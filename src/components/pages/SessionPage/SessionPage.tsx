@@ -27,6 +27,7 @@ import {
   Paper,
   Switch,
   Theme,
+  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -353,6 +354,13 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                 </AccordionSummary>
                 <AccordionDetails sx={styles.workOrderAccordionDetails}>
                   <Grid container spacing={3} margin={0}>
+                    <Typography
+                      variant="h6"
+                      sx={{ m: 3, fontStyle: 'italic', color: '#88888855', margin: 'auto auto' }}
+                      component="div"
+                    >
+                      Scouting is coming soon!!!
+                    </Typography>
                     {filteredScounts.map((scouting, idx) => {
                       return (
                         <Grid key={`scoutingfind-${idx}`}>
@@ -367,7 +375,8 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                     }}
                     sessionSettings={session.sessionSettings}
                     fabProps={{
-                      disabled: !isActive,
+                      // disabled: !isActive,
+                      disabled: true,
                     }}
                   />
                 </AccordionDetails>
