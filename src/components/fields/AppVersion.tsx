@@ -63,7 +63,9 @@ export const AppVersion: React.FC = () => {
           },
         }}
       >
-        THIS IS A TEST SERVER!!
+        {isProd
+          ? 'This product is still in soft launch. Expect data wipes until launch is announced!'
+          : 'THIS IS A TEST SERVER!!'}
       </Box>
     </Box>
   )
