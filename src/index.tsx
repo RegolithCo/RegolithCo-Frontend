@@ -2,20 +2,29 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
-import App from './App'
 import { theme } from './theme'
-
 import reportWebVitals from './reportWebVitals'
+import log from 'loglevel'
+import { APIProvider } from './hooks/useLogin'
+import App from './App'
+import { SnackbarProvider } from 'notistack'
+
+if (process.env.NODE_ENV !== 'production') {
+  log.setLevel('debug')
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-      <CssBaseline />
-      <App />
+      <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        <APIProvider>
+          <App />
+        </APIProvider>
+      </SnackbarProvider>
     </ThemeProvider>
-    ,
   </React.StrictMode>
 )
 

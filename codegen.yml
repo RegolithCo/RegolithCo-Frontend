@@ -1,0 +1,15 @@
+schema: 
+  - ../../schemas/gql/**/*.gql
+documents: '../../packages/**/*.gql'
+generates:
+  ./src/schema/operations.ts:
+    plugins:
+      - add:
+          content: "import * as types from '@orgminer/common'"
+      - typescript-react-apollo
+    config:
+      nonOptionalTypename: true
+      importOperationTypesFrom: types
+  ./src/schema/cache.ts:
+    plugins:
+      - typescript-apollo-client-helpers
