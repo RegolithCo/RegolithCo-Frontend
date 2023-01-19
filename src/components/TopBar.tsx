@@ -182,6 +182,27 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                     badgeContent={
                       userCtx.userProfile?.state === UserStateEnum.Verified ? <Verified color="success" /> : null
                     }
+                    sx={
+                      userCtx.userProfile?.state === UserStateEnum.Verified
+                        ? {
+                            '& svg': {
+                              strokeWidth: '0.5px',
+                              stroke: 'black',
+                            },
+                            '& .MuiBadge-badge::before': {
+                              content: '" "',
+                              display: 'block',
+                              background: 'black',
+                              position: 'absolute',
+
+                              height: '16px',
+                              width: '16px',
+                              zIndex: -1,
+                              borderRadius: '50%',
+                            },
+                          }
+                        : {}
+                    }
                     overlap="circular"
                   >
                     <Avatar

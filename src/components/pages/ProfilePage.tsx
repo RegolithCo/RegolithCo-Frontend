@@ -140,7 +140,33 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   {userProfile.scName}
                   {userProfile.state === UserStateEnum.Verified && (
                     <Tooltip title="You are verified!">
-                      <Verified color="success" />
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          zIndex: 1,
+                          p: 0,
+                          lineHeight: 0,
+                          display: 'inline-block',
+                          '& svg': {
+                            strokeWidth: '0.5px',
+                            stroke: 'black',
+                          },
+                          '&::before': {
+                            content: '" "',
+                            display: 'block',
+                            background: 'black',
+                            position: 'absolute',
+                            top: 4,
+                            left: 4,
+                            zIndex: -1,
+                            height: '16px',
+                            width: '16px',
+                            borderRadius: '50%',
+                          },
+                        }}
+                      >
+                        <Verified color="success" />
+                      </Box>
                     </Tooltip>
                   )}
                 </Typography>

@@ -55,6 +55,27 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           <Badge
             badgeContent={user.state === UserStateEnum.Verified ? <Verified color="success" /> : null}
             overlap="circular"
+            sx={
+              user.state === UserStateEnum.Verified
+                ? {
+                    '& svg': {
+                      strokeWidth: '0.5px',
+                      stroke: 'black',
+                    },
+                    '& .MuiBadge-badge::before': {
+                      content: '" "',
+                      display: 'block',
+                      background: 'black',
+                      position: 'absolute',
+
+                      height: '16px',
+                      width: '16px',
+                      zIndex: -1,
+                      borderRadius: '50%',
+                    },
+                  }
+                : {}
+            }
           >
             <Avatar>
               <Person />
