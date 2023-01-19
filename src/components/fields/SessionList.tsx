@@ -79,8 +79,12 @@ export const SessionList: React.FC<SessionListProps> = ({
   const numActive = sessions.filter(({ state }) => state === SessionStateEnum.Active).length
 
   React.useEffect(() => {
-    if (pageIdx >= numPages) setPageIdx(numPages - 1)
-    else if (pageIdx < 0) setPageIdx(0)
+    if (pageIdx === 0) return
+    else if (numPages > 0 && pageIdx >= numPages) {
+      setPageIdx(numPages - 1)
+    } else if (pageIdx < 0) {
+      setPageIdx(0)
+    }
   }, [pageIdx, numPages])
 
   return (

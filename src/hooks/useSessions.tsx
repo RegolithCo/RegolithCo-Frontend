@@ -21,9 +21,11 @@ import {
   useUpsertSessionUserMutation,
 } from '../schema'
 import {
+  ActivityEnum,
   CrewShareInput,
   DestructuredSettings,
   destructureSettings,
+  GetSessionQuery,
   mergeDestructured,
   OtherOrder,
   PaginatedScoutingFinds,
@@ -481,8 +483,10 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     createWorkOrder: async (newOrder: WorkOrder) => {
       const { crewShares, includeTransferFee, failReason, note } = newOrder
-      const { processStartTime, refinery, method, isRefined, shareRefinedValue } = newOrder as ShipMiningOrder
-      const { shareAmount } = newOrder as OtherOrder
+      const shipOrder = newOrder as ShipMiningOrder
+      const otherOrder = newOrder as OtherOrder
+      const { processStartTime, refinery, method, isRefined, shareRefinedValue } = shipOrder
+      const { shareAmount } = otherOrder
       const workOrderInput: WorkOrderInput = {
         includeTransferFee,
         failReason,
@@ -503,6 +507,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       const salvageOres: SalvageRowInput[] = (newOrder as SalvageOrder).salvageOres
       const shipOres: RefineryRowInput[] = (newOrder as ShipMiningOrder).shipOres
       const vehicleOres: VehicleMiningRowInput[] = (newOrder as VehicleMiningOrder).vehicleOres
+      newOrder.orderId = 'UPL_' + (Math.random() * 1000).toFixed(0)
 
       return createWorkOrderMutation[0]({
         variables: {
@@ -514,8 +519,34 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           shareAmount,
           shares: newShares,
         },
-        // Again, we need the ID here
-        refetchQueries: [GetSessionDocument],
+        // Now update the session work orders list to include the new item
+        update: (cache, { data }) => {
+          const newOrderVal = data?.createWorkOrder?.orderId ? (data?.createWorkOrder as WorkOrder) : undefined
+          if (!newOrderVal?.orderId) return
+          const session = cache.readQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+          })
+          if (!session) return
+          const newOrderItems: WorkOrder[] = [
+            ...((session.session?.workOrders?.items as WorkOrder[]) || []),
+            newOrderVal,
+          ]
+          cache.writeQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+            data: {
+              session: {
+                ...(session.session as Session),
+                workOrders: {
+                  ...(session.session?.workOrders || { __typename: 'PaginatedWorkOrders', nextToken: null }),
+                  items: newOrderItems,
+                },
+              },
+              __typename: 'Query',
+            },
+          })
+        },
       })
     },
     createScoutingFind: (findType: ScoutingFindTypeEnum, clusterCount: number) => {

@@ -41,14 +41,12 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, handleLog
           >
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/mining.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline">Mining Sessions (Login)</Typography>
+              <Typography variant="overline">Mining Sessions {userCtx.isInitialized ? '' : '(Login)'}</Typography>
               <Typography variant="body2">
                 Organize your multi-crew mining with multiple ships, crew sharing etc.
               </Typography>
             </CardContent>
-            <CardActions>
-              <Button>Login</Button>
-            </CardActions>
+            <CardActions>{userCtx.isInitialized ? <Button>My Sessions</Button> : <Button>Login</Button>}</CardActions>
           </Card>
         </Grid>
         <Grid sm={4} sx={cardCSS}>
