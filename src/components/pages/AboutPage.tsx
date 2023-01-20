@@ -18,7 +18,7 @@ export const AboutPage: React.FC = () => {
         <li>Buy me a coffee. Developers love coffee.</li>
         {/* <li>Sponsor me for a few dollars on Patreon</li> */}
         {/* <li>
-          Send a few aUEC to <code style={{ border: '1px solid #aaaaaa44', padding: '2px 4px' }}>raychaser</code> but
+          Send a few aUEC to <code style={{ border: '1px solid #aaaaaa44', padding: '2px 4px' }}>_________</code> but
           there aren't notifications so make sure to let me know so I can say thanks.
         </li> */}
       </ul>
