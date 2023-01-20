@@ -259,10 +259,11 @@ export type ShipRockFieldPolicy = {
 	mass?: FieldPolicy<any> | FieldReadFunction<any>,
 	ores?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ShipRockOreKeySpecifier = ('ore' | 'percent' | ShipRockOreKeySpecifier)[];
+export type ShipRockOreKeySpecifier = ('ore' | 'percent' | 'state' | ShipRockOreKeySpecifier)[];
 export type ShipRockOreFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
-	percent?: FieldPolicy<any> | FieldReadFunction<any>
+	percent?: FieldPolicy<any> | FieldReadFunction<any>,
+	state?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SubscriptionKeySpecifier = ('apiSubscription' | SubscriptionKeySpecifier)[];
 export type SubscriptionFieldPolicy = {
