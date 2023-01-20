@@ -19,6 +19,7 @@ import { Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } fr
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
+import { DeleteModal } from './DeleteModal'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -272,36 +273,19 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
           )}
         </DialogActions>
       </Box>
-
-      <Dialog
-        open={deleteConfirmModal}
+      <DeleteModal
+        message="Deleting this work order will remove it from the system. This action cannot be undone."
         onClose={() => setDeleteConfirmModal(false)}
-        aria-labelledby="closeDelete"
-        aria-describedby="closeDelete"
-      >
-        <DialogTitle id="alert-dialog-title">{'Permanently DELETE Work Order?'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Deleting this work order will remove it from the system. This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ display: 'flex' }}>
-          <Button onClick={() => setDeleteConfirmModal(false)}>Oops.NO!</Button>
-          <div style={{ flexGrow: 1 }} />
-          <Button
-            color={'error'}
-            variant="contained"
-            startIcon={<Delete />}
-            onClick={() => {
-              deleteWorkOrder && deleteWorkOrder()
-              setDeleteConfirmModal(false)
-            }}
-            autoFocus
-          >
-            {'Yes, Delete Work Order!'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        open={deleteConfirmModal}
+        onConfirm={() => {
+          deleteWorkOrder && deleteWorkOrder()
+          setDeleteConfirmModal(false)
+          onClose()
+        }}
+        title="Permanently DELETE Work Order?"
+        cancelBtnText="Oops.NO!"
+        confirmBtnText="Yes, Delete"
+      />
     </Dialog>
   )
 }

@@ -48,6 +48,7 @@ import { ShipOreChooser } from '../../fields/ShipOreChooser'
 import { VehicleOreChooser } from '../../fields/VehicleOreChooser'
 import { CrewShareTemplateTable } from '../../fields/crewshare/CrewShareTemplateTable'
 import { omit } from 'lodash'
+import { DeleteModal } from '../../modals/DeleteModal'
 
 export interface ShareModalProps {
   // Use this for the session version
@@ -682,21 +683,12 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
           Save
         </Button>
       </DialogActions>
-
-      <Dialog
-        open={closeConfirmModal || deleteConfirmModal}
-        onClose={() => {
-          closeConfirmModal && setCLoseConfirmModal(false)
-          deleteConfirmModal && setDeleteConfirmModal(false)
-        }}
-        aria-labelledby="closeDelete"
-        aria-describedby="closeDelete"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {closeConfirmModal ? 'Permanently close session?' : 'Permanently DELETE session?'}
-        </DialogTitle>
-        <DialogContent>
-          {closeConfirmModal ? (
+      <DeleteModal
+        title={closeConfirmModal ? 'Permanently close session?' : 'Permanently DELETE session?'}
+        confirmBtnText={closeConfirmModal ? 'Yes, End Session!' : 'Yes, Delete Session!'}
+        cancelBtnText="No, keep session"
+        message={
+          closeConfirmModal ? (
             <DialogContentText id="alert-dialog-description">
               Closing a session will lock it permanently. Crew shares can still be marked paid but no new jobs or
               scouting finds can be added and no new users can join. THIS IS A PERMANENT ACTION. Are you sure you want
@@ -707,34 +699,20 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
               Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lots.
               THIS IS A PERMANENT ACTION. Are you sure you want to delete this session?
             </DialogContentText>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ display: 'flex' }}>
-          <Button
-            onClick={() => {
-              setCLoseConfirmModal(false)
-              setDeleteConfirmModal(false)
-            }}
-          >
-            Oops.NO!
-          </Button>
-          <div style={{ flexGrow: 1 }} />
-          <Button
-            color={closeConfirmModal ? 'secondary' : 'error'}
-            variant="contained"
-            startIcon={closeConfirmModal ? <StopCircle /> : <Delete />}
-            onClick={() => {
-              setCLoseConfirmModal(false)
-              setDeleteConfirmModal(false)
-              deleteConfirmModal && onDeleteSession && onDeleteSession()
-              closeConfirmModal && onCloseSession && onCloseSession()
-            }}
-            autoFocus
-          >
-            {closeConfirmModal ? 'Yes, End Session!' : 'Yes, Delete Session!'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          )
+        }
+        open={closeConfirmModal || deleteConfirmModal}
+        onClose={() => {
+          closeConfirmModal && setCLoseConfirmModal(false)
+          deleteConfirmModal && setDeleteConfirmModal(false)
+        }}
+        onConfirm={() => {
+          setCLoseConfirmModal(false)
+          setDeleteConfirmModal(false)
+          deleteConfirmModal && onDeleteSession && onDeleteSession()
+          closeConfirmModal && onCloseSession && onCloseSession()
+        }}
+      />
     </Dialog>
   )
 }

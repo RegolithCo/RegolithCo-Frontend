@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {
   Typography,
-  Paper,
   Table,
   TableHead,
   TableRow,
@@ -9,10 +8,6 @@ import {
   TableBody,
   TableContainer,
   TableFooter,
-  Chip,
-  Card,
-  CardMedia,
-  CardContent,
   Slider,
   SxProps,
   Theme,
@@ -28,20 +23,24 @@ import {
   clusterCalc,
   FindSummary,
   getOreName,
-  getVehicleOreName,
   ScoutingFindTypeEnum,
   SessionUser,
+  ShipRock,
 } from '@orgminer/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AddCircle, Rocket, SvgIconComponent } from '@mui/icons-material'
+import { AddCircle, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
-import { ShipOreChooser } from '../../fields/ShipOreChooser'
 import { ActiveUserList } from '../../fields/ActiveUserList'
+import { DeleteModal } from '../../modals/DeleteModal'
+import { isEqual, omit } from 'lodash'
+import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 
 export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
+  onChange?: (scoutingFind: ScoutingFind) => void
+  onDelete?: () => void
 }
 
 function valuetext(value: number) {
@@ -81,9 +80,18 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
  * @param param0
  * @returns
  */
-export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind }) => {
+export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind, onChange, onDelete }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const [editFind, setEditFind] = React.useState<ScoutingFind | undefined>()
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
+  const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
+  const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
+
+  React.useEffect(() => {
+    const noAttendanceNew = omit(scoutingFind, ['attendance', 'attendanceIds'])
+    if (!isEqual(noAttendanceNew, editFind)) setEditFind(scoutingFind)
+  }, [scoutingFind])
 
   // Convenience type guards
   const shipFind = scoutingFind as ShipClusterFind
@@ -123,94 +131,100 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
   if (scanComplete) profitSymbol = ''
   else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
   return (
-    <Grid container spacing={2} padding={2} sx={styles.containerGrid}>
-      {/* Top row grid */}
-      <Grid container spacing={2} padding={2} xs={12}>
-        {/* Hero card */}
-        <Grid xs={3} sx={styles.topRowGrid}>
-          <Typography sx={{ fontSize: 20 }}>{scoutingFind.clusterCount}</Typography>
-          <Typography>{scoutingFind.state}</Typography>
-          <Typography>{scoutingFind.owner?.scName}</Typography>
-          <Slider
-            aria-label="Temperature"
-            defaultValue={3}
-            getAriaValueText={valuetext}
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={1}
-            max={16}
-          />
+    <>
+      <Grid container spacing={2} padding={2} sx={styles.containerGrid}>
+        {/* Top row grid */}
+        <Grid container spacing={2} padding={2} xs={12}>
+          {/* Hero card */}
+          <Grid xs={3} sx={styles.topRowGrid}>
+            <Typography sx={{ fontSize: 20 }}>{scoutingFind.clusterCount}</Typography>
+            <Typography>{scoutingFind.state}</Typography>
+            <Typography>{scoutingFind.owner?.scName}</Typography>
+            <Slider
+              aria-label="Temperature"
+              defaultValue={3}
+              getAriaValueText={valuetext}
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={1}
+              max={16}
+            />
+          </Grid>
+          {/* Cluster stats */}
+          <Grid xs={4} sx={styles.topRowGrid}>
+            <TableContainer>
+              <Table size="small" sx={{ maxWidth: 300, '& .MuiTableCell-root': { fontSize: 10, padding: 0 } }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Ore</TableCell>
+                    <TableCell align="right">SCU</TableCell>
+                    <TableCell align="right">aUEC</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Total</TableCell>
+                    <TableCell align="right">
+                      {MValueFormatter(summary.volume / 100, MValueFormat.number_sm, 1)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {profitSymbol}
+                      {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm)}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {summary.oreSort?.map((oreKey) => {
+                    const { mass, potentialProfit, volume } = (summary.byOre || {})[oreKey] as FindSummary
+                    return (
+                      <TableRow key={oreKey}>
+                        <TableCell>{getOreName(oreKey)}</TableCell>
+                        <TableCell align="right">{MValueFormatter(volume / 100, MValueFormat.number_sm, 1)}</TableCell>
+                        <TableCell align="right">{MValueFormatter(potentialProfit, MValueFormat.number_sm)}</TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={3} sx={{ display: 'flex' }}>
+                      Prsptr: 7<div style={{ flex: '1 1' }} /> Moles: 3
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
+          </Grid>
+          {/* Actions and attendance */}
+          <Grid xs={5} sx={styles.topRowGrid}>
+            <Typography variant="overline">On Site:</Typography>
+            <ActiveUserList small sessionUsers={(scoutingFind.attendance || []) as SessionUser[]} />
+          </Grid>
         </Grid>
-        {/* Cluster stats */}
-        <Grid xs={4} sx={styles.topRowGrid}>
-          <TableContainer>
-            <Table size="small" sx={{ maxWidth: 300, '& .MuiTableCell-root': { fontSize: 10, padding: 0 } }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Ore</TableCell>
-                  <TableCell align="right">SCU</TableCell>
-                  <TableCell align="right">aUEC</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Total</TableCell>
-                  <TableCell align="right">
-                    {MValueFormatter(summary.volume / 100, MValueFormat.number_sm, 1)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {profitSymbol}
-                    {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm)}
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {summary.oreSort?.map((oreKey) => {
-                  const { mass, potentialProfit, volume } = (summary.byOre || {})[oreKey] as FindSummary
-                  return (
-                    <TableRow key={oreKey}>
-                      <TableCell>{getOreName(oreKey)}</TableCell>
-                      <TableCell align="right">{MValueFormatter(volume / 100, MValueFormat.number_sm, 1)}</TableCell>
-                      <TableCell align="right">{MValueFormatter(potentialProfit, MValueFormat.number_sm)}</TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={3} sx={{ display: 'flex' }}>
-                    Prsptr: 7<div style={{ flex: '1 1' }} /> Moles: 3
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
-        </Grid>
-        {/* Actions and attendance */}
-        <Grid xs={5} sx={styles.topRowGrid}>
-          <Typography variant="overline">On Site:</Typography>
-          <ActiveUserList small sessionUsers={(scoutingFind.attendance || []) as SessionUser[]} />
-        </Grid>
-      </Grid>
-      {/* Rock scans */}
-      {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
-        <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
-          <Box>
-            <Box sx={{ display: 'flex' }}>
-              <Typography variant="overline">Scans</Typography>
-              <div style={{ flexGrow: 1 }} />
-              <Button
-                startIcon={<AddCircle />}
-                size="small"
-                variant="text"
-                onClick={() => {
-                  //
-                }}
-              >
-                Add Scan
-              </Button>
-            </Box>
-            <Grid container sx={styles.scansGrid}>
-              {/* {!scanComplete && (
+        {/* Rock scans */}
+        {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
+          <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
+            <Box>
+              <Box sx={{ display: 'flex' }}>
+                <Typography variant="overline">Scans</Typography>
+                <div style={{ flexGrow: 1 }} />
+                <Button
+                  startIcon={<AddCircle />}
+                  size="small"
+                  variant="text"
+                  onClick={() => {
+                    setEditScanModalOpen([-1, false])
+                    setAddScanModalOpen({
+                      __typename: 'ShipRock',
+                      mass: 3000,
+                      ores: [],
+                    })
+                  }}
+                >
+                  Add Scan
+                </Button>
+              </Box>
+              <Grid container sx={styles.scansGrid}>
+                {/* {!scanComplete && (
               <Grid>
                 <Card sx={{ border: '2px dashed', width: 100, height: 100 }}>
                   <CardContent>
@@ -221,7 +235,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
               </Grid>
             )} */}
 
-              {/* {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage &&
+                {/* {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage &&
               salvageFind.wrecks.map((wreck, idx) => (
                 <Grid xs={2} key={idx}>
                   <Typography>
@@ -230,16 +244,22 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
                   </Typography>
                 </Grid>
               ))} */}
-              {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
-                shipFind.shipRocks.map((rock, idx) => {
-                  rock.ores?.sort((a, b) => (b.percent || 0) - (a.percent || 0))
-                  return (
-                    <Grid key={idx}>
-                      <ShipRockCard rock={rock} rockValue={summary.byRock ? summary.byRock[idx] : undefined} />
-                    </Grid>
-                  )
-                })}
-              {/* {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle &&
+                {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
+                  (shipFind.shipRocks || []).map((rock, idx) => {
+                    rock.ores?.sort((a, b) => (b.percent || 0) - (a.percent || 0))
+                    return (
+                      <Grid
+                        key={idx}
+                        onClick={() => {
+                          setAddScanModalOpen(false)
+                          setEditScanModalOpen([idx, rock])
+                        }}
+                      >
+                        <ShipRockCard rock={rock} rockValue={summary.byRock ? summary.byRock[idx] : undefined} />
+                      </Grid>
+                    )
+                  })}
+                {/* {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle &&
               vehicleFind.vehicleRocks.map((rock) => (
                 <>
                   <Card>
@@ -259,10 +279,63 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
                       .join(', ')}
                 </>
               ))} */}
-            </Grid>
-          </Box>
-        </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+        )}
+      </Grid>
+      {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
+        <ShipRockEntryModal
+          open={addScanModalOpen !== false || editScanModalOpen[1] !== false}
+          onClose={() => {
+            addScanModalOpen !== false && setAddScanModalOpen(false)
+            editScanModalOpen[1] !== false && setEditScanModalOpen([-1, false])
+          }}
+          onDelete={() => {
+            // Just discard. No harm, no foul
+            addScanModalOpen !== false && setAddScanModalOpen(false)
+            // Actually remove the rock from the list
+            if (editScanModalOpen[1] !== false) {
+              const shipEditFind = editFind as ShipClusterFind
+              setEditFind({
+                ...(shipEditFind || {}),
+                shipRocks: (shipEditFind?.shipRocks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
+              })
+              setEditScanModalOpen([-1, false])
+            }
+          }}
+          onSubmit={(rock) => {
+            if (addScanModalOpen !== false) {
+              const shipEditFind = editFind as ShipClusterFind
+              setEditFind({
+                ...(shipEditFind || {}),
+                shipRocks: [...(shipEditFind?.shipRocks || []), rock],
+              })
+              setAddScanModalOpen(false)
+            } else if (editScanModalOpen[1] !== false) {
+              const shipEditFind = editFind as ShipClusterFind
+              setEditFind({
+                ...(shipEditFind || {}),
+                shipRocks: (shipEditFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
+              })
+              setEditScanModalOpen([-1, false])
+            }
+          }}
+          shipRock={addScanModalOpen !== false ? addScanModalOpen : (editScanModalOpen[1] as ShipRock)}
+        />
       )}
-    </Grid>
+      <DeleteModal
+        open={deleteModalOpen}
+        message="Are you sure you want to delete this find?"
+        title="Delete Scouting Find"
+        onClose={() => {
+          setDeleteModalOpen(false)
+        }}
+        onConfirm={() => {
+          setDeleteModalOpen(false)
+          onDelete && onDelete()
+        }}
+      />
+    </>
   )
 }

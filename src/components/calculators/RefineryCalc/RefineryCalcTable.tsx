@@ -70,9 +70,12 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   const rows: [number | null, number | null][][] = vAxis.map(([rowKey]) => {
     const cols: [number | null, number | null][] = hAxis.map(([colKey]) => {
       let outArr: [number | null, number | null] = [null, null]
+
+      // We need to send the SCU in as cSCU for the calculation
       const finalAmt = oreAmt ? oreAmt * 100 : 0
       const finalOre = (refMode === RefineryPivot.oreType ? rowKey : oreType) as ShipOreEnum
       const finalRefinery = colKey as RefineryEnum
+
       // if (refMode === RefineryPivot.oreType && finalOre === ShipOreEnum.Inertmaterial) return [null, null]
       const finalMethod = (
         refMode === RefineryPivot.oreType ? method : (rowKey as RefineryMethodEnum)

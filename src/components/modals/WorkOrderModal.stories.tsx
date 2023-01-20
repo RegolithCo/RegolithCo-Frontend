@@ -18,8 +18,8 @@ export default {
     activity: {
       control: {
         type: 'select',
+        defaultValue: ActivityEnum.ShipMining,
         options: Object.values(ActivityEnum),
-        default: ActivityEnum.ShipMining,
       },
     },
   },
