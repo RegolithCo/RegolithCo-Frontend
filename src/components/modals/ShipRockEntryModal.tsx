@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   InputAdornment,
   Slider,
   SxProps,
@@ -26,6 +25,8 @@ import { fontFamilies } from '../../theme'
 import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
+
+export const SHIP_ROCK_BOUNDS = [3000, 9000]
 
 export interface ShipRockEntryModalProps {
   open?: boolean
@@ -161,9 +162,16 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     const bPrice = lookups.marketPriceLookup[b as ShipOreEnum] as MarketPriceLookupValue
     return bPrice.refined - aPrice.refined
   })
+  const disabled =
+    !newShipRock.mass ||
+    !newShipRock.ores ||
+    !newShipRock.ores.length ||
+    newShipRock.mass <= SHIP_ROCK_BOUNDS[0] ||
+    newShipRock.mass > SHIP_ROCK_BOUNDS[1]
+
   return (
     <>
-      <Dialog open={open} onClose={onClose} sx={styles.paper} maxWidth="xs">
+      <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs">
         <RockIcon sx={styles.icon} />
         <Box sx={styles.headerBar}>
           <Typography variant="h6" sx={styles.cardTitle}>
@@ -201,8 +209,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                   }
                 }}
                 marks={marks}
-                min={3000}
-                max={9000}
+                min={SHIP_ROCK_BOUNDS[0]}
+                max={SHIP_ROCK_BOUNDS[1]}
               />
             </Grid2>
             <Grid2 xs={3}>
@@ -307,22 +315,25 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               Cancel
             </Button>
             <div style={{ flexGrow: 1 }} />
-            <Button
-              color="error"
-              startIcon={<Delete />}
-              sx={{ background: theme.palette.background.paper }}
-              variant="outlined"
-              onClick={() => {
-                setDeleteModalOpen(true)
-              }}
-            >
-              Delete
-            </Button>
+            {!isNew && (
+              <Button
+                color="error"
+                startIcon={<Delete />}
+                sx={{ background: theme.palette.background.paper }}
+                variant="outlined"
+                onClick={() => {
+                  setDeleteModalOpen(true)
+                }}
+              >
+                Delete
+              </Button>
+            )}
             <div style={{ flexGrow: 1 }} />
             <Button
               color="secondary"
               startIcon={<Save />}
               size="small"
+              disabled={disabled}
               variant={'contained'}
               onClick={() => {
                 onSubmit && onSubmit(newShipRock)

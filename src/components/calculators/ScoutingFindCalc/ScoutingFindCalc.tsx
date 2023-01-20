@@ -63,6 +63,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     },
   },
   bottomRowGrid: {
+    width: '100%',
     // border: '1px solid green!important',
   },
   scansGrid: {
@@ -205,7 +206,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
           <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
             <Box>
               <Box sx={{ display: 'flex' }}>
-                <Typography variant="overline">Scans</Typography>
+                <Typography variant="overline">Rock Scans</Typography>
                 <div style={{ flexGrow: 1 }} />
                 <Button
                   startIcon={<AddCircle />}
@@ -287,6 +288,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
       {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
         <ShipRockEntryModal
           open={addScanModalOpen !== false || editScanModalOpen[1] !== false}
+          isNew={addScanModalOpen !== false}
           onClose={() => {
             addScanModalOpen !== false && setAddScanModalOpen(false)
             editScanModalOpen[1] !== false && setEditScanModalOpen([-1, false])

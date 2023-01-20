@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { Typography, Card, List, ListItem, Box, CardContent } from '@mui/material'
+import { Typography, Card, List, ListItem, Box, CardContent, ToggleButtonGroup, ToggleButton } from '@mui/material'
 import { ShipOreEnum, ShipRock, getShipOreName } from '@orgminer/common'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { CheckCircle, FlagCircle } from '@mui/icons-material'
 
 export interface ShipRockCardProps {
   rock: ShipRock
@@ -23,7 +24,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue }) =
           fontSize: 10,
         },
         width: 90,
-        height: 100,
+        height: 120,
       }}
     >
       <CardContent sx={{ fontSize: 10, p: 0 }}>
@@ -59,6 +60,24 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue }) =
                 </ListItem>
               ))}
         </List>
+        <ToggleButtonGroup
+          color="primary"
+          value={'web'}
+          exclusive
+          sx={{ width: '100%', display: 'flex' }}
+          size="small"
+          onChange={() => {
+            console.log('change')
+          }}
+          aria-label="Platform"
+        >
+          <ToggleButton value="web" sx={{ flex: '1 1', p: 0.2, '& svg': { height: 15, width: 15 } }}>
+            <FlagCircle />
+          </ToggleButton>
+          <ToggleButton value="android" sx={{ flex: '1 1', p: 0.2, '& svg': { height: 15, width: 15 } }}>
+            <CheckCircle />
+          </ToggleButton>
+        </ToggleButtonGroup>
       </CardContent>
     </Card>
   )
