@@ -1,5 +1,7 @@
-import { orange, yellow } from '@mui/material/colors'
-import { createTheme, ThemeOptions } from '@mui/material/styles'
+import { blue, blueGrey, green, grey, orange, red, yellow } from '@mui/material/colors'
+import { createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
+import { Theme } from '@mui/material'
+import { ScoutingFindStateEnum } from '@regolithco/common'
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -78,3 +80,42 @@ export const darkOptions: ThemeOptions = {
 
 // A custom theme for this app
 export const theme = createTheme(darkOptions)
+
+const scoutingFindStateColors: Record<ScoutingFindStateEnum, PaletteOptions> = {
+  [ScoutingFindStateEnum.Abandonned]: {
+    primary: grey,
+    secondary: grey,
+  },
+  [ScoutingFindStateEnum.Depleted]: {
+    primary: grey,
+    secondary: grey,
+  },
+  [ScoutingFindStateEnum.Discovered]: {
+    primary: { main: green[400] },
+    secondary: { main: green[400] },
+  },
+  [ScoutingFindStateEnum.ReadyForWorkers]: {
+    primary: yellow,
+    secondary: yellow,
+  },
+  [ScoutingFindStateEnum.Working]: {
+    primary: { main: blue[200] },
+    secondary: { main: blue[200] },
+  },
+}
+
+export const scoutingFindStateThemes: Record<ScoutingFindStateEnum, Theme> = Object.entries(
+  scoutingFindStateColors
+).reduce(
+  (acc, [key, value]) => ({
+    ...acc,
+    [key]: createTheme({
+      ...darkOptions,
+      palette: {
+        ...darkOptions.palette,
+        ...value,
+      },
+    }),
+  }),
+  {} as Record<ScoutingFindStateEnum, Theme>
+)

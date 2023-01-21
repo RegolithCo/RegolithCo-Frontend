@@ -3,7 +3,12 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ClusterCard } from './ClusterCard'
 import { SalvageFind, ScoutingFindStateEnum, ShipClusterFind, VehicleClusterFind } from '@regolithco/common'
-import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/mock'
+import {
+  fakeSalvageFind,
+  fakeScoutingFinds,
+  fakeShipClusterFind,
+  fakeVehicleClusterFind,
+} from '@regolithco/common/dist/mock'
 import { Box } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 
@@ -39,14 +44,17 @@ const AllThree: React.FC<AllThreeProps> = () => (
       <Grid>
         <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Working })} />
       </Grid>
+      <Grid>
+        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Discovered })} />
+      </Grid>
       {/* Then a bunch more for fun */}
-      {/* {fakeScoutingFinds(20).map((v, idx) => {
+      {fakeScoutingFinds(20).map((v, idx) => {
         return (
           <Grid key={`fake-${idx}`}>
             <ClusterCard clusterFind={v} />
           </Grid>
         )
-      })} */}
+      })}
     </Grid>
   </Box>
 )
@@ -63,5 +71,4 @@ export default {
 const Template: ComponentStory<typeof AllThree> = (args) => <AllThree {...args} />
 
 export const ClusterCards = Template.bind({})
-
 ClusterCards.args = {}

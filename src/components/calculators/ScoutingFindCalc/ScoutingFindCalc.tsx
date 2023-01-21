@@ -10,7 +10,6 @@ import {
   TableFooter,
   SxProps,
   Theme,
-  useTheme,
   Box,
   Button,
   Stack,
@@ -20,6 +19,7 @@ import {
   Chip,
   ToggleButton,
   ToggleButtonGroup,
+  ThemeProvider,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -33,22 +33,11 @@ import {
   SessionUser,
   ShipRock,
   RockStateEnum,
+  ScoutingFindStateEnum,
+  getScoutingFindStateName,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import {
-  AddCircle,
-  FlightLand,
-  FlightTakeoff,
-  FormatAlignCenter,
-  FormatAlignJustify,
-  FormatAlignLeft,
-  FormatAlignRight,
-  Person,
-  Public,
-  RocketLaunch,
-  Room,
-  SvgIconComponent,
-} from '@mui/icons-material'
+import { AddCircle, Person, Public, RocketLaunch, Room, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
@@ -57,10 +46,13 @@ import { DeleteModal } from '../../modals/DeleteModal'
 import { isEqual, omit } from 'lodash'
 import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModal'
-import { fontFamilies } from '../../../theme'
+import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
 
 export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
+  me: SessionUser
+  allowEdit?: boolean
+  allowWork?: boolean
   isNew?: boolean
   onChange?: (scoutingFind: ScoutingFind) => void
   onDelete?: () => void
@@ -79,9 +71,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   clusterCountBadge: {
     '& .MuiBadge-badge': {
-      height: '60px',
-      width: '60px',
-      top: '50%',
+      height: '30px',
+      width: '30px',
+      top: '10%',
       left: '60%',
       borderRadius: '50%',
       background: theme.palette.primary.dark,
@@ -127,12 +119,20 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
  * @param param0
  * @returns
  */
-export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind, isNew, onChange, onDelete }) => {
-  const theme = useTheme()
-  const styles = stylesThunk(theme)
+export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
+  scoutingFind,
+  me,
+  isNew,
+  allowEdit,
+  allowWork,
+  onChange,
+  onDelete,
+}) => {
   const [editFind, setEditFind] = React.useState<Partial<ScoutingFind>>(
     omit(scoutingFind, ['attendance', 'attendanceIds'])
   )
+  const theme = scoutingFindStateThemes[editFind.state || ScoutingFindStateEnum.Discovered]
+  const styles = stylesThunk(theme)
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(Boolean(isNew))
   const [deleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false)
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
@@ -181,16 +181,19 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
   if (scanComplete) profitSymbol = ''
   else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Grid container spacing={2} padding={2} sx={styles.containerGrid}>
         <Chip
-          label={editFind.state}
+          label={getScoutingFindStateName(editFind.state as ScoutingFindStateEnum)}
           sx={{
             position: 'absolute',
             top: -10,
             left: '50%',
+            textTransform: 'uppercase',
+            fontWeight: 'bold',
             transform: 'translate(-50%, 0%)',
-            fontSize: 10,
+            fontSize: 14,
+            py: 0.5,
             color: theme.palette.primary.contrastText,
             background: theme.palette.primary.dark,
           }}
@@ -382,7 +385,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
             <Typography variant="overline" component="div">
               On Site:
             </Typography>
-            <ActiveUserList small sessionUsers={(editFind.attendance || []) as SessionUser[]} />
+            <ActiveUserList small sessionUsers={(scoutingFind.attendance || []) as SessionUser[]} />
           </Grid>
         </Grid>
         {/* Rock scans */}
@@ -416,14 +419,23 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
                   (shipFind.shipRocks || []).map((rock, idx) => {
                     rock.ores?.sort((a, b) => (b.percent || 0) - (a.percent || 0))
                     return (
-                      <Grid
-                        key={idx}
-                        onClick={() => {
-                          setAddScanModalOpen(false)
-                          setEditScanModalOpen([idx, rock])
-                        }}
-                      >
-                        <ShipRockCard rock={rock} rockValue={summary.byRock ? summary.byRock[idx] : undefined} />
+                      <Grid key={idx}>
+                        <ShipRockCard
+                          rock={rock}
+                          rockValue={summary.byRock ? summary.byRock[idx] : undefined}
+                          onChangeState={(newState) => {
+                            const newRocks = [...(shipFind.shipRocks || [])]
+                            newRocks[idx].state = newState
+                            setEditFind({
+                              ...shipFind,
+                              shipRocks: newRocks,
+                            })
+                          }}
+                          onEditClick={() => {
+                            setAddScanModalOpen(false)
+                            setEditScanModalOpen([idx, rock])
+                          }}
+                        />
                       </Grid>
                     )
                   })}
@@ -498,6 +510,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({ scoutingFind
           onDelete && onDelete()
         }}
       />
-    </>
+    </ThemeProvider>
   )
 }

@@ -2,7 +2,12 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ScoutingFindModal as ScoutingFindModalC } from './ScoutingFindModal'
-import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/mock'
+import {
+  fakeSalvageFind,
+  fakeSessionUser,
+  fakeShipClusterFind,
+  fakeVehicleClusterFind,
+} from '@regolithco/common/dist/mock'
 import log from 'loglevel'
 import { ScoutingFind, ScoutingFindTypeEnum } from '@regolithco/common'
 
@@ -47,6 +52,7 @@ Create.args = {
   open: true,
   isNew: true,
   allowEdit: true,
+  meUser: fakeSessionUser(),
   onChange: (scoutingFind) => {
     log.debug('ShipMiningOrderUpdate', scoutingFind)
   },
@@ -60,6 +66,8 @@ Edit.args = {
   open: true,
   isNew: false,
   allowEdit: true,
+  meUser: fakeSessionUser(),
+
   onChange: (order) => {
     log.debug('ShipMiningOrderUpdate', order)
   },
@@ -73,6 +81,8 @@ View.args = {
   open: true,
   isNew: false,
   allowEdit: false,
+  meUser: fakeSessionUser(),
+
   onChange: (order) => {
     log.debug('ShipMiningOrderUpdate', order)
   },
