@@ -18,7 +18,7 @@ import { UserListItem } from './UserListItem'
 
 export interface InnactiveUserListProps {
   verifiedUsers: VerifiedUserLookup
-  innactiveUsers: string[]
+  mentionedUsers: string[]
   myFriends: string[]
   useAutocomplete?: boolean
   addToList?: (friendName: string) => void
@@ -40,7 +40,7 @@ const filter = createFilterOptions<
 
 export const InnactiveUserList: React.FC<InnactiveUserListProps> = ({
   verifiedUsers,
-  innactiveUsers,
+  mentionedUsers,
   myFriends,
   useAutocomplete,
   addToList,
@@ -74,8 +74,8 @@ export const InnactiveUserList: React.FC<InnactiveUserListProps> = ({
           overflowX: 'hidden',
         }}
       >
-        {(innactiveUsers || []).map((innactiveUserName, idx) => {
-          const isVerified = Boolean(verifiedUsers[innactiveUserName])
+        {(mentionedUsers || []).map((mentionedUserName, idx) => {
+          const isVerified = Boolean(verifiedUsers[mentionedUserName])
           return (
             <ListItem
               key={`userlist-${idx}`}
@@ -88,20 +88,20 @@ export const InnactiveUserList: React.FC<InnactiveUserListProps> = ({
                   </Avatar>
                 </Badge>
               </ListItemAvatar> */}
-              <ListItemText primary={innactiveUserName} />
+              <ListItemText primary={mentionedUserName} />
               <ListItemSecondaryAction>
-                {addFriend && myFriends.indexOf(innactiveUserName) < 0 && (
+                {addFriend && myFriends.indexOf(mentionedUserName) < 0 && (
                   <Tooltip title="Add this user as a friend">
-                    <IconButton onClick={() => addFriend(innactiveUserName)}>
+                    <IconButton onClick={() => addFriend(mentionedUserName)}>
                       <PersonAdd />
                     </IconButton>
                   </Tooltip>
                 )}
-                {((removeFriend && myFriends.indexOf(innactiveUserName) > -1) || removeFromList) && (
+                {((removeFriend && myFriends.indexOf(mentionedUserName) > -1) || removeFromList) && (
                   <IconButton
                     onClick={() => {
-                      removeFriend && removeFriend(innactiveUserName)
-                      removeFromList && removeFromList(innactiveUserName)
+                      removeFriend && removeFriend(mentionedUserName)
+                      removeFromList && removeFromList(mentionedUserName)
                     }}
                   >
                     <Cancel />
@@ -153,7 +153,7 @@ export const InnactiveUserList: React.FC<InnactiveUserListProps> = ({
             if (Array.isArray(option) && option[0]) return option[0]
             else return ''
           }}
-          getOptionDisabled={(option) => (innactiveUsers || []).find((scName) => scName === option[0]) !== undefined}
+          getOptionDisabled={(option) => (mentionedUsers || []).find((scName) => scName === option[0]) !== undefined}
           options={Object.entries(userSuggest || {})}
           sx={{ mb: 3 }}
           fullWidth

@@ -2,7 +2,12 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { SessionPage as SessionPageComponent } from './SessionPage'
-import { fakePaginatedSessionUserList, fakeSCNameList, fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
+import {
+  fakePaginatedSessionUserList,
+  fakeSCNameList,
+  fakeSession,
+  fakeUserProfile,
+} from '@regolithco/common/dist/mock'
 import { WorkOrder } from '@regolithco/common'
 
 export default {
@@ -30,7 +35,7 @@ const meUser = fakeUserProfile()
 SessionPage.args = {
   session: fakeSession({
     activeMembers: fakePaginatedSessionUserList(10),
-    innactiveMembers: fakeSCNameList(3),
+    mentionedUsers: fakeSCNameList(3),
   }),
   verifiedInnactiveUsers: {},
   userProfile: meUser,
@@ -40,7 +45,7 @@ export const Visitor = Template.bind({})
 Visitor.args = {
   session: fakeSession({
     activeMembers: fakePaginatedSessionUserList(10),
-    innactiveMembers: fakeSCNameList(3),
+    mentionedUsers: fakeSCNameList(3),
   }),
   verifiedInnactiveUsers: {},
   userProfile: meUser,

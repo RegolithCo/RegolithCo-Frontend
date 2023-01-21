@@ -311,7 +311,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       },
       optimisticResponse: () => {
         const newInnactiveMembers = [
-          ...((sessionQry.data?.session?.innactiveMembers as Session['innactiveMembers']) || []),
+          ...((sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']) || []),
           ...scNames,
         ]
         newInnactiveMembers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
@@ -319,7 +319,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         return {
           addSessionMentions: {
             ...(sessionQry.data?.session as Session),
-            innactiveMembers: newInnactiveMembers,
+            mentionedUsers: newInnactiveMembers,
           },
           __typename: 'Mutation',
         }
@@ -354,7 +354,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         optimisticResponse: () => ({
           removeSessionMentions: {
             ...(sessionQry.data?.session as Session),
-            innactiveMembers: (sessionQry.data?.session?.innactiveMembers as Session['innactiveMembers']).filter(
+            mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).filter(
               (m) => !scNames.includes(m)
             ),
           },
@@ -371,7 +371,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         optimisticResponse: () => ({
           removeSessionCrew: {
             ...(sessionQry.data?.session as Session),
-            innactiveMembers: (sessionQry.data?.session?.innactiveMembers as Session['innactiveMembers']).filter(
+            mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).filter(
               (m) => m !== scName
             ),
           },

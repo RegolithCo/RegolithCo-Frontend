@@ -175,13 +175,13 @@ export type ScoutingFindInterfaceFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionKeySpecifier = ('activeMemberIds' | 'activeMembers' | 'createdAt' | 'finishedAt' | 'innactiveMembers' | 'name' | 'note' | 'onTheList' | 'owner' | 'ownerId' | 'scouting' | 'sessionId' | 'sessionSettings' | 'state' | 'updatedAt' | 'workOrders' | SessionKeySpecifier)[];
+export type SessionKeySpecifier = ('activeMemberIds' | 'activeMembers' | 'createdAt' | 'finishedAt' | 'mentionedUsers' | 'name' | 'note' | 'onTheList' | 'owner' | 'ownerId' | 'scouting' | 'sessionId' | 'sessionSettings' | 'state' | 'updatedAt' | 'workOrders' | SessionKeySpecifier)[];
 export type SessionFieldPolicy = {
 	activeMemberIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	activeMembers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	finishedAt?: FieldPolicy<any> | FieldReadFunction<any>,
-	innactiveMembers?: FieldPolicy<any> | FieldReadFunction<any>,
+	mentionedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
 	onTheList?: FieldPolicy<any> | FieldReadFunction<any>,

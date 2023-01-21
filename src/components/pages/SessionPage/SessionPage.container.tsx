@@ -24,7 +24,7 @@ export const SessionPageContainer: React.FC = () => {
       const shareNames = newShares.map((s) => s.scName)
       const activeNames = (sessionQueries.session?.activeMembers?.items || []).map(({ owner }) => owner?.scName)
       const addToInnactive = shareNames.filter(
-        (s) => !sessionQueries.session?.innactiveMembers?.includes(s) && !activeNames.includes(s)
+        (s) => !sessionQueries.session?.mentionedUsers?.includes(s) && !activeNames.includes(s)
       )
       if (addToInnactive.length > 0) await sessionQueries.addSessionMentions(addToInnactive)
     }

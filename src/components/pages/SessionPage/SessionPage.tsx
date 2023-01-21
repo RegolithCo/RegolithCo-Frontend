@@ -27,14 +27,13 @@ import {
   Paper,
   Switch,
   Theme,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
 import { Container, SxProps } from '@mui/system'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
-import { InnactiveUserList } from '../../fields/InnactiveUserList'
+import { InnactiveUserList } from '../../fields/MentionedUserList'
 import { ExpandMore } from '@mui/icons-material'
 import { WorkOrderTable } from './WorkOrderTable'
 import { ClusterCard } from '../../cards/ClusterCard'
@@ -43,7 +42,6 @@ import { WorkOrderModal } from '../../modals/WorkOrderModal'
 import { newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { ShareModal } from '../../modals/ShareModal'
 import { SessionHeader } from './SessionHeader'
-import { fontFamilies } from '../../../theme'
 
 export interface SessionPageProps {
   session: Session
@@ -203,7 +201,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   const scountingCounts = [filteredScounts.length, allScouts.length]
   const workOrderCounts = [filteredWorkOrders.length, allWorkOrders.length]
   const userSuggest: UserSuggest = React.useMemo(
-    () => createUserSuggest(session.activeMembers?.items || [], session.innactiveMembers, userProfile.friends),
+    () => createUserSuggest(session.activeMembers?.items || [], session.mentionedUsers, userProfile.friends),
     [session, userProfile]
   )
 
@@ -252,11 +250,11 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                   id="panel1a-header"
                   sx={{ ...styles.accordionSummary, background: '#888888', color: '#000000' }}
                 >
-                  Mentioned: ({session.innactiveMembers?.length})
+                  Mentioned: ({session.mentionedUsers?.length})
                 </AccordionSummary>
                 <AccordionDetails sx={styles.accordionDetails}>
                   <InnactiveUserList
-                    innactiveUsers={session.innactiveMembers}
+                    mentionedUsers={session.mentionedUsers}
                     verifiedUsers={verifiedInnactiveUsers}
                     myFriends={userProfile.friends}
                     useAutocomplete

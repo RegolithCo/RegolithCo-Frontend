@@ -231,7 +231,7 @@ export const useUserProfile = (): useSessionsReturn => {
       createSessionMutation[0]({
         variables: {
           session: {
-            innactiveMembers: [],
+            mentionedUsers: [],
             name: defaultSessionName(),
           },
           ...initialSessionSettings,

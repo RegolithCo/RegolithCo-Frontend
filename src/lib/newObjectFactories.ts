@@ -52,7 +52,7 @@ export function dummySession(owner: UserProfile): Session {
       lockedFields: [],
       ...owner.sessionSettings,
     },
-    innactiveMembers: [],
+    mentionedUsers: [],
     __typename: 'Session',
   }
 }

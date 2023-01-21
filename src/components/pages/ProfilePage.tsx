@@ -20,7 +20,7 @@ import { RemoveUserModal } from '../modals/RemoveUserModal'
 import { ChangeUsernameModal } from '../modals/ChangeUsernameModal'
 import { DeleteProfileModal } from '../modals/DeleteProfileModal'
 import { yellow } from '@mui/material/colors'
-import { InnactiveUserList } from '../fields/InnactiveUserList'
+import { InnactiveUserList } from '../fields/MentionedUserList'
 import { SessionSettingsModal } from './SessionPage/SessionSettingsModal'
 import { pick } from 'lodash'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -327,7 +327,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Typography>
               <InnactiveUserList
                 verifiedUsers={verifiedFriends}
-                innactiveUsers={userProfile.friends}
+                mentionedUsers={userProfile.friends}
                 myFriends={userProfile.friends}
                 addToList={addFriend}
                 removeFriend={removeFriend}

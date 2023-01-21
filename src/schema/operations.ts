@@ -253,7 +253,7 @@ export const SessionFragmentFragmentDoc = gql`
   sessionSettings {
     ...SessionSettingFragment
   }
-  innactiveMembers
+  mentionedUsers
   activeMemberIds
   activeMembers {
     items {
@@ -771,7 +771,7 @@ export const AddSessionMentionsDocument = gql`
     mutation addSessionMentions($sessionId: ID!, $scNames: [String]!) {
   addSessionMentions(sessionId: $sessionId, scNames: $scNames) {
     sessionId
-    innactiveMembers
+    mentionedUsers
   }
 }
     `;
@@ -806,7 +806,7 @@ export const RemoveSessionMentionsDocument = gql`
     mutation removeSessionMentions($sessionId: ID!, $scNames: [String]!) {
   removeSessionMentions(sessionId: $sessionId, scNames: $scNames) {
     sessionId
-    innactiveMembers
+    mentionedUsers
   }
 }
     `;
@@ -841,7 +841,7 @@ export const RemoveSessionCrewDocument = gql`
     mutation removeSessionCrew($sessionId: ID!, $scNames: [String]!) {
   removeSessionCrew(sessionId: $sessionId, scNames: $scNames) {
     sessionId
-    innactiveMembers
+    mentionedUsers
   }
 }
     `;

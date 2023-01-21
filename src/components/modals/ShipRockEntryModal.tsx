@@ -18,6 +18,7 @@ import {
 import {
   lookups,
   MarketPriceLookupValue,
+  RockStateEnum,
   ScoutingFindStateEnum,
   ShipOreEnum,
   ShipRock,
@@ -146,7 +147,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const styles = styleThunk(theme)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [newShipRock, setNewShipRock] = React.useState<ShipRock>(
-    shipRock || { state: ScoutingFindStateEnum.Discovered, mass: 0, ores: [], __typename: 'ShipRock' }
+    shipRock || { state: RockStateEnum.Ready, mass: 0, ores: [], __typename: 'ShipRock' }
   )
 
   React.useEffect(() => {

@@ -20,7 +20,7 @@ ShareModal.args = {
   onClose: () => {
     console.log('Closed')
   },
-  scoutingFind: fakeShipClusterFind(),
+  clusterCount: 1,
   open: true,
   // shipRock
 }

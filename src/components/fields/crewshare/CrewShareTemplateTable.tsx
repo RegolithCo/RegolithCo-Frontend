@@ -12,7 +12,13 @@ import {
   TextField,
   createFilterOptions,
 } from '@mui/material'
-import { CrewShareTemplate, CrewShareTemplateInput, ShareTypeEnum, UserSuggest, validateSCName } from '@regolithco/common'
+import {
+  CrewShareTemplate,
+  CrewShareTemplateInput,
+  ShareTypeEnum,
+  UserSuggest,
+  validateSCName,
+} from '@regolithco/common'
 import { CrewShareTemplateTableRow } from './CrewShareTemplateTableRow'
 import { MValue, MValueFormat } from '../MValue'
 import { UserListItem } from '../UserListItem'
