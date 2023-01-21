@@ -12,7 +12,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material'
-import { ActivityEnum, OtherOrder, WorkOrderSummary } from '@orgminer/common'
+import { ActivityEnum, OtherOrder, WorkOrderSummary } from '@regolithco/common'
 import { MValue, MValueFormat } from '../../../fields/MValue'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'

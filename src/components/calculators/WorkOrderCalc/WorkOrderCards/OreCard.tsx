@@ -36,7 +36,7 @@ import {
   SalvageRow,
   SalvageOreEnum,
   SalvageOrder,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { MValue, MValueFormat } from '../../../fields/MValue'
 import { RefineryControl } from '../../../fields/RefineryControl'
 import { RefineryMethodControl } from '../../../fields/RefiningMethodControl'

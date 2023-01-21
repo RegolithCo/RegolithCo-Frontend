@@ -1,4 +1,4 @@
-import { Session, UserProfile } from '@orgminer/common'
+import { Session, UserProfile } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SessionChooserPage } from './SessionChooserPage'

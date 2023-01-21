@@ -2,7 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ProfilePage as ProfilePageComponent } from './ProfilePage'
-import { fakeUserProfile, fakeVerifiedUserLookup } from '@orgminer/common/dist/mock'
+import { fakeUserProfile, fakeVerifiedUserLookup } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Pages/ProfilePage',

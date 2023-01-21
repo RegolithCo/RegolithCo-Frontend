@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Alert, Box, Typography } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
-import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@orgminer/common'
+import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@regolithco/common'
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { WorkOrderTypeChooser } from '../fields/WorkOrderTypeChooser'
 import { dummySession, dummyUserProfile, newWorkOrderMaker } from '../../lib/newObjectFactories'

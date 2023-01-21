@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, from, ServerError } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
 import { RetryLink } from '@apollo/client/link/retry'
-import { ErrorCode } from '@orgminer/common'
+import { ErrorCode } from '@regolithco/common'
 
 // Log any GraphQL errors or network error that occurred
 export const retryLink = new RetryLink({

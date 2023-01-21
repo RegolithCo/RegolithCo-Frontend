@@ -1,6 +1,6 @@
 import React from 'react'
 import { Select, MenuItem, Box } from '@mui/material'
-import { RefineryEnum, getRefineryName } from '@orgminer/common'
+import { RefineryEnum, getRefineryName } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
 
 export interface RefineryControlProps {

@@ -15,7 +15,7 @@ import { yellow } from '@mui/material/colors'
 import { Badge, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import { Login, Person, Verified } from '@mui/icons-material'
-import { UserStateEnum } from '@orgminer/common'
+import { UserStateEnum } from '@regolithco/common'
 // import { LoginExpiryTimer } from './fields/LoginExpiryTimer'
 import { RockIcon } from '../icons'
 

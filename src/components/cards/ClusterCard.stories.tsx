@@ -2,8 +2,8 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ClusterCard } from './ClusterCard'
-import { SalvageFind, ScoutingFindStateEnum, ShipClusterFind, VehicleClusterFind } from '@orgminer/common'
-import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@orgminer/common/dist/mock'
+import { SalvageFind, ScoutingFindStateEnum, ShipClusterFind, VehicleClusterFind } from '@regolithco/common'
+import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/mock'
 import { Box } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 

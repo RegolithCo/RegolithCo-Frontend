@@ -2,7 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { WorkOrderCalcPage as WorkOrderCalcPageComponent } from './WorkOrderCalcPage'
-import { fakeUserProfile } from '@orgminer/common/dist/mock'
+import { fakeUserProfile } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Pages/WorkOrderCalcPage',

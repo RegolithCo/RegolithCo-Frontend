@@ -14,7 +14,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { ActivityEnum, RefineryEnum, RefineryMethodEnum, ShipMiningOrder, WorkOrderStateEnum } from '@orgminer/common'
+import { ActivityEnum, RefineryEnum, RefineryMethodEnum, ShipMiningOrder, WorkOrderStateEnum } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import { ExpandMore, Help } from '@mui/icons-material'

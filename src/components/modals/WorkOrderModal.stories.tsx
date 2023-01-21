@@ -7,9 +7,9 @@ import {
   fakeSalvageOrder,
   fakeShipMiningOrder,
   fakeVehicleMiningOrder,
-} from '@orgminer/common/dist/mock'
+} from '@regolithco/common/dist/mock'
 import log from 'loglevel'
-import { ActivityEnum, WorkOrder } from '@orgminer/common'
+import { ActivityEnum, WorkOrder } from '@regolithco/common'
 
 export default {
   title: 'Modals/WorkOrderModal',

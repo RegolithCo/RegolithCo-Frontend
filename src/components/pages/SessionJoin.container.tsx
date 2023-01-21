@@ -1,4 +1,4 @@
-import { Session, SessionSettings, SessionStateEnum, UserProfile, UserStateEnum } from '@orgminer/common'
+import { Session, SessionSettings, SessionStateEnum, UserProfile, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
 import { SessionJoin } from './SessionJoin'
 

@@ -21,7 +21,7 @@ import {
   WorkOrder,
   WorkOrderDefaults,
   WorkOrderSummary,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { CrewShareTableRow } from './CrewShareTableRow'
 import { MValue, MValueFormat } from '../MValue'
 import { UserListItem } from '../UserListItem'

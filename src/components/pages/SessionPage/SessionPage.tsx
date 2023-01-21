@@ -14,7 +14,7 @@ import {
   SessionInput,
   DestructuredSettings,
   createUserSuggest,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ActiveUserList } from '../../fields/ActiveUserList'
 import {
@@ -348,7 +348,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                           onChange={(e) => setFilterInnactiveScout(e.target.checked)}
                         />
                       }
-                      label="Hide Innactive"
+                      label="Hide Inactive"
                     />
                   </FormGroup>
                 </AccordionSummary>

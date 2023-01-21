@@ -12,7 +12,7 @@ import {
   Box,
   useTheme,
 } from '@mui/material'
-import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum } from '@orgminer/common'
+import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum } from '@regolithco/common'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Delete, Description, NoteAdd } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
 import numeral from 'numeral'

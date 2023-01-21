@@ -2,9 +2,9 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ScoutingFindModal as ScoutingFindModalC } from './ScoutingFindModal'
-import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@orgminer/common/dist/mock'
+import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/mock'
 import log from 'loglevel'
-import { ScoutingFind, ScoutingFindTypeEnum } from '@orgminer/common'
+import { ScoutingFind, ScoutingFindTypeEnum } from '@regolithco/common'
 
 export default {
   title: 'Modals/ScoutingFindModal',

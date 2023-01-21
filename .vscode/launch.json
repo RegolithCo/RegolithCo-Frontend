@@ -8,7 +8,7 @@
       "name": "🚀 Launch",
       "request": "launch",
       "type": "chrome",
-      "url": "http://localhost:3000/orgminer",
+      "url": "http://localhost:3000/regolithco",
       "webRoot": "${workspaceFolder}../../"
     }, 
     {

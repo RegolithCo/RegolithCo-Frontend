@@ -15,7 +15,15 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { lookups, MarketPriceLookupValue, ShipOreEnum, ShipRock, shipRockCalc, ShipRockOre } from '@orgminer/common'
+import {
+  lookups,
+  MarketPriceLookupValue,
+  ScoutingFindStateEnum,
+  ShipOreEnum,
+  ShipRock,
+  shipRockCalc,
+  ShipRockOre,
+} from '@regolithco/common'
 import { ShipOreChooser } from '../fields/ShipOreChooser'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
@@ -138,7 +146,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const styles = styleThunk(theme)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [newShipRock, setNewShipRock] = React.useState<ShipRock>(
-    shipRock || { mass: 0, ores: [], __typename: 'ShipRock' }
+    shipRock || { state: ScoutingFindStateEnum.Discovered, mass: 0, ores: [], __typename: 'ShipRock' }
   )
 
   React.useEffect(() => {

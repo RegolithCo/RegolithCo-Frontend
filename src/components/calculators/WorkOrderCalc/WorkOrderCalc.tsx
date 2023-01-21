@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { SxProps, Theme, useTheme } from '@mui/material'
 
-import { calculateWorkOrder, UserSuggest, ActivityEnum, WorkOrder, WorkOrderDefaults } from '@orgminer/common'
+import { calculateWorkOrder, UserSuggest, ActivityEnum, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
 import { DetailsCard } from './WorkOrderCards/DetailsCard'

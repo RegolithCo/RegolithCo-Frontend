@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { defaultSessionName, getLocationName, getPlanetName, Session } from '@orgminer/common'
+import { defaultSessionName, getLocationName, getPlanetName, Session } from '@regolithco/common'
 import { PageWrapper } from '../PageWrapper'
 import { Alert, AlertTitle, Box, Button, Paper, Typography } from '@mui/material'
 import { SessionJoinError } from './SessionJoin.container'
@@ -82,7 +82,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, join
       {joinErrors.includes(SessionJoinError.NotOnList) && (
         <Alert severity="error">
           <AlertTitle>This session is by invite only and you are not on the list</AlertTitle>
-          If you are in contact with the session owner ask them to add you to the Innactive user list.
+          If you are in contact with the session owner ask them to add you to the Inactive user list.
         </Alert>
       )}
       {joinErrors.includes(SessionJoinError.UnverifiedNotAllowd) && (
@@ -94,7 +94,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, join
       {joinErrors.includes(SessionJoinError.Closed) && (
         <Alert severity="error">
           <AlertTitle>Session Closed</AlertTitle>
-          This session has been closed either deliberately or due to innactivity and is no longer accepting new users.
+          This session has been closed either deliberately or due to inactivity and is no longer accepting new users.
         </Alert>
       )}
     </PageWrapper>

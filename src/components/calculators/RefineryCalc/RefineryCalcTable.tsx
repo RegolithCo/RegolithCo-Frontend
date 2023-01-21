@@ -9,7 +9,7 @@ import {
   getRefiningCost,
   getRefiningTime,
   getShipOreName,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'

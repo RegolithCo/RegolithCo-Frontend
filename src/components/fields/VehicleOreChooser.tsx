@@ -1,6 +1,6 @@
 import React from 'react'
 import { ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { lookups, MarketPriceLookupValue, VehicleOreEnum, getVehicleOreName } from '@orgminer/common'
+import { lookups, MarketPriceLookupValue, VehicleOreEnum, getVehicleOreName } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Clear } from '@mui/icons-material'

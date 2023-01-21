@@ -11,7 +11,7 @@ import {
   Box,
   useTheme,
 } from '@mui/material'
-import { UserSuggest, ShareTypeEnum, CrewShareTemplate, CrewShareTemplateInput } from '@orgminer/common'
+import { UserSuggest, ShareTypeEnum, CrewShareTemplate, CrewShareTemplateInput } from '@regolithco/common'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Delete, NoteAdd } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
 import { fontFamilies } from '../../../theme'

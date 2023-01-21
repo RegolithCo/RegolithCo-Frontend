@@ -30,7 +30,7 @@ import {
   UserProfile,
   UserProfileInput,
   VehicleOreEnum,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 

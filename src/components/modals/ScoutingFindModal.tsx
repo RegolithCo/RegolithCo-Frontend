@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Box, Button, Dialog, DialogActions, useTheme } from '@mui/material'
 
-import { ScoutingFind } from '@orgminer/common'
+import { ScoutingFind } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 
 export interface ScoutingFindModalProps {

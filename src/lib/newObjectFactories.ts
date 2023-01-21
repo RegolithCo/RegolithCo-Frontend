@@ -24,7 +24,7 @@ import {
   WorkOrder,
   WorkOrderDefaults,
   WorkOrderStateEnum,
-} from '@orgminer/common'
+} from '@regolithco/common'
 
 export function profile2User(profile: UserProfile): User {
   const { createdAt, updatedAt, userId, scName, state } = profile

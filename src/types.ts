@@ -1,4 +1,4 @@
-import { UserProfile } from '@orgminer/common'
+import { UserProfile } from '@regolithco/common'
 
 export type Config = {
   authDomain: string

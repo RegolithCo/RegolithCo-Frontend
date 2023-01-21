@@ -8,9 +8,9 @@ import {
   fakeSalvageOrder,
   fakeOtherOrder,
   fakeWorkOrders,
-} from '@orgminer/common/dist/mock'
+} from '@regolithco/common/dist/mock'
 import log from 'loglevel'
-import { WorkOrder, RefineryMethodEnum, RefineryEnum, CrewShare } from '@orgminer/common'
+import { WorkOrder, RefineryMethodEnum, RefineryEnum, CrewShare } from '@regolithco/common'
 
 export default {
   title: 'Calculators/WorkOrder',

@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { UserProfile, Session } from '@orgminer/common'
+import { UserProfile, Session } from '@regolithco/common'
 import { PageWrapper } from '../PageWrapper'
 import { Alert, AlertTitle, Box, Button, FormControlLabel, Switch, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -37,7 +37,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
       <Alert elevation={6} variant="outlined" severity="warning" sx={{ my: 2 }}>
         <AlertTitle>Sessions close automatically</AlertTitle>
         <Typography>
-          Sessions close after 8 hours of innactivity. Closed sessions can be visited but cannot be re-opened.{' '}
+          Sessions close after 8 hours of inactivity. Closed sessions can be visited but cannot be re-opened.{' '}
         </Typography>
       </Alert>
       <Box sx={{ p: 3 }}>

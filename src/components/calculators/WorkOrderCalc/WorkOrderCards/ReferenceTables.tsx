@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { ActivityEnum, lookups, ShipStats } from '@orgminer/common'
+import { ActivityEnum, lookups, ShipStats } from '@regolithco/common'
 import { fontFamilies } from '../../../../theme'
 
 export interface ReferenceTablesProps {

@@ -15,7 +15,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2'
 // import log from 'loglevel'
 import { isUndefined } from 'lodash'
-import { getShipOreName, RefineryMethodEnum, getRefineryMethodName, ShipOreEnum } from '@orgminer/common'
+import { getShipOreName, RefineryMethodEnum, getRefineryMethodName, ShipOreEnum } from '@regolithco/common'
 import { RefineryCalcTable } from './RefineryCalcTable'
 import { fontFamilies } from '../../../theme'
 import { Box } from '@mui/system'

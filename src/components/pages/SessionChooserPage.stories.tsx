@@ -2,8 +2,8 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { SessionChooserPage as SessionChooserPageC } from './SessionChooserPage'
-import { fakeSession, fakeUserProfile } from '@orgminer/common/dist/mock'
-import { User } from '@orgminer/common'
+import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { User } from '@regolithco/common'
 
 export default {
   title: 'Pages/SessionChooserPage',

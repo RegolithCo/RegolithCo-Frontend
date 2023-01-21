@@ -5,7 +5,7 @@ generates:
   ./src/schema/operations.ts:
     plugins:
       - add:
-          content: "import * as types from '@orgminer/common'"
+          content: "import * as types from '@regolithco/common'"
       - typescript-react-apollo
     config:
       nonOptionalTypename: true

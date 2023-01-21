@@ -2,7 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { SessionJoin as SessionJoinComponent } from './SessionJoin'
-import { fakeSession } from '@orgminer/common/dist/mock'
+import { fakeSession } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Pages/SessionJoin',

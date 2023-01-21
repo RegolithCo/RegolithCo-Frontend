@@ -52,7 +52,7 @@ import {
   VehicleMiningRowInput,
   WorkOrder,
   WorkOrderInput,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { useLogin } from './useLogin'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'

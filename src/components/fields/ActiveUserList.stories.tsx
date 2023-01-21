@@ -2,7 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ActiveUserList as ActiveUserListComponent } from './ActiveUserList'
-import { fakeSessionUser } from '@orgminer/common/dist/mock'
+import { fakeSessionUser } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'UserList',

@@ -2,8 +2,8 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { SessionPage as SessionPageComponent } from './SessionPage'
-import { fakePaginatedSessionUserList, fakeSCNameList, fakeSession, fakeUserProfile } from '@orgminer/common/dist/mock'
-import { WorkOrder } from '@orgminer/common'
+import { fakePaginatedSessionUserList, fakeSCNameList, fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { WorkOrder } from '@regolithco/common'
 
 export default {
   title: 'Pages/SessionPage',

@@ -12,7 +12,7 @@ import {
   Tooltip,
   useTheme,
 } from '@mui/material'
-import { UserSuggest, validateSCName, VerifiedUserLookup } from '@orgminer/common'
+import { UserSuggest, validateSCName, VerifiedUserLookup } from '@regolithco/common'
 import { Cancel, PersonAdd } from '@mui/icons-material'
 import { UserListItem } from './UserListItem'
 

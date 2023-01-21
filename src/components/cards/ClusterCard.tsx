@@ -12,7 +12,7 @@ import {
   ScoutingFindTypeEnum,
   ShipClusterFind,
   VehicleClusterFind,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'

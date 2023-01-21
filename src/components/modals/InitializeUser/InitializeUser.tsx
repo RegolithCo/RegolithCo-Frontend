@@ -5,7 +5,7 @@ import { PageWrapper } from '../../PageWrapper'
 import { PageLoader } from '../../pages/PageLoader'
 import { SCUsernameField } from '../../fields/SCUsernameField'
 import { VerifyCodeField } from '../../fields/VerifyCodeField'
-import { UserProfile } from '@orgminer/common'
+import { UserProfile } from '@regolithco/common'
 
 interface InitializeUserProps {
   verifyOnly?: boolean

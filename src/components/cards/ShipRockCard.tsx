@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Typography, Card, List, ListItem, Box, CardContent, ToggleButtonGroup, ToggleButton } from '@mui/material'
-import { ShipOreEnum, ShipRock, getShipOreName } from '@orgminer/common'
+import { ShipOreEnum, ShipRock, getShipOreName } from '@regolithco/common'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { CheckCircle, FlagCircle } from '@mui/icons-material'
 

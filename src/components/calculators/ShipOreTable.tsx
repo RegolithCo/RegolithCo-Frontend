@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { lookups, MarketPriceLookupValue, getShipOreName, ShipOreEnum } from '@orgminer/common'
+import { lookups, MarketPriceLookupValue, getShipOreName, ShipOreEnum } from '@regolithco/common'
 import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../fields/MValue'

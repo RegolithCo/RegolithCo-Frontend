@@ -2,7 +2,7 @@ import * as React from 'react'
 import { SxProps, Theme, Typography, TypographyProps } from '@mui/material'
 import Numeral from 'numeral'
 import dayjs from 'dayjs'
-import { readableMilliseconds } from '@orgminer/common'
+import { readableMilliseconds } from '@regolithco/common'
 /* eslint-disable no-unused-vars */
 export enum MValueFormat {
   number = 'number',

@@ -6,7 +6,7 @@ import path from 'path'
 import config from '../config'
 import log from 'loglevel'
 import { LoginContextObj } from '../types'
-import { CrewShare, mergeSessionSettingsInplace, SessionSettings, UserProfile, UserStateEnum } from '@orgminer/common'
+import { CrewShare, mergeSessionSettingsInplace, SessionSettings, UserProfile, UserStateEnum } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
 

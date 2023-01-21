@@ -2,7 +2,7 @@ import * as React from 'react'
 import { ProfilePage } from './ProfilePage'
 import { useNavigate } from 'react-router-dom'
 import { useUserProfile } from '../../hooks/useUserProfile'
-import { UserProfile } from '@orgminer/common'
+import { UserProfile } from '@regolithco/common'
 
 export const ProfilePageContainer: React.FC = () => {
   const navigate = useNavigate()

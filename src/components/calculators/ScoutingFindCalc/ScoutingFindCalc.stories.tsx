@@ -2,8 +2,8 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { ScoutingFindCalc } from './ScoutingFindCalc'
-import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@orgminer/common/dist/mock'
-import { ScoutingFindTypeEnum } from '@orgminer/common'
+import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/mock'
+import { ScoutingFindTypeEnum } from '@regolithco/common'
 
 export default {
   title: 'Calculators/ScoutingFind',

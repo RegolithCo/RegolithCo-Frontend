@@ -19,7 +19,7 @@ import {
   UpdateWorkOrderMutation,
   VehicleMiningOrder,
   WorkOrder,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'

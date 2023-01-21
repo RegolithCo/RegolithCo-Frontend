@@ -7,7 +7,7 @@ import {
 
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
-import { SalvageFind, ScoutingFind, ScoutingFindInput, ShipClusterFind, VehicleClusterFind } from '@orgminer/common'
+import { SalvageFind, ScoutingFind, ScoutingFindInput, ShipClusterFind, VehicleClusterFind } from '@regolithco/common'
 import { useSnackbar } from 'notistack'
 
 type useSessionsReturn = {

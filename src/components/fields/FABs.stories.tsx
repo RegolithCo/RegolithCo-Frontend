@@ -5,8 +5,8 @@ import { WorkOrderAddFAB } from './WorkOrderAddFAB'
 import { ScoutingAddFAB } from './ScoutingAddFAB'
 import { Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { fakeSessionSettings, fakeWorkOrderInterface } from '@orgminer/common/dist/mock'
-import { ActivityEnum } from '@orgminer/common'
+import { fakeSessionSettings, fakeWorkOrderInterface } from '@regolithco/common/dist/mock'
+import { ActivityEnum } from '@regolithco/common'
 
 export default {
   title: 'Fields/FABs',

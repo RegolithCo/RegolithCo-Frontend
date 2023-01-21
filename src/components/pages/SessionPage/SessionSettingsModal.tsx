@@ -38,7 +38,7 @@ import {
   SessionStateEnum,
   UserSuggest,
   CrewShareTemplateInput,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Delete, Lock, LockOpen, Person, RestartAlt, Save, Settings, StopCircle } from '@mui/icons-material'

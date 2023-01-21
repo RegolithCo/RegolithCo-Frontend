@@ -1,6 +1,6 @@
 import React from 'react'
 import { ToggleButton, useTheme } from '@mui/material'
-import { lookups, MarketPriceLookupValue, ShipOreEnum, getShipOreName } from '@orgminer/common'
+import { lookups, MarketPriceLookupValue, ShipOreEnum, getShipOreName } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Clear } from '@mui/icons-material'

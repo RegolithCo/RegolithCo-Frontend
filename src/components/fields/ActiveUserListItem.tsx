@@ -9,7 +9,7 @@ import {
   Tooltip,
   Badge,
 } from '@mui/material'
-import { SessionUser, User, UserStateEnum } from '@orgminer/common'
+import { SessionUser, User, UserStateEnum } from '@regolithco/common'
 import { Engineering, Person, PersonAdd, Verified } from '@mui/icons-material'
 
 export interface ActiveUserListItemProps {

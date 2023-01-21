@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { TextField, useTheme } from '@mui/material'
 import { yellow } from '@mui/material/colors'
-import { validateSCName } from '@orgminer/common'
+import { validateSCName } from '@regolithco/common'
 
 interface SCUsernameFieldProps {
   defaultValue?: string | null

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, useTheme } from '@mui/material'
-import { ActivityEnum } from '@orgminer/common'
+import { ActivityEnum } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { QuestionMark } from '@mui/icons-material'
 

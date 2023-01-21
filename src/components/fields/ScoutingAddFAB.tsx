@@ -1,7 +1,7 @@
 import * as React from 'react'
 import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
-import { ActivityEnum, SessionSettings } from '@orgminer/common'
+import { ActivityEnum, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { TravelExplore } from '@mui/icons-material'
 import { Badge, Fab, FabProps, Tooltip, useTheme } from '@mui/material'

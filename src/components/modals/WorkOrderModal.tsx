@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
-import { ActivityEnum, makeHumanOrderId, UserSuggest, WorkOrder, WorkOrderDefaults } from '@orgminer/common'
+import { ActivityEnum, makeHumanOrderId, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
 import { Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'

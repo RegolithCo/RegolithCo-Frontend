@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { UserProfile, Session, SessionStateEnum, defaultSessionName } from '@orgminer/common'
+import { UserProfile, Session, SessionStateEnum, defaultSessionName } from '@regolithco/common'
 import {
   Box,
   List,

@@ -11,7 +11,7 @@ import {
   UserProfileInput,
   DestructuredSettings,
   UserSuggest,
-} from '@orgminer/common'
+} from '@regolithco/common'
 
 import { PageWrapper } from '../PageWrapper'
 import { Alert, Box, Button, MenuItem, Select, SxProps, Tooltip, Typography, useTheme } from '@mui/material'

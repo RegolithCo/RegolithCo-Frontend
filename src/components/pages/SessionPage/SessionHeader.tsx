@@ -9,7 +9,7 @@ import {
   defaultSessionName,
   SessionStateEnum,
   getActivityName,
-} from '@orgminer/common'
+} from '@regolithco/common'
 import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { SxProps } from '@mui/system'
 import dayjs from 'dayjs'

@@ -1,4 +1,4 @@
-import * as types from '@orgminer/common'
+import * as types from '@regolithco/common'
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;

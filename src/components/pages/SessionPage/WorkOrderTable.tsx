@@ -7,8 +7,8 @@ import {
   ShipMiningOrder,
   WorkOrder,
   WorkOrderStateEnum,
-} from '@orgminer/common'
-import { getActivityName, calculateWorkOrder, WorkOrderSummary } from '@orgminer/common'
+} from '@regolithco/common'
+import { getActivityName, calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   Badge,
   Table,

@@ -1,6 +1,6 @@
 import React from 'react'
 import { List } from '@mui/material'
-import { SessionUser } from '@orgminer/common'
+import { SessionUser } from '@regolithco/common'
 import { ActiveUserListItem } from './ActiveUserListItem'
 
 export interface ActiveUserListProps {
