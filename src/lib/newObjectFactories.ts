@@ -13,6 +13,8 @@ import {
   ScoutingFindTypeEnum,
   Session,
   SessionStateEnum,
+  SessionUser,
+  SessionUserStateEnum,
   ShareTypeEnum,
   ShipClusterFind,
   ShipMiningOrder,
@@ -205,7 +207,7 @@ export function newScoutingFind(
     ownerId: owner.userId,
     owner: profile2User(owner),
     // note:
-    state: ScoutingFindStateEnum.Discovered,
+    state: ScoutingFindStateEnum.ReadyForWorkers,
     attendanceIds: [],
     attendance: [],
   }
@@ -258,5 +260,26 @@ export function newUserProfile(scName: string): UserProfile {
     },
     state: UserStateEnum.Unverified,
     __typename: 'UserProfile',
+  }
+}
+
+export function dummySessionUser(owner: UserProfile): SessionUser {
+  const { createdAt, scName, state, updatedAt, userId } = owner
+  return {
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    state: SessionUserStateEnum.OnSite,
+    isPilot: true,
+    sessionId: 'DUMMYSESSION',
+    ownerId: owner.userId,
+    owner: {
+      createdAt,
+      scName,
+      state,
+      updatedAt,
+      userId,
+      __typename: 'User',
+    },
+    __typename: 'SessionUser',
   }
 }

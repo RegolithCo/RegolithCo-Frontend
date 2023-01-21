@@ -28,10 +28,10 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, handleLog
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={4}>
         <Grid sm={4} sx={cardCSS}>
           <Card
-            elevation={5}
+            elevation={8}
             sx={cardCSS}
             onClick={() => {
               if (!userCtx.isAuthenticated) handleLogin && handleLogin()
@@ -58,6 +58,20 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, handleLog
             </CardContent>
             <CardActions>
               <Button onClick={() => navigate && navigate('/workorder')}>Work Orders</Button>
+            </CardActions>
+          </Card>
+        </Grid>
+        <Grid sm={4} sx={cardCSS}>
+          <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/cluster')}>
+            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/cluster.jpg`} title="mining" />
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="overline">Cluster Calculator</Typography>
+              <Typography variant="body2">
+                Standalone calculator figuring out the value of a rock or cluster.
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button onClick={() => navigate && navigate('/cluster')}>Cluster Calculator</Button>
             </CardActions>
           </Card>
         </Grid>

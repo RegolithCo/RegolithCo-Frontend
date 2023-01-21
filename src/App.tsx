@@ -12,8 +12,9 @@ import { InitializeUserContainer } from './components/modals/InitializeUser/Init
 import { DataTablesPageContainer } from './components/pages/DataTablesPage'
 import { AuthGate } from './components/pages/AuthGate'
 import { SessionChooserPageContainer } from './components/pages/SessionChooserPage.container'
-import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage.container'
+import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage'
 import { Box } from '@mui/material'
+import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
 
 export const App: React.FC = () => {
   return (
@@ -25,7 +26,7 @@ export const App: React.FC = () => {
             <Route path="/" element={<HomePageContainer />} errorElement={<Error />} />
             <Route path="/faq" element={<FAQPage />} errorElement={<Error />} />
             <Route path="/about" element={<AboutPage />} errorElement={<Error />} />
-            <Route path="/cluster" element={<AboutPage />} errorElement={<Error />} />
+            <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<Error />} />
             {/* Standalone calc */}
             <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<Error />} />
             {/* Tables uses urls for tabs */}

@@ -21,7 +21,7 @@ import { RockIcon } from '../icons'
 
 const pages = {
   '/session': 'Sessions',
-  // '/cluster': 'Cluster Calc',
+  '/cluster': 'Cluster Calc.',
   '/workorder': 'Work Order',
   '/tables': 'Data Tables',
   // '/about': 'About',

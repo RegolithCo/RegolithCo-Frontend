@@ -274,7 +274,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                   }}
                 >
                   "Mentioned" means this name has been added to a work order or added explicitly to this list by the
-                  session owner. They are simply names, not users.
+                  session owner. When users with this name join the session they become "Session Members".
                 </Typography>
               </Accordion>
             </Grid>
