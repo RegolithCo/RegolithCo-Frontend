@@ -129,12 +129,12 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       fontSize: '0.7em',
     },
     '& .MuiSwitch-thumb, & .MuiSwitch-track': {
-      backgroundColor: '#666666',
+      backgroundColor: '#666666!important',
       border: `1px solid #444444`,
     },
-    '& .Mui-checked .MuiSwitch-thumb, & .Mui-checked+.MuiSwitch-track': {
-      backgroundColor: isActive ? theme.palette.primary.main : '#999999',
-      border: `1px solid ${isActive ? theme.palette.primary.dark : '#3b3b3b'}`,
+    '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb,& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-track': {
+      backgroundColor: isActive ? theme.palette.primary.dark + '!important' : '#999999!important',
+      border: `1px solid ${isActive ? theme.palette.primary.dark + '!important' : '#3b3b3b!important'}`,
     },
     backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
     color: theme.palette.primary.contrastText,
