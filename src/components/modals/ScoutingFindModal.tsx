@@ -4,12 +4,14 @@ import { Box, Dialog, ThemeProvider } from '@mui/material'
 import { ScoutingFind, ScoutingFindStateEnum, SessionUser } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
+import { omit } from 'lodash'
 
 export interface ScoutingFindModalProps {
   open: boolean
   scoutingFind: ScoutingFind
   meUser: SessionUser
   onChange: (scoutingFind: ScoutingFind) => void
+  onDelete: () => void
   allowEdit?: boolean
   allowWork?: boolean
   isNew?: boolean
@@ -21,18 +23,20 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
   scoutingFind,
   isNew,
   onChange,
+  onDelete,
   meUser,
   allowWork,
   allowEdit,
   onClose,
 }) => {
   const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
+
   return (
     <ThemeProvider theme={theme}>
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="sm"
+        maxWidth="md"
         disableEscapeKeyDown
         sx={{
           '& .MuiDialog-paper': {
@@ -53,12 +57,8 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
             allowEdit={allowEdit}
             allowWork={allowWork}
             me={meUser}
-            onChange={() => {
-              //
-            }}
-            onDelete={() => {
-              //
-            }}
+            onChange={onChange}
+            onDelete={onDelete}
           />
         </Box>
       </Dialog>

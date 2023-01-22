@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ToggleButton, useTheme } from '@mui/material'
 import { lookups, MarketPriceLookupValue, ShipOreEnum, getShipOreName } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
@@ -14,6 +14,11 @@ export interface ShipOreChooserProps {
 export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({ multiple, onChange, values }) => {
   const [selected, setSelected] = React.useState<ShipOreEnum[]>(values || [])
   const theme = useTheme()
+
+  useEffect(() => {
+    setSelected(values || [])
+  }, [values])
+
   const shipRowKeys = Object.values(ShipOreEnum)
   const quaColors = ['#f700ff', '#ffffff']
   const innertColors = ['#848484', '#000000']

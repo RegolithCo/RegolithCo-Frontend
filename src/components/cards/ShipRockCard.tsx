@@ -27,11 +27,11 @@ export interface ShipRockCardProps {
 }
 
 const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxProps<Theme>> => {
-  let accentColor = theme.palette.primary.light
+  let accentColor = theme.palette.primary.dark
   let contrastColor = theme.palette.primary.contrastText
   switch (rockState) {
     case RockStateEnum.Ready:
-      accentColor = theme.palette.primary.light
+      accentColor = theme.palette.primary.dark
       contrastColor = theme.palette.primary.contrastText
       break
     case RockStateEnum.Depleted:
@@ -41,6 +41,9 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
   }
   return {
     card: {
+      width: '100%',
+      height: '100%',
+      minHeight: '140px',
       position: 'relative',
       overflow: 'hidden',
       opacity: rockState === RockStateEnum.Depleted ? 0.5 : 1,
@@ -50,21 +53,19 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
         overflow: 'hidden',
         px: 0.5,
         '& .MuiTypography-root': {
-          fontSize: 8,
+          // fontSize: 8,
           fontFamily: fontFamilies.robotoMono,
           fontWeight: 'bold',
         },
       },
       '& .MuiTypography-root': {
-        fontSize: 10,
+        // fontSize: 10,
       },
-      width: 90,
-      height: 100,
     },
     cardContent: {
       height: '100%',
       overflow: 'hidden',
-      fontSize: 10,
+      // fontSize: 10,
       p: 0,
       '&:last-child': {
         p: 0,
@@ -95,13 +96,19 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       flex: '1 1',
       color: theme.palette.text.secondary,
     },
+    currency: {
+      display: 'inline',
+      fontSize: '0.8em',
+      fontStyle: 'italic',
+    },
     depletedMark: {
       position: 'absolute',
       top: '50%',
       left: '50%',
-      transform: 'translate(-50%, -50%) rotate(-45deg)',
+      fontSize: 30,
+      transform: 'translate(-50%, -50%) rotate(-38deg)',
       zIndex: 1000,
-      opacity: 0.3,
+      opacity: 0.6,
       border: `2px solid ${accentColor}`,
       borderRadius: 2,
       color: accentColor,
@@ -142,7 +149,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
 
   return (
     <Card sx={styles.card}>
-      {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>DEPLETED</Box>}
+      {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>Complete</Box>}
       <CardContent sx={styles.cardContent}>
         <Box sx={{ ...styles.topBox, cursor: onEditClick ? 'pointer' : 'default' }} onClick={onEditClick}>
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
@@ -151,7 +158,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
             <div style={{ flex: '1 1' }} />
             <Typography>
               {rockValue ? MValueFormatter(rockValue, MValueFormat.number_sm) : '??'}
-              <span style={{ fontSize: 6 }}>aUEC</span>
+              <Box sx={styles.currency}>aUEC</Box>
             </Typography>
           </Stack>
         </Box>
@@ -188,7 +195,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
                 }
               />
             }
-            label="Depleted"
+            label="Complete"
           />
         </FormGroup>
       </CardContent>

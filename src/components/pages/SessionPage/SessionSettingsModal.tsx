@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {
+  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -108,6 +109,11 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
+const planetOptions: { label: string; id: PlanetEnum }[] = Object.values(PlanetEnum).map((value) => ({
+  label: getPlanetName(value),
+  id: value,
+}))
+
 function makeNewSettings(session?: Session, sessionSettings?: SessionSettings) {
   return session
     ? destructureSettings(session.sessionSettings || { __typename: 'SessionSettings' })
@@ -171,7 +177,7 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
       },
     })
   }
-
+  const gravWell = newSettings.sessionSettings?.gravityWell || null
   const valid = nameValid
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" sx={styles.dialog}>
@@ -243,35 +249,26 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
                   (Optional) You can indicate where the mining is going to happen.
                 </Typography>
 
-                <FormControl fullWidth variant="outlined" sx={{ mb: 3 }}>
-                  <InputLabel id="gwell">Gravity Well</InputLabel>
-                  <Select
-                    value={(newSettings.sessionSettings?.gravityWell as string) || ''}
-                    size="small"
-                    label="Gravity Well"
-                    variant="outlined"
-                    renderValue={(value: string) => (value === '' ? null : getPlanetName(value as PlanetEnum))}
-                    onChange={(e) => {
-                      const newGWell = e.target.value === '' ? null : (e.target.value as PlanetEnum)
-                      setNewSettings({
-                        ...newSettings,
-                        sessionSettings: {
-                          ...newSettings.sessionSettings,
-                          gravityWell: newGWell,
-                        },
-                      })
-                    }}
-                  >
-                    <MenuItem value={''}>-- Any --</MenuItem>
-                    {Object.values(PlanetEnum).map((key) => (
-                      <MenuItem key={key} value={key}>
-                        {getPlanetName(key)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  id="combo-box-demo"
+                  options={planetOptions}
+                  fullWidth
+                  autoHighlight
+                  sx={{ mb: 3 }}
+                  value={gravWell ? { label: getPlanetName(gravWell), id: gravWell } : null}
+                  onChange={(event, newValue) => {
+                    setNewSettings({
+                      ...newSettings,
+                      sessionSettings: {
+                        ...newSettings.sessionSettings,
+                        gravityWell: newValue ? newValue.id : null,
+                      },
+                    })
+                  }}
+                  renderInput={(params) => <TextField {...params} label="Gravity Well" />}
+                />
 
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth variant="outlined" sx={{ mb: 1 }}>
                   <InputLabel id="gwell">Location Type</InputLabel>
                   <Select
                     value={(newSettings.sessionSettings?.location as string) || ''}

@@ -26,7 +26,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
   }, [userProfile])
 
   return (
-    <PageWrapper title="Cluster Calculator" maxWidth="xl" sx={{}}>
+    <PageWrapper title="Cluster Calculator" maxWidth="sm" sx={{}}>
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography variant="body1" paragraph>
         This is a standalone calculator for determining the value of a rock cluser.
@@ -39,6 +39,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
         sx={{
           display: 'flex',
           minHeight: 700,
+          margin: '0 auto',
           overflowX: 'hidden',
           overflowY: 'scroll',
         }}
@@ -49,8 +50,9 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
             scoutingFind={cluster}
             allowEdit
             allowWork
-            onChange={() => {
-              //
+            standalone
+            onChange={(cluster) => {
+              setCluster(cluster)
             }}
           />
         )}
