@@ -49,6 +49,19 @@ export const darkOptions: ThemeOptions = {
         sx: { borderRadius: 2 },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          'input::-webkit-outer-spin-button, input::-webkit-inner-spin-button': {
+            WebkitAppearance: 'none',
+            margin: 0,
+          },
+          'input[type=number]': {
+            MozAppearance: 'textfield',
+          },
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         'body>#root': {

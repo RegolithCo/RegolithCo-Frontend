@@ -61,12 +61,18 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       border: `10px solid ${theme.palette.primary.dark}`,
     },
   },
+  dialogContent: {
+    py: 1,
+    px: 2,
+    borderRadius: 3,
+    outline: `10px solid ${theme.palette.primary.dark}`,
+  },
   headTitles: {
     // fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
     // lineHeight: 1.5,
-    // fontSize: 16,
-    textAlign: 'center',
+    fontSize: '0.8rem',
+    // textAlign: 'center',
     // p: 1,
     // my: 1,
     // color: theme.palette.secondary.light,
@@ -111,6 +117,10 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   compositionSlider: {
     marginBottom: 0,
   },
+  sliderOreName: {
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 'bold',
+  },
   icon: {
     [theme.breakpoints.up('md')]: {
       fontSize: 90,
@@ -133,6 +143,9 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     borderRadius: '50%',
   },
 })
+
+const markIntervals = [3, 4, 5, 6, 7, 8, 9]
+const marks = markIntervals.map((mark) => ({ value: mark * 1000, label: mark + 'K' }))
 
 export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   open,
@@ -199,9 +212,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             </Tooltip>
           </Stack>
         </Box>
-        <DialogContent sx={{ py: 1, px: 2 }}>
+        <DialogContent sx={styles.dialogContent}>
           <Typography variant="overline" sx={styles.headTitles} component="div">
-            Size (mass)
+            Size (mass in kg)
           </Typography>
           <Grid2 container spacing={3} paddingX={1} sx={styles.compositionGrid}>
             <Grid2 xs={9}>
@@ -224,6 +237,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             <Grid2 xs={3}>
               <TextField
                 sx={styles.numfields}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                }}
                 value={(newShipRock.mass as number).toFixed(0)}
                 onChange={(event) => {
                   setNewShipRock({ ...newShipRock, mass: Number(event.target.value) })
@@ -254,9 +270,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
           </Box>
           <Box>
             {ores.map((ore, idx) => (
-              <Grid2 container spacing={3} padding={1} key={`ore-${idx}`}>
+              <Grid2 container spacing={3} paddingX={1} paddingY={0} key={`ore-${idx}`}>
                 <Grid2 xs={2}>
-                  <Box>{ore.ore?.slice(0, 4)}</Box>
+                  <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
                 </Grid2>
                 <Grid2 xs={7}>
                   <Slider
@@ -367,6 +383,3 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     </>
   )
 }
-
-const markIntervals = [3, 4, 5, 6, 7, 8, 9]
-const marks = markIntervals.map((mark) => ({ value: mark * 1000, label: mark + 'K' }))

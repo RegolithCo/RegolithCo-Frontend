@@ -1163,8 +1163,12 @@ export type DeleteScoutingFindMutationHookResult = ReturnType<typeof useDeleteSc
 export type DeleteScoutingFindMutationResult = Apollo.MutationResult<types.DeleteScoutingFindMutation>;
 export type DeleteScoutingFindMutationOptions = Apollo.BaseMutationOptions<types.DeleteScoutingFindMutation, types.DeleteScoutingFindMutationVariables>;
 export const JoinScoutingFindDocument = gql`
-    mutation joinScoutingFind($sessionId: ID!, $scoutingFindId: ID!) {
-  joinScoutingFind(sessionId: $sessionId, scoutingFindId: $scoutingFindId) {
+    mutation joinScoutingFind($sessionId: ID!, $scoutingFindId: ID!, $enRoute: Boolean) {
+  joinScoutingFind(
+    sessionId: $sessionId
+    scoutingFindId: $scoutingFindId
+    enRoute: $enRoute
+  ) {
     ...ScoutingIdFragment
   }
 }
@@ -1186,6 +1190,7 @@ export type JoinScoutingFindMutationFn = Apollo.MutationFunction<types.JoinScout
  *   variables: {
  *      sessionId: // value for 'sessionId'
  *      scoutingFindId: // value for 'scoutingFindId'
+ *      enRoute: // value for 'enRoute'
  *   },
  * });
  */

@@ -83,9 +83,24 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       height: '100%',
       flexGrow: 1,
       overflow: 'hidden',
+      '& .MuiListItem-root .MuiTypography-root': {
+        fontSize: '0.8em',
+        p: 0.2,
+        fontFamily: fontFamilies.robotoMono,
+        fontWeight: 'bold',
+      },
+    },
+    massNum: {
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+    },
+    valueNum: {
+      fontSize: '0.7em',
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
     },
     oreName: {
-      color: theme.palette.text.primary,
+      color: theme.palette.text.secondary,
       flex: '1 1 60%',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -94,7 +109,7 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
     orePercent: {
       textAlign: 'right',
       flex: '1 1',
-      color: theme.palette.text.secondary,
+      color: theme.palette.text.primary,
     },
     currency: {
       display: 'inline',
@@ -153,10 +168,9 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
       <CardContent sx={styles.cardContent}>
         <Box sx={{ ...styles.topBox, cursor: onEditClick ? 'pointer' : 'default' }} onClick={onEditClick}>
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
-            <Scale sx={{ height: 12, width: 12, pr: 0.5 }} />
-            <Typography>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
+            <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
             <div style={{ flex: '1 1' }} />
-            <Typography>
+            <Typography sx={styles.valueNum}>
               {rockValue ? MValueFormatter(rockValue, MValueFormat.number_sm) : '??'}
               <Box sx={styles.currency}>aUEC</Box>
             </Typography>
