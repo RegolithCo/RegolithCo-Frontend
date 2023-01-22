@@ -249,8 +249,6 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
             </Tooltip>
           </Box>
 
-          {/* Make sure the chip is pushed to the bottom */}
-          {/* <Box sx={{ flex: '1 1 0%' }} /> */}
           <Box
             sx={{
               position: 'absolute',

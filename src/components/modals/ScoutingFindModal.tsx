@@ -14,6 +14,8 @@ export interface ScoutingFindModalProps {
   meUser: SessionUser
   onChange: (scoutingFind: ScoutingFind) => void
   onDelete?: () => void
+  joinScoutingFind?: (findId: string, enRoute: boolean) => void
+  leaveScoutingFind?: (findId: string) => void
   allowEdit?: boolean
   allowWork?: boolean
   isNew?: boolean
@@ -26,6 +28,8 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
   isNew,
   onChange,
   onDelete,
+  joinScoutingFind,
+  leaveScoutingFind,
   meUser,
   allowWork,
   allowEdit,
@@ -34,18 +38,19 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
   // This is just used int he live case. In every other case we just edit it live
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
-  const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
 
   React.useEffect(() => {
     setNewScoutingFind(scoutingFind)
   }, [scoutingFind])
-
+  if (!scoutingFind) return null
+  const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
   return (
     <ThemeProvider theme={theme}>
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="md"
+        fullWidth
+        maxWidth="sm"
         disableEscapeKeyDown
         sx={{
           '& .MuiDialog-paper': {
@@ -65,6 +70,8 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
             isNew={isNew}
             allowEdit={allowEdit}
             allowWork={allowWork}
+            joinScoutingFind={joinScoutingFind}
+            leaveScoutingFind={leaveScoutingFind}
             me={meUser}
             onChange={(newFind) => {
               if (isNew) setNewScoutingFind(newFind)
@@ -73,11 +80,19 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
             onDelete={onDelete}
           />
         </Box>
-        <DialogActions sx={{ backgroundColor: theme.palette.primary.dark, flex: '0 0' }}>
+        <DialogActions
+          sx={{
+            //
+            backgroundColor: theme.palette.background.default,
+            flex: '0 0',
+            px: 3,
+            borderTop: `2px solid ${theme.palette.primary.dark}`,
+          }}
+        >
           <Button
             color="error"
-            variant="contained"
-            size="large"
+            variant="text"
+            size="small"
             startIcon={<Cancel />}
             onClick={() => {
               onClose()
@@ -88,7 +103,8 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
           <div style={{ flexGrow: 1 }} />
           {allowEdit && onDelete && (
             <Button
-              variant="contained"
+              variant="outlined"
+              size="small"
               startIcon={<Delete />}
               onClick={() => setDeleteConfirmModal(true)}
               color="error"
@@ -96,11 +112,12 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
               Delete
             </Button>
           )}
+          <div style={{ flexGrow: 1 }} />
           {isNew && (
             <Button
               color="secondary"
               variant="contained"
-              size="large"
+              size="small"
               startIcon={isNew ? <Create /> : <Save />}
               onClick={() => {
                 onChange(newScoutingFind)

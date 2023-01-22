@@ -207,7 +207,7 @@ export function newEmptyScoutingFind(
     ownerId: sessUser.owner?.userId,
     owner: sessUser.owner,
     // note:
-    state: ScoutingFindStateEnum.ReadyForWorkers,
+    state: ScoutingFindStateEnum.Discovered,
     attendanceIds: [sessUser.owner?.userId as string],
     attendance: [],
   }

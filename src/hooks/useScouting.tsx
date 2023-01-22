@@ -12,6 +12,7 @@ import { SalvageFind, ScoutingFind, ScoutingFindInput, ShipClusterFind, VehicleC
 import { useSnackbar } from 'notistack'
 
 type useSessionsReturn = {
+  scoutingFind?: ScoutingFind
   loading: boolean
   querying: boolean
   mutating: boolean
@@ -79,6 +80,7 @@ export const useScoutingFind = (sessionId: string, scoutingFindId: string): useS
   useGQLErrors([], mutations)
 
   return {
+    scoutingFind: scoutingFindQry.data?.scoutingFind as ScoutingFind,
     mutating,
     querying,
     loading: querying || mutating,

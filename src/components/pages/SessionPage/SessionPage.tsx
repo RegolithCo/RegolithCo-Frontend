@@ -72,10 +72,12 @@ export interface SessionPageProps {
   createWorkOrder: (workOrder: WorkOrder) => void
   openWorkOrderModal: (workOrderId?: string) => void
   deleteWorkOrder: (workOrderId: string) => void
+  updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
   // scouting
   createScoutingFind: (scoutingFind: ScoutingFind) => void
   openScoutingModal: (scoutinfFindId?: string) => void
-  updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  updateScoutingFind: (scoutingFind: ScoutingFind) => void
+  deleteScoutingFind: (scoutingFindId: string) => void
   joinScoutingFind: (findId: string, enRoute: boolean) => void
   leaveScoutingFind: (findId: string) => void
 }
@@ -123,13 +125,16 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       marginTop: -1,
       marginBottom: -1,
     },
+    '& .MuiFormGroup-root .MuiTypography-root': {
+      fontSize: '0.7em',
+    },
     '& .MuiSwitch-thumb, & .MuiSwitch-track': {
       backgroundColor: '#666666',
       border: `1px solid #444444`,
     },
     '& .Mui-checked .MuiSwitch-thumb, & .Mui-checked+.MuiSwitch-track': {
-      backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
-      border: `1px solid ${isActive ? theme.palette.secondary.dark : '#3b3b3b'}`,
+      backgroundColor: isActive ? theme.palette.primary.main : '#999999',
+      border: `1px solid ${isActive ? theme.palette.primary.dark : '#3b3b3b'}`,
     },
     backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
     color: theme.palette.primary.contrastText,
@@ -180,6 +185,11 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   createWorkOrder,
   createScoutingFind,
   openWorkOrderModal,
+  updateScoutingFind,
+  openScoutingModal,
+  joinScoutingFind,
+  deleteScoutingFind,
+  leaveScoutingFind,
   deleteWorkOrder,
   onCloseSession,
   deleteSession,
@@ -199,7 +209,10 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   const isSessionOwner = session.ownerId === userProfile.userId
   const activeWorkOrder =
     session.workOrders?.items?.find(({ orderId: existingOrderId }) => existingOrderId === orderId) || undefined
-
+  const activeScoutingFind =
+    session.scouting?.items?.find(
+      ({ scoutingFindId: existingScoutingFindId }) => existingScoutingFindId === scoutingFindId
+    ) || undefined
   // Some contextual subtitle stuff
 
   const shareUrl = `${window.location.origin}${process.env.PUBLIC_URL}/session/${session.sessionId}`
@@ -368,7 +381,17 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                   <Grid container spacing={3} margin={0}>
                     {filteredScounts.map((scouting, idx) => {
                       return (
-                        <Grid key={`scoutingfind-${idx}`}>
+                        <Grid
+                          key={`scoutingfind-${idx}`}
+                          sx={{
+                            '& *': {
+                              cursor: 'pointer',
+                            },
+                          }}
+                          onClick={() => {
+                            openScoutingModal(scouting.scoutingFindId)
+                          }}
+                        >
                           <ClusterCard key={idx} clusterFind={scouting} />
                         </Grid>
                       )
@@ -479,21 +502,29 @@ export const SessionPage: React.FC<SessionPageProps> = ({
         />
       )}
 
-      {/* {activeScoutingFind && (
+      {activeScoutingFind && (
         <ScoutingFindModal
           meUser={sessionUser}
           allowEdit={isActive}
           allowWork={isActive}
-          open={activeModal === DialogEnum.ADD_SCOUTING}
-          scoutingFind={newScoutingFind as ScoutingFind}
-          isNew={true}
-          onClose={() => setActiveModal(null)}
+          open={Boolean(activeScoutingFind)}
+          scoutingFind={activeScoutingFind}
+          joinScoutingFind={joinScoutingFind}
+          leaveScoutingFind={leaveScoutingFind}
+          onClose={() => {
+            setActiveModal(null)
+            openScoutingModal && openScoutingModal()
+          }}
+          onDelete={() => {
+            setActiveModal(null)
+            deleteScoutingFind(activeScoutingFind.scoutingFindId)
+          }}
           onChange={(newScouting) => {
             updateScoutingFind(newScouting)
             setNewScoutingFind(undefined)
           }}
         />
-      )} */}
+      )}
     </>
   )
 }

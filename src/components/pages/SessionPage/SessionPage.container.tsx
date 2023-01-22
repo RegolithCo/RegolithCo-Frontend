@@ -103,6 +103,8 @@ export const SessionPageContainer: React.FC = () => {
       }}
       // Scouting finds
       scoutingFindId={scoutingFindId}
+      updateScoutingFind={scoutingFindQry.updateScoutingFind}
+      deleteScoutingFind={scoutingFindQry.deleteScoutingFind}
       joinScoutingFind={scoutingFindQry.joinScoutingFind}
       leaveScoutingFind={scoutingFindQry.leaveScoutingFind}
       verifiedMentionedUsers={{}}

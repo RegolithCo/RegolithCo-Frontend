@@ -37,6 +37,8 @@ import {
   RockStateEnum,
   ScoutingFindStateEnum,
   getScoutingFindStateName,
+  SessionStateEnum,
+  SessionUserStateEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { AddCircle, Person, Public, RocketLaunch, Room, SvgIconComponent } from '@mui/icons-material'
@@ -55,8 +57,16 @@ export interface ScoutingFindCalcProps {
   allowWork?: boolean
   standalone?: boolean
   isNew?: boolean
+  joinScoutingFind?: (findId: string, enRoute: boolean) => void
+  leaveScoutingFind?: (findId: string) => void
   onChange: (scoutingFind: ScoutingFind) => void
   onDelete?: () => void
+}
+
+enum AttendanceStateEnum {
+  NotJoined = 'NotJoined',
+  Joined = 'Joined',
+  EnRoute = 'EnRoute',
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -65,6 +75,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     overflow: 'hidden',
     height: '100%',
     width: '100%',
+    m: 0,
     '* .MuiTypography-overline': {
       color: theme.palette.text.secondary,
       borderBottom: '1px solid',
@@ -211,6 +222,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   isNew,
   allowEdit,
   standalone,
+  joinScoutingFind,
+  leaveScoutingFind,
   allowWork,
   onChange,
   onDelete,
@@ -264,6 +277,13 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   let profitSymbol = '~'
   if (scanComplete) profitSymbol = ''
   else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
+
+  let attendanceState = AttendanceStateEnum.NotJoined
+  if (scoutingFind.attendanceIds?.includes(me.owner?.userId as string)) {
+    attendanceState =
+      me.state === SessionUserStateEnum.Travelling ? AttendanceStateEnum.Joined : AttendanceStateEnum.EnRoute
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Grid container spacing={2} padding={2} sx={styles.containerGrid}>
@@ -294,7 +314,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         <Grid container spacing={2} padding={2} xs={12}>
           {/* Hero card */}
           {!standalone && (
-            <Grid xs={standalone ? 5 : 4} sx={styles.topRowGrid}>
+            <Grid xs={3} sx={styles.topRowGrid}>
               <Box sx={styles.numberBox}>
                 <Typography sx={styles.itemName}>{itemName}</Typography>
                 <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
@@ -319,16 +339,26 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   </Avatar>
                 </Badge>
               </Box>
-              {!standalone && (
+              {!standalone && joinScoutingFind && leaveScoutingFind && (
                 <ToggleButtonGroup
                   size="small"
                   aria-label="Small sizes"
+                  value={attendanceState}
                   sx={{
                     py: 2,
                     width: '100%',
                   }}
                 >
-                  <ToggleButton value="left" key="left" sx={{ flexGrow: 1 }}>
+                  <ToggleButton
+                    value={AttendanceStateEnum.EnRoute}
+                    onClick={() => {
+                      attendanceState !== AttendanceStateEnum.EnRoute &&
+                        joinScoutingFind &&
+                        joinScoutingFind(scoutingFind.scoutingFindId, true)
+                    }}
+                    key="left"
+                    sx={{ flexGrow: 1 }}
+                  >
                     <Public />
                     <Box
                       sx={{
@@ -340,7 +370,16 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       On my way
                     </Box>
                   </ToggleButton>
-                  <ToggleButton value="center" key="center" sx={{ flexGrow: 1 }}>
+                  <ToggleButton
+                    value={AttendanceStateEnum.Joined}
+                    onClick={() => {
+                      attendanceState !== AttendanceStateEnum.Joined &&
+                        joinScoutingFind &&
+                        joinScoutingFind(scoutingFind.scoutingFindId, false)
+                    }}
+                    key="center"
+                    sx={{ flexGrow: 1 }}
+                  >
                     <Room />
                     <Box
                       sx={{
@@ -352,7 +391,16 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       I'm here
                     </Box>
                   </ToggleButton>
-                  <ToggleButton value="justify" key="justify" sx={{ flexGrow: 1 }}>
+                  <ToggleButton
+                    value="NONE"
+                    key="justify"
+                    onClick={() => {
+                      attendanceState !== AttendanceStateEnum.NotJoined &&
+                        leaveScoutingFind &&
+                        leaveScoutingFind(scoutingFind.scoutingFindId)
+                    }}
+                    sx={{ flexGrow: 1 }}
+                  >
                     <RocketLaunch />
                     <Box
                       sx={{
@@ -369,11 +417,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             </Grid>
           )}
           {/* Cluster stats */}
-          <Grid xs={standalone ? 7 : 5} sx={styles.topRowGrid}>
+          <Grid xs={standalone ? 12 : 5} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
-            <TableContainer>
+            <TableContainer sx={{ opacity: scoutingFind.clusterType === ScoutingFindTypeEnum.Ship ? 1 : 0.2 }}>
               <Table size="small" sx={styles.statsTable}>
                 <TableHead>
                   <TableRow>
@@ -414,23 +462,45 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm)}
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell>Prospector(s)</TableCell>
-                    <TableCell align="right">{(summary.volume / 32).toFixed(1)}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Mole(s)</TableCell>
-                    <TableCell align="right">{(summary.volume / 96).toFixed(1)}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
+                  {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
+                    <>
+                      <TableRow>
+                        <TableCell>Prospector(s)</TableCell>
+                        <TableCell align="right">{(summary.volume / 32).toFixed(1)}</TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Mole(s)</TableCell>
+                        <TableCell align="right">{(summary.volume / 96).toFixed(1)}</TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </>
+                  )}
                 </TableFooter>
               </Table>
             </TableContainer>
+
+            {!standalone && (
+              <Box sx={{ display: 'flex' }}>
+                <Typography
+                  variant="body1"
+                  component="div"
+                  sx={{ fontSize: '0.8em', color: theme.palette.primary.main, py: 2 }}
+                >
+                  {scoutingFind.state === ScoutingFindStateEnum.Abandonned && 'This find has been abandonned and lost'}
+                  {scoutingFind.state === ScoutingFindStateEnum.ReadyForWorkers && 'This find needs workers.'}
+                  {scoutingFind.state === ScoutingFindStateEnum.Working && 'This find is being worked on.'}
+                  {scoutingFind.state === ScoutingFindStateEnum.Discovered &&
+                    'This find has been discovered and is currently being scanned.'}
+                  {scoutingFind.state === ScoutingFindStateEnum.Depleted &&
+                    'This find has been depleted of all its minerals.'}
+                </Typography>
+              </Box>
+            )}
           </Grid>
           {/* Actions and attendance */}
           {!standalone && (
-            <Grid xs={3} sx={styles.topRowGrid}>
+            <Grid xs={4} sx={styles.topRowGrid}>
               <Typography variant="overline" component="div">
                 Discoverd By:
               </Typography>
