@@ -192,9 +192,9 @@ export function newWorkOrderMaker(session: Session, owner: UserProfile, activity
   }
 }
 
-export function newScoutingFind(
+export function newEmptyScoutingFind(
   session: Session,
-  owner: UserProfile,
+  sessUser: SessionUser,
   scoutingType: ScoutingFindTypeEnum
 ): ScoutingFind {
   const baseObj: Partial<ScoutingFind> = {
@@ -204,11 +204,11 @@ export function newScoutingFind(
     updatedAt: Date.now(),
     clusterType: scoutingType,
 
-    ownerId: owner.userId,
-    owner: profile2User(owner),
+    ownerId: sessUser.owner?.userId,
+    owner: sessUser.owner,
     // note:
     state: ScoutingFindStateEnum.ReadyForWorkers,
-    attendanceIds: [],
+    attendanceIds: [sessUser.owner?.userId as string],
     attendance: [],
   }
 

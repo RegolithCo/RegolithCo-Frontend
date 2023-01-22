@@ -28,6 +28,7 @@ import log from 'loglevel'
 type useSessionsReturn = {
   workOrder?: WorkOrder
   loading: boolean
+  querying: boolean
   mutating: boolean
   updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
   deleteWorkOrder: () => void
@@ -94,14 +95,15 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
   const queries = [workOrderQry]
   const mutations = [updateWorkOrderMutation, deleteWorkOrderMutation, upsertCrewShareMutation, deleteCrewShareMutation]
 
-  const loading = queries.some((q) => q.loading)
+  const querying = queries.some((q) => q.loading)
   const mutating = mutations.some((m) => m[1].loading)
 
   useGQLErrors(queries, mutations)
 
   return {
     workOrder: workOrderQry.data?.workOrder as WorkOrder,
-    loading,
+    querying,
+    loading: querying || mutating,
     mutating,
     updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => {
       const { shareAmount } = newWorkOrder as OtherOrder

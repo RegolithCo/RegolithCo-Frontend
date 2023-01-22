@@ -20,7 +20,7 @@ import { RemoveUserModal } from '../modals/RemoveUserModal'
 import { ChangeUsernameModal } from '../modals/ChangeUsernameModal'
 import { DeleteProfileModal } from '../modals/DeleteProfileModal'
 import { yellow } from '@mui/material/colors'
-import { InnactiveUserList } from '../fields/MentionedUserList'
+import { MentionedUserList } from '../fields/MentionedUserList'
 import { SessionSettingsModal } from './SessionPage/SessionSettingsModal'
 import { pick } from 'lodash'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -325,7 +325,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Typography paragraph variant="caption">
                 Add your the names of people you mine with so that they are easy to add to your sessions.
               </Typography>
-              <InnactiveUserList
+              <MentionedUserList
                 verifiedUsers={verifiedFriends}
                 mentionedUsers={userProfile.friends}
                 myFriends={userProfile.friends}

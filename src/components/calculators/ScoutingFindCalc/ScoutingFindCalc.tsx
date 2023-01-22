@@ -12,8 +12,6 @@ import {
   Theme,
   Box,
   Button,
-  Stack,
-  Divider,
   Avatar,
   Badge,
   ToggleButton,

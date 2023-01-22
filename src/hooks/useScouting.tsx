@@ -1,5 +1,6 @@
 import {
   useDeleteScoutingFindMutation,
+  useGetScoutingFindQuery,
   useJoinScoutingFindMutation,
   useLeaveScoutingFindMutation,
   useUpdateScoutingFindMutation,
@@ -11,23 +12,31 @@ import { SalvageFind, ScoutingFind, ScoutingFindInput, ShipClusterFind, VehicleC
 import { useSnackbar } from 'notistack'
 
 type useSessionsReturn = {
+  loading: boolean
+  querying: boolean
   mutating: boolean
   updateScoutingFind: (newFind: ScoutingFind) => void
   deleteScoutingFind: (findId: string) => void
-  joinScoutingFind: (findId: string) => void
+  joinScoutingFind: (findId: string, enRoute: boolean) => void
   leaveScoutingFind: (findId: string) => void
 }
 
-export const useScoutingFind = (sessionId: string): useSessionsReturn => {
+export const useScoutingFind = (sessionId: string, scoutingFindId: string): useSessionsReturn => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
+
+  const scoutingFindQry = useGetScoutingFindQuery({
+    variables: {
+      sessionId,
+      scoutingFindId,
+    },
+    skip: !sessionId || !scoutingFindId,
+  })
 
   const updateScoutingFindMutation = useUpdateScoutingFindMutation()
   const deleteScoutingFindMutation = useDeleteScoutingFindMutation({
     update: (cache, { data }) => {
-      cache.evict({
-        id: `ScoutingFind:${data?.deleteScoutingFind?.sessionId}:${data?.deleteScoutingFind?.scoutingFindId}`,
-      })
+      cache.evict({ id: cache.identify(scoutingFindQry.data?.scoutingFind as ScoutingFind) })
     },
     onCompleted: () => {
       enqueueSnackbar('You have deleted the scouting find', { variant: 'warning' })
@@ -57,20 +66,22 @@ export const useScoutingFind = (sessionId: string): useSessionsReturn => {
       navigate(`/session/${sessionId}`)
     },
   })
-
+  const queries = [scoutingFindQry]
   const mutations = [
     updateScoutingFindMutation,
     deleteScoutingFindMutation,
     joinScoutingFindMutation,
     leaveScoutingFindMutation,
   ]
-
+  const querying = queries.some((q) => q.loading)
   const mutating = mutations.some((m) => m[1].loading)
 
   useGQLErrors([], mutations)
 
   return {
     mutating,
+    querying,
+    loading: querying || mutating,
     updateScoutingFind: (newFind: ScoutingFind) => {
       const newScoutingFindInput: ScoutingFindInput = {
         state: newFind.state,
@@ -89,6 +100,7 @@ export const useScoutingFind = (sessionId: string): useSessionsReturn => {
         optimisticResponse: {
           __typename: 'Mutation',
           updateScoutingFind: {
+            ...scoutingFindQry.data?.scoutingFind,
             ...newFind,
           },
         },
@@ -102,11 +114,12 @@ export const useScoutingFind = (sessionId: string): useSessionsReturn => {
         },
       })
     },
-    joinScoutingFind: (findId: string) => {
+    joinScoutingFind: (findId: string, enRoute: boolean) => {
       joinScoutingFindMutation[0]({
         variables: {
           scoutingFindId: findId,
           sessionId,
+          enRoute,
         },
       })
     },

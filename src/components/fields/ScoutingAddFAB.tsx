@@ -1,36 +1,36 @@
 import * as React from 'react'
 import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
-import { ActivityEnum, SessionSettings } from '@regolithco/common'
+import { ScoutingFindTypeEnum, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { TravelExplore } from '@mui/icons-material'
-import { Badge, Fab, FabProps, Tooltip, useTheme } from '@mui/material'
+import { Badge, Fab, FabProps, useTheme } from '@mui/material'
 
 const actions = [
   {
-    activityId: ActivityEnum.ShipMining,
+    scoutingType: ScoutingFindTypeEnum.Ship,
     icon: <RockIcon />,
     name: `Ship Mining Cluster`,
   },
   {
-    activityId: ActivityEnum.VehicleMining,
+    scoutingType: ScoutingFindTypeEnum.Vehicle,
     icon: <GemIcon />,
     name: `Vehicle Mining Cluster`,
   },
-  { activityId: ActivityEnum.Salvage, icon: <ClawIcon />, name: `Wreck(s)` },
+  { scoutingType: ScoutingFindTypeEnum.Salvage, icon: <ClawIcon />, name: `Wreck(s)` },
 ]
 
 export interface ScoutingAddFABProps {
   sessionSettings?: SessionSettings
-  onClick?: (activityId: ActivityEnum) => void
+  onClick?: (scoutingType: ScoutingFindTypeEnum) => void
   fabProps?: FabProps
 }
 
 export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings, onClick, fabProps }) => {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const locked = actions.map(({ activityId }) => {
-    return sessionSettings && sessionSettings.activity && sessionSettings.activity !== activityId
+  const locked = actions.map(({ scoutingType }) => {
+    return sessionSettings && sessionSettings.activity && sessionSettings.activity !== scoutingType
   })
   // If there's only one action unlocked then just return a normal fab
   if (locked.filter((l) => !l).length === 1) {
@@ -40,7 +40,7 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
       <Fab
         color="secondary"
         onClick={() => {
-          onClick && onClick(action.activityId)
+          onClick && onClick(action.scoutingType)
           setOpen(false)
         }}
         sx={{
@@ -90,12 +90,12 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
         .filter((_, idx) => !locked[idx])
         .map((action) => (
           <SpeedDialAction
-            key={action.activityId}
+            key={action.scoutingType}
             icon={action.icon}
             tooltipTitle={action.name}
             tooltipOpen
             onClick={() => {
-              onClick && onClick(action.activityId)
+              onClick && onClick(action.scoutingType)
               setOpen(false)
             }}
             color="primary"

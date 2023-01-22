@@ -37,7 +37,7 @@ SessionPage.args = {
     activeMembers: fakePaginatedSessionUserList(10),
     mentionedUsers: fakeSCNameList(3),
   }),
-  verifiedInnactiveUsers: {},
+  verifiedMentionedUsers: {},
   userProfile: meUser,
 }
 
@@ -47,6 +47,6 @@ Visitor.args = {
     activeMembers: fakePaginatedSessionUserList(10),
     mentionedUsers: fakeSCNameList(3),
   }),
-  verifiedInnactiveUsers: {},
+  verifiedMentionedUsers: {},
   userProfile: meUser,
 }

@@ -3,7 +3,7 @@ import { Alert, Box, Typography } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
 import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser } from '@regolithco/common'
-import { dummySession, dummySessionUser, dummyUserProfile, newScoutingFind } from '../../lib/newObjectFactories'
+import { dummySession, dummySessionUser, dummyUserProfile, newEmptyScoutingFind } from '../../lib/newObjectFactories'
 import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../../hooks/useLogin'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
@@ -21,7 +21,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
   // const [activeActivity, setActiveActivity] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
 
   React.useEffect(() => {
-    const newCluster = newScoutingFind(session, owner, ScoutingFindTypeEnum.Ship)
+    const newCluster = newEmptyScoutingFind(session, sessionUser, ScoutingFindTypeEnum.Ship)
     setCluster(newCluster)
   }, [userProfile])
 

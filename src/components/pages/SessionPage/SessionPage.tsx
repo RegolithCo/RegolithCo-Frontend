@@ -14,6 +14,7 @@ import {
   SessionInput,
   DestructuredSettings,
   createUserSuggest,
+  ScoutingFind,
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ActiveUserList } from '../../fields/ActiveUserList'
@@ -33,22 +34,26 @@ import {
 import { Container, SxProps } from '@mui/system'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
-import { InnactiveUserList } from '../../fields/MentionedUserList'
+import { MentionedUserList } from '../../fields/MentionedUserList'
 import { ExpandMore } from '@mui/icons-material'
 import { WorkOrderTable } from './WorkOrderTable'
 import { ClusterCard } from '../../cards/ClusterCard'
 import { SessionSettingsModal } from './SessionSettingsModal'
 import { WorkOrderModal } from '../../modals/WorkOrderModal'
-import { newWorkOrderMaker } from '../../../lib/newObjectFactories'
+import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { ShareModal } from '../../modals/ShareModal'
 import { SessionHeader } from './SessionHeader'
+import { ScoutingFindModal } from '../../modals/ScoutingFindModal'
 
 export interface SessionPageProps {
   session: Session
   userProfile: UserProfile
+  sessionUser: SessionUser
+  // For the two modals that take us deeper
   orderId?: string
   scoutingFindId?: string
-  verifiedInnactiveUsers: VerifiedUserLookup
+  // The
+  verifiedMentionedUsers: VerifiedUserLookup
   addFriend: (username: string) => void
   navigate: (path: string) => void
   // Session
@@ -59,6 +64,8 @@ export interface SessionPageProps {
   onUpdateSession: (session: SessionInput, settings: DestructuredSettings) => void
   resetDefaultSystemSettings: () => void
   resetDefaultUserSettings: () => void
+  leaveSession: () => void
+  deleteSession: () => void
   // CrewShares
   onSetCrewSharePaid?: (scName: string, paid: boolean) => void
   // Work orders
@@ -66,10 +73,11 @@ export interface SessionPageProps {
   openWorkOrderModal: (workOrderId?: string) => void
   deleteWorkOrder: (workOrderId: string) => void
   // scouting
+  createScoutingFind: (scoutingFind: ScoutingFind) => void
   openScoutingModal: (scoutinfFindId?: string) => void
   updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
-  leaveSession: () => void
-  deleteSession: () => void
+  joinScoutingFind: (findId: string, enRoute: boolean) => void
+  leaveScoutingFind: (findId: string) => void
 }
 
 /* eslint-disable no-unused-vars */
@@ -154,6 +162,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 export const SessionPage: React.FC<SessionPageProps> = ({
   session,
   userProfile,
+  sessionUser,
   orderId,
   navigate,
   scoutingFindId,
@@ -165,10 +174,11 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   removeSessionMentions,
   addSessionMentions,
   removeSessionCrew,
-  verifiedInnactiveUsers,
+  verifiedMentionedUsers,
   resetDefaultSystemSettings,
   resetDefaultUserSettings,
   createWorkOrder,
+  createScoutingFind,
   openWorkOrderModal,
   deleteWorkOrder,
   onCloseSession,
@@ -177,10 +187,14 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   const theme = useTheme()
   const isActive = session.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
+  // Only one major modal at a time please.
   const [activeModal, setActiveModal] = React.useState<DialogEnum | null>(null)
-  const [filterInnactiveScout, setFilterInnactiveScout] = React.useState(true)
+  // Filtering for the accordions
+  const [filterClosedScout, setFilterClosedScout] = React.useState(true)
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
+  // For temporary objects before we commit them to the DB
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>()
+  const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>()
 
   const isSessionOwner = session.ownerId === userProfile.userId
   const activeWorkOrder =
@@ -192,7 +206,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
 
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
   const allScouts = session.scouting?.items || []
-  const filteredScounts = allScouts.filter(({ state }) => !filterInnactiveScout || badStates.indexOf(state) < 0)
+  const filteredScounts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
   const allWorkOrders = session.workOrders?.items || []
   const filteredWorkOrders = filterPaidWorkOrders
     ? allWorkOrders.filter(({ crewShares }) => crewShares?.some(({ state }) => !state))
@@ -253,9 +267,9 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                   Mentioned: ({session.mentionedUsers?.length})
                 </AccordionSummary>
                 <AccordionDetails sx={styles.accordionDetails}>
-                  <InnactiveUserList
+                  <MentionedUserList
                     mentionedUsers={session.mentionedUsers}
-                    verifiedUsers={verifiedInnactiveUsers}
+                    verifiedUsers={verifiedMentionedUsers}
                     myFriends={userProfile.friends}
                     useAutocomplete
                     addFriend={addFriend}
@@ -342,8 +356,8 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                       control={
                         <Switch
                           color="secondary"
-                          checked={filterInnactiveScout}
-                          onChange={(e) => setFilterInnactiveScout(e.target.checked)}
+                          checked={filterClosedScout}
+                          onChange={(e) => setFilterClosedScout(e.target.checked)}
                         />
                       }
                       label="Hide Inactive"
@@ -352,13 +366,6 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                 </AccordionSummary>
                 <AccordionDetails sx={styles.workOrderAccordionDetails}>
                   <Grid container spacing={3} margin={0}>
-                    <Typography
-                      variant="h6"
-                      sx={{ m: 3, fontStyle: 'italic', color: '#88888855', margin: 'auto auto' }}
-                      component="div"
-                    >
-                      Scouting is coming soon!!!
-                    </Typography>
                     {filteredScounts.map((scouting, idx) => {
                       return (
                         <Grid key={`scoutingfind-${idx}`}>
@@ -368,13 +375,13 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                     })}
                   </Grid>
                   <ScoutingAddFAB
-                    onClick={() => {
-                      //
+                    onClick={(scoutingType) => {
+                      setNewScoutingFind(newEmptyScoutingFind(session, sessionUser, scoutingType))
+                      setActiveModal(DialogEnum.ADD_SCOUTING)
                     }}
                     sessionSettings={session.sessionSettings}
                     fabProps={{
-                      // disabled: !isActive,
-                      disabled: true,
+                      disabled: !isActive,
                     }}
                   />
                 </AccordionDetails>
@@ -454,6 +461,39 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           allowEdit={isActive && (userProfile?.userId === activeWorkOrder?.ownerId || isSessionOwner)}
         />
       )}
+
+      {isActive && newScoutingFind && (
+        <ScoutingFindModal
+          meUser={sessionUser}
+          allowEdit={isActive}
+          allowWork={isActive}
+          open={activeModal === DialogEnum.ADD_SCOUTING}
+          scoutingFind={newScoutingFind as ScoutingFind}
+          isNew={true}
+          onClose={() => setActiveModal(null)}
+          onChange={(newScouting) => {
+            setActiveModal(null)
+            createScoutingFind(newScouting)
+            setNewScoutingFind(undefined)
+          }}
+        />
+      )}
+
+      {/* {activeScoutingFind && (
+        <ScoutingFindModal
+          meUser={sessionUser}
+          allowEdit={isActive}
+          allowWork={isActive}
+          open={activeModal === DialogEnum.ADD_SCOUTING}
+          scoutingFind={newScoutingFind as ScoutingFind}
+          isNew={true}
+          onClose={() => setActiveModal(null)}
+          onChange={(newScouting) => {
+            updateScoutingFind(newScouting)
+            setNewScoutingFind(undefined)
+          }}
+        />
+      )} */}
     </>
   )
 }

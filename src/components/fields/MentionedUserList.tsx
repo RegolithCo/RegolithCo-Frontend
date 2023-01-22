@@ -16,7 +16,7 @@ import { UserSuggest, validateSCName, VerifiedUserLookup } from '@regolithco/com
 import { Cancel, PersonAdd } from '@mui/icons-material'
 import { UserListItem } from './UserListItem'
 
-export interface InnactiveUserListProps {
+export interface MentionedUserListProps {
   verifiedUsers: VerifiedUserLookup
   mentionedUsers: string[]
   myFriends: string[]
@@ -38,7 +38,7 @@ const filter = createFilterOptions<
   ]
 >()
 
-export const InnactiveUserList: React.FC<InnactiveUserListProps> = ({
+export const MentionedUserList: React.FC<MentionedUserListProps> = ({
   verifiedUsers,
   mentionedUsers,
   myFriends,

@@ -21,7 +21,6 @@ import {
   useUpsertSessionUserMutation,
 } from '../schema'
 import {
-  ActivityEnum,
   CrewShareInput,
   DestructuredSettings,
   destructureSettings,
@@ -36,7 +35,7 @@ import {
   SalvageFind,
   SalvageOrder,
   SalvageRowInput,
-  ScoutingFindTypeEnum,
+  ScoutingFind,
   Session,
   SessionInput,
   SessionSettings,
@@ -56,7 +55,6 @@ import {
 import { useLogin } from './useLogin'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
-import { newScoutingFind } from '../lib/newObjectFactories'
 import { makeSessionUrls } from '../lib/routingUrls'
 
 type useSessionsReturn = {
@@ -75,7 +73,7 @@ type useSessionsReturn = {
   deleteSession: () => void
   updateSessionUser: (sessionUser: SessionUserInput) => void
   createWorkOrder: (workOrder: WorkOrder) => void
-  createScoutingFind: (findType: ScoutingFindTypeEnum, clusterCount: number) => void
+  createScoutingFind: (newFind: ScoutingFind) => void
   resetDefaultSystemSettings: () => void
   resetDefaultUserSettings: () => void
 }
@@ -106,6 +104,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
   })
 
+  // TODO: This is our sloppy poll function we need to update to lower data costs
   React.useEffect(() => {
     if (sessionQry.data?.session) {
       sessionQry.startPolling(10000)
@@ -310,16 +309,16 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         scNames,
       },
       optimisticResponse: () => {
-        const newInnactiveMembers = [
+        const newMentionedMembers = [
           ...((sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']) || []),
           ...scNames,
         ]
-        newInnactiveMembers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        newMentionedMembers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 
         return {
           addSessionMentions: {
             ...(sessionQry.data?.session as Session),
-            mentionedUsers: newInnactiveMembers,
+            mentionedUsers: newMentionedMembers,
           },
           __typename: 'Mutation',
         }
@@ -549,15 +548,19 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         },
       })
     },
-    createScoutingFind: (findType: ScoutingFindTypeEnum, clusterCount: number) => {
-      const newFind = newScoutingFind(sessionQry.data?.session as Session, userProfile as UserProfile, findType)
+    createScoutingFind: (newFind: ScoutingFind) => {
+      const { clusterCount } = newFind
       const { shipRocks } = newFind as ShipClusterFind
       const { vehicleRocks } = newFind as VehicleClusterFind
       const { wrecks } = newFind as SalvageFind
+
+      newFind.scoutingFindId = 'SFUPL_' + (Math.random() * 1000).toFixed(0)
+
       createScoutngFindMutation[0]({
         variables: {
           sessionId: sessionId as string,
           scoutingFind: {
+            note: newFind.note,
             state: newFind.state,
             clusterCount: clusterCount,
           },
@@ -565,8 +568,35 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           vehicleRocks,
           wrecks,
         },
-        // again, need the id to return
-        refetchQueries: [GetSessionDocument],
+        update: (cache, { data }) => {
+          const newScoutingFind = data?.addScoutingFind?.scoutingFindId
+            ? (data?.addScoutingFind as ScoutingFind)
+            : undefined
+          if (!newScoutingFind?.scoutingFindId) return
+          const session = cache.readQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+          })
+          if (!session) return
+          const newScoutingFindItems: ScoutingFind[] = [
+            ...((session.session?.scouting?.items as ScoutingFind[]) || []),
+            newScoutingFind,
+          ]
+          cache.writeQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+            data: {
+              session: {
+                ...(session.session as Session),
+                scouting: {
+                  ...(session.session?.scouting || { __typename: 'PaginatedScoutingFinds', nextToken: null }),
+                  items: newScoutingFindItems,
+                },
+              },
+              __typename: 'Query',
+            },
+          })
+        },
       })
     },
   }

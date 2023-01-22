@@ -3,11 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { SessionPage } from './SessionPage'
 import { PageLoader } from '../PageLoader'
 import { useSessions } from '../../../hooks/useSessions'
-import { CrewShareInput, Session, UserProfile, WorkOrder } from '@regolithco/common'
+import { CrewShareInput, Session, SessionUser, UserProfile, WorkOrder } from '@regolithco/common'
 import { SessionJoinContainer } from '../SessionJoin.container'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { makeSessionUrls } from '../../../lib/routingUrls'
 import { useWorkOrders } from '../../../hooks/useWorkOrder'
+import { useScoutingFind } from '../../../hooks/useScouting'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId, scoutingFindId } = useParams()
@@ -15,18 +16,19 @@ export const SessionPageContainer: React.FC = () => {
 
   const sessionQueries = useSessions(sessionId as string)
   const workOrderQry = useWorkOrders(sessionId as string, orderId as string)
+  const scoutingFindQry = useScoutingFind(sessionId as string, scoutingFindId as string)
 
   const navigate = useNavigate()
 
   // TODO: Need to fold this into the API call I think OR let session users add referenced users
-  const createNewInnactiveUsers = async (newShares: CrewShareInput[]): Promise<void> => {
+  const createNewMentionedUsers = async (newShares: CrewShareInput[]): Promise<void> => {
     if (newShares && newShares.length > 0) {
       const shareNames = newShares.map((s) => s.scName)
       const activeNames = (sessionQueries.session?.activeMembers?.items || []).map(({ owner }) => owner?.scName)
-      const addToInnactive = shareNames.filter(
+      const addToMentioned = shareNames.filter(
         (s) => !sessionQueries.session?.mentionedUsers?.includes(s) && !activeNames.includes(s)
       )
-      if (addToInnactive.length > 0) await sessionQueries.addSessionMentions(addToInnactive)
+      if (addToMentioned.length > 0) await sessionQueries.addSessionMentions(addToMentioned)
     }
   }
 
@@ -48,6 +50,8 @@ export const SessionPageContainer: React.FC = () => {
       navigate={navigate}
       // User
       userProfile={userQry.userProfile as UserProfile}
+      // A bit redundant but we need it
+      sessionUser={sessionQueries.sessionUser as SessionUser}
       addFriend={userQry.addFriend}
       // Session stuff
       onCloseSession={sessionQueries.closeSession}
@@ -73,7 +77,7 @@ export const SessionPageContainer: React.FC = () => {
             note,
           })
         )
-        await createNewInnactiveUsers(newShares)
+        await createNewMentionedUsers(newShares)
         return sessionQueries.createWorkOrder(workOrder)
       }}
       updateWorkOrder={async (workOrder: WorkOrder) => {
@@ -86,19 +90,22 @@ export const SessionPageContainer: React.FC = () => {
             note,
           })
         )
-        await createNewInnactiveUsers(newShares)
+        await createNewMentionedUsers(newShares)
         return workOrderQry.updateWorkOrder(workOrder)
       }}
       deleteWorkOrder={workOrderQry.deleteWorkOrder}
       openWorkOrderModal={(orderId) => {
         navigate(makeSessionUrls({ sessionId, orderId }))
       }}
+      createScoutingFind={sessionQueries.createScoutingFind}
       openScoutingModal={(scoutingFindId) => {
         navigate(makeSessionUrls({ sessionId, scoutingFindId }))
       }}
       // Scouting finds
       scoutingFindId={scoutingFindId}
-      verifiedInnactiveUsers={{}}
+      joinScoutingFind={scoutingFindQry.joinScoutingFind}
+      leaveScoutingFind={scoutingFindQry.leaveScoutingFind}
+      verifiedMentionedUsers={{}}
     />
   )
 }

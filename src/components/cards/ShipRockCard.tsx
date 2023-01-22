@@ -95,6 +95,7 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       fontWeight: 'bold',
     },
     valueNum: {
+      display: 'inline',
       fontSize: '0.7em',
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
@@ -170,7 +171,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
             <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
             <div style={{ flex: '1 1' }} />
-            <Typography sx={styles.valueNum}>
+            <Typography sx={styles.valueNum} component="div">
               {rockValue ? MValueFormatter(rockValue, MValueFormat.number_sm) : '??'}
               <Box sx={styles.currency}>aUEC</Box>
             </Typography>
