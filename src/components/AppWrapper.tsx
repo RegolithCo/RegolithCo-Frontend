@@ -68,6 +68,9 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
     case '/session':
       bgImage = BGImages.OPTION2
       break
+    case '/cluster':
+      bgImage = BGImages.ASTEROIDS1
+      break
     default:
       bgImage = BGImages.DEFAULT
   }

@@ -29,7 +29,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
     <PageWrapper title="Cluster Calculator" maxWidth="sm" sx={{}}>
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography variant="body1" paragraph>
-        This is a standalone calculator for determining the value of a rock cluser.
+        This is a standalone calculator for determining the value of a rock cluster.
       </Typography>
       <Alert severity="info" sx={{ m: 2 }}>
         NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive clusters

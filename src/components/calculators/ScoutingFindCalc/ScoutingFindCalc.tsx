@@ -295,79 +295,81 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         {/* Top row grid */}
         <Grid container spacing={2} padding={2} xs={12}>
           {/* Hero card */}
-          <Grid xs={standalone ? 5 : 4} sx={styles.topRowGrid}>
-            <Box sx={styles.numberBox}>
-              <Typography sx={styles.itemName}>{itemName}</Typography>
-              <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
-                <Avatar
-                  sx={styles.clusterCount}
-                  onClick={() => {
-                    allowEdit && setEditCountModalOpen(true)
+          {!standalone && (
+            <Grid xs={standalone ? 5 : 4} sx={styles.topRowGrid}>
+              <Box sx={styles.numberBox}>
+                <Typography sx={styles.itemName}>{itemName}</Typography>
+                <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
+                  <Avatar
+                    sx={styles.clusterCount}
+                    onClick={() => {
+                      allowEdit && setEditCountModalOpen(true)
+                    }}
+                  >
+                    {scoutingFind.clusterCount || 1}
+                    {allowEdit && (
+                      <Button
+                        size="small"
+                        sx={styles.editButton}
+                        onClick={() => {
+                          setEditCountModalOpen(true)
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </Avatar>
+                </Badge>
+              </Box>
+              {!standalone && (
+                <ToggleButtonGroup
+                  size="small"
+                  aria-label="Small sizes"
+                  sx={{
+                    py: 2,
+                    width: '100%',
                   }}
                 >
-                  {scoutingFind.clusterCount || 1}
-                  {allowEdit && (
-                    <Button
-                      size="small"
-                      sx={styles.editButton}
-                      onClick={() => {
-                        setEditCountModalOpen(true)
+                  <ToggleButton value="left" key="left" sx={{ flexGrow: 1 }}>
+                    <Public />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        fontSize: 6,
+                        bottom: 0,
                       }}
                     >
-                      Edit
-                    </Button>
-                  )}
-                </Avatar>
-              </Badge>
-            </Box>
-            {!standalone && (
-              <ToggleButtonGroup
-                size="small"
-                aria-label="Small sizes"
-                sx={{
-                  py: 2,
-                  width: '100%',
-                }}
-              >
-                <ToggleButton value="left" key="left" sx={{ flexGrow: 1 }}>
-                  <Public />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      fontSize: 6,
-                      bottom: 0,
-                    }}
-                  >
-                    On my way
-                  </Box>
-                </ToggleButton>
-                <ToggleButton value="center" key="center" sx={{ flexGrow: 1 }}>
-                  <Room />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      fontSize: 6,
-                      bottom: 0,
-                    }}
-                  >
-                    I'm here
-                  </Box>
-                </ToggleButton>
-                <ToggleButton value="justify" key="justify" sx={{ flexGrow: 1 }}>
-                  <RocketLaunch />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      fontSize: 6,
-                      bottom: 0,
-                    }}
-                  >
-                    I'm Leaving
-                  </Box>
-                </ToggleButton>
-              </ToggleButtonGroup>
-            )}
-          </Grid>
+                      On my way
+                    </Box>
+                  </ToggleButton>
+                  <ToggleButton value="center" key="center" sx={{ flexGrow: 1 }}>
+                    <Room />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        fontSize: 6,
+                        bottom: 0,
+                      }}
+                    >
+                      I'm here
+                    </Box>
+                  </ToggleButton>
+                  <ToggleButton value="justify" key="justify" sx={{ flexGrow: 1 }}>
+                    <RocketLaunch />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        fontSize: 6,
+                        bottom: 0,
+                      }}
+                    >
+                      I'm Leaving
+                    </Box>
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              )}
+            </Grid>
+          )}
           {/* Cluster stats */}
           <Grid xs={standalone ? 7 : 5} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
