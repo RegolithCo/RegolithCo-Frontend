@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   RadioGroup,
   Typography,
+  InputAdornment,
 } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 // import log from 'loglevel'
@@ -111,9 +112,12 @@ export const RefineryCalc: React.FC = () => {
         <Grid xs={9} sm={4}>
           <TextField
             id="scu-basic"
-            label="SCU"
+            label="Volume"
             variant="outlined"
             value={oreAmt}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">SCU</InputAdornment>,
+            }}
             inputProps={{
               sx: {
                 textAlign: 'right',
