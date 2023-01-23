@@ -134,6 +134,14 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           },
           ScoutingFindInterface: {
             keyFields: ['sessionId', 'scoutingFindId'],
+            fields: {
+              attendance: {
+                merge(existing: CrewShare[] = [], incoming: CrewShare[]) {
+                  const merged = incoming || existing
+                  return merged
+                },
+              },
+            },
           },
           CrewShare: {
             keyFields: ['sessionId', 'scName', 'orderId'],

@@ -23,6 +23,10 @@ export const ScoutingIdFragmentFragmentDoc = gql`
   updatedAt
   state
   attendanceIds
+  attendance {
+    sessionId
+    ownerId
+  }
 }
     `;
 export const WorkOrderIdFragmentFragmentDoc = gql`

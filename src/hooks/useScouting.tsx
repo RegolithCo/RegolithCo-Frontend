@@ -8,9 +8,8 @@ import {
 
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
-import { ScoutingFind, scoutingFindDestructured } from '@regolithco/common'
+import { ScoutingFind, scoutingFindDestructured, SessionUser, User } from '@regolithco/common'
 import { useSnackbar } from 'notistack'
-import { isEqual } from 'lodash'
 
 type useSessionsReturn = {
   scoutingFind?: ScoutingFind
@@ -23,7 +22,11 @@ type useSessionsReturn = {
   leaveScoutingFind: (findId: string) => void
 }
 
-export const useScoutingFind = (sessionId: string, scoutingFindId: string): useSessionsReturn => {
+export const useScoutingFind = (
+  sessionId: string,
+  scoutingFindId: string,
+  sessionUser?: SessionUser
+): useSessionsReturn => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -46,25 +49,22 @@ export const useScoutingFind = (sessionId: string, scoutingFindId: string): useS
     },
   })
   const joinScoutingFindMutation = useJoinScoutingFindMutation({
-    update: (cache, { data }) => {
-      console.log('TODO: UPDATE CACHE HERE', data)
-      // cache.modify({
-      //   id: `Session:${sessionId}`,
-      //   cache.modify({
-      //     id: cache.identify(userProfile as UserProfile),
-      //     fields: {
-      //       joinedSessions(existingSessions: Session[] = []) {
-      //         return existingSessions.filter((s) => s.sessionId !== sessionId)
-      //       },
-      //     },
-      //   })
-      // })
-    },
+    // update: (cache, { data }) => {
+    //   if (!sessionUser) return
+    //   cache.modify({
+    //     id: cache.identify(scoutingFindQry.data?.scoutingFind as ScoutingFind),
+    //     fields: {
+    //       attendance(existingAttendance: SessionUser[] = []) {
+    //         return [...existingAttendance, sessionUser]
+    //       },
+    //     },
+    //   })
+    // },
   })
   const leaveScoutingFindMutation = useLeaveScoutingFindMutation({
     onCompleted: () => {
       enqueueSnackbar('You have left the scouting find', { variant: 'warning' })
-      navigate(`/session/${sessionId}`)
+      // navigate(`/session/${sessionId}`)
     },
   })
   const queries = [scoutingFindQry]
@@ -119,6 +119,17 @@ export const useScoutingFind = (sessionId: string, scoutingFindId: string): useS
           sessionId,
           enRoute,
         },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          joinScoutingFind: {
+            ...(scoutingFindQry.data?.scoutingFind as ScoutingFind),
+            attendanceIds: [
+              ...(scoutingFindQry.data?.scoutingFind?.attendanceIds || []),
+              sessionUser?.owner?.userId as string,
+            ],
+            attendance: [...(scoutingFindQry.data?.scoutingFind?.attendance || []), sessionUser as SessionUser],
+          },
+        },
       })
     },
     leaveScoutingFind: (findId: string) => {
@@ -126,6 +137,18 @@ export const useScoutingFind = (sessionId: string, scoutingFindId: string): useS
         variables: {
           scoutingFindId: findId,
           sessionId,
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          leaveScoutingFind: {
+            ...(scoutingFindQry.data?.scoutingFind as ScoutingFind),
+            attendanceIds: (scoutingFindQry.data?.scoutingFind?.attendanceIds || []).filter(
+              (userId) => userId !== sessionUser?.owner?.userId
+            ),
+            attendance: (scoutingFindQry.data?.scoutingFind?.attendance || []).filter(
+              (user) => user.owner?.userId !== sessionUser?.owner?.userId
+            ),
+          },
         },
       })
     },

@@ -325,7 +325,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             </Typography>
           </Box>
         )}
-        {!standalone && <Typography sx={styles.scoutingFindId}>{scoutingFind.scoutingFindId.split('_')[0]}</Typography>}
+        {!standalone && !isNew && (
+          <Typography sx={styles.scoutingFindId}>{scoutingFind.scoutingFindId.split('_')[0]}</Typography>
+        )}
         {!standalone && (
           <Box sx={styles.stateBox}>
             {allowEdit ? (

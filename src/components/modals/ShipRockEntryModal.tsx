@@ -11,6 +11,7 @@ import {
   SxProps,
   TextField,
   Theme,
+  ThemeProvider,
   Tooltip,
   Typography,
   useTheme,
@@ -29,7 +30,7 @@ import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
 import { Stack } from '@mui/system'
 import { MValue, MValueFormat } from '../fields/MValue'
-import { fontFamilies } from '../../theme'
+import { fontFamilies, theme as themeOrig } from '../../theme'
 import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
@@ -254,19 +255,21 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             Composition
           </Typography>
           <Box sx={{ mb: 2 }}>
-            <ShipOreChooser
-              multiple
-              values={ores.map((o) => o.ore as ShipOreEnum)}
-              onChange={(shipOreEnum) => {
-                setNewShipRock({
-                  ...newShipRock,
-                  ores: shipOreEnum.map((ore) => {
-                    const found = (newShipRock.ores || []).find((o) => o.ore === ore)
-                    return found || { ore, percent: 0, __typename: 'ShipRockOre' }
-                  }),
-                })
-              }}
-            />
+            <ThemeProvider theme={themeOrig}>
+              <ShipOreChooser
+                multiple
+                values={ores.map((o) => o.ore as ShipOreEnum)}
+                onChange={(shipOreEnum) => {
+                  setNewShipRock({
+                    ...newShipRock,
+                    ores: shipOreEnum.map((ore) => {
+                      const found = (newShipRock.ores || []).find((o) => o.ore === ore)
+                      return found || { ore, percent: 0, __typename: 'ShipRockOre' }
+                    }),
+                  })
+                }}
+              />
+            </ThemeProvider>
           </Box>
           <Box>
             {ores.map((ore, idx) => (

@@ -16,7 +16,7 @@ export const SessionPageContainer: React.FC = () => {
 
   const sessionQueries = useSessions(sessionId as string)
   const workOrderQry = useWorkOrders(sessionId as string, orderId as string)
-  const scoutingFindQry = useScoutingFind(sessionId as string, scoutingFindId as string)
+  const scoutingFindQry = useScoutingFind(sessionId as string, scoutingFindId as string, sessionQueries.sessionUser)
 
   const navigate = useNavigate()
 
