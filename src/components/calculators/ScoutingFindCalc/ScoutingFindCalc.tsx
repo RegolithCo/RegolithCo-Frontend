@@ -37,11 +37,10 @@ import {
   RockStateEnum,
   ScoutingFindStateEnum,
   getScoutingFindStateName,
-  SessionStateEnum,
   SessionUserStateEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AddCircle, Person, Public, RocketLaunch, Room, SvgIconComponent } from '@mui/icons-material'
+import { AddCircle, Person, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
@@ -79,6 +78,20 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '* .MuiTypography-overline': {
       color: theme.palette.text.secondary,
       borderBottom: '1px solid',
+    },
+  },
+  stateBtnGrp: {
+    '& *': {
+      fontSize: '0.8em',
+    },
+    '& .MuiToggleButtonGroup-root': {
+      p: 0,
+      m: 0,
+    },
+    '& .MuiToggleButton-root': {
+      px: 1,
+      py: 0.6,
+      m: 0,
     },
   },
   scoutingFindId: {
@@ -367,81 +380,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   </Avatar>
                 </Badge>
               </Box>
-              {!standalone && joinScoutingFind && leaveScoutingFind && (
-                <ToggleButtonGroup
-                  size="small"
-                  aria-label="Small sizes"
-                  value={attendanceState}
-                  sx={{
-                    py: 2,
-                    width: '100%',
-                  }}
-                >
-                  <ToggleButton
-                    value={AttendanceStateEnum.EnRoute}
-                    onClick={() => {
-                      attendanceState !== AttendanceStateEnum.EnRoute &&
-                        joinScoutingFind &&
-                        joinScoutingFind(scoutingFind.scoutingFindId, true)
-                    }}
-                    key="left"
-                    sx={{ flexGrow: 1 }}
-                  >
-                    <Public />
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        fontSize: 6,
-                        bottom: 0,
-                      }}
-                    >
-                      On my way
-                    </Box>
-                  </ToggleButton>
-                  <ToggleButton
-                    value={AttendanceStateEnum.Joined}
-                    onClick={() => {
-                      attendanceState !== AttendanceStateEnum.Joined &&
-                        joinScoutingFind &&
-                        joinScoutingFind(scoutingFind.scoutingFindId, false)
-                    }}
-                    key="center"
-                    sx={{ flexGrow: 1 }}
-                  >
-                    <Room />
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        fontSize: 6,
-                        bottom: 0,
-                      }}
-                    >
-                      I'm here
-                    </Box>
-                  </ToggleButton>
-                  <ToggleButton
-                    value="NONE"
-                    key="justify"
-                    onClick={() => {
-                      attendanceState !== AttendanceStateEnum.NotJoined &&
-                        leaveScoutingFind &&
-                        leaveScoutingFind(scoutingFind.scoutingFindId)
-                    }}
-                    sx={{ flexGrow: 1 }}
-                  >
-                    <RocketLaunch />
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        fontSize: 6,
-                        bottom: 0,
-                      }}
-                    >
-                      I'm Leaving
-                    </Box>
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              )}
             </Grid>
           )}
           {/* Cluster stats */}
@@ -525,6 +463,55 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 </Typography>
               </Box>
             )}
+            {!standalone && joinScoutingFind && leaveScoutingFind && (
+              <Box sx={styles.stateBtnGrp}>
+                <ToggleButtonGroup
+                  size="small"
+                  aria-label="Small sizes"
+                  value={attendanceState}
+                  sx={{
+                    py: 2,
+                  }}
+                >
+                  <ToggleButton
+                    value={AttendanceStateEnum.EnRoute}
+                    onClick={() => {
+                      attendanceState !== AttendanceStateEnum.EnRoute &&
+                        joinScoutingFind &&
+                        joinScoutingFind(scoutingFind.scoutingFindId, true)
+                    }}
+                    key="left"
+                    sx={{ flexGrow: 1 }}
+                  >
+                    On my way
+                  </ToggleButton>
+                  <ToggleButton
+                    value={AttendanceStateEnum.Joined}
+                    onClick={() => {
+                      attendanceState !== AttendanceStateEnum.Joined &&
+                        joinScoutingFind &&
+                        joinScoutingFind(scoutingFind.scoutingFindId, false)
+                    }}
+                    key="center"
+                    sx={{ flexGrow: 1 }}
+                  >
+                    I'm here
+                  </ToggleButton>
+                  <ToggleButton
+                    value="NONE"
+                    key="justify"
+                    onClick={() => {
+                      attendanceState !== AttendanceStateEnum.NotJoined &&
+                        leaveScoutingFind &&
+                        leaveScoutingFind(scoutingFind.scoutingFindId)
+                    }}
+                    sx={{ flexGrow: 1 }}
+                  >
+                    I'm Leaving
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+            )}
           </Grid>
           {/* Actions and attendance */}
           {!standalone && (
@@ -592,11 +579,13 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               <Grid container sx={styles.scansGrid}>
                 {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
                   (shipFind.shipRocks || []).map((rock, idx) => {
-                    rock.ores?.sort((a, b) => (b.percent || 0) - (a.percent || 0))
+                    const newOres = [...(rock.ores || [])]
+                    newOres.sort((a, b) => (b.percent || 0) - (a.percent || 0))
+                    const newRock = { ...rock, ores: newOres }
                     return (
                       <Grid key={idx} xs={6} sm={4}>
                         <ShipRockCard
-                          rock={rock}
+                          rock={newRock}
                           rockValue={summary.byRock ? summary.byRock[idx] : undefined}
                           onChangeState={(newState) => {
                             onChange({

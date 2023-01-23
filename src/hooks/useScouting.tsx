@@ -49,16 +49,15 @@ export const useScoutingFind = (sessionId: string, scoutingFindId: string): useS
     update: (cache, { data }) => {
       console.log('TODO: UPDATE CACHE HERE', data)
       // cache.modify({
-      //   id: `Session:${data?.joinScoutingFind?.sessionId}`,
-      //   fields: {
-      //     scoutingFinds(existingScoutingFinds = []) {
-      //       const newScoutingFindRef = cache.writeFragment({
-      //         data: data?.joinScoutingFind,
-      //         fragment: GetSessionDocument.definitions[0].selectionSet.selections[0].selectionSet.selections[0],
-      //       })
-      //       return [...existingScoutingFinds, newScoutingFindRef]
+      //   id: `Session:${sessionId}`,
+      //   cache.modify({
+      //     id: cache.identify(userProfile as UserProfile),
+      //     fields: {
+      //       joinedSessions(existingSessions: Session[] = []) {
+      //         return existingSessions.filter((s) => s.sessionId !== sessionId)
+      //       },
       //     },
-      //   },
+      //   })
       // })
     },
   })
