@@ -1,6 +1,6 @@
 {
   "name": "@regolithco/react-app",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.7.3",
@@ -10,7 +10,7 @@
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.0",
     "@mui/x-date-pickers": "^5.0.13",
-    "@regolithco/common": "^0.0.7",
+    "@regolithco/common": "^0.0.8",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.9",
     "@types/react": "^18.0.26",
