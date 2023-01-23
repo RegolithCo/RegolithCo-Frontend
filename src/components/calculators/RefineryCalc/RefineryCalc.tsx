@@ -21,33 +21,36 @@ import { RefineryCalcTable } from './RefineryCalcTable'
 import { fontFamilies } from '../../../theme'
 import { Box } from '@mui/system'
 
-/* eslint-disable no-unused-vars */
-export enum RefineryPivot {
-  station = 'Refinery Location',
-  method = 'Refining Method',
-  oreType = 'Ore Type',
-  metric = 'Refinery Metric',
-}
-export enum RefineryMetric {
-  netProfit = 'Net Profit (aUEC)',
-  oreYields = 'Ore Yields (SCU)',
-  refiningTime = 'Refining Time (HH:MM)',
-  refiningCost = 'Refining Cost (aUEC)',
-  timeVProfit = 'Time & Profit (aUEC) (HH:MM)',
-}
-/* eslint-enable no-unused-vars */
+type ObjectValues<T> = T[keyof T]
+
+export const RefineryPivotEnum = {
+  station: 'Refinery Location',
+  method: 'Refining Method',
+  oreType: 'Ore Type',
+  metric: 'Refinery Metric',
+} as const
+export type RefineryPivotEnum = ObjectValues<typeof RefineryPivotEnum>
+
+export const RefineryMetricEnum = {
+  netProfit: 'Net Profit (aUEC)',
+  oreYields: 'Ore Yields (SCU)',
+  refiningTime: 'Refining Time (HH:MM)',
+  refiningCost: 'Refining Cost (aUEC)',
+  timeVProfit: 'Time & Profit (aUEC) (HH:MM)',
+} as const
+export type RefineryMetricEnum = ObjectValues<typeof RefineryMetricEnum>
 
 export const RefineryCalc: React.FC = () => {
   const [oreAmt, setOre] = React.useState<string>('32')
   const [oreType, setOreType] = React.useState<ShipOreEnum>(ShipOreEnum.Quantanium)
   const [method, setMethod] = React.useState<RefineryMethodEnum>(RefineryMethodEnum.DinyxSolventation)
-  const [refMetric, setRefMetric] = React.useState<RefineryMetric>(RefineryMetric.netProfit)
-  const [refMode, setRefMode] = React.useState<RefineryPivot>(RefineryPivot.method)
+  const [refMetric, setRefMetric] = React.useState<RefineryMetricEnum>(RefineryMetricEnum.netProfit)
+  const [refMode, setRefMode] = React.useState<RefineryPivotEnum>(RefineryPivotEnum.method)
   const oreValid = isUndefined(oreAmt) || oreAmt === null || Number(oreAmt) >= 0
   const reset = () => {
     setOre('32')
     setMethod(RefineryMethodEnum.DinyxSolventation)
-    setRefMetric(RefineryMetric.netProfit)
+    setRefMetric(RefineryMetricEnum.netProfit)
     setOreType(ShipOreEnum.Quantanium)
   }
 
@@ -56,7 +59,7 @@ export const RefineryCalc: React.FC = () => {
       <Grid container spacing={2} margin={1} maxWidth={800}>
         {/* ROW 1 */}
         <Grid xs={12} sm={6}>
-          {refMode === RefineryPivot.method ? (
+          {refMode === RefineryPivotEnum.method ? (
             <FormControl fullWidth>
               <InputLabel id="vaxis-labelinput">Ore Type</InputLabel>
               <Select
@@ -156,11 +159,15 @@ export const RefineryCalc: React.FC = () => {
               name="metric-group"
               value={refMode}
               onChange={(event) => {
-                setRefMode(event.target.value as RefineryPivot)
+                setRefMode(event.target.value as RefineryPivotEnum)
               }}
             >
-              <FormControlLabel value={RefineryPivot.method} control={<Radio />} label={RefineryPivot.method} />
-              <FormControlLabel value={RefineryPivot.oreType} control={<Radio />} label={RefineryPivot.oreType} />
+              <FormControlLabel value={RefineryPivotEnum.method} control={<Radio />} label={RefineryPivotEnum.method} />
+              <FormControlLabel
+                value={RefineryPivotEnum.oreType}
+                control={<Radio />}
+                label={RefineryPivotEnum.oreType}
+              />
             </RadioGroup>
           </FormControl>
         </Grid>
@@ -176,25 +183,33 @@ export const RefineryCalc: React.FC = () => {
               name="metric-group"
               value={refMetric}
               onChange={(event) => {
-                setRefMetric(event.target.value as RefineryMetric)
+                setRefMetric(event.target.value as RefineryMetricEnum)
               }}
             >
-              <FormControlLabel value={RefineryMetric.netProfit} control={<Radio />} label={RefineryMetric.netProfit} />
-              <FormControlLabel value={RefineryMetric.oreYields} control={<Radio />} label={RefineryMetric.oreYields} />
               <FormControlLabel
-                value={RefineryMetric.refiningCost}
+                value={RefineryMetricEnum.netProfit}
                 control={<Radio />}
-                label={RefineryMetric.refiningCost}
+                label={RefineryMetricEnum.netProfit}
               />
               <FormControlLabel
-                value={RefineryMetric.refiningTime}
+                value={RefineryMetricEnum.oreYields}
                 control={<Radio />}
-                label={RefineryMetric.refiningTime}
+                label={RefineryMetricEnum.oreYields}
               />
               <FormControlLabel
-                value={RefineryMetric.timeVProfit}
+                value={RefineryMetricEnum.refiningCost}
                 control={<Radio />}
-                label={RefineryMetric.timeVProfit}
+                label={RefineryMetricEnum.refiningCost}
+              />
+              <FormControlLabel
+                value={RefineryMetricEnum.refiningTime}
+                control={<Radio />}
+                label={RefineryMetricEnum.refiningTime}
+              />
+              <FormControlLabel
+                value={RefineryMetricEnum.timeVProfit}
+                control={<Radio />}
+                label={RefineryMetricEnum.timeVProfit}
               />
             </RadioGroup>
           </FormControl>

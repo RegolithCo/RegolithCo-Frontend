@@ -3,24 +3,26 @@ import { SxProps, Theme, Typography, TypographyProps } from '@mui/material'
 import Numeral from 'numeral'
 import dayjs from 'dayjs'
 import { readableMilliseconds } from '@regolithco/common'
-/* eslint-disable no-unused-vars */
-export enum MValueFormat {
-  number = 'number',
-  number_sm = 'number_sm',
-  currency = 'currency',
-  currency_sm = 'currency_sm',
-  volSCU = 'volumeSCU',
-  volcSCU = 'volumecSCU',
-  percent = 'percent',
-  modifier = 'mod',
-  mass_sm = 'mass_sm',
-  duration_small = 'duration_compact',
-  duration = 'duration',
-  durationS = 'durationS',
-  dateTime = 'dateTime',
-  string = 'string',
-}
-/* eslint-enable no-unused-vars */
+
+type ObjectValues<T> = T[keyof T]
+
+export const MValueFormat = {
+  number: 'number',
+  number_sm: 'number_sm',
+  currency: 'currency',
+  currency_sm: 'currency_sm',
+  volSCU: 'volumeSCU',
+  volcSCU: 'volumecSCU',
+  percent: 'percent',
+  modifier: 'mod',
+  mass_sm: 'mass_sm',
+  duration_small: 'duration_compact',
+  duration: 'duration',
+  durationS: 'durationS',
+  dateTime: 'dateTime',
+  string: 'string',
+} as const
+export type MValueFormat = ObjectValues<typeof MValueFormat>
 
 export interface MValueProps {
   value?: number | string | null

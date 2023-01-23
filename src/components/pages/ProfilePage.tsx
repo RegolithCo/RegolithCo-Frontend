@@ -27,13 +27,13 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { fontFamilies } from '../../theme'
 import { Theme } from '@mui/system'
 
-/* eslint-disable no-unused-vars */
-export enum ProfileModals {
-  ChangeUsername = 'ChangeUsername',
-  DeleteProfile = 'DeleteProfile',
-  SessionSettings = 'SeessionSettings',
-}
-/* eslint-enable no-unused-vars */
+type ObjectValues<T> = T[keyof T]
+export const ProfileModals = {
+  ChangeUsername: 'ChangeUsername',
+  DeleteProfile: 'DeleteProfile',
+  SessionSettings: 'SeessionSettings',
+} as const
+export type ProfileModals = ObjectValues<typeof ProfileModals>
 
 export interface ProfilePageProps {
   userProfile: UserProfile

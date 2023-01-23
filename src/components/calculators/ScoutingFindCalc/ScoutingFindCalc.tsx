@@ -62,10 +62,10 @@ export interface ScoutingFindCalcProps {
   onDelete?: () => void
 }
 
-enum AttendanceStateEnum {
-  NotJoined = 'NotJoined',
-  Joined = 'Joined',
-  EnRoute = 'EnRoute',
+const AttendanceStateEnum = {
+  NotJoined: 'NotJoined',
+  Joined: 'Joined',
+  EnRoute: 'EnRoute',
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({

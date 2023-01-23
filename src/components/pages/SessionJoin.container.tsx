@@ -9,13 +9,13 @@ export interface SessionJoinContainerProps {
   joinSession: () => void
 }
 
-/* eslint-disable no-unused-vars */
-export enum SessionJoinError {
-  UnverifiedNotAllowd = 'UnverifiedNotAllowd',
-  NotOnList = 'NotOnList',
-  Closed = 'Closed',
-}
-/* eslint-enable no-unused-vars */
+type ObjectValues<T> = T[keyof T]
+export const SessionJoinError = {
+  UnverifiedNotAllowd: 'UnverifiedNotAllowd',
+  NotOnList: 'NotOnList',
+  Closed: 'Closed',
+} as const
+export type SessionJoinError = ObjectValues<typeof SessionJoinError>
 
 export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = ({
   session,

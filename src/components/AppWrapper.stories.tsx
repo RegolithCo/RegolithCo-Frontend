@@ -1,7 +1,7 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { AppWrapper as AppWrapperComponent, BGImages } from './AppWrapper'
+import { AppWrapper as AppWrapperComponent, BGImagesEnum } from './AppWrapper'
 
 export default {
   title: 'AppWrapper',
@@ -10,8 +10,8 @@ export default {
     backgroundSelect: {
       control: {
         type: 'select',
-        options: Object.values(BGImages),
-        default: BGImages.DEFAULT,
+        options: Object.values(BGImagesEnum),
+        default: BGImagesEnum.DEFAULT,
       },
     },
   },

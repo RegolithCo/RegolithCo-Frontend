@@ -82,15 +82,16 @@ export interface SessionPageProps {
   leaveScoutingFind: (findId: string) => void
 }
 
-/* eslint-disable no-unused-vars */
-export enum DialogEnum {
-  SHARE_SESSION = 'SHARE_SESSION',
-  ADD_WORKORDER = 'ADD_WORKORDER',
-  ADD_SCOUTING = 'ADD_SCOUTING',
-  SESSION_PREFERENCES = 'SESSION_PREFERENCES',
-  ADD_FRIEND = 'ADD_FRIEND',
-}
-/* eslint-enable no-unused-vars */
+type ObjectValues<T> = T[keyof T]
+export const DialogEnum = {
+  SHARE_SESSION: 'SHARE_SESSION',
+  ADD_WORKORDER: 'ADD_WORKORDER',
+  ADD_SCOUTING: 'ADD_SCOUTING',
+  SESSION_PREFERENCES: 'SESSION_PREFERENCES',
+  ADD_FRIEND: 'ADD_FRIEND',
+} as const
+export type DialogEnum = ObjectValues<typeof DialogEnum>
+
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   container: {
     [theme.breakpoints.up('md')]: {

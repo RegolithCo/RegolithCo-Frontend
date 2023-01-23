@@ -13,7 +13,7 @@ import {
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
-import { RefineryMetric, RefineryPivot } from './RefineryCalc'
+import { RefineryMetricEnum, RefineryPivotEnum } from './RefineryCalc'
 import { fontFamilies } from '../../../theme'
 
 // vAxis={verticalAxis} hAxis={horizontalAxis} oreType={oreType} value={oreAmt}
@@ -21,8 +21,8 @@ interface RefineryCalcTableProps {
   oreAmt?: number
   method?: RefineryMethodEnum
   oreType?: ShipOreEnum
-  refMetric: RefineryMetric
-  refMode: RefineryPivot
+  refMetric: RefineryMetricEnum
+  refMode: RefineryPivotEnum
 }
 
 type GridStats = { max: number | null; min: number | null }
@@ -52,7 +52,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
 
   let vAxis: [ShipOreEnum | RefineryMethodEnum, string][] = []
-  if (refMode === RefineryPivot.oreType) {
+  if (refMode === RefineryPivotEnum.oreType) {
     const sortable = Object.entries(ShipOreEnum)
       .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
       .map(([oreKey, oreVal]) => [oreKey, oreVal])
@@ -73,30 +73,30 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
 
       // We need to send the SCU in as cSCU for the calculation
       const finalAmt = oreAmt ? oreAmt * 100 : 0
-      const finalOre = (refMode === RefineryPivot.oreType ? rowKey : oreType) as ShipOreEnum
+      const finalOre = (refMode === RefineryPivotEnum.oreType ? rowKey : oreType) as ShipOreEnum
       const finalRefinery = colKey as RefineryEnum
 
       // if (refMode === RefineryPivot.oreType && finalOre === ShipOreEnum.Inertmaterial) return [null, null]
       const finalMethod = (
-        refMode === RefineryPivot.oreType ? method : (rowKey as RefineryMethodEnum)
+        refMode === RefineryPivotEnum.oreType ? method : (rowKey as RefineryMethodEnum)
       ) as RefineryMethodEnum
       const oreYield = yieldCalc(finalAmt, finalOre, finalRefinery, finalMethod)
       const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
       const marketPrice = lookups.marketPriceLookup[finalOre]?.refined as number
       switch (refMetric) {
-        case RefineryMetric.netProfit:
+        case RefineryMetricEnum.netProfit:
           outArr[0] = oreYield * marketPrice - refCost
           break
-        case RefineryMetric.oreYields:
+        case RefineryMetricEnum.oreYields:
           outArr[0] = oreYield / 100
           break
-        case RefineryMetric.refiningCost:
+        case RefineryMetricEnum.refiningCost:
           outArr[0] = refCost
           break
-        case RefineryMetric.refiningTime:
+        case RefineryMetricEnum.refiningTime:
           outArr[0] = getRefiningTime(finalAmt, finalOre, finalRefinery, finalMethod)
           break
-        case RefineryMetric.timeVProfit:
+        case RefineryMetricEnum.timeVProfit:
           // We need an array of values for this one to normalize things
           outArr = [oreYield * marketPrice - refCost, getRefiningTime(finalAmt, finalOre, finalRefinery, finalMethod)]
           break
@@ -114,28 +114,28 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     return cols
   })
 
-  let numberFormat1 = MValueFormat.number
-  let numberFormat2 = MValueFormat.number
+  let numberFormat1: MValueFormat = MValueFormat.number
+  let numberFormat2: MValueFormat = MValueFormat.number
   let reverseMeaningVal1 = false
   let reverseMeaningVal2 = false
   let decimalVal1 = 0
   switch (refMetric) {
-    case RefineryMetric.netProfit:
+    case RefineryMetricEnum.netProfit:
       numberFormat1 = MValueFormat.number
       break
-    case RefineryMetric.oreYields:
+    case RefineryMetricEnum.oreYields:
       decimalVal1 = 2
       numberFormat1 = MValueFormat.number
       break
-    case RefineryMetric.refiningCost:
+    case RefineryMetricEnum.refiningCost:
       numberFormat1 = MValueFormat.number
       reverseMeaningVal1 = true
       break
-    case RefineryMetric.refiningTime:
+    case RefineryMetricEnum.refiningTime:
       numberFormat1 = MValueFormat.duration_small
       reverseMeaningVal1 = true
       break
-    case RefineryMetric.timeVProfit:
+    case RefineryMetricEnum.timeVProfit:
       numberFormat1 = MValueFormat.number
       numberFormat2 = MValueFormat.duration_small
       reverseMeaningVal2 = true
@@ -171,7 +171,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   })
 
   // Since we combined the metrics we need to renormalize the colors
-  if (refMetric === RefineryMetric.timeVProfit) {
+  if (refMetric === RefineryMetricEnum.timeVProfit) {
     const maxVal = Math.max(...rowColColors.map((row) => Math.max(...row)))
     const minVal = Math.min(...rowColColors.map((row) => Math.min(...row)))
     rowColColors.forEach((row) => {
@@ -197,8 +197,8 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                 fontSize: '1.2rem',
               }}
             >
-              {refMode === RefineryPivot.method && oreType && `${getShipOreName(oreType)}`}
-              {refMode === RefineryPivot.oreType && method && `${getRefineryMethodName(method)}`}
+              {refMode === RefineryPivotEnum.method && oreType && `${getShipOreName(oreType)}`}
+              {refMode === RefineryPivotEnum.oreType && method && `${getRefineryMethodName(method)}`}
             </TableCell>
 
             {hAxis.map(([, hAxisLabel], colIdx) => (

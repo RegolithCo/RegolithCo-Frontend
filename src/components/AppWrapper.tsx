@@ -7,17 +7,17 @@ import { AppVersion } from './fields/AppVersion'
 import { SCVersion } from './fields/SCVersion'
 // import { Box, SxProps, Theme } from '@mui/material'
 
-/* eslint-disable no-unused-vars */
-export enum BGImages {
-  DEFAULT = 'bg1.png',
-  OPTION1 = 'bg2.png',
-  OPTION2 = 'bg3.png',
-  SALVAGE1 = 'salvage1.png',
-  SALVAGE2 = 'salvage2.png',
-  ASTEROIDS1 = 'asteroids1.png',
-  REFINERY1 = 'refinery1.png',
-}
-/* eslint-enable no-unused-vars */
+type ObjectValues<T> = T[keyof T]
+export const BGImagesEnum = {
+  DEFAULT: 'bg1.png',
+  OPTION1: 'bg2.png',
+  OPTION2: 'bg3.png',
+  SALVAGE1: 'salvage1.png',
+  SALVAGE2: 'salvage2.png',
+  ASTEROIDS1: 'asteroids1.png',
+  REFINERY1: 'refinery1.png',
+} as const
+export type BGImagesEnum = ObjectValues<typeof BGImagesEnum>
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
@@ -25,7 +25,7 @@ const styles: Record<string, SxProps<Theme>> = {
     margin: 0,
     overflow: 'hidden',
     backgroundImage: {
-      md: `url('${process.env.PUBLIC_URL}/images/bg/${BGImages.OPTION1}')`,
+      md: `url('${process.env.PUBLIC_URL}/images/bg/${BGImagesEnum.OPTION1}')`,
     },
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
@@ -51,36 +51,42 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
   let bgImage
   switch (allMatches[0]) {
     case '/':
-      bgImage = BGImages.OPTION2
+      bgImage = BGImagesEnum.OPTION2
       break
     case '/profile':
-      bgImage = BGImages.OPTION1
+      bgImage = BGImagesEnum.OPTION1
       break
     case '/tables':
-      bgImage = BGImages.SALVAGE2
+      bgImage = BGImagesEnum.SALVAGE2
       break
     case '/about':
-      bgImage = BGImages.SALVAGE1
+      bgImage = BGImagesEnum.SALVAGE1
       break
     case '/workorder':
-      bgImage = BGImages.REFINERY1
+      bgImage = BGImagesEnum.REFINERY1
       break
     case '/session':
-      bgImage = BGImages.OPTION2
+      bgImage = BGImagesEnum.OPTION2
       break
     case '/cluster':
-      bgImage = BGImages.ASTEROIDS1
+      bgImage = BGImagesEnum.ASTEROIDS1
       break
     default:
-      bgImage = BGImages.DEFAULT
+      bgImage = BGImagesEnum.DEFAULT
   }
 
   return <AppWrapper bgImage={bgImage} children={children} />
 }
 
-export const AppWrapper = ({ children, bgImage }: { children: React.ReactNode; bgImage?: BGImages }): JSX.Element => {
+export const AppWrapper = ({
+  children,
+  bgImage,
+}: {
+  children: React.ReactNode
+  bgImage?: BGImagesEnum
+}): JSX.Element => {
   const theme = useTheme()
-  const bgImageFinal = bgImage ? bgImage : BGImages.DEFAULT
+  const bgImageFinal = bgImage ? bgImage : BGImagesEnum.DEFAULT
   return (
     <Box
       sx={{
