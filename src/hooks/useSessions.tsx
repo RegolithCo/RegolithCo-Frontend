@@ -32,10 +32,10 @@ import {
   PaginatedWorkOrders,
   RefineryRowInput,
   reverseDestructured,
-  SalvageFind,
   SalvageOrder,
   SalvageRowInput,
   ScoutingFind,
+  scoutingFindDestructured,
   Session,
   SessionInput,
   SessionSettings,
@@ -43,10 +43,8 @@ import {
   SessionUser,
   SessionUserInput,
   SessionUserStateEnum,
-  ShipClusterFind,
   ShipMiningOrder,
   UserProfile,
-  VehicleClusterFind,
   VehicleMiningOrder,
   VehicleMiningRowInput,
   WorkOrder,
@@ -268,12 +266,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const createScoutngFindMutation = useAddScoutingFindMutation({
     onCompleted: (data) => {
       enqueueSnackbar('Scouting find created', { variant: 'success' })
-      navigate(
-        makeSessionUrls({
-          sessionId,
-          orderId: data.addScoutingFind?.scoutingFindId,
-        })
-      )
     },
   })
 
@@ -549,24 +541,15 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       })
     },
     createScoutingFind: (newFind: ScoutingFind) => {
-      const { clusterCount } = newFind
-      const { shipRocks } = newFind as ShipClusterFind
-      const { vehicleRocks } = newFind as VehicleClusterFind
-      const { wrecks } = newFind as SalvageFind
-
+      // Assign a temp ID
       newFind.scoutingFindId = 'SFUPL_' + (Math.random() * 1000).toFixed(0)
+
+      const destructured = scoutingFindDestructured(newFind)
 
       createScoutngFindMutation[0]({
         variables: {
           sessionId: sessionId as string,
-          scoutingFind: {
-            note: newFind.note,
-            state: newFind.state,
-            clusterCount: clusterCount,
-          },
-          shipRocks,
-          vehicleRocks,
-          wrecks,
+          ...destructured,
         },
         update: (cache, { data }) => {
           const newScoutingFind = data?.addScoutingFind?.scoutingFindId

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Alert, Box, Typography } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
-import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser } from '@regolithco/common'
+import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser, ScoutingFindStateEnum } from '@regolithco/common'
 import { dummySession, dummySessionUser, dummyUserProfile, newEmptyScoutingFind } from '../../lib/newObjectFactories'
 import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../../hooks/useLogin'
@@ -22,6 +22,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
 
   React.useEffect(() => {
     const newCluster = newEmptyScoutingFind(session, sessionUser, ScoutingFindTypeEnum.Ship)
+    newCluster.state = ScoutingFindStateEnum.ReadyForWorkers
     setCluster(newCluster)
   }, [userProfile])
 

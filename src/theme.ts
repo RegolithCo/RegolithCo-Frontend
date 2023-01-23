@@ -1,4 +1,4 @@
-import { blue, blueGrey, green, grey, orange, red, yellow } from '@mui/material/colors'
+import { blue, blueGrey, green, grey, indigo, orange, red, yellow } from '@mui/material/colors'
 import { createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
 import { Theme } from '@mui/material'
 import { ScoutingFindStateEnum } from '@regolithco/common'
@@ -104,8 +104,8 @@ const scoutingFindStateColors: Record<ScoutingFindStateEnum, PaletteOptions> = {
     secondary: grey,
   },
   [ScoutingFindStateEnum.Discovered]: {
-    primary: { main: green[400] },
-    secondary: { main: green[400] },
+    primary: { main: indigo[200] },
+    secondary: { main: indigo[200] },
   },
   [ScoutingFindStateEnum.ReadyForWorkers]: {
     primary: yellow,

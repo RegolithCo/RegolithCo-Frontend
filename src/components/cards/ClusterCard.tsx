@@ -94,6 +94,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
         }}
       >
         {/* THis is the cluster id  */}
+
         <Box
           sx={{
             position: 'absolute',
@@ -116,28 +117,29 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
         </Box>
 
         {/* The icon with the number (Absolute) */}
-        <Avatar
-          sx={{
-            // zIndex: 10,
-            position: 'absolute',
-            top: -2,
-            right: '-4%',
-            transform: 'translateY(-50%)',
-            fontWeight: 'bold',
-            background: 'black',
-            border: `2px solid ${theme.palette.primary.main}`,
-            color: theme.palette.primary.main,
-            overflow: 'visible',
-            width: 38,
-            height: 38,
-            fontSize: ((clusterSize as number) || 0) < 10 ? 30 : 23,
-            mx: 'auto',
-            my: 2,
-          }}
-        >
-          {(clusterSize as number) > 0 ? clusterSize : '?'}
-          {/* The number of rocks */}
-          <Tooltip title="Cluster Size">
+        <Tooltip title="Cluster Size">
+          <Avatar
+            sx={{
+              // zIndex: 10,
+              position: 'absolute',
+              top: -2,
+              right: '-4%',
+              transform: 'translateY(-50%)',
+              fontWeight: 'bold',
+              background: 'black',
+              border: `2px solid ${theme.palette.primary.main}`,
+              color: theme.palette.primary.main,
+              overflow: 'visible',
+              width: 38,
+              height: 38,
+              fontSize: ((clusterFind.clusterCount as number) || 0) < 10 ? 30 : 23,
+              mx: 'auto',
+              my: 2,
+            }}
+          >
+            {(clusterFind.clusterCount as number) > 0 ? clusterFind.clusterCount : '?'}
+            {/* The number of rocks */}
+
             <Box
               sx={{
                 position: 'absolute',
@@ -160,8 +162,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
                 }}
               />
             </Box>
-          </Tooltip>
-        </Avatar>
+          </Avatar>
+        </Tooltip>
         <Box
           sx={{
             height: '100%',

@@ -81,6 +81,17 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       borderBottom: '1px solid',
     },
   },
+  scoutingFindId: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    px: 2,
+    m: 0,
+    fontSize: '2em',
+    color: theme.palette.primary.dark,
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 'bold',
+  },
   numberBox: {
     position: 'relative',
     textAlign: 'center',
@@ -142,7 +153,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     },
   },
   statsTable: {
-    // maxWidth: 300,
+    maxWidth: 250,
     '& .MuiTableCell-root, & .MuiTableCell-root *': {
       // fontSize: 10,
       padding: 0,
@@ -188,6 +199,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       px: 2,
       pt: 1,
     },
+  },
+  stateNoSelect: {
+    px: 2,
+    pt: 1,
   },
   stateChip: {
     margin: '0 auto',
@@ -287,6 +302,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <Grid container spacing={2} padding={2} sx={styles.containerGrid}>
+        {standalone && (
+          <Box>
+            <Typography component="div" variant="h5" sx={styles.title}>
+              Cluster Calculator
+            </Typography>
+            <Typography component="div" paragraph>
+              Add a scan to get started
+            </Typography>
+          </Box>
+        )}
+        {!standalone && <Typography sx={styles.scoutingFindId}>{scoutingFind.scoutingFindId.split('_')[0]}</Typography>}
         {!standalone && (
           <Box sx={styles.stateBox}>
             {allowEdit ? (
@@ -306,7 +332,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 ))}
               </Select>
             ) : (
-              <Box>{getScoutingFindStateName(scoutingFind.state as ScoutingFindStateEnum)}</Box>
+              <Box sx={styles.stateNoSelect}>
+                {getScoutingFindStateName(scoutingFind.state as ScoutingFindStateEnum)}
+              </Box>
             )}
           </Box>
         )}
@@ -571,11 +599,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           rock={rock}
                           rockValue={summary.byRock ? summary.byRock[idx] : undefined}
                           onChangeState={(newState) => {
-                            const newRocks = [...(shipFind.shipRocks || [])]
-                            newRocks[idx].state = newState
                             onChange({
                               ...shipFind,
-                              shipRocks: newRocks,
+                              shipRocks: (shipFind.shipRocks || []).map((r, idxx) => ({
+                                ...r,
+                                state: idxx === idx ? newState : r.state,
+                              })),
                             })
                           }}
                           onEditClick={() => {

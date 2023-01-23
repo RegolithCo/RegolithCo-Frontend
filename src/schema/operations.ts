@@ -153,6 +153,7 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   ... on ShipClusterFind {
     shipRocks {
       mass
+      state
       ores {
         ore
         percent

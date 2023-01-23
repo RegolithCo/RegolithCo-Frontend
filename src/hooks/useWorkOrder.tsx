@@ -39,6 +39,7 @@ type useSessionsReturn = {
 export const useWorkOrders = (sessionId: string, orderId: string): useSessionsReturn => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
+
   const workOrderQry = useGetWorkOrderQuery({
     variables: {
       sessionId,

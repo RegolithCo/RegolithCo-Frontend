@@ -8,8 +8,9 @@ import {
 
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
-import { SalvageFind, ScoutingFind, ScoutingFindInput, ShipClusterFind, VehicleClusterFind } from '@regolithco/common'
+import { ScoutingFind, scoutingFindDestructured } from '@regolithco/common'
 import { useSnackbar } from 'notistack'
+import { isEqual } from 'lodash'
 
 type useSessionsReturn = {
   scoutingFind?: ScoutingFind
@@ -85,19 +86,15 @@ export const useScoutingFind = (sessionId: string, scoutingFindId: string): useS
     querying,
     loading: querying || mutating,
     updateScoutingFind: (newFind: ScoutingFind) => {
-      const newScoutingFindInput: ScoutingFindInput = {
-        state: newFind.state,
-        clusterCount: newFind.clusterCount,
-        note: newFind.note,
-      }
+      const { scoutingFind, shipRocks, vehicleRocks, wrecks } = scoutingFindDestructured(newFind)
       updateScoutingFindMutation[0]({
         variables: {
           sessionId,
           scoutingFindId: newFind.scoutingFindId,
-          scoutingFind: newScoutingFindInput,
-          shipRocks: (newFind as ShipClusterFind).shipRocks,
-          vehicleRocks: (newFind as VehicleClusterFind).vehicleRocks,
-          wrecks: (newFind as SalvageFind).wrecks,
+          scoutingFind: scoutingFind,
+          shipRocks: shipRocks,
+          vehicleRocks: vehicleRocks,
+          wrecks: wrecks,
         },
         optimisticResponse: {
           __typename: 'Mutation',

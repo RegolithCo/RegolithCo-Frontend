@@ -111,6 +111,16 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
               },
             },
           },
+          ShipClusterFind: {
+            fields: {
+              shipRocks: {
+                merge(existing: CrewShare[] = [], incoming: CrewShare[]) {
+                  const merged = incoming || existing
+                  return merged
+                },
+              },
+            },
+          },
           WorkOrderInterface: {
             keyFields: ['orderId'],
             fields: {

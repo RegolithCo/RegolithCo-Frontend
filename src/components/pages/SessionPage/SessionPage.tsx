@@ -138,7 +138,6 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
     },
     backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
     color: theme.palette.primary.contrastText,
-    // borderBottom: `1px dashed ${theme.palette.secondary.dark}`,
     textTransform: 'uppercase',
     fontWeight: 500,
     fontSize: '1.1rem',
@@ -505,7 +504,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
       {activeScoutingFind && (
         <ScoutingFindModal
           meUser={sessionUser}
-          allowEdit={isActive}
+          allowEdit={isSessionOwner || activeScoutingFind.ownerId === userProfile?.userId}
           allowWork={isActive}
           open={Boolean(activeScoutingFind)}
           scoutingFind={activeScoutingFind}
