@@ -8,6 +8,7 @@ import log from 'loglevel'
 import { APIProvider } from './hooks/useLogin'
 import App from './App'
 import { SnackbarProvider } from 'notistack'
+import { MyAuthProvider } from './hooks/useOAuth2'
 
 if (process.env.NODE_ENV !== 'production') {
   log.setLevel('debug')
@@ -16,15 +17,17 @@ if (process.env.NODE_ENV !== 'production') {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <APIProvider>
-          <App />
-        </APIProvider>
-      </SnackbarProvider>
-    </ThemeProvider>
+    <MyAuthProvider>
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <APIProvider>
+            <App />
+          </APIProvider>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </MyAuthProvider>
   </React.StrictMode>
 )
 

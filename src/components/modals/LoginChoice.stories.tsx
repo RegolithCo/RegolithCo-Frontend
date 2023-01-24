@@ -2,6 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { LoginChoice as LoginChoiceC } from './LoginChoice'
+import { AuthTypeEnum } from '@regolithco/common'
 
 export default {
   title: 'Modals/LoginChoice',
@@ -20,7 +21,11 @@ DeleteProfileModal.args = {
   onClose: () => {
     console.log('Closed')
   },
-  onClick(authType) {
-    console.log('Clicked', authType)
+  authType: AuthTypeEnum.DISCORD,
+  setAuthType: (authType: AuthTypeEnum) => {
+    console.log('Set Auth Type', authType)
+  },
+  login: () => {
+    console.log('Login')
   },
 }

@@ -9,8 +9,6 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
-// import AdbIcon from '@mui/icons-material/Adb'
-import { LoginContextObj } from '../types'
 import { yellow } from '@mui/material/colors'
 import { Badge, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
@@ -18,6 +16,7 @@ import { Login, Person, Verified } from '@mui/icons-material'
 import { UserStateEnum } from '@regolithco/common'
 // import { LoginExpiryTimer } from './fields/LoginExpiryTimer'
 import { RockIcon } from '../icons'
+import { LoginContextObj } from '../hooks/useOAuth2'
 
 const pages = {
   '/session': 'Sessions',
@@ -72,6 +71,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
 
   return (
     <AppBar position="static" sx={styles.appBar}>
+      {userCtx.popup}
       <Toolbar disableGutters>
         <RockIcon
           sx={{ display: { xs: 'none', md: 'flex', cursor: 'pointer' }, mr: 1 }}
@@ -248,9 +248,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                 )}
                 <MenuItem
                   onClick={() => {
-                    userCtx.signOut().then(() => {
-                      handleNavigate('/')
-                    })
+                    userCtx.logOut()
+                    handleNavigate('/')
                   }}
                 >
                   <Typography textAlign="center">Signout</Typography>
@@ -259,7 +258,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
             </>
           )}
           {!userCtx.isAuthenticated && (
-            <Button color="inherit" onClick={userCtx.signIn} startIcon={<Login />}>
+            <Button color="inherit" onClick={() => userCtx.openPopup()} startIcon={<Login />}>
               Login
             </Button>
           )}

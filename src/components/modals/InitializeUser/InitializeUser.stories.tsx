@@ -1,7 +1,8 @@
+import { AuthTypeEnum } from '@regolithco/common'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import log from 'loglevel'
+import { LoginContextObj } from '../../../hooks/useOAuth2'
 import { InitializeUser } from './InitializeUser'
-import { LoginContextObj } from '../../../types'
 
 export default {
   title: 'Modals/InitializeUser',
@@ -37,10 +38,14 @@ const login: LoginContextObj = {
   APIWorking: true,
   isVerified: false,
   loading: false,
-  signIn: () => {
-    log.info('signIn')
+  popup: null,
+  openPopup: () => {
+    log.info('openPopup')
   },
-  signOut: () => {
+  login: (authType: AuthTypeEnum) => {
+    log.info('signIn', authType)
+  },
+  logOut: () => {
     log.info('signOut')
     return Promise.resolve()
   },

@@ -26,6 +26,8 @@ export const App: React.FC = () => {
             <Route path="/" element={<HomePageContainer />} errorElement={<Error />} />
             <Route path="/faq" element={<FAQPage />} errorElement={<Error />} />
             <Route path="/about" element={<AboutPage />} errorElement={<Error />} />
+            <Route path="/terms" element={<AboutPage />} errorElement={<Error />} />
+            <Route path="/privacy" element={<AboutPage />} errorElement={<Error />} />
             <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<Error />} />
             {/* Standalone calc */}
             <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<Error />} />

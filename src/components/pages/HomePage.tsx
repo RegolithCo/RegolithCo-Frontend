@@ -3,11 +3,10 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLogin } from '../../hooks/useLogin'
-import { LoginContextObj } from '../../types'
 import { Auth } from 'aws-amplify'
 
 import { PageWrapper } from '../PageWrapper'
+import { LoginContextObj, useLogin } from '../../hooks/useOAuth2'
 
 interface HomePageProps {
   userCtx: LoginContextObj
@@ -24,7 +23,7 @@ const cardCSS: SxProps<Theme> = {
   justifyContent: 'space-between',
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, handleLogin }) => {
+export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate }) => {
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
@@ -34,7 +33,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, handleLog
             elevation={8}
             sx={cardCSS}
             onClick={() => {
-              if (!userCtx.isAuthenticated) handleLogin && handleLogin()
+              if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')
               else if (!userCtx.isInitialized) navigate && navigate('/verify')
               else navigate && navigate('/session')
             }}
@@ -94,13 +93,6 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, handleLog
 
 export const HomePageContainer: React.FC = () => {
   const userCtx = useLogin()
-  async function handleLogin() {
-    try {
-      await Auth.federatedSignIn()
-    } catch (error) {
-      console.error(error)
-    }
-  }
   const navigate = useNavigate()
-  return <HomePage userCtx={userCtx} navigate={navigate} handleLogin={handleLogin} />
+  return <HomePage userCtx={userCtx} navigate={navigate} />
 }

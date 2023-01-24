@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { Typography, Box, Button, Stepper, Step, StepButton, Divider, Link, AlertTitle, Alert } from '@mui/material'
-import { LoginContextObj } from '../../../types'
 import { PageWrapper } from '../../PageWrapper'
 import { PageLoader } from '../../pages/PageLoader'
 import { SCUsernameField } from '../../fields/SCUsernameField'
 import { VerifyCodeField } from '../../fields/VerifyCodeField'
 import { UserProfile } from '@regolithco/common'
+import { LoginContextObj } from '../../../hooks/useOAuth2'
 
 interface InitializeUserProps {
   verifyOnly?: boolean

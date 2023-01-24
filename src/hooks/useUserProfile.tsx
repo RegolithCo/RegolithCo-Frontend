@@ -36,8 +36,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { ApolloError } from '@apollo/client'
 import { useSnackbar } from 'notistack'
-import { useLogin } from './useLogin'
 import { useEffect } from 'react'
+import { useLogin } from './useOAuth2'
 
 type useSessionsReturn = {
   userProfile?: UserProfile
@@ -281,9 +281,10 @@ export const useUserProfile = (): useSessionsReturn => {
     deleteUser: () => {
       deleteUserProfileMutation[0]({
         refetchQueries: [GetUserProfileDocument],
+      }).then(() => {
+        ctx.logOut()
+        navigate('/')
       })
-        .then(() => ctx.signOut())
-        .then(() => navigate('/'))
     },
     updateUserProfile: (newUserProfile: UserProfileInput, newSettings?: DestructuredSettings) => {
       const oldSettings = userProfileQry.data?.profile?.sessionSettings || { __typename: 'SessionSettings' }

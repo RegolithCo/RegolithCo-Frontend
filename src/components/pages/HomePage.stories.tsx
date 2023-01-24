@@ -18,10 +18,14 @@ const Template: ComponentStory<typeof HomePageComponent> = (args) => <HomePageCo
 export const HomePage = Template.bind({})
 HomePage.args = {
   userCtx: {
-    signIn: () => {
+    login: () => {
       console.log('sign in')
     },
-    signOut: () => {
+    popup: null,
+    openPopup: () => {
+      console.log('open popup')
+    },
+    logOut: () => {
       console.log('sign out')
       return Promise.resolve()
     },

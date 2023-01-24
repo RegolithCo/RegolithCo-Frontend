@@ -1,50 +1,14 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { Auth } from 'aws-amplify'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, NormalizedCacheObject } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import path from 'path'
 import config from '../config'
 import log from 'loglevel'
-import { LoginContextObj } from '../types'
 import { CrewShare, mergeSessionSettingsInplace, SessionSettings, UserProfile, UserStateEnum } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
-
-const redirectUrl = new URL(process.env.PUBLIC_URL, window.location.origin).toString()
-
-Auth.configure({
-  region: 'us-west-2',
-  userPoolId: config.userPool,
-  userPoolWebClientId: config.userPoolClientId,
-  mandatorySignIn: false,
-  oauth: {
-    domain: config.authDomain,
-    scope: ['openid'],
-    redirectSignIn: redirectUrl,
-    redirectSignOut: redirectUrl,
-    responseType: 'code',
-  },
-})
-
-const DEFAULT_LOGIN_CONTEXT: LoginContextObj = {
-  isAuthenticated: false,
-  isInitialized: false,
-  isVerified: false,
-  APIWorking: true,
-  signIn: () => Auth.federatedSignIn(),
-  signOut: (): Promise<void> => Auth.signOut(),
-  loading: false,
-}
-
-const LoginContext = React.createContext<LoginContextObj>(DEFAULT_LOGIN_CONTEXT)
-
-export function useLogin(): LoginContextObj {
-  const context = useContext<LoginContextObj>(LoginContext)
-  if (typeof context === 'undefined') {
-    throw new Error('useAuth must be used within a AuthProvider')
-  }
-  return context
-}
+import { LoginContext, useOAuth2 } from './useOAuth2'
+import { LoginChoice } from '../components/modals/LoginChoice'
+import useLocalStorage from './useLocalStorage'
 
 /**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
@@ -52,29 +16,17 @@ export function useLogin(): LoginContextObj {
  * @returns
  */
 export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { token, authType } = useOAuth2()
+
   const [APIWorking, setAPIWorking] = useState(true)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const session = await Auth.currentSession()
-        if (session.isValid()) setIsAuthenticated(true)
-      } catch (error) {
-        if (isAuthenticated) setIsAuthenticated(false)
-      }
-    }
-    checkAuth()
-  }, [])
-
   const client = useMemo(() => {
     const authLink = setContext(async (_, { headers }) => {
-      const session = await Auth.currentSession()
-      const token = session.getAccessToken().getJwtToken()
       return {
         headers: {
           ...headers,
+          authType: authType,
           authorization: token ? `Bearer ${token}` : '',
         },
       }
@@ -173,16 +125,11 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         },
       }),
     })
-  }, [isAuthenticated])
+  }, [token])
 
   return (
     <ApolloProvider client={client}>
-      <UserProfileProvider
-        apolloClient={client}
-        isAuthenticated={isAuthenticated}
-        APIWorking={APIWorking}
-        maintenanceMode={maintenanceMode}
-      >
+      <UserProfileProvider apolloClient={client} APIWorking={APIWorking} maintenanceMode={maintenanceMode}>
         {children}
       </UserProfileProvider>
     </ApolloProvider>
@@ -192,7 +139,6 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
 interface UserProfileProviderProps {
   children: React.ReactNode
   apolloClient: ApolloClient<NormalizedCacheObject>
-  isAuthenticated: boolean
   APIWorking?: boolean
   maintenanceMode?: string
 }
@@ -204,10 +150,13 @@ interface UserProfileProviderProps {
 const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   children,
   apolloClient,
-  isAuthenticated,
   APIWorking,
   maintenanceMode,
 }) => {
+  const { logOut, login, token, error, loginInProgress, authType, setAuthType } = useOAuth2()
+  const [openPopup, setOpenPopup] = useState(false)
+  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
+  const isAuthenticated = Boolean(token && token.length > 0)
   const userProfileQry = useGetUserProfileQuery({
     skip: !isAuthenticated,
   })
@@ -215,7 +164,6 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   useEffect(() => {
     if (!isAuthenticated && apolloClient) {
       log.debug('User is not authenticated, clearing cache')
-      apolloClient.resetStore()
     }
   }, [isAuthenticated, apolloClient])
 
@@ -230,21 +178,32 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
           userProfileQry.data?.profile?.userId && userProfileQry.data?.profile?.state === UserStateEnum.Verified
         ),
         userProfile: userProfileQry.data?.profile as UserProfile,
-        signIn: () => {
+        login,
+        logOut: () => {
+          logOut()
+          log.debug('Signed out')
+          apolloClient.resetStore()
+        },
+        openPopup: (newLoginRedirect?: string) => {
           // Set up a redirect for later look in <TopbarContainer /> for the code that actions this
           // When the user returns
           const baseUrl = process.env.PUBLIC_URL
           // I want the path relative to the base url using window.location.pathname
           const relpath = window.location.pathname.replace(baseUrl, '')
-          localStorage.setItem('redirect', relpath)
-          return Auth.federatedSignIn()
+          setPostLoginRedirect(newLoginRedirect || relpath)
+
+          setOpenPopup(true)
         },
-        signOut: () =>
-          Auth.signOut().then(() => {
-            log.debug('Signed out')
-            apolloClient.resetStore()
-          }),
-        loading: userProfileQry.loading,
+        popup: (
+          <LoginChoice
+            open={openPopup}
+            authType={authType}
+            setAuthType={setAuthType}
+            login={login}
+            onClose={() => setOpenPopup(false)}
+          />
+        ),
+        loading: loginInProgress || userProfileQry.loading,
       }}
     >
       {children}

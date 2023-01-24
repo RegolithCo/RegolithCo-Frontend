@@ -1,5 +1,5 @@
 import { Google } from '@mui/icons-material'
-import { Alert, Box, Button, List, ListItem, Modal, Typography, useTheme } from '@mui/material'
+import { Alert, Box, Button, Modal, ToggleButton, ToggleButtonGroup, Typography, useTheme } from '@mui/material'
 import { AuthTypeEnum } from '@regolithco/common'
 import * as React from 'react'
 import { DiscordIcon } from '../../icons/Discord'
@@ -7,10 +7,12 @@ import { DiscordIcon } from '../../icons/Discord'
 export type LoginChoiceProps = {
   open?: boolean
   onClose: () => void
-  onClick: (authType: AuthTypeEnum) => void
+  authType: AuthTypeEnum
+  setAuthType: (authType: AuthTypeEnum) => void
+  login: () => void
 }
 
-export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, onClick }) => {
+export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authType, setAuthType, login }) => {
   const theme = useTheme()
   return (
     <Modal open={Boolean(open)} onClose={onClose}>
@@ -31,30 +33,55 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, onClick
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Please choose an authentication method:
         </Typography>
-        <List>
-          <ListItem>
-            <Button
-              variant="contained"
-              onClick={() => onClick(AuthTypeEnum.DISCORD)}
-              size="large"
-              fullWidth
-              startIcon={<DiscordIcon />}
-            >
-              Login with Discord
-            </Button>
-          </ListItem>
-          <ListItem>
-            <Button
-              variant="contained"
-              onClick={() => onClick(AuthTypeEnum.GOOGLE)}
-              size="large"
-              fullWidth
-              startIcon={<Google />}
-            >
-              Login with Google
-            </Button>
-          </ListItem>
-        </List>
+        <ToggleButtonGroup
+          size="small"
+          value={authType}
+          sx={{
+            width: '100%',
+            my: 4,
+            '& .MuiToggleButton-root': {
+              flexGrow: 1,
+              p: 2,
+            },
+            '& .MuiToggleButton-root.Mui-selected': {
+              // border: '1px solid red',
+              color: theme.palette.primary.contrastText,
+              boxShadow: `1px 1px 10px 2px ${theme.palette.primary.light}`,
+              background: theme.palette.primary.main,
+            },
+            '& svg': {
+              mr: 1,
+            },
+          }}
+          aria-label="Small sizes"
+          exclusive
+          onChange={(e, value) => {
+            if (value) {
+              setAuthType(value)
+            }
+          }}
+        >
+          <ToggleButton value={AuthTypeEnum.DISCORD} aria-label="left aligned">
+            <DiscordIcon /> Discord
+          </ToggleButton>
+          <ToggleButton value={AuthTypeEnum.GOOGLE} aria-label="centered">
+            <Google /> Google
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        <Button
+          variant="contained"
+          sx={{
+            my: 4,
+          }}
+          onClick={() => login()}
+          size="large"
+          fullWidth
+          startIcon={authType === AuthTypeEnum.GOOGLE ? <Google /> : <DiscordIcon />}
+        >
+          Login with {authType === AuthTypeEnum.GOOGLE ? 'Google' : 'Discord'}
+        </Button>
+
         <Alert severity="info">
           <Typography variant="body2" paragraph>
             We use Discord and Google to authenticate you. We do not store any of your personal information.

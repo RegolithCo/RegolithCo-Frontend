@@ -50,10 +50,10 @@ import {
   WorkOrder,
   WorkOrderInput,
 } from '@regolithco/common'
-import { useLogin } from './useLogin'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
 import { makeSessionUrls } from '../lib/routingUrls'
+import { useLogin } from './useOAuth2'
 
 type useSessionsReturn = {
   session?: Session

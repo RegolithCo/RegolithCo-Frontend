@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material'
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useLogin } from '../../hooks/useLogin'
+import { useLogin } from '../../hooks/useOAuth2'
 import { LoginButton } from '../LoginButton'
 import { PageWrapper } from '../PageWrapper'
 import { MaintenancePage } from './MaintenancePage'

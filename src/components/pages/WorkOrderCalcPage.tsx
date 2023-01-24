@@ -7,7 +7,7 @@ import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { WorkOrderTypeChooser } from '../fields/WorkOrderTypeChooser'
 import { dummySession, dummyUserProfile, newWorkOrderMaker } from '../../lib/newObjectFactories'
 import { useNavigate } from 'react-router-dom'
-import { useLogin } from '../../hooks/useLogin'
+import { useLogin } from '../../hooks/useOAuth2'
 
 export interface WorkOrderCalcPageProps {
   userProfile?: UserProfile
@@ -113,7 +113,6 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
 }
 
 export const WorkOrderCalcPageContainer: React.FC = () => {
-  const navigate = useNavigate()
   const { userProfile } = useLogin()
 
   return <WorkOrderCalcPage userProfile={userProfile} />
