@@ -95,6 +95,7 @@ export const App: React.FC = () => {
               }
               errorElement={<Error />}
             />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <div style={{ flex: '1 1' }} />
         </AppWrapperContainer>

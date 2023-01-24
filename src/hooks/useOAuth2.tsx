@@ -79,6 +79,7 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   // This should persist the key with the other choices
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.DISCORD)
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
+  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
 
   const setAuthType = (newAuthType: AuthTypeEnum) => {
     setAuthTypeLS(newAuthType)
@@ -89,9 +90,20 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   if (authType === AuthTypeEnum.GOOGLE) authConfig = googleConfig
   log.debug('AuthType', authType, authConfig)
 
+  const newAuth: TAuthConfig = {
+    ...authConfig,
+    postLogin: () => {
+      if (postLoginRedirect) {
+        const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
+        setPostLoginRedirect(null)
+        window.location.href = newUrl.toString()
+      }
+    },
+  }
+
   return (
     <LoginContextWrapper.Provider value={{ authType, setAuthType }}>
-      <AuthProvider authConfig={authConfig}>{children}</AuthProvider>
+      <AuthProvider authConfig={newAuth}>{children}</AuthProvider>
     </LoginContextWrapper.Provider>
   )
 }
