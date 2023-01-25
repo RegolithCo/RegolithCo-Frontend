@@ -4,7 +4,6 @@ import { PageWrapper } from '../PageWrapper'
 
 import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser, ScoutingFindStateEnum } from '@regolithco/common'
 import { dummySession, dummySessionUser, dummyUserProfile, newEmptyScoutingFind } from '../../lib/newObjectFactories'
-import { useNavigate } from 'react-router-dom'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { useLogin } from '../../hooks/useOAuth2'
 
@@ -27,7 +26,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
   }, [userProfile])
 
   return (
-    <PageWrapper title="Cluster Calculator" maxWidth="sm" sx={{}}>
+    <PageWrapper title="Cluster Calculator" maxWidth="md" sx={{}}>
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography variant="body1" paragraph>
         This is a standalone calculator for determining the value of a rock cluster.

@@ -53,6 +53,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({ multiple, onChan
             <ToggleButton
               value={shipOreKey}
               fullWidth
+              tabIndex={-1}
               selected={active}
               size="small"
               key={`tbutt-${shipOreKey}`}
@@ -103,6 +104,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({ multiple, onChan
           value={''}
           size="small"
           fullWidth
+          tabIndex={-1}
           sx={{
             fontSize: 14,
             p: 0,

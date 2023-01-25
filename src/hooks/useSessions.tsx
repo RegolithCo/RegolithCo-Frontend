@@ -510,6 +510,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           shareAmount,
           shares: newShares,
         },
+
         // Now update the session work orders list to include the new item
         update: (cache, { data }) => {
           const newOrderVal = data?.createWorkOrder?.orderId ? (data?.createWorkOrder as WorkOrder) : undefined

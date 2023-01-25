@@ -356,36 +356,34 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         {/* Top row grid */}
         <Grid container spacing={2} padding={2} xs={12}>
           {/* Hero card */}
-          {!standalone && (
-            <Grid xs={3} sx={styles.topRowGrid}>
-              <Box sx={styles.numberBox}>
-                <Typography sx={styles.itemName}>{itemName}</Typography>
-                <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
-                  <Avatar
-                    sx={styles.clusterCount}
-                    onClick={() => {
-                      allowEdit && setEditCountModalOpen(true)
-                    }}
-                  >
-                    {scoutingFind.clusterCount || 1}
-                    {allowEdit && (
-                      <Button
-                        size="small"
-                        sx={styles.editButton}
-                        onClick={() => {
-                          setEditCountModalOpen(true)
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    )}
-                  </Avatar>
-                </Badge>
-              </Box>
-            </Grid>
-          )}
+          <Grid xs={3} sx={styles.topRowGrid}>
+            <Box sx={styles.numberBox}>
+              <Typography sx={styles.itemName}>{itemName}</Typography>
+              <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
+                <Avatar
+                  sx={styles.clusterCount}
+                  onClick={() => {
+                    !standalone && allowEdit && setEditCountModalOpen(true)
+                  }}
+                >
+                  {standalone ? (shipFind.shipRocks || []).length : scoutingFind.clusterCount || 1}
+                  {!standalone && allowEdit && (
+                    <Button
+                      size="small"
+                      sx={styles.editButton}
+                      onClick={() => {
+                        setEditCountModalOpen(true)
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </Avatar>
+              </Badge>
+            </Box>
+          </Grid>
           {/* Cluster stats */}
-          <Grid xs={standalone ? 12 : 5} sx={styles.topRowGrid}>
+          <Grid xs={standalone ? 9 : 5} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>

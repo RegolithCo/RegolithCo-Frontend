@@ -38,6 +38,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
             <ToggleButton
               value={vehicleOreKey}
               fullWidth
+              tabIndex={-1}
               selected={active}
               size="small"
               key={`tbutt-${vehicleOreKey}`}
@@ -88,6 +89,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
           value={''}
           size="small"
           fullWidth
+          tabIndex={-1}
           sx={{
             fontSize: 14,
             p: 0,

@@ -16,8 +16,8 @@ import {
 } from '@mui/material'
 import { ShipOreEnum, ShipRock, getShipOreName, RockStateEnum } from '@regolithco/common'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
-import { Scale } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
+import { RockIcon } from '../../icons'
 
 export interface ShipRockCardProps {
   rock: ShipRock
@@ -167,6 +167,16 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
     <Card sx={styles.card}>
       {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>Complete</Box>}
       <CardContent sx={styles.cardContent}>
+        <RockIcon
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: 60,
+            color: '#f0f0f012',
+          }}
+        />
         <Box sx={{ ...styles.topBox, cursor: onEditClick ? 'pointer' : 'default' }} onClick={onEditClick}>
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
             <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>

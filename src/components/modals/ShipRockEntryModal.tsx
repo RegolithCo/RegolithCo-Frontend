@@ -221,6 +221,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             <Grid2 xs={9}>
               <Slider
                 step={1}
+                tabIndex={-1}
                 sx={styles.massSlider}
                 color="secondary"
                 valueLabelDisplay="auto"
@@ -281,6 +282,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                   <Slider
                     sx={styles.compositionSlider}
                     step={1}
+                    tabIndex={-1}
                     getAriaValueText={(value) => `${value}%`}
                     valueLabelFormat={(value) => `${value.toFixed(0)}%`}
                     value={(ore.percent as number) * 100}
