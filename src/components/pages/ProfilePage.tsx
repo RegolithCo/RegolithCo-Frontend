@@ -368,6 +368,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     <Avatar
                       alt={userProfile?.scName}
                       src={myAvatar}
+                      imgProps={{ referrerPolicy: 'no-referrer' }}
                       color="secondary"
                       sx={{
                         background: theme.palette.secondary.main,

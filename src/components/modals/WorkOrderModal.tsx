@@ -1,17 +1,5 @@
 import * as React from 'react'
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  SxProps,
-  Toolbar,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Box, Button, Dialog, DialogActions, SxProps, Toolbar, Typography, useTheme } from '@mui/material'
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { ActivityEnum, makeHumanOrderId, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
@@ -167,6 +155,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
             </Typography>
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
               ID: {makeHumanOrderId(workOrder.orderId, workOrder.owner?.scName || 'NEW')}
+              {'    '} Created By: {workOrder.owner?.scName || 'NEW'}
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />

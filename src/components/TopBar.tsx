@@ -56,10 +56,11 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   }
 
   const handleNavigate = (path: string) => {
+    setAnchorElNav(null)
+    setAnchorElUser(null)
     if (navigate) {
       navigate(path)
     }
-    setAnchorElNav(null)
   }
 
   const handleCloseNavMenu = () => {
@@ -209,6 +210,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                     <Avatar
                       alt={userCtx.userProfile?.scName}
                       src={myAvatar}
+                      imgProps={{ referrerPolicy: 'no-referrer' }}
                       color="secondary"
                       sx={{
                         background: theme.palette.secondary.main,

@@ -33,6 +33,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
   const userAvatar = makeAvatar(sessionUser.owner?.avatarUrl as string)
+
   const user = sessionUser.owner as User
   if (sessionUser) {
     if (sessionUser.state) {
@@ -78,7 +79,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
                 : {}
             }
           >
-            <Avatar src={userAvatar}>
+            <Avatar src={userAvatar} imgProps={{ referrerPolicy: 'no-referrer' }} alt={sessionUser.owner?.scName}>
               <Person />
             </Avatar>
           </Badge>
