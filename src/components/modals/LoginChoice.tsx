@@ -79,7 +79,10 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
           sx={{
             my: 4,
           }}
-          onClick={() => login()}
+          onClick={() => {
+            login()
+            onClose()
+          }}
           size="large"
           fullWidth
           startIcon={authType === AuthTypeEnum.GOOGLE ? <Google /> : <DiscordIcon />}

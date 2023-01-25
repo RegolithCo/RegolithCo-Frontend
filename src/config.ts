@@ -3,10 +3,9 @@ import { Config } from './types'
 // import log from 'loglevel'
 
 const config: Config = {
-  authDomain: (window as any).CLIENT_CONFIG.authDomain || process.env.REACT_APP_AUTH_DOMAIN,
-  userPool: (window as any).CLIENT_CONFIG.userPool || process.env.REACT_APP_USERPOOL,
   apiUrl: (window as any).CLIENT_CONFIG.apiUrl || process.env.REACT_APP_API_URL,
-  userPoolClientId: (window as any).CLIENT_CONFIG.userPoolClientId || process.env.REACT_APP_CLIENTID,
+  googleClientId: (window as any).CLIENT_CONFIG.googleClientId || process.env.REACT_APP_GOOGLE_CLIENT_ID,
+  discordClientId: (window as any).CLIENT_CONFIG.discordClientId || process.env.REACT_APP_DISCORD_CLIENT_ID,
 }
 
 export default config
