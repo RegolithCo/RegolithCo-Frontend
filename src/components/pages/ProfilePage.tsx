@@ -11,11 +11,26 @@ import {
   UserProfileInput,
   DestructuredSettings,
   UserSuggest,
+  makeAvatar,
 } from '@regolithco/common'
 
 import { PageWrapper } from '../PageWrapper'
-import { Alert, Box, Button, MenuItem, Select, SxProps, Tooltip, Typography, useTheme } from '@mui/material'
-import { Edit, Settings, Verified } from '@mui/icons-material'
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemAvatar,
+  MenuItem,
+  Select,
+  SxProps,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
+import { Edit, Person, Segment, Settings, Verified } from '@mui/icons-material'
 import { RemoveUserModal } from '../modals/RemoveUserModal'
 import { ChangeUsernameModal } from '../modals/ChangeUsernameModal'
 import { DeleteProfileModal } from '../modals/DeleteProfileModal'
@@ -43,6 +58,7 @@ export interface ProfilePageProps {
   addFriend?: (friendName: string) => void
   removeFriend?: (friendName: string) => void
   resetDefaultSettings?: () => void
+  refreshAvatar: (remove?: boolean) => void
   updateUserProfile?: (userProfile: UserProfileInput, settings?: DestructuredSettings) => void
   deleteProfile?: () => void
 }
@@ -78,6 +94,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   navigate,
   updateUserProfile,
   resetDefaultSettings,
+  refreshAvatar,
   addFriend,
   deleteProfile,
   removeFriend,
@@ -97,7 +114,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const friends: string[] = [...(userProfile?.friends || [])]
   // Alphabetically sort friends
   friends.sort((a, b) => a.localeCompare(b))
-
+  const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
   const sortedShips = [...DeliveryShips]
   sortedShips.sort((a, b) => {
     const { cargo: cargoA }: ShipStats = lookups.shipLookups[a] as ShipStats
@@ -332,6 +349,39 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 addToList={addFriend}
                 removeFriend={removeFriend}
               />
+            </Box>
+          </Box>
+
+          {/* Avatar controls */}
+          <Box sx={styles.section}>
+            <Typography component="div" sx={styles.sectionTitle}>
+              Avatar
+            </Typography>
+            <Box sx={styles.sectionBody}>
+              <Typography paragraph variant="caption">
+                For now you can only choose to use the Avatar from your login account or not.
+              </Typography>
+
+              <List dense disablePadding>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar
+                      alt={userProfile?.scName}
+                      src={myAvatar}
+                      color="secondary"
+                      sx={{
+                        background: theme.palette.secondary.main,
+                        color: theme.palette.secondary.contrastText,
+                        border: '1px solid',
+                      }}
+                    >
+                      <Person color="inherit" />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <Button onClick={() => refreshAvatar()}>Refresh Avatar</Button>
+                  <Button onClick={() => refreshAvatar(true)}>Remove Avatar</Button>
+                </ListItem>
+              </List>
             </Box>
           </Box>
         </Grid>

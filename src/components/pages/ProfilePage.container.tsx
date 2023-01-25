@@ -15,6 +15,7 @@ export const ProfilePageContainer: React.FC = () => {
       updateUserProfile={userProfileQueries.updateUserProfile}
       deleteProfile={userProfileQueries.deleteProfile}
       loading={userProfileQueries.loading}
+      refreshAvatar={userProfileQueries.refreshAvatar}
       resetDefaultSettings={userProfileQueries.resetDefaultSettings}
       verifiedFriends={{}}
       navigate={navigate}

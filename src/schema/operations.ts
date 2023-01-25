@@ -382,6 +382,41 @@ export function useUpsertUserMutation(baseOptions?: Apollo.MutationHookOptions<t
 export type UpsertUserMutationHookResult = ReturnType<typeof useUpsertUserMutation>;
 export type UpsertUserMutationResult = Apollo.MutationResult<types.UpsertUserMutation>;
 export type UpsertUserMutationOptions = Apollo.BaseMutationOptions<types.UpsertUserMutation, types.UpsertUserMutationVariables>;
+export const RefreshAvatarDocument = gql`
+    mutation refreshAvatar($remove: Boolean) {
+  refreshAvatar(remove: $remove) {
+    userId
+    scName
+    avatarUrl
+  }
+}
+    `;
+export type RefreshAvatarMutationFn = Apollo.MutationFunction<types.RefreshAvatarMutation, types.RefreshAvatarMutationVariables>;
+
+/**
+ * __useRefreshAvatarMutation__
+ *
+ * To run a mutation, you first call `useRefreshAvatarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRefreshAvatarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [refreshAvatarMutation, { data, loading, error }] = useRefreshAvatarMutation({
+ *   variables: {
+ *      remove: // value for 'remove'
+ *   },
+ * });
+ */
+export function useRefreshAvatarMutation(baseOptions?: Apollo.MutationHookOptions<types.RefreshAvatarMutation, types.RefreshAvatarMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.RefreshAvatarMutation, types.RefreshAvatarMutationVariables>(RefreshAvatarDocument, options);
+      }
+export type RefreshAvatarMutationHookResult = ReturnType<typeof useRefreshAvatarMutation>;
+export type RefreshAvatarMutationResult = Apollo.MutationResult<types.RefreshAvatarMutation>;
+export type RefreshAvatarMutationOptions = Apollo.BaseMutationOptions<types.RefreshAvatarMutation, types.RefreshAvatarMutationVariables>;
 export const DeleteUserProfileDocument = gql`
     mutation deleteUserProfile($leaveData: Boolean) {
   deleteUserProfile(leaveData: $leaveData)

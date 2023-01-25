@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { Auth } from 'aws-amplify'
 import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
 import log from 'loglevel'
 
@@ -13,10 +12,10 @@ export const LoginExpiryTimer: React.FC = () => {
     const checkAuth = async () => {
       try {
         log.debug('LoginExpiryTimer: Check Auth')
-        const session = await Auth.currentSession()
+        // const session = await Auth.currentSession()
         // const token = session.getAccessToken().getJwtToken()
-        const expiry = session.getAccessToken().getExpiration() * 1000
-        setExpiryTime(expiry)
+        // const expiry = session.getAccessToken().getExpiration() * 1000
+        // setExpiryTime(expiry)
       } catch (error) {
         log.error('LoginExpiryTimer:error', error)
       }

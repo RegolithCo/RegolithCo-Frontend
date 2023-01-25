@@ -9,7 +9,7 @@ import {
   Tooltip,
   Badge,
 } from '@mui/material'
-import { SessionUser, User, UserStateEnum } from '@regolithco/common'
+import { makeAvatar, SessionUser, User, UserStateEnum } from '@regolithco/common'
 import { Engineering, Person, PersonAdd, Verified } from '@mui/icons-material'
 
 export interface ActiveUserListItemProps {
@@ -32,7 +32,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const secondaryText = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
-  const userAvatar = sessionUser.owner?.avatarUrl ? `${sessionUser.owner?.avatarUrl}.webp?size=256` : undefined
+  const userAvatar = makeAvatar(sessionUser.owner?.avatarUrl as string)
   const user = sessionUser.owner as User
   if (sessionUser) {
     if (sessionUser.state) {

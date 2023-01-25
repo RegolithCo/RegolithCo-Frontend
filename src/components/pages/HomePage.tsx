@@ -1,9 +1,8 @@
-import { Button, Card, CardActions, CardContent, CardHeader, CardMedia, SxProps, Typography } from '@mui/material'
+import { Button, Card, CardActions, CardContent, CardMedia, SxProps, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Auth } from 'aws-amplify'
 
 import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj, useLogin } from '../../hooks/useOAuth2'

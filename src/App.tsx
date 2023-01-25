@@ -15,14 +15,52 @@ import { SessionChooserPageContainer } from './components/pages/SessionChooserPa
 import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage'
 import { Box } from '@mui/material'
 import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
+import { useLogin } from './hooks/useOAuth2'
 
 export const App: React.FC = () => {
+  const { isAuthenticated, isInitialized } = useLogin()
+  const needIntervention = isAuthenticated && !isInitialized
+
+  if (needIntervention)
+    return (
+      <Router basename={process.env.PUBLIC_URL}>
+        <Box sx={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <TopBarContainer />
+          <AppWrapperContainer>
+            <Routes>
+              <Route
+                path="/verify"
+                element={
+                  <AuthGate allowNoInit>
+                    <InitializeUserContainer />
+                  </AuthGate>
+                }
+                errorElement={<Error />}
+              />
+              <Route path="*" element={<Navigate to="/verify  " replace />} />
+            </Routes>
+          </AppWrapperContainer>
+        </Box>
+      </Router>
+    )
+
   return (
     <Router basename={process.env.PUBLIC_URL}>
       <Box sx={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <TopBarContainer />
         <AppWrapperContainer>
           <Routes>
+            {needIntervention && (
+              <Route
+                path="*"
+                element={
+                  <AuthGate allowNoInit>
+                    <InitializeUserContainer />
+                  </AuthGate>
+                }
+                errorElement={<Error />}
+              />
+            )}
             <Route path="/" element={<HomePageContainer />} errorElement={<Error />} />
             <Route path="/faq" element={<FAQPage />} errorElement={<Error />} />
             <Route path="/about" element={<AboutPage />} errorElement={<Error />} />
@@ -45,15 +83,6 @@ export const App: React.FC = () => {
               element={
                 <AuthGate>
                   <ProfilePageContainer />
-                </AuthGate>
-              }
-              errorElement={<Error />}
-            />
-            <Route
-              path="/verify"
-              element={
-                <AuthGate allowNoInit>
-                  <InitializeUserContainer />
                 </AuthGate>
               }
               errorElement={<Error />}

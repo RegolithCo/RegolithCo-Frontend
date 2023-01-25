@@ -2,7 +2,7 @@ import { AuthTypeEnum, UserProfile } from '@regolithco/common'
 import React, { useContext } from 'react'
 import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import useLocalStorage from './useLocalStorage'
-import log from 'loglevel'
+import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 const redirectUrl = new URL(process.env.PUBLIC_URL, window.location.origin).toString()
 
 const discordConfig: TAuthConfig = {
@@ -13,17 +13,6 @@ const discordConfig: TAuthConfig = {
   autoLogin: false,
   decodeToken: false,
   scope: 'identify',
-  onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) =>
-    window.confirm('Session expired. Refresh page to continue using the site?') && event.login(),
-}
-
-const googleConfig: TAuthConfig = {
-  clientId: '413063286287-5d17pgr02vra5go3n82jvs11rckd56vl.apps.googleusercontent.com',
-  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-  tokenEndpoint: 'https://oauth2.googleapis.com/token',
-  redirectUri: redirectUrl,
-  autoLogin: false,
-  scope: 'openid',
   onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) =>
     window.confirm('Session expired. Refresh page to continue using the site?') && event.login(),
 }
@@ -42,15 +31,45 @@ export const useOAuth2 = (): UseOAuth2Return => {
   const { tokenData, token, login, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
 
+  const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
+  const [googleToken, setGoogleToken] = React.useState<string>(_googleToken)
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log(tokenResponse)
+      if (tokenResponse.access_token) {
+        setGoogleToken(tokenResponse.access_token)
+        _setGoogleToken(tokenResponse.access_token)
+      }
+    },
+  })
+
+  const fancyLogin = async () => {
+    if (authType === AuthTypeEnum.DISCORD) {
+      googleLogout()
+      login()
+    } else if (authType === AuthTypeEnum.GOOGLE) {
+      logOut()
+      googleLogin()
+    }
+  }
+  // Just do both.
+  const fancyLogout = async () => {
+    _setGoogleToken('')
+    setGoogleToken('')
+    googleLogout()
+    logOut()
+  }
+
   return {
     tokenData,
-    token,
+    token: authType === AuthTypeEnum.DISCORD ? token : googleToken,
     error,
     idToken,
     authType,
     setAuthType,
-    login,
-    logOut,
+    login: fancyLogin,
+    logOut: fancyLogout,
     loginInProgress,
     idTokenData,
   }
@@ -86,11 +105,9 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     _setAuthType(newAuthType)
   }
 
-  let authConfig: TAuthConfig = discordConfig
-  if (authType === AuthTypeEnum.GOOGLE) authConfig = googleConfig
-
-  const newAuth: TAuthConfig = {
-    ...authConfig,
+  const discordAuth: TAuthConfig = {
+    ...discordConfig,
+    autoLogin: false,
     postLogin: () => {
       if (postLoginRedirect) {
         const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
@@ -102,7 +119,9 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
 
   return (
     <LoginContextWrapper.Provider value={{ authType, setAuthType }}>
-      <AuthProvider authConfig={newAuth}>{children}</AuthProvider>
+      <GoogleOAuthProvider clientId="413063286287-oto0h8addk8jic8h6ontaf2f8l9r23h0.apps.googleusercontent.com">
+        <AuthProvider authConfig={discordAuth}>{children}</AuthProvider>
+      </GoogleOAuthProvider>
     </LoginContextWrapper.Provider>
   )
 }

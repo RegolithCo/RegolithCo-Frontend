@@ -13,7 +13,7 @@ import { yellow } from '@mui/material/colors'
 import { Badge, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import { Login, Person, Verified } from '@mui/icons-material'
-import { UserStateEnum } from '@regolithco/common'
+import { makeAvatar, UserStateEnum } from '@regolithco/common'
 // import { LoginExpiryTimer } from './fields/LoginExpiryTimer'
 import { RockIcon } from '../icons'
 import { LoginContextObj } from '../hooks/useOAuth2'
@@ -44,7 +44,7 @@ export interface TopBarProps {
 export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
-  const myAvatar = userCtx.userProfile?.avatarUrl ? `${userCtx.userProfile?.avatarUrl}.webp?size=256` : undefined
+  const myAvatar = makeAvatar(userCtx.userProfile?.avatarUrl as string)
   const theme = useTheme()
   // const [shareOpen, setShareOpen] = React.useState(false)
 
@@ -207,7 +207,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                     overlap="circular"
                   >
                     <Avatar
-                      alt="Remy Sharp"
+                      alt={userCtx.userProfile?.scName}
                       src={myAvatar}
                       color="secondary"
                       sx={{

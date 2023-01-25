@@ -7,6 +7,7 @@ import {
   useGetJoinedUserSessionsQuery,
   useGetMyUserSessionsQuery,
   useGetUserProfileQuery,
+  useRefreshAvatarMutation,
   useRemoveFriendsMutation,
   useRequestAccountVerifyMutation,
   useUpsertUserMutation,
@@ -55,6 +56,7 @@ type useSessionsReturn = {
   deleteProfile: () => void
   resetDefaultSettings: () => void
   addFriend: (friend: string) => void
+  refreshAvatar: (remove?: boolean) => void
   removeFriend: (friend: string) => void
 }
 
@@ -174,6 +176,8 @@ export const useUserProfile = (): useSessionsReturn => {
   const addFriendsMutation = useAddFriendsMutation()
   const removeFriendsMutation = useRemoveFriendsMutation()
 
+  const refreshAvatarMutation = useRefreshAvatarMutation()
+
   const queries = [userProfileQry, mySessionsQry, joinedSessionsQry]
   const mutations = [
     createSessionMutation,
@@ -183,6 +187,7 @@ export const useUserProfile = (): useSessionsReturn => {
     verifyUserMutation,
     addFriendsMutation,
     removeFriendsMutation,
+    refreshAvatarMutation,
   ]
 
   const loading = queries.some((q) => q.loading)
@@ -337,6 +342,13 @@ export const useUserProfile = (): useSessionsReturn => {
             __typename: 'UserProfile',
           },
           __typename: 'Mutation',
+        },
+      })
+    },
+    refreshAvatar: (remove?: boolean) => {
+      refreshAvatarMutation[0]({
+        variables: {
+          remove,
         },
       })
     },

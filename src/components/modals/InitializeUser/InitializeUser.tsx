@@ -83,6 +83,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
               color="secondary"
               size="large"
               onClick={() => {
+                login.logOut()
                 fns.backToPage()
               }}
             >
