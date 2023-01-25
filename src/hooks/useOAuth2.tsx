@@ -1,5 +1,5 @@
 import { AuthTypeEnum, UserProfile } from '@regolithco/common'
-import React, { useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import useLocalStorage from './useLocalStorage'
 import log from 'loglevel'
@@ -88,7 +88,6 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
 
   let authConfig: TAuthConfig = discordConfig
   if (authType === AuthTypeEnum.GOOGLE) authConfig = googleConfig
-  log.debug('AuthType', authType, authConfig)
 
   const newAuth: TAuthConfig = {
     ...authConfig,

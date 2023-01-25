@@ -43,6 +43,11 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
               flexGrow: 1,
               p: 2,
             },
+            '& .MuiToggleButton-root.Mui-selected:hover': {
+              color: theme.palette.primary.contrastText,
+              boxShadow: `1px 1px 15px 5px ${theme.palette.primary.light}`,
+              background: theme.palette.primary.light,
+            },
             '& .MuiToggleButton-root.Mui-selected': {
               // border: '1px solid red',
               color: theme.palette.primary.contrastText,

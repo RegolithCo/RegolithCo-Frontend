@@ -29,7 +29,7 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -44,6 +44,7 @@ export type MutationFieldPolicy = {
 	joinScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	leaveScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	leaveSession?: FieldPolicy<any> | FieldReadFunction<any>,
+	refreshAvatar?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeSessionCrew?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeSessionMentions?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -269,24 +270,27 @@ export type SubscriptionKeySpecifier = ('apiSubscription' | SubscriptionKeySpeci
 export type SubscriptionFieldPolicy = {
 	apiSubscription?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserKeySpecifier = ('createdAt' | 'scName' | 'state' | 'updatedAt' | 'userId' | UserKeySpecifier)[];
+export type UserKeySpecifier = ('avatarUrl' | 'createdAt' | 'scName' | 'state' | 'updatedAt' | 'userId' | UserKeySpecifier)[];
 export type UserFieldPolicy = {
+	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserInterfaceKeySpecifier = ('createdAt' | 'scName' | 'state' | 'updatedAt' | 'userId' | UserInterfaceKeySpecifier)[];
+export type UserInterfaceKeySpecifier = ('avatarUrl' | 'createdAt' | 'scName' | 'state' | 'updatedAt' | 'userId' | UserInterfaceKeySpecifier)[];
 export type UserInterfaceFieldPolicy = {
+	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShip' | 'friends' | 'joinedSessions' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShip' | 'friends' | 'joinedSessions' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
+	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewSharesPayee?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewSharesPayer?: FieldPolicy<any> | FieldReadFunction<any>,

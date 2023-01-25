@@ -49,6 +49,7 @@ export const UserFragmentFragmentDoc = gql`
     fragment UserFragment on User {
   userId
   scName
+  avatarUrl
   createdAt
   updatedAt
   state
@@ -321,6 +322,7 @@ export const UserProfileFragmentFragmentDoc = gql`
     fragment UserProfileFragment on UserProfile {
   userId
   scName
+  avatarUrl
   createdAt
   updatedAt
   state
@@ -446,6 +448,7 @@ export const VerifyUserDocument = gql`
   verifyUserProfile {
     userId
     scName
+    avatarUrl
     state
     verifyCode
   }

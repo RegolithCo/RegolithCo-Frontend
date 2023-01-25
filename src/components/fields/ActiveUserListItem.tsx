@@ -32,6 +32,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const secondaryText = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
+  const userAvatar = sessionUser.owner?.avatarUrl ? `${sessionUser.owner?.avatarUrl}.webp?size=256` : undefined
   const user = sessionUser.owner as User
   if (sessionUser) {
     if (sessionUser.state) {
@@ -77,7 +78,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
                 : {}
             }
           >
-            <Avatar>
+            <Avatar src={userAvatar}>
               <Person />
             </Avatar>
           </Badge>

@@ -44,6 +44,7 @@ export interface TopBarProps {
 export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
+  const myAvatar = userCtx.userProfile?.avatarUrl ? `${userCtx.userProfile?.avatarUrl}.webp?size=256` : undefined
   const theme = useTheme()
   // const [shareOpen, setShareOpen] = React.useState(false)
 
@@ -207,7 +208,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                   >
                     <Avatar
                       alt="Remy Sharp"
-                      src="/static/images/avatar/2.jpg"
+                      src={myAvatar}
                       color="secondary"
                       sx={{
                         background: theme.palette.secondary.main,
