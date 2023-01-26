@@ -8,16 +8,20 @@ import {
   IconButton,
   Tooltip,
   Badge,
+  Link,
 } from '@mui/material'
-import { makeAvatar, SessionUser, User, UserStateEnum } from '@regolithco/common'
+import { getSessionUserStateName, makeAvatar, ScoutingFind, SessionUser, User, UserStateEnum } from '@regolithco/common'
 import { Engineering, Person, PersonAdd, Verified } from '@mui/icons-material'
+import { makeSessionUrls } from '../../lib/routingUrls'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
   meId?: string
   sessionOwnerId?: string
+  scoutingFind?: ScoutingFind
   friends?: string[]
   small?: boolean
+  navigate?: (path: string) => void
   addFriend?: () => void
 }
 
@@ -25,7 +29,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   sessionUser,
   sessionOwnerId,
   friends,
+  scoutingFind,
   addFriend,
+  navigate,
   small,
   meId,
 }) => {
@@ -36,11 +42,31 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
 
   const user = sessionUser.owner as User
   if (sessionUser) {
-    if (sessionUser.state) {
-      secondaryText.push(sessionUser.state)
-    }
     if (sessionUser.isPilot) {
       secondaryText.push('Pilot')
+    }
+    if (sessionUser.state) {
+      if (scoutingFind) {
+        secondaryText.push(' - ')
+        secondaryText.push(
+          <>
+            {getSessionUserStateName(sessionUser.state)} -
+            <Link
+              sx={{
+                fontSize: '0.75rem',
+              }}
+              onClick={() => {
+                navigate &&
+                  navigate(
+                    makeSessionUrls({ sessionId: scoutingFind.sessionId, scoutingFindId: scoutingFind.scoutingFindId })
+                  )
+              }}
+            >
+              {scoutingFind.scoutingFindId.split('_')[0]}
+            </Link>
+          </>
+        )
+      } else secondaryText.push(getSessionUserStateName(sessionUser.state))
     }
     if (sessionUser.miningVehicle) {
       secondaryText.push(sessionUser.miningVehicle)
@@ -93,7 +119,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           //
         }}
         primary={user?.scName}
-        secondary={secondaryText.length > 0 ? secondaryText.join(' - ') : null}
+        secondary={secondaryText.length > 0 ? secondaryText : null}
       />
       {(isOwner || !isMe) && addFriend && (
         <ListItemSecondaryAction>

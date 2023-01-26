@@ -1,13 +1,15 @@
 import React from 'react'
 import { List } from '@mui/material'
-import { SessionUser } from '@regolithco/common'
+import { ScoutingFind, SessionUser } from '@regolithco/common'
 import { ActiveUserListItem } from './ActiveUserListItem'
 
 export interface ActiveUserListProps {
   sessionUsers: SessionUser[]
   meId?: string
+  scoutingMap?: Map<string, ScoutingFind>
   sessionOwnerId?: string
   friends?: string[]
+  navigate?: (path: string) => void
   small?: boolean
   addFriend?: (friendName: string) => void
 }
@@ -16,6 +18,8 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
   sessionUsers,
   sessionOwnerId,
   meId,
+  navigate,
+  scoutingMap,
   friends,
   small,
   addFriend,
@@ -60,8 +64,10 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
           key={`user-${idx}`}
           meId={meId}
           sessionOwnerId={sessionOwnerId}
+          scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
           sessionUser={sessionUser}
           small={small}
+          navigate={navigate}
           friends={friends}
           addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
         />

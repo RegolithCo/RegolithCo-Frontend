@@ -219,18 +219,31 @@ export const SessionPage: React.FC<SessionPageProps> = ({
 
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
   const allScouts = session.scouting?.items || []
-  const filteredScounts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
+  const filteredScouts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
+  filteredScouts.sort((a, b) => b.createdAt - a.createdAt)
   const allWorkOrders = session.workOrders?.items || []
   const filteredWorkOrders = filterPaidWorkOrders
     ? allWorkOrders.filter(({ crewShares }) => crewShares?.some(({ state }) => !state))
     : [...allWorkOrders]
 
-  const scountingCounts = [filteredScounts.length, allScouts.length]
+  const scountingCounts = [filteredScouts.length, allScouts.length]
   const workOrderCounts = [filteredWorkOrders.length, allWorkOrders.length]
   const userSuggest: UserSuggest = React.useMemo(
     () => createUserSuggest(session.activeMembers?.items || [], session.mentionedUsers, userProfile.friends),
     [session, userProfile]
   )
+
+  // make a map of useIds to their scouting find attendance
+  const userScoutingAttendance = React.useMemo(() => {
+    const map = new Map<string, ScoutingFind>()
+    session.scouting?.items?.forEach((scoutingFind) => {
+      // This will get overwritten if there are duplicates but that's ok
+      scoutingFind.attendance?.forEach((attendance) => {
+        map.set(attendance.owner?.userId as string, scoutingFind)
+      })
+    })
+    return map
+  }, [session.scouting?.items])
 
   return (
     <>
@@ -263,7 +276,9 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                 <AccordionDetails sx={styles.accordionDetails}>
                   <ActiveUserList
                     friends={userProfile.friends}
+                    scoutingMap={userScoutingAttendance}
                     sessionOwnerId={session.ownerId}
+                    navigate={navigate}
                     meId={userProfile.userId}
                     sessionUsers={session.activeMembers?.items as SessionUser[]}
                     addFriend={addFriend}
@@ -379,7 +394,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                 </AccordionSummary>
                 <AccordionDetails sx={styles.workOrderAccordionDetails}>
                   <Grid container spacing={3} margin={0}>
-                    {filteredScounts.map((scouting, idx) => {
+                    {filteredScouts.map((scouting, idx) => {
                       return (
                         <Grid
                           key={`scoutingfind-${idx}`}

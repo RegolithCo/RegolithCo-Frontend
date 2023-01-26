@@ -37,7 +37,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
       <Alert elevation={6} variant="outlined" severity="warning" sx={{ my: 2 }}>
         <AlertTitle>Sessions close automatically</AlertTitle>
         <Typography>
-          Sessions close after 8 hours of inactivity. Closed sessions can be visited but cannot be re-opened.{' '}
+          Sessions close after 12 hours of inactivity. Closed sessions can be visited but cannot be re-opened.{' '}
         </Typography>
       </Alert>
       <Box sx={{ p: 3 }}>

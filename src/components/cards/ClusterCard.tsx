@@ -12,10 +12,15 @@ import {
   ScoutingFindTypeEnum,
   ShipClusterFind,
   VehicleClusterFind,
+  SessionStateEnum,
+  SessionUserStateEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies, scoutingFindStateThemes } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import dayjs from 'dayjs'
+dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
   clusterFind: ScoutingFind
@@ -26,7 +31,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
   const summary = clusterCalc(clusterFind)
   const ores = summary.oreSort || []
   const findType = clusterFind.clusterType
-  const attendanceCount = clusterFind.attendanceIds?.length || 0
+  const attendanceCount = (clusterFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
 
   // Conveneince variables
   const shipFind = clusterFind as ShipClusterFind
@@ -82,10 +87,10 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
           position: 'relative',
           color: theme.palette.primary.main,
           opacity,
-          borderColor: theme.palette.primary.dark,
-          borderWidth: 3,
+          borderColor: theme.palette.primary.main,
+          borderWidth: 2,
           backgroundColor: theme.palette.primary.contrastText,
-          borderRadius: 2,
+          borderRadius: 3,
           height: 150,
           width: 150,
           overflow: 'visible',
@@ -104,10 +109,11 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
             color: theme.palette.primary.main,
             fontFamily: fontFamilies.robotoMono,
             background: theme.palette.primary.contrastText,
+            borderBottom: `1px solid ${theme.palette.primary.main}55`,
             borderRadius: 0,
             textAlign: 'left',
-            borderTopLeftRadius: 4,
-            borderTopRightRadius: 4,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
             px: 1,
             py: 0.2,
             fontSize: 16,
@@ -122,8 +128,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
             sx={{
               // zIndex: 10,
               position: 'absolute',
-              top: -2,
-              right: '-4%',
+              top: -5,
+              right: -7,
               transform: 'translateY(-50%)',
               fontWeight: 'bold',
               background: 'black',
@@ -175,12 +181,27 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
           {/* Give our icon some space! */}
           <Box sx={{ flex: '0 0 40px' }} />
 
+          <Typography
+            sx={{
+              position: 'absolute',
+              opacity: 0.5,
+              top: 25,
+              left: 5,
+              fontSize: '0.75rem',
+            }}
+          >
+            {Date.now() - clusterFind.createdAt > 12 * 1000 * 60 * 60
+              ? dayjs(clusterFind.createdAt).from(dayjs(Date.now()))
+              : dayjs(clusterFind.createdAt).from(dayjs(Date.now()))}
+          </Typography>
+
           {/* ORES */}
           <Typography
             gutterBottom
             sx={{
               flex: '0 0 auto',
               px: 1,
+              py: 0.5,
               textAlign: 'center',
               opacity: finalOres.length > 0 ? 1 : 0.5,
               display: 'block',
@@ -201,17 +222,17 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
                   overflow: 'hidden',
                   flex: '0 0 auto',
                   px: 1,
-                  py: 1,
+                  py: 0.3,
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis',
-                  textAlign: 'left',
+                  textAlign: 'center',
                   borderTop: `1px solid`,
                   borderBottom: `1px solid`,
                   display: 'block',
-                  fontSize: 14,
+                  fontSize: '0.875rem',
                 }}
               >
-                <PersonSearch sx={{ fontSize: '0.9rem' }} /> {clusterFind.owner?.scName}
+                <PersonSearch sx={{ fontSize: '0.875rem', mb: -0.2 }} /> {clusterFind.owner?.scName}
               </Typography>
             </Tooltip>
           )}
@@ -262,8 +283,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
               display: 'flex',
               background: theme.palette.primary.contrastText,
               borderRadius: 0,
-              borderBottomLeftRadius: 4,
-              borderBottomRightRadius: 4,
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
 
               px: 1,
               py: 0,
