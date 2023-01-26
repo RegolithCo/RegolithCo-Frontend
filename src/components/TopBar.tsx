@@ -74,6 +74,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   return (
     <AppBar position="static" sx={styles.appBar}>
       {userCtx.popup}
+      {userCtx.refreshPopup}
       <Toolbar disableGutters>
         <RockIcon
           sx={{ display: { xs: 'none', md: 'flex', cursor: 'pointer' }, mr: 1 }}

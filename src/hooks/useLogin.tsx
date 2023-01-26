@@ -9,6 +9,7 @@ import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
 import { LoginContext, useOAuth2 } from './useOAuth2'
 import { LoginChoice } from '../components/modals/LoginChoice'
 import useLocalStorage from './useLocalStorage'
+import { LoginRefresh } from '../components/modals/LoginRefresh'
 
 /**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
@@ -153,8 +154,10 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   APIWorking,
   maintenanceMode,
 }) => {
-  const { logOut, login, token, error, loginInProgress, authType, setAuthType } = useOAuth2()
+  const { logOut, login, token, error, loginInProgress, authType, setAuthType, refreshPopupOpen, setRefreshPopupOpen } =
+    useOAuth2()
   const [openPopup, setOpenPopup] = useState(false)
+
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
   const isAuthenticated = Boolean(token && token.length > 0)
   const userProfileQry = useGetUserProfileQuery({
@@ -179,6 +182,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
         ),
         userProfile: userProfileQry.data?.profile as UserProfile,
         login,
+        refreshPopupOpen,
         logOut: () => {
           logOut()
           log.debug('Signed out')
@@ -194,6 +198,15 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
 
           setOpenPopup(true)
         },
+        refreshPopup: (
+          <LoginRefresh
+            open={refreshPopupOpen}
+            onClose={() => setRefreshPopupOpen(false)}
+            login={login}
+            authType={authType}
+          />
+        ),
+        setRefreshPopupOpen: (isOpen: boolean) => setRefreshPopupOpen(isOpen),
         popup: (
           <LoginChoice
             open={openPopup}

@@ -39,6 +39,12 @@ const login: LoginContextObj = {
   isVerified: false,
   loading: false,
   popup: null,
+  refreshPopupOpen: false,
+  refreshPopup: null,
+  setRefreshPopupOpen: () => {
+    log.info('setRefreshPopupOpen')
+  },
+
   openPopup: () => {
     log.info('openPopup')
   },

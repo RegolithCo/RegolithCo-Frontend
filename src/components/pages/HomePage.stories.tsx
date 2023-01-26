@@ -29,6 +29,11 @@ HomePage.args = {
       console.log('sign out')
       return Promise.resolve()
     },
+    refreshPopupOpen: false,
+    refreshPopup: null,
+    setRefreshPopupOpen: () => {
+      console.log('setRefreshPopupOpen')
+    },
     isAuthenticated: true,
     isInitialized: true,
     isVerified: true,

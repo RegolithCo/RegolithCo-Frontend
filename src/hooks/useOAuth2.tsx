@@ -1,13 +1,10 @@
 import { AuthTypeEnum, UserProfile } from '@regolithco/common'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
-import { logRoles } from '@testing-library/react'
 const redirectUrl = new URL(process.env.PUBLIC_URL, window.location.origin).toString()
-
-let GOOGLETIMEOUT: NodeJS.Timeout | null = null
 
 const discordConfig: TAuthConfig = {
   clientId: '1067082442877440050',
@@ -17,13 +14,13 @@ const discordConfig: TAuthConfig = {
   autoLogin: false,
   decodeToken: false,
   scope: 'identify',
-  onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) =>
-    window.confirm('Session expired. Refresh page to continue using the site?') && event.login(),
 }
 
 type UseOAuth2Return = IAuthContext & {
   authType: AuthTypeEnum
   setAuthType: (authType: AuthTypeEnum) => void
+  refreshPopupOpen: boolean
+  setRefreshPopupOpen: (open: boolean) => void
 }
 
 /**
@@ -31,28 +28,40 @@ type UseOAuth2Return = IAuthContext & {
  * @returns
  */
 export const useOAuth2 = (): UseOAuth2Return => {
-  const { authType, setAuthType, googleToken, setGoogleToken } = useContext(LoginContextWrapper)
+  const { authType, setAuthType, googleToken, setGoogleToken, refreshPopupOpen, setRefreshPopupOpen } =
+    useContext(LoginContextWrapper)
   const { tokenData, token, login, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
+  const googleTimerRef = React.useRef<NodeJS.Timeout>()
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      log.info(`Setting Google logout in ${tokenResponse.expires_in} seconds`)
-      GOOGLETIMEOUT = setTimeout(() => {
-        fancyLogout()
-      }, tokenResponse.expires_in * 1000)
-
-      if (tokenResponse.access_token) {
-        setGoogleToken(tokenResponse.access_token)
-        if (postLoginRedirect) {
-          const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
-          setPostLoginRedirect(null)
-          window.location.href = newUrl.toString()
+  const googleLogin = React.useCallback(
+    useGoogleLogin({
+      onSuccess: (tokenResponse) => {
+        if (tokenResponse.access_token) {
+          if (refreshPopupOpen) setRefreshPopupOpen(false) // just in case
+          setGoogleToken(tokenResponse.access_token, tokenResponse.expires_in)
+          if (postLoginRedirect) {
+            const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
+            setPostLoginRedirect(null)
+            window.location.href = newUrl.toString()
+          }
         }
-      }
-    },
-  })
+      },
+    }),
+    [googleToken, postLoginRedirect, setGoogleToken, setPostLoginRedirect]
+  )
+
+  React.useEffect(() => {
+    if (googleTimerRef.current) clearTimeout(googleTimerRef.current)
+    if (googleToken[1] && googleToken[1] > Date.now()) {
+      googleTimerRef.current = setTimeout(() => {
+        googleLogout()
+        setGoogleToken()
+        setRefreshPopupOpen(true)
+      }, googleToken[1] - Date.now())
+    }
+  }, [googleToken])
 
   const fancyLogin = async () => {
     if (authType === AuthTypeEnum.DISCORD) {
@@ -65,7 +74,7 @@ export const useOAuth2 = (): UseOAuth2Return => {
   }
   // Just do both.
   const fancyLogout = async () => {
-    setGoogleToken('')
+    setGoogleToken()
     googleLogout()
     logOut()
     log.debug('LOGGED OUT')
@@ -73,10 +82,12 @@ export const useOAuth2 = (): UseOAuth2Return => {
 
   return {
     tokenData,
-    token: authType === AuthTypeEnum.GOOGLE ? googleToken : token,
+    token: authType === AuthTypeEnum.GOOGLE ? googleToken[0] : token,
     error,
     idToken,
     authType,
+    setRefreshPopupOpen,
+    refreshPopupOpen,
     setAuthType,
     login: fancyLogin,
     logOut: fancyLogout,
@@ -88,17 +99,23 @@ export const useOAuth2 = (): UseOAuth2Return => {
 type LoginSwitcherObj = {
   authType: AuthTypeEnum
   setAuthType: (authType: AuthTypeEnum) => void
-  googleToken: string
-  setGoogleToken: (token: string) => void
+  googleToken: [token: string, expiry: number | null]
+  setGoogleToken: (token?: string, expiry?: number) => void
+  refreshPopupOpen: boolean
+  setRefreshPopupOpen: (open: boolean) => void
 }
 
 export const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
   authType: AuthTypeEnum.DISCORD,
+  refreshPopupOpen: false,
+  setRefreshPopupOpen: (open: boolean) => {
+    //
+  },
   setAuthType: () => {
     //
   },
-  googleToken: '',
-  setGoogleToken: (token: string) => {
+  googleToken: ['', null],
+  setGoogleToken: (token?: string, expiry?: number) => {
     //
   },
 })
@@ -115,9 +132,8 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.DISCORD)
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
-
-  const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
-  const [googleToken, setGoogleToken] = React.useState<string>(_googleToken)
+  const [refreshPopupOpen, setRefreshPopupOpen] = useState(false)
+  const [googleToken, _setGoogleToken] = useLocalStorage<[string, number | null]>('ROCP_GooToken', ['', null])
   console.log('authTypeLS', authTypeLS, authType)
   console.log('Google Token', googleToken)
   const setAuthType = (newAuthType: AuthTypeEnum) => {
@@ -128,6 +144,10 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   const discordAuth: TAuthConfig = {
     ...discordConfig,
     autoLogin: false,
+    onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => {
+      // window.confirm('Session expired. Refresh page to continue using the site?') && event.login(),
+      setRefreshPopupOpen(true)
+    },
     postLogin: () => {
       if (postLoginRedirect) {
         const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
@@ -143,9 +163,11 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
         authType,
         setAuthType,
         googleToken,
-        setGoogleToken: (newToken: string) => {
-          _setGoogleToken(newToken)
-          setGoogleToken(newToken)
+        refreshPopupOpen,
+        setRefreshPopupOpen,
+        setGoogleToken: (newToken?: string, expiry?: number) => {
+          const expires = expiry ? Date.now() + expiry * 1000 : null
+          _setGoogleToken([newToken || '', expires])
         },
       }}
     >
@@ -162,6 +184,11 @@ const DEFAULT_LOGIN_CONTEXT: LoginContextObj = {
   isVerified: false,
   APIWorking: true,
   popup: null,
+  refreshPopupOpen: false,
+  refreshPopup: null,
+  setRefreshPopupOpen: () => {
+    console.log('NOT SET UP FOR POPUP')
+  },
   openPopup: () => {
     console.log('NOT SET UP FOR POPUP')
   },
@@ -198,6 +225,9 @@ export interface LoginContextObj {
   error?: Error
   popup: React.ReactNode
   openPopup: (newLoginRedirect?: string) => void
+  refreshPopupOpen: boolean
+  refreshPopup: React.ReactNode
+  setRefreshPopupOpen: (isOpen: boolean) => void
   login: (authType: AuthTypeEnum) => void
   logOut: () => void
   userProfile?: UserProfile
