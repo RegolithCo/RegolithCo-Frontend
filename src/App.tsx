@@ -67,6 +67,15 @@ export const App: React.FC = () => {
             <Route path="/terms" element={<AboutPage />} errorElement={<Error />} />
             <Route path="/privacy" element={<AboutPage />} errorElement={<Error />} />
             <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<Error />} />
+            <Route
+              path="/verify"
+              element={
+                <AuthGate allowNoInit>
+                  <InitializeUserContainer />
+                </AuthGate>
+              }
+              errorElement={<Error />}
+            />
             {/* Standalone calc */}
             <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<Error />} />
             {/* Tables uses urls for tabs */}

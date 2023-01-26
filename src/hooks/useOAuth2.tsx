@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
+import log from 'loglevel'
 const redirectUrl = new URL(process.env.PUBLIC_URL, window.location.origin).toString()
 
 const discordConfig: TAuthConfig = {
@@ -27,19 +28,21 @@ type UseOAuth2Return = IAuthContext & {
  * @returns
  */
 export const useOAuth2 = (): UseOAuth2Return => {
-  const { authType, setAuthType } = useContext(LoginContextWrapper)
+  const { authType, setAuthType, googleToken, setGoogleToken } = useContext(LoginContextWrapper)
   const { tokenData, token, login, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
 
-  const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
-  const [googleToken, setGoogleToken] = React.useState<string>(_googleToken)
+  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
 
   const googleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      console.log(tokenResponse)
       if (tokenResponse.access_token) {
         setGoogleToken(tokenResponse.access_token)
-        _setGoogleToken(tokenResponse.access_token)
+        if (postLoginRedirect) {
+          const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
+          setPostLoginRedirect(null)
+          window.location.href = newUrl.toString()
+        }
       }
     },
   })
@@ -55,15 +58,16 @@ export const useOAuth2 = (): UseOAuth2Return => {
   }
   // Just do both.
   const fancyLogout = async () => {
-    _setGoogleToken('')
     setGoogleToken('')
     googleLogout()
     logOut()
+    localStorage.clear()
+    log.debug('LOGGED OUT')
   }
 
   return {
     tokenData,
-    token: authType === AuthTypeEnum.DISCORD ? token : googleToken,
+    token: authType === AuthTypeEnum.GOOGLE ? googleToken : token,
     error,
     idToken,
     authType,
@@ -78,11 +82,17 @@ export const useOAuth2 = (): UseOAuth2Return => {
 type LoginSwitcherObj = {
   authType: AuthTypeEnum
   setAuthType: (authType: AuthTypeEnum) => void
+  googleToken: string
+  setGoogleToken: (token: string) => void
 }
 
-const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
+export const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
   authType: AuthTypeEnum.DISCORD,
   setAuthType: () => {
+    //
+  },
+  googleToken: '',
+  setGoogleToken: (token: string) => {
     //
   },
 })
@@ -99,6 +109,9 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.DISCORD)
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
+
+  const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
+  const [googleToken, setGoogleToken] = React.useState<string>(_googleToken)
 
   const setAuthType = (newAuthType: AuthTypeEnum) => {
     setAuthTypeLS(newAuthType)
@@ -118,7 +131,17 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   }
 
   return (
-    <LoginContextWrapper.Provider value={{ authType, setAuthType }}>
+    <LoginContextWrapper.Provider
+      value={{
+        authType,
+        setAuthType,
+        googleToken,
+        setGoogleToken: (newToken: string) => {
+          _setGoogleToken(newToken)
+          setGoogleToken(newToken)
+        },
+      }}
+    >
       <GoogleOAuthProvider clientId="413063286287-oto0h8addk8jic8h6ontaf2f8l9r23h0.apps.googleusercontent.com">
         <AuthProvider authConfig={discordAuth}>{children}</AuthProvider>
       </GoogleOAuthProvider>

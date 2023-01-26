@@ -16,8 +16,8 @@ import useLocalStorage from './useLocalStorage'
  * @returns
  */
 export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { token, authType } = useOAuth2()
-
+  const { token, loginInProgress, authType } = useOAuth2()
+  // const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
   const [APIWorking, setAPIWorking] = useState(true)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
 
@@ -125,7 +125,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         },
       }),
     })
-  }, [token])
+  }, [token, loginInProgress, authType])
 
   return (
     <ApolloProvider client={client}>
@@ -162,11 +162,11 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   })
 
   useEffect(() => {
-    if (!isAuthenticated && apolloClient) {
+    if (!token || (token.length === 0 && apolloClient)) {
       log.debug('User is not authenticated, clearing cache')
+      apolloClient.clearStore()
     }
-  }, [isAuthenticated, apolloClient])
-
+  }, [token, apolloClient])
   return (
     <LoginContext.Provider
       value={{

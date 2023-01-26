@@ -34,7 +34,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
   const pageTitle = !login.isInitialized ? 'Initialize User' : 'Verify User'
   const redirectTimerRef = React.useRef<NodeJS.Timeout>()
 
-  if (login.isVerified) {
+  if (!login.loading && login.isVerified) {
     // Wait 5 seconds and then redirect to the page they were on
     if (!redirectTimerRef.current) {
       redirectTimerRef.current = setTimeout(fns.backToPage, 5000)
@@ -163,14 +163,19 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
               </Button>
             </>
           )}
-          {!verifyOnly && (
-            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-              <Button color="secondary" size="large" onClick={fns.deleteUser}>
-                No thanks, I'm good.
-              </Button>
-              <Box sx={{ flex: '1 1 auto' }} />
-            </Box>
-          )}
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Button
+              color="secondary"
+              size="large"
+              fullWidth
+              sx={{ margin: '0 auto' }}
+              onClick={() => {
+                fns.backToPage()
+              }}
+            >
+              No thanks, I'm good.
+            </Button>
+          </Box>
         </>
       )}
     </PageWrapper>
