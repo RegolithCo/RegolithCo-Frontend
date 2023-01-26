@@ -288,6 +288,7 @@ export const useUserProfile = (): useSessionsReturn => {
         refetchQueries: [GetUserProfileDocument],
       }).then(() => {
         ctx.logOut()
+        localStorage.clear()
         navigate('/')
       })
     },

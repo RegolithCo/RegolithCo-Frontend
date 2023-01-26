@@ -32,7 +32,6 @@ export const useOAuth2 = (): UseOAuth2Return => {
     useContext(LoginContextWrapper)
   const { tokenData, token, login, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
-  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
   const googleTimerRef = React.useRef<NodeJS.Timeout>()
 
   const googleLogin = React.useCallback(
@@ -41,15 +40,10 @@ export const useOAuth2 = (): UseOAuth2Return => {
         if (tokenResponse.access_token) {
           if (refreshPopupOpen) setRefreshPopupOpen(false) // just in case
           setGoogleToken(tokenResponse.access_token, tokenResponse.expires_in)
-          if (postLoginRedirect) {
-            const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
-            setPostLoginRedirect(null)
-            window.location.href = newUrl.toString()
-          }
         }
       },
     }),
-    [googleToken, postLoginRedirect, setGoogleToken, setPostLoginRedirect]
+    [googleToken, setGoogleToken]
   )
 
   React.useEffect(() => {
@@ -131,7 +125,6 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   // This should persist the key with the other choices
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.DISCORD)
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
-  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
   const [refreshPopupOpen, setRefreshPopupOpen] = useState(false)
   const [googleToken, _setGoogleToken] = useLocalStorage<[string, number | null]>('ROCP_GooToken', ['', null])
   console.log('authTypeLS', authTypeLS, authType)
@@ -147,13 +140,6 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => {
       // window.confirm('Session expired. Refresh page to continue using the site?') && event.login(),
       setRefreshPopupOpen(true)
-    },
-    postLogin: () => {
-      if (postLoginRedirect) {
-        const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
-        setPostLoginRedirect(null)
-        window.location.href = newUrl.toString()
-      }
     },
   }
 

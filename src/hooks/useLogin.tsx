@@ -165,6 +165,14 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   })
 
   useEffect(() => {
+    if (postLoginRedirect && isAuthenticated && Boolean(userProfileQry.data?.profile)) {
+      const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
+      setPostLoginRedirect(null)
+      window.location.href = newUrl.toString()
+    }
+  }, [postLoginRedirect, setPostLoginRedirect])
+
+  useEffect(() => {
     if (!token || (token.length === 0 && apolloClient)) {
       log.debug('User is not authenticated, clearing cache')
       apolloClient.clearStore()
