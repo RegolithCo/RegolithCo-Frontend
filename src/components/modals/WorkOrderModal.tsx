@@ -27,6 +27,12 @@ export interface WorkOrderModalProps {
 const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   paper: {
     '& .MuiDialog-paper': {
+      borderRadius: 2,
+      [theme.breakpoints.down('sm')]: {
+        margin: 0,
+        borderRadius: 0,
+        maxHeight: '100%',
+      },
       [theme.breakpoints.up('md')]: {
         height: 'calc(100% - 64px)',
         minHeight: 600,
@@ -35,8 +41,22 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       },
       backgroundColor: '#282828cc',
       backgroundImage: 'none',
-      borderRadius: 2,
       border: `2px solid ${theme.palette.primary.dark}`,
+    },
+  },
+  containerBox: {
+    overflow: 'hidden',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  workOrderBox: {
+    overflow: 'hidden',
+    overflowY: 'auto',
+    flexGrow: 1,
+
+    [theme.breakpoints.up('md')]: {
+      overflowY: 'hidden',
     },
   },
   icon: {
@@ -126,7 +146,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" disableEscapeKeyDown={isEditing} sx={styles.paper}>
       <WorkIcon color="inherit" fontSize="large" sx={styles.icon} />
-      <Box sx={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={styles.containerBox}>
         <Toolbar
           sx={{
             zIndex: 20,
@@ -173,41 +193,44 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
 
           {/* <Chip label={workOrder?.state} color="secondary" /> */}
         </Toolbar>
-        {workOrder ? (
-          <WorkOrderCalc
-            onChange={setNewWorkOrder}
-            onSetCrewSharePaid={(scName: string, paid: boolean) => {
-              // IMPORTANT: if we're editing an existing work order we can set this thing as paid
-              // directly because it already exists int he database
+        <Box sx={styles.workOrderBox}>
+          {workOrder ? (
+            <WorkOrderCalc
+              onChange={setNewWorkOrder}
+              onSetCrewSharePaid={(scName: string, paid: boolean) => {
+                // IMPORTANT: if we're editing an existing work order we can set this thing as paid
+                // directly because it already exists int he database
 
-              // If this is a new work order, we need to update the state of the new work order first
-              // then the whole object will go to the server together
-              if (isNew) {
+                // If this is a new work order, we need to update the state of the new work order first
+                // then the whole object will go to the server together
+                if (isNew) {
+                  setNewWorkOrder({
+                    ...newWorkOrder,
+                    crewShares: (newWorkOrder.crewShares || [])?.map((share) => {
+                      if (share.scName === scName) return { ...share, paid }
+                      return share
+                    }),
+                  })
+                } else onSetCrewSharePaid && onSetCrewSharePaid(scName, paid)
+              }}
+              onDeleteCrewShare={(scName: string) => {
                 setNewWorkOrder({
                   ...newWorkOrder,
-                  crewShares: (newWorkOrder.crewShares || [])?.map((share) => {
-                    if (share.scName === scName) return { ...share, paid }
-                    return share
-                  }),
+                  crewShares: (newWorkOrder.crewShares || [])?.filter((share) => share.scName !== scName),
                 })
-              } else onSetCrewSharePaid && onSetCrewSharePaid(scName, paid)
-            }}
-            onDeleteCrewShare={(scName: string) => {
-              setNewWorkOrder({
-                ...newWorkOrder,
-                crewShares: (newWorkOrder.crewShares || [])?.filter((share) => share.scName !== scName),
-              })
-            }}
-            workOrder={newWorkOrder}
-            allowEdit={allowEdit}
-            allowPay={allowPay}
-            isEditing={isEditing}
-            templateJob={templateJob}
-            userSuggest={userSuggest}
-          />
-        ) : (
-          'Loading...'
-        )}
+              }}
+              workOrder={newWorkOrder}
+              allowEdit={allowEdit}
+              allowPay={allowPay}
+              isEditing={isEditing}
+              templateJob={templateJob}
+              userSuggest={userSuggest}
+            />
+          ) : (
+            'Loading...'
+          )}
+        </Box>
+
         <DialogActions sx={{ backgroundColor: theme.palette.primary.dark, flex: '0 0' }}>
           <Button
             color="error"

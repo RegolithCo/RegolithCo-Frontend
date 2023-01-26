@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Card from '@mui/material/Card'
 import { keyframes } from '@mui/system'
-import { Avatar, Box, ThemeProvider, Tooltip, Typography, useTheme } from '@mui/material'
+import { Avatar, Box, ThemeProvider, Tooltip, Typography } from '@mui/material'
 import { PersonSearch, Rocket, SvgIconComponent } from '@mui/icons-material'
 import {
   clusterCalc,
@@ -12,7 +12,6 @@ import {
   ScoutingFindTypeEnum,
   ShipClusterFind,
   VehicleClusterFind,
-  SessionStateEnum,
   SessionUserStateEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'

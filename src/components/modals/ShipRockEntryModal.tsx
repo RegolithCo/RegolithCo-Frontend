@@ -167,10 +167,11 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     if (shipRock && !isEqual(shipRock, newShipRock)) setNewShipRock(shipRock)
   }, [shipRock])
 
-  const [volume, value] = React.useMemo(() => {
+  const [volume, value, percentTotal] = React.useMemo(() => {
     try {
       const [volume, value] = shipRockCalc(newShipRock)
-      return [volume, value]
+      const percentTotal = (newShipRock.ores || []).reduce((acc, { percent }) => acc + percent, 0)
+      return [volume, value, percentTotal]
     } catch (e) {
       console.log(e)
       return [0, 0]
@@ -189,7 +190,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     !newShipRock.ores ||
     !newShipRock.ores.length ||
     newShipRock.mass <= SHIP_ROCK_BOUNDS[0] ||
-    newShipRock.mass > SHIP_ROCK_BOUNDS[1]
+    newShipRock.mass > SHIP_ROCK_BOUNDS[1] ||
+    Boolean(percentTotal && percentTotal > 1)
 
   return (
     <>
@@ -272,6 +274,11 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               />
             </ThemeProvider>
           </Box>
+          {percentTotal && percentTotal > 1 ? (
+            <Typography variant="caption" sx={styles.headTitles} component="div" color="error">
+              <em>Percents cannot add to greater than 100%</em>
+            </Typography>
+          ) : null}
           <Box>
             {ores.map((ore, idx) => (
               <Grid2 container spacing={3} paddingX={1} paddingY={0} key={`ore-${idx}`}>
@@ -343,6 +350,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             <Button color="error" onClick={onClose} variant="contained" startIcon={<Cancel />}>
               Cancel
             </Button>
+            <div style={{ flexGrow: 1 }} />
             <div style={{ flexGrow: 1 }} />
             {!isNew && (
               <Button

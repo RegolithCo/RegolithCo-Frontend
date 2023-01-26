@@ -48,6 +48,9 @@ import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModa
 import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
 import { ScoutingFindUserList } from './ScoutingFindUserList'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import dayjs from 'dayjs'
+dayjs.extend(relativeTime)
 
 export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
@@ -114,6 +117,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     textAlign: 'center',
     mt: 3,
     pb: 2,
+    mb: 2,
     // border: '1px solid red',
   },
   clusterCountBadge: {
@@ -402,7 +406,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             {!standalone && (
               <>
                 <Typography variant="overline" component="div">
-                  Discovered By:
+                  Found {dayjs(scoutingFind.createdAt).from(dayjs(Date.now()))} By:
                 </Typography>
                 <ScoutingFindUserList
                   users={[scoutingFind.owner as User]}

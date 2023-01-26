@@ -119,7 +119,15 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           //
         }}
         primary={user?.scName}
-        secondary={secondaryText.length > 0 ? secondaryText : null}
+        secondary={
+          secondaryText.length > 0
+            ? secondaryText.map((it, idx) => (
+                <span key={`it-${idx}`} style={{ fontSize: 'inherit' }}>
+                  {it}
+                </span>
+              ))
+            : null
+        }
       />
       {(isOwner || !isMe) && addFriend && (
         <ListItemSecondaryAction>
