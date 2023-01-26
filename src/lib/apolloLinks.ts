@@ -84,9 +84,11 @@ export type ErrorLinkThunk = (args: {
 export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorking }) =>
   onError(({ graphQLErrors, networkError, forward, operation }) => {
     if (graphQLErrors) {
-      graphQLErrors.forEach((error) => {
-        console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
-      })
+      // Wer handle this in useGQLErrors instead
+      // graphQLErrors.forEach((error) => {
+      //   if (ExceptList.includes(error.extensions.code as ErrorCode)) return
+      //   console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
+      // })
     }
     if (networkError) {
       try {

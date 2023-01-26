@@ -24,6 +24,7 @@ import {
   CrewShareInput,
   DestructuredSettings,
   destructureSettings,
+  ErrorCode,
   GetSessionQuery,
   mergeDestructured,
   OtherOrder,
@@ -115,6 +116,17 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       sessionStubQry.stopPolling()
     }
   }, [sessionStubQry.data, sessionQry.data])
+
+  React.useEffect(() => {
+    if (sessionQry.error) {
+      try {
+        if (sessionQry.error.graphQLErrors.find((e) => e.extensions.code === ErrorCode.SESSION_NOT_FOUND)) navigate('/')
+      } catch {
+        //
+      }
+      console.log('sessionQry.error', sessionQry.error)
+    }
+  }, [sessionQry.error])
 
   const sessionActiveMemberQry = useGetSessionActiveMembersQuery({
     variables: {

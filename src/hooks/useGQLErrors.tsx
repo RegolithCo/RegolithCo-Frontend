@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useSnackbar } from 'notistack'
 import { MutationTuple, QueryResult } from '@apollo/client'
 import log from 'loglevel'
+import { ErrorCode } from '@regolithco/common'
 /**
  * Just a handy hook to handle errors from queries and mutations
  *
@@ -10,6 +11,9 @@ import log from 'loglevel'
  * @param mutations
  * @returns
  */
+// Some errors we handle in other ways
+const ExceptList: ErrorCode[] = [ErrorCode.SESSION_NOT_FOUND]
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: MutationTuple<any, any>[]) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -17,7 +21,11 @@ export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: Mutati
     queries.forEach(({ error }) => {
       if (error) {
         if (error.graphQLErrors) {
-          enqueueSnackbar('Query Error:' + error.name, { variant: 'error' })
+          error.graphQLErrors.forEach((gqlErr) => {
+            if (ExceptList.includes(gqlErr.extensions.code as ErrorCode)) return
+            console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
+            enqueueSnackbar('Query Error:' + error.name, { variant: 'error' })
+          })
         }
         // if (error) console.error('upsert', error.graphQLErrors)
         log.debug(error)

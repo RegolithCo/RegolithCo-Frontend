@@ -28,7 +28,9 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Typography variant="body1">{message}</Typography>
+        <Typography variant="body1" component="div">
+          {message}
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
