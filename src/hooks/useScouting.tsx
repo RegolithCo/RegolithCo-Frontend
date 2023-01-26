@@ -1,4 +1,8 @@
 import {
+  GetSessionDocument,
+  GetSessionScoutingDocument,
+  GetSessionScoutingQueryResult,
+  GetSessionUserDocument,
   useDeleteScoutingFindMutation,
   useGetScoutingFindQuery,
   useJoinScoutingFindMutation,
@@ -8,8 +12,17 @@ import {
 
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
-import { ScoutingFind, scoutingFindDestructured, SessionUser, User } from '@regolithco/common'
+import {
+  GetSessionQuery,
+  GetSessionScoutingQuery,
+  ScoutingFind,
+  scoutingFindDestructured,
+  SessionUser,
+  SessionUserStateEnum,
+  User,
+} from '@regolithco/common'
 import { useSnackbar } from 'notistack'
+import { Session } from 'inspector'
 
 type useSessionsReturn = {
   scoutingFind?: ScoutingFind
@@ -49,22 +62,13 @@ export const useScoutingFind = (
     },
   })
   const joinScoutingFindMutation = useJoinScoutingFindMutation({
-    // update: (cache, { data }) => {
-    //   if (!sessionUser) return
-    //   cache.modify({
-    //     id: cache.identify(scoutingFindQry.data?.scoutingFind as ScoutingFind),
-    //     fields: {
-    //       attendance(existingAttendance: SessionUser[] = []) {
-    //         return [...existingAttendance, sessionUser]
-    //       },
-    //     },
-    //   })
-    // },
+    onCompleted: () => {
+      enqueueSnackbar('You have joined the scouting find', { variant: 'success' })
+    },
   })
   const leaveScoutingFindMutation = useLeaveScoutingFindMutation({
     onCompleted: () => {
       enqueueSnackbar('You have left the scouting find', { variant: 'warning' })
-      // navigate(`/session/${sessionId}`)
     },
   })
   const queries = [scoutingFindQry]
@@ -130,6 +134,20 @@ export const useScoutingFind = (
             attendance: [...(scoutingFindQry.data?.scoutingFind?.attendance || []), sessionUser as SessionUser],
           },
         },
+        refetchQueries: [
+          {
+            query: GetSessionUserDocument,
+            variables: {
+              sessionId,
+            },
+          },
+          {
+            query: GetSessionScoutingDocument,
+            variables: {
+              sessionId,
+            },
+          },
+        ],
       })
     },
     leaveScoutingFind: (findId: string) => {
@@ -150,6 +168,20 @@ export const useScoutingFind = (
             ),
           },
         },
+        refetchQueries: [
+          {
+            query: GetSessionUserDocument,
+            variables: {
+              sessionId,
+            },
+          },
+          {
+            query: GetSessionScoutingDocument,
+            variables: {
+              sessionId,
+            },
+          },
+        ],
       })
     },
   }
