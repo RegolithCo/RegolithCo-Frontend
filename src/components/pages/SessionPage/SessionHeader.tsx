@@ -187,7 +187,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
             gutterBottom
             variant="caption"
           >
-            Users must be specified: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
+            Users must be mentioned to join: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
           </Typography>
         </Grid>
       </Grid>
