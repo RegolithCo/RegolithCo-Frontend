@@ -6,7 +6,6 @@ import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@regolithco/c
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { WorkOrderTypeChooser } from '../fields/WorkOrderTypeChooser'
 import { dummySession, dummyUserProfile, newWorkOrderMaker } from '../../lib/newObjectFactories'
-import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../../hooks/useOAuth2'
 
 export interface WorkOrderCalcPageProps {

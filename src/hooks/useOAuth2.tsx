@@ -4,7 +4,10 @@ import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAut
 import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
+import { logRoles } from '@testing-library/react'
 const redirectUrl = new URL(process.env.PUBLIC_URL, window.location.origin).toString()
+
+let GOOGLETIMEOUT: NodeJS.Timeout | null = null
 
 const discordConfig: TAuthConfig = {
   clientId: '1067082442877440050',
@@ -31,11 +34,15 @@ export const useOAuth2 = (): UseOAuth2Return => {
   const { authType, setAuthType, googleToken, setGoogleToken } = useContext(LoginContextWrapper)
   const { tokenData, token, login, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
-
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
 
   const googleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
+      log.info(`Setting Google logout in ${tokenResponse.expires_in} seconds`)
+      GOOGLETIMEOUT = setTimeout(() => {
+        fancyLogout()
+      }, tokenResponse.expires_in * 1000)
+
       if (tokenResponse.access_token) {
         setGoogleToken(tokenResponse.access_token)
         if (postLoginRedirect) {
@@ -61,7 +68,6 @@ export const useOAuth2 = (): UseOAuth2Return => {
     setGoogleToken('')
     googleLogout()
     logOut()
-    localStorage.clear()
     log.debug('LOGGED OUT')
   }
 
@@ -112,7 +118,8 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
 
   const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
   const [googleToken, setGoogleToken] = React.useState<string>(_googleToken)
-
+  console.log('authTypeLS', authTypeLS, authType)
+  console.log('Google Token', googleToken)
   const setAuthType = (newAuthType: AuthTypeEnum) => {
     setAuthTypeLS(newAuthType)
     _setAuthType(newAuthType)

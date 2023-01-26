@@ -80,8 +80,8 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
             my: 4,
           }}
           onClick={() => {
-            login()
             onClose()
+            login()
           }}
           size="large"
           fullWidth

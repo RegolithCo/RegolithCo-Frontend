@@ -1,7 +1,5 @@
 import {
-  GetSessionDocument,
   GetSessionScoutingDocument,
-  GetSessionScoutingQueryResult,
   GetSessionUserDocument,
   useDeleteScoutingFindMutation,
   useGetScoutingFindQuery,
@@ -12,17 +10,8 @@ import {
 
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
-import {
-  GetSessionQuery,
-  GetSessionScoutingQuery,
-  ScoutingFind,
-  scoutingFindDestructured,
-  SessionUser,
-  SessionUserStateEnum,
-  User,
-} from '@regolithco/common'
+import { ScoutingFind, scoutingFindDestructured, SessionUser } from '@regolithco/common'
 import { useSnackbar } from 'notistack'
-import { Session } from 'inspector'
 
 type useSessionsReturn = {
   scoutingFind?: ScoutingFind
@@ -127,11 +116,17 @@ export const useScoutingFind = (
           __typename: 'Mutation',
           joinScoutingFind: {
             ...(scoutingFindQry.data?.scoutingFind as ScoutingFind),
-            attendanceIds: [
-              ...(scoutingFindQry.data?.scoutingFind?.attendanceIds || []),
-              sessionUser?.owner?.userId as string,
-            ],
-            attendance: [...(scoutingFindQry.data?.scoutingFind?.attendance || []), sessionUser as SessionUser],
+            attendanceIds: Array.from(
+              new Set([
+                ...(scoutingFindQry.data?.scoutingFind?.attendanceIds || []),
+                sessionUser?.owner?.userId as string,
+              ])
+            ),
+            attendance: scoutingFindQry.data?.scoutingFind?.attendance?.find(
+              ({ owner }) => owner?.userId === sessionUser?.owner?.userId
+            )
+              ? scoutingFindQry.data?.scoutingFind?.attendance
+              : [...(scoutingFindQry.data?.scoutingFind?.attendance || []), sessionUser as SessionUser],
           },
         },
         refetchQueries: [

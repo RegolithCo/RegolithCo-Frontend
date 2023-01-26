@@ -1,10 +1,9 @@
 import * as React from 'react'
-import { Box, Button, Dialog, DialogActions, ThemeProvider } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, SxProps, Theme, ThemeProvider } from '@mui/material'
 
 import { ScoutingFind, ScoutingFindStateEnum, SessionUser } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
-import { omit } from 'lodash'
 import { Cancel, Create, Delete, Save } from '@mui/icons-material'
 import { DeleteModal } from './DeleteModal'
 
@@ -21,6 +20,25 @@ export interface ScoutingFindModalProps {
   isNew?: boolean
   onClose: () => void
 }
+
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  dialog: {
+    //     [theme.breakpoints.up('md')]: {
+    '& .MuiDialog-paper': {
+      borderRadius: 10,
+      border: `8px solid ${theme.palette.primary.dark}`,
+    },
+  },
+  boxContainer: {
+    position: 'relative',
+    overflow: 'hidden',
+    overflowY: 'auto',
+    [theme.breakpoints.up('md')]: {
+      overflowY: 'hidden',
+    },
+    height: '100%',
+  },
+})
 
 export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
   open,
@@ -44,27 +62,11 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
   }, [scoutingFind])
   if (!scoutingFind) return null
   const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
+  const styles = stylesThunk(theme)
   return (
     <ThemeProvider theme={theme}>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth="sm"
-        disableEscapeKeyDown
-        sx={{
-          '& .MuiDialog-paper': {
-            borderRadius: 10,
-            border: `8px solid ${theme.palette.primary.dark}`,
-          },
-        }}
-      >
-        <Box
-          sx={{
-            overflow: 'hidden',
-            height: '100%',
-          }}
-        >
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" disableEscapeKeyDown sx={styles.dialog}>
+        <Box sx={styles.boxContainer}>
           <ScoutingFindCalc
             scoutingFind={isNew ? newScoutingFind : scoutingFind}
             isNew={isNew}

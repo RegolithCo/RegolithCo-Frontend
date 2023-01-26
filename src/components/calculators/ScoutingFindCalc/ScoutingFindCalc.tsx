@@ -17,9 +17,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   ThemeProvider,
-  ListItemText,
-  ListItem,
-  List,
   MenuItem,
   Select,
 } from '@mui/material'
@@ -38,9 +35,10 @@ import {
   ScoutingFindStateEnum,
   getScoutingFindStateName,
   SessionUserStateEnum,
+  User,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AddCircle, Person, SvgIconComponent } from '@mui/icons-material'
+import { AddCircle, EmojiPeople, ExitToApp, Person, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
@@ -48,6 +46,8 @@ import { DeleteModal } from '../../modals/DeleteModal'
 import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModal'
 import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
+import { ScoutingFindUserList } from './ScoutingFindUserList'
+import { EmptyScanCard } from '../../cards/EmptyScanCard'
 
 export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
@@ -81,17 +81,21 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     },
   },
   stateBtnGrp: {
-    '& *': {
-      fontSize: '0.8em',
-    },
+    '& *': {},
     '& .MuiToggleButtonGroup-root': {
-      p: 0,
-      m: 0,
+      width: '100%',
+    },
+    '& .MuiToggleButton-root.Mui-selected, & .MuiToggleButton-root.Mui-selected:hover': {
+      cursor: 'default',
+      color: theme.palette.primary.contrastText,
+      boxShadow: `0 0 4px 2px ${theme.palette.primary.light}66, 0 0 10px 5px ${theme.palette.primary.light}33`,
+      background: theme.palette.primary.dark,
     },
     '& .MuiToggleButton-root': {
-      px: 1,
-      py: 0.6,
-      m: 0,
+      flexGrow: 1,
+      // px: 0.7,
+      // py: 0.3,
+      // m: 0,
     },
   },
   scoutingFindId: {
@@ -154,22 +158,24 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     textTransform: 'uppercase',
     fontWeight: 'bold',
   },
-  attendanceList: {
-    '& .MuiListItem-root': {
-      p: 0,
-    },
-    '& .MuiTypography-root': {
-      display: 'block',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
+  statsTable: {
+    maxWidth: 340,
+    '& .MuiTableCell-root, & .MuiTableCell-root *': {
+      padding: 0,
+      [theme.breakpoints.up('md')]: {
+        padding: 0.3,
+      },
+      fontSize: '0.875rem',
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
     },
   },
-  statsTable: {
-    maxWidth: 250,
-    '& .MuiTableCell-root, & .MuiTableCell-root *': {
-      // fontSize: 10,
-      padding: 0,
+  totalRow: {
+    '& .MuiTableCell-root': {
+      borderTop: '2px solid',
+      fontSize: '0.875rem',
+      color: theme.palette.primary.main,
+      borderBottom: '2px solid',
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
     },
@@ -306,11 +312,23 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   if (scanComplete) profitSymbol = ''
   else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
 
-  let attendanceState = AttendanceStateEnum.NotJoined
+  let myAttendanceState = AttendanceStateEnum.NotJoined
   if (scoutingFind.attendanceIds?.includes(me.owner?.userId as string)) {
-    attendanceState =
-      me.state === SessionUserStateEnum.Travelling ? AttendanceStateEnum.Joined : AttendanceStateEnum.EnRoute
+    myAttendanceState =
+      me.state === SessionUserStateEnum.Travelling ? AttendanceStateEnum.EnRoute : AttendanceStateEnum.Joined
   }
+
+  // Just a handy array to map over
+  const placeholderRocks: unknown[] =
+    clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
+
+  const onSiteUsers: User[] =
+    scoutingFind.attendance?.filter((a) => a.state === SessionUserStateEnum.OnSite).map(({ owner }) => owner as User) ||
+    []
+  const enRouteUsers: User[] =
+    scoutingFind.attendance
+      ?.filter((a) => a.state === SessionUserStateEnum.Travelling)
+      .map(({ owner }) => owner as User) || []
 
   return (
     <ThemeProvider theme={theme}>
@@ -356,7 +374,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         {/* Top row grid */}
         <Grid container spacing={2} padding={2} xs={12}>
           {/* Hero card */}
-          <Grid xs={3} sx={styles.topRowGrid}>
+          <Grid xs={6} sm={3} sx={styles.topRowGrid}>
             <Box sx={styles.numberBox}>
               <Typography sx={styles.itemName}>{itemName}</Typography>
               <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
@@ -381,9 +399,21 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 </Avatar>
               </Badge>
             </Box>
+            {!standalone && (
+              <>
+                <Typography variant="overline" component="div">
+                  Discovered By:
+                </Typography>
+                <ScoutingFindUserList
+                  users={[scoutingFind.owner as User]}
+                  meId={me.owner?.userId as string}
+                  ownerId={scoutingFind.ownerId}
+                />
+              </>
+            )}
           </Grid>
           {/* Cluster stats */}
-          <Grid xs={standalone ? 9 : 5} sx={styles.topRowGrid}>
+          <Grid xs={6} sm={standalone ? 9 : 5} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
@@ -412,15 +442,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     })}
                 </TableBody>
                 <TableFooter>
-                  <TableRow
-                    sx={{
-                      '& .MuiTableCell-root': {
-                        borderTop: '2px solid',
-                        color: theme.palette.primary.main,
-                        borderBottom: '2px solid',
-                      },
-                    }}
-                  >
+                  <TableRow sx={styles.totalRow}>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">{MValueFormatter(summary.volume, MValueFormat.number_sm, 1)}</TableCell>
                     <TableCell align="right">
@@ -465,10 +487,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             )}
             {!standalone && joinScoutingFind && leaveScoutingFind && (
               <Box sx={styles.stateBtnGrp}>
+                <Typography variant="overline" component="div">
+                  I am:
+                </Typography>
                 <ToggleButtonGroup
                   size="small"
-                  aria-label="Small sizes"
-                  value={attendanceState}
+                  value={myAttendanceState}
                   sx={{
                     py: 2,
                   }}
@@ -476,38 +500,42 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   <ToggleButton
                     value={AttendanceStateEnum.EnRoute}
                     onClick={() => {
-                      attendanceState !== AttendanceStateEnum.EnRoute &&
+                      myAttendanceState !== AttendanceStateEnum.EnRoute &&
                         joinScoutingFind &&
                         joinScoutingFind(scoutingFind.scoutingFindId, true)
                     }}
                     key="left"
                     sx={{ flexGrow: 1 }}
                   >
-                    On my way
+                    <RocketLaunch />
+                    En-Route
                   </ToggleButton>
                   <ToggleButton
                     value={AttendanceStateEnum.Joined}
                     onClick={() => {
-                      attendanceState !== AttendanceStateEnum.Joined &&
+                      myAttendanceState !== AttendanceStateEnum.Joined &&
                         joinScoutingFind &&
                         joinScoutingFind(scoutingFind.scoutingFindId, false)
                     }}
                     key="center"
                     sx={{ flexGrow: 1 }}
                   >
-                    I'm here
+                    <EmojiPeople />
+                    Here
                   </ToggleButton>
                   <ToggleButton
                     value="NONE"
+                    disabled={myAttendanceState === AttendanceStateEnum.NotJoined}
                     key="justify"
                     onClick={() => {
-                      attendanceState !== AttendanceStateEnum.NotJoined &&
+                      myAttendanceState !== AttendanceStateEnum.NotJoined &&
                         leaveScoutingFind &&
                         leaveScoutingFind(scoutingFind.scoutingFindId)
                     }}
                     sx={{ flexGrow: 1 }}
                   >
-                    I'm Leaving
+                    <ExitToApp />
+                    Leaving
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Box>
@@ -515,38 +543,24 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           </Grid>
           {/* Actions and attendance */}
           {!standalone && (
-            <Grid xs={4} sx={styles.topRowGrid}>
+            <Grid xs={12} sm={4} sx={styles.topRowGrid}>
               <Typography variant="overline" component="div">
-                Discoverd By:
+                En-Route:
               </Typography>
-              <Typography
-                component="div"
-                variant="caption"
-                sx={{
-                  textAlign: 'center',
-                  borderTop: `1px solid ${theme.palette.primary.dark}`,
-                  borderBottom: `1px solid ${theme.palette.primary.dark}`,
-                }}
-              >
-                <Person sx={{ height: 20, width: 20, pr: 1, lineHeight: 1, mb: -0.5 }} />
-                {scoutingFind.owner?.scName}
-              </Typography>
+              <ScoutingFindUserList
+                meId={me.owner?.userId as string}
+                users={enRouteUsers}
+                ownerId={scoutingFind.ownerId}
+              />
+
               <Typography variant="overline" component="div">
-                On Site:
+                On-Site:
               </Typography>
-              <List dense disablePadding sx={styles.attendanceList}>
-                {scoutingFind.attendance?.map((att, idx) => (
-                  <ListItem key={`user-${idx}`} divider>
-                    <ListItemText
-                      primary={
-                        <>
-                          <Person sx={{ height: 20, width: 20, pr: 1, lineHeight: 1, mb: -0.5 }} /> {att.owner?.scName}
-                        </>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
+              <ScoutingFindUserList
+                meId={me.owner?.userId as string}
+                users={onSiteUsers}
+                ownerId={scoutingFind.ownerId}
+              />
             </Grid>
           )}
         </Grid>
@@ -556,13 +570,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             <Box sx={{ width: '100%' }}>
               <Box sx={{ display: 'flex' }}>
                 <Typography variant="overline" component="div">
-                  Rock Scans
+                  Rocks Scanned: {shipFind.shipRocks?.length || vehicleFind.vehicleRocks?.length}/
+                  {shipFind.clusterCount || 0}
                 </Typography>
                 <div style={{ flexGrow: 1 }} />
                 <Button
                   startIcon={<AddCircle />}
                   size="small"
-                  variant="contained"
+                  variant="text"
                   onClick={() => {
                     setEditScanModalOpen([-1, false])
                     setAddScanModalOpen({
@@ -576,14 +591,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   Add Scan
                 </Button>
               </Box>
-              <Grid container sx={styles.scansGrid}>
+              <Grid container sx={styles.scansGrid} margin={1} spacing={3}>
                 {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
                   (shipFind.shipRocks || []).map((rock, idx) => {
                     const newOres = [...(rock.ores || [])]
                     newOres.sort((a, b) => (b.percent || 0) - (a.percent || 0))
                     const newRock = { ...rock, ores: newOres }
                     return (
-                      <Grid key={idx} xs={6} sm={4}>
+                      <Grid key={idx} xs={6} sm={4} md={3}>
                         <ShipRockCard
                           rock={newRock}
                           rockValue={summary.byRock ? summary.byRock[idx] : undefined}
@@ -604,6 +619,23 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       </Grid>
                     )
                   })}
+                {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
+                  placeholderRocks.map((_, idx) => (
+                    <Grid key={idx} xs={6} sm={4} md={3}>
+                      <EmptyScanCard
+                        Icon={RockIcon}
+                        onClick={() => {
+                          setEditScanModalOpen([-1, false])
+                          setAddScanModalOpen({
+                            __typename: 'ShipRock',
+                            state: RockStateEnum.Ready,
+                            mass: 3000,
+                            ores: [],
+                          })
+                        }}
+                      />
+                    </Grid>
+                  ))}
               </Grid>
             </Box>
           </Grid>
