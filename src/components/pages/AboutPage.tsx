@@ -7,24 +7,27 @@ import { fontFamilies } from '../../theme'
 export const AboutPage: React.FC = () => {
   return (
     <PageWrapper title="About Regolith Co." maxWidth="sm" sx={{ marginLeft: { lg: '7%' } }}>
+      <Typography variant="body2" component="div" gutterBottom>
+        <em>"Don't mine alone"</em>
+      </Typography>
       <Typography>
-        Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share and scout together.
+        Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.
       </Typography>
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography paragraph>
-        It was developed by me. I am a software developer and a Star Citizen backer. I have been playing Star Citizen
-        since 2020. I am a member of the{' '}
+        It was developed by me. Hello! I am a software developer and a Star Citizen backer. I have been playing Star
+        Citizen since 2020. I am a member of the{' '}
         <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
           United Earth Mining Corporation (UEMC)
-        </Link>
-        .
+        </Link>{' '}
+        Organization.
       </Typography>
       <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
         Support the site
       </Typography>
       <Typography paragraph>
-        Everyone can use this site for free, hopefully forever. That said, server costs are a real thing so if you use
-        it and are looking for a way to help keep the lights on your support would be amazing!
+        Everyone can use this site for free, hopefully forever. That said, server costs are a real thing. If you use it
+        and are looking for a way to help keep the lights on, your support would be amazing!
       </Typography>
       <Stack
         direction="row"
@@ -57,7 +60,7 @@ export const AboutPage: React.FC = () => {
       <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
         Report Bugs / Get Help
       </Typography>
-      <Typography paragraph>RegolithCo is on twitter.</Typography>
+      <Typography paragraph>RegolithCo is on twitter. Go on, Slide into our DMs.</Typography>
       <Button
         startIcon={<Twitter />}
         variant="contained"
@@ -68,7 +71,9 @@ export const AboutPage: React.FC = () => {
       >
         @RegolithCo
       </Button>
-      <Typography paragraph>For the old-school among us here's an email address I check every now and then.</Typography>
+      <Typography paragraph>
+        For the old-school among us, here's an email address I check every now and then.
+      </Typography>
       <Typography
         component="div"
         sx={{
@@ -83,9 +88,8 @@ export const AboutPage: React.FC = () => {
       </Typography>
       <Typography variant="caption" paragraph sx={{ p: 1, m: 1 }}>
         Regolith Co. is a Star Citizen fansite, not affiliated with the Cloud Imperium group of companies in any way.
-        All content on this site not authored by its host or users are property of their respective owners. <br />
-        Star Citizen®, Roberts Space Industries® and Cloud Imperium® are registered trademarks of Cloud Imperium Rights
-        LLC.
+        All content on this site not authored by its host or users is property of their respective owners. Star
+        Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC.
       </Typography>
     </PageWrapper>
   )

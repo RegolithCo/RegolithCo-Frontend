@@ -298,7 +298,13 @@ const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactN
   return (
     <Tooltip title={tooltip}>
       <TableCell align="right" padding="none">
-        <MValue value={shareArr[1]} format={MValueFormat.number} />
+        <MValue
+          value={shareArr[1]}
+          format={MValueFormat.number}
+          typoProps={{
+            color: shareArr[1] >= 0 ? undefined : 'error',
+          }}
+        />
       </TableCell>
     </Tooltip>
   )

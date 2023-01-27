@@ -44,10 +44,10 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
   let itemName = 'rocks'
   switch (clusterType) {
     case ScoutingFindTypeEnum.Ship:
-      itemName = 'rocks'
+      itemName = 'mineable rocks'
       break
     case ScoutingFindTypeEnum.Vehicle:
-      itemName = 'gems'
+      itemName = 'mineable rocks'
       break
     case ScoutingFindTypeEnum.Salvage:
       itemName = 'wrecks'
@@ -84,7 +84,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           color: theme.palette.primary.contrastText,
         }}
       >
-        Number of {itemName}
+        Total {itemName}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -196,7 +196,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
             startIcon={<Save />}
             variant="contained"
             onClick={() => {
-              onSave(newClusterCount, vehicleOre, gemSize === 'ROC' ? 0.86 : 0.1)
+              onSave(newClusterCount, vehicleOre, gemSize === 'ROC' ? 0.15 : 0.05)
               onClose()
             }}
           >

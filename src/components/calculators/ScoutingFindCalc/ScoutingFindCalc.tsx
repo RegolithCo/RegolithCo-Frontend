@@ -439,7 +439,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
-            <TableContainer sx={{ opacity: scoutingFind.clusterType === ScoutingFindTypeEnum.Ship ? 1 : 0.2 }}>
+            <TableContainer sx={{ opacity: scoutingFind.clusterType !== ScoutingFindTypeEnum.Salvage ? 1 : 0.2 }}>
               <Table size="small" sx={styles.statsTable}>
                 <TableHead>
                   <TableRow>
@@ -457,7 +457,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           <TableCell>{getOreName(oreKey)}</TableCell>
                           <TableCell align="right">{MValueFormatter(volume, MValueFormat.number_sm, 1)}</TableCell>
                           <TableCell align="right">
-                            {MValueFormatter(potentialProfit, MValueFormat.number_sm)}
+                            {MValueFormatter(potentialProfit, MValueFormat.number_sm, 1)}
                           </TableCell>
                         </TableRow>
                       )
@@ -469,7 +469,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     <TableCell align="right">{MValueFormatter(summary.volume, MValueFormat.number_sm, 1)}</TableCell>
                     <TableCell align="right">
                       {profitSymbol}
-                      {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm)}
+                      {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm, 1)}
                     </TableCell>
                   </TableRow>
                   {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
@@ -724,7 +724,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               ores: [
                 {
                   ore: gemType as VehicleOreEnum,
-                  percent: random(0.6, 0.9, true),
+                  percent: 1.0,
                   __typename: 'VehicleRockOre',
                 },
               ],

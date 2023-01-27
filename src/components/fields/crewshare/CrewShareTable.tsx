@@ -186,6 +186,8 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
           )}
           clearOnBlur
           blurOnSelect
+          autoSelect
+          selectOnFocus
           fullWidth
           freeSolo
           getOptionLabel={(option) => {
