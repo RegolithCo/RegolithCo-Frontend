@@ -15,7 +15,7 @@ const actions = [
   {
     scoutingType: ScoutingFindTypeEnum.Vehicle,
     icon: <GemIcon />,
-    name: `Vehicle Mining Cluster`,
+    name: `Hand/ROC Mining Cluster`,
   },
   { scoutingType: ScoutingFindTypeEnum.Salvage, icon: <ClawIcon />, name: `Wreck(s)` },
 ]

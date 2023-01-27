@@ -191,7 +191,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     !newShipRock.ores.length ||
     newShipRock.mass <= SHIP_ROCK_BOUNDS[0] ||
     newShipRock.mass > SHIP_ROCK_BOUNDS[1] ||
-    Boolean(percentTotal && percentTotal > 1)
+    Boolean(percentTotal && percentTotal > 1) ||
+    Boolean(percentTotal === 0)
 
   return (
     <>

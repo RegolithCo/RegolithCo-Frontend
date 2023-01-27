@@ -8,13 +8,17 @@ import {
   DialogContent,
   DialogTitle,
   Slider,
+  ThemeProvider,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   useTheme,
 } from '@mui/material'
 import { Stack } from '@mui/system'
-import { Cancel, Save } from '@mui/icons-material'
-import { ScoutingFindTypeEnum } from '@regolithco/common'
-import { fontFamilies } from '../../theme'
+import { theme as defaultTheme } from '../../theme'
+import { Agriculture, Cancel, PanTool, Save } from '@mui/icons-material'
+import { ScoutingFindTypeEnum, VehicleOreEnum } from '@regolithco/common'
+import { VehicleOreChooser } from '../fields/VehicleOreChooser'
 
 export interface ScoutingClusterCountModalProps {
   open: boolean
@@ -22,7 +26,7 @@ export interface ScoutingClusterCountModalProps {
   clusterType: ScoutingFindTypeEnum
   isNew?: boolean
   onClose: () => void
-  onSave: (newValue: number) => void
+  onSave: (newValue: number, vehicleGem?: VehicleOreEnum, gemSize?: number) => void
 }
 
 export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps> = ({
@@ -32,6 +36,8 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
   onClose,
   onSave,
 }) => {
+  const [vehicleOre, setVehicleOre] = React.useState<VehicleOreEnum>(VehicleOreEnum.Hadanite)
+  const [gemSize, setGemSize] = React.useState<string>('ROC')
   const [newClusterCount, setNewClusterCount] = React.useState<number>((clusterCount as number) || 1)
   const theme = useTheme()
 
@@ -56,6 +62,8 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
     <Dialog
       open={open}
       onClose={onClose}
+      maxWidth="xs"
+      fullWidth
       sx={{
         '& .MuiDialog-paper': {
           // [theme.breakpoints.up('md')]: {
@@ -139,6 +147,43 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           min={1}
           max={16}
         />
+        {clusterType === ScoutingFindTypeEnum.Vehicle && (
+          <>
+            <Typography variant="overline" sx={{ mt: 2 }}>
+              Ore Type:
+            </Typography>
+            <ThemeProvider theme={defaultTheme}>
+              <VehicleOreChooser
+                values={[vehicleOre]}
+                requireValue
+                onChange={(newValue: VehicleOreEnum[]) => {
+                  if (newValue.length === 0) return
+                  setVehicleOre(newValue[0])
+                }}
+              />
+            </ThemeProvider>
+            <Typography variant="overline" sx={{ mt: 2 }}>
+              Rock size:
+            </Typography>
+            <Box sx={{ width: '100%', textAlign: 'center' }}>
+              <ToggleButtonGroup
+                exclusive
+                value={gemSize}
+                onChange={(event, newValue) => {
+                  if (newValue === null) return
+                  setGemSize(newValue)
+                }}
+              >
+                <ToggleButton sx={{ flexGrow: 1 }} value="HAND">
+                  <PanTool sx={{ mr: 1 }} /> Hand
+                </ToggleButton>
+                <ToggleButton sx={{ flexGrow: 1 }} value="ROC">
+                  <Agriculture sx={{ mr: 1 }} /> Roc
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </>
+        )}
       </DialogContent>
       <DialogActions>
         <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
@@ -151,7 +196,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
             startIcon={<Save />}
             variant="contained"
             onClick={() => {
-              onSave(newClusterCount)
+              onSave(newClusterCount, vehicleOre, gemSize === 'ROC' ? 0.86 : 0.1)
               onClose()
             }}
           >

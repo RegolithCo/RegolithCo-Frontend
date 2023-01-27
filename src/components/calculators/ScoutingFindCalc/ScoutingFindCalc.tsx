@@ -36,6 +36,8 @@ import {
   getScoutingFindStateName,
   SessionUserStateEnum,
   User,
+  VehicleRock,
+  VehicleOreEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { AddCircle, EmojiPeople, ExitToApp, Person, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -50,6 +52,8 @@ import { ScoutingFindUserList } from './ScoutingFindUserList'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
+import { random } from 'lodash'
+import { getNamedType } from 'graphql'
 dayjs.extend(relativeTime)
 
 export interface ScoutingFindCalcProps {
@@ -161,6 +165,14 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     transform: 'translate(-50%, -50%)',
     textTransform: 'uppercase',
     fontWeight: 'bold',
+  },
+  gemName: {
+    color: theme.palette.primary.dark,
+    textShadow: '1px 1px 3px #000, -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000',
+    fontSize: 30,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   statsTable: {
     maxWidth: 340,
@@ -403,6 +415,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 </Avatar>
               </Badge>
             </Box>
+            {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle &&
+              vehicleFind.vehicleRocks[0] &&
+              vehicleFind.vehicleRocks[0].ores[0] && (
+                <Typography sx={styles.gemName}>{vehicleFind.vehicleRocks[0].ores[0].ore}</Typography>
+              )}
+
             {!standalone && (
               <>
                 <Typography variant="overline" component="div">
@@ -695,9 +713,26 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         onClose={() => {
           setEditCountModalOpen(false)
         }}
-        onSave={(newCount) => {
+        onSave={(newCount, gemType, gemSize) => {
           setEditCountModalOpen(false)
-          onChange({ ...shipFind, clusterCount: newCount })
+          if (shipFind?.clusterType === ScoutingFindTypeEnum.Ship) {
+            onChange({ ...shipFind, clusterCount: newCount })
+          } else if (shipFind?.clusterType === ScoutingFindTypeEnum.Vehicle) {
+            const vehicleRocks: VehicleRock[] = Array.from({ length: newCount }, (_, idx) => ({
+              __typename: 'VehicleRock',
+              mass: gemSize as number,
+              ores: [
+                {
+                  ore: gemType as VehicleOreEnum,
+                  percent: random(0.6, 0.9, true),
+                  __typename: 'VehicleRockOre',
+                },
+              ],
+            }))
+            onChange({ ...vehicleFind, clusterCount: newCount, vehicleRocks })
+          } else {
+            onChange({ ...shipFind, clusterCount: newCount })
+          }
         }}
         isNew={isNew}
       />

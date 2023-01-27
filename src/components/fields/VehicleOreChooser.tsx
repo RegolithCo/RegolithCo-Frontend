@@ -7,11 +7,12 @@ import { Clear } from '@mui/icons-material'
 
 export interface VehicleOreChooserProps {
   multiple?: boolean
+  requireValue?: boolean
   values?: VehicleOreEnum[]
   onChange?: (value: VehicleOreEnum[]) => void
 }
 
-export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, onChange, values }) => {
+export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, onChange, values, requireValue }) => {
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
   const theme = useTheme()
   const vehicleRowKeys = Object.values(VehicleOreEnum)
@@ -53,6 +54,9 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
                 } else {
                   newValue = selected.filter((v) => v !== vehicleOreKey)
                 }
+                if (requireValue && newValue.length === 0) {
+                  return
+                }
                 setSelected(newValue)
                 onChange && onChange(newValue)
               }}
@@ -84,24 +88,26 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
           </Grid>
         )
       })}
-      <Grid xs={3}>
-        <ToggleButton
-          value={''}
-          size="small"
-          fullWidth
-          tabIndex={-1}
-          sx={{
-            fontSize: 14,
-            p: 0,
-          }}
-          onChange={() => {
-            setSelected([])
-            onChange && onChange([])
-          }}
-        >
-          <Clear />
-        </ToggleButton>
-      </Grid>
+      {!requireValue && (
+        <Grid xs={3}>
+          <ToggleButton
+            value={''}
+            size="small"
+            fullWidth
+            tabIndex={-1}
+            sx={{
+              fontSize: 14,
+              p: 0,
+            }}
+            onChange={() => {
+              setSelected([])
+              onChange && onChange([])
+            }}
+          >
+            <Clear />
+          </ToggleButton>
+        </Grid>
+      )}
     </Grid>
   )
 }
