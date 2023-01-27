@@ -147,17 +147,19 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
           )}
           clearOnBlur
           blurOnSelect
+          fullWidth
+          freeSolo
           getOptionLabel={(option) => {
             if (option === null) return ''
             if (typeof option === 'string') return option
             if (Array.isArray(option) && option[0]) return option[0]
             else return ''
           }}
-          getOptionDisabled={(option) => (mentionedUsers || []).find((scName) => scName === option[0]) !== undefined}
+          getOptionDisabled={(option) =>
+            (mentionedUsers || []).find((scName) => scName.toLowerCase() === option[0].toLowerCase()) !== undefined
+          }
           options={Object.entries(userSuggest || {})}
           sx={{ mb: 3 }}
-          fullWidth
-          freeSolo
           renderInput={(params) => <TextField {...params} label="Add a name" />}
           filterOptions={(options, params) => {
             const filtered = filter(options, params)
@@ -173,7 +175,10 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
             } else if (Array.isArray(option) && option[0]) {
               addName = option[0]
             }
-            if (validateSCName(addName)) {
+            if (
+              validateSCName(addName) &&
+              !(mentionedUsers || []).find((scName) => scName.toLowerCase() === addName.toLowerCase())
+            ) {
               addToList(addName)
             }
           }}

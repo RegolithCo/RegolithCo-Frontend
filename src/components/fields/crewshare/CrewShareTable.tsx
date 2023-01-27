@@ -174,8 +174,6 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
       {isEditing && (
         <Autocomplete
           id="adduser"
-          autoHighlight
-          blurOnSelect
           renderOption={(props, [scName, { friend, session, named }]) => (
             <UserListItem
               scName={scName}
@@ -186,15 +184,21 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               friend={friend}
             />
           )}
-          getOptionLabel={(option) => option[0]}
+          clearOnBlur
+          blurOnSelect
+          fullWidth
+          freeSolo
+          getOptionLabel={(option) => {
+            if (option === null) return ''
+            if (typeof option === 'string') return option
+            if (Array.isArray(option) && option[0]) return option[0]
+            else return ''
+          }}
           getOptionDisabled={(option) =>
-            (workOrder.crewShares || []).find((cs) => cs.scName === option[0]) !== undefined
+            (workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === option[0].toLowerCase()) !== undefined
           }
           options={Object.entries(userSuggest || {})}
           sx={{ my: 3 }}
-          fullWidth
-          freeSolo
-          selectOnFocus
           renderInput={(params) => <TextField {...params} label="Add User" />}
           filterOptions={(options, params) => {
             const filtered = filter(options, params)

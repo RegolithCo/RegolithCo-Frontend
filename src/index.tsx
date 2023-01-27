@@ -21,7 +21,7 @@ root.render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
+          <CssBaseline enableColorScheme />
           <APIProvider>
             <App />
           </APIProvider>

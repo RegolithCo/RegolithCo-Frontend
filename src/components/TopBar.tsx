@@ -23,8 +23,7 @@ const pages = {
   '/cluster': 'Cluster Calc.',
   '/workorder': 'Work Order',
   '/tables': 'Data Tables',
-  // '/about': 'About',
-  // '/faq': 'FAQ',
+  '/about': 'About',
 }
 
 const styles: Record<string, SxProps<Theme>> = {

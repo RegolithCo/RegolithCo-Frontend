@@ -22,6 +22,7 @@ import { RockIcon } from '../../icons'
 export interface ShipRockCardProps {
   rock: ShipRock
   rockValue?: number
+  allowWork?: boolean
   onChangeState?: (state: RockStateEnum) => void
   onEditClick?: () => void
 }
@@ -159,15 +160,23 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
  * @param param0
  * @returns
  */
-export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onChangeState, onEditClick }) => {
+export const ShipRockCard: React.FC<ShipRockCardProps> = ({
+  rock,
+  rockValue,
+  onChangeState,
+  onEditClick,
+  allowWork,
+}) => {
   const theme = useTheme()
   const styles = stylesThunk(theme, rock.state)
-
+  const onClickAction = allowWork ? onEditClick : undefined
+  const cursor = onClickAction ? 'pointer' : 'default'
   return (
-    <Card sx={styles.card}>
+    <Card sx={{ ...styles.card, '& *': { cursor } }}>
       {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>Complete</Box>}
       <CardContent sx={styles.cardContent}>
         <RockIcon
+          onClick={onClickAction}
           sx={{
             position: 'absolute',
             left: '50%',
@@ -177,7 +186,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
             color: '#f0f0f012',
           }}
         />
-        <Box sx={{ ...styles.topBox, cursor: onEditClick ? 'pointer' : 'default' }} onClick={onEditClick}>
+        <Box sx={{ ...styles.topBox, cursor }} onClick={onClickAction}>
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
             <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
             <div style={{ flex: '1 1' }} />
@@ -188,7 +197,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
           </Stack>
         </Box>
 
-        <List dense sx={{ ...styles.oreList, cursor: onEditClick ? 'pointer' : 'default' }} onClick={onEditClick}>
+        <List dense sx={{ ...styles.oreList, cursor: onClickAction ? 'pointer' : 'default' }} onClick={onClickAction}>
           {rock.ores &&
             rock.ores
               .filter(({ ore }) => Boolean(ore) && ore !== ShipOreEnum.Inertmaterial)
@@ -209,20 +218,22 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({ rock, rockValue, onC
               ))}
         </List>
         <Box sx={{ flexGrow: 1 }} />
-        <FormGroup sx={styles.stateCheckbox}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={rock.state === RockStateEnum.Depleted}
-                onChange={(e) =>
-                  onChangeState && onChangeState(e.target.checked ? RockStateEnum.Depleted : RockStateEnum.Ready)
-                }
-              />
-            }
-            label="Complete"
-          />
-        </FormGroup>
+        {allowWork && (
+          <FormGroup sx={styles.stateCheckbox}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={rock.state === RockStateEnum.Depleted}
+                  onChange={(e) =>
+                    onChangeState && onChangeState(e.target.checked ? RockStateEnum.Depleted : RockStateEnum.Ready)
+                  }
+                />
+              }
+              label="Complete"
+            />
+          </FormGroup>
+        )}
       </CardContent>
     </Card>
   )

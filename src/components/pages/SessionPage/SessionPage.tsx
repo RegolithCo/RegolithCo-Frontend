@@ -520,8 +520,16 @@ export const SessionPage: React.FC<SessionPageProps> = ({
       {activeScoutingFind && (
         <ScoutingFindModal
           meUser={sessionUser}
-          allowEdit={isSessionOwner || activeScoutingFind.ownerId === userProfile?.userId}
-          allowWork={isActive}
+          allowEdit={
+            isSessionOwner ||
+            activeScoutingFind.ownerId === userProfile?.userId ||
+            activeScoutingFind.attendanceIds.includes(userProfile?.userId as string)
+          }
+          allowWork={
+            isSessionOwner ||
+            activeScoutingFind.ownerId === userProfile?.userId ||
+            activeScoutingFind.attendanceIds.includes(userProfile?.userId as string)
+          }
           open={Boolean(activeScoutingFind)}
           scoutingFind={activeScoutingFind}
           joinScoutingFind={joinScoutingFind}

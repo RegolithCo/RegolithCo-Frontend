@@ -127,8 +127,7 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
   const [refreshPopupOpen, setRefreshPopupOpen] = useState(false)
   const [googleToken, _setGoogleToken] = useLocalStorage<[string, number | null]>('ROCP_GooToken', ['', null])
-  console.log('authTypeLS', authTypeLS, authType)
-  console.log('Google Token', googleToken)
+
   const setAuthType = (newAuthType: AuthTypeEnum) => {
     setAuthTypeLS(newAuthType)
     _setAuthType(newAuthType)

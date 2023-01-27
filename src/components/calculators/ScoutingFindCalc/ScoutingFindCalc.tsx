@@ -578,22 +578,24 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   {shipFind.clusterCount || 0}
                 </Typography>
                 <div style={{ flexGrow: 1 }} />
-                <Button
-                  startIcon={<AddCircle />}
-                  size="small"
-                  variant="text"
-                  onClick={() => {
-                    setEditScanModalOpen([-1, false])
-                    setAddScanModalOpen({
-                      __typename: 'ShipRock',
-                      state: RockStateEnum.Ready,
-                      mass: 3000,
-                      ores: [],
-                    })
-                  }}
-                >
-                  Add Scan
-                </Button>
+                {allowWork && (
+                  <Button
+                    startIcon={<AddCircle />}
+                    size="small"
+                    variant="text"
+                    onClick={() => {
+                      setEditScanModalOpen([-1, false])
+                      setAddScanModalOpen({
+                        __typename: 'ShipRock',
+                        state: RockStateEnum.Ready,
+                        mass: 3000,
+                        ores: [],
+                      })
+                    }}
+                  >
+                    Add Scan
+                  </Button>
+                )}
               </Box>
               <Grid container sx={styles.scansGrid} margin={1} spacing={3}>
                 {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
@@ -605,6 +607,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       <Grid key={idx} xs={6} sm={4} md={3}>
                         <ShipRockCard
                           rock={newRock}
+                          allowWork={allowWork}
                           rockValue={summary.byRock ? summary.byRock[idx] : undefined}
                           onChangeState={(newState) => {
                             onChange({
@@ -669,12 +672,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             if (addScanModalOpen !== false) {
               onChange({
                 ...(shipFind || {}),
+                clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
                 shipRocks: [...(shipFind?.shipRocks || []), rock],
               })
               setAddScanModalOpen(false)
             } else if (editScanModalOpen[1] !== false) {
               onChange({
                 ...(shipFind || {}),
+                clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
                 shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
               })
               setEditScanModalOpen([-1, false])
