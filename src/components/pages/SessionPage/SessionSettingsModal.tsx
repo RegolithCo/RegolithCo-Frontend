@@ -74,6 +74,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '& .MuiDialog-paper': {
       border: '1px solid #444444',
       background: '#111111ee',
+      [theme.breakpoints.down('sm')]: {
+        maxHeight: ' 100%',
+        m: 0,
+      },
     },
   },
   dialogTitle: {
@@ -161,6 +165,12 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
 
   const displayValue: Session = Object.assign({}, session, newSession)
 
+  const handleClose = () => {
+    // Reset everything
+    setNewSettings(makeNewSettings(session, sessionSettings))
+    onClose()
+  }
+
   // Conveneince methods for merging
   const setNewMergeLockedFields = (fieldName: string, isChecked: boolean) => {
     let newLockedFields = newSettings.workOrderDefaults?.lockedFields || []
@@ -180,7 +190,7 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
   const gravWell = newSettings.sessionSettings?.gravityWell || null
   const valid = nameValid
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" sx={styles.dialog}>
+    <Dialog open={open} onClose={handleClose} maxWidth="lg" sx={styles.dialog}>
       <DialogTitle sx={styles.dialogTitle}>
         <Settings sx={{ fontSize: '2rem', mr: 2 }} />
         <Box
@@ -304,7 +314,7 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
                 Activity Type (Optional)
               </Typography>
               <Box sx={styles.section}>
-                <Box sx={{ px: 5, py: 2 }}>
+                <Box sx={{ px: { xs: 1, sm: 2, md: 5 }, py: 2 }}>
                   <WorkOrderTypeChooser
                     allowNone
                     hideOther
@@ -618,7 +628,7 @@ export const SessionSettingsModal: React.FC<ShareModalProps> = ({
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" onClick={onClose}>
+        <Button color="secondary" onClick={handleClose}>
           Cancel
         </Button>
 

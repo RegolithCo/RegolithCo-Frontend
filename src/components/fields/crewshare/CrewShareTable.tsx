@@ -43,6 +43,12 @@ export interface CrewShareTableProps {
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   gridContainer: {
     [theme.breakpoints.up('md')]: {},
+    '& .MuiTableCell-root *': {
+      [theme.breakpoints.down('sm')]: {
+        border: '1px solid red',
+        fontSize: '0.2rem',
+      },
+    },
   },
 })
 

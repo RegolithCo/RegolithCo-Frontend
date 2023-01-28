@@ -15,6 +15,7 @@ export const BGImagesEnum = {
   SALVAGE1: 'salvage1.png',
   SALVAGE2: 'salvage2.png',
   ASTEROIDS1: 'asteroids1.png',
+  CONCOURSE: 'concourse.jpg',
   PROFILE: 'profile.jpg',
   REFINERY1: 'refinery1.png',
 } as const
@@ -58,7 +59,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       bgImage = BGImagesEnum.OPTION1
       break
     case '/tables':
-      bgImage = BGImagesEnum.SALVAGE2
+      bgImage = BGImagesEnum.CONCOURSE
       break
     case '/about':
       bgImage = BGImagesEnum.PROFILE

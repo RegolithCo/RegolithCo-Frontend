@@ -26,14 +26,38 @@ const pages = {
   '/about': 'About',
 }
 
-const styles: Record<string, SxProps<Theme>> = {
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   appBar: {
     fontFamily: fontFamilies.robotoMono,
     bgcolor: yellow[700],
     color: '#000',
     px: 2,
+    [theme.breakpoints.down('sm')]: {
+      px: 0,
+      mx: 0,
+    },
   },
-}
+  siteIcon: {
+    display: { md: 'flex', cursor: 'pointer' },
+    mr: 1,
+  },
+  siteName: {
+    mr: 2,
+    cursor: 'pointer',
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 700,
+    letterSpacing: '.3rem',
+    fontSize: '1.25rem',
+    [theme.breakpoints.down('sm')]: {
+      letterSpacing: '.1rem',
+      fontSize: '1rem',
+      mr: 0.2,
+    },
+    color: 'inherit',
+    textDecoration: 'none',
+  },
+  toolbar: {},
+})
 
 export interface TopBarProps {
   userCtx: LoginContextObj
@@ -45,6 +69,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
   const myAvatar = makeAvatar(userCtx.userProfile?.avatarUrl as string)
   const theme = useTheme()
+  const styles = stylesThunk(theme)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -74,30 +99,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
     <AppBar position="static" sx={styles.appBar}>
       {userCtx.popup}
       {userCtx.refreshPopup}
-      <Toolbar disableGutters>
-        <RockIcon
-          sx={{ display: { xs: 'none', md: 'flex', cursor: 'pointer' }, mr: 1 }}
-          onClick={() => handleNavigate('/')}
-        />
-        <Typography
-          variant="h6"
-          noWrap
-          onClick={() => handleNavigate('/')}
-          sx={{
-            mr: 2,
-            cursor: 'pointer',
-            display: { xs: 'none', md: 'flex' },
-            fontFamily: fontFamilies.robotoMono,
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
-          }}
-        >
-          Regolith Co.
-        </Typography>
-
-        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+      <Toolbar disableGutters sx={styles.toolbar}>
+        <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
           <IconButton
             size="large"
             aria-label="account of current user"
@@ -135,24 +138,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
           </Menu>
         </Box>
         {/* This is our mini menu for mobile */}
-        <RockIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-        <Typography
-          variant="h5"
-          noWrap
-          component="a"
-          onClick={() => handleNavigate('/')}
-          sx={{
-            mr: 2,
-            cursor: 'pointer',
-            display: { xs: 'flex', md: 'none' },
-            flexGrow: 1,
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
-          }}
-        >
+        <RockIcon sx={styles.siteIcon} />
+        <Typography variant="h5" noWrap component="a" onClick={() => handleNavigate('/')} sx={styles.siteName}>
           Regolith Co.
         </Typography>
 
@@ -169,6 +156,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         {/* <Box sx={{ flexGrow: 0 }}>{userCtx.isAuthenticated && <LoginExpiryTimer />}</Box> */}
 
         {/* Profile icon, username and badge */}
+        <div style={{ flexGrow: 1 }} />
         <Box sx={{ flexGrow: 0 }}>
           {userCtx.isAuthenticated && (
             <>

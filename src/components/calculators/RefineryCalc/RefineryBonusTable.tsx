@@ -91,7 +91,17 @@ export const RefineryBonusTable: React.FC = () => {
   return (
     <>
       {tables.map((tableName, tableIdx) => (
-        <TableContainer sx={{ align: 'center' }} key={`table-${tableIdx}`}>
+        <TableContainer
+          sx={{
+            align: 'center',
+            [theme.breakpoints.down('sm')]: {
+              '& .MuiTableCell-root * ': {
+                fontSize: '0.75rem!important',
+              },
+            },
+          }}
+          key={`table-${tableIdx}`}
+        >
           <Table size="small" aria-label="simple table" sx={{ my: 2 }}>
             <TableHead>
               <TableRow>
@@ -102,6 +112,9 @@ export const RefineryBonusTable: React.FC = () => {
                     fontFamily: fontFamilies.robotoMono,
                     fontWeight: 'bold',
                     fontSize: '1.2rem',
+                    '& .MuiTableCell-root * ': {
+                      fontSize: '0.75rem!important',
+                    },
                   }}
                 >
                   {tableName}
@@ -118,6 +131,9 @@ export const RefineryBonusTable: React.FC = () => {
                       fontFamily: fontFamilies.robotoMono,
                       fontWeight: 'bold',
                       background: colIdx % 2 === 0 ? '#000000' : '#222222',
+                      '& .MuiTableCell-root * ': {
+                        fontSize: '0.75rem!important',
+                      },
                     }}
                   >
                     {hAxisLabel}

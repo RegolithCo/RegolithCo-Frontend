@@ -146,9 +146,9 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
 }
 
 const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
-  [ShareTypeEnum.Amount]: <TollIcon sx={{ fontSize: 12 }} />,
-  [ShareTypeEnum.Percent]: <Percent sx={{ fontSize: 12 }} />,
-  [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: 12 }} />,
+  [ShareTypeEnum.Amount]: <TollIcon sx={{ fontSize: '1em' }} />,
+  [ShareTypeEnum.Percent]: <Percent sx={{ fontSize: '1em' }} />,
+  [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: '1em' }} />,
 }
 
 const formatCrewShareTypeEdit = (

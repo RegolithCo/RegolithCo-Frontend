@@ -63,7 +63,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               display: 'flex',
               fontFamily: fontFamilies.robotoMono,
               fontWeight: 'bold',
-              fontSize: 20,
+              fontSize: {
+                xs: '0.8rem',
+                md: '0.9rem',
+                lg: '1rem',
+              },
               lineHeight: 1,
             }}
           >

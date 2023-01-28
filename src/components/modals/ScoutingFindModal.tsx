@@ -23,7 +23,6 @@ export interface ScoutingFindModalProps {
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   dialog: {
-    //     [theme.breakpoints.up('md')]: {
     '& .MuiDialog-paper': {
       borderRadius: 10,
       border: `8px solid ${theme.palette.primary.dark}`,
@@ -56,12 +55,19 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
   // This is just used int he live case. In every other case we just edit it live
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
-
+  const [theme, setTheme] = React.useState<Theme>(
+    scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
+  )
   React.useEffect(() => {
     setNewScoutingFind(scoutingFind)
   }, [scoutingFind])
+  // Make sure to update the theme correctly
+  React.useEffect(() => {
+    setTheme(scoutingFindStateThemes[newScoutingFind.state || ScoutingFindStateEnum.Discovered])
+  }, [newScoutingFind])
+
   if (!scoutingFind) return null
-  const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
+
   const styles = stylesThunk(theme)
   return (
     <ThemeProvider theme={theme}>

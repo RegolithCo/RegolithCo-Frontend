@@ -121,8 +121,9 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
             </Alert>
           )}
           <Typography sx={{ pt: 4 }}>
-            You can verify your handle to match your Star Citizen username. This will prevent new users from
-            impersonating you on the app. (This will not affect existing users with the same name).
+            You can verify your handle to match your Star Citizen handle <em>(your username, not your moniker)</em>.
+            This will prevent new users from impersonating you on the app. (This will not affect existing users with the
+            same name).
           </Typography>
           <Typography sx={{ pt: 4 }}>
             <strong>Step 1:</strong> Click the button below to request a new verification code.

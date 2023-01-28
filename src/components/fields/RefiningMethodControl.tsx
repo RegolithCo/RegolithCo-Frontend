@@ -31,7 +31,11 @@ export const RefineryMethodControl: React.FC<RefineryMethodProps> = ({
                 p: 1.5,
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
-                fontSize: 20,
+                fontSize: {
+                  xs: '0.8rem',
+                  md: '0.9rem',
+                  lg: '1rem',
+                },
               }
             : {}
         }
@@ -52,7 +56,11 @@ export const RefineryMethodControl: React.FC<RefineryMethodProps> = ({
           ? {
               color: 'inherit',
               fontFamily: fontFamilies.robotoMono,
-              fontSize: 18,
+              fontSize: {
+                xs: '0.8rem',
+                md: '0.9rem',
+                lg: '1rem',
+              },
               fontWeight: 'bold',
               '& .MuiSelect-select': {
                 mx: 2,

@@ -18,8 +18,8 @@ import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
 import { useLogin } from './hooks/useOAuth2'
 
 export const App: React.FC = () => {
-  const { isAuthenticated, isInitialized, loading } = useLogin()
-  const needIntervention = !loading && isAuthenticated && !isInitialized
+  const { isAuthenticated, isInitialized, loading, error } = useLogin()
+  const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
   if (needIntervention)
     return (

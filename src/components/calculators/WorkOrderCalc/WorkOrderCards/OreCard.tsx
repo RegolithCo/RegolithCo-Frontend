@@ -54,6 +54,27 @@ export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
 }
 
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  title: {
+    display: 'flex',
+    fontFamily: fontFamilies.robotoMono,
+    overflow: 'hidden',
+    fontWeight: 'bold',
+    fontSize: {
+      xs: '0.8rem',
+      md: '0.9rem',
+      lg: '1rem',
+    },
+  },
+  cardContent: {
+    display: 'flex',
+    flex: '1 1',
+    flexDirection: 'column',
+    overflowX: { md: 'hidden', sm: 'scroll' },
+    overflow: { md: 'scroll' },
+  },
+})
+
 export const OreCard: React.FC<OreCardProps> = ({
   workOrder,
   summary,
@@ -64,6 +85,7 @@ export const OreCard: React.FC<OreCardProps> = ({
   sx,
 }) => {
   const theme = useTheme()
+  const styles = stylesThunk(theme)
   const [editCell, setEditCell] = React.useState<[string, boolean]>()
   const editCellOre = editCell ? editCell[0] : null
   const editCellQty = editCell ? editCell[1] : null
@@ -73,7 +95,7 @@ export const OreCard: React.FC<OreCardProps> = ({
 
   const pulse = keyframes`
     0% { background-color: transparent; }
-    70% { background-color:  ${theme.palette.warning.dark}33; }
+    70% { background-color:  ${theme.palette.warning.light}44; }
     100% { background-color: transparent; }
   `
   const pulseCssThunk = (doPulse: boolean): SxProps<Theme> => ({
@@ -120,15 +142,7 @@ export const OreCard: React.FC<OreCardProps> = ({
           backgroundColor: theme.palette.secondary.light,
         }}
         title={
-          <Box
-            sx={{
-              display: 'flex',
-              fontFamily: fontFamilies.robotoMono,
-              overflow: 'hidden',
-              fontWeight: 'bold',
-              fontSize: 20,
-            }}
-          >
+          <Box sx={styles.title}>
             {(workOrder.orderType !== ActivityEnum.ShipMining || !shipOrder.isRefined) && (
               <>
                 {workOrder.orderType === ActivityEnum.ShipMining && 'Raw Ore'}
@@ -149,15 +163,7 @@ export const OreCard: React.FC<OreCardProps> = ({
         }
         subheaderTypographyProps={{ color: 'inherit' }}
       />
-      <CardContent
-        sx={{
-          display: 'flex',
-          flex: '1 1',
-          flexDirection: 'column',
-          overflowX: { md: 'hidden', sm: 'scroll' },
-          overflow: { md: 'scroll' },
-        }}
-      >
+      <CardContent sx={styles.cardContent}>
         {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
           <RefineryMethodControl
             value={shipOrder.method || RefineryMethodEnum.DinyxSolventation}

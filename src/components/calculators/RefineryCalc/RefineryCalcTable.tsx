@@ -184,7 +184,17 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   }
 
   return (
-    <TableContainer sx={{ align: 'center' }}>
+    <TableContainer
+      sx={{
+        align: 'center',
+        [theme.breakpoints.down('sm')]: {
+          '& .MuiTableCell-root * ': {
+            // border: '1px solid red',
+            fontSize: '0.75rem!important',
+          },
+        },
+      }}
+    >
       <Table size="small" aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -195,6 +205,9 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
                 fontSize: '1.2rem',
+                [theme.breakpoints.down('sm')]: {
+                  fontSize: '0.75rem',
+                },
               }}
             >
               {refMode === RefineryPivotEnum.method && oreType && `${getShipOreName(oreType)}`}
@@ -212,6 +225,9 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                   fontFamily: fontFamilies.robotoMono,
                   fontWeight: 'bold',
                   background: colIdx % 2 === 0 ? '#000000' : '#222222',
+                  [theme.breakpoints.down('sm')]: {
+                    fontSize: '0.75rem',
+                  },
                 }}
               >
                 {hAxisLabel}

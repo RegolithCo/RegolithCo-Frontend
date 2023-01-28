@@ -52,7 +52,7 @@ export const VehicleOreTable: React.FC = () => {
             <TableCell sx={{ backgroundColor: '#00000033' }} />
             <TableCell align="left" valign="top" sx={{ backgroundColor: '#00000055' }}>
               <Typography variant="h5" component="div">
-                1 cSCU
+                1 mSCU
               </Typography>
               <Typography variant="caption" component="div">
                 Single Gem

@@ -31,13 +31,17 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   cardCss: {
     border: `1px solid #444444`,
-    borderRadius: 2,
     [theme.breakpoints.up('md')]: {
+      borderRadius: 2,
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       overflowX: 'hidden',
       overflowY: 'hidden',
+    },
+    [theme.breakpoints.down('sm')]: {
+      borderRadius: 0,
+      border: `None`,
     },
   },
   gridCss: {
@@ -57,7 +61,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   return (
     <>
       {workOrder.orderType !== ActivityEnum.Other && (
-        <Grid container spacing={{ md: 3 }} margin={{ md: 2, sm: 0 }} sx={styles.container}>
+        <Grid container spacing={{ md: 2, lg: 3 }} margin={{ xs: 0, sm: 0, md: 0, lg: 2 }} sx={styles.container}>
           <Grid xs={12} sm={12} md={3} lg={3} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
           </Grid>
@@ -70,7 +74,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
         </Grid>
       )}
       {workOrder.orderType === ActivityEnum.Other && (
-        <Grid container spacing={2} margin={0} sx={styles.container}>
+        <Grid container spacing={{ md: 2, lg: 3 }} margin={0} sx={styles.container}>
           <Grid xs={12} sm={12} md={6} lg={4} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
           </Grid>

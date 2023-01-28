@@ -11,14 +11,17 @@ import {
 import { getActivityName, calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   Badge,
+  SxProps,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Theme,
   Tooltip,
   useTheme,
+  useThemeProps,
 } from '@mui/material'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
@@ -39,9 +42,20 @@ export interface WorkOrderTableProps {
   openWorkOrderModal: (orderId: string) => void
 }
 
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  table: {
+    maxHeight: 300,
+    '& .MuiTableCell-root': {
+      whiteSpace: 'nowrap',
+    },
+  },
+})
+
 export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, openWorkOrderModal }) => {
+  const theme = useTheme()
+  const styles = stylesThunk(theme)
   return (
-    <TableContainer sx={{ maxHeight: 300 }}>
+    <TableContainer sx={styles.table}>
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>

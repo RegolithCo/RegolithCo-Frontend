@@ -16,7 +16,6 @@ import {
   Badge,
   ToggleButton,
   ToggleButtonGroup,
-  ThemeProvider,
   MenuItem,
   Select,
 } from '@mui/material'
@@ -345,8 +344,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       .map(({ owner }) => owner as User) || []
 
   return (
-    <ThemeProvider theme={theme}>
-      <Grid container spacing={2} padding={2} sx={styles.containerGrid}>
+    <>
+      <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
         {standalone && (
           <Box>
             <Typography component="div" variant="h5" sx={styles.title}>
@@ -386,9 +385,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           </Box>
         )}
         {/* Top row grid */}
-        <Grid container spacing={2} padding={2} xs={12}>
+        <Grid container spacing={{ xs: 0, sm: 2 }} padding={{ xs: 0, sm: 2 }} xs={12}>
           {/* Hero card */}
-          <Grid xs={6} sm={3} sx={styles.topRowGrid}>
+          <Grid xs={12} sm={3} sx={styles.topRowGrid}>
             <Box sx={styles.numberBox}>
               <Typography sx={styles.itemName}>{itemName}</Typography>
               <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
@@ -433,7 +432,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             )}
           </Grid>
           {/* Cluster stats */}
-          <Grid xs={6} sm={standalone ? 9 : 5} sx={styles.topRowGrid}>
+          <Grid xs={12} sm={standalone ? 9 : 5} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
@@ -613,7 +612,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   </Button>
                 )}
               </Box>
-              <Grid container sx={styles.scansGrid} margin={1} spacing={3}>
+              <Grid container sx={styles.scansGrid} margin={1} spacing={{ xs: 0, sm: 2 }}>
                 {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
                   (shipFind.shipRocks || []).map((rock, idx) => {
                     const newOres = [...(rock.ores || [])]
@@ -747,6 +746,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           onDelete && onDelete()
         }}
       />
-    </ThemeProvider>
+    </>
   )
 }

@@ -88,7 +88,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
           opacity,
           borderColor: theme.palette.primary.main,
           borderWidth: 2,
-          backgroundColor: theme.palette.primary.contrastText,
+          backgroundColor: '#121212',
           borderRadius: 3,
           height: 150,
           width: 150,

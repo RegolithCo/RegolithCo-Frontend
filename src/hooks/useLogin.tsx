@@ -183,6 +183,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
       value={{
         isAuthenticated,
         APIWorking,
+        error: userProfileQry.error,
         maintenanceMode,
         isInitialized: Boolean(userProfileQry.data?.profile),
         isVerified: Boolean(

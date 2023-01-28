@@ -66,7 +66,8 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
                 color: fgc,
                 fontSize: {
                   xs: 10,
-                  sm: 12,
+                  sm: 10,
+                  md: 10,
                 },
                 opacity: 0.3,
                 p: 0,
@@ -75,7 +76,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
                   border: '2px solid white',
                   opacity: 1,
                 },
-                '&.Mui-selected': {
+                '&.Mui-selected, &.Mui-selected:hover': {
                   color: fgc,
                   border: '2px solid white',
                   opacity: 1,
@@ -96,7 +97,11 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
             fullWidth
             tabIndex={-1}
             sx={{
-              fontSize: 14,
+              fontSize: {
+                xs: 10,
+                sm: 10,
+                md: 10,
+              },
               p: 0,
             }}
             onChange={() => {
