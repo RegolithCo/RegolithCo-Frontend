@@ -23,6 +23,7 @@ import { VehicleOreChooser } from '../fields/VehicleOreChooser'
 export interface ScoutingClusterCountModalProps {
   open: boolean
   clusterCount: number
+  numScans?: number
   clusterType: ScoutingFindTypeEnum
   isNew?: boolean
   onClose: () => void
@@ -33,6 +34,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
   open,
   clusterCount,
   clusterType,
+  numScans,
   onClose,
   onSave,
 }) => {
@@ -54,9 +56,11 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
       break
   }
 
+  const minVal = clusterType === ScoutingFindTypeEnum.Ship && numScans && numScans > 0 ? numScans : 1
+
   React.useEffect(() => {
-    setNewClusterCount(clusterCount || 1)
-  }, [clusterCount])
+    setNewClusterCount(clusterCount || minVal)
+  }, [clusterCount, numScans, minVal])
 
   return (
     <Dialog
@@ -136,11 +140,16 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
             { value: 15, label: '' },
             { value: 16, label: '16' },
           ]}
-          value={newClusterCount || 1}
+          value={newClusterCount || numScans}
           valueLabelDisplay="off"
           onChange={(event: Event, newValue: number | number[]) => {
             if (typeof newValue === 'number') {
-              setNewClusterCount(newValue)
+              if (newValue < minVal) {
+                setNewClusterCount(minVal)
+                return
+              } else {
+                setNewClusterCount(newValue)
+              }
             }
           }}
           step={1}

@@ -40,7 +40,7 @@ import {
   VehicleOreEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AddCircle, EmojiPeople, ExitToApp, Person, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
+import { AddCircle, EmojiPeople, ExitToApp, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
@@ -52,8 +52,6 @@ import { ScoutingFindUserList } from './ScoutingFindUserList'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
-import { random } from 'lodash'
-import { getNamedType } from 'graphql'
 dayjs.extend(relativeTime)
 
 export interface ScoutingFindCalcProps {
@@ -709,6 +707,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       <ScoutingClusterCountModal
         open={editCountModalOpen}
         clusterCount={shipFind?.clusterCount || 1}
+        numScans={numScans}
         clusterType={shipFind?.clusterType as ScoutingFindTypeEnum}
         onClose={() => {
           setEditCountModalOpen(false)
