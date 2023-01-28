@@ -1,23 +1,30 @@
 import * as React from 'react'
 import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
-import { ScoutingFindTypeEnum, SessionSettings } from '@regolithco/common'
+import { ActivityEnum, ScoutingFindTypeEnum, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { TravelExplore } from '@mui/icons-material'
 import { Badge, Fab, FabProps, useTheme } from '@mui/material'
 
 const actions = [
   {
+    activityId: ActivityEnum.ShipMining,
     scoutingType: ScoutingFindTypeEnum.Ship,
     icon: <RockIcon />,
     name: `Ship Mining Cluster`,
   },
   {
+    activityId: ActivityEnum.VehicleMining,
     scoutingType: ScoutingFindTypeEnum.Vehicle,
     icon: <GemIcon />,
     name: `Hand/ROC Mining Cluster`,
   },
-  { scoutingType: ScoutingFindTypeEnum.Salvage, icon: <ClawIcon />, name: `Wreck(s)` },
+  {
+    activityId: ActivityEnum.Salvage,
+    scoutingType: ScoutingFindTypeEnum.Salvage,
+    icon: <ClawIcon />,
+    name: `Wreck(s)`,
+  },
 ]
 
 export interface ScoutingAddFABProps {
@@ -29,8 +36,8 @@ export interface ScoutingAddFABProps {
 export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings, onClick, fabProps }) => {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const locked = actions.map(({ scoutingType }) => {
-    return sessionSettings && sessionSettings.activity && sessionSettings.activity !== scoutingType
+  const locked = actions.map(({ activityId }) => {
+    return sessionSettings && sessionSettings.activity && sessionSettings.activity !== activityId
   })
   // If there's only one action unlocked then just return a normal fab
   if (locked.filter((l) => !l).length === 1) {
