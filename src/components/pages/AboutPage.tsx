@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, Divider, Link, Stack, Typography } from '@mui/material'
+import { Avatar, Button, Divider, Link, Stack, Typography } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { Coffee, Segment, Twitter } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
@@ -40,8 +40,8 @@ export const AboutPage: React.FC = () => {
           href="https://ko-fi.com/regolithco"
           target="_blank"
           fullWidth
-          sx={{ fontSize: '1rem', p: 2 }}
-          startIcon={<Coffee />}
+          sx={{ fontSize: '1rem', p: 1 }}
+          startIcon={<Avatar src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`} />}
         >
           Ko-Fi
         </Button>
@@ -51,7 +51,7 @@ export const AboutPage: React.FC = () => {
           target="_blank"
           fullWidth
           color="secondary"
-          sx={{ fontSize: '1rem', p: 2 }}
+          sx={{ fontSize: '1rem', p: 1 }}
           startIcon={<Coffee />}
         >
           Patreon
