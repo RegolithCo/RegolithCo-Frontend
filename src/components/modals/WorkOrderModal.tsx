@@ -29,7 +29,6 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '& .MuiDialog-paper': {
       borderRadius: 2,
       [theme.breakpoints.down('sm')]: {
-        height: 'calc(100% - 64px)',
         margin: 0,
         borderRadius: 0,
         maxHeight: '100%',
@@ -57,6 +56,14 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
     [theme.breakpoints.up('md')]: {
       overflowY: 'hidden',
+    },
+  },
+  headerMeta: {
+    // display: 'block',
+    display: 'inline',
+    fontSize: '0.6rem',
+    [theme.breakpoints.up('md')]: {
+      fontSize: '0.8rem',
     },
   },
   icon: {
@@ -174,8 +181,10 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
               {title}
             </Typography>
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
-              ID: {makeHumanOrderId(workOrder.orderId, workOrder.owner?.scName || 'NEW')}
-              {'    '} Created By: {workOrder.owner?.scName || 'NEW'}
+              <Box sx={styles.headerMeta}>
+                ID: {makeHumanOrderId(workOrder.orderId, workOrder.owner?.scName || 'NEW')}
+              </Box>
+              <Box sx={styles.headerMeta}> Created By: {workOrder.owner?.scName || 'NEW'}</Box>
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />

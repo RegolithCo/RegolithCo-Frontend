@@ -36,6 +36,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
+      minHeight: 600,
       overflowX: 'hidden',
       overflowY: 'hidden',
     },
@@ -61,7 +62,13 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   return (
     <>
       {workOrder.orderType !== ActivityEnum.Other && (
-        <Grid container spacing={{ md: 1, lg: 2 }} margin={{ xs: 0, sm: 0, md: 0, lg: 1 }} sx={styles.container}>
+        <Grid
+          container
+          spacing={{ md: 1, lg: 2 }}
+          marginX={{ xs: 0, sm: 0, md: 0, lg: 1 }}
+          marginY={{ xs: 0, sm: 1, md: 2, lg: 3 }}
+          sx={styles.container}
+        >
           <Grid xs={12} sm={12} md={3} lg={3} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
           </Grid>

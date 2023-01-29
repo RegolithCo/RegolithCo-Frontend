@@ -28,9 +28,9 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
                 fontWeight: 'bold',
                 lineHeight: 1,
                 fontSize: {
-                  xs: '0.7rem',
-                  md: '0.8rem',
-                  lg: '0.9rem',
+                  xs: '0.8rem',
+                  md: '0.9rem',
+                  lg: '1rem',
                 },
               }
             : {}
@@ -69,9 +69,9 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
                 color: 'inherit',
                 lineHeight: 1,
                 fontSize: {
-                  xs: '0.7rem',
-                  md: '0.8rem',
-                  lg: '0.9rem',
+                  xs: '0.8rem',
+                  md: '0.9rem',
+                  lg: '1rem',
                 },
                 mx: 1,
                 my: 0,

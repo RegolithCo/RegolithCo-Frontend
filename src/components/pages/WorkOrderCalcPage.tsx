@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Box, Typography } from '@mui/material'
+import { Alert, Box, Stack, Typography } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
 import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@regolithco/common'
@@ -50,13 +50,16 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
       <Typography variant="body1" paragraph>
         This is where you can calculate the cost of a work order and how to share it between members of your org/party.
       </Typography>
-      <Alert severity="info" sx={{ m: 2 }}>
-        NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
-        share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>.
-      </Alert>
-      <Box sx={{ maxWidth: 500, mx: 3 }}>
-        <WorkOrderTypeChooser onChange={setActiveActivity} value={activeActivity} />
-      </Box>
+
+      <Stack direction="row" spacing={2} sx={{ m: 2 }}>
+        <Box sx={{ mx: 3, flex: '1 1 50%' }}>
+          <WorkOrderTypeChooser onChange={setActiveActivity} value={activeActivity} />
+        </Box>
+        <Alert severity="info" sx={{ m: 2, flex: '1 1 50%' }}>
+          NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
+          share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>.
+        </Alert>
+      </Stack>
       <Box
         sx={{
           display: 'flex',
