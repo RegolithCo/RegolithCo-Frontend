@@ -1348,10 +1348,10 @@ export type GetSessionUserQueryHookResult = ReturnType<typeof useGetSessionUserQ
 export type GetSessionUserLazyQueryHookResult = ReturnType<typeof useGetSessionUserLazyQuery>;
 export type GetSessionUserQueryResult = Apollo.QueryResult<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>;
 export const GetMyUserSessionsDocument = gql`
-    query getMyUserSessions($nextToken: String, $filter: SessionStateEnum) {
+    query getMyUserSessions($nextToken: String) {
   profile {
     userId
-    mySessions(nextToken: $nextToken, filter: $filter) {
+    mySessions(nextToken: $nextToken) {
       items {
         ...SessionListFragment
       }
@@ -1374,7 +1374,6 @@ export const GetMyUserSessionsDocument = gql`
  * const { data, loading, error } = useGetMyUserSessionsQuery({
  *   variables: {
  *      nextToken: // value for 'nextToken'
- *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -1390,10 +1389,10 @@ export type GetMyUserSessionsQueryHookResult = ReturnType<typeof useGetMyUserSes
 export type GetMyUserSessionsLazyQueryHookResult = ReturnType<typeof useGetMyUserSessionsLazyQuery>;
 export type GetMyUserSessionsQueryResult = Apollo.QueryResult<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>;
 export const GetJoinedUserSessionsDocument = gql`
-    query getJoinedUserSessions($nextToken: String, $filter: SessionUserStateEnum) {
+    query getJoinedUserSessions($nextToken: String) {
   profile {
     userId
-    joinedSessions(nextToken: $nextToken, filter: $filter) {
+    joinedSessions(nextToken: $nextToken) {
       items {
         ...SessionListFragment
       }
@@ -1416,7 +1415,6 @@ export const GetJoinedUserSessionsDocument = gql`
  * const { data, loading, error } = useGetJoinedUserSessionsQuery({
  *   variables: {
  *      nextToken: // value for 'nextToken'
- *      filter: // value for 'filter'
  *   },
  * });
  */
