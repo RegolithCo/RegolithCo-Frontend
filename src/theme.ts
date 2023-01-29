@@ -97,23 +97,23 @@ export const theme = createTheme(darkOptions)
 const scoutingFindStateColors: Record<ScoutingFindStateEnum, PaletteOptions> = {
   [ScoutingFindStateEnum.Abandonned]: {
     primary: grey,
-    secondary: grey,
+    secondary: orange,
   },
   [ScoutingFindStateEnum.Depleted]: {
     primary: grey,
-    secondary: grey,
+    secondary: orange,
   },
   [ScoutingFindStateEnum.Discovered]: {
     primary: { main: 'rgb(181, 206, 255)' },
-    secondary: { main: 'rgb(181, 206, 255)' },
+    secondary: orange,
   },
   [ScoutingFindStateEnum.ReadyForWorkers]: {
     primary: yellow,
-    secondary: yellow,
+    secondary: orange,
   },
   [ScoutingFindStateEnum.Working]: {
     primary: { main: purple[200] },
-    secondary: { main: purple[200] },
+    secondary: orange,
   },
 }
 

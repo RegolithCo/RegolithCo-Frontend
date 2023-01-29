@@ -38,7 +38,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
         maxHeight: 900,
         overflow: 'visible',
       },
-      backgroundColor: '#282828cc',
+      backgroundColor: '#282828',
       backgroundImage: 'none',
       border: `2px solid ${theme.palette.primary.dark}`,
     },

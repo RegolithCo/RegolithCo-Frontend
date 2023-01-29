@@ -78,6 +78,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const expenses: { name: string; value: number }[] = []
+  const [keyCounter, setKeyCounter] = React.useState(0)
   if (workOrder.includeTransferFee) {
     expenses.push({
       name: 'moTRADER',
@@ -180,6 +181,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
       {isEditing && (
         <Autocomplete
           id="adduser"
+          key={`uniquekey-${keyCounter}`}
           renderOption={(props, [scName, { friend, session, named }]) => (
             <UserListItem
               scName={scName}
@@ -192,8 +194,6 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
           )}
           clearOnBlur
           blurOnSelect
-          autoSelect
-          selectOnFocus
           fullWidth
           freeSolo
           getOptionLabel={(option) => {
@@ -216,13 +216,19 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             return filtered
           }}
           onChange={(event, option) => {
-            if (option && option[0] && validateSCName(option[0])) {
+            const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
+            if (
+              validateSCName(addName) &&
+              !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase()) !==
+                undefined
+            ) {
+              setKeyCounter(keyCounter + 1)
               onChange({
                 ...workOrder,
                 crewShares: [
                   ...(workOrder.crewShares || []),
                   {
-                    scName: option[0],
+                    scName: addName,
                     shareType: ShareTypeEnum.Share,
                     share: 1,
                     note: null,

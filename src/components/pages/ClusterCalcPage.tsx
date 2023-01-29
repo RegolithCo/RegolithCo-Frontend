@@ -29,16 +29,12 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
     <PageWrapper title="Cluster Calculator" maxWidth="md" sx={{}}>
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography variant="body1" paragraph>
-        This is a standalone calculator for determining the value of a rock cluster.
+        This is a standalone calculator for determining the value of a rock cluster. Simply click "Add Scan" to get
+        started.
       </Typography>
-      <Alert severity="info" sx={{ m: 2 }}>
-        NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive clusters
-        or share your clusters with friends then consider logging in and creating/joining a <strong>session</strong>.
-      </Alert>
       <Box
         sx={{
           display: 'flex',
-          minHeight: 700,
           margin: '0 auto',
           overflowX: 'hidden',
           overflowY: 'scroll',
@@ -57,6 +53,10 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
           />
         )}
       </Box>
+      <Alert severity="info" sx={{ m: 2, flex: '1 1 60%' }}>
+        NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive clusters
+        or share your clusters with friends then consider logging in and creating/joining a <strong>session</strong>.
+      </Alert>
     </PageWrapper>
   )
 }

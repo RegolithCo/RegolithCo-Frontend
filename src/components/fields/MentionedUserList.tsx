@@ -50,6 +50,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
 }) => {
   const theme = useTheme()
   const [newFriend, setNewFriend] = React.useState<string>('')
+  const [keyCounter, setKeyCounter] = React.useState(0)
 
   const userSuggest: UserSuggest = myFriends.reduce(
     (acc, friendName) => ({
@@ -135,6 +136,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
       {addToList && useAutocomplete && (
         <Autocomplete
           id="adduser"
+          key={`uniquekey-${keyCounter}`}
           renderOption={(props, [scName, { friend, session, named }]) => (
             <UserListItem
               scName={scName}
@@ -169,16 +171,12 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
             return filtered
           }}
           onChange={(event, option) => {
-            let addName = ''
-            if (typeof option === 'string') {
-              addName = option
-            } else if (Array.isArray(option) && option[0]) {
-              addName = option[0]
-            }
+            const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
             if (
               validateSCName(addName) &&
               !(mentionedUsers || []).find((scName) => scName.toLowerCase() === addName.toLowerCase())
             ) {
+              setKeyCounter(keyCounter + 1)
               addToList(addName)
             }
           }}
