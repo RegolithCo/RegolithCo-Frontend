@@ -2,8 +2,6 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { DownloadModal as DownloadModalC } from './DownloadModal'
-import { fakeSession } from '@regolithco/common/dist/mock'
-import { JSONObject } from '@regolithco/common'
 
 export default {
   title: 'Modals/DownloadModal',
@@ -24,10 +22,10 @@ DeleteProfileModal.args = {
   },
   title: 'Download Modal',
   description: 'This is a description',
-  csvData: [
-    ['a', 'b', 'c'],
-    ['d', 'e', 'f'],
-  ],
-  jsonData: fakeSession() as JSONObject,
-  fileName: 'test',
+  downloadCSV() {
+    console.log('CSV')
+  },
+  downloadJSON() {
+    console.log('JSON')
+  },
 }

@@ -118,7 +118,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
             fontSize: 16,
           }}
         >
-          {clusterFind.scoutingFindId.split('_')[0]}
+          {clusterFind.owner?.scName.slice(0, 3).toUpperCase()}-{clusterFind.scoutingFindId.split('_')[0]}
         </Box>
 
         {/* The icon with the number (Absolute) */}

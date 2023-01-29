@@ -14,7 +14,7 @@ import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/mate
 import { SxProps } from '@mui/system'
 import dayjs from 'dayjs'
 import { fontFamilies } from '../../../theme'
-import { Logout, Settings, Share } from '@mui/icons-material'
+import { CloudDownload, Logout, Settings, Share } from '@mui/icons-material'
 import { DialogEnum } from './SessionPage'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 
@@ -146,14 +146,21 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
             )}
             {!isSessionOwner && (
               <Tooltip title="Leave Session">
-                <IconButton onClick={leaveSession} size="large" color="primary">
+                <IconButton onClick={() => setActiveModal(DialogEnum.LEAVE_SESSION)} color="error">
                   <Logout />
                 </IconButton>
               </Tooltip>
             )}
-            <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} size="large" color="secondary">
-              <Share />
-            </IconButton>
+            <Tooltip title="Download Session">
+              <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)}>
+                <CloudDownload />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Leave Session">
+              <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="secondary">
+                <Share />
+              </IconButton>
+            </Tooltip>
           </Box>
           <Typography
             sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}

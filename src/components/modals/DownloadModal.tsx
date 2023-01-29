@@ -1,15 +1,13 @@
 import { BorderAll, CloudDownload, DataObject } from '@mui/icons-material'
 import { Avatar, Box, Button, Modal, Stack, Typography, useTheme } from '@mui/material'
-import { JSONObject } from '@regolithco/common'
 import * as React from 'react'
 
 export type DownloadModalProps = {
   open?: boolean
   title: string
   description: string
-  fileName?: string
-  csvData?: string[][]
-  jsonData?: JSONObject
+  downloadCSV?: () => void
+  downloadJSON?: () => void
   onClose: () => void
 }
 
@@ -17,29 +15,11 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
   open,
   title,
   description,
-  fileName,
-  csvData,
-  jsonData,
+  downloadCSV,
+  downloadJSON,
   onClose,
 }) => {
   const theme = useTheme()
-
-  const downloadFile = (data: string, finalFileName: string, fileType: string) => {
-    // Create a blob with the data we want to download as a file
-    const blob = new Blob([data], { type: fileType })
-    // Create an anchor element and dispatch a click event on it
-    // to trigger a download
-    const a = document.createElement('a')
-    a.download = finalFileName
-    a.href = window.URL.createObjectURL(blob)
-    const clickEvt = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    })
-    a.dispatchEvent(clickEvt)
-    a.remove()
-  }
 
   return (
     <Modal open={Boolean(open)} onClose={onClose}>
@@ -68,7 +48,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
         <Typography id="modal-modal-title" variant="body1" component="div" paragraph>
           {description}
         </Typography>
-        {csvData && (
+        {downloadCSV && (
           <Button
             variant="contained"
             startIcon={<BorderAll />}
@@ -77,7 +57,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             }}
             onClick={() => {
               onClose()
-              downloadFile(csvData.toString(), `${fileName}.csv`, 'text/csv')
+              downloadCSV()
             }}
             size="large"
             fullWidth
@@ -85,7 +65,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             CSV
           </Button>
         )}
-        {jsonData && (
+        {downloadJSON && (
           <Button
             variant="contained"
             startIcon={<DataObject />}
@@ -94,7 +74,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             }}
             onClick={() => {
               onClose()
-              downloadFile(JSON.stringify(jsonData, null, 2), `${fileName}.csv`, 'text/csv')
+              downloadJSON()
             }}
             size="large"
             fullWidth

@@ -349,7 +349,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
         {!standalone && !isNew && (
-          <Typography sx={styles.scoutingFindId}>{scoutingFind.scoutingFindId.split('_')[0]}</Typography>
+          <Typography sx={styles.scoutingFindId}>
+            {scoutingFind.owner?.scName.slice(0, 3).toUpperCase()}-{scoutingFind.scoutingFindId.split('_')[0]}
+          </Typography>
         )}
         {!standalone && (
           <Box sx={styles.stateBox}>

@@ -15,6 +15,10 @@ import {
   DestructuredSettings,
   createUserSuggest,
   ScoutingFind,
+  session2Json,
+  downloadFile,
+  createSafeFileName,
+  session2csv,
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ActiveUserList } from '../../fields/ActiveUserList'
@@ -44,6 +48,8 @@ import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectF
 import { ShareModal } from '../../modals/ShareModal'
 import { SessionHeader } from './SessionHeader'
 import { ScoutingFindModal } from '../../modals/ScoutingFindModal'
+import { ConfirmModal } from '../../modals/ConfirmModal'
+import { DownloadModal } from '../../modals/DownloadModal'
 
 export interface SessionPageProps {
   session: Session
@@ -86,6 +92,8 @@ type ObjectValues<T> = T[keyof T]
 export const DialogEnum = {
   SHARE_SESSION: 'SHARE_SESSION',
   ADD_WORKORDER: 'ADD_WORKORDER',
+  LEAVE_SESSION: 'LEAVE_SESSION',
+  DOWNLOAD_SESSION: 'DOWNLOAD_SESSION',
   ADD_SCOUTING: 'ADD_SCOUTING',
   SESSION_PREFERENCES: 'SESSION_PREFERENCES',
   ADD_FRIEND: 'ADD_FRIEND',
@@ -516,6 +524,36 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           }}
         />
       )}
+
+      {leaveSession && (
+        <ConfirmModal
+          title="Leave the session?"
+          message="Are you sure you want to leave this session? You will not be able to find it again unless you still have the URL."
+          onClose={() => setActiveModal(null)}
+          open={activeModal === DialogEnum.LEAVE_SESSION}
+          onConfirm={leaveSession}
+          cancelBtnText="Cancel"
+          confirmBtnText="Yes, Leave"
+        />
+      )}
+      <DownloadModal
+        open={activeModal === DialogEnum.DOWNLOAD_SESSION}
+        onClose={() => setActiveModal(null)}
+        title="Download Session"
+        description="Download the session data as a CSV or JSON file."
+        downloadCSV={() => {
+          const csvObj = session2csv(session)
+          downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
+        }}
+        downloadJSON={() => {
+          const jsonObj = JSON.stringify(session2Json(session), null, 2)
+          downloadFile(
+            jsonObj,
+            createSafeFileName(session.name || 'Session', session.sessionId) + '.json',
+            'application/json'
+          )
+        }}
+      />
 
       {activeScoutingFind && (
         <ScoutingFindModal

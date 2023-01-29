@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import {
   ActivityEnum,
-  makeHumanOrderId,
+  makeHumanIds,
   OtherOrder,
   ShipMiningOrder,
   WorkOrder,
@@ -177,10 +177,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
         </Tooltip>
       </TableCell>
       <TableCell>
-        <MValue
-          value={makeHumanOrderId(workOrder.orderId, workOrder.owner?.scName || 'NEW')}
-          format={MValueFormat.string}
-        />
+        <MValue value={makeHumanIds(workOrder.owner?.scName, workOrder.orderId)} format={MValueFormat.string} />
       </TableCell>
       <TableCell>
         <Tooltip title={workOrder.state}>{stateIcon}</Tooltip>
