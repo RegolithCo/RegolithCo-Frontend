@@ -24,6 +24,7 @@ const pages = {
   '/workorder': 'Work Order',
   '/tables': 'Data Tables',
   '/about': 'About',
+  // '/faq': 'FAQ',
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({

@@ -29,12 +29,12 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '& .MuiDialog-paper': {
       borderRadius: 2,
       [theme.breakpoints.down('sm')]: {
+        height: 'calc(100% - 64px)',
         margin: 0,
         borderRadius: 0,
         maxHeight: '100%',
       },
       [theme.breakpoints.up('md')]: {
-        height: 'calc(100% - 64px)',
         minHeight: 600,
         maxHeight: 900,
         overflow: 'visible',

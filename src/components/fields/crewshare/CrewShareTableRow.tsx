@@ -88,7 +88,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           <Tooltip
             title={isMe ? 'This is you. You are always paid.' : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`}
           >
-            <TableCell align="center" padding="none">
+            <TableCell align="center" padding="none" width={30}>
               <Checkbox
                 checked={paid}
                 disabled={isMe || !allowPay}
@@ -99,7 +99,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
             </TableCell>
           </Tooltip>
 
-          <TableCell align="center" padding="none">
+          <TableCell align="center" padding="none" width={30}>
             {(!isEditing || isMandatory) && hasNote && (
               <Tooltip title={`NOTE: ${crewShare.note}`}>
                 <div>
@@ -120,7 +120,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           </TableCell>
 
           {isEditing && (
-            <TableCell align="center" padding="none">
+            <TableCell align="center" padding="none" width={30}>
               {!isMe && !isMandatory && (
                 <IconButton size="small" onClick={onDelete}>
                   <Delete />
@@ -206,6 +206,7 @@ const formatCrewShare = (
   editing: boolean,
   setEditing: (editing: boolean) => void
 ): React.ReactElement => {
+  const theme = useTheme()
   let shareVal: React.ReactElement
   switch (crewShare.shareType) {
     case ShareTypeEnum.Amount:
@@ -227,6 +228,7 @@ const formatCrewShare = (
       align="right"
       valign="middle"
       padding="none"
+      sx={{ color: theme.palette.text.secondary }}
       onClick={() => {
         if (allowEdit && !editing) setEditing(true)
       }}
@@ -287,6 +289,7 @@ const formatCrewShare = (
 }
 
 const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactNode => {
+  const theme = useTheme()
   let tooltip = ''
   if (includeTfr) {
     tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout - ${numeral(shareArr[0] - shareArr[1]).format(
@@ -297,7 +300,7 @@ const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactN
   }
   return (
     <Tooltip title={tooltip}>
-      <TableCell align="right" padding="none">
+      <TableCell align="right" padding="none" sx={{ color: theme.palette.primary.light }}>
         <MValue
           value={shareArr[1]}
           format={MValueFormat.number}

@@ -141,7 +141,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
     color: theme.palette.primary.contrastText,
     textTransform: 'uppercase',
     fontWeight: 500,
-    fontSize: '1.1rem',
+    fontSize: '1rem',
     [theme.breakpoints.up('md')]: {},
   },
   accordionDetails: {
@@ -388,7 +388,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                           onChange={(e) => setFilterClosedScout(e.target.checked)}
                         />
                       }
-                      label="Hide Inactive"
+                      label="Hide Depleted/Abandoned"
                     />
                   </FormGroup>
                 </AccordionSummary>

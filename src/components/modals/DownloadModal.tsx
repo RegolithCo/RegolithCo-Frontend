@@ -1,7 +1,6 @@
 import { BorderAll, CloudDownload, DataObject } from '@mui/icons-material'
 import { Avatar, Box, Button, Modal, Stack, Typography, useTheme } from '@mui/material'
 import { JSONObject } from '@regolithco/common'
-import { Parser } from '@json2csv/plainjs'
 import * as React from 'react'
 
 export type DownloadModalProps = {
@@ -78,10 +77,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             }}
             onClick={() => {
               onClose()
-              const opts = {}
-              const parser = new Parser()
-              const csvParsed = parser.parse(csvData)
-              downloadFile(csvParsed.toString(), `${fileName}.csv`, 'text/csv')
+              downloadFile(csvData.toString(), `${fileName}.csv`, 'text/csv')
             }}
             size="large"
             fullWidth

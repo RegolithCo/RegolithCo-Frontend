@@ -61,9 +61,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     overflow: 'hidden',
     fontWeight: 'bold',
     fontSize: {
-      xs: '0.8rem',
-      md: '0.9rem',
-      lg: '1rem',
+      xs: '0.7rem',
+      md: '0.8rem',
+      lg: '0.9rem',
     },
   },
   cardContent: {
@@ -72,6 +72,16 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     flexDirection: 'column',
     overflowX: { md: 'hidden', sm: 'scroll' },
     overflow: { md: 'scroll' },
+  },
+  table: {
+    '& *': {
+      fontFamily: fontFamilies.robotoMono,
+      fontSize: {
+        // lg: '0.8rem',
+        // sm: '0.7rem',
+        // xs: '0.6rem',
+      },
+    },
   },
 })
 
@@ -138,6 +148,7 @@ export const OreCard: React.FC<OreCardProps> = ({
       <CardHeader
         sx={{
           flex: '0 0',
+          padding: 1.5,
           color: theme.palette.secondary.contrastText,
           backgroundColor: theme.palette.secondary.light,
         }}
@@ -207,19 +218,7 @@ export const OreCard: React.FC<OreCardProps> = ({
 
         {/* To make this more like the SC refinery console we need to give it somespace */}
 
-        <Table
-          size="small"
-          sx={{
-            '& *': {
-              fontFamily: fontFamilies.robotoMono,
-              fontSize: {
-                lg: 14,
-                sm: 12,
-                xs: 10,
-              },
-            },
-          }}
-        >
+        <Table size="small" sx={styles.table}>
           <TableHead>
             <TableRow>
               <TableCell
@@ -258,7 +257,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                     <Typography
                       component="div"
                       variant="subtitle1"
-                      sx={{ fontSize: 16, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
+                      sx={{ fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
                       color="error"
                     >
                       <em>No ore selected</em>
@@ -275,10 +274,7 @@ export const OreCard: React.FC<OreCardProps> = ({
               return (
                 <TableRow key={`oreRow-${idx}`}>
                   <TableCell component="th" scope="row">
-                    <Typography
-                      sx={{ fontSize: 16, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-                      variant="tablecell"
-                    >
+                    <Typography sx={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} variant="tablecell">
                       {getOreName(oreKey as ShipOreEnum).toUpperCase()}
                     </Typography>
                   </TableCell>
@@ -328,14 +324,13 @@ export const OreCard: React.FC<OreCardProps> = ({
                         inputProps={{
                           sx: {
                             p: 0,
-                            fontSize: 16,
                             textAlign: 'right',
                             fontFamily: fontFamilies.robotoMono,
                           },
                         }}
                       />
                     ) : (
-                      <MValue value={convertedCollected} typoProps={{ sx: { fontSize: 16 } }} />
+                      <MValue value={convertedCollected} typoProps={{}} />
                     )}
                   </TableCell>
                   {shipOrder?.isRefined && (
@@ -385,14 +380,13 @@ export const OreCard: React.FC<OreCardProps> = ({
                           inputProps={{
                             sx: {
                               p: 0,
-                              fontSize: 16,
                               textAlign: 'right',
                               fontFamily: fontFamilies.robotoMono,
                             },
                           }}
                         />
                       ) : (
-                        <MValue value={refined} typoProps={{ sx: { fontSize: 16 } }} />
+                        <MValue value={refined} />
                       )}
                     </TableCell>
                   )}
@@ -410,40 +404,21 @@ export const OreCard: React.FC<OreCardProps> = ({
             {shipOrder.isRefined && (
               <TableRow>
                 <TableCell component="th">
-                  <Typography
-                    sx={{
-                      fontSize: 16,
-                    }}
-                    variant="tablecell"
-                  >
-                    Unrefined Value
-                  </Typography>
+                  <Typography variant="tablecell">Unrefined Value</Typography>
                 </TableCell>
                 <TableCell align="right" colSpan={2}>
-                  <MValue
-                    value={summary.unrefinedValue}
-                    format={MValueFormat.currency}
-                    typoProps={{ sx: { fontSize: 16 } }}
-                  />
+                  <MValue value={summary.unrefinedValue} format={MValueFormat.currency} />
                 </TableCell>
               </TableRow>
             )}
             <TableRow>
               <TableCell component="th">
-                <Typography
-                  sx={{
-                    fontSize: 16,
-                  }}
-                  variant="tablecell"
-                >
-                  {shipOrder.isRefined ? 'Refined Value' : 'Ore Value'}
-                </Typography>
+                <Typography variant="tablecell">{shipOrder.isRefined ? 'Refined Value' : 'Ore Value'}</Typography>
               </TableCell>
               <TableCell align="right" colSpan={2}>
                 <MValue
                   value={shipOrder.isRefined ? summary?.refinedValue : summary?.grossProfit}
                   format={MValueFormat.currency}
-                  typoProps={{ sx: { fontSize: 16 } }}
                 />
               </TableCell>
             </TableRow>
@@ -451,16 +426,10 @@ export const OreCard: React.FC<OreCardProps> = ({
             {shipOrder.isRefined && (
               <TableRow>
                 <TableCell component="th" sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <Typography sx={{ fontSize: 16 }} variant="tablecell">
-                    Process Fee
-                  </Typography>
+                  <Typography variant="tablecell">Process Fee</Typography>
                 </TableCell>
                 <TableCell colSpan={2} align="right">
-                  <MValue
-                    value={-1 * (summary?.refiningCost as number)}
-                    format={MValueFormat.currency}
-                    typoProps={{ sx: { fontSize: 16 } }}
-                  />
+                  <MValue value={-1 * (summary?.refiningCost as number)} format={MValueFormat.currency} />
                 </TableCell>
               </TableRow>
             )}
@@ -473,7 +442,6 @@ export const OreCard: React.FC<OreCardProps> = ({
               variant="contained"
               color={shipOrder.processStartTime ? 'error' : 'primary'}
               sx={{
-                fontSize: 20,
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
                 fontFamily: fontFamilies.robotoMono,

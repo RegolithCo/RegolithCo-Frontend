@@ -54,7 +54,7 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
         NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
         share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>.
       </Alert>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ maxWidth: 500, mx: 3 }}>
         <WorkOrderTypeChooser onChange={setActiveActivity} value={activeActivity} />
       </Box>
       <Box

@@ -1,7 +1,8 @@
 import * as React from 'react'
 import Typography from '@mui/material/Typography'
 import { PageWrapper } from '../PageWrapper'
-import { Divider, Link } from '@mui/material'
+import { Avatar, Button, Divider, Link, Stack } from '@mui/material'
+import { Coffee } from '@mui/icons-material'
 
 export const FAQPage: React.FC = () => {
   return (
@@ -41,22 +42,44 @@ export const FAQPage: React.FC = () => {
         </strong>{' '}
         Sort of a nice problem to have, but I'll cross that bridge when/if we get there.
       </Typography>
-
       <Typography paragraph>
         Feel free to use the site as much as you'd like totally free. If you'd like to contribute towards server costs
         or buy me a coffee as a gesture of appreciation, that would be greatly appreciated. Beyond that, I have no plans
         to monetize the site through advertising or any other methods.
       </Typography>
-
+      <Stack
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+        spacing={2}
+        sx={{ width: '100%', mb: 3 }}
+      >
+        <Button
+          variant="contained"
+          href="https://ko-fi.com/regolithco"
+          target="_blank"
+          fullWidth
+          sx={{ fontSize: '1rem', p: 1 }}
+          startIcon={<Avatar src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`} />}
+        >
+          Ko-Fi
+        </Button>
+        <Button
+          variant="contained"
+          href="https://patreon.com/user?u=64746907"
+          target="_blank"
+          fullWidth
+          color="secondary"
+          sx={{ fontSize: '1rem', p: 1 }}
+          startIcon={<Coffee />}
+        >
+          Patreon
+        </Button>
+      </Stack>
       <Divider sx={{ m: 2 }} />
       <Typography variant="h5" gutterBottom>
-        Is my data safe?
+        Will there be data wipes?
       </Typography>
-      <Typography paragraph>
-        What data? Kidding... well sort of. I don't track, store or sell your login info, identity, passwords or emails
-        in the database. Any data you enter into this app might be used to do fun things like reporting on general
-        trends (ore collected, etc...). I won't ever mention individual users by name without express permission.
-      </Typography>
+      <Typography paragraph>Yes. Star Citizen does a lot of wipes and patches and so will we.</Typography>
       <Typography paragraph>
         I might turn on Google analytics at some point to keep track of traffic and estimate my server needs.
       </Typography>

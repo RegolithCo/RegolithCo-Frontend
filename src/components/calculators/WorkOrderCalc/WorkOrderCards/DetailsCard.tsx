@@ -43,6 +43,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
       <CardHeader
         sx={{
           flex: '0 0',
+          padding: 1.5,
           color: theme.palette.secondary.contrastText,
           backgroundColor: theme.palette.secondary.light,
         }}
@@ -53,9 +54,9 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
               fontFamily: fontFamilies.robotoMono,
               fontWeight: 'bold',
               fontSize: {
-                xs: '0.8rem',
-                md: '0.9rem',
-                lg: '1rem',
+                xs: '0.7rem',
+                md: '0.8rem',
+                lg: '0.9rem',
               },
               lineHeight: 1,
             }}

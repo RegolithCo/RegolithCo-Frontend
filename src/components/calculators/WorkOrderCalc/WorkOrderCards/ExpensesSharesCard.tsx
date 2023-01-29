@@ -44,7 +44,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const expenses: { name: string; value: number }[] = []
   if (workOrder.includeTransferFee) {
     expenses.push({
-      name: 'moTRADER Service Fees',
+      name: 'moTRADER',
       value: (summary?.transferFees as number) > -1 ? -1 * ((summary.transferFees as number) || 0) : 0,
     })
   }
@@ -54,6 +54,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
       <CardHeader
         sx={{
           flex: '0 0',
+          padding: 1.5,
           color: theme.palette.secondary.contrastText,
           backgroundColor: theme.palette.secondary.light,
         }}
@@ -64,9 +65,9 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               fontFamily: fontFamilies.robotoMono,
               fontWeight: 'bold',
               fontSize: {
-                xs: '0.8rem',
-                md: '0.9rem',
-                lg: '1rem',
+                xs: '0.7rem',
+                md: '0.8rem',
+                lg: '0.9rem',
               },
               lineHeight: 1,
             }}

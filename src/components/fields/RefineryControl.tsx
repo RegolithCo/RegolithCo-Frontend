@@ -26,10 +26,11 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
             ? {
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
+                lineHeight: 1,
                 fontSize: {
-                  xs: '0.8rem',
-                  md: '0.9rem',
-                  lg: '1rem',
+                  xs: '0.7rem',
+                  md: '0.8rem',
+                  lg: '0.9rem',
                 },
               }
             : {}
@@ -43,6 +44,7 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
       labelId="refineryChoice"
       id="refineryChoice"
       variant="standard"
+      disableUnderline
       disabled={disabled}
       value={value ? value : allowNone ? '' : RefineryEnum.Arcl1}
       sx={
@@ -52,17 +54,25 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
               color: 'inherit',
               fontFamily: fontFamilies.robotoMono,
               fontWeight: 'bold',
+              borderBottom: '1px solid',
               '&.MuiInput-root::before': {
                 borderBottom: 'none',
               },
+              '& input': {
+                p: 0,
+                m: 0,
+              },
+              '& .MuiSvgIcon-root': {
+                color: 'inherit',
+              },
               '& .MuiSelect-select': {
                 color: 'inherit',
-                fontSize: {
-                  xs: '0.8rem',
-                  md: '0.9rem',
-                  lg: '1rem',
-                },
                 lineHeight: 1,
+                fontSize: {
+                  xs: '0.7rem',
+                  md: '0.8rem',
+                  lg: '0.9rem',
+                },
                 mx: 1,
                 my: 0,
                 p: 0,

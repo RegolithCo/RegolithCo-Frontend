@@ -80,7 +80,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   const expenses: { name: string; value: number }[] = []
   if (workOrder.includeTransferFee) {
     expenses.push({
-      name: 'moTRADER Service Fees',
+      name: 'moTRADER',
       value: (summary?.transferFees as number) > -1 ? -1 * ((summary.transferFees as number) || 0) : 0,
     })
   }
@@ -119,11 +119,11 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             <TableCell align="center" padding="none">
               Type
             </TableCell>
-            <TableCell align="right" padding="none">
+            <TableCell align="right" padding="none" sx={{ color: theme.palette.text.secondary }}>
               Share
             </TableCell>
             <Tooltip title="The payout is the amount of aUEC that the user will receive from the work order.">
-              <TableCell align="right" padding="none">
+              <TableCell align="right" padding="none" sx={{ color: theme.palette.primary.light }}>
                 Payout
               </TableCell>
             </Tooltip>
