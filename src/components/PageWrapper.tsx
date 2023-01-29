@@ -14,7 +14,7 @@ export interface PageWrapperProps {
 const styles = {
   container: {
     py: {
-      md: 2,
+      md: 3,
       lg: 4,
     },
     px: {

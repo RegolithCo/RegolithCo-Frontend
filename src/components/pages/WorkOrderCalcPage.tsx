@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Box, Stack, Typography } from '@mui/material'
+import { Alert, Box, Stack, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
 import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@regolithco/common'
@@ -13,6 +13,7 @@ export interface WorkOrderCalcPageProps {
 }
 
 export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfile }) => {
+  const theme = useTheme()
   // eslint-disable-next-line no-unused-vars
   const [workOrders, setWorkOrders] = React.useState<{ [key in ActivityEnum]?: WorkOrder }>({})
   const [activeActivity, setActiveActivity] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
@@ -51,11 +52,26 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
         This is where you can calculate the cost of a work order and how to share it between members of your org/party.
       </Typography>
 
-      <Stack direction="row" spacing={2} sx={{ m: 2 }}>
-        <Box sx={{ mx: 3, flex: '1 1 50%' }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={2}
+        sx={{
+          [theme.breakpoints.up('md')]: {
+            m: { md: 2, sm: 0, xs: 0 },
+          },
+        }}
+      >
+        <Box
+          sx={{
+            [theme.breakpoints.up('md')]: {
+              mx: 3,
+              flex: '1 1 50%',
+            },
+          }}
+        >
           <WorkOrderTypeChooser onChange={setActiveActivity} value={activeActivity} />
         </Box>
-        <Alert severity="info" sx={{ m: 2, flex: '1 1 50%' }}>
+        <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
           NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
           share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>.
         </Alert>

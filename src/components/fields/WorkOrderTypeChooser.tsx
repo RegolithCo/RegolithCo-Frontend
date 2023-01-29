@@ -90,7 +90,19 @@ export const WorkOrderTypeChooser: React.FC<WorkOrderTypeChooserProps> = ({
             sx={{ flexDirection: 'column' }}
           >
             {row.icon}
-            <Box sx={{ flex: '1 1', mt: 2 }}>
+            <Box
+              sx={{
+                flex: '1 1',
+                mt: 2,
+                [theme.breakpoints.down('sm')]: {
+                  mt: 1,
+                  p: 0.2,
+                  '& .MuiTypography-root': {
+                    fontSize: '0.7rem',
+                  },
+                },
+              }}
+            >
               <Typography component="div">{row.title}</Typography>
             </Box>
           </ToggleButton>
