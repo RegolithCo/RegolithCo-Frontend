@@ -1,164 +1,269 @@
 import * as React from 'react'
 
-import { UserProfile, Session, SessionStateEnum, defaultSessionName } from '@regolithco/common'
+import { Session, SessionStateEnum, defaultSessionName, makeAvatar } from '@regolithco/common'
 import {
+  Avatar,
   Box,
+  Chip,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
+  ListItemAvatar,
   ListItemText,
-  Pagination,
+  Paper,
   SxProps,
   Typography,
   useTheme,
 } from '@mui/material'
 import dayjs from 'dayjs'
-import { chunk } from 'lodash'
-import { AddCircle, Groups } from '@mui/icons-material'
-import { Stack, Theme } from '@mui/system'
+import { Person } from '@mui/icons-material'
+import { keyframes, Theme } from '@mui/system'
 import { sessionSubtitleArr } from '../pages/SessionPage/SessionHeader'
-import log from 'loglevel'
+import {
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  TimelineOppositeContent,
+  TimelineSeparator,
+} from '@mui/lab'
 
 export interface SessionListProps {
-  title: string
-  userProfile: UserProfile
-  activeOnly: boolean
   sessions: Session[]
   loading?: boolean
-  pageSize: number
   onClickSession?: (sessionId: string) => void
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   containerBox: {
-    [theme.breakpoints.up('md')]: { display: 'flex', flexDirection: 'column', height: '100%' },
+    // [theme.breakpoints.up('md')]: { display: 'flex', flexDirection: 'column', height: '100%' },
   },
   listItemCommon: {
     '& .MuiListItemButton-root': {
-      border: '1px solid #aaaaaa',
-      borderRadius: 5,
+      // border: '1px solid #aaaaaa',
+      // borderRadius: 5,
     },
   },
 })
 
-export const SessionList: React.FC<SessionListProps> = ({
-  title,
-  activeOnly,
-  userProfile,
-  sessions,
-  pageSize,
-  onClickSession,
-}) => {
+export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onClickSession }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const [pageIdx, setPageIdx] = React.useState(0)
 
-  const { numPages, numFiltered, filteredSortedChunked } = React.useMemo(() => {
-    if (!sessions || sessions.length === 0) {
-      return {
-        filteredSortedChunked: [[]],
-        numFiltered: 0,
-        numPages: 1,
+  const pulse = keyframes`
+  0% { background-color: transparent; }
+  70% { background-color:  ${theme.palette.warning.light}44; }
+  100% { background-color: transparent; }
+  `
+  const pulseCssThunk = (doPulse: boolean): SxProps<Theme> => ({
+    animation: doPulse ? `${pulse} 4s infinite ease` : '',
+    backgroundColor: 'transparent',
+  })
+
+  // Group sessions by YEAR[MONTH[DAY[]]]
+  const sessionsByDate: Session[][][] = React.useMemo(() => {
+    const today = dayjs()
+    const sessionsByDate: Session[][][] = []
+    let currYear = today.year()
+    let currMonth = today.month()
+    let currDay = today.date()
+    let yearMonthArr: Session[][] = []
+    let dayArr: Session[] = []
+
+    sessions.forEach((session) => {
+      const sessionDate = dayjs(session.createdAt)
+      const sessionYear = sessionDate.year()
+      const sessionMonth = sessionDate.month()
+      const sessionDay = sessionDate.date()
+      if (sessionYear === currYear && sessionMonth === currMonth) {
+        if (sessionDay === currDay) {
+          dayArr.push(session)
+        } else {
+          if (dayArr.length > 0) yearMonthArr.push(dayArr)
+          dayArr = [session]
+          currDay = sessionDay
+        }
+      } else {
+        if (yearMonthArr.length > 0) sessionsByDate.push(yearMonthArr)
+        yearMonthArr = [[session]]
+        currYear = sessionYear
+        currMonth = sessionMonth
       }
-    }
-    const filteredSessions = activeOnly
-      ? sessions.filter(({ state }) => state === SessionStateEnum.Active)
-      : [...(sessions || [])]
-
-    // Sort by most recent update
-    filteredSessions.sort((a, b) => b.updatedAt - a.updatedAt)
-
-    const chunkedSessions = chunk(filteredSessions, pageSize)
-    return {
-      filteredSortedChunked: chunkedSessions,
-      numFiltered: filteredSessions.length,
-      numPages: chunkedSessions.length,
-    }
-  }, [activeOnly, sessions])
-  const numActive = sessions.filter(({ state }) => state === SessionStateEnum.Active).length
-
-  React.useEffect(() => {
-    if (pageIdx === 0) return
-    else if (numPages > 0 && pageIdx >= numPages) {
-      setPageIdx(numPages - 1)
-    } else if (pageIdx < 0) {
-      setPageIdx(0)
-    }
-  }, [pageIdx, numPages])
+    })
+    if (dayArr.length > 0) yearMonthArr.push(dayArr)
+    if (yearMonthArr.length > 0) sessionsByDate.push(yearMonthArr)
+    return sessionsByDate
+  }, [sessions, loading])
 
   return (
     <Box sx={styles.containerBox}>
-      <Typography sx={{ flex: '0 0' }}>
-        {title} (Active: {numActive} Closed: {sessions.length - numActive})
-      </Typography>
-      <List dense sx={{ flex: '0 0' }}>
-        {filteredSortedChunked.length === 0 && (
-          <ListItem>
-            <ListItemText
+      {sessionsByDate.map((yearMonthArr, idx) => {
+        if (yearMonthArr.length === 0) return
+        const currHeading = dayjs(yearMonthArr[0][0].createdAt).format('YYYY - MMMM')
+        return (
+          <Box key={`yeamonth-${idx}`}>
+            <Typography variant="h6" sx={{ textAlign: 'left' }}>
+              {currHeading}
+            </Typography>
+            <Timeline
+              position="right"
               sx={{
-                '& .MuiListItemText-primary': { fontStyle: 'italic' },
+                [theme.breakpoints.down('sm')]: {
+                  '&, & .MuiTimelineContent-root, & .MuiTimelineOppositeContent-root': {
+                    // p: 0.2,
+                    // m: 0.7,
+                  },
+                },
+                '& .MuiTimelineOppositeContent-positionRight': {
+                  flex: 0.2,
+                },
               }}
-              primary={'No matching sessions'}
-            />
-          </ListItem>
-        )}
-        {filteredSortedChunked[pageIdx] &&
-          filteredSortedChunked[pageIdx].map((session) => {
-            const { sessionId, name, owner, createdAt, updatedAt, state } = session
-            const sessionActive = state === SessionStateEnum.Active
-            const subtitleArr = sessionSubtitleArr(session)
-            return (
-              <ListItem key={sessionId} sx={{ ...styles.listItemCommon, opacity: !sessionActive ? 0.5 : 1 }}>
-                <ListItemButton onClick={() => onClickSession?.(sessionId)}>
-                  <ListItemIcon>
-                    <Groups />
-                  </ListItemIcon>
-                  <Box sx={{ overflow: 'hidden', flex: '1 1 ' }}>
-                    <Typography
-                      component="div"
-                      variant="subtitle1"
+            >
+              {yearMonthArr.map((dayArr, idy) => {
+                if (dayArr.length === 0) return
+                const currHeading = dayjs(dayArr[0].createdAt).format('ddd, MMM DD')
+                return (
+                  <TimelineItem key={`days-${idy}`}>
+                    <TimelineOppositeContent
+                      color="text.secondary"
                       sx={{
-                        border: '1px transparent solid',
-                        display: 'block',
-                        textOverflow: 'ellipsis',
-                        width: '100%',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
+                        fontStyle: 'italic',
+                        fontSize: '0.75rem',
+                        [theme.breakpoints.down('sm')]: {
+                          fontSize: '0.65rem',
+                          lineHeight: 2,
+                        },
                       }}
                     >
-                      {name || defaultSessionName()}
-                    </Typography>
-                    <Typography component="div" variant="caption">
-                      Owner: {owner?.scName || 'Unknown'}
-                    </Typography>
-                    <Typography component="div" variant="caption">
-                      {subtitleArr.join(' - ')}
-                    </Typography>
-                    <Typography component="div" variant="caption">
-                      Last Activity: {dayjs(updatedAt).format('ddd, DD/MM/YY, h:mm a')}
-                    </Typography>
-                  </Box>
-                </ListItemButton>
-              </ListItem>
-            )
-          })}
-      </List>
-      <Box sx={{ flex: '1 1' }} />
-      {numPages > 1 && (
-        <Stack alignItems="center" sx={{ flex: '0 0' }}>
-          <Pagination
-            sx={{ margin: '0 auto' }}
-            count={numPages}
-            page={pageIdx + 1}
-            onChange={(event: React.ChangeEvent<unknown>, value: number) => {
-              if (value < 1 || value > numPages) {
-                return
-              }
-              setPageIdx(value - 1)
-            }}
-          />
-        </Stack>
+                      {currHeading}
+                    </TimelineOppositeContent>
+                    <TimelineSeparator>
+                      <TimelineDot color="secondary" />
+                      <TimelineConnector />
+                    </TimelineSeparator>
+                    <TimelineContent>
+                      <Paper
+                        elevation={10}
+                        sx={{
+                          // p: {
+                          //   xs: 0.5,
+                          //   sm: 1,
+                          //   md: 1.5,
+                          // },
+                          border: '1px solid #666666',
+                        }}
+                      >
+                        <List dense disablePadding>
+                          {dayArr.map((session) => {
+                            const { sessionId, name, owner, createdAt, updatedAt, state } = session
+                            const sessionActive = state === SessionStateEnum.Active
+                            const subtitleArr = sessionSubtitleArr(session)
+                            const userAvatar = makeAvatar(session.owner?.avatarUrl as string)
+                            return (
+                              <ListItem
+                                divider
+                                alignItems="flex-start"
+                                key={sessionId}
+                                sx={{
+                                  ...pulseCssThunk(sessionActive),
+                                  cursor: 'pointer',
+                                  // mb: {
+                                  //   xs: 0.5,
+                                  //   sm: 1,
+                                  //   md: 1.5,
+                                  // },
+                                  // '&:last-child': {
+                                  //   mb: 0,
+                                  // },
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.23)',
+                                  },
+                                  // backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                                }}
+                                onClick={() => onClickSession?.(sessionId)}
+                              >
+                                <Chip
+                                  label={sessionActive ? 'Active' : 'Ended'}
+                                  size="small"
+                                  sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    color: sessionActive
+                                      ? theme.palette.secondary.contrastText
+                                      : theme.palette.grey[500],
+                                    backgroundColor: sessionActive
+                                      ? theme.palette.secondary.light
+                                      : theme.palette.background.default,
+                                    borderRadius: 0,
+                                    borderTopLeftRadius: 3,
+                                    p: 0,
+                                    m: 0,
+                                    //
+                                  }}
+                                />
+                                <ListItemAvatar
+                                  sx={{
+                                    [theme.breakpoints.down('sm')]: {
+                                      display: 'none',
+                                    },
+                                  }}
+                                >
+                                  <Avatar
+                                    src={userAvatar}
+                                    imgProps={{ referrerPolicy: 'no-referrer' }}
+                                    alt={session.owner?.scName}
+                                    sx={{
+                                      background: theme.palette.secondary.main,
+                                      color: theme.palette.secondary.contrastText,
+                                      border: '1px solid',
+                                      mt: 2,
+                                      ml: 1,
+                                    }}
+                                  >
+                                    <Person />
+                                  </Avatar>
+                                  <div style={{ flexGrow: 1 }} />
+                                </ListItemAvatar>
+                                <ListItemText sx={{ pl: 1 }}>
+                                  <Typography
+                                    component="div"
+                                    variant="subtitle1"
+                                    sx={{
+                                      lineHeight: 1.2,
+                                      [theme.breakpoints.down('sm')]: {
+                                        mt: 2,
+                                        fontSize: '0.9rem',
+                                        lineHeight: 1.2,
+                                      },
+                                    }}
+                                  >
+                                    {name || defaultSessionName()}
+                                  </Typography>
+                                  <Typography component="div" variant="caption">
+                                    Owner: {owner?.scName || 'Unknown'}
+                                  </Typography>
+                                  <Typography component="div" variant="caption">
+                                    {subtitleArr.join(' - ')}
+                                  </Typography>
+                                </ListItemText>
+                              </ListItem>
+                            )
+                          })}
+                        </List>
+                      </Paper>
+                    </TimelineContent>
+                  </TimelineItem>
+                )
+              })}
+            </Timeline>
+          </Box>
+        )
+      })}
+      {!loading && (
+        <Typography variant="body2" sx={{ textAlign: 'center' }} component="div" color="text.secondary">
+          <em>No more sessions</em>
+        </Typography>
       )}
     </Box>
   )

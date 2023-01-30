@@ -22,8 +22,8 @@ const { userId, scName, createdAt, updatedAt, state } = userProfile
 const user: User = { userId, scName, createdAt, updatedAt, state, __typename: 'User' }
 SessionChooserPage.args = {
   userProfile,
-  mySessions: Array.from({ length: 0 }, () => fakeSession({ owner: user })),
-  joinedSessions: Array.from({ length: 0 }, () => fakeSession()),
+  mySessions: Array.from({ length: 20 }, () => fakeSession({ owner: user })),
+  joinedSessions: Array.from({ length: 20 }, () => fakeSession()),
   loading: false,
   navigate: (path: string) => {
     console.log('navigate', path)

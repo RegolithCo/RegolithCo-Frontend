@@ -135,7 +135,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
                 fontSize: '1.5rem',
               }}
             >
-              {session.state === SessionStateEnum.Active ? 'Active' : 'Closed'}
+              {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
             </Typography>
             {isSessionOwner && (
               <Tooltip title="Session Settings">

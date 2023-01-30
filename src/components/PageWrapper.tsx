@@ -37,7 +37,19 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
       <Container maxWidth={maxWidth || 'sm'} sx={sx}>
         <Paper elevation={4} sx={styles.container}>
           {title && (
-            <Typography variant="h4" component="h1" gutterBottom>
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontSize: {
+                  xs: '1.5rem',
+                  sm: '1.7rem',
+                  md: '1.8rem',
+                  lg: '2rem',
+                },
+              }}
+            >
               {title}
             </Typography>
           )}
