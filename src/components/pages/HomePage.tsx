@@ -2,15 +2,18 @@ import { Button, Card, CardActions, CardContent, CardMedia, SxProps, Typography 
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { PageWrapper } from '../PageWrapper'
-import { LoginContextObj, useLogin } from '../../hooks/useOAuth2'
+import { LoginContextObj } from '../../hooks/useOAuth2'
+import { SiteStats } from '../cards/SiteStats'
+import { StatsObject } from '@regolithco/common'
 
 interface HomePageProps {
   userCtx: LoginContextObj
   navigate?: (path: string) => void
   handleLogin?: () => void
+  stats?: StatsObject
+  statsLoading?: boolean
 }
 
 const cardCSS: SxProps<Theme> = {
@@ -22,10 +25,13 @@ const cardCSS: SxProps<Theme> = {
   justifyContent: 'space-between',
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate }) => {
+export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, statsLoading }) => {
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
+      {/* STATS */}
+      {/* <SiteStats stats={stats} loading={statsLoading} /> */}
+      {/* OUR MAIN CHOICE */}
       <Grid container spacing={4}>
         <Grid sm={4} sx={cardCSS}>
           <Card
@@ -88,10 +94,4 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate }) => {
       </Grid>
     </PageWrapper>
   )
-}
-
-export const HomePageContainer: React.FC = () => {
-  const userCtx = useLogin()
-  const navigate = useNavigate()
-  return <HomePage userCtx={userCtx} navigate={navigate} />
 }

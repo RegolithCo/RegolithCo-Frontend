@@ -1,7 +1,7 @@
 import React from 'react'
 import { AppWrapperContainer } from './components/AppWrapper'
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
-import { HomePageContainer } from './components/pages/HomePage'
+import { HomePageContainer } from './components/pages/HomePage.container'
 import Error from './Error'
 import { FAQPage } from './components/pages/FAQPage'
 import { AboutPage } from './components/pages/AboutPage'

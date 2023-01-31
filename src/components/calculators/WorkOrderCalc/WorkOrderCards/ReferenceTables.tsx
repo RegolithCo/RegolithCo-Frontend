@@ -35,7 +35,7 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell colSpan={2}>Referennce Capacities:</TableCell>
+            <TableCell colSpan={2}>Reference Capacities:</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

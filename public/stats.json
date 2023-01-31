@@ -1,0 +1,32 @@
+{
+  "users": 20,
+  "workOrders": 16,
+  "sessions": 8,
+  "scoutingRocks": 33,
+  "rawOreSCU": 548.24,
+  "aUEC": 3011994.202225,
+  "shipOres": {
+    "AGRICIUM": 0,
+    "ALUMINUM": 0,
+    "BERYL": 9.881234999999998,
+    "BEXALITE": 70.268,
+    "BORASE": 44.1945,
+    "COPPER": 0,
+    "CORUNDUM": 0,
+    "DIAMOND": 0,
+    "GOLD": 0,
+    "HEPHAESTANITE": 0,
+    "INERTMATERIAL": 0,
+    "LARANITE": 0,
+    "QUANTANIUM": 166.0315,
+    "QUARTZ": 21.755,
+    "TARANITE": 77.14,
+    "TITANIUM": 0,
+    "TUNGSTEN": 0
+  },
+  "vehicleOres": {
+    "APHORITE": 8,
+    "DOLIVINE": 0,
+    "HADANITE": 15.5
+  }
+}

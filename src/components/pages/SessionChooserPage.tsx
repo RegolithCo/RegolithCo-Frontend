@@ -67,7 +67,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
           <div style={{ flex: 1 }} />
           <FormControlLabel
             control={<Switch checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} />}
-            label="Hide ended"
+            label="Only active"
             labelPlacement="start"
           />
         </Stack>
