@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardMedia, SxProps, Typography } from '@mui/material'
+import { Button, Card, CardActions, CardContent, CardMedia, Divider, Paper, SxProps, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
@@ -28,9 +28,8 @@ const cardCSS: SxProps<Theme> = {
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, statsLoading }) => {
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
-      {/* <SiteStats stats={stats} loading={statsLoading} /> */}
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
-      {/* STATS */}
+      <Divider sx={{ my: 2 }} />
       {/* OUR MAIN CHOICE */}
       <Grid container spacing={4}>
         <Grid sm={4} sx={cardCSS}>
@@ -92,6 +91,15 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
       </Grid>
+
+      {/* STATS */}
+      <Divider sx={{ my: 2 }} />
+      <Paper sx={{ p: 2, my: 3 }} elevation={1}>
+        <Typography variant="h5" sx={{ mb: 2 }} gutterBottom>
+          Site Stats
+        </Typography>
+        <SiteStats stats={stats} loading={statsLoading} />
+      </Paper>
     </PageWrapper>
   )
 }
