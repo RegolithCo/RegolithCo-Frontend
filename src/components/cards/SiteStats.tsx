@@ -37,7 +37,7 @@ interface SiteStatsCardProps {
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   card: {
-    height: '100%',
+    height: 100,
     display: 'flex',
     flexDirection: 'column',
   },
@@ -47,18 +47,18 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ number, subText })
   const theme = useTheme()
   const styles = stylesThunk(theme)
   return (
-    <Grid xs={4} sm={4} md={3}>
+    <Grid xs={4} sm={3} md={2}>
       <Card sx={styles.card} elevation={7}>
         <div style={{ flexGrow: 1 }} />
         <CardMedia sx={{ textAlign: 'center', minHeight: 30, mx: 2 }}>
-          <Textfit mode="single">{MValueFormatter(number || 0, MValueFormat.number)}</Textfit>
+          <Textfit mode="single" max={30}>
+            {MValueFormatter(number || 0, MValueFormat.number)}
+          </Textfit>
         </CardMedia>
         <div style={{ flexGrow: 1 }} />
-        <CardContent sx={{ flex: '1 1 20%' }}>
-          <Typography sx={{ mb: 1.5, textAlign: 'center' }} color="text.secondary">
-            {subText}
-          </Typography>
-        </CardContent>
+        <Typography sx={{ mb: 1, textAlign: 'center' }} color="text.secondary" variant="caption" component="div">
+          {subText}
+        </Typography>
       </Card>
     </Grid>
   )

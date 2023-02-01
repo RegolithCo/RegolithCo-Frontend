@@ -28,9 +28,9 @@ const cardCSS: SxProps<Theme> = {
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, statsLoading }) => {
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
+      {/* <SiteStats stats={stats} loading={statsLoading} /> */}
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
       {/* STATS */}
-      {/* <SiteStats stats={stats} loading={statsLoading} /> */}
       {/* OUR MAIN CHOICE */}
       <Grid container spacing={4}>
         <Grid sm={4} sx={cardCSS}>

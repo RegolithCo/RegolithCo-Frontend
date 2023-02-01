@@ -156,7 +156,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
                 <CloudDownload />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Leave Session">
+            <Tooltip title="Share session">
               <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="secondary">
                 <Share />
               </IconButton>
