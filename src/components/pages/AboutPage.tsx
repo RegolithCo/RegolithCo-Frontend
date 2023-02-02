@@ -3,6 +3,7 @@ import { Avatar, Button, Divider, Link, Stack, Typography } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { Coffee, Segment, Twitter } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
+import { DiscordIcon } from '../../icons/Discord'
 
 export const AboutPage: React.FC = () => {
   return (
@@ -60,19 +61,41 @@ export const AboutPage: React.FC = () => {
       <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
         Report Bugs / Get Help
       </Typography>
-      <Typography paragraph>RegolithCo is on twitter. Go on, Slide into our DMs.</Typography>
-      <Button
-        startIcon={<Twitter />}
-        variant="contained"
-        color="info"
-        sx={{ fontSize: '1rem', mb: 3 }}
-        href="https://twitter.com/RegolithCo"
-        target="_blank"
-      >
-        @RegolithCo
-      </Button>
       <Typography paragraph>
-        For the old-school among us, here's an email address I check every now and then.
+        Primarily, Regolith Co. has a discord server for help, support, bugs, feature requests etc. We are also on
+        twitter (but not very often).
+      </Typography>
+      <Stack
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+        spacing={2}
+        sx={{ width: '100%', mb: 3 }}
+      >
+        <Button
+          startIcon={<DiscordIcon />}
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ fontSize: '1rem', p: 2 }}
+          href="https://discord.gg/6TKSYHNJha"
+          target="_blank"
+        >
+          Discord Server
+        </Button>
+        <Button
+          startIcon={<Twitter />}
+          variant="contained"
+          color="info"
+          fullWidth
+          sx={{ fontSize: '1rem', p: 2 }}
+          href="https://twitter.com/RegolithCo"
+          target="_blank"
+        >
+          @RegolithCo
+        </Button>
+      </Stack>
+      <Typography paragraph>
+        For the old-school among us, here's an email address but it doesn't get checked very often.
       </Typography>
       <Typography
         component="div"

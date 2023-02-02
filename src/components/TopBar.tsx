@@ -10,9 +10,9 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import { yellow } from '@mui/material/colors'
-import { Badge, SxProps, Theme, useTheme } from '@mui/material'
+import { Badge, CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
-import { Login, Person, Verified } from '@mui/icons-material'
+import { Error, Login, Person, Verified } from '@mui/icons-material'
 import { makeAvatar, UserStateEnum } from '@regolithco/common'
 // import { LoginExpiryTimer } from './fields/LoginExpiryTimer'
 import { RockIcon } from '../icons'
@@ -161,59 +161,63 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         <Box sx={{ flexGrow: 0 }}>
           {userCtx.isAuthenticated && (
             <>
-              <Button
-                onClick={handleOpenUserMenu}
-                sx={{
-                  fontFamily: fontFamilies.robotoMono,
-                  fontWeight: 'bold',
-                  color: theme.palette.primary.contrastText,
-                }}
-                endIcon={
-                  <Badge
-                    badgeContent={
-                      userCtx.userProfile?.state === UserStateEnum.Verified ? <Verified color="success" /> : null
-                    }
-                    sx={
-                      userCtx.userProfile?.state === UserStateEnum.Verified
-                        ? {
-                            '& svg': {
-                              strokeWidth: '0.5px',
-                              stroke: 'black',
-                            },
-                            '& .MuiBadge-badge::before': {
-                              content: '" "',
-                              display: 'block',
-                              background: 'black',
-                              position: 'absolute',
+              {userCtx.loading ? (
+                <CircularProgress color="secondary" thickness={7} />
+              ) : (
+                <Button
+                  onClick={handleOpenUserMenu}
+                  sx={{
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
+                    color: theme.palette.primary.contrastText,
+                  }}
+                  endIcon={
+                    <Badge
+                      badgeContent={
+                        userCtx.userProfile?.state === UserStateEnum.Verified ? <Verified color="success" /> : null
+                      }
+                      sx={
+                        userCtx.userProfile?.state === UserStateEnum.Verified
+                          ? {
+                              '& svg': {
+                                strokeWidth: '0.5px',
+                                stroke: 'black',
+                              },
+                              '& .MuiBadge-badge::before': {
+                                content: '" "',
+                                display: 'block',
+                                background: 'black',
+                                position: 'absolute',
 
-                              height: '16px',
-                              width: '16px',
-                              zIndex: -1,
-                              borderRadius: '50%',
-                            },
-                          }
-                        : {}
-                    }
-                    overlap="circular"
-                  >
-                    <Avatar
-                      alt={userCtx.userProfile?.scName}
-                      src={myAvatar}
-                      imgProps={{ referrerPolicy: 'no-referrer' }}
-                      color="secondary"
-                      sx={{
-                        background: theme.palette.secondary.main,
-                        color: theme.palette.secondary.contrastText,
-                        border: '1px solid',
-                      }}
+                                height: '16px',
+                                width: '16px',
+                                zIndex: -1,
+                                borderRadius: '50%',
+                              },
+                            }
+                          : {}
+                      }
+                      overlap="circular"
                     >
-                      <Person color="inherit" />
-                    </Avatar>
-                  </Badge>
-                }
-              >
-                {userCtx.userProfile?.scName}
-              </Button>
+                      <Avatar
+                        alt={userCtx.userProfile?.scName}
+                        src={myAvatar}
+                        imgProps={{ referrerPolicy: 'no-referrer' }}
+                        color="secondary"
+                        sx={{
+                          background: theme.palette.secondary.main,
+                          color: theme.palette.secondary.contrastText,
+                          border: '1px solid',
+                        }}
+                      >
+                        {userCtx.error && !userCtx.userProfile ? <Error color="error" /> : <Person color="inherit" />}
+                      </Avatar>
+                    </Badge>
+                  }
+                >
+                  {userCtx.userProfile?.scName}
+                </Button>
+              )}
               <Menu
                 sx={{ mt: '45px', color: 'inherit' }}
                 id="menu-appbar"
@@ -230,9 +234,11 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={() => handleNavigate('/profile')} sx={{ color: 'inherit' }}>
-                  <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
+                {userCtx.isInitialized && (
+                  <MenuItem onClick={() => handleNavigate('/profile')} sx={{ color: 'inherit' }}>
+                    <Typography textAlign="center">Profile</Typography>
+                  </MenuItem>
+                )}
                 {userCtx.isInitialized && !userCtx.isVerified && (
                   <MenuItem onClick={() => handleNavigate('/verify')}>
                     <Typography textAlign="center">Verify Account</Typography>

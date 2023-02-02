@@ -164,14 +164,23 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
     skip: !isAuthenticated,
   })
 
+  // If the profile fails to fetch then try again in 5 seconds
+  React.useEffect(() => {
+    if (userProfileQry.loading || userProfileQry.data?.profile || !userProfileQry.error) {
+      userProfileQry.stopPolling()
+    }
+    if (!userProfileQry.data?.profile && userProfileQry.error) {
+      userProfileQry.startPolling(5000)
+    }
+  }, [userProfileQry.data, userProfileQry.loading, userProfileQry.error])
+
   useEffect(() => {
     if (postLoginRedirect && isAuthenticated && Boolean(userProfileQry.data?.profile)) {
       const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
       setPostLoginRedirect(null)
       window.location.href = newUrl.toString()
     }
-  }, [postLoginRedirect, setPostLoginRedirect])
-
+  }, [postLoginRedirect, setPostLoginRedirect, userProfileQry])
   useEffect(() => {
     if (!token || (token.length === 0 && apolloClient)) {
       log.debug('User is not authenticated, clearing cache')

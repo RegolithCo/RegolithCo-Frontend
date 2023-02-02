@@ -501,17 +501,19 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 >
                   <TableContainer>
                     <Table size="small" sx={styles.statsTable}>
-                      <TableRow>
-                        <TableCell colSpan={2}> Enough ore for:</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell align="right">{(summary.volume / 32).toFixed(1)}</TableCell>
-                        <TableCell>Prospector(s)</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell align="right">{(summary.volume / 96).toFixed(1)}</TableCell>
-                        <TableCell>Mole(s)</TableCell>
-                      </TableRow>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell colSpan={2}> Enough ore for:</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell align="right">{(summary.volume / 32).toFixed(1)}</TableCell>
+                          <TableCell>Prospector(s)</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell align="right">{(summary.volume / 96).toFixed(1)}</TableCell>
+                          <TableCell>Mole(s)</TableCell>
+                        </TableRow>
+                      </TableBody>
                     </Table>
                   </TableContainer>
                 </Box>
