@@ -1,4 +1,4 @@
-import { blue, grey, indigo, orange, purple, yellow } from '@mui/material/colors'
+import { grey, orange, purple, yellow } from '@mui/material/colors'
 import { createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
 import { Theme } from '@mui/material'
 import { ScoutingFindStateEnum } from '@regolithco/common'

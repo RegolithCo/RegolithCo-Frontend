@@ -23,35 +23,35 @@ const AllThree: React.FC<AllThreeProps> = () => (
     <Grid container spacing={3} margin={0}>
       {/* One of each kind of state */}
       <Grid>
-        <ClusterCard clusterFind={fakeSalvageFind({ state: ScoutingFindStateEnum.Working })} />
+        <ClusterCard scoutingFind={fakeSalvageFind({ state: ScoutingFindStateEnum.Working })} />
       </Grid>
       <Grid>
-        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Working })} />
+        <ClusterCard scoutingFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Working })} />
       </Grid>
       <Grid>
-        <ClusterCard clusterFind={fakeVehicleClusterFind({ state: ScoutingFindStateEnum.Working })} />
+        <ClusterCard scoutingFind={fakeVehicleClusterFind({ state: ScoutingFindStateEnum.Working })} />
       </Grid>
       {/* One of each kind of card */}
       <Grid>
-        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Abandonned })} />
+        <ClusterCard scoutingFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Abandonned })} />
       </Grid>
       <Grid>
-        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Depleted })} />
+        <ClusterCard scoutingFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Depleted })} />
       </Grid>
       <Grid>
-        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.ReadyForWorkers })} />
+        <ClusterCard scoutingFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.ReadyForWorkers })} />
       </Grid>
       <Grid>
-        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Working })} />
+        <ClusterCard scoutingFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Working })} />
       </Grid>
       <Grid>
-        <ClusterCard clusterFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Discovered })} />
+        <ClusterCard scoutingFind={fakeShipClusterFind({ state: ScoutingFindStateEnum.Discovered })} />
       </Grid>
       {/* Then a bunch more for fun */}
       {fakeScoutingFinds(20).map((v, idx) => {
         return (
           <Grid key={`fake-${idx}`}>
-            <ClusterCard clusterFind={v} />
+            <ClusterCard scoutingFind={v} />
           </Grid>
         )
       })}

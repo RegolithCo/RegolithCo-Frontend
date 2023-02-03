@@ -118,25 +118,34 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
           <Box sx={{ display: 'flex' }}>
             {/* SHARE BUTTON */}
             <div style={{ flex: '1 1' }} />
-            <Typography
-              sx={{
-                fontWeight: 'bold',
-                lineHeight: 1.5,
-                my: 1,
-                px: 2,
-                borderRadius: 3,
-                border: `2px solid ${
-                  session.state === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.error.main
-                }`,
-                textShadow: '1px 1px 4px #000',
-                color:
-                  session.state === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.error.main,
-                textTransform: 'uppercase',
-                fontSize: '1.5rem',
-              }}
+            <Tooltip
+              arrow
+              title={
+                session.state === SessionStateEnum.Active
+                  ? 'Session is currently active'
+                  : 'Session has ended. You can still edit work orders and pay shares but you cannot create new work orders or scouting finds'
+              }
             >
-              {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
-            </Typography>
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                  lineHeight: 1.5,
+                  my: 1,
+                  px: 2,
+                  borderRadius: 3,
+                  border: `2px solid ${
+                    session.state === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.error.main
+                  }`,
+                  textShadow: '1px 1px 4px #000',
+                  color:
+                    session.state === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.error.main,
+                  textTransform: 'uppercase',
+                  fontSize: '1.5rem',
+                }}
+              >
+                {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
+              </Typography>
+            </Tooltip>
             {isSessionOwner && (
               <Tooltip title="Session Settings">
                 <IconButton onClick={() => setActiveModal(DialogEnum.SESSION_PREFERENCES)} size="large">

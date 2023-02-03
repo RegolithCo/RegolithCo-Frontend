@@ -57,7 +57,6 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   const theme = useTheme()
   const [editingShare, setEditingShare] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
-  const [newNote, setNewNote] = React.useState<string>(crewShare.note || '')
 
   const paid = Boolean(isMe ? true : crewShare?.state)
 

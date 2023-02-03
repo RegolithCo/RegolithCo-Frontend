@@ -2,7 +2,7 @@ import * as React from 'react'
 import Card from '@mui/material/Card'
 import { keyframes } from '@mui/system'
 import { Avatar, Box, ThemeProvider, Tooltip, Typography } from '@mui/material'
-import { PersonSearch, Rocket, SvgIconComponent } from '@mui/icons-material'
+import { Article, NoteAdd, PersonSearch, Rocket, SvgIconComponent } from '@mui/icons-material'
 import {
   clusterCalc,
   SalvageFind,
@@ -19,23 +19,24 @@ import { fontFamilies, scoutingFindStateThemes } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
+import { yellow } from '@mui/material/colors'
 dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
-  clusterFind: ScoutingFind
+  scoutingFind: ScoutingFind
 }
 
-export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
-  const theme = scoutingFindStateThemes[clusterFind.state]
-  const summary = clusterCalc(clusterFind)
+export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
+  const theme = scoutingFindStateThemes[scoutingFind.state]
+  const summary = clusterCalc(scoutingFind)
   const ores = summary.oreSort || []
-  const findType = clusterFind.clusterType
-  const attendanceCount = (clusterFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
+  const findType = scoutingFind.clusterType
+  const attendanceCount = (scoutingFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
 
   // Conveneince variables
-  const shipFind = clusterFind as ShipClusterFind
-  const vehicleFind = clusterFind as VehicleClusterFind
-  const salvageFind = clusterFind as SalvageFind
+  const shipFind = scoutingFind as ShipClusterFind
+  const vehicleFind = scoutingFind as VehicleClusterFind
+  const salvageFind = scoutingFind as SalvageFind
 
   let Icon: SvgIconComponent = ClawIcon
   let clusterSize = 0
@@ -54,7 +55,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
       break
   }
 
-  const doPulse = clusterFind.state === ScoutingFindStateEnum.ReadyForWorkers
+  const doPulse = scoutingFind.state === ScoutingFindStateEnum.ReadyForWorkers
   const pulseColor = theme.palette.primary.light
   const pulse = keyframes`
   0% {
@@ -73,9 +74,10 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
 
   let opacity = 1
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
-  if (badStates.includes(clusterFind.state)) {
+  if (badStates.includes(scoutingFind.state)) {
     opacity = 0.5
   }
+  const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
   return (
     <ThemeProvider theme={theme}>
@@ -118,7 +120,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
             fontSize: 16,
           }}
         >
-          {clusterFind.owner?.scName.slice(0, 3).toUpperCase()}-{clusterFind.scoutingFindId.split('_')[0]}
+          {scoutingFind.owner?.scName.slice(0, 3).toUpperCase()}-{scoutingFind.scoutingFindId.split('_')[0]}
         </Box>
 
         {/* The icon with the number (Absolute) */}
@@ -137,12 +139,12 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
               overflow: 'visible',
               width: 38,
               height: 38,
-              fontSize: ((clusterFind.clusterCount as number) || 0) < 10 ? 30 : 23,
+              fontSize: ((scoutingFind.clusterCount as number) || 0) < 10 ? 30 : 23,
               mx: 'auto',
               my: 2,
             }}
           >
-            {(clusterFind.clusterCount as number) > 0 ? clusterFind.clusterCount : '?'}
+            {(scoutingFind.clusterCount as number) > 0 ? scoutingFind.clusterCount : '?'}
             {/* The number of rocks */}
 
             <Box
@@ -189,9 +191,9 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
               fontSize: '0.75rem',
             }}
           >
-            {Date.now() - clusterFind.createdAt > 12 * 1000 * 60 * 60
-              ? dayjs(clusterFind.createdAt).from(dayjs(Date.now()))
-              : dayjs(clusterFind.createdAt).from(dayjs(Date.now()))}
+            {Date.now() - scoutingFind.createdAt > 12 * 1000 * 60 * 60
+              ? dayjs(scoutingFind.createdAt).from(dayjs(Date.now()))
+              : dayjs(scoutingFind.createdAt).from(dayjs(Date.now()))}
           </Typography>
 
           {/* ORES */}
@@ -213,8 +215,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
           </Typography>
 
           {/* WHo was the scout */}
-          {clusterFind.owner?.scName && (
-            <Tooltip title={`${clusterFind.owner?.scName} found this cluster`}>
+          {scoutingFind.owner?.scName && (
+            <Tooltip title={`${scoutingFind.owner?.scName} found this cluster`}>
               <Typography
                 component="div"
                 sx={{
@@ -231,7 +233,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
                   fontSize: '0.875rem',
                 }}
               >
-                <PersonSearch sx={{ fontSize: '0.875rem', mb: -0.2 }} /> {clusterFind.owner?.scName}
+                <PersonSearch sx={{ fontSize: '0.875rem', mb: -0.2 }} /> {scoutingFind.owner?.scName}
               </Typography>
             </Tooltip>
           )}
@@ -291,8 +293,15 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ clusterFind }) => {
               textTransform: 'uppercase',
             }}
           >
-            <Box>{getScoutingFindStateName(clusterFind.state)}</Box>
+            <Box>{getScoutingFindStateName(scoutingFind.state)}</Box>
+            <Box sx={{ flex: '1 1' }} />
             {/* The spaceships (Absolute) */}
+            {hasNote && (
+              <Tooltip title={`Note: ${scoutingFind.note}`}>
+                <Article sx={{ color: yellow[500], fontSize: 14, lineHeight: 10, mx: 0.2 }} />
+              </Tooltip>
+            )}
+
             <Box sx={{ flex: '1 1' }} />
             {attendanceCount > 0 && (
               <Tooltip title={`${attendanceCount} Ships on site`}>

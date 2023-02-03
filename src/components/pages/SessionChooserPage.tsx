@@ -1,13 +1,12 @@
 import * as React from 'react'
 
 import { UserProfile, Session, SessionStateEnum } from '@regolithco/common'
-import { PageWrapper } from '../PageWrapper'
 import { Alert, AlertTitle, Box, Button, FormControlLabel, Paper, Switch, Typography } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SessionList } from '../fields/SessionList'
 import { AddCircle } from '@mui/icons-material'
 import { Container, Stack } from '@mui/system'
 import { PageLoader } from './PageLoader'
+import dayjs from 'dayjs'
 
 export interface SessionChooserPageProps {
   userProfile: UserProfile
@@ -33,7 +32,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
     const allSessions = [...mySessions, ...joinedSessions].filter((s) =>
       activeOnly ? s.state !== SessionStateEnum.Closed : true
     )
-    allSessions.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+    allSessions.sort((a, b) => b.createdAt - a.createdAt)
     return allSessions
   }, [mySessions, joinedSessions, activeOnly])
 
@@ -81,7 +80,6 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
                 variant="contained"
                 sx={{ margin: '0 auto' }}
                 onClick={onCreateNewSession}
-                disabled={loading}
               >
                 Create a new Session
               </Button>

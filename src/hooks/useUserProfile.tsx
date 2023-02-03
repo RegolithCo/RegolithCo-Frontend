@@ -70,6 +70,7 @@ export const useUserProfile = (): useSessionsReturn => {
     variables: {
       nextToken: null,
     },
+    notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
   })
 
@@ -104,6 +105,7 @@ export const useUserProfile = (): useSessionsReturn => {
     variables: {
       nextToken: null,
     },
+    notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
   })
 

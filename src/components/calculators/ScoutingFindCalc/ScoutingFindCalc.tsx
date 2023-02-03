@@ -19,7 +19,7 @@ import {
   MenuItem,
   Select,
   Stack,
-  Alert,
+  Tooltip,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -39,9 +39,10 @@ import {
   User,
   VehicleRock,
   VehicleOreEnum,
+  makeHumanIds,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AddCircle, EmojiPeople, ExitToApp, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
+import { AddCircle, EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
@@ -53,6 +54,8 @@ import { ScoutingFindUserList } from './ScoutingFindUserList'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
+import { NoteAddDialog } from '../../modals/NoteAddDialog'
+import { yellow } from '@mui/material/colors'
 dayjs.extend(relativeTime)
 
 export interface ScoutingFindCalcProps {
@@ -281,8 +284,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const styles = stylesThunk(theme)
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(Boolean(isNew))
   const [deleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false)
+  const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
   const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
+
+  const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
   // Convenience type guards
   const shipFind = scoutingFind as ShipClusterFind
@@ -345,14 +351,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       ?.filter((a) => a.state === SessionUserStateEnum.Travelling)
       .map(({ owner }) => owner as User) || []
 
+  const scoutId = makeHumanIds(scoutingFind.owner?.scName, scoutingFind.scoutingFindId)
+
   return (
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
-        {!standalone && !isNew && (
-          <Typography sx={styles.scoutingFindId}>
-            {scoutingFind.owner?.scName.slice(0, 3).toUpperCase()}-{scoutingFind.scoutingFindId.split('_')[0]}
-          </Typography>
-        )}
+        {!standalone && !isNew && <Typography sx={styles.scoutingFindId}>{scoutId}</Typography>}
         {!standalone && (
           <Box sx={styles.stateBox}>
             {allowEdit ? (
@@ -519,6 +523,16 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 </Box>
               )}
             </Stack>
+
+            <Tooltip title="Add a note">
+              <Box onClick={() => setOpenNoteDialog(true)}>
+                <Typography variant="overline" component="div">
+                  <NoteAdd sx={{ color: hasNote ? yellow[500] : 'inherit', fontSize: 14, lineHeight: 10, mx: 0.2 }} />
+                  {hasNote ? 'Note' : 'Add a note'}
+                </Typography>
+                <Typography variant="caption">{scoutingFind.note}</Typography>
+              </Box>
+            </Tooltip>
           </Grid>
           {/* Actions and attendance */}
           {!standalone && (
@@ -754,6 +768,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         }}
         isNew={isNew}
       />
+      {/* NOTE DIALOG */}
+      <NoteAddDialog
+        title={`Note for: ${scoutId}`}
+        open={openNoteDialog}
+        onClose={() => setOpenNoteDialog(false)}
+        note={scoutingFind.note as string}
+        onChange={(note) => {
+          onChange({ ...scoutingFind, note })
+        }}
+      />
+
       <DeleteModal
         open={deleteModalOpen}
         message="Are you sure you want to delete this find?"

@@ -71,6 +71,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
     let dayArr: Session[] = []
 
     sessions.forEach((session) => {
+      console.log(currYear, currMonth, currDay, dayjs(session.createdAt).format('YYYY-MM-DD HH:mm:ss'))
       const sessionDate = dayjs(session.createdAt)
       const sessionYear = sessionDate.year()
       const sessionMonth = sessionDate.month()
@@ -80,14 +81,17 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
           dayArr.push(session)
         } else {
           if (dayArr.length > 0) yearMonthArr.push(dayArr)
-          dayArr = [session]
           currDay = sessionDay
+          dayArr = [session]
         }
       } else {
+        if (dayArr.length > 0) yearMonthArr.push(dayArr)
         if (yearMonthArr.length > 0) sessionsByDate.push(yearMonthArr)
-        yearMonthArr = [[session]]
+        yearMonthArr = []
+        dayArr = [session]
         currYear = sessionYear
         currMonth = sessionMonth
+        currDay = sessionDay
       }
     })
     if (dayArr.length > 0) yearMonthArr.push(dayArr)
@@ -95,11 +99,14 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
     return sessionsByDate
   }, [sessions, loading])
 
+  console.log(sessionsByDate)
+
   return (
     <Box sx={styles.containerBox}>
       {sessionsByDate.map((yearMonthArr, idx) => {
         if (yearMonthArr.length === 0) return
         const currHeading = dayjs(yearMonthArr[0][0].createdAt).format('YYYY - MMMM')
+
         return (
           <Box key={`yeamonth-${idx}`}>
             <Typography variant="h6" sx={{ textAlign: 'left' }}>

@@ -34,6 +34,7 @@ import {
   Theme,
   Typography,
   useTheme,
+  Zoom,
 } from '@mui/material'
 import { Container, SxProps } from '@mui/system'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
@@ -415,7 +416,11 @@ export const SessionPage: React.FC<SessionPageProps> = ({
                             openScoutingModal(scouting.scoutingFindId)
                           }}
                         >
-                          <ClusterCard key={idx} clusterFind={scouting} />
+                          <Zoom in style={{ transitionDelay: `${200 * idx}ms` }}>
+                            <Box>
+                              <ClusterCard key={idx} scoutingFind={scouting} />
+                            </Box>
+                          </Zoom>
                         </Grid>
                       )
                     })}
