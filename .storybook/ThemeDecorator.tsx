@@ -14,7 +14,7 @@ export const ThemeDecorator = (Story: React.FC): JSX.Element => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Story />
+      <Story/>
     </ThemeProvider>
   )
 }

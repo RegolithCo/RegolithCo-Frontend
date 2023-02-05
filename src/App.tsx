@@ -1,13 +1,13 @@
 import React from 'react'
 import { AppWrapperContainer } from './components/AppWrapper'
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { HomePageContainer } from './components/pages/HomePage.container'
 import Error from './Error'
 import { FAQPage } from './components/pages/FAQPage'
 import { AboutPage } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
-import { SessionPageContainer } from './components/pages/SessionPage/SessionPage.container'
+import { SessionPageContainer2 } from './components/pages/SessionPage2/SessionPage.container'
 import { InitializeUserContainer } from './components/modals/InitializeUser/InitializeUser.container'
 import { DataTablesPageContainer } from './components/pages/DataTablesPage'
 import { AuthGate } from './components/pages/AuthGate'
@@ -106,29 +106,30 @@ export const App: React.FC = () => {
               }
               errorElement={<Error />}
             />
+            <Route path="/session/:sessionId" element={<RedirectToTab />} />
             <Route
-              path="/session/:sessionId"
+              path="/session/:sessionId/:tab"
               element={
                 <AuthGate>
-                  <SessionPageContainer />
+                  <SessionPageContainer2 />
                 </AuthGate>
               }
               errorElement={<Error />}
             />
             <Route
-              path="/session/:sessionId/w/:orderId"
+              path="/session/:sessionId/:tab/w/:orderId"
               element={
                 <AuthGate>
-                  <SessionPageContainer />
+                  <SessionPageContainer2 />
                 </AuthGate>
               }
               errorElement={<Error />}
             />
             <Route
-              path="/session/:sessionId/s/:scoutingFindId"
+              path="/session/:sessionId/:tab/s/:scoutingFindId"
               element={
                 <AuthGate>
-                  <SessionPageContainer />
+                  <SessionPageContainer2 />
                 </AuthGate>
               }
               errorElement={<Error />}
@@ -143,3 +144,9 @@ export const App: React.FC = () => {
 }
 
 export default App
+
+const RedirectToTab: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { sessionId } = useParams<{ sessionId: string }>()
+
+  return <Navigate to={`/session/${sessionId}/dash`} replace />
+}

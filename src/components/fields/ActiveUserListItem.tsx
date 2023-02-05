@@ -20,7 +20,6 @@ export interface ActiveUserListItemProps {
   sessionOwnerId?: string
   scoutingFind?: ScoutingFind
   friends?: string[]
-  small?: boolean
   navigate?: (path: string) => void
   addFriend?: () => void
 }
@@ -32,7 +31,6 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   scoutingFind,
   addFriend,
   navigate,
-  small,
   meId,
 }) => {
   const secondaryText = []
@@ -77,44 +75,43 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   }
 
   return (
-    <ListItem sx={{ background: meId ? '#33333366' : 'transparent' }} disableGutters={small}>
-      {!small && (
-        <ListItemAvatar>
-          <Badge
-            badgeContent={user.state === UserStateEnum.Verified ? <Verified color="success" /> : null}
-            overlap="circular"
-            sx={
-              user.state === UserStateEnum.Verified
-                ? {
-                    '& svg': {
-                      strokeWidth: '0.5px',
-                      stroke: 'black',
-                    },
-                    '& .MuiBadge-badge::before': {
-                      content: '" "',
-                      display: 'block',
-                      background: 'black',
-                      position: 'absolute',
+    <ListItem sx={{ background: meId ? '#33333366' : 'transparent' }}>
+      <ListItemAvatar>
+        <Badge
+          badgeContent={user.state === UserStateEnum.Verified ? <Verified color="success" /> : null}
+          overlap="circular"
+          sx={
+            user.state === UserStateEnum.Verified
+              ? {
+                  '& svg': {
+                    strokeWidth: '0.5px',
+                    stroke: 'black',
+                  },
+                  '& .MuiBadge-badge::before': {
+                    content: '" "',
+                    display: 'block',
+                    background: 'black',
+                    position: 'absolute',
 
-                      height: '16px',
-                      width: '16px',
-                      zIndex: -1,
-                      borderRadius: '50%',
-                    },
-                  }
-                : {}
-            }
-          >
-            <Avatar src={userAvatar} imgProps={{ referrerPolicy: 'no-referrer' }} alt={sessionUser.owner?.scName}>
-              <Person />
-            </Avatar>
-          </Badge>
-        </ListItemAvatar>
-      )}
+                    height: '16px',
+                    width: '16px',
+                    zIndex: -1,
+                    borderRadius: '50%',
+                  },
+                }
+              : {}
+          }
+        >
+          <Avatar src={userAvatar} imgProps={{ referrerPolicy: 'no-referrer' }} alt={sessionUser.owner?.scName}>
+            <Person />
+          </Avatar>
+        </Badge>
+      </ListItemAvatar>
+
       <ListItemText
         sx={{
           '& .MuiListItemText-secondary': {
-            fontSize: small ? '0.5rem' : '0.7rem',
+            fontSize: '0.7rem',
           },
           //
         }}

@@ -37,6 +37,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       px: 0,
       mx: 0,
     },
+    zIndex: (theme) => theme.zIndex.drawer + 1,
   },
   siteIcon: {
     display: { md: 'flex', cursor: 'pointer' },

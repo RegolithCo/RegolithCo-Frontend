@@ -10,7 +10,6 @@ export interface ActiveUserListProps {
   sessionOwnerId?: string
   friends?: string[]
   navigate?: (path: string) => void
-  small?: boolean
   addFriend?: (friendName: string) => void
 }
 
@@ -21,7 +20,6 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
   navigate,
   scoutingMap,
   friends,
-  small,
   addFriend,
 }) => {
   const sortedSessionUsers = [...sessionUsers]
@@ -50,10 +48,8 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
   return (
     <List
       dense
+      disablePadding
       sx={{
-        '& *': {
-          fontSize: small ? '0.5rem' : '1rem',
-        },
         height: '100%',
         overflowY: 'scroll',
         overflowX: 'hidden',
@@ -66,7 +62,6 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
           sessionOwnerId={sessionOwnerId}
           scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
           sessionUser={sessionUser}
-          small={small}
           navigate={navigate}
           friends={friends}
           addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
