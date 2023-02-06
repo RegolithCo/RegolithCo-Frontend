@@ -18,9 +18,22 @@ import {
   createSafeFileName,
   session2csv,
 } from '@regolithco/common'
-import { Box, DialogContentText, Drawer, Tab, Tabs, Theme, Toolbar, useMediaQuery, useTheme } from '@mui/material'
+import {
+  Box,
+  Button,
+  DialogContentText,
+  Drawer,
+  Stack,
+  Tab,
+  Tabs,
+  Theme,
+  Toolbar,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import { SxProps } from '@mui/system'
-import { Dashboard, Group, Settings, Summarize, TableView, TravelExplore } from '@mui/icons-material'
+import { ArrowBack, Dashboard, Group, Logout, Settings, Summarize, TableView, TravelExplore } from '@mui/icons-material'
 import { WorkOrderModal } from '../../modals/WorkOrderModal'
 import { ShareModal } from '../../modals/ShareModal'
 import { SessionHeader2 } from './SessionHeader'
@@ -84,79 +97,13 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       p: 2,
     },
   },
-  gridContainer: {
-    // [theme.breakpoints.up('md')]: {
-    //   flex: '1 1',
-    //   overflow: 'hidden',
-    //   //
-    // },
-    // border: '2px solid yellow',
-  },
-  gridColumn: {
-    // [theme.breakpoints.up('md')]: {
-    //   height: '100%',
-    //   overflowX: 'hidden',
-    //   overflowY: 'scroll',
-    //   //
-    // },
-    // border: '2px solid blue',
+  sessionTabs: {
+    background: '#121115aa',
   },
   drawerAccordionSummary: {
     // borderBottom: '1px solid',
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
-  },
-  drawerAccordionDetails: {
-    p: 0,
-  },
-  accordionSummary: {
-    fontFamily: fontFamilies.robotoMono,
-    fontWeight: 'bold',
-    px: 1,
-    '& .MuiAccordionSummary-expandIconWrapper': {
-      // color: theme.palette.primary.contrastText,
-    },
-    '& .MuiSwitch-root': {
-      marginTop: -1,
-      marginBottom: -1,
-    },
-    '& .MuiFormGroup-root .MuiTypography-root': {
-      fontSize: '0.7em',
-    },
-    '& .MuiSwitch-thumb, & .MuiSwitch-track': {
-      backgroundColor: '#666666!important',
-      border: `1px solid #444444`,
-    },
-    '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb,& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-track': {
-      backgroundColor: isActive ? theme.palette.primary.dark + '!important' : '#999999!important',
-      border: `1px solid ${isActive ? theme.palette.primary.dark + '!important' : '#3b3b3b!important'}`,
-    },
-    // backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
-    // color: theme.palette.primary.contrastText,
-    // textTransform: 'uppercase',
-    // fontWeight: 500,
-    // fontSize: '1rem',
-    [theme.breakpoints.up('md')]: {},
-  },
-  accordionDetails: {
-    borderBottom: '2px solid transparent',
-    '&.Mui-expanded': {
-      // borderBottom: '2px solid ${}`,
-    },
-  },
-  workOrderAccordionDetails: {
-    // p: 0, minHeight: 300
-  },
-  paper: {
-    // [theme.breakpoints.up('md')]: {
-    //   overflow: 'hidden',
-    //   height: '100%',
-    //   display: 'flex',
-    //   flexDirection: 'column',
-    //   p: 2,
-    // },
-    // border: '1px solid #222222',
-    // backgroundColor: '#000000aa',
   },
 })
 
@@ -229,7 +176,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
   }, [mediumUp, activeTab, setActiveTab])
 
   return (
-    <Box sx={{ display: 'flex', height: '100%' }}>
+    <Box sx={{ display: 'flex', height: '100%', backdropFilter: 'blur(7px)', backgroundColor: '#0e0c1b77' }}>
       {/* NAV Drawer   */}
       {mediumUp && (
         <Drawer
@@ -237,6 +184,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
             width: DRAWER_WIDTH,
             flexShrink: 0,
             '& .MuiDrawer-paper': {
+              background: '#12121255',
               width: DRAWER_WIDTH,
               boxSizing: 'border-box',
             },
@@ -244,7 +192,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
           variant="permanent"
           anchor="left"
         >
-          <Toolbar />
+          {/* <Toolbar /> */}
           <TabUsers
             session={session}
             userProfile={userProfile}
@@ -256,6 +204,32 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
             verifiedMentionedUsers={verifiedMentionedUsers}
             setActiveModal={setActiveModal}
           />
+          <Stack direction="row" spacing={2} sx={{ p: 2 }}>
+            <Tooltip title="Back to sessions">
+              <Button
+                startIcon={<ArrowBack />}
+                onClick={() => navigate('/session')}
+                color="secondary"
+                variant="text"
+                fullWidth
+              >
+                Back to sessions
+              </Button>
+            </Tooltip>
+            {!isSessionOwner && (
+              <Tooltip title="Leave Session">
+                <Button
+                  startIcon={<Logout />}
+                  onClick={() => setActiveModal(DialogEnum.LEAVE_SESSION)}
+                  color="error"
+                  variant="outlined"
+                  fullWidth
+                >
+                  Leave Session
+                </Button>
+              </Tooltip>
+            )}
+          </Stack>
         </Drawer>
       )}
       {/* This is the main content */}
@@ -265,6 +239,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
           p: mediumUp ? 3 : 1,
           display: 'flex',
           flex: '1 1',
+          maxWidth: 1100,
           flexDirection: 'column',
           height: '100%',
           // border: '1px solid yellow',
@@ -278,6 +253,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
               onChange={(_, newValue) => {
                 setActiveTab(newValue)
               }}
+              sx={styles.sessionTabs}
               aria-label="basic tabs example"
             >
               <Tab label="Dashboard" value={SessionTabs.DASHBOARD} />

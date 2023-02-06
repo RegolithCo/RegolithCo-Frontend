@@ -19,6 +19,9 @@ import {
   FormControlLabel,
   FormGroup,
   Switch,
+  SxProps,
+  Theme,
+  useTheme,
   Zoom,
 } from '@mui/material'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
@@ -28,6 +31,7 @@ import { WorkOrderTable } from './WorkOrderTable'
 import { ClusterCard } from '../../cards/ClusterCard'
 import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { DialogEnum } from './SessionPage.container'
+import { fontFamilies } from '../../../theme'
 
 export interface TabDashboardProps {
   session: Session
@@ -42,6 +46,50 @@ export interface TabDashboardProps {
   setActiveModal: (modal: DialogEnum) => void
 }
 
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  container: {
+    '& .MuiAccordion-root': {
+      backgroundColor: '#0e0c1baa',
+      position: 'relative',
+    },
+    '& .MuiAccordionDetails-root': {
+      p: 0,
+      position: 'relative',
+    },
+    '& .MuiAccordionSummary-content': {
+      m: 0,
+    },
+    '& .MuiTable-root': {
+      background: '#12111555',
+    },
+  },
+  section: {},
+  sectionTitle: {
+    '&::before': {
+      content: '""',
+    },
+    // fontFamily: fontFamilies.robotoMono,
+    fontSize: '1rem',
+    lineHeight: 2,
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.8rem',
+      lineHeight: 1,
+    },
+    // color: theme.palette.primary.dark,
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 'bold',
+    background: '#121115aa',
+    textShadow: '0 0 1px #000',
+    // borderBottom: '2px solid',
+  },
+  sectionBody: {
+    py: 1,
+    pl: 2,
+    pr: 1,
+    mb: 2,
+  },
+})
+
 export const TabDashboard: React.FC<TabDashboardProps> = ({
   session,
   userProfile,
@@ -52,9 +100,11 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
   setNewScoutingFind,
   setActiveModal,
 }) => {
+  const theme = useTheme()
+  const styles = stylesThunk(theme)
   const isActive = session.state === SessionStateEnum.Active
   // Filtering for the accordions
-  const [filterClosedScout, setFilterClosedScout] = React.useState(true)
+  const [filterClosedScout, setFilterClosedScout] = React.useState(false)
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
   const allScouts = session.scouting?.items || []
@@ -69,12 +119,13 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
   const workOrderCounts = [filteredWorkOrders.length, allWorkOrders.length]
 
   return (
-    <>
+    <Box sx={styles.container}>
       <Accordion defaultExpanded={true} disableGutters>
         <AccordionSummary
           expandIcon={<ExpandMore color="inherit" />}
           aria-controls="panel1a-content"
           id="panel1a-header"
+          sx={styles.sectionTitle}
         >
           Work Orders ({workOrderCounts[0]}/{workOrderCounts[1]})
           <Box sx={{ flexGrow: 1 }} />
@@ -117,6 +168,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
           expandIcon={<ExpandMore color="inherit" />}
           aria-controls="panel1a-content"
           id="panel1a-header"
+          sx={styles.sectionTitle}
         >
           Scouting ({scountingCounts[0]}/{scountingCounts[1]})
           <Box sx={{ flexGrow: 1 }} />
@@ -180,6 +232,6 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
           />
         </AccordionDetails>
       </Accordion>
-    </>
+    </Box>
   )
 }

@@ -4,7 +4,7 @@ import SpeedDialAction from '@mui/material/SpeedDialAction'
 import { ActivityEnum, getActivityName, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { PostAdd, QuestionMark } from '@mui/icons-material'
-import { Badge, Fab, FabProps, useTheme } from '@mui/material'
+import { Badge, Fab, FabProps, keyframes, SxProps, Theme, useTheme } from '@mui/material'
 
 const actions = [
   {
@@ -33,6 +33,13 @@ export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSetting
   const locked = actions.map(({ activityId }) => {
     return sessionSettings && sessionSettings.activity && sessionSettings.activity !== activityId
   })
+
+  const pulse = keyframes`
+  0% { box-shadow: 0 0 0 0 transparent; }
+  70% { box-shadow: 0 0 10px 10px  ${theme.palette.warning.light}44; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+`
+
   // If there's only one action unlocked then just return a normal fab
   if (locked.filter((l) => !l).length === 1) {
     const action = actions.find((a, idx) => !locked[idx])
@@ -54,6 +61,8 @@ export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSetting
             backgroundColor: 'transparent',
             bottom: 0,
           },
+          boxShadow: '0 0 0 0 transparent',
+          animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
         }}
         {...(fabProps || {})}
       >
@@ -83,6 +92,10 @@ export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSetting
         '& .MuiSpeedDialAction-staticTooltipLabel': {
           whiteSpace: 'nowrap',
           maxWidth: 'none',
+        },
+        '& .MuiFab-root': {
+          animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
+          boxShadow: '0 0 0 0 transparent',
         },
       }}
       icon={<PostAdd color="inherit" />}

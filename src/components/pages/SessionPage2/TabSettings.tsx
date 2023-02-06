@@ -64,6 +64,25 @@ export interface SessionSettingsTabProps {
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  tabContainerOuter: {
+    background: '#121115aa',
+    p: 2,
+    overflow: 'hidden',
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+    },
+  },
+  tabContainerInner: {
+    flexGrow: 1,
+    [theme.breakpoints.up('md')]: {
+      overflowY: 'auto',
+      overflowX: 'hidden',
+    },
+  },
   gridContainer: {
     [theme.breakpoints.up('md')]: {},
   },
@@ -157,9 +176,9 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const gravWell = newSettings.sessionSettings?.gravityWell || null
   const valid = nameValid
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <Box sx={styles.tabContainerOuter}>
       {/* Here's our scrollbox */}
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+      <Box sx={styles.tabContainerInner}>
         <Grid container sx={styles.gridContainer} spacing={3}>
           <Grid xs={12} md={6}>
             <Box sx={styles.section}>
@@ -589,15 +608,29 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         </Grid>
       </Box>
 
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        spacing={1}
+        alignItems="center"
+      >
         {session && (
-          <Button variant="contained" startIcon={<Delete />} onClick={() => setDeleteConfirmModal(true)} color="error">
+          <Button
+            variant="contained"
+            fullWidth
+            startIcon={<Delete />}
+            onClick={() => setDeleteConfirmModal(true)}
+            color="error"
+          >
             Delete Session
           </Button>
         )}
         {session?.state === SessionStateEnum.Active && (
           <Button
             variant="contained"
+            fullWidth
             startIcon={<StopCircle />}
             onClick={() => setCLoseConfirmModal(true)}
             color="secondary"
@@ -608,6 +641,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         <Box sx={{ flexGrow: 1 }} />
         <Button
           color="info"
+          fullWidth
           startIcon={<RestartAlt />}
           disabled={!valid}
           variant="outlined"
@@ -621,6 +655,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         {session && (
           <Button
             color="secondary"
+            fullWidth
             startIcon={<Person />}
             disabled={!valid}
             variant="outlined"
@@ -636,6 +671,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
           color="primary"
           startIcon={<Save />}
           disabled={!valid}
+          fullWidth
           variant="contained"
           onClick={() => {
             session && onChangeSession && onChangeSession(newSession as SessionInput, newSettings)

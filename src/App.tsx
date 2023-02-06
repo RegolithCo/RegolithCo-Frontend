@@ -145,8 +145,7 @@ export const App: React.FC = () => {
 
 export default App
 
-const RedirectToTab: React.FC<React.PropsWithChildren> = ({ children }) => {
+const RedirectToTab: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>()
-
   return <Navigate to={`/session/${sessionId}/dash`} replace />
 }

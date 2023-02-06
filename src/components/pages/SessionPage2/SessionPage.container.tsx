@@ -123,11 +123,11 @@ export const SessionPageContainer2: React.FC = () => {
       }}
       deleteWorkOrder={workOrderQry.deleteWorkOrder}
       openWorkOrderModal={(orderId) => {
-        navigate(makeSessionUrls({ sessionId, orderId }))
+        navigate(makeSessionUrls({ sessionId, orderId, tab }))
       }}
       createScoutingFind={sessionQueries.createScoutingFind}
       openScoutingModal={(scoutingFindId) => {
-        navigate(makeSessionUrls({ sessionId, scoutingFindId }))
+        navigate(makeSessionUrls({ sessionId, scoutingFindId, tab }))
       }}
       // Scouting finds
       scoutingFindId={scoutingFindId}

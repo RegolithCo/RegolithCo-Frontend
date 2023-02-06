@@ -8,11 +8,11 @@ import {
   UserProfile,
   VerifiedUserLookup,
 } from '@regolithco/common'
-import { Box, Stack, SxProps, Theme, Typography, useTheme } from '@mui/material'
-import { Accordion, AccordionDetails, AccordionSummary, Button, Tooltip } from '@mui/material'
+import { Box, SxProps, Theme, Typography, useTheme } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { DialogEnum } from './SessionPage.container'
 import { ActiveUserList } from '../../fields/ActiveUserList'
-import { ExpandMore, Logout } from '@mui/icons-material'
+import { ExpandMore } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { MentionedUserList } from '../../fields/MentionedUserList'
 
@@ -36,34 +36,24 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       p: 2,
     },
   },
-  gridContainer: {
-    // [theme.breakpoints.up('md')]: {
-    //   flex: '1 1',
-    //   overflow: 'hidden',
-    //   //
-    // },
-    // border: '2px solid yellow',
-  },
-  gridColumn: {
-    // [theme.breakpoints.up('md')]: {
-    //   height: '100%',
-    //   overflowX: 'hidden',
-    //   overflowY: 'scroll',
-    //   //
-    // },
-    // border: '2px solid blue',
-  },
+  gridContainer: {},
+  gridColumn: {},
   drawerAccordionSummary: {
-    // borderBottom: '1px solid',
-    fontFamily: fontFamilies.robotoMono,
-    fontWeight: 'bold',
+    // fontFamily: fontFamilies.robotoMono,
+    // fontWeight: 'bold',
+    // color: theme.palette.secondary.main,
   },
   drawerAccordionDetails: {
     p: 0,
+    pb: 2,
   },
   accordionSummary: {
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.8rem',
+      lineHeight: 1,
+    },
     px: 1,
     '& .MuiAccordionSummary-expandIconWrapper': {
       // color: theme.palette.primary.contrastText,
@@ -83,33 +73,9 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       backgroundColor: isActive ? theme.palette.primary.dark + '!important' : '#999999!important',
       border: `1px solid ${isActive ? theme.palette.primary.dark + '!important' : '#3b3b3b!important'}`,
     },
-    // backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
-    // color: theme.palette.primary.contrastText,
-    // textTransform: 'uppercase',
-    // fontWeight: 500,
-    // fontSize: '1rem',
     [theme.breakpoints.up('md')]: {},
   },
-  accordionDetails: {
-    borderBottom: '2px solid transparent',
-    '&.Mui-expanded': {
-      // borderBottom: '2px solid ${}`,
-    },
-  },
-  workOrderAccordionDetails: {
-    // p: 0, minHeight: 300
-  },
-  paper: {
-    // [theme.breakpoints.up('md')]: {
-    //   overflow: 'hidden',
-    //   height: '100%',
-    //   display: 'flex',
-    //   flexDirection: 'column',
-    //   p: 2,
-    // },
-    // border: '1px solid #222222',
-    // backgroundColor: '#000000aa',
-  },
+  paper: {},
 })
 
 export const TabUsers: React.FC<TabUsersProps> = ({
@@ -158,7 +124,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
             />
           </AccordionDetails>
         </Accordion>
-        <Accordion defaultExpanded={false} disableGutters>
+        <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary
             expandIcon={<ExpandMore color="inherit" />}
             aria-controls="panel1a-content"
@@ -193,21 +159,6 @@ export const TabUsers: React.FC<TabUsersProps> = ({
           </Typography>
         </Accordion>
       </Box>
-      <Stack direction="row" spacing={2} sx={{ p: 2 }}>
-        {!isSessionOwner && (
-          <Tooltip title="Leave Session">
-            <Button
-              startIcon={<Logout />}
-              onClick={() => setActiveModal(DialogEnum.LEAVE_SESSION)}
-              color="error"
-              variant="outlined"
-              fullWidth
-            >
-              Leave Session
-            </Button>
-          </Tooltip>
-        )}
-      </Stack>
     </>
   )
 }

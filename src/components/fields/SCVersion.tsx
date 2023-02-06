@@ -17,8 +17,7 @@ export const SCVersion: React.FC<SCVersionProps> = ({ semver }) => {
         fontWeight: 'bold',
       }}
     >
-      <Box>Star Citizen</Box>
-      <Box>V.{semver}</Box>
+      <Box>Star Citizen V.{semver}</Box>
     </Box>
   )
 }

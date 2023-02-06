@@ -6,5 +6,5 @@ export const makeSessionUrls = ({ scoutingFindId, orderId, tab, sessionId }: Mak
   if (!sessionId) return '/session'
   else if (orderId) return `/session/${sessionId}/${tab || 'dash'}/w/${orderId}`
   else if (scoutingFindId) return `/session/${sessionId}/${tab || 'dash'}/s/${scoutingFindId}`
-  else return `/session/${sessionId}`
+  else return `/session/${sessionId}/${tab || 'dash'}`
 }

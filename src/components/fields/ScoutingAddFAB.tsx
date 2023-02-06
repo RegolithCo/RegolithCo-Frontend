@@ -4,7 +4,7 @@ import SpeedDialAction from '@mui/material/SpeedDialAction'
 import { ActivityEnum, ScoutingFindTypeEnum, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { TravelExplore } from '@mui/icons-material'
-import { Badge, Fab, FabProps, useTheme } from '@mui/material'
+import { Badge, Fab, FabProps, keyframes, useTheme } from '@mui/material'
 
 const actions = [
   {
@@ -39,6 +39,13 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
   const locked = actions.map(({ activityId }) => {
     return sessionSettings && sessionSettings.activity && sessionSettings.activity !== activityId
   })
+
+  const pulse = keyframes`
+  0% { box-shadow: 0 0 0 0 transparent; }
+  70% { box-shadow: 0 0 10px 10px  ${theme.palette.warning.light}44; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+`
+
   // If there's only one action unlocked then just return a normal fab
   if (locked.filter((l) => !l).length === 1) {
     const action = actions.find((a, idx) => !locked[idx])
@@ -60,6 +67,8 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
             backgroundColor: 'transparent',
             bottom: 0,
           },
+          boxShadow: '0 0 0 0 transparent',
+          animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
         }}
         {...(fabProps || {})}
       >
@@ -89,6 +98,10 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
         '& .MuiSpeedDialAction-staticTooltipLabel': {
           whiteSpace: 'nowrap',
           maxWidth: 'none',
+        },
+        '& .MuiFab-root': {
+          boxShadow: '0 0 0 0 transparent',
+          animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
         },
       }}
       icon={<TravelExplore color="inherit" />}
