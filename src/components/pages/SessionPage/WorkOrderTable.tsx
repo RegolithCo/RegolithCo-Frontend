@@ -44,6 +44,9 @@ export interface WorkOrderTableProps {
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   table: {
     maxHeight: 300,
+    '& .MuiTableRow-root:nth-of-type(odd) *': {
+      backgroundColor: 'red',
+    },
     '& .MuiTableCell-root': {
       whiteSpace: 'nowrap',
     },

@@ -100,8 +100,6 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
     return sessionsByDate
   }, [sessions, loading])
 
-  console.log(sessionsByDate)
-
   return (
     <Box sx={styles.containerBox}>
       {sessionsByDate.map((yearMonthArr, idx) => {
@@ -162,7 +160,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                         }}
                       >
                         <List dense disablePadding>
-                          {dayArr.map((session) => {
+                          {dayArr.map((session, idx) => {
                             const { sessionId, name, owner, createdAt, updatedAt, state } = session
                             const sessionActive = state === SessionStateEnum.Active
                             const subtitleArr = sessionSubtitleArr(session)
@@ -171,7 +169,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                               <ListItem
                                 divider
                                 alignItems="flex-start"
-                                key={sessionId}
+                                key={`${sessionId}-${idx}`}
                                 sx={{
                                   ...pulseCssThunk(sessionActive),
                                   cursor: 'pointer',

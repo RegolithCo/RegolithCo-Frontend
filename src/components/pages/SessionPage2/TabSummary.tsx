@@ -187,7 +187,16 @@ const OwingList: React.FC<OwingListProps> = ({ session, sessionUser, sessionSumm
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
-  const rowArr = isPaid ? sessionSummary.paid : sessionSummary.owed
+  const rowObj = isPaid ? sessionSummary.paid : sessionSummary.owed
+  const rowArr: [string, string, number][] = Object.entries(rowObj).reduce<[string, string, number][]>(
+    (acc, [payerSCName, payeeObj]) => {
+      Object.entries(payeeObj).forEach(([payeeSCName, amt]) => {
+        acc.push([payerSCName, payeeSCName, amt])
+      })
+      return acc
+    },
+    []
+  )
   // sort rowArr by pushing sessionUser.owner.sCN to the front and then alphabetically
   rowArr.sort((a, b) => {
     if (a[0] === sessionUser.owner?.scName) return -1
@@ -200,8 +209,11 @@ const OwingList: React.FC<OwingListProps> = ({ session, sessionUser, sessionSumm
     <List
       sx={{
         // Make every other row a different color
-        '& .MuiListItem-root:nth-of-type(odd)': {
-          background: '#00000022',
+        '& .MuiListItemButton-root:nth-of-type(odd)': {
+          backgroundColor: '#00000033',
+        },
+        '& .MuiListItemButton-root:hover': {
+          backgroundColor: '#FFFFFF55',
         },
       }}
     >

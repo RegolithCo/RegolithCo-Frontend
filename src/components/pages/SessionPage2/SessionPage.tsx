@@ -328,6 +328,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
             <SessionSettingsTab
               session={session}
               userSuggest={userSuggest}
+              scroll
               resetDefaultSystemSettings={resetDefaultSystemSettings}
               resetDefaultUserSettings={resetDefaultUserSettings}
               setActiveModal={setActiveModal}

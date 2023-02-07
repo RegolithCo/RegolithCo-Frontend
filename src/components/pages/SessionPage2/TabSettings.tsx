@@ -15,8 +15,6 @@ import {
   Stack,
   Switch,
   SxProps,
-  Tab,
-  Tabs,
   TextField,
   Theme,
   Typography,
@@ -56,6 +54,7 @@ export interface SessionSettingsTabProps {
   session?: Session
   title?: string
   description?: string
+  scroll?: boolean
   // For the profile version we only have the sessionSettings
   sessionSettings?: SessionSettings
   onChangeSession?: (session: SessionInput, newSettings: DestructuredSettings) => void
@@ -66,24 +65,24 @@ export interface SessionSettingsTabProps {
   userSuggest?: UserSuggest
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<Theme>> => ({
   tabContainerOuter: {
     background: '#121115aa',
     p: 2,
-    overflow: 'hidden',
+    overflow: scroll ? 'hidden' : undefined,
     [theme.breakpoints.up('md')]: {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      overflowY: 'auto',
-      overflowX: 'hidden',
+      overflowY: scroll ? 'auto' : undefined,
+      overflowX: scroll ? 'hidden' : undefined,
     },
   },
   tabContainerInner: {
     flexGrow: 1,
     [theme.breakpoints.up('md')]: {
-      overflowY: 'auto',
-      overflowX: 'hidden',
+      overflowY: scroll ? 'auto' : undefined,
+      overflowX: scroll ? 'hidden' : undefined,
     },
   },
   gridContainer: {
@@ -129,6 +128,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   title,
   description,
   userSuggest,
+  scroll,
   onChangeSession,
   onChangeSettings,
   setActiveModal,
@@ -136,7 +136,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   resetDefaultUserSettings,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const styles = stylesThunk(theme, scroll)
   const [forceRefresh, setForceRefresh] = React.useState(0)
   const [newSession, setNewSession] = React.useState<SessionInput | null>(null)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
@@ -235,6 +235,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   fullWidth
                   autoHighlight
                   sx={{ mb: 3 }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   value={gravWell ? { label: getPlanetName(gravWell), id: gravWell } : null}
                   onChange={(event, newValue) => {
                     setNewSettings({
@@ -312,10 +313,10 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
 
             <Box sx={styles.section}>
               <Typography component="div" sx={styles.sectionTitle}>
-                Activity Type (Optional)
+                Activity Type
               </Typography>
               <Box sx={styles.section}>
-                <Box sx={{ px: { xs: 1, sm: 2, md: 5 }, py: 2 }}>
+                <Box sx={{ px: { xs: 1, sm: 2, md: 2 }, py: 2 }}>
                   <WorkOrderTypeChooser
                     allowNone
                     hideOther
@@ -345,8 +346,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                 Crew Share Defaults
               </Typography>
               <Typography variant="caption" component="div" gutterBottom sx={{ mb: 2 }}>
-                These are the default crew shares that will be applied to all new workorders. You can override these
-                defaults on a per-workorder basis unless you click the lock switch below.
+                These are the default crew shares that will be added to all new workorders. You can override these when
+                creating a work order <strong>unless</strong> you click the lock switch below.
               </Typography>
               <Box sx={styles.sectionBody}>
                 <CrewShareTemplateTable

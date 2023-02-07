@@ -198,7 +198,7 @@ const formatCrewShareType = (crewShare: CrewShare): React.ReactElement => {
   )
 }
 
-const formatCrewShare = (
+export const formatCrewShare = (
   crewShare: CrewShare,
   onChange: (newCrewShare: CrewShare) => void,
   allowEdit: boolean,

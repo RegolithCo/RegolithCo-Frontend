@@ -49,6 +49,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '& .MuiTableCell-root': {
       whiteSpace: 'nowrap',
     },
+    '& .MuiTableBody-root .MuiTableRow-root:nth-of-type(odd) .MuiTableCell-root': {
+      backgroundColor: '#00000055',
+    },
   },
   footer: {
     '& .MuiTableCell-root': {

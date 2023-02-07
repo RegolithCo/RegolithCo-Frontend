@@ -31,6 +31,8 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
       sx={{
         '& .MuiDialog-paper': {
           borderRadius: 10,
+          boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+          background: theme.palette.background.default,
           border: `10px solid ${theme.palette.primary.dark}`,
           px: 4,
           py: 2,

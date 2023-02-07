@@ -144,16 +144,7 @@ export const SessionHeader2: React.FC<SesionHeader2Props> = ({ session, userProf
             <Box sx={{ display: 'flex' }}>
               {/* SHARE BUTTON */}
               <div style={{ flex: '1 1' }} />
-              <Tooltip
-                arrow
-                title={
-                  session.state === SessionStateEnum.Active
-                    ? 'Session is currently active'
-                    : 'Session has ended. You can still edit work orders and pay shares but you cannot create new work orders or scouting finds'
-                }
-              >
-                <SessionState sessionState={session.state} size="large" />
-              </Tooltip>
+              <SessionState sessionState={session.state} size="large" />
               <Tooltip title="Download Session">
                 <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)}>
                   <CloudDownload />
