@@ -42,7 +42,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '&::before': {
       content: '""',
     },
-    background: '#121115ee',
     // color: theme.palette.primary.dark,
     // fontFamily: fontFamilies.robotoMono,
     '& .MuiTypography-root': {
@@ -52,7 +51,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       // fontFamily: fontFamilies.robotoMono,
       // fontWeight: 'bold',
     },
-    textShadow: '0 0 1px #000',
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 'bold',
+    background: '#121115aa',
     // borderBottom: '2px solid',
   },
   sectionBody: {
@@ -86,7 +87,7 @@ export const TabWorkOrders: React.FC<TabWorkOrdersProps> = ({
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', ...styles.container }}>
       <Box sx={styles.sectionTitle}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Typography>
+          <Typography sx={styles.sectionTitle}>
             Work Orders ({workOrderCounts[0]}/{workOrderCounts[1]})
           </Typography>
           <Box sx={{ flexGrow: 1 }} />

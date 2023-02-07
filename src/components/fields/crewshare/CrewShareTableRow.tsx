@@ -304,7 +304,7 @@ const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactN
           value={shareArr[1]}
           format={MValueFormat.number}
           typoProps={{
-            color: shareArr[1] >= 0 ? undefined : 'error',
+            color: shareArr[1] >= 0 ? theme.palette.primary.light : 'error',
           }}
         />
       </TableCell>

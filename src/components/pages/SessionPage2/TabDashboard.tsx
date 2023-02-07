@@ -54,6 +54,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     },
     '& .MuiAccordionDetails-root': {
       p: 0,
+      pb: 8,
       position: 'relative',
     },
     '& .MuiAccordionSummary-content': {
@@ -79,7 +80,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
     background: '#121115aa',
-    textShadow: '0 0 1px #000',
     // borderBottom: '2px solid',
   },
   sectionBody: {

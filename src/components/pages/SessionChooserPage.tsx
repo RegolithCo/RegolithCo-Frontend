@@ -60,7 +60,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
     <Container maxWidth="md">
       <Paper elevation={4} sx={styles.container}>
         <Stack spacing={2} sx={{ my: 2, borderBottom: '2px solid' }} direction={{ xs: 'column', sm: 'row' }}>
-          <Typography variant="h3" component="h2" gutterBottom>
+          <Typography variant="h4" component="h2" gutterBottom>
             My Sessions
           </Typography>
           <div style={{ flex: 1 }} />

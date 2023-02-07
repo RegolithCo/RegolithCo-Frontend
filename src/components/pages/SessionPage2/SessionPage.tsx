@@ -48,6 +48,7 @@ import { TabScouting } from './TabScouting'
 import { SessionSettingsTab } from './TabSettings'
 import { DeleteModal } from '../../modals/DeleteModal'
 import { TabUsers } from './TabUsers'
+import { TabSummary } from './TabSummary'
 
 export interface SessionPage2Props {
   session: Session
@@ -236,7 +237,7 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
       <Box
         sx={{
           overflow: 'hidden',
-          p: mediumUp ? 3 : 1,
+          p: mediumUp ? 3 : 0,
           display: 'flex',
           flex: '1 1',
           maxWidth: 1100,
@@ -315,12 +316,21 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
               setNewScoutingFind={setNewScoutingFind}
             />
           )}
+          {activeTab === SessionTabs.SUMMARY && (
+            <TabSummary
+              session={session}
+              sessionUser={sessionUser}
+              setActiveModal={setActiveModal}
+              openWorkOrderModal={openWorkOrderModal}
+            />
+          )}
           {activeTab === SessionTabs.SETTINGS && (
             <SessionSettingsTab
               session={session}
               userSuggest={userSuggest}
               resetDefaultSystemSettings={resetDefaultSystemSettings}
               resetDefaultUserSettings={resetDefaultUserSettings}
+              setActiveModal={setActiveModal}
               onChangeSession={(newSession, newSettings) => {
                 setActiveModal(null)
                 onUpdateSession(newSession, newSettings)
@@ -328,9 +338,23 @@ export const SessionPage2: React.FC<SessionPage2Props> = ({
             />
           )}
         </Box>
+        {/* Mobile-only menu */}
         {!mediumUp && (
           <Tabs
             variant="scrollable"
+            sx={{
+              borderTop: '2px solid',
+              backgroundColor: theme.palette.primary.dark,
+              color: theme.palette.primary.contrastText,
+              '& .MuiTab-root': {
+                color: theme.palette.primary.contrastText,
+              },
+              '& .Mui-selected': {
+                backgroundColor: theme.palette.secondary.main,
+                // color: theme.palette.primary.light,
+                // textShadow: '0 0 2px #FFF',
+              },
+            }}
             allowScrollButtonsMobile
             value={activeTab}
             onChange={(_, newValue) => {

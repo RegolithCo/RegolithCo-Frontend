@@ -6,6 +6,7 @@ import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 export interface CountdownTimerProps {
   startTime?: number
   totalTime?: number
+  endTime?: number
   useMValue?: boolean
   typoProps?: TypographyProps & {
     sx?: SxProps<Theme>
@@ -13,8 +14,16 @@ export interface CountdownTimerProps {
   }
 }
 
-export const CountdownTimer: React.FC<CountdownTimerProps> = ({ startTime, totalTime, useMValue, typoProps }) => {
-  const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTime, totalTime)
+export const CountdownTimer: React.FC<CountdownTimerProps> = ({
+  startTime,
+  totalTime,
+  endTime,
+  useMValue,
+  typoProps,
+}) => {
+  const startTimeFinal = startTime || Date.now()
+  const totalTimeFinal = totalTime || (endTime ? endTime - startTimeFinal : 0)
+  const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTimeFinal, totalTimeFinal)
 
   let finalVal = ''
   if (hasTime && isFinished) finalVal = 'COMPLETED'

@@ -149,9 +149,16 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
     default:
       return <>DisplayError</>
   }
-
+  // const maxWidth = 500
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xl" disableEscapeKeyDown={isEditing} sx={styles.paper}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="lg"
+      fullWidth
+      disableEscapeKeyDown={isEditing}
+      sx={{ ...styles.paper }}
+    >
       <WorkIcon color="inherit" fontSize="large" sx={styles.icon} />
       <Box sx={styles.containerBox}>
         <Toolbar

@@ -13,6 +13,7 @@ import {
 import { getSessionUserStateName, makeAvatar, ScoutingFind, SessionUser, User, UserStateEnum } from '@regolithco/common'
 import { Engineering, Person, PersonAdd, Verified } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
+import { UserAvatar } from '../UserAvatar'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
@@ -77,35 +78,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   return (
     <ListItem sx={{ background: meId ? '#33333366' : 'transparent' }}>
       <ListItemAvatar>
-        <Badge
-          badgeContent={user.state === UserStateEnum.Verified ? <Verified color="success" /> : null}
-          overlap="circular"
-          sx={
-            user.state === UserStateEnum.Verified
-              ? {
-                  '& svg': {
-                    strokeWidth: '0.5px',
-                    stroke: 'black',
-                  },
-                  '& .MuiBadge-badge::before': {
-                    content: '" "',
-                    display: 'block',
-                    background: 'black',
-                    position: 'absolute',
-
-                    height: '16px',
-                    width: '16px',
-                    zIndex: -1,
-                    borderRadius: '50%',
-                  },
-                }
-              : {}
-          }
-        >
-          <Avatar src={userAvatar} imgProps={{ referrerPolicy: 'no-referrer' }} alt={sessionUser.owner?.scName}>
-            <Person />
-          </Avatar>
-        </Badge>
+        <UserAvatar size="small" user={user} sessionOwner={isOwner} />
       </ListItemAvatar>
 
       <ListItemText
@@ -128,13 +101,6 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       />
       {(isOwner || !isMe) && addFriend && (
         <ListItemSecondaryAction>
-          {isOwner && (
-            <Tooltip title="Session Owner" arrow>
-              <span>
-                <Engineering color="disabled" />
-              </span>
-            </Tooltip>
-          )}
           {!isMe && friends && (friends || []).indexOf(user.scName) < 0 ? (
             <Tooltip title="Add username to friend list" arrow>
               <span>

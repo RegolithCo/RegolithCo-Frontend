@@ -100,7 +100,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
               </Tooltip>
             </TableCell>
             <TableCell align="right">Collected</TableCell>
-            <TableCell align="right">Net Profit</TableCell>
+            <TableCell align="right">Gross Profit</TableCell>
             <TableCell align="right">
               <Tooltip title="Finished At / Time left">
                 <AccessTime />

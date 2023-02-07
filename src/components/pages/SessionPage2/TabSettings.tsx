@@ -20,6 +20,7 @@ import {
   TextField,
   Theme,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import {
@@ -48,6 +49,7 @@ import { VehicleOreChooser } from '../../fields/VehicleOreChooser'
 import { CrewShareTemplateTable } from '../../fields/crewshare/CrewShareTemplateTable'
 import { omit } from 'lodash'
 import { fontFamilies } from '../../../theme'
+import { DialogEnum } from './SessionPage.container'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -60,6 +62,7 @@ export interface SessionSettingsTabProps {
   onChangeSettings?: (newSettings: DestructuredSettings) => void
   resetDefaultUserSettings?: () => void
   resetDefaultSystemSettings?: () => void
+  setActiveModal?: (modal: DialogEnum) => void
   userSuggest?: UserSuggest
 }
 
@@ -128,6 +131,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   userSuggest,
   onChangeSession,
   onChangeSettings,
+  setActiveModal,
   resetDefaultSystemSettings,
   resetDefaultUserSettings,
 }) => {
@@ -135,13 +139,11 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const styles = stylesThunk(theme)
   const [forceRefresh, setForceRefresh] = React.useState(0)
   const [newSession, setNewSession] = React.useState<SessionInput | null>(null)
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
   const [newSettings, setNewSettings] = React.useState<DestructuredSettings>(makeNewSettings(session, sessionSettings))
   const [nameValid, setNameValid] = React.useState(true)
   const [notevalid, setNoteValid] = React.useState(true)
-
-  const [closeConfirmModal, setCLoseConfirmModal] = React.useState(false)
-  const [deleteConfirmModal, setDeleteConfirmModal] = React.useState(false)
 
   React.useEffect(() => {
     setNewSettings(makeNewSettings(session, sessionSettings))
@@ -246,14 +248,14 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   renderInput={(params) => <TextField {...params} label="Gravity Well" />}
                 />
 
-                <FormControl fullWidth variant="outlined" sx={{ mb: 1 }}>
+                <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
                   <InputLabel id="gwell">Location Type</InputLabel>
                   <Select
                     value={(newSettings.sessionSettings?.location as string) || ''}
                     fullWidth
                     variant="outlined"
                     label="Location Type"
-                    size="small"
+                    // size="small"
                     renderValue={(value: string) => (value === '' ? null : getLocationName(value as LocationEnum))}
                     onChange={(e) => {
                       const newLocation = e.target.value === '' ? null : (e.target.value as LocationEnum)
@@ -274,6 +276,37 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     ))}
                   </Select>
                 </FormControl>
+
+                {session && (
+                  <Stack direction={mediumUp ? 'row' : 'column'} spacing={2} sx={{ mb: 2 }}>
+                    {session?.state === SessionStateEnum.Active && (
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        startIcon={<StopCircle />}
+                        onClick={() => {
+                          setActiveModal && setActiveModal(DialogEnum.CLOSE_SESSION)
+                        }}
+                        color="secondary"
+                      >
+                        End Session
+                      </Button>
+                    )}
+                    {session && (
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        startIcon={<Delete />}
+                        onClick={() => {
+                          setActiveModal && setActiveModal(DialogEnum.DELETE_SESSION)
+                        }}
+                        color="error"
+                      >
+                        Delete Session
+                      </Button>
+                    )}
+                  </Stack>
+                )}
               </Box>
             </Box>
 
@@ -609,6 +642,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
       </Box>
 
       <Stack
+        sx={mediumUp ? { borderTop: '2px solid', py: 2 } : undefined}
         direction={{
           xs: 'column',
           md: 'row',
@@ -616,32 +650,10 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         spacing={1}
         alignItems="center"
       >
-        {session && (
-          <Button
-            variant="contained"
-            fullWidth
-            startIcon={<Delete />}
-            onClick={() => setDeleteConfirmModal(true)}
-            color="error"
-          >
-            Delete Session
-          </Button>
-        )}
-        {session?.state === SessionStateEnum.Active && (
-          <Button
-            variant="contained"
-            fullWidth
-            startIcon={<StopCircle />}
-            onClick={() => setCLoseConfirmModal(true)}
-            color="secondary"
-          >
-            End Session
-          </Button>
-        )}
         <Box sx={{ flexGrow: 1 }} />
         <Button
           color="info"
-          fullWidth
+          fullWidth={!mediumUp}
           startIcon={<RestartAlt />}
           disabled={!valid}
           variant="outlined"
@@ -655,7 +667,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         {session && (
           <Button
             color="secondary"
-            fullWidth
+            fullWidth={!mediumUp}
             startIcon={<Person />}
             disabled={!valid}
             variant="outlined"
@@ -671,7 +683,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
           color="primary"
           startIcon={<Save />}
           disabled={!valid}
-          fullWidth
+          fullWidth={!mediumUp}
           variant="contained"
           onClick={() => {
             session && onChangeSession && onChangeSession(newSession as SessionInput, newSettings)

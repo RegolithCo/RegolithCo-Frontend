@@ -25,7 +25,18 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
 }) => {
   const theme = useTheme()
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      sx={{
+        '& .MuiDialog-paper': {
+          borderRadius: 10,
+          border: `10px solid ${theme.palette.primary.dark}`,
+          px: 4,
+          py: 2,
+        },
+      }}
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Typography variant="body1" component="div">

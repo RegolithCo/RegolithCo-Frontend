@@ -35,7 +35,8 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     [theme.breakpoints.up('md')]: {},
   },
   container: {
-    pt: 2,
+    backgroundColor: '#0e0c1baa',
+    position: 'relative',
     '& .MuiAccordion-root': {
       backgroundColor: '#0e0c1baa',
     },
@@ -48,6 +49,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   section: {},
   sectionTitle: {
+    p: 1,
     '&::before': {
       content: '""',
     },
@@ -59,9 +61,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       // color: theme.palette.primary.dark,
       // fontFamily: fontFamilies.robotoMono,
       // fontWeight: 'bold',
-      textShadow: '0 0 1px #000',
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
     },
-    borderBottom: '2px solid',
+    background: '#121115aa',
   },
   sectionBody: {
     py: 1,
@@ -90,7 +93,7 @@ export const TabScouting: React.FC<TabScoutingProps> = ({
   const scountingCounts = [filteredScouts.length, allScouts.length]
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: 1000, ...styles.container }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', ...styles.container }}>
       <Box sx={styles.sectionTitle}>
         <Stack direction="row" alignItems="center" spacing={1}>
           <Typography>

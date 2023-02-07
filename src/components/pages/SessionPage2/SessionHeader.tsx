@@ -17,6 +17,7 @@ import { fontFamilies } from '../../../theme'
 import { CloudDownload, Share } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { DialogEnum } from './SessionPage.container'
+import { SessionState } from '../../SessionState'
 
 export interface SesionHeader2Props {
   session: Session
@@ -151,29 +152,7 @@ export const SessionHeader2: React.FC<SesionHeader2Props> = ({ session, userProf
                     : 'Session has ended. You can still edit work orders and pay shares but you cannot create new work orders or scouting finds'
                 }
               >
-                <Typography
-                  sx={{
-                    display: {
-                      xs: 'none',
-                      md: 'block',
-                    },
-                    fontWeight: 'bold',
-                    lineHeight: 1.2,
-                    my: 1,
-                    px: 2,
-                    borderRadius: 2,
-                    border: `2px solid ${
-                      session.state === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.error.main
-                    }`,
-                    textShadow: '1px 1px 4px #000',
-                    color:
-                      session.state === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.error.main,
-                    textTransform: 'uppercase',
-                    fontSize: '1rem',
-                  }}
-                >
-                  {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
-                </Typography>
+                <SessionState sessionState={session.state} size="large" />
               </Tooltip>
               <Tooltip title="Download Session">
                 <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)}>

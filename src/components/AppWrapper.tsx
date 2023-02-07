@@ -1,4 +1,4 @@
-import { Box, useTheme } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { SxProps, Theme } from '@mui/system'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
@@ -88,6 +88,7 @@ export const AppWrapper = ({
   bgImage?: BGImagesEnum
 }): JSX.Element => {
   const theme = useTheme()
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const bgImageFinal = bgImage ? bgImage : BGImagesEnum.DEFAULT
   return (
     <Box
@@ -99,13 +100,17 @@ export const AppWrapper = ({
       }}
     >
       <Box sx={styles.overlay}>{children}</Box>
-      <Box sx={{ position: 'absolute', bottom: 10, left: 10, [theme.breakpoints.down('sm')]: { display: 'None' } }}>
-        <SCVersion semver="3.18" />
-      </Box>
-      <AppVersion />
-      <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
-        <Copyright />
-      </Box>
+      {mediumUp && (
+        <>
+          <Box sx={{ position: 'absolute', bottom: 10, left: 10, [theme.breakpoints.down('sm')]: { display: 'None' } }}>
+            <SCVersion semver="3.18" />
+          </Box>
+          <AppVersion />
+          <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
+            <Copyright />
+          </Box>
+        </>
+      )}
     </Box>
   )
 }

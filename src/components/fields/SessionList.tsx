@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Session, SessionStateEnum, defaultSessionName, makeAvatar } from '@regolithco/common'
+import { Session, SessionStateEnum, defaultSessionName, makeAvatar, User } from '@regolithco/common'
 import {
   Avatar,
   Box,
@@ -27,6 +27,8 @@ import {
   TimelineOppositeContent,
   TimelineSeparator,
 } from '@mui/lab'
+import { UserAvatar } from '../UserAvatar'
+import { SessionState } from '../SessionState'
 
 export interface SessionListProps {
   sessions: Session[]
@@ -71,7 +73,6 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
     let dayArr: Session[] = []
 
     sessions.forEach((session) => {
-      console.log(currYear, currMonth, currDay, dayjs(session.createdAt).format('YYYY-MM-DD HH:mm:ss'))
       const sessionDate = dayjs(session.createdAt)
       const sessionYear = sessionDate.year()
       const sessionMonth = sessionDate.month()
@@ -108,7 +109,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
         const currHeading = dayjs(yearMonthArr[0][0].createdAt).format('YYYY - MMMM')
 
         return (
-          <Box key={`yeamonth-${idx}`}>
+          <Box key={`yeamonth-${idx}`} sx={{ maxWidth: 600, margin: '0 auto' }}>
             <Typography variant="h6" sx={{ textAlign: 'left' }}>
               {currHeading}
             </Typography>
@@ -174,64 +175,12 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                                 sx={{
                                   ...pulseCssThunk(sessionActive),
                                   cursor: 'pointer',
-                                  // mb: {
-                                  //   xs: 0.5,
-                                  //   sm: 1,
-                                  //   md: 1.5,
-                                  // },
-                                  // '&:last-child': {
-                                  //   mb: 0,
-                                  // },
                                   '&:hover': {
                                     backgroundColor: 'rgba(255, 255, 255, 0.23)',
                                   },
-                                  // backgroundColor: 'rgba(255, 255, 255, 0.13)',
                                 }}
                                 onClick={() => onClickSession?.(sessionId)}
                               >
-                                <Chip
-                                  label={sessionActive ? 'Active' : 'Ended'}
-                                  size="small"
-                                  sx={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    color: sessionActive
-                                      ? theme.palette.secondary.contrastText
-                                      : theme.palette.grey[500],
-                                    backgroundColor: sessionActive
-                                      ? theme.palette.secondary.light
-                                      : theme.palette.background.default,
-                                    borderRadius: 0,
-                                    borderTopLeftRadius: 3,
-                                    p: 0,
-                                    m: 0,
-                                    //
-                                  }}
-                                />
-                                <ListItemAvatar
-                                  sx={{
-                                    [theme.breakpoints.down('sm')]: {
-                                      display: 'none',
-                                    },
-                                  }}
-                                >
-                                  <Avatar
-                                    src={userAvatar}
-                                    imgProps={{ referrerPolicy: 'no-referrer' }}
-                                    alt={session.owner?.scName}
-                                    sx={{
-                                      background: theme.palette.secondary.main,
-                                      color: theme.palette.secondary.contrastText,
-                                      border: '1px solid',
-                                      mt: 2,
-                                      ml: 1,
-                                    }}
-                                  >
-                                    <Person />
-                                  </Avatar>
-                                  <div style={{ flexGrow: 1 }} />
-                                </ListItemAvatar>
                                 <ListItemText sx={{ pl: 1 }}>
                                   <Typography
                                     component="div"
@@ -253,7 +202,18 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                                   <Typography component="div" variant="caption">
                                     {subtitleArr.join(' - ')}
                                   </Typography>
+                                  <SessionState sessionState={session.state} size="small" />
                                 </ListItemText>
+                                <ListItemAvatar
+                                  sx={{
+                                    [theme.breakpoints.down('sm')]: {
+                                      display: 'none',
+                                    },
+                                  }}
+                                >
+                                  <UserAvatar user={session.owner as User} size="large" />
+                                  <div style={{ flexGrow: 1 }} />
+                                </ListItemAvatar>
                               </ListItem>
                             )
                           })}
