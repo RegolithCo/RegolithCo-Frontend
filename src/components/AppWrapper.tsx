@@ -15,7 +15,9 @@ export const BGImagesEnum = {
   SALVAGE1: 'salvage1.png',
   SALVAGE2: 'salvage2.png',
   ASTEROIDS1: 'asteroids1.png',
+  ASTEROIDS2: 'asteroids2.jpg',
   CONCOURSE: 'concourse.jpg',
+  CITY1: 'city1.jpg',
   PROFILE: 'profile.jpg',
   REFINERY1: 'refinery1.png',
 } as const
@@ -56,13 +58,13 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       bgImage = BGImagesEnum.OPTION2
       break
     case '/profile':
-      bgImage = BGImagesEnum.OPTION1
+      bgImage = BGImagesEnum.PROFILE
       break
     case '/tables':
-      bgImage = BGImagesEnum.CONCOURSE
+      bgImage = BGImagesEnum.CITY1
       break
     case '/about':
-      bgImage = BGImagesEnum.PROFILE
+      bgImage = BGImagesEnum.OPTION1
       break
     case '/workorder':
       bgImage = BGImagesEnum.REFINERY1
@@ -71,7 +73,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       bgImage = BGImagesEnum.OPTION2
       break
     case '/cluster':
-      bgImage = BGImagesEnum.ASTEROIDS1
+      bgImage = BGImagesEnum.ASTEROIDS2
       break
     default:
       bgImage = BGImagesEnum.DEFAULT

@@ -9,9 +9,10 @@ export type LoginRefreshProps = {
   authType: AuthTypeEnum
   onClose: () => void
   login: () => void
+  logOut: () => void
 }
 
-export const LoginRefresh: React.FC<LoginRefreshProps> = ({ open, onClose, authType, login }) => {
+export const LoginRefresh: React.FC<LoginRefreshProps> = ({ open, onClose, authType, login, logOut }) => {
   const theme = useTheme()
   return (
     <Modal open={Boolean(open)} disableEscapeKeyDown>
@@ -52,6 +53,7 @@ export const LoginRefresh: React.FC<LoginRefreshProps> = ({ open, onClose, authT
           fullWidth
           onClick={() => {
             onClose()
+            logOut()
           }}
         >
           Nah. I'm good. Just log me out.

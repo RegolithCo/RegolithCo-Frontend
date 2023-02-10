@@ -221,6 +221,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
             open={refreshPopupOpen}
             onClose={() => setRefreshPopupOpen(false)}
             login={login}
+            logOut={logOut}
             authType={authType}
           />
         ),
