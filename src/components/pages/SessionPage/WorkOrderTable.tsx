@@ -16,6 +16,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TableRow,
   Theme,
@@ -35,29 +36,60 @@ import {
   QuestionMark,
   SvgIconComponent,
 } from '@mui/icons-material'
+import { fontFamilies } from '../../../theme'
 
 export interface WorkOrderTableProps {
+  isDashboard?: boolean
   workOrders: WorkOrder[]
   openWorkOrderModal: (orderId: string) => void
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   table: {
-    maxHeight: 300,
-    '& .MuiTableRow-root:nth-of-type(odd) *': {
-      backgroundColor: 'red',
-    },
     '& .MuiTableCell-root': {
       whiteSpace: 'nowrap',
+    },
+    '& .MuiTableBody-root .MuiTableRow-root:nth-of-type(odd) .MuiTableCell-root': {
+      backgroundColor: '#00000055',
+    },
+  },
+  footer: {
+    '& .MuiTableCell-root': {
+      fontSize: '0.8rem',
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+      color: theme.palette.primary.dark,
+      borderTop: '2px solid',
+      whiteSpace: 'nowrap',
+      borderBottom: 'none',
     },
   },
 })
 
-export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, openWorkOrderModal }) => {
+export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, openWorkOrderModal, isDashboard }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+
+  const { summaries, volSCU, grossProfit } = React.useMemo(() => {
+    const summaries = workOrders.map((workOrder: WorkOrder) => calculateWorkOrder(workOrder))
+    return {
+      summaries,
+      volSCU: summaries.reduce(
+        (acc, summary) =>
+          acc +
+          (summary.oreSummary
+            ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected / 100, 0)
+            : 0),
+        0
+      ),
+      grossProfit: summaries.reduce((acc, summary) => acc + summary.grossProfit, 0),
+    }
+  }, [workOrders])
+
   return (
-    <TableContainer sx={styles.table}>
+    <TableContainer
+      sx={{ ...styles.table, maxHeight: isDashboard ? 400 : undefined, minHeight: isDashboard ? 300 : undefined }}
+    >
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>
@@ -71,7 +103,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
               </Tooltip>
             </TableCell>
             <TableCell align="right">Collected</TableCell>
-            <TableCell align="right">Net Profit</TableCell>
+            <TableCell align="right">Gross Profit</TableCell>
             <TableCell align="right">
               <Tooltip title="Finished At / Time left">
                 <AccessTime />
@@ -81,9 +113,26 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
         </TableHead>
         <TableBody>
           {workOrders.map((workOrder: WorkOrder, idx) => (
-            <WorkOrderTableRow key={`wo-${idx}`} workOrder={workOrder} openWorkOrderModal={openWorkOrderModal} />
+            <WorkOrderTableRow
+              key={`wo-${idx}`}
+              workOrder={workOrder}
+              openWorkOrderModal={openWorkOrderModal}
+              summary={summaries[idx]}
+            />
           ))}
         </TableBody>
+        <TableFooter sx={styles.footer}>
+          <TableRow>
+            <TableCell colSpan={5}>Totals</TableCell>
+            <TableCell align="right">
+              <MValue value={volSCU} format={MValueFormat.volSCU} decimals={1} />
+            </TableCell>
+            <TableCell align="right">
+              <MValue value={grossProfit} format={MValueFormat.currency} />
+            </TableCell>
+            <TableCell align="right"></TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>
     </TableContainer>
   )
@@ -92,18 +141,14 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
 export interface WorkOrderTableRowProps {
   workOrder: WorkOrder
   openWorkOrderModal: (orderId: string) => void
+  summary: WorkOrderSummary
 }
 
-export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, openWorkOrderModal }) => {
+export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, openWorkOrderModal, summary }) => {
   const theme = useTheme()
   const { owner, createdAt, state, orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
   const otherOrder = workOrder as OtherOrder
-  const summary = React.useMemo(() => {
-    const retVal: WorkOrderSummary = calculateWorkOrder(workOrder)
-
-    return retVal
-  }, [workOrder])
 
   let displayValueCol = 0
 

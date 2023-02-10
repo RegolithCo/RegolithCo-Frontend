@@ -1,8 +1,6 @@
 import * as React from 'react'
 
 import {
-  ActivityEnum,
-  ScoutingFindStateEnum,
   Session,
   SessionStateEnum,
   UserProfile,
@@ -19,38 +17,38 @@ import {
   downloadFile,
   createSafeFileName,
   session2csv,
+  CrewShare,
 } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { ActiveUserList } from '../../fields/ActiveUserList'
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
-  FormControlLabel,
-  FormGroup,
-  Paper,
-  Switch,
+  Button,
+  DialogContentText,
+  Drawer,
+  Stack,
+  Tab,
+  Tabs,
   Theme,
-  Typography,
+  Tooltip,
+  useMediaQuery,
   useTheme,
-  Zoom,
 } from '@mui/material'
-import { Container, SxProps } from '@mui/system'
-import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
-import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
-import { MentionedUserList } from '../../fields/MentionedUserList'
-import { ExpandMore } from '@mui/icons-material'
-import { WorkOrderTable } from './WorkOrderTable'
-import { ClusterCard } from '../../cards/ClusterCard'
-import { SessionSettingsModal } from './SessionSettingsModal'
+import { SxProps } from '@mui/system'
+import { ArrowBack, Dashboard, Group, Logout, Settings, Summarize, TableView, TravelExplore } from '@mui/icons-material'
 import { WorkOrderModal } from '../../modals/WorkOrderModal'
-import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { ShareModal } from '../../modals/ShareModal'
 import { SessionHeader } from './SessionHeader'
 import { ScoutingFindModal } from '../../modals/ScoutingFindModal'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { DownloadModal } from '../../modals/DownloadModal'
+import { fontFamilies } from '../../../theme'
+import { DialogEnum, SessionTabs } from './SessionPage.container'
+import { TabDashboard } from './TabDashboard'
+import { TabWorkOrders } from './TabWorkOrders'
+import { TabScouting } from './TabScouting'
+import { SessionSettingsTab } from './TabSettings'
+import { DeleteModal } from '../../modals/DeleteModal'
+import { TabUsers } from './TabUsers'
+import { TabSummary } from './TabSummary'
 
 export interface SessionPageProps {
   session: Session
@@ -59,10 +57,15 @@ export interface SessionPageProps {
   // For the two modals that take us deeper
   orderId?: string
   scoutingFindId?: string
+  loading: boolean
+  mutating: boolean
   // The
   verifiedMentionedUsers: VerifiedUserLookup
   addFriend: (username: string) => void
   navigate: (path: string) => void
+  // Tab navigation
+  activeTab: SessionTabs
+  setActiveTab: (tab: SessionTabs) => void
   // Session
   onCloseSession: () => void
   addSessionMentions: (scNames: string[]) => void
@@ -74,7 +77,7 @@ export interface SessionPageProps {
   leaveSession: () => void
   deleteSession: () => void
   // CrewShares
-  onSetCrewSharePaid?: (scName: string, paid: boolean) => void
+  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
   // Work orders
   createWorkOrder: (workOrder: WorkOrder) => void
   openWorkOrderModal: (workOrderId?: string) => void
@@ -89,18 +92,6 @@ export interface SessionPageProps {
   leaveScoutingFind: (findId: string) => void
 }
 
-type ObjectValues<T> = T[keyof T]
-export const DialogEnum = {
-  SHARE_SESSION: 'SHARE_SESSION',
-  ADD_WORKORDER: 'ADD_WORKORDER',
-  LEAVE_SESSION: 'LEAVE_SESSION',
-  DOWNLOAD_SESSION: 'DOWNLOAD_SESSION',
-  ADD_SCOUTING: 'ADD_SCOUTING',
-  SESSION_PREFERENCES: 'SESSION_PREFERENCES',
-  ADD_FRIEND: 'ADD_FRIEND',
-} as const
-export type DialogEnum = ObjectValues<typeof DialogEnum>
-
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   container: {
     [theme.breakpoints.up('md')]: {
@@ -109,69 +100,17 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       p: 2,
     },
   },
-  gridContainer: {
-    [theme.breakpoints.up('md')]: {
-      flex: '1 1',
-      overflow: 'hidden',
-      //
-    },
-    // border: '2px solid yellow',
+  sessionTabs: {
+    background: '#121115aa',
   },
-  gridColumn: {
-    [theme.breakpoints.up('md')]: {
-      height: '100%',
-      overflowX: 'hidden',
-      overflowY: 'scroll',
-      //
-    },
-    // border: '2px solid blue',
-  },
-  accordionSummary: {
-    px: 1,
-    '& .MuiAccordionSummary-expandIconWrapper': {
-      color: theme.palette.primary.contrastText,
-    },
-    '& .MuiSwitch-root': {
-      marginTop: -1,
-      marginBottom: -1,
-    },
-    '& .MuiFormGroup-root .MuiTypography-root': {
-      fontSize: '0.7em',
-    },
-    '& .MuiSwitch-thumb, & .MuiSwitch-track': {
-      backgroundColor: '#666666!important',
-      border: `1px solid #444444`,
-    },
-    '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb,& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-track': {
-      backgroundColor: isActive ? theme.palette.primary.dark + '!important' : '#999999!important',
-      border: `1px solid ${isActive ? theme.palette.primary.dark + '!important' : '#3b3b3b!important'}`,
-    },
-    backgroundColor: isActive ? theme.palette.secondary.main : '#999999',
-    color: theme.palette.primary.contrastText,
-    textTransform: 'uppercase',
-    fontWeight: 500,
-    fontSize: '1rem',
-    [theme.breakpoints.up('md')]: {},
-  },
-  accordionDetails: {
-    borderBottom: '2px solid transparent',
-    '&.Mui-expanded': {
-      // borderBottom: '2px solid ${}`,
-    },
-  },
-  workOrderAccordionDetails: { p: 0, minHeight: 300 },
-  paper: {
-    [theme.breakpoints.up('md')]: {
-      overflow: 'hidden',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      p: 2,
-    },
-    border: '1px solid #222222',
-    backgroundColor: '#000000aa',
+  drawerAccordionSummary: {
+    // borderBottom: '1px solid',
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 'bold',
   },
 })
+
+const DRAWER_WIDTH = 300
 
 export const SessionPage: React.FC<SessionPageProps> = ({
   session,
@@ -179,12 +118,16 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   sessionUser,
   orderId,
   navigate,
+  loading,
+  mutating,
+  activeTab,
+  setActiveTab,
   scoutingFindId,
   leaveSession,
   addFriend,
   updateWorkOrder,
   onUpdateSession,
-  onSetCrewSharePaid,
+  markCrewSharePaid,
   removeSessionMentions,
   addSessionMentions,
   removeSessionCrew,
@@ -204,13 +147,12 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   deleteSession,
 }) => {
   const theme = useTheme()
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const isActive = session.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
   // Only one major modal at a time please.
   const [activeModal, setActiveModal] = React.useState<DialogEnum | null>(null)
-  // Filtering for the accordions
-  const [filterClosedScout, setFilterClosedScout] = React.useState(true)
-  const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
+
   // For temporary objects before we commit them to the DB
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>()
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>()
@@ -226,242 +168,218 @@ export const SessionPage: React.FC<SessionPageProps> = ({
 
   const shareUrl = `${window.location.origin}${process.env.PUBLIC_URL}/session/${session.sessionId}`
 
-  const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
-  const allScouts = session.scouting?.items || []
-  const filteredScouts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
-  filteredScouts.sort((a, b) => b.createdAt - a.createdAt)
-  const allWorkOrders = session.workOrders?.items || []
-  const filteredWorkOrders = filterPaidWorkOrders
-    ? allWorkOrders.filter(({ crewShares }) => crewShares?.some(({ state }) => !state))
-    : [...allWorkOrders]
-
-  const scountingCounts = [filteredScouts.length, allScouts.length]
-  const workOrderCounts = [filteredWorkOrders.length, allWorkOrders.length]
   const userSuggest: UserSuggest = React.useMemo(
     () => createUserSuggest(session.activeMembers?.items || [], session.mentionedUsers, userProfile.friends),
     [session, userProfile]
   )
 
-  // make a map of useIds to their scouting find attendance
-  const userScoutingAttendance = React.useMemo(() => {
-    const map = new Map<string, ScoutingFind>()
-    session.scouting?.items?.forEach((scoutingFind) => {
-      // This will get overwritten if there are duplicates but that's ok
-      scoutingFind.attendance?.forEach((attendance) => {
-        map.set(attendance.owner?.userId as string, scoutingFind)
-      })
-    })
-    return map
-  }, [session.scouting?.items])
+  // USER Tab is not allowed on desktop
+  React.useEffect(() => {
+    if (mediumUp && activeTab === SessionTabs.USERS) {
+      setActiveTab(SessionTabs.DASHBOARD)
+    }
+  }, [mediumUp, activeTab, setActiveTab])
 
   return (
-    <>
-      <Container
-        maxWidth="xl"
+    <Box sx={{ display: 'flex', height: '100%', backdropFilter: 'blur(7px)', backgroundColor: '#0e0c1b77' }}>
+      {/* NAV Drawer   */}
+      {mediumUp && (
+        <Drawer
+          sx={{
+            width: DRAWER_WIDTH,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              background: '#12121255',
+              width: DRAWER_WIDTH,
+              boxSizing: 'border-box',
+            },
+          }}
+          variant="permanent"
+          anchor="left"
+        >
+          {/* <Toolbar /> */}
+          <TabUsers
+            session={session}
+            userProfile={userProfile}
+            sessionUser={sessionUser}
+            navigate={navigate}
+            addFriend={addFriend}
+            addSessionMentions={addSessionMentions}
+            removeSessionMentions={removeSessionMentions}
+            verifiedMentionedUsers={verifiedMentionedUsers}
+            setActiveModal={setActiveModal}
+          />
+          <Stack direction="row" spacing={2} sx={{ p: 2 }}>
+            <Tooltip title="Back to sessions">
+              <Button
+                startIcon={<ArrowBack />}
+                onClick={() => navigate('/session')}
+                color="secondary"
+                variant="text"
+                fullWidth
+              >
+                Back to sessions
+              </Button>
+            </Tooltip>
+            {!isSessionOwner && (
+              <Tooltip title="Leave Session">
+                <Button
+                  startIcon={<Logout />}
+                  onClick={() => setActiveModal(DialogEnum.LEAVE_SESSION)}
+                  color="error"
+                  variant="outlined"
+                  fullWidth
+                >
+                  Leave Session
+                </Button>
+              </Tooltip>
+            )}
+          </Stack>
+        </Drawer>
+      )}
+      {/* This is the main content */}
+      <Box
         sx={{
-          [theme.breakpoints.up('md')]: {
-            height: '100%',
-            overflow: 'hidden',
-            p: 2,
-          },
+          overflow: 'hidden',
+          p: mediumUp ? 3 : 0,
+          display: 'flex',
+          flex: '1 1',
+          maxWidth: 1100,
+          flexDirection: 'column',
+          height: '100%',
+          // border: '1px solid yellow',
         }}
       >
-        <Paper elevation={4} sx={styles.paper}>
-          <SessionHeader
-            userProfile={userProfile}
-            leaveSession={leaveSession}
-            setActiveModal={setActiveModal}
-            session={session}
-          />
+        <SessionHeader userProfile={userProfile} setActiveModal={setActiveModal} session={session} />
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          {mediumUp && (
+            <Tabs
+              value={activeTab}
+              onChange={(_, newValue) => {
+                setActiveTab(newValue)
+              }}
+              sx={styles.sessionTabs}
+              aria-label="basic tabs example"
+            >
+              <Tab label="Dashboard" value={SessionTabs.DASHBOARD} />
+              <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} />
+              <Tab label="Scouting" value={SessionTabs.SCOUTING} />
+              <Tab label="Summary" value={SessionTabs.SUMMARY} />
+              {isSessionOwner && <Tab label="Settings" value={SessionTabs.SETTINGS} />}
+            </Tabs>
+          )}
+        </Box>
+        <Box
+          sx={{
+            flex: '1 1',
+            overflow: 'auto',
+            //
+            // border: '1px solid red',
+          }}
+        >
+          {activeTab === SessionTabs.USERS && (
+            <TabUsers
+              session={session}
+              userProfile={userProfile}
+              sessionUser={sessionUser}
+              navigate={navigate}
+              addFriend={addFriend}
+              addSessionMentions={addSessionMentions}
+              removeSessionMentions={removeSessionMentions}
+              verifiedMentionedUsers={verifiedMentionedUsers}
+              setActiveModal={setActiveModal}
+            />
+          )}
+          {activeTab === SessionTabs.DASHBOARD && (
+            <TabDashboard
+              session={session}
+              userProfile={userProfile}
+              sessionUser={sessionUser}
+              openScoutingModal={openScoutingModal}
+              openWorkOrderModal={openWorkOrderModal}
+              setActiveModal={setActiveModal}
+              setNewWorkOrder={setNewWorkOrder}
+              setNewScoutingFind={setNewScoutingFind}
+            />
+          )}
+          {activeTab === SessionTabs.WORK_ORDERS && (
+            <TabWorkOrders
+              session={session}
+              userProfile={userProfile}
+              openWorkOrderModal={openWorkOrderModal}
+              setActiveModal={setActiveModal}
+              setNewWorkOrder={setNewWorkOrder}
+            />
+          )}
+          {activeTab === SessionTabs.SCOUTING && (
+            <TabScouting
+              session={session}
+              sessionUser={sessionUser}
+              openScoutingModal={openScoutingModal}
+              setActiveModal={setActiveModal}
+              setNewScoutingFind={setNewScoutingFind}
+            />
+          )}
+          {activeTab === SessionTabs.SUMMARY && (
+            <TabSummary
+              session={session}
+              sessionUser={sessionUser}
+              mutating={mutating}
+              setActiveModal={setActiveModal}
+              markCrewSharePaid={markCrewSharePaid}
+              openWorkOrderModal={openWorkOrderModal}
+            />
+          )}
+          {activeTab === SessionTabs.SETTINGS && (
+            <SessionSettingsTab
+              session={session}
+              userSuggest={userSuggest}
+              scroll
+              resetDefaultSystemSettings={resetDefaultSystemSettings}
+              resetDefaultUserSettings={resetDefaultUserSettings}
+              setActiveModal={setActiveModal}
+              onChangeSession={(newSession, newSettings) => {
+                setActiveModal(null)
+                onUpdateSession(newSession, newSettings)
+              }}
+            />
+          )}
+        </Box>
+        {/* Mobile-only menu */}
+        {!mediumUp && (
+          <Tabs
+            variant="scrollable"
+            sx={{
+              borderTop: '2px solid',
+              backgroundColor: theme.palette.primary.dark,
+              color: theme.palette.primary.contrastText,
+              '& .MuiTab-root': {
+                color: theme.palette.primary.contrastText,
+              },
+              '& .Mui-selected': {
+                backgroundColor: theme.palette.secondary.main,
+                // color: theme.palette.primary.light,
+                // textShadow: '0 0 2px #FFF',
+              },
+            }}
+            allowScrollButtonsMobile
+            value={activeTab}
+            onChange={(_, newValue) => {
+              setActiveTab(newValue)
+            }}
+            aria-label="basic tabs example"
+          >
+            <Tab label="Users" value={SessionTabs.USERS} icon={<Group />} />
+            <Tab label="Dash" value={SessionTabs.DASHBOARD} icon={<Dashboard />} />
+            <Tab label="Orders" value={SessionTabs.WORK_ORDERS} icon={<TableView />} />
+            <Tab label="Scout" value={SessionTabs.SCOUTING} icon={<TravelExplore />} />
+            <Tab label="Summary" value={SessionTabs.SUMMARY} icon={<Summarize />} />
+            {isSessionOwner && <Tab label="Settings" value={SessionTabs.SETTINGS} icon={<Settings />} />}
+          </Tabs>
+        )}
+      </Box>
 
-          {/* The main page grid */}
-          <Grid container sx={styles.gridContainer} spacing={2}>
-            {/* The left grid column with the users */}
-            <Grid xs={12} sm={4} md={3} sx={styles.gridColumn}>
-              <Accordion defaultExpanded={true} disableGutters>
-                <AccordionSummary expandIcon={<ExpandMore color="inherit" />} sx={styles.accordionSummary}>
-                  Session Members: ({session.activeMembers?.items?.length})
-                </AccordionSummary>
-                <AccordionDetails sx={styles.accordionDetails}>
-                  <ActiveUserList
-                    friends={userProfile.friends}
-                    scoutingMap={userScoutingAttendance}
-                    sessionOwnerId={session.ownerId}
-                    navigate={navigate}
-                    meId={userProfile.userId}
-                    sessionUsers={session.activeMembers?.items as SessionUser[]}
-                    addFriend={addFriend}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion defaultExpanded={false} disableGutters>
-                <AccordionSummary
-                  expandIcon={<ExpandMore color="inherit" />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                  sx={{ ...styles.accordionSummary, background: '#888888', color: '#000000' }}
-                >
-                  Mentioned: ({session.mentionedUsers?.length})
-                </AccordionSummary>
-                <AccordionDetails sx={styles.accordionDetails}>
-                  <MentionedUserList
-                    mentionedUsers={session.mentionedUsers}
-                    verifiedUsers={verifiedMentionedUsers}
-                    myFriends={userProfile.friends}
-                    useAutocomplete
-                    addFriend={addFriend}
-                    addToList={isActive ? (scName: string) => addSessionMentions([scName]) : undefined}
-                    removeFromList={isActive ? (scName: string) => removeSessionMentions([scName]) : undefined}
-                  />
-                </AccordionDetails>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  sx={{
-                    m: 3,
-                    border: '1px solid',
-                    borderRadius: 3,
-                    p: 2,
-                  }}
-                >
-                  "Mentioned" means this name has been added to a work order or added explicitly to this list by the
-                  session owner. When users with this name join the session they become "Session Members".
-                </Typography>
-              </Accordion>
-            </Grid>
-            <Grid xs={12} sm={8} md={9} sx={styles.gridColumn}>
-              <Accordion defaultExpanded={true} disableGutters sx={styles.accordionDetails}>
-                <AccordionSummary
-                  expandIcon={<ExpandMore color="inherit" />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                  sx={styles.accordionSummary}
-                >
-                  Work Orders ({workOrderCounts[0]}/{workOrderCounts[1]})
-                  <Box sx={{ flexGrow: 1 }} />
-                  <FormGroup
-                    onClick={(e) => {
-                      e.stopPropagation()
-                    }}
-                  >
-                    <FormControlLabel
-                      sx={{ mr: 3 }}
-                      labelPlacement="start"
-                      color="secondary"
-                      control={
-                        <Switch
-                          color="secondary"
-                          checked={filterPaidWorkOrders}
-                          onChange={(e) => setFilterPaidWorkOrders(e.target.checked)}
-                        />
-                      }
-                      label="Hide paid"
-                    />
-                  </FormGroup>
-                </AccordionSummary>
-                <AccordionDetails sx={styles.workOrderAccordionDetails}>
-                  <WorkOrderTable workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
-                  <WorkOrderAddFAB
-                    onClick={(activity: ActivityEnum) => {
-                      setNewWorkOrder(newWorkOrderMaker(session, userProfile, activity))
-                      setActiveModal(DialogEnum.ADD_WORKORDER)
-                    }}
-                    sessionSettings={session.sessionSettings}
-                    fabProps={{
-                      disabled: !isActive,
-                    }}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion defaultExpanded={true} disableGutters>
-                <AccordionSummary
-                  expandIcon={<ExpandMore color="inherit" />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                  sx={styles.accordionSummary}
-                >
-                  Scouting ({scountingCounts[0]}/{scountingCounts[1]})
-                  <Box sx={{ flexGrow: 1 }} />
-                  <FormGroup
-                    onClick={(e) => {
-                      e.stopPropagation()
-                    }}
-                  >
-                    <FormControlLabel
-                      sx={{ mr: 3 }}
-                      labelPlacement="start"
-                      control={
-                        <Switch
-                          color="secondary"
-                          checked={filterClosedScout}
-                          onChange={(e) => setFilterClosedScout(e.target.checked)}
-                        />
-                      }
-                      label="Hide Depleted/Abandoned"
-                    />
-                  </FormGroup>
-                </AccordionSummary>
-                <AccordionDetails sx={styles.workOrderAccordionDetails}>
-                  <Grid container spacing={3} margin={0}>
-                    {filteredScouts.map((scouting, idx) => {
-                      return (
-                        <Grid
-                          key={`scoutingfind-${idx}`}
-                          sx={{
-                            '& *': {
-                              cursor: 'pointer',
-                            },
-                          }}
-                          onClick={() => {
-                            openScoutingModal(scouting.scoutingFindId)
-                          }}
-                        >
-                          <Zoom in style={{ transitionDelay: `${200 * idx}ms` }}>
-                            <Box>
-                              <ClusterCard key={idx} scoutingFind={scouting} />
-                            </Box>
-                          </Zoom>
-                        </Grid>
-                      )
-                    })}
-                  </Grid>
-                  <ScoutingAddFAB
-                    onClick={(scoutingType) => {
-                      setNewScoutingFind(newEmptyScoutingFind(session, sessionUser, scoutingType))
-                      setActiveModal(DialogEnum.ADD_SCOUTING)
-                    }}
-                    sessionSettings={session.sessionSettings}
-                    fabProps={{
-                      disabled: !isActive,
-                    }}
-                  />
-                </AccordionDetails>
-              </Accordion>
-            </Grid>
-          </Grid>
-        </Paper>
-      </Container>
-
-      <SessionSettingsModal
-        session={session}
-        open={activeModal === DialogEnum.SESSION_PREFERENCES}
-        onModalClose={() => setActiveModal(null)}
-        userSuggest={userSuggest}
-        resetDefaultSystemSettings={resetDefaultSystemSettings}
-        resetDefaultUserSettings={resetDefaultUserSettings}
-        onChangeSession={(newSession, newSettings) => {
-          setActiveModal(null)
-          onUpdateSession(newSession, newSettings)
-        }}
-        onDeleteSession={() => {
-          setActiveModal(null)
-          deleteSession()
-        }}
-        onCloseSession={() => {
-          setActiveModal(null)
-          onCloseSession()
-        }}
-      />
+      {/* The modals start here ====================== */}
 
       <ShareModal
         open={activeModal === DialogEnum.SHARE_SESSION}
@@ -486,6 +404,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           forceTemplate
           userSuggest={userSuggest}
           isNew={true}
+          markCrewSharePaid={markCrewSharePaid}
           templateJob={session.sessionSettings?.workOrderDefaults as WorkOrderDefaults}
           workOrder={newWorkOrder as WorkOrder}
         />
@@ -498,7 +417,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
             setActiveModal(null)
             updateWorkOrder(newOrder)
           }}
-          onSetCrewSharePaid={onSetCrewSharePaid}
+          markCrewSharePaid={markCrewSharePaid}
           workOrder={activeWorkOrder as WorkOrder}
           templateJob={session.sessionSettings?.workOrderDefaults as WorkOrderDefaults}
           userSuggest={userSuggest}
@@ -591,6 +510,47 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           }}
         />
       )}
-    </>
+
+      <DeleteModal
+        title={'Permanently DELETE session?'}
+        confirmBtnText={'Yes, Delete Session!'}
+        cancelBtnText="No, keep session"
+        message={
+          <DialogContentText id="alert-dialog-description">
+            Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lots. THIS
+            IS A PERMANENT ACTION. Are you sure you want to delete this session?
+          </DialogContentText>
+        }
+        open={activeModal === DialogEnum.DELETE_SESSION}
+        onClose={() => {
+          setActiveModal(null)
+        }}
+        onConfirm={() => {
+          setActiveModal(null)
+          deleteSession && deleteSession()
+        }}
+      />
+
+      <DeleteModal
+        title={'Permanently end this session?'}
+        confirmBtnText={'Yes, End Session!'}
+        cancelBtnText="No, keep session"
+        message={
+          <DialogContentText id="alert-dialog-description">
+            Closing a session will lock it permanently. Crew shares can still be marked paid but no new jobs or scouting
+            finds can be added and no new users can join. THIS IS A PERMANENT ACTION. Are you sure you want to close
+            this session?
+          </DialogContentText>
+        }
+        open={activeModal === DialogEnum.CLOSE_SESSION}
+        onClose={() => {
+          setActiveModal(null)
+        }}
+        onConfirm={() => {
+          setActiveModal(null)
+          onCloseSession && onCloseSession()
+        }}
+      />
+    </Box>
   )
 }

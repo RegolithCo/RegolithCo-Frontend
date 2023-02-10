@@ -10,8 +10,32 @@ import { makeSessionUrls } from '../../../lib/routingUrls'
 import { useWorkOrders } from '../../../hooks/useWorkOrder'
 import { useScoutingFind } from '../../../hooks/useScouting'
 
-export const SessionPageContainer: React.FC = () => {
-  const { sessionId, orderId, scoutingFindId } = useParams()
+type ObjectValues<T> = T[keyof T]
+export const DialogEnum = {
+  SHARE_SESSION: 'SHARE_SESSION',
+  ADD_WORKORDER: 'ADD_WORKORDER',
+  LEAVE_SESSION: 'LEAVE_SESSION',
+  DELETE_SESSION: 'DELETE_SESSION',
+  CLOSE_SESSION: 'CLOSE_SESSION',
+  DOWNLOAD_SESSION: 'DOWNLOAD_SESSION',
+  ADD_SCOUTING: 'ADD_SCOUTING',
+  SESSION_PREFERENCES: 'SESSION_PREFERENCES',
+  ADD_FRIEND: 'ADD_FRIEND',
+} as const
+export type DialogEnum = ObjectValues<typeof DialogEnum>
+
+export const SessionTabs = {
+  USERS: 'users',
+  DASHBOARD: 'dash',
+  WORK_ORDERS: 'work',
+  SCOUTING: 'scout',
+  SUMMARY: 'summary',
+  SETTINGS: 'settings',
+} as const
+export type SessionTabs = ObjectValues<typeof SessionTabs>
+
+export const SessionPageContainer2: React.FC = () => {
+  const { sessionId, orderId, tab, scoutingFindId } = useParams()
   const userQry = useUserProfile()
 
   const sessionQueries = useSessions(sessionId as string)
@@ -48,6 +72,8 @@ export const SessionPageContainer: React.FC = () => {
     <SessionPage
       session={sessionQueries.session as Session}
       navigate={navigate}
+      loading={sessionQueries.loading}
+      mutating={sessionQueries.mutating}
       // User
       userProfile={userQry.userProfile as UserProfile}
       // A bit redundant but we need it
@@ -64,9 +90,13 @@ export const SessionPageContainer: React.FC = () => {
       leaveSession={sessionQueries.leaveSession}
       deleteSession={sessionQueries.deleteSession}
       // CrewShares
-      onSetCrewSharePaid={workOrderQry.setCrewSharePaid}
+      markCrewSharePaid={sessionQueries.markCrewSharePaid}
       // Work orders
       orderId={orderId}
+      activeTab={tab as SessionTabs}
+      setActiveTab={(tab: SessionTabs) => {
+        navigate(makeSessionUrls({ sessionId, tab }))
+      }}
       createWorkOrder={async (workOrder: WorkOrder) => {
         const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
           ({ scName, share, shareType, state, note }) => ({
@@ -95,11 +125,11 @@ export const SessionPageContainer: React.FC = () => {
       }}
       deleteWorkOrder={workOrderQry.deleteWorkOrder}
       openWorkOrderModal={(orderId) => {
-        navigate(makeSessionUrls({ sessionId, orderId }))
+        navigate(makeSessionUrls({ sessionId, orderId, tab }))
       }}
       createScoutingFind={sessionQueries.createScoutingFind}
       openScoutingModal={(scoutingFindId) => {
-        navigate(makeSessionUrls({ sessionId, scoutingFindId }))
+        navigate(makeSessionUrls({ sessionId, scoutingFindId, tab }))
       }}
       // Scouting finds
       scoutingFindId={scoutingFindId}

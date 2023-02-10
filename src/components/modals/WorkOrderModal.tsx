@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Box, Button, Dialog, DialogActions, SxProps, Toolbar, Typography, useTheme } from '@mui/material'
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
-import { ActivityEnum, makeHumanIds, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
+import { ActivityEnum, CrewShare, makeHumanIds, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
 import { Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
@@ -14,7 +14,7 @@ export interface WorkOrderModalProps {
   workOrder: WorkOrder
   onUpdate: (workOrder: WorkOrder) => void
   deleteWorkOrder?: () => void
-  onSetCrewSharePaid?: (scName: string, paid: boolean) => void
+  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
   allowEdit?: boolean
   allowPay?: boolean
   templateJob?: WorkOrderDefaults
@@ -98,7 +98,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
   workOrder,
   onUpdate,
   deleteWorkOrder,
-  onSetCrewSharePaid,
+  markCrewSharePaid,
   allowEdit,
   allowPay,
   templateJob,
@@ -211,7 +211,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
           {workOrder ? (
             <WorkOrderCalc
               onChange={setNewWorkOrder}
-              onSetCrewSharePaid={(scName: string, paid: boolean) => {
+              markCrewSharePaid={(crewShare: CrewShare, paid: boolean) => {
                 // IMPORTANT: if we're editing an existing work order we can set this thing as paid
                 // directly because it already exists int he database
 
@@ -221,11 +221,11 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
                   setNewWorkOrder({
                     ...newWorkOrder,
                     crewShares: (newWorkOrder.crewShares || [])?.map((share) => {
-                      if (share.scName === scName) return { ...share, paid }
+                      if (share.scName === crewShare.scName) return { ...share, paid }
                       return share
                     }),
                   })
-                } else onSetCrewSharePaid && onSetCrewSharePaid(scName, paid)
+                } else markCrewSharePaid && markCrewSharePaid(crewShare, paid)
               }}
               onDeleteCrewShare={(scName: string) => {
                 setNewWorkOrder({

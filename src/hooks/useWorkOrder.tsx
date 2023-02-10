@@ -8,8 +8,6 @@ import {
   useUpsertCrewShareMutation,
 } from '../schema'
 import {
-  CrewShare,
-  CrewShareInput,
   crewSharesToInput,
   GetWorkOrderQuery,
   OtherOrder,
@@ -32,7 +30,6 @@ type useSessionsReturn = {
   mutating: boolean
   updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
   deleteWorkOrder: () => void
-  setCrewSharePaid: (scName: string, paid: boolean) => void
   deleteCrewShare: (scName: string) => void
 }
 
@@ -162,34 +159,6 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           sessionId,
           orderId,
         },
-      })
-    },
-    setCrewSharePaid: (scName: string, paid: boolean) => {
-      const existingShare = workOrderQry.data?.workOrder?.crewShares?.find((cs) => cs.scName === scName)
-      if (!existingShare) {
-        log.error('Crew Share not found', scName)
-      }
-      const { note, share, shareType } = existingShare as CrewShare
-      const newShare: CrewShareInput = {
-        scName,
-        state: paid,
-        note,
-        share,
-        shareType,
-      }
-      upsertCrewShareMutation[0]({
-        variables: {
-          orderId,
-          sessionId,
-          crewShare: newShare,
-        },
-        optimisticResponse: () => ({
-          __typename: 'Mutation',
-          upsertCrewShare: {
-            ...(existingShare as CrewShare),
-            state: paid,
-          },
-        }),
       })
     },
     deleteCrewShare: (scName: string) => {

@@ -30,7 +30,7 @@ import { UserListItem } from '../UserListItem'
 export interface CrewShareTableProps {
   workOrder: WorkOrder
   onChange: (workOrder: WorkOrder) => void
-  onSetCrewSharePaid?: (scName: string, paid: boolean) => void
+  markCrewSharePaid?: (crewShare: CrewShare, paid: boolean) => void
   onDeleteCrewShare?: (scName: string) => void
   allowPay?: boolean
   allowEdit?: boolean
@@ -70,7 +70,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   allowEdit,
   isEditing,
   onChange,
-  onSetCrewSharePaid,
+  markCrewSharePaid,
   onDeleteCrewShare,
   templateJob,
   userSuggest,
@@ -158,7 +158,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
                   crewShares: workOrder.crewShares?.map((cs, i) => (i === idx ? newCrewShare : cs)),
                 })
               }}
-              onSetCrewSharePaid={onSetCrewSharePaid}
+              markCrewSharePaid={markCrewSharePaid}
               payoutSummary={(summary.crewShareSummary || [])[idx]}
               isEditing={isEditing}
               allowEdit={allowEdit}

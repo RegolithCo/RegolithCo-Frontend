@@ -29,7 +29,7 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -44,6 +44,7 @@ export type MutationFieldPolicy = {
 	joinScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	leaveScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	leaveSession?: FieldPolicy<any> | FieldReadFunction<any>,
+	markCrewSharePaid?: FieldPolicy<any> | FieldReadFunction<any>,
 	refreshAvatar?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeSessionCrew?: FieldPolicy<any> | FieldReadFunction<any>,

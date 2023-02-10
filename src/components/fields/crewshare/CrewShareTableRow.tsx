@@ -33,7 +33,7 @@ export type CrewShareTableRowProps = {
   isEditing?: boolean
   includeTransferFee?: boolean
   onChange: (newCrewShare: CrewShare) => void
-  onSetCrewSharePaid?: (scName: string, paid: boolean) => void
+  markCrewSharePaid?: (crewShare: CrewShare, paid: boolean) => void
   onDelete: () => void
   userSuggest?: UserSuggest
 }
@@ -51,7 +51,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   numSharesTotal,
   includeTransferFee,
   onChange,
-  onSetCrewSharePaid,
+  markCrewSharePaid,
   onDelete,
 }) => {
   const theme = useTheme()
@@ -92,7 +92,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
                 checked={paid}
                 disabled={isMe || !allowPay}
                 onChange={(e) => {
-                  onSetCrewSharePaid && onSetCrewSharePaid(crewShare.scName, e.target.checked)
+                  markCrewSharePaid && markCrewSharePaid(crewShare, e.target.checked)
                 }}
               />
             </TableCell>

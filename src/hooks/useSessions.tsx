@@ -19,8 +19,10 @@ import {
   useRemoveSessionCrewMutation,
   useUpdateSessionMutation,
   useUpsertSessionUserMutation,
+  useMarkCrewSharePaidMutation,
 } from '../schema'
 import {
+  CrewShare,
   CrewShareInput,
   DestructuredSettings,
   destructureSettings,
@@ -74,6 +76,7 @@ type useSessionsReturn = {
   updateSessionUser: (sessionUser: SessionUserInput) => void
   createWorkOrder: (workOrder: WorkOrder) => void
   createScoutingFind: (newFind: ScoutingFind) => void
+  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
   resetDefaultSystemSettings: () => void
   resetDefaultUserSettings: () => void
 }
@@ -237,6 +240,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const addSessionMentionsMutation = useAddSessionMentionsMutation()
   const removeSessionMentionsMutation = useRemoveSessionMentionsMutation()
   const removeSessionCrewMutation = useRemoveSessionCrewMutation()
+  const markCrewSharePaidMutation = useMarkCrewSharePaidMutation()
   const deleteSessionMutation = useDeleteSessionMutation({
     variables: {
       sessionId: sessionId as string,
@@ -305,6 +309,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     deleteSessionMutation,
     upsertSessionUserMutation,
     leaveSessionMutation,
+    markCrewSharePaidMutation,
     createWorkOrderMutation,
     createScoutngFindMutation,
   ]
@@ -559,6 +564,25 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
             },
           })
         },
+      })
+    },
+    // NOTE: This looks similar to "setCrewSharePaid" in useWorkOrder.ts but it's much more lightweight
+    markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => {
+      const { orderId, sessionId, scName } = crewShare
+      markCrewSharePaidMutation[0]({
+        variables: {
+          sessionId,
+          orderId,
+          scName,
+          isPaid,
+        },
+        optimisticResponse: () => ({
+          __typename: 'Mutation',
+          markCrewSharePaid: {
+            ...(crewShare as CrewShare),
+            state: isPaid,
+          },
+        }),
       })
     },
     createScoutingFind: (newFind: ScoutingFind) => {

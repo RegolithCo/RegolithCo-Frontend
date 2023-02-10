@@ -110,14 +110,14 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
             }
             setWorkOrders(newWorkOrders)
           }}
-          onSetCrewSharePaid={(scName, paid) => {
+          markCrewSharePaid={(crewShare, paid) => {
             if (!activeWorkOrder) return
             const newWorkOrders = {
               ...(workOrders ? workOrders : {}),
               [activeActivity]: {
                 ...activeWorkOrder,
                 crewShares: (activeWorkOrder.crewShares || [])?.map((share) => {
-                  if (share.scName === scName) return { ...share, state: paid }
+                  if (share.scName === crewShare.scName) return { ...share, state: paid }
                   return share
                 }),
               },

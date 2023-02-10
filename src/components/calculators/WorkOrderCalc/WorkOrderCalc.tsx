@@ -1,7 +1,14 @@
 import React, { useMemo } from 'react'
 import { SxProps, Theme, useTheme } from '@mui/material'
 
-import { calculateWorkOrder, UserSuggest, ActivityEnum, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
+import {
+  calculateWorkOrder,
+  UserSuggest,
+  ActivityEnum,
+  WorkOrder,
+  WorkOrderDefaults,
+  CrewShare,
+} from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
 import { DetailsCard } from './WorkOrderCards/DetailsCard'
@@ -11,7 +18,7 @@ import log from 'loglevel'
 export interface WorkOrderCalcProps {
   workOrder: WorkOrder
   onChange: (workOrder: WorkOrder) => void
-  onSetCrewSharePaid?: (scName: string, paid: boolean) => void
+  markCrewSharePaid?: (crewShare: CrewShare, paid: boolean) => void
   onDeleteCrewShare?: (scName: string) => void
   allowEdit?: boolean
   allowPay?: boolean

@@ -25,7 +25,21 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 }) => {
   const theme = useTheme()
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      sx={{
+        '& .MuiDialog-paper': {
+          borderRadius: 10,
+          boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+          background: theme.palette.background.default,
+          border: `10px solid ${theme.palette.primary.dark}`,
+          px: 4,
+          py: 2,
+        },
+      }}
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Typography variant="body1" component="div">

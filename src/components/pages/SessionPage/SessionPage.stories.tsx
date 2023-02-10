@@ -7,11 +7,12 @@ import {
   fakeSCNameList,
   fakeSession,
   fakeUserProfile,
+  fakeWorkOrders,
 } from '@regolithco/common/dist/mock'
-import { WorkOrder } from '@regolithco/common'
+import { SessionTabs } from './SessionPage.container'
 
 export default {
-  title: 'Pages/SessionPage',
+  title: 'Pages/SessionPage2',
   component: SessionPageComponent,
   parameters: {},
 } as ComponentMeta<typeof SessionPageComponent>
@@ -19,9 +20,12 @@ export default {
 const Template: ComponentStory<typeof SessionPageComponent> = (args) => {
   const [orderId, setActiveOrder] = React.useState<string>()
   const [scoutingFind, setScoutingFind] = React.useState<string>()
+  const [activeTab, setActiveTab] = React.useState<SessionTabs>(SessionTabs.SETTINGS)
   return (
     <SessionPageComponent
       {...args}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
       openWorkOrderModal={setActiveOrder}
       openScoutingModal={setScoutingFind}
       orderId={orderId}
@@ -34,8 +38,8 @@ export const SessionPage = Template.bind({})
 const meUser = fakeUserProfile()
 SessionPage.args = {
   session: fakeSession({
-    activeMembers: fakePaginatedSessionUserList(10),
-    mentionedUsers: fakeSCNameList(3),
+    activeMembers: fakePaginatedSessionUserList(40),
+    mentionedUsers: fakeSCNameList(40),
   }),
   verifiedMentionedUsers: {},
   userProfile: meUser,
@@ -45,7 +49,7 @@ export const Visitor = Template.bind({})
 Visitor.args = {
   session: fakeSession({
     activeMembers: fakePaginatedSessionUserList(10),
-    mentionedUsers: fakeSCNameList(3),
+    mentionedUsers: fakeSCNameList(20),
   }),
   verifiedMentionedUsers: {},
   userProfile: meUser,

@@ -1011,6 +1011,47 @@ export function useLeaveSessionMutation(baseOptions?: Apollo.MutationHookOptions
 export type LeaveSessionMutationHookResult = ReturnType<typeof useLeaveSessionMutation>;
 export type LeaveSessionMutationResult = Apollo.MutationResult<types.LeaveSessionMutation>;
 export type LeaveSessionMutationOptions = Apollo.BaseMutationOptions<types.LeaveSessionMutation, types.LeaveSessionMutationVariables>;
+export const MarkCrewSharePaidDocument = gql`
+    mutation markCrewSharePaid($sessionId: ID!, $orderId: ID!, $scName: String!, $isPaid: Boolean!) {
+  markCrewSharePaid(
+    sessionId: $sessionId
+    orderId: $orderId
+    scName: $scName
+    isPaid: $isPaid
+  ) {
+    ...CrewShareFragment
+  }
+}
+    ${CrewShareFragmentFragmentDoc}`;
+export type MarkCrewSharePaidMutationFn = Apollo.MutationFunction<types.MarkCrewSharePaidMutation, types.MarkCrewSharePaidMutationVariables>;
+
+/**
+ * __useMarkCrewSharePaidMutation__
+ *
+ * To run a mutation, you first call `useMarkCrewSharePaidMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkCrewSharePaidMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markCrewSharePaidMutation, { data, loading, error }] = useMarkCrewSharePaidMutation({
+ *   variables: {
+ *      sessionId: // value for 'sessionId'
+ *      orderId: // value for 'orderId'
+ *      scName: // value for 'scName'
+ *      isPaid: // value for 'isPaid'
+ *   },
+ * });
+ */
+export function useMarkCrewSharePaidMutation(baseOptions?: Apollo.MutationHookOptions<types.MarkCrewSharePaidMutation, types.MarkCrewSharePaidMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.MarkCrewSharePaidMutation, types.MarkCrewSharePaidMutationVariables>(MarkCrewSharePaidDocument, options);
+      }
+export type MarkCrewSharePaidMutationHookResult = ReturnType<typeof useMarkCrewSharePaidMutation>;
+export type MarkCrewSharePaidMutationResult = Apollo.MutationResult<types.MarkCrewSharePaidMutation>;
+export type MarkCrewSharePaidMutationOptions = Apollo.BaseMutationOptions<types.MarkCrewSharePaidMutation, types.MarkCrewSharePaidMutationVariables>;
 export const UpsertCrewShareDocument = gql`
     mutation upsertCrewShare($sessionId: ID!, $orderId: ID!, $crewShare: CrewShareInput!) {
   upsertCrewShare(sessionId: $sessionId, orderId: $orderId, crewShare: $crewShare) {

@@ -42,7 +42,7 @@ import { MentionedUserList } from '../fields/MentionedUserList'
 import { pick } from 'lodash'
 import { fontFamilies } from '../../theme'
 import { Theme } from '@mui/system'
-import { SessionSettingsTab } from './SessionPage2/TabSettings'
+import { SessionSettingsTab } from './SessionPage/TabSettings'
 
 type ObjectValues<T> = T[keyof T]
 export const ProfileModals = {
@@ -66,6 +66,12 @@ export interface ProfilePageProps {
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  pageWrapper: {
+    '&>.MuiPaper-root': {},
+    [theme.breakpoints.up('md')]: {
+      ml: '5%',
+    },
+  },
   container: {
     py: 3,
   },
@@ -138,21 +144,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'sm'
 
   return (
-    <PageWrapper title="User Profile" loading={loading} maxWidth={maxWidth} sx={{ marginLeft: '5%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        {mediumUp && (
-          <Tabs
-            value={activeTab}
-            onChange={(_, newValue) => {
-              setActiveTab(newValue)
-            }}
-            sx={styles.sessionTabs}
-          >
-            <Tab label="Profile" value={ProfileTabsEnum.PROFILE} />
-            <Tab label="Friends" value={ProfileTabsEnum.FRIENDS} />
-            <Tab label="Session Defaults" value={ProfileTabsEnum.SESSION_DEFAULTS} />
-          </Tabs>
-        )}
+    <PageWrapper title="User Profile" loading={loading} maxWidth={maxWidth} sx={styles.pageWrapper}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
+        <Tabs
+          value={activeTab}
+          onChange={(_, newValue) => {
+            setActiveTab(newValue)
+          }}
+          sx={styles.sessionTabs}
+        >
+          <Tab label="Profile" value={ProfileTabsEnum.PROFILE} />
+          <Tab label="Friends" value={ProfileTabsEnum.FRIENDS} />
+          <Tab label="Session Defaults" value={ProfileTabsEnum.SESSION_DEFAULTS} />
+        </Tabs>
       </Box>
       <Box sx={styles.container}>
         {/* Profile Tab */}
@@ -167,18 +171,23 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <Box
                   sx={{
                     display: 'flex',
-                    p: 2,
                     color: theme.palette.getContrastText(yellow[600]),
                     background: yellow[600],
                     border: '4px solid pink',
                     borderImage: `repeating-linear-gradient(
-                  -45deg,
-                  #000,
-                  #000 10px,
-                  #ffb101 10px,
-                  #ffb101 20px
-                ) 10`,
-                    fontSize: 40,
+                        -45deg,
+                        #000,
+                        #000 10px,
+                        #ffb101 10px,
+                        #ffb101 20px
+                      ) 10`,
+                    p: 1,
+                    flexDirection: 'column',
+                    [theme.breakpoints.up('md')]: {
+                      flexDirection: 'row',
+                      p: 2,
+                      fontSize: 40,
+                    },
                     lineHeight: 1,
                     fontWeight: 'bold',
                     textAlign: 'center',
@@ -382,7 +391,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 Friends ({userProfile.friends.length})
               </Typography>
               <Typography paragraph variant="body2" sx={{ p: 1, px: 2 }}>
-                Add your the names of people you mine with so that they are easy to add to your sessions.
+                Add your the names of people you mine with regularly so they are easy to add to your sessions.
               </Typography>
               <Box sx={styles.sectionBody}>
                 <MentionedUserList
@@ -392,11 +401,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   addToList={addFriend}
                   removeFriend={removeFriend}
                 />
-                <Typography paragraph variant="body2" sx={{ p: 1, pt: 3, px: 2 }}>
-                  <em>
-                    Note: This is not linked up in any way. Friends do not have to be in this system to add them. It is
-                    simply here to populate the dropdown menus for shares on Work orders (for now).
-                  </em>
+                <Typography paragraph variant="caption" sx={{ p: 1, pt: 3, px: 2 }} component="div">
+                  NOTES:
+                  <ul>
+                    <li>Friends are not notified and this is not linked to their account in any way.</li>
+                    <li>Friends do not have to be in this system to add them.</li>
+                    <li>
+                      This is simply here as a convenience to populate the dropdown menus for shares on Work orders (for
+                      now).
+                    </li>
+                  </ul>
                 </Typography>
               </Box>
             </Box>

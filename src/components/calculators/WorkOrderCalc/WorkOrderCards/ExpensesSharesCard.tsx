@@ -31,7 +31,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   allowPay,
   isEditing,
   onChange,
-  onSetCrewSharePaid,
+  markCrewSharePaid,
   onDeleteCrewShare,
   userSuggest,
   templateJob,
@@ -168,7 +168,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           allowPay={allowPay}
           templateJob={templateJob}
           onChange={onChange}
-          onSetCrewSharePaid={onSetCrewSharePaid}
+          markCrewSharePaid={markCrewSharePaid}
           onDeleteCrewShare={onDeleteCrewShare}
           workOrder={workOrder}
           summary={summary}
