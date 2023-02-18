@@ -21,7 +21,7 @@ import {
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
-import log from 'loglevel'
+// import log from 'loglevel'
 
 type useSessionsReturn = {
   workOrder?: WorkOrder

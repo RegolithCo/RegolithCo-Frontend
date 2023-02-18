@@ -64,14 +64,25 @@ export const darkOptions: ThemeOptions = {
     },
     MuiCssBaseline: {
       styleOverrides: {
-        'body>#root': {
-          height: '100%',
+        'body *::-webkit-scrollbar': {
+          display: 'none', // Safari and Chrome scrollbars turn off
+        },
+        'body *': {
+          '-ms-overflow-style': 'none', // IE 10+ scrollbars turn off
+          scrollbarWidth: 'none', // Firefox scrollbars turn off
         },
         html: {
           height: '100%',
         },
         body: {
           height: '100%',
+        },
+        // This is our app container
+        'body>#root': {
+          height: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
         },
       },
     },
