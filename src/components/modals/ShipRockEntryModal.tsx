@@ -59,14 +59,14 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       borderRadius: 4,
       position: 'relative',
       outline: `10px solid ${theme.palette.primary.contrastText}`,
-      border: `10px solid ${theme.palette.primary.dark}`,
+      border: `10px solid ${theme.palette.primary.main}`,
     },
   },
   dialogContent: {
     py: 1,
     px: 2,
     borderRadius: 3,
-    outline: `10px solid ${theme.palette.primary.dark}`,
+    outline: `10px solid ${theme.palette.primary.main}`,
   },
   headTitles: {
     // fontFamily: fontFamilies.robotoMono,
@@ -82,7 +82,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   headerBar: {
     color: theme.palette.primary.contrastText,
-    background: theme.palette.primary.dark,
+    background: theme.palette.primary.main,
     display: 'flex',
     justifyContent: 'space-between',
     px: 2,
@@ -138,8 +138,8 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     width: 50,
     position: 'absolute',
     zIndex: 100,
-    border: `8px solid ${theme.palette.primary.dark}`,
-    color: theme.palette.primary.dark,
+    border: `8px solid ${theme.palette.primary.main}`,
+    color: theme.palette.primary.main,
     background: 'black',
     borderRadius: '50%',
   },
@@ -346,7 +346,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             ))}
           </Box>
         </DialogContent>
-        <DialogActions sx={{ background: theme.palette.primary.dark }}>
+        <DialogActions sx={{ background: theme.palette.primary.main }}>
           <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
             <Button color="error" onClick={onClose} variant="contained" startIcon={<Cancel />}>
               Cancel

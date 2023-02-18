@@ -70,7 +70,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     display: 'flex',
     flex: '1 1',
     flexDirection: 'column',
-    overflowX: { md: 'hidden', sm: 'scroll' },
+    overflowX: 'hidden',
     overflow: { md: 'scroll' },
   },
   table: {

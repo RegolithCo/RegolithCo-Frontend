@@ -80,7 +80,7 @@ export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSetting
       onOpen={() => setOpen(true)}
       open={open}
       FabProps={{
-        color: 'primary',
+        color: 'secondary',
         ...fabProps,
       }}
       sx={{

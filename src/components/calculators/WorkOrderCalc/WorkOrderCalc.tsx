@@ -20,6 +20,7 @@ export interface WorkOrderCalcProps {
   onChange: (workOrder: WorkOrder) => void
   markCrewSharePaid?: (crewShare: CrewShare, paid: boolean) => void
   onDeleteCrewShare?: (scName: string) => void
+  failWorkOrder?: (reason?: string) => void
   allowEdit?: boolean
   allowPay?: boolean
   isEditing?: boolean

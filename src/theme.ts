@@ -1,7 +1,7 @@
-import { grey, orange, purple, yellow } from '@mui/material/colors'
+import { grey, orange, purple, red, yellow } from '@mui/material/colors'
 import { createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
 import { Theme } from '@mui/material'
-import { ScoutingFindStateEnum } from '@regolithco/common'
+import { ScoutingFindStateEnum, WorkOrderStateEnum } from '@regolithco/common'
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -28,7 +28,7 @@ export const fontFamilies = {
 export const darkOptions: ThemeOptions = {
   palette: {
     mode: 'dark',
-    primary: yellow,
+    primary: { main: '#fbc02d' },
     secondary: orange,
     text: {
       // primary: '#FFFFAA',
@@ -68,7 +68,7 @@ export const darkOptions: ThemeOptions = {
           display: 'none', // Safari and Chrome scrollbars turn off
         },
         'body *': {
-          '-ms-overflow-style': 'none', // IE 10+ scrollbars turn off
+          msOverflowStyle: 'none', // IE 10+ scrollbars turn off
           scrollbarWidth: 'none', // Firefox scrollbars turn off
         },
         html: {
@@ -119,7 +119,7 @@ const scoutingFindStateColors: Record<ScoutingFindStateEnum, PaletteOptions> = {
     secondary: orange,
   },
   [ScoutingFindStateEnum.ReadyForWorkers]: {
-    primary: yellow,
+    primary: { main: '#fbc02d' },
     secondary: orange,
   },
   [ScoutingFindStateEnum.Working]: {
@@ -142,4 +142,29 @@ export const scoutingFindStateThemes: Record<ScoutingFindStateEnum, Theme> = Obj
     }),
   }),
   {} as Record<ScoutingFindStateEnum, Theme>
+)
+
+const workOrderStateColors: Record<WorkOrderStateEnum, PaletteOptions> = {
+  [WorkOrderStateEnum.Done]: {},
+  [WorkOrderStateEnum.Failed]: {
+    primary: { main: '#ff8e77' },
+    secondary: { main: '#ff8e77' },
+  },
+  [WorkOrderStateEnum.RefiningComplete]: {},
+  [WorkOrderStateEnum.RefiningStarted]: {},
+  [WorkOrderStateEnum.Unknown]: {},
+}
+
+export const workOrderStateThemes: Record<WorkOrderStateEnum, Theme> = Object.entries(workOrderStateColors).reduce(
+  (acc, [key, value]) => ({
+    ...acc,
+    [key]: createTheme({
+      ...darkOptions,
+      palette: {
+        ...darkOptions.palette,
+        ...value,
+      },
+    }),
+  }),
+  {} as Record<WorkOrderStateEnum, Theme>
 )

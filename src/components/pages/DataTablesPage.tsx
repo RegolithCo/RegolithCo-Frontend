@@ -58,7 +58,7 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
         sx={{
           mb: 2,
           width: '100%',
-          overflow: 'hidden',
+          // overflow: 'hidden',
           '& .MuiTab-root': {},
         }}
         onChange={(event: React.SyntheticEvent, newValue: DataTabsEnum) => {

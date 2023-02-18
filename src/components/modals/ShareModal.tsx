@@ -2,7 +2,8 @@ import * as React from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
 import { ShareUrlField } from '../fields/ShareUrlField'
-import { Share, ShareLocation } from '@mui/icons-material'
+import { Share } from '@mui/icons-material'
+import { fontFamilies } from '../../theme'
 
 export interface ShareModalProps {
   open: boolean
@@ -14,13 +15,29 @@ export interface ShareModalProps {
 export const ShareModal: React.FC<ShareModalProps> = ({ open, url, warn, onClose }) => {
   const theme = useTheme()
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      sx={{
+        '& .MuiDialog-paper': {
+          borderRadius: 10,
+          boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+          background: theme.palette.background.default,
+          border: `10px solid ${theme.palette.primary.main}`,
+          // px: 4,
+          // py: 2,
+        },
+      }}
+    >
       <DialogTitle
         sx={{
           position: 'relative',
-          backgroundColor: theme.palette.secondary.main,
-          color: theme.palette.secondary.contrastText,
-          paddingLeft: 10,
+          fontFamily: fontFamilies.robotoMono,
+          fontWeight: 'bold',
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          textAlign: 'center',
           mb: 2,
         }}
       >
@@ -32,7 +49,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, url, warn, onClose
             top: 15,
           }}
         />
-        Session Sharing
+        Share this session
       </DialogTitle>
       <DialogContent>
         {warn ? (

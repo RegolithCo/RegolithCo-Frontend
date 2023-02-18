@@ -8,11 +8,11 @@ import {
   UserProfile,
   VerifiedUserLookup,
 } from '@regolithco/common'
-import { Box, SxProps, Theme, Typography, useTheme } from '@mui/material'
+import { Box, Stack, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { DialogEnum } from './SessionPage.container'
 import { ActiveUserList } from '../../fields/ActiveUserList'
-import { ExpandMore } from '@mui/icons-material'
+import { ExpandMore, HelpOutline, Info, QuestionAnswer } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { MentionedUserList } from '../../fields/MentionedUserList'
 
@@ -39,41 +39,19 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   gridContainer: {},
   gridColumn: {},
   drawerAccordionSummary: {
-    // fontFamily: fontFamilies.robotoMono,
-    // fontWeight: 'bold',
-    // color: theme.palette.secondary.main,
+    '& .MuiTypography-root': {
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+    },
+    color: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.secondary.main,
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      color: theme.palette.secondary.contrastText,
+    },
   },
   drawerAccordionDetails: {
     p: 0,
     pb: 2,
-  },
-  accordionSummary: {
-    fontFamily: fontFamilies.robotoMono,
-    fontWeight: 'bold',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.8rem',
-      lineHeight: 1,
-    },
-    px: 1,
-    '& .MuiAccordionSummary-expandIconWrapper': {
-      // color: theme.palette.primary.contrastText,
-    },
-    '& .MuiSwitch-root': {
-      marginTop: -1,
-      marginBottom: -1,
-    },
-    '& .MuiFormGroup-root .MuiTypography-root': {
-      fontSize: '0.7em',
-    },
-    '& .MuiSwitch-thumb, & .MuiSwitch-track': {
-      backgroundColor: '#666666!important',
-      border: `1px solid #444444`,
-    },
-    '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb,& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-track': {
-      backgroundColor: isActive ? theme.palette.primary.dark + '!important' : '#999999!important',
-      border: `1px solid ${isActive ? theme.palette.primary.dark + '!important' : '#3b3b3b!important'}`,
-    },
-    [theme.breakpoints.up('md')]: {},
   },
   paper: {},
 })
@@ -109,8 +87,8 @@ export const TabUsers: React.FC<TabUsersProps> = ({
     <>
       <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
         <Accordion defaultExpanded={true} disableGutters>
-          <AccordionSummary expandIcon={<ExpandMore color="inherit" />} sx={styles.drawerAccordionSummary}>
-            Session Members: ({session.activeMembers?.items?.length})
+          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummary}>
+            <Typography>Session Members: ({session.activeMembers?.items?.length})</Typography>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <ActiveUserList
@@ -126,12 +104,33 @@ export const TabUsers: React.FC<TabUsersProps> = ({
         </Accordion>
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary
-            expandIcon={<ExpandMore color="inherit" />}
+            expandIcon={<ExpandMore />}
             aria-controls="panel1a-content"
             id="panel1a-header"
-            sx={{ ...styles.drawerAccordionSummary }}
+            sx={styles.drawerAccordionSummary}
           >
-            Mentioned: ({session.mentionedUsers?.length})
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
+              <Typography sx={{ flexGrow: 1 }}>Mentioned: ({session.mentionedUsers?.length})</Typography>
+              <Tooltip
+                title={
+                  <>
+                    <Typography paragraph variant="caption">
+                      "Mentioned" users haven't joined the session yet (Or they don't want to). But mentioning them
+                      means you can still track what you owe them.
+                    </Typography>
+                    <Typography paragraph variant="caption">
+                      When users with the same name log in they become "Session Members".
+                    </Typography>
+                    <Typography paragraph variant="caption">
+                      If you have enabled the session setting <strong>"Require joining users to be "Mentioned"</strong>{' '}
+                      then only users that are mentioned can join this session, even if they have the share link.
+                    </Typography>
+                  </>
+                }
+              >
+                <HelpOutline />
+              </Tooltip>
+            </Stack>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <MentionedUserList
@@ -144,19 +143,6 @@ export const TabUsers: React.FC<TabUsersProps> = ({
               removeFromList={isActive ? (scName: string) => removeSessionMentions([scName]) : undefined}
             />
           </AccordionDetails>
-          <Typography
-            variant="caption"
-            component="div"
-            sx={{
-              m: 3,
-              border: '1px solid',
-              borderRadius: 3,
-              p: 2,
-            }}
-          >
-            "Mentioned" means this name has been added to a work order or added explicitly to this list by the session
-            owner. When users with this name join the session they become "Session Members".
-          </Typography>
         </Accordion>
       </Box>
     </>

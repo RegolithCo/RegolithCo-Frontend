@@ -48,17 +48,25 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   table: {
     '& .MuiTableCell-root': {
       whiteSpace: 'nowrap',
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
     },
     '& .MuiTableBody-root .MuiTableRow-root:nth-of-type(odd) .MuiTableCell-root': {
       backgroundColor: '#00000055',
     },
   },
+  tableHead: {
+    '& .MuiTableCell-root': {
+      backgroundColor: theme.palette.primary.light,
+      color: theme.palette.primary.contrastText,
+      borderBottom: '2px solid',
+    },
+  },
   footer: {
     '& .MuiTableCell-root': {
       fontSize: '0.8rem',
-      fontFamily: fontFamilies.robotoMono,
-      fontWeight: 'bold',
-      color: theme.palette.primary.dark,
+      color: theme.palette.secondary.main,
+      backgroundColor: '#160800d8',
       borderTop: '2px solid',
       whiteSpace: 'nowrap',
       borderBottom: 'none',
@@ -92,13 +100,13 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
     >
       <Table size="small" stickyHeader>
         <TableHead>
-          <TableRow>
-            <TableCell>Type</TableCell>
+          <TableRow sx={styles.tableHead}>
+            <TableCell align="center">Type</TableCell>
             <TableCell>Order Id</TableCell>
-            <TableCell>State</TableCell>
+            <TableCell align="center">State</TableCell>
             <TableCell>Ores</TableCell>
-            <TableCell align="right">
-              <Tooltip title="Stakeholders">
+            <TableCell align="center">
+              <Tooltip title="Crew Shares">
                 <Diversity3 />
               </Tooltip>
             </TableCell>
@@ -218,7 +226,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
 
   return (
     <TableRow key={workOrder.orderId} onClick={() => openWorkOrderModal(workOrder.orderId)} sx={{ cursor: 'pointer' }}>
-      <TableCell>
+      <TableCell align="center">
         <Tooltip title={getActivityName(workOrder.orderType)}>
           <OrderIcon />
         </Tooltip>
@@ -226,11 +234,13 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       <TableCell>
         <MValue value={makeHumanIds(workOrder.owner?.scName, workOrder.orderId)} format={MValueFormat.string} />
       </TableCell>
-      <TableCell>
+      {/* State */}
+      <TableCell align="center">
         <Tooltip title={workOrder.state}>{stateIcon}</Tooltip>
       </TableCell>
       <TableCell>{oreNames}</TableCell>
-      <TableCell align="right">{workOrder.crewShares?.length || 0}</TableCell>
+      {/* crew shares */}
+      <TableCell align="center">{workOrder.crewShares?.length || 0}</TableCell>
       <TableCell align="right">
         {workOrder.orderType === ActivityEnum.Other ? (
           'N/A'

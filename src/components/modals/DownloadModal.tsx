@@ -32,13 +32,13 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
           width: 400,
           bgcolor: 'background.paper',
           borderRadius: 10,
-          border: `10px solid ${theme.palette.primary.dark}`,
-          boxShadow: 24,
+          boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+          border: `10px solid ${theme.palette.primary.main}`,
           p: 4,
         }}
       >
         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-          <Avatar sx={{ background: theme.palette.primary.dark }}>
+          <Avatar sx={{ background: theme.palette.primary.main }}>
             <CloudDownload color="inherit" />
           </Avatar>
           <Typography id="modal-modal-title" variant="h6" component="h2">

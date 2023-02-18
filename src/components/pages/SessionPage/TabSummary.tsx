@@ -78,8 +78,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontWeight: 'bold',
   },
   container: {
-    px: 2,
-    py: 2,
     backgroundColor: '#0e0c1baa',
     position: 'relative',
     '& .MuiAccordion-root': {
@@ -94,13 +92,19 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   section: {},
   sectionTitle: {
-    p: 1,
-    fontSize: '1rem',
+    px: 2,
+    py: 0.65,
+    background: '#121115aa',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    fontSize: '1.2rem',
     lineHeight: 2,
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.8rem',
+      lineHeight: 1,
+    },
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
-    background: '#121115aa',
-    borderBottom: '1px solid',
   },
   sectionBody: {
     py: 1,
@@ -140,8 +144,8 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
       <List
         sx={{
           // Make every other row a different color
-          '& .MuiListItem-root:nth-of-type(odd)': {
-            background: '#00000022',
+          '& .MuiListItem-container:nth-of-type(odd)': {
+            background: '#00000044',
           },
         }}
       >
@@ -192,9 +196,9 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
           </ListItemSecondaryAction>
         </ListItem>
       </List>
-
+      <Box sx={{ mb: 2 }} />
       {/* Unpaid Crew Shares */}
-      <Typography sx={styles.sectionTitle}>Unpaid</Typography>
+      <Typography sx={styles.sectionTitle}>Unpaid Crew Shares</Typography>
       <OwingList
         isPaid={false}
         mutating={mutating}
@@ -204,9 +208,10 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
         sessionSummary={sessionSummary}
         sessionUser={sessionUser}
       />
+      <Box sx={{ mb: 2 }} />
 
       {/* Paid Crew Shares */}
-      <Typography sx={styles.sectionTitle}>Paid</Typography>
+      <Typography sx={styles.sectionTitle}>Paid Crew Shares</Typography>
       <OwingList
         isPaid={true}
         mutating={mutating}
@@ -297,6 +302,14 @@ const OwingList: React.FC<OwingListProps> = ({
     // Else do alphabetical locale
     return a[0].localeCompare(b[0])
   })
+
+  if (rowArr.length === 0) {
+    return (
+      <Typography variant="body1" component="div" sx={{ px: 2, py: 1 }}>
+        No {isPaid ? 'paid' : 'unpaid'} crew shares
+      </Typography>
+    )
+  }
 
   return (
     <List

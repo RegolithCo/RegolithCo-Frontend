@@ -63,13 +63,13 @@ export const WorkOrderTypeChooser: React.FC<WorkOrderTypeChooserProps> = ({
         '& .MuiToggleButton-root.Mui-selected': {
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
-          border: `1px solid ${theme.palette.primary.dark}`,
+          border: `1px solid ${theme.palette.primary.main}`,
           boxShadow: `0px 0px 10px 5px ${theme.palette.secondary.light}`,
         },
         '& .MuiToggleButton-root.Mui-selected:hover': {
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
-          border: `1px solid ${theme.palette.primary.dark}`,
+          border: `1px solid ${theme.palette.primary.main}`,
           boxShadow: `0px 0px 15px 5px ${theme.palette.secondary.light}`,
         },
       }}

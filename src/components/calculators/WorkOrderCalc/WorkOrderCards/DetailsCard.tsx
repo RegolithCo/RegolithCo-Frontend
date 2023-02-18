@@ -19,6 +19,7 @@ import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import { ExpandMore, Help } from '@mui/icons-material'
 import { ReferenceTables } from './ReferenceTables'
+import { WorkOrderFailModal } from '../../../modals/WorkOrderFailModal'
 
 export type DetailsCardProps = WorkOrderCalcProps
 
@@ -26,11 +27,13 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
   workOrder,
   onChange,
   allowEdit,
+  failWorkOrder,
   isEditing,
   templateJob,
   sx,
 }) => {
   const theme = useTheme()
+  const [isFailModalOpen, setIsFailModalOpen] = React.useState(false)
   const shipOrder = workOrder as ShipMiningOrder
 
   // Convenience checked functions
@@ -162,22 +165,45 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
             />
           </Tooltip>
         </FormGroup>
-        {!workOrder.state && workOrder.state !== WorkOrderStateEnum.Unknown && (
+
+        <Tooltip
+          placement="right"
+          title={
+            <>
+              <Typography variant="body1" gutterBottom>
+                Set this job as failed to indicate you won't be able to pay your crew.
+              </Typography>
+            </>
+          }
+        >
           <>
-            <Typography variant="overline" sx={{ mt: 1 }}>
-              Current State
-            </Typography>
-            <Typography>{workOrder.state}</Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={Boolean(workOrder.state === WorkOrderStateEnum.Failed)}
+                  disabled={!isEditing}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    if (event.target.checked) {
+                      setIsFailModalOpen(true)
+                    } else {
+                      // Un-fail please
+                      failWorkOrder && failWorkOrder()
+                    }
+                  }}
+                />
+              }
+              label="Work order failed"
+            />
+            {workOrder.failReason && (
+              <Box>
+                <Typography variant="overline" sx={{ mt: 1, color: theme.palette.error.main }}>
+                  Fail Reason:
+                </Typography>
+                <Typography color="error">{workOrder.failReason}</Typography>
+              </Box>
+            )}
           </>
-        )}
-        {workOrder.failReason && (
-          <>
-            <Typography variant="overline" sx={{ mt: 1 }}>
-              Reason for Failure (optional)
-            </Typography>
-            <Typography>{workOrder.failReason}</Typography>
-          </>
-        )}
+        </Tooltip>
 
         {/* Helpful tips and tricks */}
         {isEditing && (
@@ -250,6 +276,13 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
         )}
         <ReferenceTables activity={workOrder.orderType} />
       </CardContent>
+      <WorkOrderFailModal
+        open={isFailModalOpen}
+        onClose={() => setIsFailModalOpen(false)}
+        onChoose={(reason: string) => {
+          failWorkOrder && failWorkOrder(reason)
+        }}
+      />
     </Card>
   )
 }

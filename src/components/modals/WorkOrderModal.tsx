@@ -1,8 +1,26 @@
 import * as React from 'react'
-import { Box, Button, Dialog, DialogActions, SxProps, Toolbar, Typography, useTheme } from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  SxProps,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
-import { ActivityEnum, CrewShare, makeHumanIds, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
+import {
+  ActivityEnum,
+  CrewShare,
+  makeHumanIds,
+  UserSuggest,
+  WorkOrder,
+  WorkOrderDefaults,
+  WorkOrderStateEnum,
+} from '@regolithco/common'
 import { Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
@@ -12,9 +30,10 @@ import { DeleteModal } from './DeleteModal'
 export interface WorkOrderModalProps {
   open: boolean
   workOrder: WorkOrder
-  onUpdate: (workOrder: WorkOrder) => void
+  onUpdate: (workOrder: WorkOrder, setFail?: boolean) => void
   deleteWorkOrder?: () => void
   markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
+  failWorkOrder?: (reason?: string) => void
   allowEdit?: boolean
   allowPay?: boolean
   templateJob?: WorkOrderDefaults
@@ -40,7 +59,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       },
       backgroundColor: '#282828',
       backgroundImage: 'none',
-      border: `2px solid ${theme.palette.primary.dark}`,
+      border: `2px solid ${theme.palette.primary.main}`,
     },
   },
   containerBox: {
@@ -84,8 +103,8 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     width: 50,
     position: 'absolute',
     zIndex: 100,
-    border: `5px solid ${theme.palette.primary.dark}`,
-    color: theme.palette.primary.dark,
+    border: `5px solid ${theme.palette.primary.main}`,
+    color: theme.palette.primary.main,
 
     background: theme.palette.primary.contrastText,
     borderRadius: '50%',
@@ -102,6 +121,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
   allowEdit,
   allowPay,
   templateJob,
+  failWorkOrder,
   forceTemplate,
   userSuggest,
   onClose,
@@ -111,6 +131,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const styles = styleThunk(theme)
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
   React.useEffect(() => {
     setNewWorkOrder(workOrder)
@@ -118,7 +139,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
 
   const pulse = keyframes`
   0% { color:  ${theme.palette.secondary.contrastText}; }
-  70% { color:  ${theme.palette.secondary.dark}; }
+  70% { color:  ${theme.palette.secondary.main}; }
   100% { color: ${theme.palette.warning.contrastText}; }
 `
   const pulseCssThunk = (doPulse: boolean): SxProps<Theme> => ({
@@ -166,7 +187,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
             zIndex: 20,
             flex: '0 0',
             fontFamily: fontFamilies.robotoMono,
-            bgcolor: theme.palette.primary.dark,
+            bgcolor: theme.palette.primary.main,
             color: theme.palette.primary.contrastText,
             // mb: 2,
           }}
@@ -186,6 +207,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
               }}
             >
               {title}
+              {mediumUp && workOrder?.state === WorkOrderStateEnum.Failed ? ' <FAILED>' : ''}
             </Typography>
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
               <Box sx={styles.headerMeta}>ID: {makeHumanIds(workOrder.owner?.scName, workOrder.orderId)}</Box>
@@ -211,6 +233,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
           {workOrder ? (
             <WorkOrderCalc
               onChange={setNewWorkOrder}
+              failWorkOrder={failWorkOrder}
               markCrewSharePaid={(crewShare: CrewShare, paid: boolean) => {
                 // IMPORTANT: if we're editing an existing work order we can set this thing as paid
                 // directly because it already exists int he database
@@ -245,7 +268,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
           )}
         </Box>
 
-        <DialogActions sx={{ backgroundColor: theme.palette.primary.dark, flex: '0 0' }}>
+        <DialogActions sx={{ backgroundColor: theme.palette.primary.main, flex: '0 0' }}>
           <Button
             color="error"
             variant="contained"
@@ -278,7 +301,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
               onClick={() => {
                 onUpdate(newWorkOrder)
                 isEditing && setIsEditing(false)
-                isEditing && onClose()
+                // isEditing && onClose()
               }}
             >
               {isNew ? 'Create' : 'Save'}

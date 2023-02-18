@@ -49,19 +49,26 @@ export interface TabDashboardProps {
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
     '& .MuiAccordion-root': {
-      backgroundColor: '#0e0c1baa',
       position: 'relative',
+    },
+    '& .MuiAccordion-root .MuiCollapse-root': {
+      backgroudColor: '#0e0c1baa',
     },
     '& .MuiAccordionDetails-root': {
       p: 0,
       pb: 8,
       position: 'relative',
+      backgroundColor: '#0e0c1baa',
+    },
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      color: theme.palette.primary.contrastText,
     },
     '& .MuiAccordionSummary-content': {
       m: 0,
     },
-    '& .MuiTable-root': {
-      background: '#12111555',
+    '& .MuiAccordionSummary-content .MuiFormControlLabel-root .MuiTypography-root': {
+      fontStyle: 'italic',
+      fontSize: '0.7rem',
     },
   },
   section: {},
@@ -69,18 +76,17 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '&::before': {
       content: '""',
     },
-    // fontFamily: fontFamilies.robotoMono,
-    fontSize: '1rem',
+    fontSize: '1.2rem',
     lineHeight: 2,
     [theme.breakpoints.down('sm')]: {
       fontSize: '0.8rem',
       lineHeight: 1,
     },
-    // color: theme.palette.primary.dark,
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
     background: '#121115aa',
-    // borderBottom: '2px solid',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
   },
   sectionBody: {
     py: 1,
@@ -197,7 +203,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
             minHeight: 300,
           }}
         >
-          <Grid container spacing={3} margin={0}>
+          <Grid container spacing={3} margin={0} sx={{ mt: 3 }}>
             {filteredScouts.map((scouting, idx) => {
               return (
                 <Grid

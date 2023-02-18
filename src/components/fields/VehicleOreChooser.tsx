@@ -17,7 +17,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
   const theme = useTheme()
   const vehicleRowKeys = Object.values(VehicleOreEnum)
   const bgColors = new Gradient()
-    .setColorGradient(theme.palette.secondary.dark, theme.palette.primary.light)
+    .setColorGradient(theme.palette.secondary.main, theme.palette.primary.light)
     .setMidpoint(vehicleRowKeys.length) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
@@ -69,7 +69,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
                   sm: 10,
                   md: 10,
                 },
-                opacity: 0.3,
+                opacity: 0.7,
                 p: 0,
                 '&:hover': {
                   color: 'white',

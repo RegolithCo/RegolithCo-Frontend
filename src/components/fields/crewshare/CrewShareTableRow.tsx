@@ -12,7 +12,7 @@ import {
   Box,
   useTheme,
 } from '@mui/material'
-import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum } from '@regolithco/common'
+import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum, ShareTypeToolTip } from '@regolithco/common'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Delete, Description, NoteAdd } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
 import numeral from 'numeral'
@@ -75,7 +75,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   return (
     <>
       <Tooltip title={tooltip}>
-        <TableRow sx={{ background: backgroundColor, '& *': { color: fgColor } }}>
+        <TableRow sx={{ background: backgroundColor }}>
           {isMe && <TableCell>{crewShare.scName}</TableCell>}
           {!isMe && <TableCell>{crewShare.scName}</TableCell>}
 
@@ -85,6 +85,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           {isMe ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
 
           <Tooltip
+            placement="right-end"
             title={isMe ? 'This is you. You are always paid.' : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`}
           >
             <TableCell align="center" padding="none" width={30}>
@@ -100,7 +101,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
 
           <TableCell align="center" padding="none" width={30}>
             {(!isEditing || isMandatory) && hasNote && (
-              <Tooltip title={`NOTE: ${crewShare.note}`}>
+              <Tooltip title={`NOTE: ${crewShare.note}`} placement="right-end">
                 <div>
                   <Description color="primary" />
                 </div>
@@ -192,9 +193,11 @@ const formatCrewShareTypeEdit = (
 const formatCrewShareType = (crewShare: CrewShare): React.ReactElement => {
   const shareIcon = crewShareTypeIcons[crewShare.shareType]
   return (
-    <TableCell align="right" valign="middle" padding="none">
-      {shareIcon}
-    </TableCell>
+    <Tooltip title={`Share type: ${ShareTypeToolTip[crewShare.shareType]}`} placement="left-start">
+      <TableCell align="right" valign="middle" padding="none">
+        {shareIcon}
+      </TableCell>
+    </Tooltip>
   )
 }
 

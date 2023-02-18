@@ -97,7 +97,7 @@ const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<The
     fontSize: '1rem',
     mb: 2,
     lineHeight: 1.5,
-    color: theme.palette.primary.dark,
+    color: theme.palette.primary.main,
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
     textShadow: '0 0 1px #000',

@@ -680,6 +680,41 @@ export function useUpdateWorkOrderMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateWorkOrderMutationHookResult = ReturnType<typeof useUpdateWorkOrderMutation>;
 export type UpdateWorkOrderMutationResult = Apollo.MutationResult<types.UpdateWorkOrderMutation>;
 export type UpdateWorkOrderMutationOptions = Apollo.BaseMutationOptions<types.UpdateWorkOrderMutation, types.UpdateWorkOrderMutationVariables>;
+export const FailWorkOrderDocument = gql`
+    mutation failWorkOrder($sessionId: ID!, $orderId: ID!, $reason: String) {
+  failWorkOrder(sessionId: $sessionId, orderId: $orderId, reason: $reason) {
+    ...WorkOrderFragment
+  }
+}
+    ${WorkOrderFragmentFragmentDoc}`;
+export type FailWorkOrderMutationFn = Apollo.MutationFunction<types.FailWorkOrderMutation, types.FailWorkOrderMutationVariables>;
+
+/**
+ * __useFailWorkOrderMutation__
+ *
+ * To run a mutation, you first call `useFailWorkOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFailWorkOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [failWorkOrderMutation, { data, loading, error }] = useFailWorkOrderMutation({
+ *   variables: {
+ *      sessionId: // value for 'sessionId'
+ *      orderId: // value for 'orderId'
+ *      reason: // value for 'reason'
+ *   },
+ * });
+ */
+export function useFailWorkOrderMutation(baseOptions?: Apollo.MutationHookOptions<types.FailWorkOrderMutation, types.FailWorkOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.FailWorkOrderMutation, types.FailWorkOrderMutationVariables>(FailWorkOrderDocument, options);
+      }
+export type FailWorkOrderMutationHookResult = ReturnType<typeof useFailWorkOrderMutation>;
+export type FailWorkOrderMutationResult = Apollo.MutationResult<types.FailWorkOrderMutation>;
+export type FailWorkOrderMutationOptions = Apollo.BaseMutationOptions<types.FailWorkOrderMutation, types.FailWorkOrderMutationVariables>;
 export const DeleteWorkOrderDocument = gql`
     mutation deleteWorkOrder($sessionId: ID!, $orderId: ID!) {
   deleteWorkOrder(sessionId: $sessionId, orderId: $orderId) {

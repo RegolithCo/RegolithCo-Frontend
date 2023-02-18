@@ -3,12 +3,14 @@ import {
   GetWorkOrderDocument,
   useDeleteCrewShareMutation,
   useDeleteWorkOrderMutation,
+  useFailWorkOrderMutation,
   useGetWorkOrderQuery,
   useUpdateWorkOrderMutation,
   useUpsertCrewShareMutation,
 } from '../schema'
 import {
   crewSharesToInput,
+  FailWorkOrderMutation,
   GetWorkOrderQuery,
   OtherOrder,
   removeKeyRecursive,
@@ -17,6 +19,7 @@ import {
   UpdateWorkOrderMutation,
   VehicleMiningOrder,
   WorkOrder,
+  WorkOrderStateEnum,
 } from '@regolithco/common'
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
@@ -28,7 +31,8 @@ type useSessionsReturn = {
   loading: boolean
   querying: boolean
   mutating: boolean
-  updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  updateWorkOrder: (newWorkOrder: WorkOrder) => void
+  failWorkOrder: (reason?: string) => void
   deleteWorkOrder: () => void
   deleteCrewShare: (scName: string) => void
 }
@@ -46,6 +50,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
   })
 
   const updateWorkOrderMutation = useUpdateWorkOrderMutation()
+  const failWorkOrderMutation = useFailWorkOrderMutation()
   const deleteWorkOrderMutation = useDeleteWorkOrderMutation({
     onCompleted: () => {
       enqueueSnackbar('Work Order Deleted', { variant: 'success' })
@@ -91,7 +96,13 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
   })
 
   const queries = [workOrderQry]
-  const mutations = [updateWorkOrderMutation, deleteWorkOrderMutation, upsertCrewShareMutation, deleteCrewShareMutation]
+  const mutations = [
+    updateWorkOrderMutation,
+    deleteWorkOrderMutation,
+    upsertCrewShareMutation,
+    failWorkOrderMutation,
+    deleteCrewShareMutation,
+  ]
 
   const querying = queries.some((q) => q.loading)
   const mutating = mutations.some((m) => m[1].loading)
@@ -103,13 +114,12 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
     querying,
     loading: querying || mutating,
     mutating,
-    updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => {
+    updateWorkOrder: (newWorkOrder: WorkOrder) => {
       const { shareAmount } = newWorkOrder as OtherOrder
       const {
         crewShares,
         isRefined,
         method,
-        failReason,
         note,
         processStartTime,
         refinery,
@@ -126,7 +136,6 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           orderId,
           shares: crewSharesToInput(newWorkOrder.crewShares || []),
           workOrder: {
-            failReason,
             note,
             isRefined,
             includeTransferFee,
@@ -134,7 +143,6 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             processStartTime,
             refinery,
             shareRefinedValue,
-            setFail,
           },
           shipOres: removeKeyRecursive(shipOres, '__typename'),
           vehicleOres: removeKeyRecursive(vehicleOres, '__typename'),
@@ -147,6 +155,27 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             updateWorkOrder: {
               ...workOrderQry.data?.workOrder,
               ...newWorkOrder,
+            },
+          }
+          return optimisticresponse
+        },
+      })
+    },
+    failWorkOrder: (reason?: string) => {
+      const fail = reason && reason.trim().length > 0
+      failWorkOrderMutation[0]({
+        variables: {
+          sessionId,
+          orderId,
+          reason,
+        },
+        optimisticResponse: () => {
+          const optimisticresponse: FailWorkOrderMutation = {
+            __typename: 'Mutation',
+            failWorkOrder: {
+              ...(workOrderQry.data?.workOrder as WorkOrder),
+              failReason: fail ? reason : null,
+              state: fail ? WorkOrderStateEnum.Failed : WorkOrderStateEnum.Unknown,
             },
           }
           return optimisticresponse

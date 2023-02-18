@@ -28,11 +28,11 @@ export interface ShipRockCardProps {
 }
 
 const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxProps<Theme>> => {
-  let accentColor = theme.palette.primary.dark
+  let accentColor = theme.palette.primary.main
   let contrastColor = theme.palette.primary.contrastText
   switch (rockState) {
     case RockStateEnum.Ready:
-      accentColor = theme.palette.primary.dark
+      accentColor = theme.palette.primary.main
       contrastColor = theme.palette.primary.contrastText
       break
     case RockStateEnum.Depleted:

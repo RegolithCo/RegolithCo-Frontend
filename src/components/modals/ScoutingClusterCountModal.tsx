@@ -72,9 +72,9 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
         '& .MuiDialog-paper': {
           // [theme.breakpoints.up('md')]: {
           // },
-          background: theme.palette.primary.dark,
+          background: theme.palette.primary.main,
           borderRadius: 5,
-          border: `4px solid ${theme.palette.primary.dark}`,
+          border: `4px solid ${theme.palette.primary.main}`,
         },
       }}
     >
@@ -84,7 +84,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           textTransform: 'uppercase',
           p: 1,
 
-          background: theme.palette.primary.dark,
+          background: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
         }}
       >
@@ -95,7 +95,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           p: 3,
           borderRadius: 7,
           background: theme.palette.background.default,
-          outline: `4px solid ${theme.palette.primary.dark}`,
+          outline: `4px solid ${theme.palette.primary.main}`,
         }}
       >
         <Box sx={{ mt: 3 }}>
@@ -111,7 +111,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
               color: theme.palette.primary.main,
               lineHeight: '60px',
               fontWeight: 'bold',
-              border: `4px solid ${theme.palette.primary.dark}`,
+              border: `4px solid ${theme.palette.primary.main}`,
               textAlign: 'center',
             }}
           >

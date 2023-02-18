@@ -28,6 +28,7 @@ import {
   Tab,
   Tabs,
   Theme,
+  ThemeProvider,
   Tooltip,
   useMediaQuery,
   useTheme,
@@ -40,7 +41,7 @@ import { SessionHeader } from './SessionHeader'
 import { ScoutingFindModal } from '../../modals/ScoutingFindModal'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { DownloadModal } from '../../modals/DownloadModal'
-import { fontFamilies } from '../../../theme'
+import { fontFamilies, workOrderStateThemes } from '../../../theme'
 import { DialogEnum, SessionTabs } from './SessionPage.container'
 import { TabDashboard } from './TabDashboard'
 import { TabWorkOrders } from './TabWorkOrders'
@@ -83,6 +84,7 @@ export interface SessionPageProps {
   openWorkOrderModal: (workOrderId?: string) => void
   deleteWorkOrder: (workOrderId: string) => void
   updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  failWorkOrder: (reason?: string) => void
   // scouting
   createScoutingFind: (scoutingFind: ScoutingFind) => void
   openScoutingModal: (scoutinfFindId?: string) => void
@@ -140,6 +142,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   updateScoutingFind,
   openScoutingModal,
   joinScoutingFind,
+  failWorkOrder,
   deleteScoutingFind,
   leaveScoutingFind,
   deleteWorkOrder,
@@ -241,7 +244,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
       <Box
         sx={{
           overflow: 'hidden',
-          p: mediumUp ? 3 : 0,
+          mx: mediumUp ? 3 : 0,
           display: 'flex',
           flex: '1 1',
           maxWidth: 1100,
@@ -273,8 +276,6 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           sx={{
             flex: '1 1',
             overflow: 'auto',
-            //
-            // border: '1px solid red',
           }}
         >
           {activeTab === SessionTabs.USERS && (
@@ -351,7 +352,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
             variant="scrollable"
             sx={{
               borderTop: '2px solid',
-              backgroundColor: theme.palette.primary.dark,
+              backgroundColor: theme.palette.primary.main,
               color: theme.palette.primary.contrastText,
               '& .MuiTab-root': {
                 color: theme.palette.primary.contrastText,
@@ -412,24 +413,27 @@ export const SessionPage: React.FC<SessionPageProps> = ({
 
       {/* This is the EDIT Workorder modal */}
       {activeWorkOrder && (
-        <WorkOrderModal
-          onUpdate={(newOrder) => {
-            setActiveModal(null)
-            updateWorkOrder(newOrder)
-          }}
-          markCrewSharePaid={markCrewSharePaid}
-          workOrder={activeWorkOrder as WorkOrder}
-          templateJob={session.sessionSettings?.workOrderDefaults as WorkOrderDefaults}
-          userSuggest={userSuggest}
-          allowPay={isSessionOwner || activeWorkOrder.ownerId === userProfile?.userId}
-          deleteWorkOrder={() => deleteWorkOrder(activeWorkOrder.orderId)}
-          open={Boolean(activeWorkOrder)}
-          onClose={() => {
-            setActiveModal(null)
-            openWorkOrderModal && openWorkOrderModal()
-          }}
-          allowEdit={isActive && (userProfile?.userId === activeWorkOrder?.ownerId || isSessionOwner)}
-        />
+        <ThemeProvider theme={workOrderStateThemes[activeWorkOrder.state]}>
+          <WorkOrderModal
+            onUpdate={(newOrder) => {
+              setActiveModal(null)
+              updateWorkOrder(newOrder)
+            }}
+            markCrewSharePaid={markCrewSharePaid}
+            workOrder={activeWorkOrder as WorkOrder}
+            templateJob={session.sessionSettings?.workOrderDefaults as WorkOrderDefaults}
+            userSuggest={userSuggest}
+            allowPay={isSessionOwner || activeWorkOrder.ownerId === userProfile?.userId}
+            deleteWorkOrder={() => deleteWorkOrder(activeWorkOrder.orderId)}
+            open={Boolean(activeWorkOrder)}
+            failWorkOrder={failWorkOrder}
+            onClose={() => {
+              setActiveModal(null)
+              openWorkOrderModal && openWorkOrderModal()
+            }}
+            allowEdit={isActive && (userProfile?.userId === activeWorkOrder?.ownerId || isSessionOwner)}
+          />
+        </ThemeProvider>
       )}
 
       {isActive && newScoutingFind && (

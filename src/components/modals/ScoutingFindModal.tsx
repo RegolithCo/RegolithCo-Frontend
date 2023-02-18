@@ -25,7 +25,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   dialog: {
     '& .MuiDialog-paper': {
       borderRadius: 10,
-      border: `8px solid ${theme.palette.primary.dark}`,
+      border: `8px solid ${theme.palette.primary.main}`,
     },
   },
   boxContainer: {
@@ -94,7 +94,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
             backgroundColor: theme.palette.background.default,
             flex: '0 0',
             px: 3,
-            borderTop: `2px solid ${theme.palette.primary.dark}`,
+            borderTop: `2px solid ${theme.palette.primary.main}`,
           }}
         >
           <Button

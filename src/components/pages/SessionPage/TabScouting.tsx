@@ -37,34 +37,30 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
     backgroundColor: '#0e0c1baa',
     position: 'relative',
-    '& .MuiAccordion-root': {
-      backgroundColor: '#0e0c1baa',
-    },
-    '& .MuiAccordionDetails-root': {
-      p: 0,
-    },
-    '& .MuiTable-root': {
-      background: '#12111555',
-    },
   },
   section: {},
   sectionTitle: {
-    p: 1,
-    '&::before': {
-      content: '""',
-    },
-    // color: theme.palette.primary.dark,
-    // fontFamily: fontFamilies.robotoMono,
+    px: 2,
+    py: 0.65,
+    background: '#121115aa',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
     '& .MuiTypography-root': {
-      fontSize: '1rem',
+      fontSize: '1.2rem',
       lineHeight: 2,
-      // color: theme.palette.primary.dark,
-      // fontFamily: fontFamilies.robotoMono,
-      // fontWeight: 'bold',
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '0.8rem',
+        lineHeight: 1,
+      },
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
     },
-    background: '#121115aa',
+    '& .MuiFormControlLabel-root .MuiTypography-root': {
+      fontStyle: 'italic',
+      fontSize: '0.7rem',
+    },
+    // Just for scouting,
+    mb: 3,
   },
   sectionBody: {
     py: 1,

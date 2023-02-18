@@ -26,35 +26,28 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
     backgroundColor: '#0e0c1baa',
     position: 'relative',
-    '& .MuiAccordion-root': {
-      // backgroundColor: '#0e0c1baa',
-    },
-    '& .MuiAccordionDetails-root': {
-      p: 0,
-    },
-    '& .MuiTable-root': {
-      background: '#12111555',
-    },
   },
   section: {},
   sectionTitle: {
-    p: 1,
-    '&::before': {
-      content: '""',
-    },
-    // color: theme.palette.primary.dark,
-    // fontFamily: fontFamilies.robotoMono,
-    '& .MuiTypography-root': {
-      fontSize: '1rem',
-      lineHeight: 2,
-      // color: theme.palette.primary.dark,
-      // fontFamily: fontFamilies.robotoMono,
-      // fontWeight: 'bold',
-    },
-    fontFamily: fontFamilies.robotoMono,
-    fontWeight: 'bold',
+    px: 2,
+    py: 0.65,
     background: '#121115aa',
-    // borderBottom: '2px solid',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    '& .MuiTypography-root': {
+      fontSize: '1.2rem',
+      lineHeight: 2,
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '0.8rem',
+        lineHeight: 1,
+      },
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+    },
+    '& .MuiFormControlLabel-root .MuiTypography-root': {
+      fontStyle: 'italic',
+      fontSize: '0.7rem',
+    },
   },
   sectionBody: {
     py: 1,
@@ -87,7 +80,7 @@ export const TabWorkOrders: React.FC<TabWorkOrdersProps> = ({
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', ...styles.container }}>
       <Box sx={styles.sectionTitle}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Typography sx={styles.sectionTitle}>
+          <Typography>
             Work Orders ({workOrderCounts[0]}/{workOrderCounts[1]})
           </Typography>
           <Box sx={{ flexGrow: 1 }} />

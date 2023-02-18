@@ -38,6 +38,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
     background: '#121115aa',
     p: 1,
+    '*': {
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+    },
   },
   gridContainer: {
     [theme.breakpoints.up('md')]: {},
@@ -97,7 +101,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
                 textShadow: '1px 1px 4px #000',
                 fontSize: {
                   xs: '1rem',
-                  md: session.name && session.name.length > 100 ? '1rem' : '1.2rem',
+                  md: session.name && session.name.length > 100 ? '1rem' : '1.4rem',
                 },
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -113,9 +117,12 @@ export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfil
                   variant="h6"
                   component="div"
                   sx={{
+                    color: theme.palette.grey[500],
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
                     fontSize: {
-                      xs: '0.8rem',
-                      md: '1rem',
+                      xs: '0.65rem',
+                      md: '0.8rem',
                     },
                   }}
                 >

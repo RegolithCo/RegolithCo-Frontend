@@ -25,15 +25,15 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, t
         variant="determinate"
         value={progress}
         sx={{
-          backgroundColor: theme.palette.primary.dark + 'aa',
+          backgroundColor: theme.palette.primary.main + 'aa',
           '& .MuiLinearProgress-bar': {
             backgroundSize: '100px 100px',
             backgroundImage: `repeating-linear-gradient(
               45deg,
               ${theme.palette.secondary.main} 25%,
               ${theme.palette.secondary.main} 50%,
-              ${theme.palette.secondary.dark} 50%,
-              ${theme.palette.secondary.dark} 75%
+              ${theme.palette.secondary.main} 50%,
+              ${theme.palette.secondary.main} 75%
               )`,
           },
           height: 50,

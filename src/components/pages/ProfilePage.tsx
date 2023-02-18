@@ -85,7 +85,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontSize: '1rem',
     mb: 2,
     lineHeight: 1.5,
-    color: theme.palette.primary.dark,
+    color: theme.palette.primary.main,
     textShadow: '0 0 1px #000',
     borderBottom: '2px solid',
   },

@@ -11,7 +11,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   card: {
     opacity: 0.4,
     cursor: 'pointer',
-    border: `4px dashed ${theme.palette.primary.dark}`,
+    border: `4px dashed ${theme.palette.primary.main}`,
     width: '100%',
     height: '100%',
     minHeight: '140px',
@@ -33,7 +33,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     color: theme.palette.primary.contrastText,
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.main,
     opacity: 0.5,
   },
 })

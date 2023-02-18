@@ -25,7 +25,7 @@ export const LoginRefresh: React.FC<LoginRefreshProps> = ({ open, onClose, authT
           width: 400,
           bgcolor: 'background.paper',
           borderRadius: 10,
-          border: `10px solid ${theme.palette.primary.dark}`,
+          border: `10px solid ${theme.palette.primary.main}`,
           boxShadow: 24,
           p: 4,
         }}

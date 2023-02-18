@@ -97,6 +97,7 @@ export const SessionPageContainer2: React.FC = () => {
       setActiveTab={(tab: SessionTabs) => {
         navigate(makeSessionUrls({ sessionId, tab }))
       }}
+      failWorkOrder={workOrderQry.failWorkOrder}
       createWorkOrder={async (workOrder: WorkOrder) => {
         const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
           ({ scName, share, shareType, state, note }) => ({
