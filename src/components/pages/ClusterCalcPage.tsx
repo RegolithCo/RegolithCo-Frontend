@@ -1,11 +1,13 @@
 import * as React from 'react'
-import { Alert, Box, Typography } from '@mui/material'
+import { Alert, Box, Stack, ThemeProvider, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
 import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser, ScoutingFindStateEnum } from '@regolithco/common'
 import { dummySession, dummySessionUser, dummyUserProfile, newEmptyScoutingFind } from '../../lib/newObjectFactories'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { useLogin } from '../../hooks/useOAuth2'
+import { ScoutingFindTypeChooser } from '../fields/ScoutingFindTypeChooser'
+import { scoutingFindStateThemes } from '../../theme'
 
 export interface ClusterCalcPageProps {
   userProfile?: UserProfile
@@ -13,17 +15,23 @@ export interface ClusterCalcPageProps {
 
 export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile }) => {
   // eslint-disable-next-line no-unused-vars
-  const [cluster, setCluster] = React.useState<ScoutingFind>()
+  const [clusters, setClusters] = React.useState<{ [key in ScoutingFindTypeEnum]?: ScoutingFind }>({})
+  const [activeScoutingFindType, setActiveScoutingFindType] = React.useState<ScoutingFindTypeEnum>(
+    ScoutingFindTypeEnum.Ship
+  )
+  const theme = useTheme()
   const owner = userProfile || dummyUserProfile()
   const session = dummySession(owner)
   const sessionUser: SessionUser = dummySessionUser(owner)
-  // const [activeActivity, setActiveActivity] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
 
-  React.useEffect(() => {
-    const newCluster = newEmptyScoutingFind(session, sessionUser, ScoutingFindTypeEnum.Ship)
-    newCluster.state = ScoutingFindStateEnum.ReadyForWorkers
-    setCluster(newCluster)
-  }, [userProfile])
+  const activeScoutingFind = React.useMemo(() => {
+    if (clusters && clusters[activeScoutingFindType]) return clusters && clusters[activeScoutingFindType]
+    else {
+      const newFind = newEmptyScoutingFind(session, sessionUser, activeScoutingFindType)
+      newFind.state = ScoutingFindStateEnum.Discovered
+      return newFind
+    }
+  }, [clusters, activeScoutingFindType])
 
   return (
     <PageWrapper title="Cluster Calculator" maxWidth="md" sx={{}}>
@@ -32,31 +40,58 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
         This is a standalone calculator for determining the value of a rock cluster. Simply click "Add Scan" to get
         started.
       </Typography>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={2}
+        sx={{
+          [theme.breakpoints.up('md')]: {
+            m: { md: 2, sm: 0, xs: 0 },
+          },
+        }}
+      >
+        <Box
+          sx={{
+            [theme.breakpoints.up('md')]: {
+              mx: 3,
+              flex: '1 1 50%',
+            },
+          }}
+        >
+          <ScoutingFindTypeChooser onChange={setActiveScoutingFindType} value={activeScoutingFindType} />
+        </Box>
+        <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
+          NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive
+          clusters or share your clusters with friends then consider logging in and creating/joining a{' '}
+          <strong>session</strong>.
+        </Alert>
+      </Stack>
       <Box
         sx={{
           display: 'flex',
           margin: '0 auto',
-          overflowX: 'hidden',
-          overflowY: 'scroll',
+          overflow: 'hidden',
+          borderRadius: 10,
+          border: `8px solid rgb(181, 206, 255)`,
         }}
       >
-        {cluster && (
-          <ScoutingFindCalc
-            me={sessionUser}
-            scoutingFind={cluster}
-            allowEdit
-            allowWork
-            standalone
-            onChange={(cluster) => {
-              setCluster(cluster)
-            }}
-          />
+        {activeScoutingFind && (
+          <ThemeProvider theme={scoutingFindStateThemes.DISCOVERED}>
+            <ScoutingFindCalc
+              me={sessionUser}
+              scoutingFind={activeScoutingFind}
+              allowEdit
+              allowWork
+              standalone
+              onChange={(newScoutingFind) => {
+                setClusters({
+                  ...(clusters ? clusters : {}),
+                  [activeScoutingFindType]: { ...newScoutingFind },
+                })
+              }}
+            />
+          </ThemeProvider>
         )}
       </Box>
-      <Alert severity="info" sx={{ m: 2, flex: '1 1 60%' }}>
-        NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive clusters
-        or share your clusters with friends then consider logging in and creating/joining a <strong>session</strong>.
-      </Alert>
     </PageWrapper>
   )
 }

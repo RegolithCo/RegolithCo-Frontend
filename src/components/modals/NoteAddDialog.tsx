@@ -1,6 +1,7 @@
 import React from 'react'
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material'
 import { Check } from '@mui/icons-material'
+import { MAX_NOTE_LENGTH } from '@regolithco/common'
 
 export type NoteAddDialogProps = {
   title?: string
@@ -19,6 +20,7 @@ export const NoteAddDialog: React.FC<NoteAddDialogProps> = ({ open, note, title,
       open={Boolean(open)}
       onClose={onClose}
       maxWidth="sm"
+      fullWidth
       aria-labelledby="closeDelete"
       aria-describedby="closeDelete"
     >
@@ -37,9 +39,15 @@ export const NoteAddDialog: React.FC<NoteAddDialogProps> = ({ open, note, title,
             }
           }}
           value={newNote || ''}
+          helperText={`${newNote.length}/${MAX_NOTE_LENGTH}`}
           variant="standard"
           onChange={(e) => {
-            setNewNote(e.target.value || '')
+            let newValue = e.target.value || ''
+            // truncate to MAX_NOTE_LENGTH characters or less
+            if (newValue.length > MAX_NOTE_LENGTH) {
+              newValue = newValue.substring(0, MAX_NOTE_LENGTH)
+            }
+            setNewNote(newValue)
           }}
           sx={{ mb: 2 }}
           placeholder="Enter a note..."

@@ -56,45 +56,19 @@ export const FAQPage: React.FC = () => {
         </Typography>
         <Typography paragraph>
           Feel free to use the site as much as you'd like totally free. If you'd like to contribute towards server costs
-          or buy me a coffee as a gesture of appreciation, that would be greatly appreciated. Beyond that, I have no
-          plans to monetize the site through advertising or any other methods.
-        </Typography>{' '}
-        <Stack
-          direction="row"
-          divider={<Divider orientation="vertical" flexItem />}
-          spacing={2}
-          sx={{ width: '100%', mb: 3 }}
-        >
-          <Button
-            variant="contained"
-            href="https://ko-fi.com/regolithco"
-            target="_blank"
-            fullWidth
-            sx={{ fontSize: '1rem', p: 1 }}
-            startIcon={<Avatar src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`} />}
-          >
-            Ko-Fi
-          </Button>
-          <Button
-            variant="contained"
-            href="https://patreon.com/user?u=64746907"
-            target="_blank"
-            fullWidth
-            color="secondary"
-            sx={{ fontSize: '1rem', p: 1 }}
-            startIcon={<Coffee />}
-          >
-            Patreon
-          </Button>
-        </Stack>
+          or buy me a coffee on <Link href="https://ko-fi.com/regolithco">ko-fi</Link> or{' '}
+          <Link href="https://patreon.com/user?u=64746907">Patreon</Link> as a gesture of appreciation and to help cover
+          server costs, that would be greatly appreciated. Beyond that, I have no plans to monetize the site through
+          advertising or any other methods.
+        </Typography>
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
-          Will there be data wipes?
+          "Will there be data wipes?"
         </Typography>
         <Typography paragraph>
-          Yes. Star Citizen wipes their database when they patch and so will Regolith Co. If that's a problem for you
-          then be sure to regularly download your sessions to either a CSV or JSON files.
+          <strong>Yes!</strong> Star Citizen wipes their database when they patch and so will Regolith Co. If that's a
+          problem for you then be sure to regularly download your sessions to either a CSV or JSON files.
         </Typography>
         <Typography paragraph>
           Why? It's just easier than migrating all the numbers in the database to their new values. Or trying to support
@@ -103,14 +77,15 @@ export const FAQPage: React.FC = () => {
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
-          What about privacy / security?
+          "What about privacy / security?"
         </Typography>
         <Typography paragraph>
-          We don't collect any identifying data beyond your Star Citizen username (optional).
+          We don't collect any identifying data beyond your Star Citizen username (optional) and your discord or google
+          id to enable login. Any other information in the site is only what you choose to add.
         </Typography>
         <Typography paragraph>
           The data you enter into this tool will be used to calculate stats and interesting metrics but we will never
-          single you out or expose individual data about any user without their express consent.
+          single-out or expose individual data about any user without their express consent.
         </Typography>
         <Typography paragraph>
           Currently we don't use Google analytics or any other tracking tools but that might change at some point to

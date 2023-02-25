@@ -8,13 +8,14 @@ import {
   DialogContent,
   DialogTitle,
   Slider,
+  Theme,
   ThemeProvider,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
   useTheme,
 } from '@mui/material'
-import { Stack } from '@mui/system'
+import { Stack, SxProps } from '@mui/system'
 import { theme as defaultTheme } from '../../theme'
 import { Agriculture, Cancel, PanTool, Save } from '@mui/icons-material'
 import { ScoutingFindTypeEnum, VehicleOreEnum } from '@regolithco/common'
@@ -30,6 +31,31 @@ export interface ScoutingClusterCountModalProps {
   onSave: (newValue: number, vehicleGem?: VehicleOreEnum, gemSize?: number) => void
 }
 
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  sizeBtn: {
+    backgroundColor: theme.palette.primary.light,
+    border: '2px solid transparent',
+    color: theme.palette.primary.contrastText,
+    fontSize: {
+      xs: 10,
+      sm: 12,
+    },
+    opacity: 0.3,
+
+    '&:hover': {
+      color: theme.palette.primary.contrastText,
+      border: '2px solid white',
+      opacity: 0.7,
+      backgroundColor: theme.palette.primary.light,
+    },
+    '&.Mui-selected, &.Mui-selected:hover': {
+      color: theme.palette.primary.contrastText,
+      border: '2px solid white',
+      opacity: 1,
+      backgroundColor: theme.palette.primary.light,
+    },
+  },
+})
 export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps> = ({
   open,
   clusterCount,
@@ -42,6 +68,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
   const [gemSize, setGemSize] = React.useState<string>('ROC')
   const [newClusterCount, setNewClusterCount] = React.useState<number>((clusterCount as number) || 1)
   const theme = useTheme()
+  const styles = stylesThunk(theme)
 
   let itemName = 'rocks'
   switch (clusterType) {
@@ -183,11 +210,11 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
                   setGemSize(newValue)
                 }}
               >
-                <ToggleButton sx={{ flexGrow: 1 }} value="HAND">
-                  <PanTool sx={{ mr: 1 }} /> Hand
+                <ToggleButton sx={styles.sizeBtn} value="HAND">
+                  <PanTool sx={{ mr: 1 }} /> Hand Size
                 </ToggleButton>
-                <ToggleButton sx={{ flexGrow: 1 }} value="ROC">
-                  <Agriculture sx={{ mr: 1 }} /> Roc
+                <ToggleButton sx={styles.sizeBtn} value="ROC">
+                  <Agriculture sx={{ mr: 1 }} /> ROC Size
                 </ToggleButton>
               </ToggleButtonGroup>
             </Box>
@@ -201,7 +228,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           </Button>
           <div style={{ flexGrow: 1 }} />
           <Button
-            color="primary"
+            color="secondary"
             startIcon={<Save />}
             variant="contained"
             onClick={() => {

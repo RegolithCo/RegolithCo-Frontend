@@ -353,6 +353,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const scoutId = makeHumanIds(scoutingFind.owner?.scName, scoutingFind.scoutingFindId)
 
+  const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
+
   return (
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
@@ -392,11 +394,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 <Avatar
                   sx={styles.clusterCount}
                   onClick={() => {
-                    !standalone && allowEdit && setEditCountModalOpen(true)
+                    enableEditButton && setEditCountModalOpen(true)
                   }}
                 >
-                  {standalone ? (shipFind.shipRocks || []).length : scoutingFind.clusterCount || 1}
-                  {!standalone && allowEdit && (
+                  {scoutingFind.clusterCount || 1}
+                  {enableEditButton && (
                     <Button
                       size="small"
                       sx={styles.editButton}
@@ -455,7 +457,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 <TableHead>
                   <TableRow>
                     <TableCell></TableCell>
-                    <TableCell align="right">SCU</TableCell>
+                    <TableCell align="right">
+                      {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 'uSCU' : 'SCU'}
+                    </TableCell>
                     <TableCell align="right">aUEC</TableCell>
                   </TableRow>
                 </TableHead>
@@ -463,10 +467,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   {summary.potentialProfit > 0 &&
                     summary.oreSort?.map((oreKey) => {
                       const { mass, potentialProfit, volume } = (summary.byOre || {})[oreKey] as FindSummary
+                      const volumeUnitted =
+                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? volume * 100 : volume
                       return (
                         <TableRow key={oreKey}>
                           <TableCell>{getOreName(oreKey)}</TableCell>
-                          <TableCell align="right">{MValueFormatter(volume, MValueFormat.number_sm, 1)}</TableCell>
+                          <TableCell align="right">
+                            {MValueFormatter(volumeUnitted, MValueFormat.number_sm, 1)}
+                          </TableCell>
                           <TableCell align="right">
                             {MValueFormatter(potentialProfit, MValueFormat.number_sm, 1)}
                           </TableCell>
@@ -477,7 +485,15 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 <TableFooter>
                   <TableRow sx={styles.totalRow}>
                     <TableCell>Total</TableCell>
-                    <TableCell align="right">{MValueFormatter(summary.volume, MValueFormat.number_sm, 1)}</TableCell>
+                    <TableCell align="right">
+                      {MValueFormatter(
+                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle
+                          ? summary.volume * 100
+                          : summary.volume,
+                        MValueFormat.number_sm,
+                        1
+                      )}
+                    </TableCell>
                     <TableCell align="right">
                       {profitSymbol}
                       {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm, 1)}
@@ -524,15 +540,31 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               )}
             </Stack>
 
-            <Tooltip title="Add a note">
-              <Box onClick={() => setOpenNoteDialog(true)}>
-                <Typography variant="overline" component="div">
-                  <NoteAdd sx={{ color: hasNote ? yellow[500] : 'inherit', fontSize: 14, lineHeight: 10, mx: 0.2 }} />
-                  {hasNote ? 'Note' : 'Add a note'}
-                </Typography>
-                <Typography variant="caption">{scoutingFind.note}</Typography>
-              </Box>
-            </Tooltip>
+            {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage && (
+              <Typography
+                variant="caption"
+                component="div"
+                sx={{
+                  maxWidth: 300,
+                  color: theme.palette.primary.main,
+                  fontStyle: 'italic',
+                }}
+              >
+                Note: Salvage scouting is still pretty new so all you can do for now is report the number of wrecks in
+                an area.
+              </Typography>
+            )}
+            {!standalone && (
+              <Tooltip title="Add a note">
+                <Box onClick={() => setOpenNoteDialog(true)}>
+                  <Typography variant="overline" component="div">
+                    <NoteAdd sx={{ color: hasNote ? yellow[500] : 'inherit', fontSize: 14, lineHeight: 10, mx: 0.2 }} />
+                    {hasNote ? 'Note' : 'Add a note'}
+                  </Typography>
+                  <Typography variant="caption">{scoutingFind.note}</Typography>
+                </Box>
+              </Tooltip>
+            )}
           </Grid>
           {/* Actions and attendance */}
           {!standalone && (
@@ -623,7 +655,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             <Box sx={{ width: '100%' }}>
               <Box sx={{ display: 'flex' }}>
                 <Typography variant="overline" component="div">
-                  Rocks Scanned: {shipFind.shipRocks?.length || vehicleFind.vehicleRocks?.length}/
+                  Rocks Scanned: {shipFind.shipRocks?.length || vehicleFind.vehicleRocks?.length || 0}/
                   {shipFind.clusterCount || 0}
                 </Typography>
                 <div style={{ flexGrow: 1 }} />

@@ -2,7 +2,6 @@ import * as React from 'react'
 import { Avatar, Button, Divider, Link, Paper, Stack, SxProps, Theme, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { Coffee, Twitter } from '@mui/icons-material'
-import { fontFamilies } from '../../theme'
 import { DiscordIcon } from '../../icons/Discord'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({

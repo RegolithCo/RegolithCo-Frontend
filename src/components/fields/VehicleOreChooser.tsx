@@ -4,6 +4,7 @@ import { lookups, MarketPriceLookupValue, VehicleOreEnum, getVehicleOreName } fr
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Clear } from '@mui/icons-material'
+import { blue, green, pink } from '@mui/material/colors'
 
 export interface VehicleOreChooserProps {
   multiple?: boolean
@@ -16,11 +17,8 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
   const theme = useTheme()
   const vehicleRowKeys = Object.values(VehicleOreEnum)
-  const bgColors = new Gradient()
-    .setColorGradient(theme.palette.secondary.main, theme.palette.primary.light)
-    .setMidpoint(vehicleRowKeys.length) // 100 is the number of colors to generate. Should be enough stops for our ores
-    .getColors()
-  const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+  const bgColors = ['#ff00c3', green[500], blue[500]]
+  const fgColors = ['#ffffff', '#ffffff', '#ffffff']
   // Sort descendng value
   vehicleRowKeys.sort((a, b) => {
     const aPrice = lookups.marketPriceLookup[a] as MarketPriceLookupValue
@@ -69,7 +67,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
                   sm: 10,
                   md: 10,
                 },
-                opacity: 0.7,
+                opacity: 0.5,
                 p: 0,
                 '&:hover': {
                   color: 'white',
