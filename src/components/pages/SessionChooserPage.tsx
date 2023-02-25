@@ -98,6 +98,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
         <SessionList
           sessions={allSessionsSorted}
           loading={loading}
+          activeOnly={activeOnly}
           onClickSession={(sessionId) => navigate?.(`/session/${sessionId}`)}
         />
       </Paper>

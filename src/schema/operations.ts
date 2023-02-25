@@ -34,6 +34,7 @@ export const WorkOrderIdFragmentFragmentDoc = gql`
   orderId
   sessionId
   updatedAt
+  failReason
   state
 }
     `;
@@ -43,6 +44,30 @@ export const SessionIdFragmentFragmentDoc = gql`
   updatedAt
   state
   name
+}
+    `;
+export const SessionSummaryFragmentFragmentDoc = gql`
+    fragment SessionSummaryFragment on Session {
+  summary {
+    aUEC
+    oreSCU
+    allPaid
+    lastJobDone
+    refineries
+    activeMembers
+    totalMembers
+    workOrders {
+      other
+      salvage
+      ship
+      vehicle
+    }
+    scoutingFinds {
+      salvage
+      ship
+      vehicle
+    }
+  }
 }
     `;
 export const UserFragmentFragmentDoc = gql`
@@ -1430,12 +1455,14 @@ export const GetMyUserSessionsDocument = gql`
     mySessions(nextToken: $nextToken) {
       items {
         ...SessionListFragment
+        ...SessionSummaryFragment
       }
       nextToken
     }
   }
 }
-    ${SessionListFragmentFragmentDoc}`;
+    ${SessionListFragmentFragmentDoc}
+${SessionSummaryFragmentFragmentDoc}`;
 
 /**
  * __useGetMyUserSessionsQuery__
@@ -1471,12 +1498,14 @@ export const GetJoinedUserSessionsDocument = gql`
     joinedSessions(nextToken: $nextToken) {
       items {
         ...SessionListFragment
+        ...SessionSummaryFragment
       }
       nextToken
     }
   }
 }
-    ${SessionListFragmentFragmentDoc}`;
+    ${SessionListFragmentFragmentDoc}
+${SessionSummaryFragmentFragmentDoc}`;
 
 /**
  * __useGetJoinedUserSessionsQuery__

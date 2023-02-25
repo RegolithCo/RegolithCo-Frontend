@@ -178,7 +178,7 @@ export type ScoutingFindInterfaceFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionKeySpecifier = ('activeMemberIds' | 'activeMembers' | 'createdAt' | 'finishedAt' | 'mentionedUsers' | 'name' | 'note' | 'onTheList' | 'owner' | 'ownerId' | 'scouting' | 'sessionId' | 'sessionSettings' | 'state' | 'updatedAt' | 'workOrders' | SessionKeySpecifier)[];
+export type SessionKeySpecifier = ('activeMemberIds' | 'activeMembers' | 'createdAt' | 'finishedAt' | 'mentionedUsers' | 'name' | 'note' | 'onTheList' | 'owner' | 'ownerId' | 'scouting' | 'sessionId' | 'sessionSettings' | 'state' | 'summary' | 'updatedAt' | 'workOrders' | SessionKeySpecifier)[];
 export type SessionFieldPolicy = {
 	activeMemberIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	activeMembers?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -194,6 +194,7 @@ export type SessionFieldPolicy = {
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionSettings?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
+	summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -206,6 +207,25 @@ export type SessionSettingsFieldPolicy = {
 	lockedFields?: FieldPolicy<any> | FieldReadFunction<any>,
 	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderDefaults?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SessionSummaryKeySpecifier = ('aUEC' | 'activeMembers' | 'allPaid' | 'lastJobDone' | 'oreSCU' | 'refineries' | 'scoutingFinds' | 'totalMembers' | 'workOrders' | SessionSummaryKeySpecifier)[];
+export type SessionSummaryFieldPolicy = {
+	aUEC?: FieldPolicy<any> | FieldReadFunction<any>,
+	activeMembers?: FieldPolicy<any> | FieldReadFunction<any>,
+	allPaid?: FieldPolicy<any> | FieldReadFunction<any>,
+	lastJobDone?: FieldPolicy<any> | FieldReadFunction<any>,
+	oreSCU?: FieldPolicy<any> | FieldReadFunction<any>,
+	refineries?: FieldPolicy<any> | FieldReadFunction<any>,
+	scoutingFinds?: FieldPolicy<any> | FieldReadFunction<any>,
+	totalMembers?: FieldPolicy<any> | FieldReadFunction<any>,
+	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SessionSummaryTotalsKeySpecifier = ('other' | 'salvage' | 'ship' | 'vehicle' | SessionSummaryTotalsKeySpecifier)[];
+export type SessionSummaryTotalsFieldPolicy = {
+	other?: FieldPolicy<any> | FieldReadFunction<any>,
+	salvage?: FieldPolicy<any> | FieldReadFunction<any>,
+	ship?: FieldPolicy<any> | FieldReadFunction<any>,
+	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'miningVehicle' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'state' | 'updatedAt' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
@@ -466,6 +486,14 @@ export type StrictTypedTypePolicies = {
 	SessionSettings?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SessionSettingsKeySpecifier | (() => undefined | SessionSettingsKeySpecifier),
 		fields?: SessionSettingsFieldPolicy,
+	},
+	SessionSummary?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SessionSummaryKeySpecifier | (() => undefined | SessionSummaryKeySpecifier),
+		fields?: SessionSummaryFieldPolicy,
+	},
+	SessionSummaryTotals?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SessionSummaryTotalsKeySpecifier | (() => undefined | SessionSummaryTotalsKeySpecifier),
+		fields?: SessionSummaryTotalsFieldPolicy,
 	},
 	SessionUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SessionUserKeySpecifier | (() => undefined | SessionUserKeySpecifier),

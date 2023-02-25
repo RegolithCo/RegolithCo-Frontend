@@ -6,14 +6,12 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
-import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import { yellow } from '@mui/material/colors'
-import { Badge, CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
+import { CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
-import { Error, Login, Person, Verified } from '@mui/icons-material'
-import { makeAvatar, UserStateEnum } from '@regolithco/common'
+import { Login } from '@mui/icons-material'
 // import { LoginExpiryTimer } from './fields/LoginExpiryTimer'
 import { RockIcon } from '../icons'
 import { LoginContextObj } from '../hooks/useOAuth2'
@@ -25,7 +23,7 @@ const pages = {
   '/workorder': 'Work Order',
   '/tables': 'Data Tables',
   '/about': 'About',
-  // '/faq': 'FAQ',
+  '/faq': 'FAQ',
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -70,7 +68,6 @@ export interface TopBarProps {
 export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
-  const myAvatar = makeAvatar(userCtx.userProfile?.avatarUrl as string)
   const theme = useTheme()
   const styles = stylesThunk(theme)
   // const [shareOpen, setShareOpen] = React.useState(false)

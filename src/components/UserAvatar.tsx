@@ -21,6 +21,12 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       borderRadius: '50%',
     },
   },
+  largeBadge: {
+    '& svg': {
+      height: 15,
+      width: 15,
+    },
+  },
   smallBadge: {
     '& svg': {
       height: 15,
@@ -33,7 +39,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       width: 18,
     },
   },
-  largeBadge: {},
 })
 
 export interface UserAvatarProps {

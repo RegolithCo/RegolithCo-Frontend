@@ -326,6 +326,7 @@ const OwingList: React.FC<OwingListProps> = ({
       {rowArr.map(([payerSCName, payeeSCName, amt], idy) => {
         const payerUser = (session.activeMembers?.items || []).find(({ owner }) => owner?.scName === payerSCName)
         const payeeUser = (session.activeMembers?.items || []).find(({ owner }) => owner?.scName === payeeSCName)
+        if (payerUser?.owner?.scName === payeeUser?.owner?.scName) return null
 
         const crewShares = (session.workOrders?.items || [])
           .filter(({ owner }) => owner?.scName === payerSCName)

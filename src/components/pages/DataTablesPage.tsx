@@ -35,6 +35,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     [theme.breakpoints.up('md')]: {
       display: 'block',
       fontSize: '1.2rem',
+      '&.Mui-selected': {
+        borderBottom: '2px solid',
+      },
     },
   },
   smallTabs: {

@@ -23,7 +23,7 @@ const actions = [
     activityId: ActivityEnum.Salvage,
     scoutingType: ScoutingFindTypeEnum.Salvage,
     icon: <ClawIcon />,
-    name: `Wreck(s)`,
+    name: `Salvage Wreck(s)`,
   },
 ]
 

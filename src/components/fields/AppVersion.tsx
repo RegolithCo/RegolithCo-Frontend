@@ -32,6 +32,8 @@ export const AppVersion: React.FC = () => {
   if (!isProd) {
     versionStr += `-${version?.stage} [#${version.commit}]`
   }
+  // Turn this off on production
+  if (isProd) return null
   return (
     <Box
       sx={{

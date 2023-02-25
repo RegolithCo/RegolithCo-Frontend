@@ -1,21 +1,18 @@
 import * as React from 'react'
-
-import { Session, SessionStateEnum, defaultSessionName, makeAvatar, User } from '@regolithco/common'
+import { Session, SessionStateEnum, defaultSessionName, User } from '@regolithco/common'
 import {
-  Avatar,
   Box,
-  Chip,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Paper,
+  Stack,
   SxProps,
   Typography,
   useTheme,
 } from '@mui/material'
 import dayjs from 'dayjs'
-import { Person } from '@mui/icons-material'
 import { keyframes, Theme } from '@mui/system'
 import { sessionSubtitleArr } from '../pages/SessionPage/SessionHeader'
 import {
@@ -28,11 +25,14 @@ import {
   TimelineSeparator,
 } from '@mui/lab'
 import { UserAvatar } from '../UserAvatar'
-import { SessionState } from '../SessionState'
+import { SessionListSummary } from './SessionListSummary'
+import { MValueFormat, MValueFormatter } from './MValue'
+import { fontFamilies } from '../../theme'
 
 export interface SessionListProps {
   sessions: Session[]
   loading?: boolean
+  activeOnly?: boolean
   onClickSession?: (sessionId: string) => void
 }
 
@@ -48,13 +48,13 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onClickSession }) => {
+export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, activeOnly, onClickSession }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
 
   const pulse = keyframes`
   0% { background-color: transparent; }
-  70% { background-color:  ${theme.palette.warning.light}44; }
+  70% { background-color:  ${theme.palette.warning.light}22; }
   100% { background-color: transparent; }
   `
   const pulseCssThunk = (doPulse: boolean): SxProps<Theme> => ({
@@ -105,9 +105,15 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
       {sessionsByDate.map((yearMonthArr, idx) => {
         if (yearMonthArr.length === 0) return
         const currHeading = dayjs(yearMonthArr[0][0].createdAt).format('YYYY - MMMM')
+        const monthlyAUEC = yearMonthArr.reduce((acc, dayArr) => {
+          const dayAUEC = dayArr.reduce<number>((acc, session) => {
+            return acc + (session.summary?.aUEC || 0)
+          }, 0)
+          return acc + dayAUEC
+        }, 0)
 
         return (
-          <Box key={`yeamonth-${idx}`} sx={{ maxWidth: 600, margin: '0 auto' }}>
+          <Box key={`yeamonth-${idx}`} sx={{ margin: '0 auto' }}>
             <Typography variant="h6" sx={{ textAlign: 'left' }}>
               {currHeading}
             </Typography>
@@ -151,28 +157,28 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                       <Paper
                         elevation={10}
                         sx={{
-                          // p: {
-                          //   xs: 0.5,
-                          //   sm: 1,
-                          //   md: 1.5,
-                          // },
                           border: '1px solid #666666',
+                          mb: 5,
                         }}
                       >
                         <List dense disablePadding>
                           {dayArr.map((session, idx) => {
-                            const { sessionId, name, owner, createdAt, updatedAt, state } = session
+                            const { sessionId, name, owner, state, summary } = session
                             const sessionActive = state === SessionStateEnum.Active
                             const subtitleArr = sessionSubtitleArr(session)
-                            const userAvatar = makeAvatar(session.owner?.avatarUrl as string)
                             return (
                               <ListItem
                                 divider
                                 alignItems="flex-start"
+                                disableGutters
+                                disablePadding
                                 key={`${sessionId}-${idx}`}
                                 sx={{
                                   ...pulseCssThunk(sessionActive),
                                   cursor: 'pointer',
+                                  p: 0.5,
+                                  // Leave a little space for the session summary
+                                  pb: 6,
                                   '&:hover': {
                                     backgroundColor: 'rgba(255, 255, 255, 0.23)',
                                   },
@@ -194,13 +200,13 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                                   >
                                     {name || defaultSessionName()}
                                   </Typography>
-                                  <Typography component="div" variant="caption">
+                                  {/* <Typography component="div" variant="caption">
                                     Owner: {owner?.scName || 'Unknown'}
-                                  </Typography>
+                                  </Typography> */}
                                   <Typography component="div" variant="caption">
                                     {subtitleArr.join(' - ')}
                                   </Typography>
-                                  <SessionState sessionState={session.state} size="small" />
+                                  <SessionListSummary session={session} />
                                 </ListItemText>
                                 <ListItemAvatar
                                   sx={{
@@ -222,10 +228,19 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, onC
                 )
               })}
             </Timeline>
+            {!activeOnly && (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ justifyContent: 'center', mb: 4, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
+              >
+                Monthly Total: {MValueFormatter(monthlyAUEC, MValueFormat.currency)}
+              </Stack>
+            )}
           </Box>
         )
       })}
-      {!loading && (
+      {!loading && !activeOnly && (
         <Typography variant="body2" sx={{ textAlign: 'center' }} component="div" color="text.secondary">
           <em>No more sessions</em>
         </Typography>
