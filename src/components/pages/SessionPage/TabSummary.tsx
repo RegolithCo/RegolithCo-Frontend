@@ -167,8 +167,9 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
           <ListItemText primary="Raw ore collected" />
           <ListItemSecondaryAction>
             <MValue
-              value={sessionSummary.rawOreCollected / 100}
+              value={sessionSummary.rawOreCollected / 1000}
               format={MValueFormat.volSCU}
+              decimals={1}
               typoProps={{
                 px: 2,
                 fontSize: '1.1rem',
@@ -177,10 +178,10 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
             />
           </ListItemSecondaryAction>
         </ListItem>
-        <ListItem>
-          <ListItemText primary="Last work order complete" />
-          <ListItemSecondaryAction>
-            {sessionSummary.lastFinishedOrder && sessionSummary.lastFinishedOrder > Date.now() ? (
+        {sessionSummary.lastFinishedOrder && sessionSummary.lastFinishedOrder > Date.now() && (
+          <ListItem>
+            <ListItemText primary="Last work order complete" />
+            <ListItemSecondaryAction>
               <CountdownTimer
                 endTime={sessionSummary.lastFinishedOrder}
                 useMValue
@@ -190,11 +191,9 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
                   },
                 }}
               />
-            ) : (
-              <MValue value={sessionSummary.lastFinishedOrder} format={MValueFormat.dateTime} />
-            )}
-          </ListItemSecondaryAction>
-        </ListItem>
+            </ListItemSecondaryAction>
+          </ListItem>
+        )}
       </List>
       <Box sx={{ mb: 2 }} />
       {/* Unpaid Crew Shares */}

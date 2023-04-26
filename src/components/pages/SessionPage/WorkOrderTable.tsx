@@ -85,14 +85,17 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
       volSCU: summaries.reduce(
         (acc, summary) =>
           acc +
-          (summary.oreSummary
-            ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected / 100, 0)
-            : 0),
+          (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) /
+            1000,
         0
       ),
       grossProfit: summaries.reduce((acc, summary) => acc + summary.grossProfit, 0),
     }
   }, [workOrders])
+
+  workOrders.sort((a, b) => {
+    return a.createdAt - b.createdAt
+  })
 
   return (
     <TableContainer
@@ -268,7 +271,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
             }}
           />
         ) : (
-          <MValue value={summary.completionTime} format={MValueFormat.dateTime} />
+          <MValue value={workOrder.createdAt} format={MValueFormat.dateTime} />
         )}
       </TableCell>
     </TableRow>
