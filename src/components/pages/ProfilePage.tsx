@@ -369,6 +369,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </Box>
 
             {/* Delete Profile */}
+            <Box
+              sx={{
+                border: '1px solid #666',
+                backgroundColor: '#333',
+                padding: 1,
+                fontSize: '0.8rem',
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+              }}
+            >
+              USERID:{userProfile.userId}
+            </Box>
+
             <div style={{ flexGrow: 1 }} />
             <Button
               fullWidth
