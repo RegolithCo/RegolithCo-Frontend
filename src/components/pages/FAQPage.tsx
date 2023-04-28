@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import { PageWrapper } from '../PageWrapper'
 import { Avatar, Button, Divider, Link, Paper, Stack, SxProps, Theme, useTheme } from '@mui/material'
 import { Coffee } from '@mui/icons-material'
+import { DiscordIcon } from '../../icons/Discord'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -35,6 +36,60 @@ export const FAQPage: React.FC = () => {
           , but quickly grew beyond its container. I had always had a clear idea of what I wanted it to be, but I was
           hesitant to take on the additional responsibility of maintaining a website. However, I eventually made the
           decision to go ahead and build it. I hope you find it helpful.
+        </Typography>
+      </Paper>
+      <Paper elevation={5} sx={styles.innerPaper}>
+        <Typography variant="h5" gutterBottom>
+          How do I report a bug or ask for a feature?
+        </Typography>
+        <Typography gutterBottom>
+          If you're a discord user that's probably the best place. It really helps me if you can take a screenshot of
+          the problem and also{' '}
+          <strong>
+            <em>send me your user id</em>
+          </strong>{' '}
+          (you can find it on the bottom of the user profile page)
+        </Typography>
+        <Button
+          startIcon={<DiscordIcon />}
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ fontSize: '1rem', p: 2 }}
+          href="https://discord.gg/6TKSYHNJha"
+          target="_blank"
+        >
+          Discord Server
+        </Button>
+        <Typography gutterBottom>
+          If you're not a discord user, you can also{' '}
+          <Link href="https://twitter.com/RegolithCo" target="_blank">
+            hit me up on twitter
+          </Link>
+        </Typography>
+      </Paper>
+      <Paper elevation={5} sx={styles.innerPaper}>
+        <Typography variant="h5" gutterBottom>
+          3.19 is going to change mining. Can Regolith adapt?
+        </Typography>
+        <Typography gutterBottom>
+          I'm really excited about the new mining changes coming in 3.19. But I'm also nervous about how much they
+          change and how much work it will to adapt.
+        </Typography>
+        <Typography gutterBottom>
+          Hopefully this won't be too painful. Certainly things like prices are easy to update. Adding new ore types
+          like iron and the new rare hand-mineable should be pretty easy too. The biggest challenge will be: 1) the new
+          dynamic pricing system and 2) The new rock composition calculations. Regolith might need new controls to allow
+          you to enter your sell location and a bunch more lookup values.
+        </Typography>
+        <Typography gutterBottom>
+          I've got a 3.19 development code branch started already but CIG can change anything at any time so I think the
+          safest thing to do is to wait until 3.19 hits and stabilizes a bit in the PTU. Unfortunately this means
+          Regolith might not be 100% ready on day 1 of 3.19 in the PU but hopefully it won't be too long a wait.
+        </Typography>
+        <Typography gutterBottom>
+          Also if things change too much <strong>I might need to wipe the Regolith database for 3.19</strong> but I'm
+          really hoping not to. Stay tuned!
         </Typography>
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>

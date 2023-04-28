@@ -104,10 +104,6 @@ export const AppWrapper = ({
       <Box sx={styles.overlay}>{children}</Box>
       {mediumUp && (
         <>
-          <Box sx={{ position: 'absolute', bottom: 10, left: 10, [theme.breakpoints.down('sm')]: { display: 'None' } }}>
-            <SCVersion semver="3.18" />
-          </Box>
-          <AppVersion />
           <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
             <Copyright />
           </Box>

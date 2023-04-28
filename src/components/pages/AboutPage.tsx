@@ -1,8 +1,11 @@
 import * as React from 'react'
-import { Avatar, Button, Divider, Link, Paper, Stack, SxProps, Theme, Typography, useTheme } from '@mui/material'
+import { Avatar, Box, Button, Divider, Link, Paper, Stack, SxProps, Theme, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { Coffee, Twitter } from '@mui/icons-material'
 import { DiscordIcon } from '../../icons/Discord'
+import { AppVersion } from '../fields/AppVersion'
+import { SCVersion } from '../fields/SCVersion'
+import { fontFamilies } from '../../theme'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -121,6 +124,20 @@ export const AboutPage: React.FC = () => {
           info@regolith.rocks
         </Typography> */}
       </Paper>
+      <Box
+        sx={{
+          border: '1px solid #666',
+          backgroundColor: '#333',
+          padding: 1,
+          my: 2,
+          fontSize: '0.8rem',
+          textAlign: 'center',
+          fontFamily: fontFamilies.robotoMono,
+        }}
+      >
+        <AppVersion />
+        <SCVersion />
+      </Box>
       <Typography variant="caption" paragraph sx={{ p: 1, m: 1 }}>
         Regolith Co. is a Star Citizen fansite, not affiliated with the Cloud Imperium group of companies in any way.
         All content on this site not authored by its host or users is property of their respective owners. Star

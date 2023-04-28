@@ -24,6 +24,7 @@ export const AppVersion: React.FC = () => {
       version: !version || version === '%VERSION%' ? '0.0.0' : version,
       commit: !commit || commit === '%COMMIT%' ? '0000000' : commit,
       stage: !stage || stage === '%STAGE%' ? 'dev' : stage,
+      // stage: 'production',
     })
   }, [])
 
@@ -32,26 +33,20 @@ export const AppVersion: React.FC = () => {
   if (!isProd) {
     versionStr += `-${version?.stage} [#${version.commit}]`
   }
-  // Turn this off on production
-  if (isProd) return null
+
   return (
     <Box
       sx={{
         zIndex: 0,
         outline: 'none',
         userSelect: 'none',
-        position: 'absolute',
-        bottom: 0,
         fontFamily: fontFamilies.robotoMono,
-        fontSize: 8,
+        // fontSize: 8,
         color: isProd ? 'white' : theme.palette.error.main,
         textShadow: '1px 1px 3px #000',
-        fontWeight: 'bold',
-        width: '100%',
-        textAlign: 'center',
 
         [theme.breakpoints.up('md')]: {
-          fontSize: isProd ? 10 : 15,
+          // fontSize: 10,
           bottom: 3,
         },
       }}
@@ -64,11 +59,7 @@ export const AppVersion: React.FC = () => {
             display: 'None',
           },
         }}
-      >
-        {isProd
-          ? 'This product is still in soft launch. Expect data wipes until launch is announced!'
-          : 'THIS IS A TEST SERVER!!'}
-      </Box>
+      ></Box>
     </Box>
   )
 }
