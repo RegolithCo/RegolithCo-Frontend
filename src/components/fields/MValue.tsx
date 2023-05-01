@@ -77,7 +77,9 @@ export const MValueFormatter = (
     // Format date to be more readable
     finalVal = dayjs(value as number).format('MMM D h:mma')
   } else if (format === MValueFormat.volSCU) {
-    finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}`) + ' SCU'
+    const val = value as number
+    const finalDecimals = val && val > 0 && val < 1 && decimals === 0 ? decimals + 1 : decimals
+    finalVal = Numeral(val).format(`0,0.${'0'.repeat(finalDecimals)}`) + ' SCU'
   } else if (format === MValueFormat.volcSCU) {
     finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}`) + ' cSCU'
   } else if (format === MValueFormat.mass_sm) {
