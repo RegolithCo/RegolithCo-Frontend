@@ -28,7 +28,7 @@ export const ScoutingFindTypeChooser: React.FC<ScoutingFindTypeChooserProps> = (
     {
       icon: <GemIcon />,
       title: 'ROC / Hand',
-      description: 'Hadanite, Aphorite, Dolivine....',
+      description: 'Hadanite, Aphorite, Dolivine, Janalite....',
       value: ScoutingFindTypeEnum.Vehicle,
     },
     {

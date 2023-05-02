@@ -1,24 +1,29 @@
 import React from 'react'
 import { ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { lookups, MarketPriceLookupValue, VehicleOreEnum, getVehicleOreName } from '@regolithco/common'
-import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { Clear } from '@mui/icons-material'
-import { blue, green, pink } from '@mui/material/colors'
+import { blue, green } from '@mui/material/colors'
 
 export interface VehicleOreChooserProps {
   multiple?: boolean
   requireValue?: boolean
+  showAllBtn?: boolean
   values?: VehicleOreEnum[]
   onChange?: (value: VehicleOreEnum[]) => void
 }
 
-export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, onChange, values, requireValue }) => {
+export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
+  multiple,
+  onChange,
+  values,
+  showAllBtn,
+  requireValue,
+}) => {
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
-  const theme = useTheme()
+  // const theme = useTheme()
   const vehicleRowKeys = Object.values(VehicleOreEnum)
-  const bgColors = ['#ff00c3', green[500], blue[500]]
-  const fgColors = ['#ffffff', '#ffffff', '#ffffff']
+  const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
+  const fgColors = ['#000000', '#ffffff', '#ffffff']
   // Sort descendng value
   vehicleRowKeys.sort((a, b) => {
     const aPrice = lookups.marketPriceLookup[a] as MarketPriceLookupValue
@@ -87,28 +92,56 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({ multiple, 
           </Grid>
         )
       })}
+      {multiple && showAllBtn && (
+        <Grid xs={3}>
+          <Tooltip title="Select all ores">
+            <ToggleButton
+              value={''}
+              size="small"
+              fullWidth
+              tabIndex={-1}
+              sx={{
+                fontSize: {
+                  xs: 10,
+                  sm: 10,
+                  md: 10,
+                },
+                p: 0,
+              }}
+              onChange={() => {
+                setSelected(vehicleRowKeys)
+                onChange && onChange(vehicleRowKeys)
+              }}
+            >
+              All
+            </ToggleButton>
+          </Tooltip>
+        </Grid>
+      )}
       {!requireValue && (
         <Grid xs={3}>
-          <ToggleButton
-            value={''}
-            size="small"
-            fullWidth
-            tabIndex={-1}
-            sx={{
-              fontSize: {
-                xs: 10,
-                sm: 10,
-                md: 10,
-              },
-              p: 0,
-            }}
-            onChange={() => {
-              setSelected([])
-              onChange && onChange([])
-            }}
-          >
-            <Clear />
-          </ToggleButton>
+          <Tooltip title="Remove all selected ores">
+            <ToggleButton
+              value={''}
+              size="small"
+              fullWidth
+              tabIndex={-1}
+              sx={{
+                fontSize: {
+                  xs: 10,
+                  sm: 10,
+                  md: 10,
+                },
+                p: 0,
+              }}
+              onChange={() => {
+                setSelected([])
+                onChange && onChange([])
+              }}
+            >
+              None
+            </ToggleButton>
+          </Tooltip>
         </Grid>
       )}
     </Grid>

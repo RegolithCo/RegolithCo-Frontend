@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ToggleButton, useTheme } from '@mui/material'
+import { ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { lookups, MarketPriceLookupValue, ShipOreEnum, getShipOreName } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -8,10 +8,18 @@ import { Clear } from '@mui/icons-material'
 export interface ShipOreChooserProps {
   values?: ShipOreEnum[]
   multiple?: boolean
+  requireValue?: boolean
+  showAllBtn?: boolean
   onChange?: (value: ShipOreEnum[]) => void
 }
 
-export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({ multiple, onChange, values }) => {
+export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
+  multiple,
+  onChange,
+  values,
+  requireValue,
+  showAllBtn,
+}) => {
   const [selected, setSelected] = React.useState<ShipOreEnum[]>(values || [])
   const theme = useTheme()
 
@@ -99,24 +107,59 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({ multiple, onChan
           </Grid>
         )
       })}
-      <Grid xs={2}>
-        <ToggleButton
-          value={''}
-          size="small"
-          fullWidth
-          tabIndex={-1}
-          sx={{
-            fontSize: 14,
-            p: 0,
-          }}
-          onChange={() => {
-            onChange && onChange([])
-            setSelected([])
-          }}
-        >
-          <Clear />
-        </ToggleButton>
-      </Grid>
+      {multiple && (
+        // {multiple && showAllBtn && (
+        <Grid xs={2}>
+          <Tooltip title="Select all ores">
+            <ToggleButton
+              value={''}
+              size="small"
+              fullWidth
+              tabIndex={-1}
+              sx={{
+                fontSize: {
+                  xs: 10,
+                  sm: 10,
+                  md: 10,
+                },
+                p: 0,
+              }}
+              onChange={() => {
+                setSelected(shipRowKeys)
+                onChange && onChange(shipRowKeys)
+              }}
+            >
+              All
+            </ToggleButton>
+          </Tooltip>
+        </Grid>
+      )}
+      {!requireValue && (
+        <Grid xs={2}>
+          <Tooltip title="Remove all selected ores">
+            <ToggleButton
+              value={''}
+              size="small"
+              fullWidth
+              tabIndex={-1}
+              sx={{
+                fontSize: {
+                  xs: 10,
+                  sm: 10,
+                  md: 10,
+                },
+                p: 0,
+              }}
+              onChange={() => {
+                setSelected([])
+                onChange && onChange([])
+              }}
+            >
+              None
+            </ToggleButton>
+          </Tooltip>
+        </Grid>
+      )}
     </Grid>
   )
 }
