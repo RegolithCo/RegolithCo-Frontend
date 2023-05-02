@@ -6,6 +6,7 @@ import {
   DialogActions,
   SxProps,
   Toolbar,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -170,6 +171,21 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
     default:
       return <>DisplayError</>
   }
+
+  const editBtnTip = allowEdit ? (
+    <div>
+      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+        Edit Work Order
+      </Typography>
+    </div>
+  ) : (
+    <div>
+      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+        This work order cannot be edited
+      </Typography>
+    </div>
+  )
+
   // const maxWidth = 500
   return (
     <Dialog
@@ -269,56 +285,67 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
         </Box>
 
         <DialogActions sx={{ backgroundColor: theme.palette.primary.main, flex: '0 0' }}>
-          <Button
-            color="error"
-            variant="contained"
-            size="large"
-            startIcon={<Cancel />}
-            onClick={() => {
-              if (isEditing && !isNew) setIsEditing(false)
-              onClose()
-            }}
-          >
-            {isNew ? 'Cancel' : 'Close'}
-          </Button>
+          <Tooltip title={isNew ? 'Cancel and close this window' : 'Close this window'} placement="top">
+            <Button
+              color="error"
+              variant="contained"
+              size="large"
+              startIcon={<Cancel />}
+              onClick={() => {
+                if (isEditing && !isNew) setIsEditing(false)
+                onClose()
+              }}
+            >
+              {isNew ? 'Cancel' : 'Close'}
+            </Button>
+          </Tooltip>
           <div style={{ flexGrow: 1 }} />
           {allowEdit && deleteWorkOrder && (
-            <Button
-              variant="contained"
-              startIcon={<Delete />}
-              onClick={() => setDeleteConfirmModal(true)}
-              color="error"
-            >
-              Delete
-            </Button>
+            <Tooltip title={'PERMANENTLY Delete this work order'} placement="top">
+              <Button
+                variant="contained"
+                startIcon={<Delete />}
+                onClick={() => setDeleteConfirmModal(true)}
+                color="error"
+              >
+                Delete
+              </Button>
+            </Tooltip>
           )}
           {allowEdit && isEditing && (
-            <Button
-              color="secondary"
-              variant="contained"
-              size="large"
-              startIcon={isNew ? <Create /> : <Save />}
-              onClick={() => {
-                onUpdate(newWorkOrder)
-                isEditing && setIsEditing(false)
-                // isEditing && onClose()
-              }}
-            >
-              {isNew ? 'Create' : 'Save'}
-            </Button>
+            <Tooltip title={isNew ? 'Save & Create this work order' : 'Save these edits'} placement="top">
+              <Button
+                color="secondary"
+                variant="contained"
+                size="large"
+                startIcon={isNew ? <Create /> : <Save />}
+                onClick={() => {
+                  onUpdate(newWorkOrder)
+                  isEditing && setIsEditing(false)
+                  // isEditing && onClose()
+                }}
+              >
+                {isNew ? 'Create' : 'Save'}
+              </Button>
+            </Tooltip>
           )}
-          {allowEdit && !isEditing && (
-            <Button
-              color="secondary"
-              variant="contained"
-              size="large"
-              startIcon={<Edit />}
-              onClick={() => {
-                setIsEditing(true)
-              }}
-            >
-              {'Edit'}
-            </Button>
+          {!isEditing && (
+            <Tooltip title={editBtnTip} placement="top">
+              <div>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  size="large"
+                  disabled={!allowEdit}
+                  startIcon={<Edit />}
+                  onClick={() => {
+                    setIsEditing(true)
+                  }}
+                >
+                  {'Edit'}
+                </Button>
+              </div>
+            </Tooltip>
           )}
         </DialogActions>
       </Box>
