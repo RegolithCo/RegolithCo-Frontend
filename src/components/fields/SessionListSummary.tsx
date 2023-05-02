@@ -84,8 +84,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
   const { aUEC, activeMembers, totalMembers, allPaid, lastJobDone, oreSCU, refineries, scoutingFinds, workOrders } =
     session.summary as SessionSummary
 
-  // TODO: THis is probably a math error. FIX it in 3.19
-  const oreSCUFixed = oreSCU && oreSCU > 0 ? oreSCU / 10 : 0
+  const oreSCUDecimals = oreSCU && oreSCU > 0 && oreSCU < 10 ? 1 : 0
 
   // Sum all the numeric values of workOrders
   const totalWorkOrders = Object.values(workOrders || {}).reduce<number>(
@@ -193,11 +192,11 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
           title={
             <Typography>
               Total raw ore collected: <br />
-              {MValueFormatter(oreSCUFixed, MValueFormat.volSCU)}
+              {MValueFormatter(oreSCU, MValueFormat.volSCU, oreSCUDecimals)}
             </Typography>
           }
         >
-          <Typography sx={styles.oreSCU}>{MValueFormatter(oreSCUFixed, MValueFormat.volSCU)}</Typography>
+          <Typography sx={styles.oreSCU}>{MValueFormatter(oreSCU, MValueFormat.volSCU, oreSCUDecimals)}</Typography>
         </Tooltip>
 
         <Divider orientation="vertical" flexItem />

@@ -167,7 +167,7 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
           <ListItemText primary="Raw ore collected" />
           <ListItemSecondaryAction>
             <MValue
-              value={sessionSummary.rawOreCollected / 1000}
+              value={sessionSummary.rawOreCollected / 100}
               format={MValueFormat.volSCU}
               decimals={1}
               typoProps={{

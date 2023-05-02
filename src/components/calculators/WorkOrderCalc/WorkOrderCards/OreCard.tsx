@@ -268,8 +268,14 @@ export const OreCard: React.FC<OreCardProps> = ({
 
             {/* THIS IS THE MAIN ORE TABLE */}
             {oreTableRows.map(([oreKey, { collected, refined }], idx) => {
-              const convertedCollected =
-                collected > 0 ? (workOrder.orderType === ActivityEnum.Salvage ? collected / 100 : collected) : 0
+              let convertedCollected = 0
+              if (workOrder.orderType === ActivityEnum.ShipMining) {
+                convertedCollected = collected
+              } else if (workOrder.orderType === ActivityEnum.VehicleMining) {
+                convertedCollected = collected * 10
+              } else if (workOrder.orderType === ActivityEnum.Salvage) {
+                convertedCollected = collected / 100
+              }
 
               return (
                 <TableRow key={`oreRow-${idx}`}>

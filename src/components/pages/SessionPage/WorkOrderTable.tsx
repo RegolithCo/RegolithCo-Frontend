@@ -86,7 +86,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
         (acc, summary) =>
           acc +
           (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) /
-            1000,
+            100,
         0
       ),
       grossProfit: summaries.reduce((acc, summary) => acc + summary.grossProfit, 0),
@@ -164,7 +164,10 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   let displayValueCol = 0
 
   let stateIcon: React.ReactNode
-  let volumeVal = Object.entries(summary.oreSummary).reduce((acc, [oreKey, { collected }]) => acc + collected / 100, 0)
+  const volumeVal = Object.entries(summary.oreSummary).reduce(
+    (acc, [oreKey, { collected }]) => acc + collected / 100,
+    0
+  )
 
   let OrderIcon: SvgIconComponent
   switch (orderType) {
@@ -177,7 +180,6 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       OrderIcon = ClawIcon
       break
     case ActivityEnum.VehicleMining:
-      volumeVal = volumeVal / 10
       displayValueCol = summary.grossProfit
       OrderIcon = GemIcon
       break
