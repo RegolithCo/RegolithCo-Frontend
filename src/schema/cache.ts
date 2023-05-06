@@ -59,10 +59,11 @@ export type MutationFieldPolicy = {
 	upsertUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
 	verifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type OtherOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | OtherOrderKeySpecifier)[];
+export type OtherOrderKeySpecifier = ('createdAt' | 'crewShares' | 'delegateSCName' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | OtherOrderKeySpecifier)[];
 export type OtherOrderFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
+	delegateSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	expenses?: FieldPolicy<any> | FieldReadFunction<any>,
 	failReason?: FieldPolicy<any> | FieldReadFunction<any>,
 	includeTransferFee?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -138,10 +139,11 @@ export type SalvageFindFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	wrecks?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SalvageOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'salvageOres' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | SalvageOrderKeySpecifier)[];
+export type SalvageOrderKeySpecifier = ('createdAt' | 'crewShares' | 'delegateSCName' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'salvageOres' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | SalvageOrderKeySpecifier)[];
 export type SalvageOrderFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
+	delegateSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	expenses?: FieldPolicy<any> | FieldReadFunction<any>,
 	failReason?: FieldPolicy<any> | FieldReadFunction<any>,
 	includeTransferFee?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -258,10 +260,11 @@ export type ShipClusterFindFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processStartTime' | 'refinery' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | ShipMiningOrderKeySpecifier)[];
+export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'delegateSCName' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processStartTime' | 'refinery' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | ShipMiningOrderKeySpecifier)[];
 export type ShipMiningOrderFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
+	delegateSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	expenses?: FieldPolicy<any> | FieldReadFunction<any>,
 	failReason?: FieldPolicy<any> | FieldReadFunction<any>,
 	includeTransferFee?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -350,10 +353,11 @@ export type VehicleClusterFindFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicleRocks?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type VehicleMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'vehicleOres' | VehicleMiningOrderKeySpecifier)[];
+export type VehicleMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'delegateSCName' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'vehicleOres' | VehicleMiningOrderKeySpecifier)[];
 export type VehicleMiningOrderFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
+	delegateSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	expenses?: FieldPolicy<any> | FieldReadFunction<any>,
 	failReason?: FieldPolicy<any> | FieldReadFunction<any>,
 	includeTransferFee?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -402,10 +406,11 @@ export type WorkOrderExpenseFieldPolicy = {
 	amount?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type WorkOrderInterfaceKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | WorkOrderInterfaceKeySpecifier)[];
+export type WorkOrderInterfaceKeySpecifier = ('createdAt' | 'crewShares' | 'delegateSCName' | 'expenses' | 'failReason' | 'includeTransferFee' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | WorkOrderInterfaceKeySpecifier)[];
 export type WorkOrderInterfaceFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
+	delegateSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	expenses?: FieldPolicy<any> | FieldReadFunction<any>,
 	failReason?: FieldPolicy<any> | FieldReadFunction<any>,
 	includeTransferFee?: FieldPolicy<any> | FieldReadFunction<any>,
