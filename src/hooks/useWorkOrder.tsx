@@ -12,7 +12,6 @@ import {
   crewSharesToInput,
   FailWorkOrderMutation,
   GetWorkOrderQuery,
-  OtherOrder,
   removeKeyRecursive,
   SalvageOrder,
   ShipMiningOrder,
@@ -115,7 +114,6 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
     loading: querying || mutating,
     mutating,
     updateWorkOrder: (newWorkOrder: WorkOrder) => {
-      const { shareAmount } = newWorkOrder as OtherOrder
       const {
         crewShares,
         isRefined,
@@ -124,6 +122,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         sellerscName,
         processStartTime,
         refinery,
+        shareAmount,
         includeTransferFee,
         shareRefinedValue,
         shipOres,

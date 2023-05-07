@@ -35,7 +35,7 @@ import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
 
-export const SHIP_ROCK_BOUNDS = [3000, 9000]
+export const SHIP_ROCK_BOUNDS = [2000, 150000]
 
 export interface ShipRockEntryModalProps {
   open?: boolean
@@ -99,6 +99,18 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       padding: 0.5,
     },
   },
+  massField: {
+    '& .MuiInputBase-root': {
+      paddingRight: 0,
+    },
+    '& .MuiOutlinedInput-input': {
+      textAlign: 'right',
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+      fontSize: 20,
+      padding: 0.5,
+    },
+  },
   cardTitle: {
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
@@ -146,7 +158,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 })
 
 const markIntervals = [3, 4, 5, 6, 7, 8, 9]
-const marks = markIntervals.map((mark) => ({ value: mark * 1000, label: mark + 'K' }))
+const marks = markIntervals.map((mark) => ({ value: mark * 10000, label: mark + 'K' }))
 
 export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   open,
@@ -204,11 +216,6 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
           </Typography>
           <div style={{ flexGrow: 1 }} />
           <Stack>
-            <Tooltip title="Potential value of all the ore, after refining, using Dinyx Solventation" placement="right">
-              <Typography sx={{ fontWeight: 'bold' }} align="right">
-                Value: <MValue value={value} format={MValueFormat.currency} />
-              </Typography>
-            </Tooltip>
             <Tooltip title="Total volume of all the unrefined ore in this rock" placement="right">
               <Typography sx={{ fontWeight: 'bold' }} align="right">
                 Material: <MValue value={volume} format={MValueFormat.volSCU} />
@@ -218,30 +225,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         </Box>
         <DialogContent sx={styles.dialogContent}>
           <Typography variant="overline" sx={styles.headTitles} component="div">
-            Size (mass in kg)
+            Rock Mass
           </Typography>
           <Grid2 container spacing={3} paddingX={1} sx={styles.compositionGrid}>
-            <Grid2 xs={9}>
-              <Slider
-                step={1}
-                tabIndex={-1}
-                sx={styles.massSlider}
-                color="secondary"
-                valueLabelDisplay="auto"
-                value={newShipRock.mass as number}
-                onChange={(event: Event, newValue: number | number[]) => {
-                  if (typeof newValue === 'number') {
-                    setNewShipRock({ ...newShipRock, mass: newValue })
-                  }
-                }}
-                marks={marks}
-                min={SHIP_ROCK_BOUNDS[0]}
-                max={SHIP_ROCK_BOUNDS[1]}
-              />
-            </Grid2>
-            <Grid2 xs={3}>
+            <Grid2 xs={12}>
               <TextField
-                sx={styles.numfields}
+                sx={styles.massField}
+                fullWidth
                 InputProps={{
                   endAdornment: <InputAdornment position="end">kg</InputAdornment>,
                 }}
@@ -251,7 +241,6 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 }}
                 variant="outlined"
                 type="number"
-                size="small"
               />
             </Grid2>
           </Grid2>

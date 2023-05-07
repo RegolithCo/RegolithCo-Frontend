@@ -16,6 +16,8 @@ import {
   keyframes,
   SxProps,
   Theme,
+  IconButton,
+  Tooltip,
 } from '@mui/material'
 import {
   ActivityEnum,
@@ -49,6 +51,8 @@ import { fontFamilies } from '../../../../theme'
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
+import { ErrorOutline, QuestionAnswerOutlined, QuestionMarkOutlined } from '@mui/icons-material'
+import { PricesTooltip } from '../../../fields/PricesTooltip'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -419,13 +423,26 @@ export const OreCard: React.FC<OreCardProps> = ({
             )}
             <TableRow>
               <TableCell component="th">
-                <Typography variant="tablecell">{shipOrder.isRefined ? 'Refined Value' : 'Ore Value'}</Typography>
+                <Typography variant="tablecell" sx={{ fontSize: '0.8em' }}>
+                  <PricesTooltip>
+                    <em>
+                      {shipOrder.isRefined ? 'Refined Value (est.)' : 'Ore Value (est.)'}{' '}
+                      <ErrorOutline sx={{ fontSize: '1.2em', color: theme.palette.primary.main }} />{' '}
+                    </em>
+                  </PricesTooltip>
+                </Typography>
               </TableCell>
-              <TableCell align="right" colSpan={2}>
-                <MValue
-                  value={shipOrder.isRefined ? summary?.refinedValue : summary?.grossProfit}
-                  format={MValueFormat.currency}
-                />
+              <TableCell align="right" colSpan={2} sx={{ fontSize: '0.8em' }}>
+                <PricesTooltip>
+                  <em>
+                    <MValue
+                      value={shipOrder.isRefined ? summary?.refinedValue : summary?.grossProfit}
+                      format={MValueFormat.currency}
+                      typoProps={{ sx: { fontSize: '0.8em' } }}
+                      approx
+                    />
+                  </em>
+                </PricesTooltip>
               </TableCell>
             </TableRow>
 

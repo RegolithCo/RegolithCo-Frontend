@@ -38,7 +38,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   sx,
 }) => {
   const theme = useTheme()
-  const [otherShareAmtEdit, setOtherShareAmtEdit] = useState<boolean>(false)
+  const [editingShareAmt, setEditingShareAmt] = useState<boolean>(false)
 
   const otherOrder = workOrder as OtherOrder
   const expenses: { name: string; value: number }[] = []
@@ -49,6 +49,15 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
     })
   }
 
+  let displayedShareVal = 0
+  if (workOrder.orderType === ActivityEnum.Other) {
+    displayedShareVal = otherOrder.shareAmount || 0
+  } else {
+    displayedShareVal =
+      typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null && workOrder.shareAmount >= 0
+        ? workOrder.shareAmount
+        : summary.netProfit
+  }
   return (
     <Card sx={sx}>
       <CardHeader
@@ -78,16 +87,24 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
         subheaderTypographyProps={{ color: 'iherit' }}
       />
       <CardContent sx={{ flex: '1 1', overflowX: { md: 'hidden', sm: 'scroll' }, overflow: { md: 'scroll' } }}>
-        {workOrder.orderType === ActivityEnum.Other && (
-          <Typography variant="overline">aUEC Amount to share:</Typography>
-        )}
-        {isEditing && workOrder.orderType === ActivityEnum.Other && (
-          <Typography>
-            This is useful for sharing aUEC for other activities, missions etc. Simply type in the aUEC amount you want
-            to share
+        {workOrder.orderType === ActivityEnum.Other ? (
+          <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+            Share Amount:
+          </Typography>
+        ) : (
+          <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+            Final Sell Price:
           </Typography>
         )}
-        {workOrder.orderType === ActivityEnum.Other && isEditing && otherShareAmtEdit && (
+        {isEditing && workOrder.orderType === ActivityEnum.Other && (
+          <Typography variant="caption" component="div">
+            Type in the arbitrary aUEC amount you want to share
+          </Typography>
+        )}
+        {!workOrder.shareAmount && workOrder.orderType !== ActivityEnum.Other && (
+          <Typography variant="caption">(approximate until set)</Typography>
+        )}
+        {editingShareAmt && (
           <TextField
             fullWidth
             autoFocus
@@ -95,7 +112,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             onFocus={(event) => {
               event.target.select()
             }}
-            onBlur={() => setOtherShareAmtEdit(false)}
+            onBlur={() => setEditingShareAmt(false)}
             onKeyDown={(event) => {
               if (event.key === '.') {
                 event.preventDefault()
@@ -103,59 +120,72 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               if (event.key === 'Enter') {
                 // Set next cell down to edit mode
                 event.preventDefault()
-                setOtherShareAmtEdit(false)
+                setEditingShareAmt(false)
               }
               if (event.key === 'Tab') {
                 event.preventDefault()
                 // Set next cell down to edit mode
-                setOtherShareAmtEdit(false)
+                setEditingShareAmt(false)
               }
               if (event.key === 'Escape') {
                 event.preventDefault()
-                setOtherShareAmtEdit(false)
+                setEditingShareAmt(false)
               }
             }}
             onChange={(e) => {
               try {
-                const value = parseFloat(e.target.value)
+                const value = parseInt(e.target.value)
                 if (value > 0) {
                   onChange({
-                    ...otherOrder,
+                    ...workOrder,
                     shareAmount: value,
+                  })
+                } else {
+                  onChange({
+                    ...workOrder,
+                    shareAmount: workOrder.orderType !== ActivityEnum.Other ? null : 0,
                   })
                 }
               } catch (e) {
                 //
               }
             }}
+            InputProps={{
+              endAdornment: <Box sx={{ fontSize: 20, pl: 0.5 }}>aUEC</Box>,
+            }}
             inputProps={{
               sx: {
+                m: 0,
                 textAlign: 'right',
                 fontFamily: fontFamilies.robotoMono,
-                fontSize: 24,
+                fontSize: 20,
               },
             }}
             type="number"
             sx={{
-              my: 2,
+              m: 0,
+              mt: 0.5,
+              mb: 2,
               p: 1,
             }}
           />
         )}
-        {workOrder.orderType === ActivityEnum.Other && (!isEditing || !otherShareAmtEdit) && (
+        {!editingShareAmt && (
           <MValue
-            value={(workOrder as OtherOrder).shareAmount}
+            value={displayedShareVal}
             decimals={0}
-            onClick={() => setOtherShareAmtEdit(true)}
+            onClick={() => isEditing && setEditingShareAmt(true)}
             format={MValueFormat.currency}
             typoProps={{
               component: 'div',
               sx: {
-                my: 2,
-                p: 2,
+                mt: 0.5,
+                mb: 2,
+                p: 1,
+                py: 2,
                 border: '1px solid',
                 textAlign: 'right',
-                fontSize: 24,
+                fontSize: 20,
               },
             }}
           />

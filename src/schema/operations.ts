@@ -38,6 +38,7 @@ export const WorkOrderIdFragmentFragmentDoc = gql`
   failReason
   ownerId
   sellerscName
+  shareAmount
   state
 }
     `;
@@ -239,6 +240,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
   includeTransferFee
   orderType
   note
+  shareAmount
   crewShares {
     ...CrewShareFragment
   }
@@ -264,9 +266,6 @@ export const WorkOrderFragmentFragmentDoc = gql`
       ore
       amt
     }
-  }
-  ... on OtherOrder {
-    shareAmount
   }
 }
     ${UserFragmentFragmentDoc}

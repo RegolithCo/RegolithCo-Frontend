@@ -28,6 +28,7 @@ export interface MValueProps {
   value?: number | string | null
   onClick?: () => void
   decimals?: number
+  approx?: boolean
   format?: MValueFormat
   typoProps?: TypographyProps & {
     sx?: SxProps<Theme>
@@ -96,6 +97,7 @@ export const MValue: React.FC<MValueProps> = ({
   onClick,
   decimals = 0,
   format = MValueFormat.number,
+  approx,
   typoProps,
 }) => {
   const finalVal = MValueFormatter(value, format, decimals)
@@ -104,6 +106,7 @@ export const MValue: React.FC<MValueProps> = ({
 
   return (
     <Typography onClick={onClick} variant="tablecell" {...internalTypoProps} {...typoProps}>
+      {approx && '~'}
       {finalVal}
     </Typography>
   )

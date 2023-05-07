@@ -171,6 +171,7 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({
   const styles = stylesThunk(theme, rock.state)
   const onClickAction = allowWork ? onEditClick : undefined
   const cursor = onClickAction ? 'pointer' : 'default'
+
   return (
     <Card sx={{ ...styles.card, '& *': { cursor } }}>
       {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>Complete</Box>}
@@ -188,12 +189,8 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({
         />
         <Box sx={{ ...styles.topBox, cursor }} onClick={onClickAction}>
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
-            <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
+            <Typography sx={styles.massNum}>Mass: {MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
             <div style={{ flex: '1 1' }} />
-            <Typography sx={styles.valueNum} component="div">
-              {rockValue ? MValueFormatter(rockValue, MValueFormat.number_sm) : '??'}
-              <Box sx={styles.currency}>aUEC</Box>
-            </Typography>
           </Stack>
         </Box>
 

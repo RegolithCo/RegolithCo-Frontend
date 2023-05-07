@@ -458,9 +458,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   <TableRow>
                     <TableCell></TableCell>
                     <TableCell align="right">
-                      {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 'uSCU' : 'SCU'}
+                      {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 'mSCU' : 'SCU'}
                     </TableCell>
-                    <TableCell align="right">aUEC</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -468,15 +467,16 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     summary.oreSort?.map((oreKey) => {
                       const { mass, potentialProfit, volume } = (summary.byOre || {})[oreKey] as FindSummary
                       const volumeUnitted =
-                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? volume * 100 : volume
+                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? volume * 10000 : volume
                       return (
                         <TableRow key={oreKey}>
                           <TableCell>{getOreName(oreKey)}</TableCell>
                           <TableCell align="right">
-                            {MValueFormatter(volumeUnitted, MValueFormat.number_sm, 1)}
-                          </TableCell>
-                          <TableCell align="right">
-                            {MValueFormatter(potentialProfit, MValueFormat.number_sm, 1)}
+                            {MValueFormatter(
+                              volumeUnitted,
+                              MValueFormat.number_sm,
+                              scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 0 : 1
+                            )}
                           </TableCell>
                         </TableRow>
                       )
@@ -488,15 +488,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     <TableCell align="right">
                       {MValueFormatter(
                         scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle
-                          ? summary.volume * 100
+                          ? summary.volume * 10000
                           : summary.volume,
                         MValueFormat.number_sm,
-                        1
+                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 0 : 1
                       )}
-                    </TableCell>
-                    <TableCell align="right">
-                      {profitSymbol}
-                      {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm, 1)}
                     </TableCell>
                   </TableRow>
                 </TableFooter>
