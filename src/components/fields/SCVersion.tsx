@@ -10,7 +10,7 @@ export const SCVersion: React.FC = () => {
         // fontSize: 10,
       }}
     >
-      <Box>Star Citizen V.3.18.2</Box>
+      <Box>Star Citizen V.3.19</Box>
     </Box>
   )
 }
