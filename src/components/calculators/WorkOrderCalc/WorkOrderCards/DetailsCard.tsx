@@ -20,6 +20,7 @@ import { fontFamilies } from '../../../../theme'
 import { ExpandMore, Help } from '@mui/icons-material'
 import { ReferenceTables } from './ReferenceTables'
 import { WorkOrderFailModal } from '../../../modals/WorkOrderFailModal'
+import { ChooseSellerModal } from '../../../modals/ChooseSellerModal'
 
 export type DetailsCardProps = WorkOrderCalcProps
 
@@ -30,11 +31,13 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
   failWorkOrder,
   isEditing,
   templateJob,
+  userSuggest,
   sx,
 }) => {
   const theme = useTheme()
   const [isFailModalOpen, setIsFailModalOpen] = React.useState(false)
   const shipOrder = workOrder as ShipMiningOrder
+  const [isSellerNameModalOpen, setIsSellerNameModalOpen] = React.useState(false)
 
   // Convenience checked functions
   const isRefinedLocked = (templateJob?.lockedFields || [])?.includes('isRefined')
@@ -166,45 +169,81 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
           </Tooltip>
         </FormGroup>
 
-        <Tooltip
-          placement="right"
-          title={
+        <FormGroup>
+          <Tooltip
+            placement="right"
+            title={
+              <>
+                <Typography variant="body1" gutterBottom>
+                  Set this job as failed to indicate you won't be able to pay your crew.
+                </Typography>
+              </>
+            }
+          >
             <>
-              <Typography variant="body1" gutterBottom>
-                Set this job as failed to indicate you won't be able to pay your crew.
-              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={Boolean(workOrder.state === WorkOrderStateEnum.Failed)}
+                    disabled={!isEditing}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      if (event.target.checked) {
+                        setIsFailModalOpen(true)
+                      } else {
+                        // Un-fail please
+                        failWorkOrder && failWorkOrder()
+                      }
+                    }}
+                  />
+                }
+                label="Work order failed"
+              />
+              {workOrder.failReason && (
+                <Box>
+                  <Typography variant="overline" sx={{ mt: 1, color: theme.palette.error.main }}>
+                    Fail Reason:
+                  </Typography>
+                  <Typography color="error">{workOrder.failReason}</Typography>
+                </Box>
+              )}
             </>
-          }
-        >
-          <>
+          </Tooltip>
+
+          <Tooltip
+            placement="right"
+            title={
+              <>
+                <Typography variant="body1" gutterBottom>
+                  If you are creating this work order on behalf of someone else select this option and choose them.
+                </Typography>
+              </>
+            }
+          >
             <FormControlLabel
               control={
                 <Switch
-                  checked={Boolean(workOrder.state === WorkOrderStateEnum.Failed)}
-                  disabled={!isEditing}
+                  checked={Boolean(workOrder.sellerscName && workOrder.sellerscName.length > 0)}
+                  disabled={!isEditing || isIncludeTransferFeeLocked}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     if (event.target.checked) {
-                      setIsFailModalOpen(true)
+                      setIsSellerNameModalOpen(true)
                     } else {
                       // Un-fail please
-                      failWorkOrder && failWorkOrder()
+                      setIsSellerNameModalOpen(false)
+                      if (workOrder.sellerscName) {
+                        onChange({
+                          ...workOrder,
+                          sellerscName: null,
+                        })
+                      }
                     }
                   }}
                 />
               }
-              label="Work order failed"
+              label={workOrder.sellerscName ? `Alternate Seller: (${workOrder.sellerscName})` : `Alternate Seller`}
             />
-            {workOrder.failReason && (
-              <Box>
-                <Typography variant="overline" sx={{ mt: 1, color: theme.palette.error.main }}>
-                  Fail Reason:
-                </Typography>
-                <Typography color="error">{workOrder.failReason}</Typography>
-              </Box>
-            )}
-          </>
-        </Tooltip>
-
+          </Tooltip>
+        </FormGroup>
         {/* Helpful tips and tricks */}
         {isEditing && (
           <Accordion sx={{ mt: 6 }} disableGutters>
@@ -276,6 +315,18 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
         )}
         <ReferenceTables activity={workOrder.orderType} />
       </CardContent>
+      <ChooseSellerModal
+        open={isSellerNameModalOpen}
+        onChange={(seller: string) => {
+          onChange({
+            ...workOrder,
+            sellerscName: seller,
+          })
+        }}
+        onClose={() => setIsSellerNameModalOpen(false)}
+        disableList={workOrder.owner?.scName ? [workOrder.owner?.scName] : []}
+        userSuggest={userSuggest}
+      />
       <WorkOrderFailModal
         open={isFailModalOpen}
         onClose={() => setIsFailModalOpen(false)}

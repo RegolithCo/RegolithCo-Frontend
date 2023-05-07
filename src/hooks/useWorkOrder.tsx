@@ -121,6 +121,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         isRefined,
         method,
         note,
+        sellerscName,
         processStartTime,
         refinery,
         includeTransferFee,
@@ -138,6 +139,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           workOrder: {
             note,
             isRefined,
+            sellerscName,
             includeTransferFee,
             method,
             processStartTime,

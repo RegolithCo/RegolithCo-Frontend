@@ -1,0 +1,87 @@
+import React from 'react'
+import { useTheme, Theme, SxProps, Autocomplete, TextField, createFilterOptions, Tooltip } from '@mui/material'
+import { UserSuggest } from '@regolithco/common'
+import { UserListItem } from './UserListItem'
+// import log from 'loglevel'
+
+export interface UserPickerProps {
+  label?: string
+  toolTip?: React.ReactNode
+  onChange: (scName: string) => void
+  disableList?: string[]
+  includeMentioned?: boolean
+  includeFriends?: boolean
+  userSuggest?: UserSuggest
+}
+
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
+
+const filter = createFilterOptions<
+  [
+    string,
+    {
+      friend: boolean
+      session: boolean
+      named: boolean
+    }
+  ]
+>()
+
+export const UserPicker: React.FC<UserPickerProps> = ({
+  label,
+  toolTip,
+  onChange,
+  userSuggest,
+  disableList,
+  includeMentioned,
+  includeFriends,
+}) => {
+  const theme = useTheme()
+  const styles = stylesThunk(theme)
+
+  return (
+    <Tooltip title={toolTip || 'Enter a user name to add to the list'}>
+      <Autocomplete
+        id="adduser"
+        key={`userPicker`}
+        renderOption={(props, [scName, { friend, session, named }]) => (
+          <UserListItem
+            scName={scName}
+            key={`scname-${scName}`}
+            props={props}
+            session={session}
+            named={named}
+            friend={friend}
+          />
+        )}
+        clearOnBlur
+        blurOnSelect
+        fullWidth
+        freeSolo
+        getOptionLabel={(option) => {
+          if (option === null) return ''
+          if (typeof option === 'string') return option
+          if (Array.isArray(option) && option[0]) return option[0]
+          else return ''
+        }}
+        getOptionDisabled={(option) =>
+          (disableList || []).find((cs) => cs.toLowerCase() === option[0].toLowerCase()) !== undefined
+        }
+        options={Object.entries(userSuggest || {})}
+        sx={{ my: 3 }}
+        renderInput={(params) => <TextField {...params} label={label || 'Add User'} />}
+        filterOptions={(options, params) => {
+          const filtered = filter(options, params)
+          if (params.inputValue !== '') {
+            filtered.push([params.inputValue, { session: false, friend: !includeFriends, named: !includeMentioned }])
+          }
+          return filtered
+        }}
+        onChange={(event, option) => {
+          const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
+          onChange && onChange(addName)
+        }}
+      />
+    </Tooltip>
+  )
+}

@@ -29,6 +29,7 @@ export type CrewShareTableRowProps = {
   allowPay?: boolean
   isSessionRow?: boolean
   isMe?: boolean
+  isSeller?: boolean
   allowEdit?: boolean
   isEditing?: boolean
   includeTransferFee?: boolean
@@ -42,6 +43,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   crewShare,
   payoutSummary,
   isMe,
+  isSeller,
   remainder,
   allowEdit,
   isEditing,
@@ -58,7 +60,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   const [editingShare, setEditingShare] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
 
-  const paid = Boolean(isMe ? true : crewShare?.state)
+  const paid = Boolean(isSeller ? true : crewShare?.state)
 
   const tooltip = isMandatory
     ? 'The session owner has made this row mandatory'
@@ -67,31 +69,37 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     : ''
 
   const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
-  const backgroundColor = isMe ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
+  const backgroundColor = isSeller ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
   const hasNote = crewShare.note && crewShare.note.length > 0
-  const finalPayout: ShareAmtArr = isMe
+  const finalPayout: ShareAmtArr = isSeller
     ? [payoutSummary[0] + (remainder || 0), payoutSummary[1] + (remainder || 0), 0]
     : payoutSummary
   return (
     <>
       <Tooltip title={tooltip}>
         <TableRow sx={{ background: backgroundColor }}>
-          {isMe && <TableCell>{crewShare.scName}</TableCell>}
-          {!isMe && <TableCell>{crewShare.scName}</TableCell>}
+          {isSeller && <TableCell>{crewShare.scName}</TableCell>}
+          {!isSeller && <TableCell>{crewShare.scName}</TableCell>}
 
           {isEditing && !isMandatory ? formatCrewShareTypeEdit(crewShare, onChange) : formatCrewShareType(crewShare)}
           {formatCrewShare(crewShare, onChange, Boolean(isEditing && !isMandatory), editingShare, setEditingShare)}
 
-          {isMe ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
+          {isSeller ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
 
           <Tooltip
             placement="right-end"
-            title={isMe ? 'This is you. You are always paid.' : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`}
+            title={
+              isMe
+                ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
+                : isSeller
+                ? `The seller. The seller is always paid`
+                : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
+            }
           >
             <TableCell align="center" padding="none" width={30}>
               <Checkbox
                 checked={paid}
-                disabled={isMe || !allowPay}
+                disabled={isSeller || !allowPay}
                 onChange={(e) => {
                   markCrewSharePaid && markCrewSharePaid(crewShare, e.target.checked)
                 }}
@@ -121,7 +129,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
 
           {isEditing && (
             <TableCell align="center" padding="none" width={30}>
-              {!isMe && !isMandatory && (
+              {!isSeller && !isMandatory && (
                 <IconButton size="small" onClick={onDelete}>
                   <Delete />
                 </IconButton>

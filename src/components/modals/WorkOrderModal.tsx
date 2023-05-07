@@ -228,6 +228,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
               <Box sx={styles.headerMeta}>ID: {makeHumanIds(workOrder.owner?.scName, workOrder.orderId)}</Box>
               <Box sx={styles.headerMeta}> Created By: {workOrder.owner?.scName || 'NEW'}</Box>
+              {workOrder.sellerscName && <Box sx={styles.headerMeta}> Seller: {workOrder.sellerscName}</Box>}
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />

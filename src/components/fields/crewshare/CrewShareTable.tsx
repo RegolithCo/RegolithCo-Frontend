@@ -1,18 +1,5 @@
 import React from 'react'
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  useTheme,
-  Theme,
-  SxProps,
-  Autocomplete,
-  TextField,
-  createFilterOptions,
-  Tooltip,
-} from '@mui/material'
+import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Theme, SxProps, Tooltip } from '@mui/material'
 import {
   CrewShare,
   ShareTypeEnum,
@@ -24,7 +11,7 @@ import {
 } from '@regolithco/common'
 import { CrewShareTableRow } from './CrewShareTableRow'
 import { MValue, MValueFormat } from '../MValue'
-import { UserListItem } from '../UserListItem'
+import { UserPicker } from '../UserPicker'
 // import log from 'loglevel'
 
 export interface CrewShareTableProps {
@@ -51,17 +38,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     },
   },
 })
-
-const filter = createFilterOptions<
-  [
-    string,
-    {
-      friend: boolean
-      session: boolean
-      named: boolean
-    }
-  ]
->()
 
 export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   workOrder,
@@ -144,6 +120,11 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               key={`crewShare-${idx}`}
               crewShare={crewShare}
               isMe={crewShare.scName === workOrder.owner?.scName}
+              isSeller={
+                workOrder.sellerscName
+                  ? crewShare.scName === workOrder.sellerscName
+                  : crewShare.scName === workOrder.owner?.scName
+              }
               allowPay={allowPay}
               numSharesTotal={numSharesTotal}
               isMandatory={mandatoryRows.includes(crewShare.scName)}
@@ -179,44 +160,10 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
         </TableBody>
       </Table>
       {isEditing && (
-        <Autocomplete
-          id="adduser"
-          key={`uniquekey-${keyCounter}`}
-          renderOption={(props, [scName, { friend, session, named }]) => (
-            <UserListItem
-              scName={scName}
-              key={`scname-${scName}`}
-              props={props}
-              session={session}
-              named={named}
-              friend={friend}
-            />
-          )}
-          clearOnBlur
-          blurOnSelect
-          fullWidth
-          freeSolo
-          getOptionLabel={(option) => {
-            if (option === null) return ''
-            if (typeof option === 'string') return option
-            if (Array.isArray(option) && option[0]) return option[0]
-            else return ''
-          }}
-          getOptionDisabled={(option) =>
-            (workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === option[0].toLowerCase()) !== undefined
-          }
-          options={Object.entries(userSuggest || {})}
-          sx={{ my: 3 }}
-          renderInput={(params) => <TextField {...params} label="Add User" />}
-          filterOptions={(options, params) => {
-            const filtered = filter(options, params)
-            if (params.inputValue !== '') {
-              filtered.push([params.inputValue, { session: false, friend: false, named: false }])
-            }
-            return filtered
-          }}
-          onChange={(event, option) => {
-            const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
+        <UserPicker
+          label="Add User"
+          toolTip="Add a user to the work order"
+          onChange={(addName) => {
             if (
               validateSCName(addName) &&
               !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase()) !==
@@ -243,6 +190,10 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               })
             }
           }}
+          userSuggest={userSuggest}
+          includeFriends
+          includeMentioned
+          disableList={workOrder.crewShares?.map((cs) => cs.scName) || []}
         />
       )}
     </>

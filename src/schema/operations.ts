@@ -9,6 +9,7 @@ export const WorkOrderListFragmentFragmentDoc = gql`
   createdAt
   updatedAt
   ownerId
+  sellerscName
   state
   failReason
   includeTransferFee
@@ -35,6 +36,8 @@ export const WorkOrderIdFragmentFragmentDoc = gql`
   sessionId
   updatedAt
   failReason
+  ownerId
+  sellerscName
   state
 }
     `;
@@ -227,6 +230,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
   createdAt
   updatedAt
   ownerId
+  sellerscName
   owner {
     ...UserFragment
   }
