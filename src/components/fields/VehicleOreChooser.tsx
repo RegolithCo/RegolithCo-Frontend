@@ -1,6 +1,6 @@
 import React from 'react'
 import { ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { lookups, MarketPriceLookupValue, VehicleOreEnum, getVehicleOreName } from '@regolithco/common'
+import { lookups, VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { blue, green } from '@mui/material/colors'
 
@@ -26,9 +26,9 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
   const fgColors = ['#000000', '#ffffff', '#ffffff']
   // Sort descendng value
   vehicleRowKeys.sort((a, b) => {
-    const aPrice = lookups.marketPriceLookup[a] as MarketPriceLookupValue
-    const bPrice = lookups.marketPriceLookup[b] as MarketPriceLookupValue
-    return bPrice.refined - aPrice.refined
+    const aPrice = findPrice(a as VehicleOreEnum)
+    const bPrice = findPrice(b as VehicleOreEnum)
+    return bPrice - aPrice
   })
 
   return (

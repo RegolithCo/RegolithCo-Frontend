@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { lookups, MarketPriceLookupValue, getShipOreName, ShipOreEnum } from '@regolithco/common'
+import { getShipOreName, ShipOreEnum, findPrice } from '@regolithco/common'
 import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../fields/MValue'
@@ -14,22 +14,23 @@ export const ShipOreTable: React.FC = () => {
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
   // Sort descendng value
   shipRowKeys.sort((a, b) => {
-    const aPrice = lookups.marketPriceLookup[a] as MarketPriceLookupValue
-    const bPrice = lookups.marketPriceLookup[b] as MarketPriceLookupValue
-    return bPrice.refined - aPrice.refined
+    const aPrice = findPrice(a as ShipOreEnum, undefined, true)
+    const bPrice = findPrice(b as ShipOreEnum, undefined, true)
+    return bPrice - aPrice
   })
 
   const rowStats: { max: number; min: number }[] = []
 
   const finalTable: [number, number, number, number, number, number][] = shipRowKeys.map((shipOreKey, rowIdx) => {
-    const oreLookup = lookups.marketPriceLookup[shipOreKey] as MarketPriceLookupValue
+    const orePriceRefined = findPrice(shipOreKey as ShipOreEnum, undefined, true)
+    const orePriceUnrefined = findPrice(shipOreKey as ShipOreEnum, undefined, false)
     const retVals = [
-      oreLookup.unrefined,
-      oreLookup.refined,
-      oreLookup.unrefined * 3200,
-      oreLookup.refined * 3200,
-      oreLookup.unrefined * 9600,
-      oreLookup.refined * 9600,
+      orePriceUnrefined,
+      orePriceRefined,
+      orePriceUnrefined * 3200,
+      orePriceRefined * 3200,
+      orePriceUnrefined * 9600,
+      orePriceRefined * 9600,
     ]
     if (rowIdx === 0) {
       retVals.forEach((value) => rowStats.push({ max: value, min: value }))

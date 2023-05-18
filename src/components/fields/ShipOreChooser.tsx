@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { lookups, MarketPriceLookupValue, ShipOreEnum, getShipOreName } from '@regolithco/common'
+import { lookups, ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Clear } from '@mui/icons-material'
@@ -37,9 +37,9 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
   // Sort descendng value
   shipRowKeys.sort((a, b) => {
-    const aPrice = lookups.marketPriceLookup[a] as MarketPriceLookupValue
-    const bPrice = lookups.marketPriceLookup[b] as MarketPriceLookupValue
-    return bPrice.refined - aPrice.refined
+    const aPrice = findPrice(a as ShipOreEnum, undefined, true)
+    const bPrice = findPrice(b as ShipOreEnum, undefined, true)
+    return bPrice - aPrice
   })
 
   return (

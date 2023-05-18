@@ -16,8 +16,6 @@ import {
   keyframes,
   SxProps,
   Theme,
-  IconButton,
-  Tooltip,
 } from '@mui/material'
 import {
   ActivityEnum,
@@ -30,14 +28,13 @@ import {
   VehicleMiningRow,
   VehicleOreEnum,
   WorkOrder,
-  lookups,
   WorkOrderSummary,
   oreAmtCalc,
   getOreName,
-  MarketPriceLookupValue,
   SalvageRow,
   SalvageOreEnum,
   SalvageOrder,
+  findPrice,
 } from '@regolithco/common'
 import { MValue, MValueFormat } from '../../../fields/MValue'
 import { RefineryControl } from '../../../fields/RefineryControl'
@@ -51,7 +48,7 @@ import { fontFamilies } from '../../../../theme'
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
-import { ErrorOutline, QuestionAnswerOutlined, QuestionMarkOutlined } from '@mui/icons-material'
+import { ErrorOutline } from '@mui/icons-material'
 import { PricesTooltip } from '../../../fields/PricesTooltip'
 
 export type OreCardProps = WorkOrderCalcProps & {
@@ -124,12 +121,12 @@ export const OreCard: React.FC<OreCardProps> = ({
   const oreTableRows = useMemo(() => {
     const oreTableRows = Object.entries(summary?.oreSummary || [])
     oreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
-      const aPrice = lookups.marketPriceLookup[a as ShipOreEnum] as MarketPriceLookupValue
-      const bPrice = lookups.marketPriceLookup[b as ShipOreEnum] as MarketPriceLookupValue
+      const aPrice = findPrice(a as ShipOreEnum, undefined, true)
+      const bPrice = findPrice(b as ShipOreEnum, undefined, true)
       // Sort the ore by price. The refinery sorts by value of the ore, but that would create chaos while the user
       // is editing the ore amounts. So we sort by the price of the ore.
-      if (isEditing) return aPrice.refined - bPrice.refined
-      else return rb * bPrice.refined - ra * aPrice.refined
+      if (isEditing) return aPrice - bPrice
+      else return rb * bPrice - ra * aPrice
     })
     return oreTableRows
   }, [summary.oreSummary, isEditing])

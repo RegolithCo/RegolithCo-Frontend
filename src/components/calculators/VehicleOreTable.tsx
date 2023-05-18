@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { lookups, MarketPriceLookupValue, getVehicleOreName, VehicleOreEnum } from '@regolithco/common'
+import { getVehicleOreName, VehicleOreEnum, findPrice } from '@regolithco/common'
 import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 // import log from 'loglevel'
@@ -15,16 +15,16 @@ export const VehicleOreTable: React.FC = () => {
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
   // Sort descendng value
   vehicleRowKeys.sort((a, b) => {
-    const aPrice = lookups.marketPriceLookup[a] as MarketPriceLookupValue
-    const bPrice = lookups.marketPriceLookup[b] as MarketPriceLookupValue
-    return bPrice.refined - aPrice.refined
+    const aPrice = findPrice(a as VehicleOreEnum)
+    const bPrice = findPrice(b as VehicleOreEnum)
+    return bPrice - aPrice
   })
 
   const rowStats: { max: number; min: number }[] = []
 
   const finalTable: [number, number, number][] = vehicleRowKeys.map((shipOreKey, rowIdx) => {
-    const oreLookup = lookups.marketPriceLookup[shipOreKey] as MarketPriceLookupValue
-    const retVals = [oreLookup.unrefined, oreLookup.unrefined * 800, oreLookup.unrefined * 3500]
+    const orePrice = findPrice(shipOreKey as VehicleOreEnum)
+    const retVals = [orePrice, orePrice * 800, orePrice * 3500]
     if (rowIdx === 0) {
       retVals.forEach((value) => rowStats.push({ max: value, min: value }))
     } else {

@@ -16,15 +16,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import {
-  lookups,
-  MarketPriceLookupValue,
-  RockStateEnum,
-  ShipOreEnum,
-  ShipRock,
-  shipRockCalc,
-  ShipRockOre,
-} from '@regolithco/common'
+import { findPrice, lookups, RockStateEnum, ShipOreEnum, ShipRock, shipRockCalc, ShipRockOre } from '@regolithco/common'
 import { ShipOreChooser } from '../fields/ShipOreChooser'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
@@ -193,9 +185,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const ores: ShipRockOre[] = [...(newShipRock.ores || [])]
   // alphabetical sort
   ores.sort(({ ore: a }, { ore: b }) => {
-    const aPrice = lookups.marketPriceLookup[a as ShipOreEnum] as MarketPriceLookupValue
-    const bPrice = lookups.marketPriceLookup[b as ShipOreEnum] as MarketPriceLookupValue
-    return bPrice.refined - aPrice.refined
+    const aPrice = findPrice(a as ShipOreEnum, undefined, true)
+    const bPrice = findPrice(b as ShipOreEnum, undefined, true)
+    return bPrice - aPrice
   })
   const disabled =
     !newShipRock.mass ||

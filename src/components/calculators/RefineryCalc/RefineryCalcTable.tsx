@@ -9,6 +9,7 @@ import {
   getRefiningCost,
   getRefiningTime,
   getShipOreName,
+  findPrice,
 } from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
@@ -57,9 +58,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
       .map(([oreKey, oreVal]) => [oreKey, oreVal])
     sortable.sort(
-      (a, b) =>
-        (lookups.marketPriceLookup[b[1] as ShipOreEnum]?.refined as number) -
-        (lookups.marketPriceLookup[a[1] as ShipOreEnum]?.refined as number)
+      (a, b) => findPrice(b[1] as ShipOreEnum, undefined, true) - findPrice(a[1] as ShipOreEnum, undefined, true)
     )
     vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
   } else {
@@ -82,7 +81,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       ) as RefineryMethodEnum
       const oreYield = yieldCalc(finalAmt, finalOre, finalRefinery, finalMethod)
       const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
-      const marketPrice = lookups.marketPriceLookup[finalOre]?.refined as number
+      const marketPrice = findPrice(finalOre as ShipOreEnum, undefined, true)
       switch (refMetric) {
         case RefineryMetricEnum.netProfit:
           outArr[0] = oreYield * marketPrice - refCost

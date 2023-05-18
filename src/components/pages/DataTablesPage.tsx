@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, Tab, Tabs, useTheme, Theme } from '@mui/material'
+import { Typography, Tab, Tabs, useTheme, Theme, Alert, AlertTitle, Link } from '@mui/material'
 import { Box, SxProps } from '@mui/system'
 import { PageWrapper } from '../PageWrapper'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -56,6 +56,13 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
   return (
     <PageWrapper title="Data Tables" maxWidth="lg">
       <Typography paragraph>Use these calculators to figure out where you should take your hard-won ore. </Typography>
+      <Alert severity="warning" sx={{ mb: 2 }}>
+        <AlertTitle>3.19 Prices</AlertTitle>
+        <Typography paragraph>
+          In 3.19 prices have become a lot more dynamic. A more interactive, comprehensive view of prices is coming but
+          for now these are just the maximum prices reported by <Link href="https://uexcorp.space/">UEX</Link>.
+        </Typography>
+      </Alert>
       <Tabs
         value={finalTab}
         sx={{

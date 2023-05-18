@@ -6,6 +6,7 @@ import {
   RefineryModifiers,
   ShipOreEnum,
   getShipOreName,
+  findPrice,
 } from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
@@ -37,9 +38,7 @@ export const RefineryBonusTable: React.FC = () => {
     .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
     .map(([oreKey, oreVal]) => [oreKey, oreVal])
   sortable.sort(
-    (a, b) =>
-      (lookups.marketPriceLookup[b[1] as ShipOreEnum]?.refined as number) -
-      (lookups.marketPriceLookup[a[1] as ShipOreEnum]?.refined as number)
+    (a, b) => findPrice(b[1] as ShipOreEnum, undefined, true) - findPrice(a[1] as ShipOreEnum, undefined, true)
   )
   vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
 
