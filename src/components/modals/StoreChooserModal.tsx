@@ -3,28 +3,20 @@ import * as React from 'react'
 import {
   Box,
   Button,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   List,
-  ListItemButton,
-  ListItemText,
   SxProps,
   Theme,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
-import { OreSummary, findAllStoreChoices, lookups } from '@regolithco/common'
+import { OreSummary, findAllStoreChoices } from '@regolithco/common'
 import { Stack } from '@mui/system'
 import Gradient from 'javascript-color-gradient'
-import { Cancel, Error, ResetTv } from '@mui/icons-material'
-import { MValueFormat } from '../fields/MValue'
-import { MValueFormatter } from '../fields/MValue'
-import { fontFamilies } from '../../theme'
-
-export const SHIP_ROCK_BOUNDS = [2000, 150000]
+import { Cancel, ResetTv } from '@mui/icons-material'
+import { StoreChooserListItem } from '../fields/StoreChooserListItem'
 
 export interface StoreChooserModalProps {
   open?: boolean
@@ -86,7 +78,7 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
   const styles = styleThunk(theme)
 
   const storeChoices = findAllStoreChoices(ores, isRefined)
-  const quaColors = ['#00ff22', '#fff700', '#FF0000']
+  const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
     .setColorGradient(...quaColors)
     .setMidpoint(storeChoices.length) // 100 is the number of colors to generate. Should be enough stops for our ores
@@ -111,90 +103,20 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
               No stores found
             </Typography>
           )}
-          <List sx={{ overflowY: 'scroll', flexGrow: 1 }}>
+          <List sx={{ overflowY: 'scroll', flexGrow: 1, px: 2 }}>
             {sortedStoreChoices.map((choice, index) => (
-              <ListItemButton
+              <StoreChooserListItem
                 key={index}
+                ores={ores}
+                isSelected={choice.code === initStore}
+                storeChoice={choice}
+                priceColor={bgColors[index]}
+                isMax={index === 0}
                 onClick={() => {
                   onSubmit && onSubmit(choice.code)
                   onClose()
                 }}
-                sx={{
-                  borderRadius: 3,
-                  backgroundOpacity: 0.2,
-                  border: `1px solid ${theme.palette.text.secondary}`,
-                  mb: 1,
-                }}
-              >
-                <ListItemText
-                  sx={{
-                    flex: '1 1 70%',
-                  }}
-                  primary={
-                    <Box>
-                      <Typography variant="body1" sx={{ color: theme.palette.text.primary }}>
-                        {choice.name}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {lookups.planetLookups['ST'][choice.planet].name}
-                        {choice.satellite &&
-                          ` // ${lookups.planetLookups['ST'][choice.planet].satellites[choice.satellite]}`}
-                      </Typography>
-                    </Box>
-                  }
-                  secondary={
-                    <Tooltip
-                      title={
-                        <Box>
-                          <Typography variant="body1" sx={{}} component="div">
-                            These ores are not available to sell at this location. You'll need to make a second stop to
-                            sell them.
-                          </Typography>
-                        </Box>
-                      }
-                    >
-                      <Box>
-                        {Object.keys(ores).map((ore, index) => {
-                          const found = !choice.missingOres.find((missingOre) => missingOre === ore)
-                          return (
-                            <Chip
-                              key={index}
-                              label={ore}
-                              size="small"
-                              sx={{
-                                //
-                                fontSize: '0.7rem',
-                                mr: 0.5,
-                                background: found ? theme.palette.success.main : theme.palette.error.light,
-                                color: found ? theme.palette.success.contrastText : theme.palette.error.dark,
-                                height: 14,
-                                borderRadius: 1,
-                                fontWeight: 'bold',
-                              }}
-                            />
-                          )
-                        })}
-                      </Box>
-                    </Tooltip>
-                  }
-                />
-                <ListItemText
-                  sx={{
-                    flex: '1 1 30%',
-                    '& .MuiListItemText-primary': {
-                      color: bgColors[index],
-                      fontSize: '1.2rem',
-                      textAlign: 'right',
-                      fontFamily: fontFamilies.robotoMono,
-                    },
-                    '& .MuiListItemText-secondary': {
-                      textAlign: 'right',
-                    },
-                  }}
-                  primary={MValueFormatter(choice.price, MValueFormat.currency_sm, 1)}
-                  secondary={index === 0 && <Chip label="MAX" color="success" size="small" />}
-                />
-              </ListItemButton>
+              />
             ))}
           </List>
         </DialogContent>
@@ -210,7 +132,8 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
               size="small"
               variant={'contained'}
               onClick={() => {
-                //
+                onSubmit && onSubmit(null)
+                onClose()
               }}
             >
               Auto Choose Max

@@ -29,5 +29,5 @@ StoreChooserModal.args = {
     [ShipOreEnum.Iron]: { collected: 1000, refined: 1000 },
   },
   open: true,
-  initStore: undefined,
+  initStore: 'CRUTD',
 }
