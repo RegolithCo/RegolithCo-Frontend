@@ -2,6 +2,7 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { StoreChooserModal as StoreChooserModalC } from './StoreChooserModal'
+import { ShipOreEnum, VehicleOreEnum } from '@regolithco/common'
 
 export default {
   title: 'Modals/StoreChooserModals',
@@ -19,7 +20,14 @@ StoreChooserModal.args = {
   onClose: () => {
     console.log('Closed')
   },
-  ores: {},
+  ores: {
+    [VehicleOreEnum.Hadanite]: { collected: 80, refined: 80 },
+    [ShipOreEnum.Bexalite]: { collected: 1000, refined: 1000 },
+    [ShipOreEnum.Diamond]: { collected: 1000, refined: 1000 },
+    [ShipOreEnum.Corundum]: { collected: 1000, refined: 1000 },
+    [ShipOreEnum.Iron]: { collected: 1000, refined: 1000 },
+    [ShipOreEnum.Iron]: { collected: 1000, refined: 1000 },
+  },
   open: true,
   initStore: undefined,
 }
