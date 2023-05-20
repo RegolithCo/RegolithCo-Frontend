@@ -2,12 +2,8 @@ import * as React from 'react'
 
 import {
   VerifiedUserLookup,
-  DeliveryShips,
-  lookups,
-  ShipStats,
   UserProfile,
   UserStateEnum,
-  ShipEnum,
   UserProfileInput,
   DestructuredSettings,
   UserSuggest,
@@ -23,8 +19,6 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  MenuItem,
-  Select,
   SxProps,
   Tab,
   Tabs,
@@ -134,12 +128,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Alphabetically sort friends
   friends.sort((a, b) => a.localeCompare(b))
   const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
-  const sortedShips = [...DeliveryShips]
-  sortedShips.sort((a, b) => {
-    const { cargo: cargoA }: ShipStats = lookups.shipLookups[a] as ShipStats
-    const { cargo: cargoB }: ShipStats = lookups.shipLookups[b] as ShipStats
-    return cargoA && cargoB ? cargoB - cargoA : 0
-  })
+  // const sortedShips = [...DeliveryShips]
+  // sortedShips.sort((a, b) => {
+  //   const { cargo: cargoA }: ShipStats = lookups.shipLookups[a] as ShipStats
+  //   const { cargo: cargoB }: ShipStats = lookups.shipLookups[b] as ShipStats
+  //   return cargoA && cargoB ? cargoB - cargoA : 0
+  // })
 
   const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'sm'
 
@@ -281,7 +275,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Typography component="div" sx={styles.sectionTitle}>
                 Preferred Delivery Ship
               </Typography>
-              <Box sx={styles.sectionBody}>
+              {/* <Box sx={styles.sectionBody}>
                 <Select
                   labelId="demo-select-small-label"
                   id="delivery-ship-select"
@@ -297,7 +291,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   }}
                   value={newUserProfile.deliveryShip || ''}
                   renderValue={(ship) => {
-                    const shipObj: ShipStats = lookups.shipLookups[ship as ShipEnum] as ShipStats
+                    const shipObj: ShipStats = lookups.shipLookup[ship] as ShipStats
                     return (
                       <Box sx={{ display: 'flex' }}>
                         {shipObj.name}
@@ -331,7 +325,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <Typography variant="caption" sx={{ mt: 1 }}>
                   The ship you prefer to use for taking your ore to market.
                 </Typography>
-              </Box>
+              </Box> */}
             </Box>
 
             {/* Avatar controls */}
