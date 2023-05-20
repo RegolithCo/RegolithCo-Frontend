@@ -23,7 +23,7 @@ export const VehicleOreTable: React.FC = () => {
   const rowStats: { max: number; min: number }[] = []
 
   const finalTable: [number, number, number][] = vehicleRowKeys.map((shipOreKey, rowIdx) => {
-    const orePrice = findPrice(shipOreKey as VehicleOreEnum)
+    const orePrice = findPrice(shipOreKey as VehicleOreEnum) / 10
     const retVals = [orePrice, orePrice * 800, orePrice * 3500]
     if (rowIdx === 0) {
       retVals.forEach((value) => rowStats.push({ max: value, min: value }))
@@ -93,7 +93,7 @@ export const VehicleOreTable: React.FC = () => {
                         color: fgColors[colorizedRows[rowIdx][colIdx]],
                       }}
                     >
-                      <MValue value={colVal} />
+                      <MValue value={colVal} format={MValueFormat.currency_sm} />
                     </TableCell>
                   )
                 })}

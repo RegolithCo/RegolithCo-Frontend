@@ -460,6 +460,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     <TableCell align="right">
                       {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 'mSCU' : 'SCU'}
                     </TableCell>
+                    <TableCell align="right">aUEC</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -472,11 +473,10 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                         <TableRow key={oreKey}>
                           <TableCell>{getOreName(oreKey)}</TableCell>
                           <TableCell align="right">
-                            {MValueFormatter(
-                              volumeUnitted,
-                              MValueFormat.number_sm,
-                              scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 0 : 1
-                            )}
+                            {MValueFormatter(volumeUnitted, MValueFormat.number_sm, 1)}
+                          </TableCell>
+                          <TableCell align="right">
+                            {MValueFormatter(potentialProfit, MValueFormat.number_sm, 1)}
                           </TableCell>
                         </TableRow>
                       )
@@ -493,6 +493,10 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                         MValueFormat.number_sm,
                         scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 0 : 1
                       )}
+                    </TableCell>
+                    <TableCell align="right">
+                      {profitSymbol}
+                      {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm, 1)}
                     </TableCell>
                   </TableRow>
                 </TableFooter>

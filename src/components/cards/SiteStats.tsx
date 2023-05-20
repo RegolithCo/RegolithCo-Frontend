@@ -41,7 +41,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, loading }) => {
 }
 
 interface SiteStatsCardProps {
-  value: number | string
+  value: number | string | React.ReactNode
   subText: string
   tooltip?: React.ReactNode
 }

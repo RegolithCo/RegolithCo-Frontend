@@ -208,6 +208,11 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
           </Typography>
           <div style={{ flexGrow: 1 }} />
           <Stack>
+            <Tooltip title="Potential value of all the ore, after refining, using Dinyx Solventation" placement="right">
+              <Typography sx={{ fontWeight: 'bold' }} align="right">
+                Value: <MValue value={value} format={MValueFormat.currency} />
+              </Typography>
+            </Tooltip>
             <Tooltip title="Total volume of all the unrefined ore in this rock" placement="right">
               <Typography sx={{ fontWeight: 'bold' }} align="right">
                 Material: <MValue value={volume} format={MValueFormat.volSCU} />

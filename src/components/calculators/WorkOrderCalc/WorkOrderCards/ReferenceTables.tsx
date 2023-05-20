@@ -13,16 +13,16 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
   let show = true
   switch (activity) {
     case ActivityEnum.ShipMining:
-      rows.push([lups.PROSPECTOR as ShipStats, 100, 'miningHold', 'cSCU'])
-      rows.push([lups.MOLE as ShipStats, 100, 'miningHold', 'cSCU'])
+      rows.push([lups.find(({ code }) => code === 'MPROSP') as ShipStats, 100, 'miningHold', 'cSCU'])
+      rows.push([lups.find(({ code }) => code === 'ARMOLE') as ShipStats, 100, 'miningHold', 'cSCU'])
       break
     case ActivityEnum.VehicleMining:
-      rows.push([lups.ROC as ShipStats, 1000, 'miningHold', 'mSCU'])
-      rows.push([lups.ROC_DS as ShipStats, 1000, 'miningHold', 'mSCU'])
+      rows.push([lups.find(({ code }) => code === 'GREROC') as ShipStats, 1000, 'miningHold', 'mSCU'])
+      rows.push([lups.find(({ code }) => code === 'GRERCD') as ShipStats, 1000, 'miningHold', 'mSCU'])
       break
     case ActivityEnum.Salvage:
-      rows.push([lups.RECLAIMER as ShipStats, 1, 'cargo', 'SCU'])
-      rows.push([lups.VULTURE as ShipStats, 1, 'cargo', 'SCU'])
+      rows.push([lups.find(({ code }) => code === 'RECLAI') as ShipStats, 1, 'cargo', 'SCU'])
+      rows.push([lups.find(({ code }) => code === 'VULTUR') as ShipStats, 1, 'cargo', 'SCU'])
       break
     default:
       show = false

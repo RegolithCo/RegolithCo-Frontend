@@ -63,6 +63,13 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
           for now these are just the maximum prices reported by <Link href="https://uexcorp.space/">UEX</Link>.
         </Typography>
       </Alert>
+      <Alert severity="success" sx={{ mb: 2 }}>
+        <AlertTitle>New Tables coming soon</AlertTitle>
+        <Typography paragraph>
+          3.19 has brought a lot more complexity to mining and we will be adding new tables to help you make the most of
+          it. Stay tuned!
+        </Typography>
+      </Alert>
       <Tabs
         value={finalTab}
         sx={{

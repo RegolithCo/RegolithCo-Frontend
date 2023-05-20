@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {
-  lookups,
   yieldCalc,
   RefineryEnum,
   RefineryMethodEnum,
@@ -10,8 +9,9 @@ import {
   getRefiningTime,
   getShipOreName,
   findPrice,
+  lookups,
 } from '@regolithco/common'
-import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody } from '@mui/material'
+import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { RefineryMetricEnum, RefineryPivotEnum } from './RefineryCalc'
@@ -49,7 +49,10 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const hAxis = Object.values(RefineryEnum).map((refVal) => [refVal, refVal])
+  const hAxis = Object.values(RefineryEnum).map((refVal) => [
+    refVal as RefineryEnum,
+    (lookups.tradeports.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
+  ])
   hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
 
   let vAxis: [ShipOreEnum | RefineryMethodEnum, string][] = []
@@ -120,14 +123,14 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   let decimalVal1 = 0
   switch (refMetric) {
     case RefineryMetricEnum.netProfit:
-      numberFormat1 = MValueFormat.number
+      numberFormat1 = MValueFormat.currency_sm
       break
     case RefineryMetricEnum.oreYields:
       decimalVal1 = 2
-      numberFormat1 = MValueFormat.number
+      numberFormat1 = MValueFormat.volSCU
       break
     case RefineryMetricEnum.refiningCost:
-      numberFormat1 = MValueFormat.number
+      numberFormat1 = MValueFormat.currency_sm
       reverseMeaningVal1 = true
       break
     case RefineryMetricEnum.refiningTime:
@@ -135,7 +138,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       reverseMeaningVal1 = true
       break
     case RefineryMetricEnum.timeVProfit:
-      numberFormat1 = MValueFormat.number
+      numberFormat1 = MValueFormat.currency_sm
       numberFormat2 = MValueFormat.duration_small
       reverseMeaningVal2 = true
       break
@@ -219,17 +222,21 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                 align="left"
                 valign="top"
                 sx={{
-                  fontSize: '1.2rem',
+                  px: 0.1,
                   textAlign: 'center',
                   fontFamily: fontFamilies.robotoMono,
-                  fontWeight: 'bold',
                   background: colIdx % 2 === 0 ? '#000000' : '#222222',
-                  [theme.breakpoints.down('sm')]: {
-                    fontSize: '0.75rem',
+                  '& .MuiTableCell-root * ': {
+                    fontSize: '0.75rem!important',
                   },
                 }}
               >
-                {hAxisLabel}
+                <Typography variant="h5" sx={{ fontSize: '1.2rem' }} component="div">
+                  {hAxisLabel.split(' ')[0]}
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: '0.65rem' }} component="div">
+                  {hAxisLabel.split(' ').slice(1).join(' ')}
+                </Typography>
               </TableCell>
             ))}
           </TableRow>

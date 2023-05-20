@@ -25,7 +25,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   const totalTimeFinal = totalTime || (endTime ? endTime - startTimeFinal : 0)
   const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTimeFinal, totalTimeFinal)
 
-  let finalVal = ''
+  let finalVal: React.ReactNode = ''
   if (hasTime && isFinished) finalVal = 'COMPLETED'
   else if (hasTime && isStarted) finalVal = MValueFormatter(remainingTime, MValueFormat.durationS)
 

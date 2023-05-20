@@ -8,22 +8,32 @@ export const ShipOreTable: React.FC = () => {
   const theme = useTheme()
   const shipRowKeys = Object.values(ShipOreEnum)
   const bgColors = new Gradient()
-    .setColorGradient('#b93327', theme.palette.background.paper, '#246f9a', '#229f63')
+    .setColorGradient('#b93327', '#a46800', theme.palette.background.paper, '#246f9a', '#229f63')
     .setMidpoint(50) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+  const priceLookups = shipRowKeys.reduce((acc, shipOreKey) => {
+    acc[shipOreKey] = [
+      findPrice(shipOreKey as ShipOreEnum, undefined, true),
+      findPrice(shipOreKey as ShipOreEnum, undefined, false),
+    ]
+    return acc
+  }, {} as { [key in ShipOreEnum]: [number, number] })
+
   // Sort descendng value
   shipRowKeys.sort((a, b) => {
-    const aPrice = findPrice(a as ShipOreEnum, undefined, true)
-    const bPrice = findPrice(b as ShipOreEnum, undefined, true)
-    return bPrice - aPrice
+    const aPrice = priceLookups[a as ShipOreEnum]
+    const bPrice = priceLookups[b as ShipOreEnum]
+    return bPrice[0] - aPrice[0]
   })
+
+  console.log('sorted shipRowKeys: ', shipRowKeys, priceLookups)
 
   const rowStats: { max: number; min: number }[] = []
 
   const finalTable: [number, number, number, number, number, number][] = shipRowKeys.map((shipOreKey, rowIdx) => {
-    const orePriceRefined = findPrice(shipOreKey as ShipOreEnum, undefined, true)
-    const orePriceUnrefined = findPrice(shipOreKey as ShipOreEnum, undefined, false)
+    const orePriceRefined = priceLookups[shipOreKey][0]
+    const orePriceUnrefined = priceLookups[shipOreKey][1]
     const retVals = [
       orePriceUnrefined,
       orePriceRefined,
@@ -53,7 +63,7 @@ export const ShipOreTable: React.FC = () => {
 
   return (
     <TableContainer>
-      <Table sx={{ minWidth: 400, maxWidth: 700, mx: 'auto' }} size="small" aria-label="simple table">
+      <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell sx={{ backgroundColor: '#00000033' }}></TableCell>
@@ -123,7 +133,7 @@ export const ShipOreTable: React.FC = () => {
                         color: fgColors[colorizedRows[rowIdx][colIdx]],
                       }}
                     >
-                      <MValue key={`cell-${rowIdx}-${colIdx}`} value={colVal} />
+                      <MValue key={`cell-${rowIdx}-${colIdx}`} value={colVal} format={MValueFormat.currency_sm} />
                     </TableCell>
                   )
                 })}

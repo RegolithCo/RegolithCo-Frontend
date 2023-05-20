@@ -32,11 +32,11 @@ export const RefineryPivotEnum = {
 export type RefineryPivotEnum = ObjectValues<typeof RefineryPivotEnum>
 
 export const RefineryMetricEnum = {
-  netProfit: 'Net Profit (aUEC)',
-  oreYields: 'Ore Yields (SCU)',
-  refiningTime: 'Refining Time (HH:MM)',
-  refiningCost: 'Refining Cost (aUEC)',
-  timeVProfit: 'Time & Profit (aUEC) (HH:MM)',
+  netProfit: 'Net Profit',
+  oreYields: 'Ore Yields',
+  refiningTime: 'Refining Time',
+  refiningCost: 'Refining Cost',
+  timeVProfit: 'Time & Profit',
 } as const
 export type RefineryMetricEnum = ObjectValues<typeof RefineryMetricEnum>
 

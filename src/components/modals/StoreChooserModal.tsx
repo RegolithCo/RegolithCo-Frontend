@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Link,
   List,
   SxProps,
   Theme,
@@ -59,8 +60,6 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   headerBar: {
     color: theme.palette.primary.contrastText,
     background: theme.palette.primary.main,
-    display: 'flex',
-    justifyContent: 'space-between',
     px: 2,
     py: 1,
   },
@@ -90,12 +89,23 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
     <>
       <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="sm" fullWidth>
         <Box sx={styles.headerBar}>
-          <Typography variant="h6" sx={styles.cardTitle} component="div">
-            Store Chooser
-          </Typography>
-          <Typography variant="caption" sx={styles.cardTitle} component="div">
-            Price for all sellable ores
-          </Typography>
+          <Stack direction="row">
+            <Typography variant="h6" sx={styles.cardTitle}>
+              Store Chooser
+            </Typography>
+            <div style={{ flex: 1 }} />
+            <Typography variant="caption" sx={styles.cardTitle}>
+              Price for all sellable ores
+            </Typography>
+          </Stack>
+          <Box>
+            <Typography variant="caption" sx={styles.cardTitle} component="div">
+              Prices courtesy of:{' '}
+              <Link href="https://uexcorp.space/" target="_blank" color={theme.palette.primary.contrastText}>
+                UEX
+              </Link>
+            </Typography>
+          </Box>
         </Box>
         <DialogContent sx={styles.dialogContent}>
           {storeChoices.length === 0 && (

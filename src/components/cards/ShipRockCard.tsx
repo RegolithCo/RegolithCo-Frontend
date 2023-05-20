@@ -189,8 +189,11 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({
         />
         <Box sx={{ ...styles.topBox, cursor }} onClick={onClickAction}>
           <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
-            <Typography sx={styles.massNum}>Mass: {MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
+            <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
             <div style={{ flex: '1 1' }} />
+            <Typography sx={styles.valueNum} component="div">
+              {rockValue ? MValueFormatter(rockValue, MValueFormat.currency_sm) : '??'}
+            </Typography>
           </Stack>
         </Box>
 

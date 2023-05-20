@@ -25,7 +25,7 @@ export const MValueFormat = {
 export type MValueFormat = ObjectValues<typeof MValueFormat>
 
 export interface MValueProps {
-  value?: number | string | null
+  value?: number | string | React.ReactNode | null
   onClick?: () => void
   decimals?: number
   approx?: boolean
@@ -36,12 +36,20 @@ export interface MValueProps {
   }
 }
 
+export const MValueAddUnit = (value: string, unit: string): React.ReactNode => {
+  return (
+    <>
+      {value} <span style={{ fontSize: '0.7em' }}>{unit}</span>
+    </>
+  )
+}
+
 export const MValueFormatter = (
   value: MValueProps['value'],
   format: MValueProps['format'],
   decimals: MValueProps['decimals'] = 0
-): string => {
-  let finalVal = ''
+): React.ReactNode => {
+  let finalVal: React.ReactNode = ''
 
   if (format === MValueFormat.string) finalVal = value as string
   else if (isNaN(value as number)) finalVal = 'NaN'
@@ -56,9 +64,9 @@ export const MValueFormatter = (
   }
   // aUEC
   else if (format === MValueFormat.currency) {
-    finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}`) + ' aUEC'
+    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals)}`), 'aUEC')
   } else if (format === MValueFormat.currency_sm) {
-    finalVal = Numeral(value).format(`0a`) + ' aUEC'
+    finalVal = MValueAddUnit(Numeral(value).format(`0a`), 'aUEC')
   }
   // Percent
   else if (format === MValueFormat.percent) {
@@ -80,11 +88,11 @@ export const MValueFormatter = (
   } else if (format === MValueFormat.volSCU) {
     const val = value as number
     const finalDecimals = val && val > 0 && val < 1 && decimals === 0 ? decimals + 1 : decimals
-    finalVal = Numeral(val).format(`0,0.${'0'.repeat(finalDecimals)}`) + ' SCU'
+    finalVal = MValueAddUnit(Numeral(val).format(`0,0.${'0'.repeat(finalDecimals)}`), 'SCU')
   } else if (format === MValueFormat.volcSCU) {
-    finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}`) + ' cSCU'
+    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals)}`), 'cSCU')
   } else if (format === MValueFormat.mass_sm) {
-    finalVal = Numeral(value).format(`0.${'0'.repeat(decimals)}a`) + ' kg'
+    finalVal = MValueAddUnit(Numeral(value).format(`0.${'0'.repeat(decimals)}a`), 'kg')
   } else {
     finalVal = value as string
   }

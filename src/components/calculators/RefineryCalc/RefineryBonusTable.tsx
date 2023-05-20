@@ -8,7 +8,7 @@ import {
   getShipOreName,
   findPrice,
 } from '@regolithco/common'
-import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody } from '@mui/material'
+import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
@@ -30,8 +30,11 @@ export const RefineryBonusTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const hAxis = Object.values(RefineryEnum).map((refVal) => [refVal, refVal])
-  hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
+  const hAxis: [RefineryEnum, string][] = Object.values(RefineryEnum).map((refVal) => [
+    refVal as RefineryEnum,
+    (lookups.tradeports.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
+  ])
+  hAxis.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
 
   let vAxis: [ShipOreEnum, string][] = []
   const sortable = Object.entries(ShipOreEnum)
@@ -43,7 +46,7 @@ export const RefineryBonusTable: React.FC = () => {
   vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
 
   const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
-    const cols: RefineryModifiers[] = hAxis.map(([refinery]) => {
+    const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
       const opl = lookups.refineryBonusLookup[refinery] as OreProcessingLookup
       const outArr = opl[ore] as RefineryModifiers
 
@@ -85,7 +88,8 @@ export const RefineryBonusTable: React.FC = () => {
     })
   )
 
-  const tables = ['Yield', 'Refining Time']
+  const tables = ['Yield', 'Refining Time', 'Refining Cost']
+  const reversed = [false, true, true]
 
   return (
     <>
@@ -125,17 +129,21 @@ export const RefineryBonusTable: React.FC = () => {
                     align="left"
                     valign="top"
                     sx={{
-                      fontSize: '1.2rem',
+                      px: 0.1,
                       textAlign: 'center',
                       fontFamily: fontFamilies.robotoMono,
-                      fontWeight: 'bold',
                       background: colIdx % 2 === 0 ? '#000000' : '#222222',
                       '& .MuiTableCell-root * ': {
                         fontSize: '0.75rem!important',
                       },
                     }}
                   >
-                    {hAxisLabel}
+                    <Typography variant="h5" sx={{ fontSize: '1.2rem' }} component="div">
+                      {hAxisLabel.split(' ')[0]}
+                    </Typography>
+                    <Typography variant="caption" sx={{ fontSize: '0.65rem' }} component="div">
+                      {hAxisLabel.split(' ').slice(1).join(' ')}
+                    </Typography>
                   </TableCell>
                 ))}
               </TableRow>
