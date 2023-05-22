@@ -8,6 +8,13 @@ export type APIEventFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type CIGLookupsKeySpecifier = ('mineralDensities' | 'refiningBaseParams' | 'refiningBonuses' | 'refiningMethods' | CIGLookupsKeySpecifier)[];
+export type CIGLookupsFieldPolicy = {
+	mineralDensities?: FieldPolicy<any> | FieldReadFunction<any>,
+	refiningBaseParams?: FieldPolicy<any> | FieldReadFunction<any>,
+	refiningBonuses?: FieldPolicy<any> | FieldReadFunction<any>,
+	refiningMethods?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type CrewShareKeySpecifier = ('createdAt' | 'note' | 'orderId' | 'scName' | 'session' | 'sessionId' | 'share' | 'shareType' | 'state' | 'updatedAt' | 'workOrder' | CrewShareKeySpecifier)[];
 export type CrewShareFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -29,7 +36,12 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type LookupDataKeySpecifier = ('CIG' | 'UEX' | LookupDataKeySpecifier)[];
+export type LookupDataFieldPolicy = {
+	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
+	UEX?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -52,6 +64,7 @@ export type MutationFieldPolicy = {
 	removeSessionCrew?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeSessionMentions?: FieldPolicy<any> | FieldReadFunction<any>,
 	requestVerifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
+	setLookupData?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -111,9 +124,10 @@ export type PaginatedWorkOrdersFieldPolicy = {
 	items?: FieldPolicy<any> | FieldReadFunction<any>,
 	nextToken?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('crewShares' | 'profile' | 'scoutingFind' | 'session' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
+	lookups?: FieldPolicy<any> | FieldReadFunction<any>,
 	profile?: FieldPolicy<any> | FieldReadFunction<any>,
 	scoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	session?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -315,6 +329,13 @@ export type SubscriptionKeySpecifier = ('apiSubscription' | SubscriptionKeySpeci
 export type SubscriptionFieldPolicy = {
 	apiSubscription?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type UEXLookupsKeySpecifier = ('bodies' | 'maxPrices' | 'ships' | 'tradeports' | UEXLookupsKeySpecifier)[];
+export type UEXLookupsFieldPolicy = {
+	bodies?: FieldPolicy<any> | FieldReadFunction<any>,
+	maxPrices?: FieldPolicy<any> | FieldReadFunction<any>,
+	ships?: FieldPolicy<any> | FieldReadFunction<any>,
+	tradeports?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type UserKeySpecifier = ('avatarUrl' | 'createdAt' | 'scName' | 'state' | 'updatedAt' | 'userId' | UserKeySpecifier)[];
 export type UserFieldPolicy = {
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -450,6 +471,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | APIEventKeySpecifier | (() => undefined | APIEventKeySpecifier),
 		fields?: APIEventFieldPolicy,
 	},
+	CIGLookups?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CIGLookupsKeySpecifier | (() => undefined | CIGLookupsKeySpecifier),
+		fields?: CIGLookupsFieldPolicy,
+	},
 	CrewShare?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CrewShareKeySpecifier | (() => undefined | CrewShareKeySpecifier),
 		fields?: CrewShareFieldPolicy,
@@ -457,6 +482,10 @@ export type StrictTypedTypePolicies = {
 	CrewShareTemplate?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CrewShareTemplateKeySpecifier | (() => undefined | CrewShareTemplateKeySpecifier),
 		fields?: CrewShareTemplateFieldPolicy,
+	},
+	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
+		fields?: LookupDataFieldPolicy,
 	},
 	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
@@ -561,6 +590,10 @@ export type StrictTypedTypePolicies = {
 	Subscription?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SubscriptionKeySpecifier | (() => undefined | SubscriptionKeySpecifier),
 		fields?: SubscriptionFieldPolicy,
+	},
+	UEXLookups?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UEXLookupsKeySpecifier | (() => undefined | UEXLookupsKeySpecifier),
+		fields?: UEXLookupsFieldPolicy,
 	},
 	User?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier),

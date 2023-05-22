@@ -272,9 +272,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Box>
             )}
             <Box sx={styles.section}>
-              <Typography component="div" sx={styles.sectionTitle}>
+              {/* <Typography component="div" sx={styles.sectionTitle}>
                 Preferred Delivery Ship
-              </Typography>
+              </Typography> */}
               {/* <Box sx={styles.sectionBody}>
                 <Select
                   labelId="demo-select-small-label"

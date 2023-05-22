@@ -84,8 +84,8 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 border: '2px solid transparent',
                 color: fgc,
                 fontSize: {
-                  xs: 10,
-                  sm: 12,
+                  xs: 8,
+                  sm: 10,
                 },
                 opacity: 0.3,
                 p: 0,
@@ -118,9 +118,9 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
               tabIndex={-1}
               sx={{
                 fontSize: {
-                  xs: 10,
-                  sm: 10,
-                  md: 10,
+                  xs: 8,
+                  sm: 8,
+                  md: 8,
                 },
                 p: 0,
               }}
@@ -144,9 +144,9 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
               tabIndex={-1}
               sx={{
                 fontSize: {
-                  xs: 10,
-                  sm: 10,
-                  md: 10,
+                  xs: 8,
+                  sm: 8,
+                  md: 8,
                 },
                 p: 0,
               }}

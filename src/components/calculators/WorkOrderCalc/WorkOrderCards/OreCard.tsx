@@ -400,6 +400,16 @@ export const OreCard: React.FC<OreCardProps> = ({
                 </TableRow>
               )
             })}
+            {shipOrder.isRefined && (
+              <TableRow sx={{ borderTop: '2px solid' }}>
+                <TableCell component="th" sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <Typography variant="tablecell">Process Fee</Typography>
+                </TableCell>
+                <TableCell colSpan={2} align="right">
+                  <MValue value={-1 * (summary?.refiningCost as number)} format={MValueFormat.currency} />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         <Box sx={{ flexGrow: 1 }} />
@@ -408,7 +418,7 @@ export const OreCard: React.FC<OreCardProps> = ({
         )}
         <Table size="small" sx={{ borderTop: '2px solid' }}>
           <TableBody>
-            {shipOrder.isRefined && (
+            {/* {shipOrder.isRefined && (
               <TableRow>
                 <TableCell component="th">
                   <Typography variant="tablecell">Unrefined Value</Typography>
@@ -417,8 +427,8 @@ export const OreCard: React.FC<OreCardProps> = ({
                   <MValue value={summary.unrefinedValue} format={MValueFormat.currency} />
                 </TableCell>
               </TableRow>
-            )}
-            <TableRow>
+            )} */}
+            {/* <TableRow>
               <TableCell component="th">
                 <Typography variant="tablecell" sx={{ fontSize: '0.8em' }}>
                   <PricesTooltip>
@@ -441,18 +451,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                   </em>
                 </PricesTooltip>
               </TableCell>
-            </TableRow>
-
-            {shipOrder.isRefined && (
-              <TableRow>
-                <TableCell component="th" sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <Typography variant="tablecell">Process Fee</Typography>
-                </TableCell>
-                <TableCell colSpan={2} align="right">
-                  <MValue value={-1 * (summary?.refiningCost as number)} format={MValueFormat.currency} />
-                </TableCell>
-              </TableRow>
-            )}
+            </TableRow> */}
           </TableBody>
         </Table>
 

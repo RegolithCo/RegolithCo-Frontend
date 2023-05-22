@@ -23,6 +23,7 @@ export interface StoreChooserListItemProps {
   ores: OreSummary
   onClick: (storeChoice: StoreChoice) => void
   compact?: boolean
+  disabled?: boolean
   isSelected?: boolean
   isMax?: boolean
   priceColor?: string
@@ -43,6 +44,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   storeChoice,
   priceColor,
   onClick,
+  disabled,
   compact,
   isSelected,
   isMax,
@@ -52,7 +54,10 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 
   return (
     <ListItemButton
-      onClick={() => onClick && onClick(storeChoice)}
+      disableRipple={disabled}
+      disableTouchRipple={disabled}
+      onClick={() => !disabled && onClick && onClick(storeChoice)}
+      onMouseOver={(e) => disabled && e.preventDefault()}
       sx={{
         borderRadius: 3,
         // background: '#222',
@@ -68,42 +73,48 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
         }}
         primary={
           <Box>
-            <Typography variant="body1" sx={{ color: theme.palette.primary.main }}>
+            <Typography variant="body1" sx={{ color: theme.palette.primary.main }} component="div">
               {compact ? storeChoice.name_short : storeChoice.name}
             </Typography>
-            <Typography variant="caption" sx={{ color: theme.palette.secondary.main }}>
+            <Typography variant="caption" sx={{ color: theme.palette.secondary.main }} component="div">
               {lookups.planetLookups['ST'][storeChoice.planet].name}
               {storeChoice.satellite &&
                 ` // ${lookups.planetLookups['ST'][storeChoice.planet].satellites[storeChoice.satellite]}`}
             </Typography>
           </Box>
         }
+        secondaryTypographyProps={{
+          component: 'div',
+        }}
         secondary={
-          <Box>
-            {Object.keys(ores).map((ore, index) => {
-              const found = !storeChoice.missingOres.find((missingOre) => missingOre === ore)
-              return (
-                <Tooltip
-                  title={
-                    found
-                      ? `${getOreName(ore as AnyOreEnum)} can be sold here}`
-                      : `${getOreName(ore as AnyOreEnum)} cannot be sold here}`
-                  }
-                >
-                  <Chip
-                    key={index}
-                    label={compact ? getOreName(ore as AnyOreEnum).slice(0, 4) : getOreName(ore as AnyOreEnum)}
-                    size="small"
-                    sx={{
-                      ...styles.tinyChips,
-                      background: found ? theme.palette.primary.main : theme.palette.primary.contrastText,
-                      color: found ? theme.palette.primary.contrastText : theme.palette.primary.dark,
-                    }}
-                  />
-                </Tooltip>
-              )
-            })}
-          </Box>
+          !compact && (
+            <Box>
+              {Object.keys(ores).map((ore, index) => {
+                const found = !storeChoice.missingOres.find((missingOre) => missingOre === ore)
+                return (
+                  <Tooltip
+                    key={`tt-${index}`}
+                    title={
+                      found
+                        ? `${getOreName(ore as AnyOreEnum)} can be sold here}`
+                        : `${getOreName(ore as AnyOreEnum)} cannot be sold here}`
+                    }
+                  >
+                    <Chip
+                      key={index}
+                      label={compact ? getOreName(ore as AnyOreEnum).slice(0, 4) : getOreName(ore as AnyOreEnum)}
+                      size="small"
+                      sx={{
+                        ...styles.tinyChips,
+                        background: found ? theme.palette.primary.main : theme.palette.primary.contrastText,
+                        color: found ? theme.palette.primary.contrastText : theme.palette.primary.dark,
+                      }}
+                    />
+                  </Tooltip>
+                )
+              })}
+            </Box>
+          )
         }
       />
       <ListItemText
@@ -124,6 +135,9 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
           },
         }}
         primary={MValueFormatter(storeChoice.price, MValueFormat.currency_sm, 1)}
+        secondaryTypographyProps={{
+          component: 'div',
+        }}
         secondary={
           <Stack direction={'column'}>
             <div style={{ flexGrow: 1 }} />

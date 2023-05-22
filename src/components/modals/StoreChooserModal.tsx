@@ -82,8 +82,6 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
     .setColorGradient(...quaColors)
     .setMidpoint(storeChoices.length) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
-  // Sort the storeChoices array in descending order of price
-  const sortedStoreChoices = [...storeChoices].sort((a, b) => b.price - a.price)
 
   return (
     <>
@@ -91,7 +89,7 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
         <Box sx={styles.headerBar}>
           <Stack direction="row">
             <Typography variant="h6" sx={styles.cardTitle}>
-              Store Chooser
+              Sell Location Chooser
             </Typography>
             <div style={{ flex: 1 }} />
             <Typography variant="caption" sx={styles.cardTitle}>
@@ -114,9 +112,9 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
             </Typography>
           )}
           <List sx={{ overflowY: 'scroll', flexGrow: 1, px: 2 }}>
-            {sortedStoreChoices.map((choice, index) => (
+            {storeChoices.map((choice, index) => (
               <StoreChooserListItem
-                key={index}
+                key={`store-${index}`}
                 ores={ores}
                 isSelected={choice.code === initStore}
                 storeChoice={choice}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Theme, SxProps, Tooltip } from '@mui/material'
+import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Theme, SxProps, Tooltip, Box } from '@mui/material'
 import {
   CrewShare,
   ShareTypeEnum,
@@ -12,6 +12,7 @@ import {
 import { CrewShareTableRow } from './CrewShareTableRow'
 import { MValue, MValueFormat } from '../MValue'
 import { UserPicker } from '../UserPicker'
+import { PersonAdd } from '@mui/icons-material'
 // import log from 'loglevel'
 
 export interface CrewShareTableProps {
@@ -86,7 +87,9 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   const mandatoryRows = templateJob?.lockedFields && templateJob?.lockedFields.includes('crewShares') ? sessionRows : []
 
   return (
-    <>
+    <Box
+      sx={{ border: `1px solid ${isEditing ? theme.palette.secondary.main : '#000'}`, borderRadius: 3, py: 1, px: 0.5 }}
+    >
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -160,42 +163,44 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
         </TableBody>
       </Table>
       {isEditing && (
-        <UserPicker
-          label="Add User"
-          toolTip="Add a user to the work order"
-          onChange={(addName) => {
-            if (
-              validateSCName(addName) &&
-              !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase()) !==
-                undefined
-            ) {
-              setKeyCounter(keyCounter + 1)
-              onChange({
-                ...workOrder,
-                crewShares: [
-                  ...(workOrder.crewShares || []),
-                  {
-                    scName: addName,
-                    shareType: ShareTypeEnum.Share,
-                    share: 1,
-                    note: null,
-                    createdAt: Date.now(),
-                    orderId: workOrder.orderId,
-                    sessionId: workOrder.sessionId,
-                    updatedAt: Date.now(),
-                    state: false,
-                    __typename: 'CrewShare',
-                  },
-                ],
-              })
-            }
-          }}
-          userSuggest={userSuggest}
-          includeFriends
-          includeMentioned
-          disableList={workOrder.crewShares?.map((cs) => cs.scName) || []}
-        />
+        <Box sx={{ px: 0.5 }}>
+          <UserPicker
+            label="Add Crew Share Row"
+            toolTip="Add a user to the work order"
+            onChange={(addName) => {
+              if (
+                validateSCName(addName) &&
+                !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase()) !==
+                  undefined
+              ) {
+                setKeyCounter(keyCounter + 1)
+                onChange({
+                  ...workOrder,
+                  crewShares: [
+                    ...(workOrder.crewShares || []),
+                    {
+                      scName: addName,
+                      shareType: ShareTypeEnum.Share,
+                      share: 1,
+                      note: null,
+                      createdAt: Date.now(),
+                      orderId: workOrder.orderId,
+                      sessionId: workOrder.sessionId,
+                      updatedAt: Date.now(),
+                      state: false,
+                      __typename: 'CrewShare',
+                    },
+                  ],
+                })
+              }
+            }}
+            userSuggest={userSuggest}
+            includeFriends
+            includeMentioned
+            disableList={workOrder.crewShares?.map((cs) => cs.scName) || []}
+          />
+        </Box>
       )}
-    </>
+    </Box>
   )
 }

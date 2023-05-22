@@ -20,7 +20,14 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, t
   }
 
   return (
-    <Box sx={{ width: '100%', position: 'relative', borderTop: `2px solid`, borderBottom: '2px solid' }}>
+    <Box
+      sx={{
+        width: '100%',
+        position: 'relative',
+        borderTop: `2px solid ${theme.palette.primary.light}`,
+        borderBottom: `2px solid ${theme.palette.primary.light}`,
+      }}
+    >
       <LinearProgress
         variant="determinate"
         value={progress}
@@ -36,7 +43,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, t
               ${theme.palette.secondary.main} 75%
               )`,
           },
-          height: 50,
+          height: 30,
           width: '100%',
         }}
       />
@@ -53,9 +60,9 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, t
             left: 0,
             textAlign: 'center',
             color: 'black',
-            fontSize: '1.3rem',
-            lineHeight: 1.3,
-            padding: '10px',
+            fontSize: '1rem',
+            lineHeight: 1,
+            padding: '5px',
             fontWeight: 'bold',
             fontFamily: fontFamilies.robotoMono,
           }}
