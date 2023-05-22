@@ -32,7 +32,7 @@ export interface WorkOrderCalcProps {
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
     [theme.breakpoints.up('md')]: {
-      flexGrow: 1,
+      flex: '1 1',
       overflowX: 'hidden',
       overflowY: 'hidden',
     },
