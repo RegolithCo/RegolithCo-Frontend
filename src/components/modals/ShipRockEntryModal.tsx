@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -16,7 +17,16 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { findPrice, lookups, RockStateEnum, ShipOreEnum, ShipRock, shipRockCalc, ShipRockOre } from '@regolithco/common'
+import {
+  AnyOreEnum,
+  findPrice,
+  getOreName,
+  RockStateEnum,
+  ShipOreEnum,
+  ShipRock,
+  shipRockCalc,
+  ShipRockOre,
+} from '@regolithco/common'
 import { ShipOreChooser } from '../fields/ShipOreChooser'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
@@ -163,8 +173,37 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const theme = useTheme()
   const styles = styleThunk(theme)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
-  const [newShipRock, setNewShipRock] = React.useState<ShipRock>(
+  const [newShipRock, _setNewShipRock] = React.useState<ShipRock>(
     !isNew && shipRock ? shipRock : { state: RockStateEnum.Ready, mass: 0, ores: [], __typename: 'ShipRock' }
+  )
+
+  const setNewShipRock = React.useCallback(
+    (newRock: ShipRock) => {
+      _setNewShipRock((oldRock) => {
+        const newOres = [...(newRock.ores || [])]
+        // if ShipOreEnum.Inertmaterial isn't in the list, add it
+        if (!newOres.find(({ ore }) => ore === ShipOreEnum.Inertmaterial)) {
+          newOres.push({ ore: ShipOreEnum.Inertmaterial, percent: 0, __typename: 'ShipRockOre' })
+        }
+        // Set the entry for ShipOreEnum.Inertmaterial to be 1- the sum of all other ores
+        const total = newOres.reduce(
+          (acc, { ore, percent }) => (ore === ShipOreEnum.Inertmaterial ? acc : acc + percent),
+          0
+        )
+        const inertMaterial = newOres.find(({ ore }) => ore === ShipOreEnum.Inertmaterial)
+        if (inertMaterial) {
+          inertMaterial.percent = 1 - total
+          if (inertMaterial?.percent < 0) inertMaterial.percent = 0
+        }
+        newOres.sort((a, b) => {
+          const aPrice = findPrice(a.ore as ShipOreEnum, undefined, true)
+          const bPrice = findPrice(b.ore as ShipOreEnum, undefined, true)
+          return bPrice - aPrice
+        })
+        return { ...oldRock, ...newRock, ores: newOres }
+      })
+    },
+    [_setNewShipRock]
   )
 
   React.useEffect(() => {
@@ -173,7 +212,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
 
   const [volume, value, percentTotal] = React.useMemo(() => {
     try {
-      const [volume, value] = shipRockCalc(newShipRock)
+      const {
+        rock: { volume, value },
+      } = shipRockCalc(newShipRock)
       const percentTotal = (newShipRock.ores || []).reduce((acc, { percent }) => acc + percent, 0)
       return [volume, value, percentTotal]
     } catch (e) {
@@ -210,17 +251,23 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
           <Stack>
             <Tooltip title="Potential value of all the ore, after refining, using Dinyx Solventation" placement="right">
               <Typography sx={{ fontWeight: 'bold' }} align="right">
-                Value: <MValue value={value} format={MValueFormat.currency} />
+                Value: <MValue value={value} format={MValueFormat.currency_sm} />
               </Typography>
             </Tooltip>
-            <Tooltip title="Total volume of all the unrefined ore in this rock" placement="right">
+            <Tooltip
+              title="Total volume of all the unrefined ore in this rock (not including inert material)"
+              placement="right"
+            >
               <Typography sx={{ fontWeight: 'bold' }} align="right">
-                Material: <MValue value={volume} format={MValueFormat.volSCU} />
+                Material: <MValue value={volume} format={MValueFormat.volSCU} decimals={volume > 10 ? 0 : 1} />
               </Typography>
             </Tooltip>
           </Stack>
         </Box>
         <DialogContent sx={styles.dialogContent}>
+          <Alert severity="warning">
+            <Typography variant="caption">Enter all minerals for maximum SCU and value accuracy.</Typography>
+          </Alert>
           <Typography variant="overline" sx={styles.headTitles} component="div">
             Rock Mass
           </Typography>
@@ -250,12 +297,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 multiple
                 values={ores.map((o) => o.ore as ShipOreEnum)}
                 onChange={(shipOreEnum) => {
+                  const chosenOres = shipOreEnum.map<ShipRockOre>((ore) => {
+                    const found = (newShipRock.ores || []).find((o) => o.ore === ore)
+                    return found || { ore, percent: 0, __typename: 'ShipRockOre' }
+                  })
                   setNewShipRock({
                     ...newShipRock,
-                    ores: shipOreEnum.map((ore) => {
-                      const found = (newShipRock.ores || []).find((o) => o.ore === ore)
-                      return found || { ore, percent: 0, __typename: 'ShipRockOre' }
-                    }),
+                    ores: chosenOres,
                   })
                 }}
               />
@@ -266,17 +314,20 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               <em>Percents cannot add to greater than 100%</em>
             </Typography>
           ) : null}
-          <Box>
+          <Box sx={{ mb: 2 }}>
             {ores.map((ore, idx) => (
               <Grid2 container spacing={3} paddingX={1} paddingY={0} key={`ore-${idx}`}>
                 <Grid2 xs={2}>
-                  <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
+                  <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
+                    <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
+                  </Tooltip>
                 </Grid2>
                 <Grid2 xs={7}>
                   <Slider
                     sx={styles.compositionSlider}
                     step={1}
                     tabIndex={-1}
+                    disabled={ore.ore === ShipOreEnum.Inertmaterial}
                     getAriaValueText={(value) => `${value}%`}
                     valueLabelFormat={(value) => `${value.toFixed(0)}%`}
                     value={(ore.percent as number) * 100}
@@ -284,7 +335,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       if (typeof newValue === 'number') {
                         let retVal = Math.round(newValue + Number.EPSILON) / 100
                         if (retVal < 0) retVal = 0
-                        if (retVal > 0.5) retVal = 0.5
+                        if (retVal > 1) retVal = 1
                         const newOres = newShipRock.ores?.map((o) => {
                           if (o.ore === ore.ore) {
                             return { ...o, percent: retVal }
@@ -297,10 +348,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                     }}
                     marks={[
                       { value: 0, label: '0%' },
+                      { value: 25, label: '25%' },
                       { value: 50, label: '50%' },
+                      { value: 75, label: '75%' },
+                      { value: 100, label: '100%' },
                     ]}
                     min={0}
-                    max={50}
+                    max={100}
                     valueLabelDisplay="auto"
                   />
                 </Grid2>
@@ -308,6 +362,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                   <TextField
                     value={((ore.percent as number) * 100).toFixed(0)}
                     sx={styles.numfields}
+                    disabled={ore.ore === ShipOreEnum.Inertmaterial}
                     InputProps={{
                       endAdornment: <InputAdornment position="end">%</InputAdornment>,
                     }}

@@ -498,11 +498,9 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       })
     },
     createWorkOrder: async (newOrder: WorkOrder) => {
-      const { crewShares, includeTransferFee, note } = newOrder
+      const { crewShares, includeTransferFee, note, shareAmount, sellStore } = newOrder
       const shipOrder = newOrder as ShipMiningOrder
-      const otherOrder = newOrder as OtherOrder
       const { processStartTime, refinery, method, isRefined, shareRefinedValue } = shipOrder
-      const { shareAmount } = otherOrder
       const workOrderInput: WorkOrderInput = {
         includeTransferFee,
         isRefined,
@@ -511,6 +509,8 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         processStartTime,
         refinery,
         shareRefinedValue,
+        shareAmount,
+        sellStore,
       }
       const newShares: CrewShareInput[] = (crewShares || []).map(({ scName, share, shareType, state, note }) => ({
         scName,
@@ -531,7 +531,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           salvageOres: salvageOres ? salvageOres.map(({ ore, amt }) => ({ ore, amt })) : undefined,
           shipOres: shipOres ? shipOres.map(({ ore, amt }) => ({ ore, amt })) : undefined,
           vehicleOres: vehicleOres ? vehicleOres.map(({ ore, amt }) => ({ ore, amt })) : undefined,
-          shareAmount,
           shares: newShares,
         },
 

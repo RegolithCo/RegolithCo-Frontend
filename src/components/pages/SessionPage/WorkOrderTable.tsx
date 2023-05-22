@@ -23,7 +23,7 @@ import {
   Tooltip,
   useTheme,
 } from '@mui/material'
-import { MValue, MValueFormat } from '../../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import {
@@ -78,7 +78,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
   const theme = useTheme()
   const styles = stylesThunk(theme)
 
-  const { summaries, volSCU, grossProfit } = React.useMemo(() => {
+  const { summaries, volSCU, shareAmount } = React.useMemo(() => {
     const summaries = workOrders.map((workOrder: WorkOrder) => calculateWorkOrder(workOrder))
     return {
       summaries,
@@ -89,7 +89,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
             100,
         0
       ),
-      grossProfit: summaries.reduce((acc, summary) => acc + summary.grossProfit, 0),
+      shareAmount: summaries.reduce((acc, summary) => acc + summary.shareAmount, 0),
     }
   }, [workOrders])
 
@@ -136,11 +136,13 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
           <TableRow>
             <TableCell colSpan={5}>Totals</TableCell>
             <TableCell align="right">
-              <MValue value={volSCU} format={MValueFormat.volSCU} decimals={1} />
+              <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
             </TableCell>
-            <TableCell align="right">
-              <MValue value={grossProfit} format={MValueFormat.currency} />
-            </TableCell>
+            <Tooltip title={<>Gross Profit: {MValueFormatter(shareAmount, MValueFormat.currency)}</>}>
+              <TableCell align="right">
+                <MValue value={shareAmount} format={MValueFormat.currency_sm} />
+              </TableCell>
+            </Tooltip>
             <TableCell align="right"></TableCell>
           </TableRow>
         </TableFooter>
@@ -176,11 +178,11 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       OrderIcon = RockIcon
       break
     case ActivityEnum.Salvage:
-      displayValueCol = summary.grossProfit
+      displayValueCol = summary.shareAmount
       OrderIcon = ClawIcon
       break
     case ActivityEnum.VehicleMining:
-      displayValueCol = summary.grossProfit
+      displayValueCol = summary.shareAmount
       OrderIcon = GemIcon
       break
     case ActivityEnum.Other:
@@ -243,23 +245,37 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       <TableCell align="center">
         <Tooltip title={workOrder.state}>{stateIcon}</Tooltip>
       </TableCell>
-      <TableCell>{oreNames}</TableCell>
+      <TableCell
+        sx={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: 150,
+        }}
+      >
+        {oreNames}
+      </TableCell>
       {/* crew shares */}
       <TableCell align="center">{workOrder.crewShares?.length || 0}</TableCell>
       <TableCell align="right">
         {workOrder.orderType === ActivityEnum.Other ? (
           'N/A'
         ) : (
-          <MValue value={volumeVal} format={MValueFormat.volSCU} decimals={1} />
+          <MValue value={volumeVal} format={MValueFormat.volSCU} decimals={volumeVal > 10 ? 0 : 1} />
         )}
       </TableCell>
-      <TableCell align="right">
-        {workOrder.orderType === ActivityEnum.Other ? (
-          <MValue value={summary.grossProfit} format={MValueFormat.currency} />
-        ) : (
-          <MValue value={displayValueCol} format={MValueFormat.currency} />
-        )}
-      </TableCell>
+      <Tooltip
+        title={
+          <>
+            Work Order Profit:
+            {MValueFormatter(workOrder.shareAmount || summary.shareAmount || 0, MValueFormat.currency)}
+          </>
+        }
+      >
+        <TableCell align="right">
+          <MValue value={workOrder.shareAmount || summary.shareAmount || 0} format={MValueFormat.currency_sm} />
+        </TableCell>
+      </Tooltip>
       <TableCell align="right">
         {summary.completionTime && summary.completionTime > Date.now() ? (
           <CountdownTimer

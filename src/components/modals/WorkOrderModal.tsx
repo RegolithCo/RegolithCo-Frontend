@@ -338,7 +338,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
             <Tooltip title={editBtnTip} placement="top">
               <div>
                 <Button
-                  color="secondary"
+                  color="info"
                   variant="contained"
                   size="large"
                   disabled={!allowEdit}

@@ -3,6 +3,7 @@ import * as React from 'react'
 import {
   Box,
   Chip,
+  ListItem,
   ListItemButton,
   ListItemText,
   Stack,
@@ -52,21 +53,8 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const theme = useTheme()
   const styles = styleThunk(theme)
 
-  return (
-    <ListItemButton
-      disableRipple={disabled}
-      disableTouchRipple={disabled}
-      onClick={() => !disabled && onClick && onClick(storeChoice)}
-      onMouseOver={(e) => disabled && e.preventDefault()}
-      sx={{
-        borderRadius: 3,
-        // background: '#222',
-        boxShadow: isSelected ? `0 0 10px 2px ${theme.palette.primary.light}` : 'none',
-        background: isSelected ? alpha(theme.palette.primary.contrastText, 0.2) : '#222',
-        border: isSelected ? `2px solid ${theme.palette.primary.light}` : `1px solid #000`,
-        mb: 1,
-      }}
-    >
+  const contents = (
+    <>
       <ListItemText
         sx={{
           flex: '1 1 70%',
@@ -139,8 +127,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
           component: 'div',
         }}
         secondary={
-          <Stack direction={'column'}>
-            <div style={{ flexGrow: 1 }} />
+          <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="flex-end">
             {isMax && (
               <Chip
                 label="Max"
@@ -166,6 +153,23 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
           </Stack>
         }
       />
+    </>
+  )
+
+  const itemSx = {
+    borderRadius: 3,
+    // background: '#222',
+    boxShadow: isSelected ? `0 0 10px 2px ${theme.palette.primary.light}` : 'none',
+    background: isSelected ? alpha(theme.palette.primary.contrastText, 0.2) : '#222',
+    border: isSelected ? `2px solid ${theme.palette.primary.light}` : `1px solid #000`,
+    mb: 1,
+  }
+
+  return disabled ? (
+    <ListItem sx={itemSx}>{contents}</ListItem>
+  ) : (
+    <ListItemButton sx={itemSx} onClick={() => onClick && onClick(storeChoice)}>
+      {contents}
     </ListItemButton>
   )
 }

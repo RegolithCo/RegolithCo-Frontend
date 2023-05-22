@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
 import { ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { lookups, ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
+import { ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { Clear } from '@mui/icons-material'
 
 export interface ShipOreChooserProps {
   values?: ShipOreEnum[]

@@ -39,6 +39,7 @@ export const WorkOrderIdFragmentFragmentDoc = gql`
   ownerId
   sellerscName
   shareAmount
+  sellStore
   state
 }
     `;
@@ -241,6 +242,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
   orderType
   note
   shareAmount
+  sellStore
   crewShares {
     ...CrewShareFragment
   }
@@ -613,14 +615,13 @@ export type RemoveFriendsMutationHookResult = ReturnType<typeof useRemoveFriends
 export type RemoveFriendsMutationResult = Apollo.MutationResult<types.RemoveFriendsMutation>;
 export type RemoveFriendsMutationOptions = Apollo.BaseMutationOptions<types.RemoveFriendsMutation, types.RemoveFriendsMutationVariables>;
 export const CreateWorkOrderDocument = gql`
-    mutation createWorkOrder($sessionId: ID!, $workOrder: WorkOrderInput!, $shipOres: [RefineryRowInput!], $vehicleOres: [VehicleMiningRowInput!], $salvageOres: [SalvageRowInput!], $shareAmount: Int, $shares: [CrewShareInput!]!) {
+    mutation createWorkOrder($sessionId: ID!, $workOrder: WorkOrderInput!, $shipOres: [RefineryRowInput!], $vehicleOres: [VehicleMiningRowInput!], $salvageOres: [SalvageRowInput!], $shares: [CrewShareInput!]!) {
   createWorkOrder(
     sessionId: $sessionId
     workOrder: $workOrder
     shipOres: $shipOres
     vehicleOres: $vehicleOres
     salvageOres: $salvageOres
-    shareAmount: $shareAmount
     shares: $shares
   ) {
     ...WorkOrderFragment
@@ -647,7 +648,6 @@ export type CreateWorkOrderMutationFn = Apollo.MutationFunction<types.CreateWork
  *      shipOres: // value for 'shipOres'
  *      vehicleOres: // value for 'vehicleOres'
  *      salvageOres: // value for 'salvageOres'
- *      shareAmount: // value for 'shareAmount'
  *      shares: // value for 'shares'
  *   },
  * });
@@ -660,7 +660,7 @@ export type CreateWorkOrderMutationHookResult = ReturnType<typeof useCreateWorkO
 export type CreateWorkOrderMutationResult = Apollo.MutationResult<types.CreateWorkOrderMutation>;
 export type CreateWorkOrderMutationOptions = Apollo.BaseMutationOptions<types.CreateWorkOrderMutation, types.CreateWorkOrderMutationVariables>;
 export const UpdateWorkOrderDocument = gql`
-    mutation updateWorkOrder($sessionId: ID!, $orderId: ID!, $workOrder: WorkOrderInput!, $shipOres: [RefineryRowInput!], $vehicleOres: [VehicleMiningRowInput!], $salvageOres: [SalvageRowInput!], $shareAmount: Int, $shares: [CrewShareInput!]) {
+    mutation updateWorkOrder($sessionId: ID!, $orderId: ID!, $workOrder: WorkOrderInput!, $shipOres: [RefineryRowInput!], $vehicleOres: [VehicleMiningRowInput!], $salvageOres: [SalvageRowInput!], $shares: [CrewShareInput!]) {
   updateWorkOrder(
     sessionId: $sessionId
     orderId: $orderId
@@ -668,7 +668,6 @@ export const UpdateWorkOrderDocument = gql`
     shipOres: $shipOres
     vehicleOres: $vehicleOres
     salvageOres: $salvageOres
-    shareAmount: $shareAmount
     shares: $shares
   ) {
     ...WorkOrderFragment
@@ -696,7 +695,6 @@ export type UpdateWorkOrderMutationFn = Apollo.MutationFunction<types.UpdateWork
  *      shipOres: // value for 'shipOres'
  *      vehicleOres: // value for 'vehicleOres'
  *      salvageOres: // value for 'salvageOres'
- *      shareAmount: // value for 'shareAmount'
  *      shares: // value for 'shares'
  *   },
  * });

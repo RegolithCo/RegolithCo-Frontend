@@ -209,7 +209,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
             </Typography>
           }
         >
-          <Typography sx={styles.aUEC}>{MValueFormatter(aUEC, MValueFormat.currency)}</Typography>
+          <Typography sx={styles.aUEC}>{MValueFormatter(aUEC, MValueFormat.currency_sm)}</Typography>
         </Tooltip>
       </Box>
     </>

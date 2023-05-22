@@ -153,7 +153,7 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
           <ListItemText primary="Gross earnings" />
           <ListItemSecondaryAction>
             <MValue
-              value={sessionSummary.grossProfit}
+              value={sessionSummary.shareAmount}
               format={MValueFormat.currency}
               typoProps={{
                 px: 2,

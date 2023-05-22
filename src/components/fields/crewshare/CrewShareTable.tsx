@@ -3,6 +3,7 @@ import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Theme, SxPr
 import {
   CrewShare,
   ShareTypeEnum,
+  ShipMiningOrder,
   UserSuggest,
   validateSCName,
   WorkOrder,
@@ -12,7 +13,6 @@ import {
 import { CrewShareTableRow } from './CrewShareTableRow'
 import { MValue, MValueFormat } from '../MValue'
 import { UserPicker } from '../UserPicker'
-import { PersonAdd } from '@mui/icons-material'
 // import log from 'loglevel'
 
 export interface CrewShareTableProps {
@@ -56,7 +56,13 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   const styles = stylesThunk(theme)
   const expenses: { name: string; value: number }[] = []
   const [keyCounter, setKeyCounter] = React.useState(0)
-  if (workOrder.includeTransferFee) {
+  if ((workOrder as ShipMiningOrder).isRefined) {
+    expenses.push({
+      name: 'Refining Cost',
+      value: -1 * (summary?.refiningCost as number),
+    })
+  }
+  if (workOrder.includeTransferFee && summary.transferFees > 0) {
     expenses.push({
       name: 'moTRADER',
       value: (summary?.transferFees as number) > -1 ? -1 * ((summary.transferFees as number) || 0) : 0,

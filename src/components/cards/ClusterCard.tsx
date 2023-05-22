@@ -2,7 +2,7 @@ import * as React from 'react'
 import Card from '@mui/material/Card'
 import { keyframes } from '@mui/system'
 import { Avatar, Box, ThemeProvider, Tooltip, Typography } from '@mui/material'
-import { Article, NoteAdd, PersonSearch, Rocket, SvgIconComponent } from '@mui/icons-material'
+import { Article, PersonSearch, Rocket, SvgIconComponent } from '@mui/icons-material'
 import {
   clusterCalc,
   SalvageFind,
@@ -259,16 +259,14 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
                 variant="body2"
                 sx={{
                   textAlign: 'center',
-                  opacity: summary.potentialProfit > 0 ? 1 : 0.5,
+                  opacity: summary.value > 0 ? 1 : 0.5,
                   fontFamily: fontFamilies.robotoMono,
                   fontWeight: 'bold',
                   display: 'block',
                   fontSize: 12,
                 }}
               >
-                {summary.potentialProfit > 0
-                  ? MValueFormatter(summary.potentialProfit, MValueFormat.currency_sm)
-                  : '??? aUEC'}
+                {summary.value > 0 ? MValueFormatter(summary.value, MValueFormat.currency_sm) : '??? aUEC'}
               </Typography>
             </Tooltip>
           </Box>

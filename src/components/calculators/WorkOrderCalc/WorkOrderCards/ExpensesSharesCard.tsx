@@ -220,23 +220,25 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     <Store color="primary" />
                   </Tooltip>
                 ) : (
-                  <Tooltip title="Reset to store estimate">
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        setEditingShareAmt(false)
-                        onChange({
-                          ...workOrder,
-                          shareAmount: undefined,
-                        })
-                      }}
-                    >
-                      <RestartAlt fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  isEditing && (
+                    <Tooltip title="Reset to store estimate">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          setEditingShareAmt(false)
+                          onChange({
+                            ...workOrder,
+                            shareAmount: undefined,
+                          })
+                        }}
+                      >
+                        <RestartAlt fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )
                 ),
             }}
             inputProps={{
@@ -265,7 +267,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           />
 
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-            Crew Shares:
+            Crew Shares & Expenses:
           </Typography>
           {/* The actual control for the crew shares */}
           <CrewShareTable

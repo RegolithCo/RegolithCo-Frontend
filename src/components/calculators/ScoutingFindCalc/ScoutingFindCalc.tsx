@@ -40,6 +40,7 @@ import {
   VehicleRock,
   VehicleOreEnum,
   makeHumanIds,
+  ShipOreEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { AddCircle, EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -464,23 +465,23 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {summary.potentialProfit > 0 &&
-                    summary.oreSort?.map((oreKey) => {
-                      const { mass, potentialProfit, volume } = (summary.byOre || {})[oreKey] as FindSummary
-                      const volumeUnitted =
-                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? volume * 10000 : volume
-                      return (
-                        <TableRow key={oreKey}>
-                          <TableCell>{getOreName(oreKey)}</TableCell>
-                          <TableCell align="right">
-                            {MValueFormatter(volumeUnitted, MValueFormat.number_sm, 1)}
-                          </TableCell>
-                          <TableCell align="right">
-                            {MValueFormatter(potentialProfit, MValueFormat.number_sm, 1)}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
+                  {summary.value > 0 &&
+                    summary.oreSort
+                      ?.filter((ore) => ore !== ShipOreEnum.Inertmaterial)
+                      .map((oreKey) => {
+                        const { value, volume } = (summary.byOre || {})[oreKey] as FindSummary
+                        const volumeUnitted =
+                          scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? volume * 10000 : volume
+                        return (
+                          <TableRow key={oreKey}>
+                            <TableCell>{getOreName(oreKey)}</TableCell>
+                            <TableCell align="right">
+                              {MValueFormatter(volumeUnitted, MValueFormat.number_sm, 1)}
+                            </TableCell>
+                            <TableCell align="right">{MValueFormatter(value, MValueFormat.number_sm, 1)}</TableCell>
+                          </TableRow>
+                        )
+                      })}
                 </TableBody>
                 <TableFooter>
                   <TableRow sx={styles.totalRow}>
@@ -496,7 +497,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     </TableCell>
                     <TableCell align="right">
                       {profitSymbol}
-                      {MValueFormatter(summary.potentialProfit, MValueFormat.number_sm, 1)}
+                      {MValueFormatter(summary.value, MValueFormat.number_sm, 1)}
                     </TableCell>
                   </TableRow>
                 </TableFooter>
@@ -689,7 +690,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                         <ShipRockCard
                           rock={newRock}
                           allowWork={allowWork}
-                          rockValue={summary.byRock ? summary.byRock[idx] : undefined}
+                          rockValue={summary.byRock ? summary.byRock[idx].value : undefined}
                           onChangeState={(newState) => {
                             onChange({
                               ...shipFind,

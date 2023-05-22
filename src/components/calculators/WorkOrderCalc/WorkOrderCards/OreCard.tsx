@@ -400,16 +400,6 @@ export const OreCard: React.FC<OreCardProps> = ({
                 </TableRow>
               )
             })}
-            {shipOrder.isRefined && (
-              <TableRow sx={{ borderTop: '2px solid' }}>
-                <TableCell component="th" sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <Typography variant="tablecell">Process Fee</Typography>
-                </TableCell>
-                <TableCell colSpan={2} align="right">
-                  <MValue value={-1 * (summary?.refiningCost as number)} format={MValueFormat.currency} />
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
         <Box sx={{ flexGrow: 1 }} />

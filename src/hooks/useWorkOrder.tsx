@@ -123,6 +123,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         processStartTime,
         refinery,
         shareAmount,
+        sellStore,
         includeTransferFee,
         shareRefinedValue,
         shipOres,
@@ -144,11 +145,12 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             processStartTime,
             refinery,
             shareRefinedValue,
+            shareAmount,
+            sellStore,
           },
           shipOres: removeKeyRecursive(shipOres, '__typename'),
           vehicleOres: removeKeyRecursive(vehicleOres, '__typename'),
           salvageOres: removeKeyRecursive(salvageOres, '__typename'),
-          shareAmount,
         },
         optimisticResponse: () => {
           const optimisticresponse: UpdateWorkOrderMutation = {
