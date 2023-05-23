@@ -13,7 +13,15 @@ import {
   useTheme,
 } from '@mui/material'
 import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum, ShareTypeToolTip } from '@regolithco/common'
-import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Delete, Description, NoteAdd } from '@mui/icons-material'
+import {
+  Toll as TollIcon,
+  PieChart as PieChartIcon,
+  Percent,
+  Delete,
+  Description,
+  NoteAdd,
+  Cancel,
+} from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
 import numeral from 'numeral'
 import { fontFamilies } from '../../../theme'
@@ -68,9 +76,9 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     ? 'The session owner has suggested this row. You can change it if you want.'
     : ''
 
-  const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
+  // const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
   const backgroundColor = isSeller ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
-  const hasNote = crewShare.note && crewShare.note.length > 0
+  // const hasNote = crewShare.note && crewShare.note.length > 0
   const finalPayout: ShareAmtArr = isSeller
     ? [payoutSummary[0] + (remainder || 0), payoutSummary[1] + (remainder || 0), 0]
     : payoutSummary
@@ -107,7 +115,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
             </TableCell>
           </Tooltip>
 
-          <TableCell align="center" padding="none" width={30}>
+          {/* <TableCell align="center" padding="none" width={30}>
             {(!isEditing || isMandatory) && hasNote && (
               <Tooltip title={`NOTE: ${crewShare.note}`} placement="right-end">
                 <div>
@@ -115,7 +123,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
                 </div>
               </Tooltip>
             )}
-            {isEditing && !isMandatory && (
+             {isEditing && !isMandatory && (
               <Tooltip title="Add a note">
                 <Box sx={{}}>
                   <NoteAdd
@@ -124,17 +132,19 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
                   />
                 </Box>
               </Tooltip>
-            )}
-          </TableCell>
+            )} 
+          </TableCell> */}
 
           {isEditing && (
-            <TableCell align="center" padding="none" width={30}>
-              {!isSeller && !isMandatory && (
-                <IconButton size="small" onClick={onDelete}>
-                  <Delete />
-                </IconButton>
-              )}
-            </TableCell>
+            <Tooltip title={`Delete ${crewShare.scName}`}>
+              <TableCell align="center" padding="none" width={30}>
+                {!isSeller && !isMandatory && (
+                  <IconButton size="small" color="error" onClick={onDelete}>
+                    <Cancel />
+                  </IconButton>
+                )}
+              </TableCell>
+            </Tooltip>
           )}
         </TableRow>
       </Tooltip>
@@ -220,7 +230,7 @@ export const formatCrewShare = (
   let shareVal: React.ReactElement
   switch (crewShare.shareType) {
     case ShareTypeEnum.Amount:
-      shareVal = <MValue value={crewShare.share} format={MValueFormat.number} />
+      shareVal = <MValue value={crewShare.share} format={MValueFormat.number_sm} />
       break
     case ShareTypeEnum.Percent:
       shareVal = <MValue value={crewShare.share} format={MValueFormat.percent} />

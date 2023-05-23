@@ -15,6 +15,8 @@ import {
   IconButton,
   Tooltip,
   alpha,
+  ListItem,
+  ListItemText,
 } from '@mui/material'
 import Numeral from 'numeral'
 import { ActivityEnum, ShipMiningOrder, WorkOrderSummary, findAllStoreChoices, jsRound } from '@regolithco/common'
@@ -25,6 +27,7 @@ import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
 import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
+import { ExpenseTable } from '../../../fields/ExpenseTable'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -103,25 +106,27 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           subheaderTypographyProps={{ color: 'iherit' }}
         />
         <CardContent sx={{ flex: '1 1', overflowX: { md: 'hidden', sm: 'scroll' }, overflow: { md: 'scroll' } }}>
-          {storeChoices.length > 0 && (
-            <>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-                Sell Location:
-              </Typography>
-              <List dense>
-                <StoreChooserListItem
-                  onClick={() => isEditing && setStoreChooserOpen(true)}
-                  ores={summary.oreSummary}
-                  compact
-                  disabled={!isEditing}
-                  isSelected={isEditing}
-                  storeChoice={myStoreChoice}
-                  isMax={!workOrder.sellStore}
-                  priceColor={theme.palette.success.main}
-                />
-              </List>
-            </>
-          )}
+          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
+            Sell Price Estimate:
+          </Typography>
+          <List dense>
+            {storeChoices.length > 0 ? (
+              <StoreChooserListItem
+                onClick={() => isEditing && setStoreChooserOpen(true)}
+                ores={summary.oreSummary}
+                compact
+                disabled={!isEditing}
+                isSelected={isEditing}
+                storeChoice={myStoreChoice}
+                isMax={!workOrder.sellStore}
+                priceColor={theme.palette.success.main}
+              />
+            ) : (
+              <ListItem>
+                <ListItemText primary="No stores found" />
+              </ListItem>
+            )}
+          </List>
 
           {workOrder.orderType === ActivityEnum.Other ? (
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
@@ -267,7 +272,12 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           />
 
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-            Crew Shares & Expenses:
+            Expenses:
+          </Typography>
+          <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} />
+
+          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
+            Crew Shares:
           </Typography>
           {/* The actual control for the crew shares */}
           <CrewShareTable

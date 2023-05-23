@@ -3,7 +3,6 @@ import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Theme, SxPr
 import {
   CrewShare,
   ShareTypeEnum,
-  ShipMiningOrder,
   UserSuggest,
   validateSCName,
   WorkOrder,
@@ -11,7 +10,6 @@ import {
   WorkOrderSummary,
 } from '@regolithco/common'
 import { CrewShareTableRow } from './CrewShareTableRow'
-import { MValue, MValueFormat } from '../MValue'
 import { UserPicker } from '../UserPicker'
 // import log from 'loglevel'
 
@@ -54,20 +52,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const expenses: { name: string; value: number }[] = []
   const [keyCounter, setKeyCounter] = React.useState(0)
-  if ((workOrder as ShipMiningOrder).isRefined) {
-    expenses.push({
-      name: 'Refining Cost',
-      value: -1 * (summary?.refiningCost as number),
-    })
-  }
-  if (workOrder.includeTransferFee && summary.transferFees > 0) {
-    expenses.push({
-      name: 'moTRADER',
-      value: (summary?.transferFees as number) > -1 ? -1 * ((summary.transferFees as number) || 0) : 0,
-    })
-  }
 
   const sortedCrewshares: [number, CrewShare][] = (workOrder.crewShares || []).map((cs, idx) => [idx, cs])
   const typeOrder = [ShareTypeEnum.Amount, ShareTypeEnum.Percent, ShareTypeEnum.Share]
@@ -99,28 +84,19 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell align="left" padding="none">
-              Username
-            </TableCell>
-            <TableCell align="center" padding="none">
-              Type
-            </TableCell>
-            <TableCell align="right" padding="none" sx={{ color: theme.palette.text.secondary }}>
+            <TableCell align="left">Username</TableCell>
+            <TableCell align="left" colSpan={2} padding="none">
               Share
             </TableCell>
             <Tooltip title="The payout is the amount of aUEC that the user will receive from the work order.">
-              <TableCell align="right" padding="none" sx={{ color: theme.palette.primary.light }}>
-                Payout
+              <TableCell align="right" sx={{ color: theme.palette.primary.light }} padding="none">
+                aUEC
               </TableCell>
             </Tooltip>
-            <TableCell align="center" padding="none">
+            {/* The delete button only shows if we are editing */}
+            <TableCell align="left" colSpan={isEditing ? 2 : 1}>
               Paid
             </TableCell>
-            <TableCell align="center" padding="none">
-              Note
-            </TableCell>
-            {/* The delete button only shows if we are editing */}
-            {isEditing && <TableCell align="right"></TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -155,23 +131,12 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               remainder={summary.remainder || 0}
             />
           ))}
-          {expenses.map(({ name, value }, idx) => (
-            <TableRow key={`expensesRows-${idx}`}>
-              <TableCell component="th" scope="row" colSpan={2}>
-                {name}
-              </TableCell>
-              <TableCell align="right" colSpan={3}>
-                <MValue value={value} format={MValueFormat.currency} />
-              </TableCell>
-              <TableCell align="right">&nbsp;</TableCell>
-            </TableRow>
-          ))}
         </TableBody>
       </Table>
       {isEditing && (
         <Box sx={{ px: 0.5 }}>
           <UserPicker
-            label="Add Crew Share Row"
+            label="+ Add Crew Share Row"
             toolTip="Add a user to the work order"
             onChange={(addName) => {
               if (

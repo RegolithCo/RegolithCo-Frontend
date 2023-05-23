@@ -44,6 +44,7 @@ export const UserPicker: React.FC<UserPickerProps> = ({
     <Tooltip title={toolTip || 'Enter a user name to add to the list'}>
       <Autocomplete
         id="adduser"
+        color="primary"
         key={`userPicker`}
         renderOption={(props, [scName, { friend, session, named }]) => (
           <UserListItem
@@ -69,7 +70,7 @@ export const UserPicker: React.FC<UserPickerProps> = ({
           (disableList || []).find((cs) => cs.toLowerCase() === option[0].toLowerCase()) !== undefined
         }
         options={Object.entries(userSuggest || {})}
-        sx={{ my: 3 }}
+        sx={{ my: 1 }}
         renderInput={(params) => <TextField variant="standard" {...params} label={label || 'Add User'} />}
         filterOptions={(options, params) => {
           const filtered = filter(options, params)
