@@ -37,7 +37,7 @@ import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
 
-export const SHIP_ROCK_BOUNDS = [2000, 150000]
+export const SHIP_ROCK_BOUNDS = [1, 150000]
 
 export interface ShipRockEntryModalProps {
   open?: boolean
