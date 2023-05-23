@@ -20,6 +20,7 @@ import { DiscordIcon } from '../../icons/Discord'
 import { AppVersion } from '../fields/AppVersion'
 import { SCVersion } from '../fields/SCVersion'
 import { fontFamilies } from '../../theme'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -28,36 +29,50 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-const TabIndex = {
-  General: 0,
-  HelpUs: 1,
-  GetHelp: 2,
-  Thanks: 3,
+export const AboutPageContainer: React.FC = () => {
+  const navigate = useNavigate()
+  const { tab } = useParams()
+
+  return <AboutPage navigate={navigate} tab={tab as string} />
 }
 
-export const AboutPage: React.FC = () => {
+export interface AboutPageProps {
+  tab: string
+  navigate?: (path: string) => void
+}
+
+const TabIndex = {
+  General: 'general',
+  HelpUs: 'support-us',
+  GetHelp: 'get-help',
+  Thanks: 'acknowledgements',
+}
+
+export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const [activeTab, setActiveTab] = React.useState(TabIndex.General)
+
+  const finalTab = typeof tab === 'undefined' ? TabIndex.General : tab
+
   return (
     <PageWrapper title="About Regolith Co." maxWidth="sm" sx={{ marginLeft: { lg: '7%' } }}>
       <Typography variant="body2" component="div" gutterBottom>
         <em>"Don't mine alone"</em>
       </Typography>
       <Tabs
-        value={activeTab}
+        value={finalTab}
         aria-label="basic tabs example"
         sx={{ mb: 3 }}
         onChange={(event, newValue) => {
-          setActiveTab(newValue)
+          navigate && navigate(`/about/${newValue}`)
         }}
       >
-        <Tab label="General" icon={<Info />} value={0} />
-        <Tab label="Help Us" icon={<Coffee />} value={1} />
-        <Tab label="Get Help" icon={<HelpCenter />} value={2} />
-        <Tab label="Thanks" icon={<Celebration />} value={3} />
+        <Tab label="General" icon={<Info />} value={TabIndex.General} />
+        <Tab label="Help Us" icon={<Coffee />} value={TabIndex.HelpUs} />
+        <Tab label="Get Help" icon={<HelpCenter />} value={TabIndex.GetHelp} />
+        <Tab label="Thanks" icon={<Celebration />} value={TabIndex.Thanks} />
       </Tabs>
-      {activeTab === TabIndex.General && (
+      {finalTab === TabIndex.General && (
         <Box sx={{ mb: 3 }}>
           <Typography>
             Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.
@@ -74,7 +89,7 @@ export const AboutPage: React.FC = () => {
         </Box>
       )}
       {/* HELP US TAB ============================= */}
-      {activeTab === TabIndex.HelpUs && (
+      {finalTab === TabIndex.HelpUs && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
@@ -118,7 +133,7 @@ export const AboutPage: React.FC = () => {
       )}
 
       {/* GET HELP TAB ============================= */}
-      {activeTab === TabIndex.GetHelp && (
+      {finalTab === TabIndex.GetHelp && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
@@ -160,7 +175,7 @@ export const AboutPage: React.FC = () => {
           </Paper>
         </Box>
       )}
-      {activeTab === TabIndex.Thanks && (
+      {finalTab === TabIndex.Thanks && (
         <Box sx={{ mb: 3 }}>
           <Typography paragraph>
             Regolith is a community-driven app and would not exist without a lot of support and hard work from people.

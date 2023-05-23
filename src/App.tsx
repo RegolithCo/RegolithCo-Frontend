@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'rea
 import { HomePageContainer } from './components/pages/HomePage.container'
 import Error from './Error'
 import { FAQPage } from './components/pages/FAQPage'
-import { AboutPage } from './components/pages/AboutPage'
+import { AboutPage, AboutPageContainer } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
 import { SessionPageContainer2 } from './components/pages/SessionPage/SessionPage.container'
@@ -60,9 +60,13 @@ export const App: React.FC = () => {
           )}
           <Route path="/" element={<HomePageContainer />} errorElement={<Error />} />
           <Route path="/faq" element={<FAQPage />} errorElement={<Error />} />
-          <Route path="/about" element={<AboutPage />} errorElement={<Error />} />
-          <Route path="/terms" element={<AboutPage />} errorElement={<Error />} />
-          <Route path="/privacy" element={<AboutPage />} errorElement={<Error />} />
+
+          {/* about uses urls for tabs */}
+          <Route path="/about/" element={<Navigate to="/about/general" replace />} />
+          <Route path="/about/:tab" element={<AboutPageContainer />} errorElement={<Error />} />
+
+          <Route path="/terms" element={<AboutPageContainer />} errorElement={<Error />} />
+          <Route path="/privacy" element={<AboutPageContainer />} errorElement={<Error />} />
           <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<Error />} />
           <Route
             path="/verify"
