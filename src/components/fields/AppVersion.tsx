@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, useTheme } from '@mui/material'
-import { fontFamilies, theme } from '../../theme'
+import { fontFamilies } from '../../theme'
 
 export type AppVersion = {
   version: string

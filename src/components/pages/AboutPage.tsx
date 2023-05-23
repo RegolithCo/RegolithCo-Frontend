@@ -75,7 +75,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.General && (
         <Box sx={{ mb: 3 }}>
           <Typography>
-            Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.
+            Regolith Co. is a fansite dedicated to helping Star Citizen players mine, organize, share, and scout
+            together.
           </Typography>
           <Typography variant="h4" component="h1" gutterBottom></Typography>
           <Typography paragraph>
@@ -212,11 +213,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5">UEMC Miners, Board and Foremen</Typography>
             <Typography variant="body2" paragraph>
-              A big thanks to the community (Rockseeker and Synack in particular) at the{' '}
+              A big thanks to the{' '}
               <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
                 United Earth Mining Corporation (UEMC)
               </Link>{' '}
-              for their collective determination to crack the new meta for 3.19.
+              org and in particular to <strong style={{ color: theme.palette.secondary.dark }}>Ents</strong>,{' '}
+              <strong style={{ color: theme.palette.secondary.dark }}>Rockseeker</strong> and{' '}
+              <strong style={{ color: theme.palette.secondary.dark }}>Synack</strong> for their help, support,
+              encouragement and collective determination to crack the new meta for 3.19.
             </Typography>
           </Paper>
 

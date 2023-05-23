@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'rea
 import { HomePageContainer } from './components/pages/HomePage.container'
 import Error from './Error'
 import { FAQPage } from './components/pages/FAQPage'
-import { AboutPage, AboutPageContainer } from './components/pages/AboutPage'
+import { AboutPageContainer } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
 import { SessionPageContainer2 } from './components/pages/SessionPage/SessionPage.container'
@@ -13,12 +13,17 @@ import { DataTablesPageContainer } from './components/pages/DataTablesPage'
 import { AuthGate } from './components/pages/AuthGate'
 import { SessionChooserPageContainer } from './components/pages/SessionChooserPage.container'
 import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage'
-import { Box } from '@mui/material'
 import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
 import { useLogin } from './hooks/useOAuth2'
+import { StagingWarning } from './components/modals/StagingWarning'
+
+const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
+const IS_STAGING = !STAGE || STAGE !== 'production'
+console.log('IS_STAGING', IS_STAGING)
 
 export const App: React.FC = () => {
   const { isAuthenticated, isInitialized, loading, error } = useLogin()
+  const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(true)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
   if (needIntervention)
@@ -45,6 +50,12 @@ export const App: React.FC = () => {
   return (
     <Router basename={process.env.PUBLIC_URL}>
       <TopBarContainer />
+      <StagingWarning
+        open={stagingWarningOpen}
+        onClose={() => {
+          setStagingWarningOpen(false)
+        }}
+      />
       <AppWrapperContainer>
         <Routes>
           {needIntervention && (
