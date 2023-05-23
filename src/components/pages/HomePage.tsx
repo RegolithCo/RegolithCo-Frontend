@@ -1,4 +1,17 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Divider, Paper, SxProps, Typography } from '@mui/material'
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Divider,
+  Link,
+  Paper,
+  SxProps,
+  Typography,
+} from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
@@ -7,6 +20,7 @@ import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
 import { StatsObject } from '@regolithco/common'
+import { Alert319 } from '../modals/Alert319'
 
 interface HomePageProps {
   userCtx: LoginContextObj
@@ -26,9 +40,15 @@ const cardCSS: SxProps<Theme> = {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, statsLoading }) => {
+  const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <AlertTitle>A note about 3.19</AlertTitle>
+        TL;DR: Expect weirdness and <strong>thank you</strong> for your patience while we all learn the new meta.
+        <Link onClick={() => setAlertModalOpen(true)}>Read More</Link>
+      </Alert>
       <Divider sx={{ my: 2 }} />
       {/* OUR MAIN CHOICE */}
       <Grid container spacing={4}>
@@ -91,6 +111,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
       </Grid>
+      <Alert319 open={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
 
       {/* STATS */}
       <Divider sx={{ my: 2 }} />
