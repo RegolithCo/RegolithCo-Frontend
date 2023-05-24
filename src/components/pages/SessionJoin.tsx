@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { defaultSessionName, getLocationName, getPlanetName, Session } from '@regolithco/common'
+import { defaultSessionName, getLocationName, getPlanetName, Session, SessionSettings } from '@regolithco/common'
 import { PageWrapper } from '../PageWrapper'
 import { Alert, AlertTitle, Box, Button, Paper, Typography } from '@mui/material'
 import { SessionJoinError } from './SessionJoin.container'
@@ -8,14 +8,14 @@ import dayjs from 'dayjs'
 import { fontFamilies } from '../../theme'
 
 export interface SessionJoinProps {
-  session: Session
+  session?: Session
   loading: boolean
   joinSession: () => void
   joinErrors: SessionJoinError[]
 }
 
 export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, joinSession, joinErrors }) => {
-  const settings = session.sessionSettings || {}
+  const settings = session?.sessionSettings || ({} as SessionSettings)
   const subtitleArr = []
   if (settings.activity) subtitleArr.push(settings.activity)
   if (settings.gravityWell) subtitleArr.push(getPlanetName(settings.gravityWell))
@@ -28,17 +28,19 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, join
       </Typography>
       <Paper elevation={5} sx={{ p: 3, border: '1px solid white', borderRadius: 3 }}>
         <Typography variant="h4" component="h1">
-          {session.name || defaultSessionName()}
+          {session?.name || defaultSessionName()}
         </Typography>
-        <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
-          <strong>Started:</strong> {dayjs(session.createdAt).format('ddd, MMM D YYYY, h:mm a')}
-        </Typography>
-        {session.finishedAt && (
+        {session && (
+          <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
+            <strong>Started:</strong> {dayjs(session.createdAt).format('ddd, MMM D YYYY, h:mm a')}
+          </Typography>
+        )}
+        {session && session.finishedAt && (
           <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
             <strong>Ended:</strong> {dayjs(session.finishedAt).format('ddd, MMM D YYYY, h:mm a')}
           </Typography>
         )}
-        {session.note && (
+        {session && session.note && (
           <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
             <strong>Note:</strong> {session.note}
           </Typography>
@@ -49,7 +51,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, join
               {subtitleArr.join(' - ')}
             </Typography>
           )}
-          {session.note && session.note.trim().length && (
+          {session && session.note && session.note.trim().length && (
             <Typography component="div" sx={{ mb: 2 }} gutterBottom>
               {session.note}
             </Typography>

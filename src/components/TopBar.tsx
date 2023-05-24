@@ -8,7 +8,7 @@ import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
-import { yellow } from '@mui/material/colors'
+import { green, red, yellow } from '@mui/material/colors'
 import { CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import { Login } from '@mui/icons-material'
@@ -23,8 +23,10 @@ const pages = {
   '/workorder': 'Work Order',
   '/tables': 'Data Tables',
   '/about': 'About',
-  '/faq': 'FAQ',
 }
+
+const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
+const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   appBar: {
@@ -142,7 +144,6 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         <Typography variant="h5" noWrap component="a" onClick={() => handleNavigate('/')} sx={styles.siteName}>
           Regolith Co.
         </Typography>
-
         {/* This is the login Menu for non-mobile */}
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           {Object.entries(pages).map(([path, name]) => (
@@ -151,12 +152,11 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
             </Button>
           ))}
         </Box>
-
         {/* Debugger for oauth token expiry */}
         {/* <Box sx={{ flexGrow: 0 }}>{userCtx.isAuthenticated && <LoginExpiryTimer />}</Box> */}
-
         {/* Profile icon, username and badge */}
         <div style={{ flexGrow: 1 }} />
+        {IS_STAGING && '[TEST SERVER]'}
         <Box sx={{ flexGrow: 0 }}>
           {userCtx.isAuthenticated && (
             <>

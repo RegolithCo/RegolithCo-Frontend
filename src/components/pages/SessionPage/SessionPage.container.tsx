@@ -59,10 +59,11 @@ export const SessionPageContainer2: React.FC = () => {
   if (sessionQueries.loading && !sessionQueries.session && !sessionQueries.sessionStub)
     return <PageLoader title="loading session..." loading />
 
-  if (sessionQueries.sessionStub)
+  if (sessionQueries.sessionStub || sessionQueries.sessionError)
     return (
       <SessionJoinContainer
         session={sessionQueries.sessionStub}
+        sessionError={sessionQueries.sessionError}
         userProfile={userQry.userProfile as UserProfile}
         joinSession={sessionQueries.joinSession}
         loading={sessionQueries.loading || sessionQueries.mutating}

@@ -1,9 +1,10 @@
-import { Session, SessionSettings, SessionStateEnum, UserProfile, UserStateEnum } from '@regolithco/common'
+import { ErrorCode, Session, SessionSettings, SessionStateEnum, UserProfile, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
 import { SessionJoin } from './SessionJoin'
 
 export interface SessionJoinContainerProps {
-  session: Session
+  session?: Session
+  sessionError?: ErrorCode
   loading: boolean
   userProfile: UserProfile
   joinSession: () => void
@@ -19,6 +20,7 @@ export type SessionJoinError = ObjectValues<typeof SessionJoinError>
 
 export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = ({
   session,
+  sessionError,
   userProfile,
   joinSession,
   loading,
@@ -27,14 +29,17 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = ({
 
   const joinErrors: SessionJoinError[] = []
   // If you're not verified and the session requires it then nope
-  if (!settings.allowUnverifiedUsers && userProfile.state === UserStateEnum.Unverified) {
+  if (
+    sessionError === ErrorCode.SESSIONJOIN_NOT_VERIFIED ||
+    (!settings.allowUnverifiedUsers && userProfile.state === UserStateEnum.Unverified)
+  ) {
     joinErrors.push(SessionJoinError.UnverifiedNotAllowd)
   }
   // if the session has a list and you're on it then yay!
-  if (settings.specifyUsers && !session?.onTheList) {
+  if (sessionError === ErrorCode.SESSIONJOIN_NOT_ON_LIST || (settings.specifyUsers && !session?.onTheList)) {
     joinErrors.push(SessionJoinError.NotOnList)
   }
-  if (session.state === SessionStateEnum.Closed) {
+  if (session && session.state === SessionStateEnum.Closed) {
     joinErrors.push(SessionJoinError.Closed)
   }
 

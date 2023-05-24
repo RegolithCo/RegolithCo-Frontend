@@ -12,7 +12,11 @@ import { ErrorCode } from '@regolithco/common'
  * @returns
  */
 // Some errors we handle in other ways
-const ExceptList: ErrorCode[] = [ErrorCode.SESSION_NOT_FOUND]
+const ExceptList: ErrorCode[] = [
+  ErrorCode.SESSION_NOT_FOUND,
+  ErrorCode.SESSIONJOIN_NOT_VERIFIED,
+  ErrorCode.SESSIONJOIN_NOT_ON_LIST,
+]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: MutationTuple<any, any>[]) => {

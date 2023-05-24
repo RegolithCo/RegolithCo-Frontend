@@ -431,7 +431,12 @@ export const SessionPage: React.FC<SessionPageProps> = ({
               setActiveModal(null)
               openWorkOrderModal && openWorkOrderModal()
             }}
-            allowEdit={isActive && (userProfile?.userId === activeWorkOrder?.ownerId || isSessionOwner)}
+            allowEdit={
+              isActive &&
+              (userProfile?.userId === activeWorkOrder?.ownerId ||
+                isSessionOwner ||
+                activeWorkOrder.sellerscName === userProfile?.scName)
+            }
           />
         </ThemeProvider>
       )}

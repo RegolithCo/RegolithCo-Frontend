@@ -61,6 +61,7 @@ import { useLogin } from './useOAuth2'
 
 type useSessionsReturn = {
   session?: Session
+  sessionError?: ErrorCode
   sessionStub?: Session
   sessionUser?: SessionUser
   loading: boolean
@@ -85,6 +86,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const { userProfile } = useLogin()
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
+  const [sessionError, setSessionError] = React.useState<ErrorCode>()
 
   const sessionUserQry = useGetSessionUserQuery({
     variables: {
@@ -98,6 +100,14 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       sessionId: sessionId as string,
     },
     skip: !sessionId || sessionUserQry.loading || Boolean(sessionUserQry.data?.sessionUser),
+    onCompleted: (data) => {
+      if (data.session && sessionError) {
+        setSessionError(undefined)
+      }
+    },
+    onError: (error) => {
+      setSessionError((error.graphQLErrors[0].extensions?.code as ErrorCode) || ErrorCode.SESSION_NOT_FOUND)
+    },
   })
 
   const sessionQry = useGetSessionQuery({
@@ -345,6 +355,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
 
   return {
     session: sessionQry.data?.session as Session,
+    sessionError,
     sessionStub: sessionStubQry.data?.session as Session,
     sessionUser: sessionUserQry.data?.sessionUser as SessionUser,
     loading,

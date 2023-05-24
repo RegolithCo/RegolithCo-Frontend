@@ -3,7 +3,6 @@ import { AppWrapperContainer } from './components/AppWrapper'
 import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { HomePageContainer } from './components/pages/HomePage.container'
 import Error from './Error'
-import { FAQPage } from './components/pages/FAQPage'
 import { AboutPageContainer } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
@@ -18,12 +17,12 @@ import { useLogin } from './hooks/useOAuth2'
 import { StagingWarning } from './components/modals/StagingWarning'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
-const IS_STAGING = !STAGE || STAGE !== 'production'
-console.log('IS_STAGING', IS_STAGING)
+const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 
 export const App: React.FC = () => {
   const { isAuthenticated, isInitialized, loading, error } = useLogin()
-  const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(true)
+  const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
+  console.log('stage', STAGE)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
   if (needIntervention)
@@ -70,7 +69,6 @@ export const App: React.FC = () => {
             />
           )}
           <Route path="/" element={<HomePageContainer />} errorElement={<Error />} />
-          <Route path="/faq" element={<FAQPage />} errorElement={<Error />} />
 
           {/* about uses urls for tabs */}
           <Route path="/about/" element={<Navigate to="/about/general" replace />} />
