@@ -125,7 +125,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
         <TableBody>
           {workOrders.map((workOrder: WorkOrder, idx) => (
             <WorkOrderTableRow
-              key={`wo-${idx}`}
+              key={`wo-${workOrder.orderId}`}
               workOrder={workOrder}
               openWorkOrderModal={openWorkOrderModal}
               summary={summaries[idx]}
@@ -161,9 +161,6 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   const theme = useTheme()
   const { owner, createdAt, state, orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
-  const otherOrder = workOrder as OtherOrder
-
-  let displayValueCol = 0
 
   let stateIcon: React.ReactNode
   const volumeVal = Object.entries(summary.oreSummary).reduce(
@@ -174,19 +171,15 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   let OrderIcon: SvgIconComponent
   switch (orderType) {
     case ActivityEnum.ShipMining:
-      displayValueCol = shipOrder.isRefined ? summary.refinedValue || 0 : summary.unrefinedValue || 0
       OrderIcon = RockIcon
       break
     case ActivityEnum.Salvage:
-      displayValueCol = summary.shareAmount
       OrderIcon = ClawIcon
       break
     case ActivityEnum.VehicleMining:
-      displayValueCol = summary.shareAmount
       OrderIcon = GemIcon
       break
     case ActivityEnum.Other:
-      displayValueCol = otherOrder.shareAmount || 0
       OrderIcon = QuestionMark
       break
     default:

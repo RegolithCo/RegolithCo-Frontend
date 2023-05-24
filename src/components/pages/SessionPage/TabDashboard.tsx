@@ -113,9 +113,11 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
+
   const allScouts = session.scouting?.items || []
   const filteredScouts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
   filteredScouts.sort((a, b) => b.createdAt - a.createdAt)
+
   const allWorkOrders = session.workOrders?.items || []
   const filteredWorkOrders = filterPaidWorkOrders
     ? allWorkOrders.filter(({ crewShares }) => crewShares?.some(({ state }) => !state))
