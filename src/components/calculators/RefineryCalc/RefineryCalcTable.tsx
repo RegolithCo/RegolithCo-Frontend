@@ -42,7 +42,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     { max: null, min: null },
     { max: null, min: null },
   ]
-  const bgColorArr = ['#a10d00', '#00861b']
+  const bgColorArr = ['#a10d00', '#fd8300', '#fdbe00', '#fdbe00', '#00861b']
   const bgColors = new Gradient()
     .setColorGradient(...bgColorArr)
     .setMidpoint(101) // 100 is the number of colors to generate. Should be enough stops for our ores
@@ -84,7 +84,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       ) as RefineryMethodEnum
       const oreYield = yieldCalc(finalAmt, finalOre, finalRefinery, finalMethod)
       const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
-      const marketPrice = findPrice(finalOre as ShipOreEnum, undefined, true)
+      const marketPrice = findPrice(finalOre as ShipOreEnum, undefined, true) / 100
       switch (refMetric) {
         case RefineryMetricEnum.netProfit:
           outArr[0] = oreYield * marketPrice - refCost

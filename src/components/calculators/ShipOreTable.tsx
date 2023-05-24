@@ -37,10 +37,10 @@ export const ShipOreTable: React.FC = () => {
     const retVals = [
       orePriceUnrefined,
       orePriceRefined,
-      orePriceUnrefined * 3200,
-      orePriceRefined * 3200,
-      orePriceUnrefined * 9600,
-      orePriceRefined * 9600,
+      orePriceUnrefined * 32,
+      orePriceRefined * 32,
+      orePriceUnrefined * 96,
+      orePriceRefined * 96,
     ]
     if (rowIdx === 0) {
       retVals.forEach((value) => rowStats.push({ max: value, min: value }))
@@ -69,7 +69,7 @@ export const ShipOreTable: React.FC = () => {
             <TableCell sx={{ backgroundColor: '#00000033' }}></TableCell>
             <TableCell align="left" colSpan={2} valign="top" sx={{ backgroundColor: '#00000055' }}>
               <Typography variant="h5" component="div">
-                1 cSCU
+                1 SCU
               </Typography>
               <Typography variant="caption" component="div">
                 &nbsp;
@@ -133,7 +133,11 @@ export const ShipOreTable: React.FC = () => {
                         color: fgColors[colorizedRows[rowIdx][colIdx]],
                       }}
                     >
-                      <MValue key={`cell-${rowIdx}-${colIdx}`} value={colVal} format={MValueFormat.currency_sm} />
+                      <MValue
+                        key={`cell-${rowIdx}-${colIdx}`}
+                        value={colVal}
+                        format={colIdx < 2 ? MValueFormat.currency : MValueFormat.currency_sm}
+                      />
                     </TableCell>
                   )
                 })}

@@ -36,7 +36,7 @@ import {
   SalvageOrder,
   findPrice,
 } from '@regolithco/common'
-import { MValue, MValueFormat } from '../../../fields/MValue'
+import { MValue } from '../../../fields/MValue'
 import { RefineryControl } from '../../../fields/RefineryControl'
 import { RefineryMethodControl } from '../../../fields/RefiningMethodControl'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
@@ -48,8 +48,6 @@ import { fontFamilies } from '../../../../theme'
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
-import { ErrorOutline } from '@mui/icons-material'
-import { PricesTooltip } from '../../../fields/PricesTooltip'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary

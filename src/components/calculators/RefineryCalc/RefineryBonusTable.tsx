@@ -161,8 +161,13 @@ export const RefineryBonusTable: React.FC = () => {
                       const val1IsMax = val !== null && val === gridStatsArr[tableIdx].max
                       const val1IsMin = val !== null && val === gridStatsArr[tableIdx].min
                       const transparency = val1IsMax || val1IsMin ? 'ff' : 'aa'
-                      const bgcol = rowColorIdx ? bgColors[rowColorIdx] + transparency : null
-                      const fgcol = rowColorIdx ? fgColors[rowColorIdx] + transparency : null
+                      const isReversed = reversed[tableIdx]
+                      let bgcol = rowColorIdx ? bgColors[rowColorIdx] + transparency : null
+                      let fgcol = rowColorIdx ? fgColors[rowColorIdx] + transparency : null
+                      if (isReversed) {
+                        bgcol = rowColorIdx ? bgColors[bgColors.length - rowColorIdx] + transparency : null
+                        fgcol = rowColorIdx ? fgColors[fgColors.length - rowColorIdx] + transparency : null
+                      }
                       return (
                         <TableCell
                           align="right"

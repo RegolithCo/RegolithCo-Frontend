@@ -277,7 +277,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 sx={styles.massField}
                 fullWidth
                 InputProps={{
-                  endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                  endAdornment: <Typography sx={{ mr: 1 }}>t</Typography>,
                 }}
                 value={(newShipRock.mass as number).toFixed(0)}
                 onChange={(event) => {
