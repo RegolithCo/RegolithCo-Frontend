@@ -148,7 +148,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           <TextField
             fullWidth
             autoFocus
-            inputRef={(input) => input && input.focus()}
             disabled={!allowEdit || !isEditing}
             value={Numeral(shareAmountInputVal).format(`0,0`)}
             // onKeyDown={(event) => {}}
