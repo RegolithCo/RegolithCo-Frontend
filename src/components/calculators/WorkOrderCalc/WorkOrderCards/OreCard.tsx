@@ -402,48 +402,14 @@ export const OreCard: React.FC<OreCardProps> = ({
         </Table>
         <Box sx={{ flexGrow: 1 }} />
         {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
-          <RefineryProgress startTime={shipOrder.processStartTime as number} totalTime={summary.refiningTime} />
+          <RefineryProgress
+            startTime={shipOrder.processStartTime as number}
+            totalTimeS={shipOrder.processDurationS || 0}
+            editable={isEditing}
+            onChange={(newTime) => onChange({ ...shipOrder, processStartTime: Date.now(), processDurationS: newTime })}
+          />
         )}
-        <Table size="small" sx={{ borderTop: '2px solid' }}>
-          <TableBody>
-            {/* {shipOrder.isRefined && (
-              <TableRow>
-                <TableCell component="th">
-                  <Typography variant="tablecell">Unrefined Value</Typography>
-                </TableCell>
-                <TableCell align="right" colSpan={2}>
-                  <MValue value={summary.unrefinedValue} format={MValueFormat.currency} />
-                </TableCell>
-              </TableRow>
-            )} */}
-            {/* <TableRow>
-              <TableCell component="th">
-                <Typography variant="tablecell" sx={{ fontSize: '0.8em' }}>
-                  <PricesTooltip>
-                    <em>
-                      {shipOrder.isRefined ? 'Refined Value (est.)' : 'Ore Value (est.)'}{' '}
-                      <ErrorOutline sx={{ fontSize: '1.2em', color: theme.palette.primary.main }} />{' '}
-                    </em>
-                  </PricesTooltip>
-                </Typography>
-              </TableCell>
-              <TableCell align="right" colSpan={2} sx={{ fontSize: '0.8em' }}>
-                <PricesTooltip>
-                  <em>
-                    <MValue
-                      value={shipOrder.isRefined ? summary?.refinedValue : summary?.grossProfit}
-                      format={MValueFormat.currency}
-                      typoProps={{ sx: { fontSize: '0.8em' } }}
-                      approx
-                    />
-                  </em>
-                </PricesTooltip>
-              </TableCell>
-            </TableRow> */}
-          </TableBody>
-        </Table>
-
-        {shipOrder.isRefined && isEditing && (
+        {/* {shipOrder.isRefined && isEditing && (
           <Box sx={{ display: 'flex' }}>
             <Button
               variant="contained"
@@ -479,7 +445,7 @@ export const OreCard: React.FC<OreCardProps> = ({
               />
             </LocalizationProvider>
           </Box>
-        )}
+        )} */}
       </CardContent>
     </Card>
   )

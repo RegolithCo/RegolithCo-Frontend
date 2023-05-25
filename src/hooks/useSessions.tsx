@@ -511,13 +511,14 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     createWorkOrder: async (newOrder: WorkOrder) => {
       const { crewShares, includeTransferFee, note, shareAmount, sellStore } = newOrder
       const shipOrder = newOrder as ShipMiningOrder
-      const { processStartTime, refinery, method, isRefined, shareRefinedValue } = shipOrder
+      const { processStartTime, processDurationS, refinery, method, isRefined, shareRefinedValue } = shipOrder
       const workOrderInput: WorkOrderInput = {
         includeTransferFee,
         isRefined,
         method,
         note,
         processStartTime,
+        processDurationS,
         refinery,
         shareRefinedValue,
         shareAmount,

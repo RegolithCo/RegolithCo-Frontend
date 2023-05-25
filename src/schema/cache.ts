@@ -287,7 +287,7 @@ export type ShipClusterFindFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processStartTime' | 'refinery' | 'sellStore' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | 'version' | ShipMiningOrderKeySpecifier)[];
+export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processDurationS' | 'processStartTime' | 'refinery' | 'sellStore' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | 'version' | ShipMiningOrderKeySpecifier)[];
 export type ShipMiningOrderFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -301,6 +301,7 @@ export type ShipMiningOrderFieldPolicy = {
 	orderType?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
+	processDurationS?: FieldPolicy<any> | FieldReadFunction<any>,
 	processStartTime?: FieldPolicy<any> | FieldReadFunction<any>,
 	refinery?: FieldPolicy<any> | FieldReadFunction<any>,
 	sellStore?: FieldPolicy<any> | FieldReadFunction<any>,

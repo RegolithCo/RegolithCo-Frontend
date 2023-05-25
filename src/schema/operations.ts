@@ -252,6 +252,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
     refinery
     method
     processStartTime
+    processDurationS
     shipOres {
       amt
       ore

@@ -136,6 +136,7 @@ export function newWorkOrderMaker(session: Session, owner: UserProfile, activity
     failReason: undefined,
     shareRefinedValue: undefined,
     processStartTime: undefined,
+    processDurationS: undefined,
     shareAmount: undefined,
 
     // Cascading fallback of options

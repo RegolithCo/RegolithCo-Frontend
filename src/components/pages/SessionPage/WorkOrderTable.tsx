@@ -1,13 +1,6 @@
 import * as React from 'react'
 
-import {
-  ActivityEnum,
-  makeHumanIds,
-  OtherOrder,
-  ShipMiningOrder,
-  WorkOrder,
-  WorkOrderStateEnum,
-} from '@regolithco/common'
+import { ActivityEnum, makeHumanIds, ShipMiningOrder, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
 import { getActivityName, calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   Badge,
@@ -273,7 +266,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
         {summary.completionTime && summary.completionTime > Date.now() ? (
           <CountdownTimer
             startTime={shipOrder.processStartTime as number}
-            totalTime={summary.refiningTime}
+            totalTime={(shipOrder.processDurationS || 0) * 1000}
             useMValue
             typoProps={{
               sx: {
