@@ -297,9 +297,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const salvageFind = scoutingFind as SalvageFind
 
   // Some convenience variables
-  const hasCount = Boolean(scoutingFind.clusterCount)
+  // const hasCount = Boolean(scoutingFind.clusterCount)
   let hasScans = false
-  let scanComplete = false
+  // let scanComplete = false
   let numScans = 0
   const clusterCount = scoutingFind.clusterCount || 0
 
@@ -309,30 +309,30 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   switch (scoutingFind.clusterType) {
     case ScoutingFindTypeEnum.Salvage:
       hasScans = salvageFind.wrecks && salvageFind.wrecks.length > 0
-      scanComplete = hasScans && hasCount && salvageFind.wrecks.length === scoutingFind.clusterCount
+      // scanComplete = hasScans && hasCount && salvageFind.wrecks.length === scoutingFind.clusterCount
       numScans = hasScans ? salvageFind.wrecks.length : 0
       Icon = ClawIcon
       itemName = plural ? 'Wrecks' : 'Wreck'
       break
     case ScoutingFindTypeEnum.Ship:
       hasScans = shipFind.shipRocks && shipFind.shipRocks.length > 0
-      scanComplete = hasScans && hasCount && shipFind.shipRocks.length === scoutingFind.clusterCount
+      // scanComplete = hasScans && hasCount && shipFind.shipRocks.length === scoutingFind.clusterCount
       numScans = hasScans ? shipFind.shipRocks.length : 0
       Icon = RockIcon
       itemName = plural ? 'Rocks' : 'Rock'
       break
     case ScoutingFindTypeEnum.Vehicle:
       hasScans = vehicleFind.vehicleRocks && vehicleFind.vehicleRocks.length > 0
-      scanComplete = hasScans && hasCount && vehicleFind.vehicleRocks.length === scoutingFind.clusterCount
+      // scanComplete = hasScans && hasCount && vehicleFind.vehicleRocks.length === scoutingFind.clusterCount
       numScans = hasScans ? vehicleFind.vehicleRocks.length : 0
       Icon = GemIcon
       itemName = plural ? 'Gems' : 'Gem'
       break
   }
   const summary = clusterCalc(scoutingFind as ScoutingFind)
-  let profitSymbol = '~'
-  if (scanComplete) profitSymbol = ''
-  else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
+  // let profitSymbol = '~'
+  // if (scanComplete) profitSymbol = ''
+  // else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
 
   let myAttendanceState = AttendanceStateEnum.NotJoined
   if (scoutingFind.attendanceIds?.includes(me.owner?.userId as string)) {
@@ -496,7 +496,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       )}
                     </TableCell>
                     <TableCell align="right">
-                      {profitSymbol}
+                      {/* {profitSymbol} */}
                       {MValueFormatter(summary.value, MValueFormat.number_sm, 1)}
                     </TableCell>
                   </TableRow>
@@ -667,15 +667,19 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     variant="text"
                     onClick={() => {
                       setEditScanModalOpen([-1, false])
-                      setAddScanModalOpen({
-                        __typename: 'ShipRock',
-                        state: RockStateEnum.Ready,
-                        mass: 3000,
-                        ores: [],
+                      // setAddScanModalOpen({
+                      //   __typename: 'ShipRock',
+                      //   state: RockStateEnum.Ready,
+                      //   mass: 3000,
+                      //   ores: [],
+                      // })
+                      onChange({
+                        ...shipFind,
+                        clusterCount: (shipFind.clusterCount || 0) + 1,
                       })
                     }}
                   >
-                    Add Scan
+                    Add Rock
                   </Button>
                 )}
               </Box>
@@ -713,6 +717,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     <Grid key={idx} xs={6} sm={4} md={3}>
                       <EmptyScanCard
                         Icon={RockIcon}
+                        onDelete={() => {
+                          if (!shipFind.shipRocks || !shipFind.clusterCount) return
+                          if (shipFind.clusterCount <= shipFind.shipRocks.length) return
+                          onChange({
+                            ...shipFind,
+                            clusterCount: shipFind.clusterCount - 1,
+                          })
+                        }}
                         onClick={() => {
                           setEditScanModalOpen([-1, false])
                           setAddScanModalOpen({
@@ -761,7 +773,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             } else if (editScanModalOpen[1] !== false) {
               onChange({
                 ...(shipFind || {}),
-                clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
                 shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
               })
               setEditScanModalOpen([-1, false])

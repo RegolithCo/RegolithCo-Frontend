@@ -21,6 +21,7 @@ import {
   AnyOreEnum,
   findPrice,
   getOreName,
+  jsRound,
   RockStateEnum,
   ShipOreEnum,
   ShipRock,
@@ -36,6 +37,7 @@ import { fontFamilies, theme as themeOrig } from '../../theme'
 import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
+import Numeral from 'numeral'
 
 export const SHIP_ROCK_BOUNDS = [1, 150000]
 
@@ -159,9 +161,6 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-const markIntervals = [3, 4, 5, 6, 7, 8, 9]
-const marks = markIntervals.map((mark) => ({ value: mark * 10000, label: mark + 'K' }))
-
 export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   open,
   isNew,
@@ -239,6 +238,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     Boolean(percentTotal && percentTotal > 1) ||
     Boolean(percentTotal === 0)
 
+  let massErrorReason = ''
+  if (!newShipRock.mass) massErrorReason = 'Mass is required'
+  else if (newShipRock.mass <= SHIP_ROCK_BOUNDS[0] || newShipRock.mass > SHIP_ROCK_BOUNDS[1]) {
+    massErrorReason = `Mass must be between ${Numeral(SHIP_ROCK_BOUNDS[0]).format('0,0')} and ${Numeral(
+      SHIP_ROCK_BOUNDS[1]
+    ).format('0,0')} tonnes`
+  }
   return (
     <>
       <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs">
@@ -279,12 +285,16 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 InputProps={{
                   endAdornment: <Typography sx={{ mr: 1 }}>t</Typography>,
                 }}
-                value={(newShipRock.mass as number).toFixed(0)}
+                error={disabled}
+                helperText={disabled ? massErrorReason : 'Enter the rock mass'}
+                value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
                 onChange={(event) => {
-                  setNewShipRock({ ...newShipRock, mass: Number(event.target.value) })
+                  const rawValue = event.target.value.replace(/[^\d]/g, '').replace(/^0+/, '')
+                  const value = jsRound(parseInt(rawValue, 10), 0)
+                  setNewShipRock({ ...newShipRock, mass: value })
                 }}
                 variant="outlined"
-                type="number"
+                type="text"
               />
             </Grid2>
           </Grid2>
