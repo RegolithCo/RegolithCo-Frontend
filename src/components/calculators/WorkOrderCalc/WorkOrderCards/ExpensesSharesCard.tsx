@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -48,18 +48,21 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   sx,
 }) => {
   const theme = useTheme()
-  const [editingShareAmt, setEditingShareAmt] = useState<boolean>(false)
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
-  // Set a ref for the input so we can focus it when the user clicks the edit button
-  const shareAmountInputRef = React.useRef<HTMLInputElement>(null)
 
   const shipOrder = workOrder as ShipMiningOrder
 
   const expenses: { name: string; value: number }[] = []
 
-  const storeChoices = findAllStoreChoices(summary.oreSummary, Boolean(shipOrder.isRefined))
-  const myStoreChoice = storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0]
+  const storeChoices = useMemo(
+    () => findAllStoreChoices(summary.oreSummary, Boolean(shipOrder.isRefined)),
+    [summary.oreSummary]
+  )
+  const myStoreChoice = useMemo(
+    () => storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0],
+    [storeChoices]
+  )
 
   if (workOrder.includeTransferFee) {
     expenses.push({
@@ -145,54 +148,29 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           <TextField
             fullWidth
             autoFocus
-            ref={shareAmountInputRef}
-            disabled={!allowEdit || !editingShareAmt}
+            inputRef={(input) => input && input.focus()}
+            disabled={!allowEdit || !isEditing}
             value={Numeral(shareAmountInputVal).format(`0,0`)}
-            onFocus={(event) => {
-              event.target.select()
-              setEditingShareAmt(true)
-            }}
-            onBlur={() => setEditingShareAmt(false)}
-            onAbort={() => setEditingShareAmt(false)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                // Set next cell down to edit mode
-                event.preventDefault()
-                setEditingShareAmt(false)
-              } else if (event.key === 'Tab') {
-                event.preventDefault()
-                // Set next cell down to edit mode
-                setEditingShareAmt(false)
-              } else if (event.key === 'Escape') {
-                event.preventDefault()
-                setEditingShareAmt(false)
-              } else if (event.key.length === 1 && !event.key.match(/^[0-9]$/)) {
-                event.preventDefault()
-              }
-            }}
+            // onKeyDown={(event) => {}}
             onChange={(e) => {
               try {
-                const value = parseInt(e.target.value.replaceAll(',', ''), 10)
-                console.log('MARZIPAN', e.target.value, value)
+                const value = jsRound(parseInt(e.target.value.replace(/[^\d]/g, '').replace(/^0+/, ''), 10), 0)
+
                 if (value >= 0) {
-                  setShareAmountInputVal(jsRound(value, 0))
+                  setShareAmountInputVal(value)
                   onChange({
                     ...workOrder,
                     shareAmount: value,
                   })
                 } else {
+                  setShareAmountInputVal(0)
                   onChange({
                     ...workOrder,
-                    shareAmount: workOrder.orderType !== ActivityEnum.Other ? null : 0,
+                    shareAmount: 0,
                   })
                 }
               } catch (e) {
                 //
-              }
-            }}
-            onClick={() => {
-              if (isEditing && !editingShareAmt) {
-                setEditingShareAmt(true)
               }
             }}
             InputProps={{
@@ -233,7 +211,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
-                          setEditingShareAmt(false)
                           onChange({
                             ...workOrder,
                             shareAmount: undefined,
@@ -259,9 +236,9 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             sx={{
               '& .MuiInputBase-root': {
                 borderRadius: 3,
-                boxShadow: editingShareAmt ? `0 0 10px 2px ${theme.palette.primary.light}` : 'none',
-                background: editingShareAmt ? alpha(theme.palette.primary.contrastText, 0.2) : '#222',
-                border: editingShareAmt ? `2px solid ${theme.palette.primary.light}` : `1px solid #000`,
+                // boxShadow: isEditingShareAmt ? `0 0 10px 2px ${theme.palette.primary.light}` : 'none',
+                // background: isEditingShareAmt ? alpha(theme.palette.primary.contrastText, 0.2) : '#222',
+                // border: isEditingShareAmt ? `2px solid ${theme.palette.primary.light}` : `1px solid #000`,
                 mt: 0.5,
                 mb: 2,
                 p: 0.5,
