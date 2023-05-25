@@ -1,1 +1,34 @@
-{"users":215,"workOrders":68,"sessions":124,"scoutingRocks":145,"rawOreSCU":1981.0400000000002,"aUEC":16419728.810625,"shipOres":{"AGRICIUM":0,"ALUMINUM":0.31616,"BERYL":19.979734999999998,"BEXALITE":81.839,"BORASE":47.66238,"COPPER":0,"CORUNDUM":0,"DIAMOND":7.7044999999999995,"GOLD":5.4435,"HEPHAESTANITE":0,"INERTMATERIAL":0,"LARANITE":0.988,"QUANTANIUM":718.8269999999999,"QUARTZ":21.755,"TARANITE":77.14,"TITANIUM":1.3775,"TUNGSTEN":0},"vehicleOres":{"APHORITE":22.69,"DOLIVINE":9.74,"HADANITE":123.05000000000001}}
+{
+  "users": 373,
+  "workOrders": 393,
+  "sessions": 376,
+  "scoutingRocks": 423,
+  "rawOreSCU": 1489,
+  "aUEC": 76278862,
+  "shipOres": {
+    "AGRICIUM": 0,
+    "ALUMINUM": 0,
+    "BERYL": 69,
+    "BEXALITE": 10,
+    "BORASE": 0,
+    "COPPER": 12,
+    "CORUNDUM": 0,
+    "DIAMOND": 0,
+    "GOLD": 0,
+    "HEPHAESTANITE": 0,
+    "INERTMATERIAL": 0,
+    "IRON": 0,
+    "LARANITE": 3,
+    "QUANTANIUM": 83,
+    "QUARTZ": 0,
+    "TARANITE": 0,
+    "TITANIUM": 0,
+    "TUNGSTEN": 0
+  },
+  "vehicleOres": {
+    "APHORITE": 18,
+    "DOLIVINE": 36,
+    "HADANITE": 222,
+    "JANALITE": 0
+  }
+}
