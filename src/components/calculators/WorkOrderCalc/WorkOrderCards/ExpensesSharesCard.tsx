@@ -235,9 +235,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             sx={{
               '& .MuiInputBase-root': {
                 borderRadius: 3,
-                // boxShadow: isEditingShareAmt ? `0 0 10px 2px ${theme.palette.primary.light}` : 'none',
-                // background: isEditingShareAmt ? alpha(theme.palette.primary.contrastText, 0.2) : '#222',
-                // border: isEditingShareAmt ? `2px solid ${theme.palette.primary.light}` : `1px solid #000`,
                 mt: 0.5,
                 mb: 2,
                 p: 0.5,
