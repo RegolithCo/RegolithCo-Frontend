@@ -29,7 +29,6 @@ import {
   ErrorCode,
   GetSessionQuery,
   mergeDestructured,
-  OtherOrder,
   PaginatedScoutingFinds,
   PaginatedSessions,
   PaginatedSessionUsers,
@@ -43,6 +42,7 @@ import {
   Session,
   SessionInput,
   SessionSettings,
+  SessionStateEnum,
   SessionSystemDefaults,
   SessionUser,
   SessionUserInput,
@@ -120,12 +120,30 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   // TODO: This is our sloppy poll function we need to update to lower data costs
   React.useEffect(() => {
     if (sessionQry.data?.session) {
-      sessionQry.startPolling(10000)
+      // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
+      const oneDayMs = 86400000 // 24 hours in milliseconds
+      const pollTime =
+        Date.now() - oneDayMs > sessionQry.data?.session.updatedAt ||
+        sessionQry.data?.session.state !== SessionStateEnum.Active
+          ? 60000
+          : 10000
+
+      sessionQry.startPolling(pollTime)
     } else {
       sessionQry.stopPolling()
     }
-    if (sessionStubQry.data?.session) {
-      sessionStubQry.startPolling(20000)
+
+    // Only poll the stub if we don't have a real session
+    if (!sessionQry.data?.session && sessionStubQry.data?.session) {
+      // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
+      const oneDayMs = 86400000 // 24 hours in milliseconds
+      const pollTime =
+        Date.now() - oneDayMs > sessionStubQry.data?.session.updatedAt ||
+        sessionStubQry.data?.session.state !== SessionStateEnum.Active
+          ? 120000
+          : 10000
+      // If the session is active, poll every 20 seconds, otherwise every 2 minutes
+      sessionStubQry.startPolling(pollTime)
     } else {
       sessionStubQry.stopPolling()
     }
