@@ -4,6 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { SessionChooserPage as SessionChooserPageC } from './SessionChooserPage'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
 import { User } from '@regolithco/common'
+import log from 'loglevel'
 
 export default {
   title: 'Pages/SessionChooserPage',
@@ -26,9 +27,9 @@ SessionChooserPage.args = {
   joinedSessions: Array.from({ length: 20 }, () => fakeSession()),
   loading: false,
   navigate: (path: string) => {
-    console.log('navigate', path)
+    log.debug('navigate', path)
   },
   onCreateNewSession: () => {
-    console.log('onCreateNewSession')
+    log.debug('onCreateNewSession')
   },
 }

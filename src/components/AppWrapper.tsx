@@ -48,7 +48,6 @@ const styles: Record<string, SxProps<Theme>> = {
 export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { pathname } = useLocation()
 
-  // console.log('AppWrapperContainer', location)
   const pathnameRegex = pathname.match(/^(\/[^/]*)/)
   const allMatches = pathnameRegex && pathnameRegex.length > 0 ? pathnameRegex : ['/']
 

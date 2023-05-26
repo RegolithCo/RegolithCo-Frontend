@@ -58,6 +58,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
 import { makeSessionUrls } from '../lib/routingUrls'
 import { useLogin } from './useOAuth2'
+import log from 'loglevel'
 
 type useSessionsReturn = {
   session?: Session
@@ -156,7 +157,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       } catch {
         //
       }
-      console.log('sessionQry.error', sessionQry.error)
+      log.error('sessionQry.error', sessionQry.error)
     }
   }, [sessionQry.error])
 

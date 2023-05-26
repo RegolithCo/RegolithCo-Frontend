@@ -172,16 +172,16 @@ const DEFAULT_LOGIN_CONTEXT: LoginContextObj = {
   refreshPopupOpen: false,
   refreshPopup: null,
   setRefreshPopupOpen: () => {
-    console.log('NOT SET UP FOR POPUP')
+    log.warn('NOT SET UP FOR POPUP')
   },
   openPopup: () => {
-    console.log('NOT SET UP FOR POPUP')
+    log.warn('NOT SET UP FOR POPUP')
   },
   login: (authType: AuthTypeEnum) => {
-    console.log('NOT SET UP FOR LOGIN', authType)
+    log.warn('NOT SET UP FOR LOGIN', authType)
   },
   logOut: () => {
-    console.log('NOT SET UP FOR LOGOUT')
+    log.warn('NOT SET UP FOR LOGOUT')
   },
   loading: false,
 }

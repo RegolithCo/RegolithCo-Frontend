@@ -179,7 +179,6 @@ export const OreCard: React.FC<OreCardProps> = ({
             value={shipOrder.method || RefineryMethodEnum.DinyxSolventation}
             disabled={!isEditing || isRefineryMethodLocked}
             onChange={(method) => {
-              console.log('method', method)
               method && onChange({ ...shipOrder, method })
             }}
           />
@@ -409,43 +408,6 @@ export const OreCard: React.FC<OreCardProps> = ({
             onChange={(newTime) => onChange({ ...shipOrder, processStartTime: Date.now(), processDurationS: newTime })}
           />
         )}
-        {/* {shipOrder.isRefined && isEditing && (
-          <Box sx={{ display: 'flex' }}>
-            <Button
-              variant="contained"
-              color={shipOrder.processStartTime ? 'error' : 'primary'}
-              sx={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-                flex: '1 1 auto',
-              }}
-              onClick={() =>
-                onChange({
-                  ...shipOrder,
-                  processStartTime: shipOrder.processStartTime ? null : Date.now(),
-                })
-              }
-            >
-              {shipOrder.processStartTime ? 'Reset' : 'Start'}
-            </Button>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                renderInput={(props) => <TextField {...props} />}
-                label="Refinery Start Time"
-                value={shipOrder.processStartTime ? new Date(shipOrder.processStartTime) : null}
-                onChange={(newValue) => {
-                  console.log('newValue', newValue)
-                  onChange({
-                    ...shipOrder,
-                    processStartTime: newValue?.valueOf() || null,
-                  })
-                }}
-              />
-            </LocalizationProvider>
-          </Box>
-        )} */}
       </CardContent>
     </Card>
   )

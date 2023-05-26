@@ -1,5 +1,6 @@
 // Borrowed with grattitude from:
 // https://github.com/soofstad/react-oauth2-pkce/blob/main/src/Hooks.tsx
+import log from 'loglevel'
 import { useEffect, useState } from 'react'
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (v: T) => void] {
@@ -18,7 +19,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (v: T) => void] {
       setStoredValue(valueToStore)
       localStorage.setItem(key, JSON.stringify(valueToStore))
     } catch (error) {
-      console.log(`Failed to store value '${value}' for key '${key}'`)
+      log.error(`Failed to store value '${value}' for key '${key}'`)
     }
   }
 

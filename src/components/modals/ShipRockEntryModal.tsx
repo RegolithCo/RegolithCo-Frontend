@@ -38,6 +38,7 @@ import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
 import Numeral from 'numeral'
+import log from 'loglevel'
 
 export const SHIP_ROCK_BOUNDS = [1, 150000]
 
@@ -217,7 +218,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
       const percentTotal = (newShipRock.ores || []).reduce((acc, { percent }) => acc + percent, 0)
       return [volume, value, percentTotal]
     } catch (e) {
-      console.log(e)
+      log.error(e)
       return [0, 0]
     }
   }, [newShipRock])

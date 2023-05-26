@@ -5,6 +5,7 @@ import axios from 'axios'
 
 import { useLogin } from '../../hooks/useOAuth2'
 import { HomePage } from './HomePage'
+import log from 'loglevel'
 
 export const HomePageContainer: React.FC = () => {
   const userCtx = useLogin()
@@ -23,7 +24,7 @@ export const HomePageContainer: React.FC = () => {
       })
       .catch((error) => {
         //If there is an error, log it. DO NOT FAIL
-        console.log(error)
+        log.error(error)
         setStats(undefined)
         setStatsLoading(false)
       })

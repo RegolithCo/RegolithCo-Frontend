@@ -27,8 +27,6 @@ export const ShipOreTable: React.FC = () => {
     return bPrice[0] - aPrice[0]
   })
 
-  console.log('sorted shipRowKeys: ', shipRowKeys, priceLookups)
-
   const rowStats: { max: number; min: number }[] = []
 
   const finalTable: [number, number, number, number, number, number][] = shipRowKeys.map((shipOreKey, rowIdx) => {

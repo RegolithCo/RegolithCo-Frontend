@@ -22,7 +22,6 @@ const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 export const App: React.FC = () => {
   const { isAuthenticated, isInitialized, loading, error } = useLogin()
   const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
-  console.log('stage', STAGE)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
   if (needIntervention)
