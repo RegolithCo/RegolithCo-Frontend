@@ -51,30 +51,6 @@ export const SessionIdFragmentFragmentDoc = gql`
   name
 }
     `;
-export const SessionSummaryFragmentFragmentDoc = gql`
-    fragment SessionSummaryFragment on Session {
-  summary {
-    aUEC
-    oreSCU
-    allPaid
-    lastJobDone
-    refineries
-    activeMembers
-    totalMembers
-    workOrders {
-      other
-      salvage
-      ship
-      vehicle
-    }
-    scoutingFinds {
-      salvage
-      ship
-      vehicle
-    }
-  }
-}
-    `;
 export const UserFragmentFragmentDoc = gql`
     fragment UserFragment on User {
   userId
@@ -132,6 +108,30 @@ export const SessionListFragmentFragmentDoc = gql`
 }
     ${UserFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}`;
+export const SessionSummaryFragmentFragmentDoc = gql`
+    fragment SessionSummaryFragment on Session {
+  summary {
+    aUEC
+    oreSCU
+    allPaid
+    lastJobDone
+    refineries
+    activeMembers
+    totalMembers
+    workOrders {
+      other
+      salvage
+      ship
+      vehicle
+    }
+    scoutingFinds {
+      salvage
+      ship
+      vehicle
+    }
+  }
+}
+    `;
 export const SessionUpdateFragmentFragmentDoc = gql`
     fragment SessionUpdateFragment on Session {
   sessionId
@@ -149,9 +149,11 @@ export const SessionUpdateFragmentFragmentDoc = gql`
   sessionSettings {
     ...SessionSettingFragment
   }
+  ...SessionSummaryFragment
 }
     ${UserFragmentFragmentDoc}
-${SessionSettingFragmentFragmentDoc}`;
+${SessionSettingFragmentFragmentDoc}
+${SessionSummaryFragmentFragmentDoc}`;
 export const SessionUserFragmentFragmentDoc = gql`
     fragment SessionUserFragment on SessionUser {
   sessionId

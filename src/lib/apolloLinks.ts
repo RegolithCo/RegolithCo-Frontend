@@ -92,8 +92,10 @@ export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorki
     }
     if (networkError) {
       try {
-        if ((networkError as ServerError).result.extensions.code === ErrorCode.MAINENANCE_MODE) {
-          setMaintenanceMode((networkError as ServerError).result.message)
+        const result = (networkError as ServerError).result
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((result as Record<string, any>).extensions.code === ErrorCode.MAINENANCE_MODE) {
+          setMaintenanceMode((result as Record<string, string>).message)
         }
       } catch {
         console.error('Error parsing network error', networkError)
