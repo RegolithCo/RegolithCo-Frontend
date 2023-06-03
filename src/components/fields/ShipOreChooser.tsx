@@ -30,7 +30,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
   const quaColors = ['#f700ff', '#ffffff']
   const innertColors = ['#848484', '#000000']
   const bgColors = new Gradient()
-    .setColorGradient(theme.palette.secondary.main, theme.palette.primary.main, theme.palette.grey[500])
+    .setColorGradient(theme.palette.success.main, theme.palette.secondary.main, theme.palette.grey[500])
     .setMidpoint(shipRowKeys.length) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))

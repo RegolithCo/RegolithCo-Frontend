@@ -9,8 +9,8 @@ export const VehicleOreTable: React.FC = () => {
   const theme = useTheme()
   const vehicleRowKeys = Object.values(VehicleOreEnum)
   const bgColors = new Gradient()
-    .setColorGradient('#b93327', theme.palette.background.paper, '#246f9a', '#229f63')
-    .setMidpoint(50) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .setColorGradient('#b93327', '#a46800', '#246f9a', '#229f63')
+    .setMidpoint(4) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
   // Sort descendng value
@@ -36,13 +36,13 @@ export const VehicleOreTable: React.FC = () => {
     return retVals as [number, number, number]
   })
   // Now map the values to a color index
-  const colorizedRows: [number, number, number][] = vehicleRowKeys.map((_, rowIdx) => {
-    const normalizedValues = finalTable[rowIdx].map((value, colIdx) => {
-      return (value - rowStats[colIdx].min) / (rowStats[colIdx].max - rowStats[colIdx].min)
-    })
-    const colorIdxs = normalizedValues.map((value) => Math.round(value * 49))
-    return colorIdxs as [number, number, number]
-  })
+  // const colorizedRows: [number, number, number][] = vehicleRowKeys.map((_, rowIdx) => {
+  // const normalizedValues = finalTable[rowIdx].map((value, colIdx) => {
+  //   return (value - rowStats[colIdx].min) / (rowStats[colIdx].max - rowStats[colIdx].min)
+  // })
+  // const colorIdxs = normalizedValues.map((value) => Math.round(value * 49))
+  // return colorIdxs as [number, number, number]
+  // })
 
   return (
     <TableContainer>
@@ -89,8 +89,8 @@ export const VehicleOreTable: React.FC = () => {
                       align="right"
                       key={`col-${colIdx}`}
                       sx={{
-                        background: bgColors[colorizedRows[rowIdx][colIdx]] + (colIdx % 2 === 1 ? '33' : '55'),
-                        color: fgColors[colorizedRows[rowIdx][colIdx]],
+                        background: bgColors[bgColors.length - rowIdx - 1] + (colIdx % 2 === 1 ? '33' : '55'),
+                        color: fgColors[fgColors.length - rowIdx - 1],
                       }}
                     >
                       <MValue value={colVal} format={MValueFormat.currency_sm} />

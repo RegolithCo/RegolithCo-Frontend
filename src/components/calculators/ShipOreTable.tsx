@@ -8,8 +8,8 @@ export const ShipOreTable: React.FC = () => {
   const theme = useTheme()
   const shipRowKeys = Object.values(ShipOreEnum)
   const bgColors = new Gradient()
-    .setColorGradient('#b93327', '#a46800', theme.palette.background.paper, '#246f9a', '#229f63')
-    .setMidpoint(50) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .setColorGradient('#b93327', '#a46800', '#246f9a', '#246f9a', '#246f9a', '#229f63')
+    .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
   const priceLookups = shipRowKeys.reduce((acc, shipOreKey) => {
@@ -55,7 +55,7 @@ export const ShipOreTable: React.FC = () => {
     const normalizedValues = finalTable[rowIdx].map((value, colIdx) => {
       return (value - rowStats[colIdx].min) / (rowStats[colIdx].max - rowStats[colIdx].min)
     })
-    const colorIdxs = normalizedValues.map((value) => Math.round(value * 49))
+    const colorIdxs = normalizedValues.map((value) => Math.round(value * 99))
     return colorIdxs as [number, number, number, number, number, number]
   })
 
