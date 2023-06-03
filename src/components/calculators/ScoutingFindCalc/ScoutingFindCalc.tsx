@@ -356,6 +356,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
 
+  const summaryVolume =
+    scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume
+
   return (
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
@@ -476,9 +479,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           <TableRow key={oreKey}>
                             <TableCell>{getOreName(oreKey)}</TableCell>
                             <TableCell align="right">
-                              {MValueFormatter(volumeUnitted, MValueFormat.number_sm, 1)}
+                              {MValueFormatter(volumeUnitted, MValueFormat.number_sm, volumeUnitted > 100 ? 0 : 1)}
                             </TableCell>
-                            <TableCell align="right">{MValueFormatter(value, MValueFormat.number_sm, 1)}</TableCell>
+                            <TableCell align="right">
+                              {MValueFormatter(value, MValueFormat.number_sm, summaryVolume > 100 ? 1 : 0)}
+                            </TableCell>
                           </TableRow>
                         )
                       })}
@@ -487,17 +492,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   <TableRow sx={styles.totalRow}>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">
-                      {MValueFormatter(
-                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle
-                          ? summary.volume * 10000
-                          : summary.volume,
-                        MValueFormat.number_sm,
-                        scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? 0 : 1
-                      )}
+                      {MValueFormatter(summaryVolume, MValueFormat.number_sm, summaryVolume > 100 ? 0 : 1)}
                     </TableCell>
                     <TableCell align="right">
                       {/* {profitSymbol} */}
-                      {MValueFormatter(summary.value, MValueFormat.number_sm, 1)}
+                      {MValueFormatter(summary.value, MValueFormat.number_sm, summaryVolume > 100 ? 1 : 0)}
                     </TableCell>
                   </TableRow>
                 </TableFooter>
