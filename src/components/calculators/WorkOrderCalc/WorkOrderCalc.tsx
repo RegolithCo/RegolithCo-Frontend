@@ -23,6 +23,7 @@ export interface WorkOrderCalcProps {
   failWorkOrder?: (reason?: string) => void
   allowEdit?: boolean
   allowPay?: boolean
+  isNew?: boolean
   isEditing?: boolean
   templateJob?: WorkOrderDefaults
   userSuggest?: UserSuggest

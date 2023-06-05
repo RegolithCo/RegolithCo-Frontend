@@ -402,6 +402,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           }}
           allowEdit={isActive}
           allowPay={true}
+          isSessionActive={isActive}
           forceTemplate
           userSuggest={userSuggest}
           isNew={true}
@@ -427,15 +428,15 @@ export const SessionPage: React.FC<SessionPageProps> = ({
             deleteWorkOrder={() => deleteWorkOrder(activeWorkOrder.orderId)}
             open={Boolean(activeWorkOrder)}
             failWorkOrder={failWorkOrder}
+            isSessionActive={isActive}
             onClose={() => {
               setActiveModal(null)
               openWorkOrderModal && openWorkOrderModal()
             }}
             allowEdit={
-              isActive &&
-              (userProfile?.userId === activeWorkOrder?.ownerId ||
-                isSessionOwner ||
-                activeWorkOrder.sellerscName === userProfile?.scName)
+              userProfile?.userId === activeWorkOrder?.ownerId ||
+              isSessionOwner ||
+              activeWorkOrder.sellerscName === userProfile?.scName
             }
           />
         </ThemeProvider>

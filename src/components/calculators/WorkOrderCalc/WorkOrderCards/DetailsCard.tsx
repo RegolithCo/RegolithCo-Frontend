@@ -14,7 +14,14 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { ActivityEnum, RefineryEnum, RefineryMethodEnum, ShipMiningOrder, WorkOrderStateEnum } from '@regolithco/common'
+import {
+  ActivityEnum,
+  RefineryEnum,
+  RefineryMethodEnum,
+  ShareTypeEnum,
+  ShipMiningOrder,
+  WorkOrderStateEnum,
+} from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import { ExpandMore, Help } from '@mui/icons-material'
@@ -30,6 +37,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
   allowEdit,
   failWorkOrder,
   isEditing,
+  isNew,
   templateJob,
   userSuggest,
   sx,
@@ -228,12 +236,38 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
                     if (event.target.checked) {
                       setIsSellerNameModalOpen(true)
                     } else {
-                      // Un-fail please
+                      // De-assign the seller
                       setIsSellerNameModalOpen(false)
                       if (workOrder.sellerscName) {
+                        const newCrewShares = (workOrder.crewShares || []).map((share) => {
+                          // If this is a new workorder then we want to uncheck the paid box when we change the seller
+                          let paid = share.state
+                          if (workOrder.sellerscName && share.scName === workOrder.sellerscName && isNew) {
+                            paid = false
+                          }
+                          return {
+                            ...share,
+                            state: paid,
+                          }
+                        })
+                        if (!newCrewShares.find((share) => share.scName === workOrder.owner?.scName)) {
+                          if (workOrder.owner?.scName)
+                            newCrewShares.push({
+                              scName: workOrder.owner?.scName,
+                              state: true,
+                              shareType: ShareTypeEnum.Share,
+                              createdAt: Date.now(),
+                              updatedAt: Date.now(),
+                              orderId: workOrder.orderId,
+                              sessionId: workOrder.sessionId,
+                              share: 1,
+                              __typename: 'CrewShare',
+                            })
+                        }
                         onChange({
                           ...workOrder,
                           sellerscName: null,
+                          crewShares: newCrewShares,
                         })
                       }
                     }
@@ -318,9 +352,34 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
       <ChooseSellerModal
         open={isSellerNameModalOpen}
         onChange={(seller: string) => {
+          const newCrewShares = (workOrder.crewShares || []).map((share) => {
+            // If this is a new workorder then we want to uncheck the paid box for the USER when we change the seller
+            let paid = share.state
+            if (share.scName === workOrder.owner?.scName && isNew) {
+              paid = false
+            }
+            return {
+              ...share,
+              state: paid,
+            }
+          })
+          if (!newCrewShares.find((share) => share.scName === seller)) {
+            newCrewShares.push({
+              scName: seller,
+              state: true,
+              shareType: ShareTypeEnum.Share,
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+              orderId: workOrder.orderId,
+              sessionId: workOrder.sessionId,
+              share: 1,
+              __typename: 'CrewShare',
+            })
+          }
           onChange({
             ...workOrder,
             sellerscName: seller,
+            crewShares: newCrewShares,
           })
         }}
         onClose={() => setIsSellerNameModalOpen(false)}

@@ -37,6 +37,7 @@ export interface WorkOrderModalProps {
   failWorkOrder?: (reason?: string) => void
   allowEdit?: boolean
   allowPay?: boolean
+  isSessionActive?: boolean
   templateJob?: WorkOrderDefaults
   forceTemplate?: boolean
   userSuggest?: UserSuggest
@@ -125,6 +126,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
   markCrewSharePaid,
   allowEdit,
   allowPay,
+  isSessionActive,
   templateJob,
   failWorkOrder,
   forceTemplate,
@@ -257,6 +259,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
             <WorkOrderCalc
               onChange={setNewWorkOrder}
               failWorkOrder={failWorkOrder}
+              isNew={isNew}
               markCrewSharePaid={(crewShare: CrewShare, paid: boolean) => {
                 // IMPORTANT: if we're editing an existing work order we can set this thing as paid
                 // directly because it already exists int he database
@@ -267,7 +270,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
                   setNewWorkOrder({
                     ...newWorkOrder,
                     crewShares: (newWorkOrder.crewShares || [])?.map((share) => {
-                      if (share.scName === crewShare.scName) return { ...share, paid }
+                      if (share.scName === crewShare.scName) return { ...share, state: paid }
                       return share
                     }),
                   })
@@ -357,7 +360,19 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
         </DialogActions>
       </Box>
       <DeleteModal
-        message="Deleting this work order will remove it from the system. This action cannot be undone."
+        message={
+          <>
+            <Typography paragraph>
+              Deleting this work order will remove it from the system. This action cannot be undone.
+            </Typography>
+            {!isSessionActive && (
+              <Typography color="error" paragraph>
+                <strong>This session has ended!</strong> If you delete this work order you will not be able to re-add
+                it.
+              </Typography>
+            )}
+          </>
+        }
         onClose={() => setDeleteConfirmModal(false)}
         open={deleteConfirmModal}
         onConfirm={() => {
