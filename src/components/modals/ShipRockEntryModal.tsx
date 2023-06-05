@@ -7,9 +7,17 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Divider,
   InputAdornment,
   Slider,
   SxProps,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHead,
+  TableRow,
   TextField,
   Theme,
   ThemeProvider,
@@ -21,6 +29,7 @@ import {
   AnyOreEnum,
   findPrice,
   getOreName,
+  getShipOreName,
   jsRound,
   RockStateEnum,
   ShipOreEnum,
@@ -32,7 +41,7 @@ import { ShipOreChooser } from '../fields/ShipOreChooser'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
 import { Stack } from '@mui/system'
-import { MValue, MValueFormat } from '../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { fontFamilies, theme as themeOrig } from '../../theme'
 import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
@@ -210,13 +219,14 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     if (shipRock && !isEqual(shipRock, newShipRock)) setNewShipRock(shipRock)
   }, [shipRock])
 
-  const [volume, value, percentTotal] = React.useMemo(() => {
+  const [volume, value, percentTotal, byOre] = React.useMemo(() => {
     try {
       const {
         rock: { volume, value },
+        byOre,
       } = shipRockCalc(newShipRock)
       const percentTotal = (newShipRock.ores || []).reduce((acc, { percent }) => acc + percent, 0)
-      return [volume, value, percentTotal]
+      return [volume, value, percentTotal, byOre]
     } catch (e) {
       log.error(e)
       return [0, 0]
@@ -250,27 +260,79 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     <>
       <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs">
         <RockIcon sx={styles.icon} />
-        <Box sx={styles.headerBar}>
-          <Typography variant="h6" sx={styles.cardTitle}>
-            Rock Scan
-          </Typography>
-          <div style={{ flexGrow: 1 }} />
-          <Stack>
-            <Tooltip title="Potential value of all the ore, after refining, using Dinyx Solventation" placement="right">
+        <Tooltip
+          title={
+            <>
+              <Typography variant="caption">
+                Values are after refining, using Dinyx Solventation and at the maximum stanton price for each element:
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell padding="none">Ore</TableCell>
+                      <TableCell padding="none" align="right">
+                        SCU
+                      </TableCell>
+                      <TableCell padding="none" align="right">
+                        aUEC
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {Object.entries(byOre || {}).map(([ore, { value: oreValue, volume: oreVolume }]) => (
+                      <TableRow>
+                        <TableCell padding="none">{getShipOreName(ore as ShipOreEnum).slice(0, 4)}</TableCell>
+                        <TableCell padding="none" align="right">
+                          <MValue value={oreVolume} />
+                        </TableCell>
+                        <TableCell padding="none" align="right">
+                          <MValue value={oreValue} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow
+                      sx={{
+                        '& > *': {
+                          borderTop: '2px solid black',
+                          color: 'white',
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    >
+                      <TableCell padding="none">Total</TableCell>
+                      <TableCell padding="none" align="right">
+                        <MValue value={volume} />
+                      </TableCell>
+                      <TableCell padding="none" align="right">
+                        <MValue value={value} />
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+            </>
+          }
+          placement="right"
+        >
+          <Box sx={styles.headerBar}>
+            <Typography variant="h6" sx={styles.cardTitle}>
+              Rock Scan
+            </Typography>
+            <div style={{ flexGrow: 1 }} />
+            <Stack>
               <Typography sx={{ fontWeight: 'bold' }} align="right">
                 Value: <MValue value={value} format={MValueFormat.currency_sm} />
               </Typography>
-            </Tooltip>
-            <Tooltip
-              title="Total volume of all the unrefined ore in this rock (not including inert material)"
-              placement="right"
-            >
+
               <Typography sx={{ fontWeight: 'bold' }} align="right">
                 Material: <MValue value={volume} format={MValueFormat.volSCU} decimals={volume > 10 ? 0 : 1} />
               </Typography>
-            </Tooltip>
-          </Stack>
-        </Box>
+            </Stack>
+          </Box>
+        </Tooltip>
         <DialogContent sx={styles.dialogContent}>
           <Alert severity="warning">
             <Typography variant="caption">Enter all minerals for maximum SCU and value accuracy.</Typography>

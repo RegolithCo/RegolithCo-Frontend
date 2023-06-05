@@ -57,7 +57,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
     <>
       <ListItemText
         sx={{
-          flex: '1 1 70%',
+          flex: '1 1 65%',
         }}
         primary={
           <Box>
@@ -107,7 +107,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
       />
       <ListItemText
         sx={{
-          flex: '1 1 30%',
+          flex: '1 1 35%',
           display: 'flex',
           flexDirection: 'column',
           '& .MuiListItemText-primary': {
@@ -122,7 +122,11 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
             textAlign: 'right',
           },
         }}
-        primary={MValueFormatter(storeChoice.price, MValueFormat.currency_sm, 1)}
+        primary={
+          <Tooltip title={MValueFormatter(storeChoice.price, MValueFormat.currency)}>
+            <span>{MValueFormatter(storeChoice.price, MValueFormat.currency_sm)}</span>
+          </Tooltip>
+        }
         secondaryTypographyProps={{
           component: 'div',
         }}

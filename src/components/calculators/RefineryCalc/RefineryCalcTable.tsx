@@ -120,10 +120,11 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   let numberFormat2: MValueFormat = MValueFormat.number
   let reverseMeaningVal1 = false
   let reverseMeaningVal2 = false
-  let decimalVal1 = 0
+  let decimalVal1: number | undefined = 0
   switch (refMetric) {
     case RefineryMetricEnum.netProfit:
       numberFormat1 = MValueFormat.currency_sm
+      decimalVal1 = undefined
       break
     case RefineryMetricEnum.oreYields:
       decimalVal1 = 2
@@ -131,6 +132,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       break
     case RefineryMetricEnum.refiningCost:
       numberFormat1 = MValueFormat.currency_sm
+      decimalVal1 = undefined
       reverseMeaningVal1 = true
       break
     case RefineryMetricEnum.refiningTime:
@@ -139,6 +141,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       break
     case RefineryMetricEnum.timeVProfit:
       numberFormat1 = MValueFormat.currency_sm
+      decimalVal1 = undefined
       numberFormat2 = MValueFormat.duration_small
       reverseMeaningVal2 = true
       break

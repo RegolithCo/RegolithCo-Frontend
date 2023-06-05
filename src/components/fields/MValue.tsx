@@ -24,6 +24,18 @@ export const MValueFormat = {
 } as const
 export type MValueFormat = ObjectValues<typeof MValueFormat>
 
+/**
+ * Numeral does a pretty good job but sometimes we need a few more significant digits
+ * @returns
+ */
+export const findDecimals = (value: number, allowFractions = false): number => {
+  if (value === 0) return 0
+  if (value < 100 && !allowFractions) return 0
+  const testVal = Numeral(value).format(`0a`)
+  if (testVal.length >= 3) return 0
+  else return 3 - testVal.length
+}
+
 export interface MValueProps {
   value?: number | string | React.ReactNode | null
   onClick?: () => void
@@ -47,7 +59,7 @@ export const MValueAddUnit = (value: string, unit: string): React.ReactNode => {
 export const MValueFormatter = (
   value: MValueProps['value'],
   format: MValueProps['format'],
-  decimals: MValueProps['decimals'] = 0
+  decimals?: MValueProps['decimals']
 ): React.ReactNode => {
   let finalVal: React.ReactNode = ''
 
@@ -64,13 +76,14 @@ export const MValueFormatter = (
   }
   // aUEC
   else if (format === MValueFormat.currency) {
-    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals)}`), 'aUEC')
+    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals || 0)}`), 'aUEC')
   } else if (format === MValueFormat.currency_sm) {
-    finalVal = MValueAddUnit(Numeral(value).format(`0a`), 'aUEC')
+    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimals(value as number)
+    finalVal = MValueAddUnit(Numeral(value).format(`0.${'0'.repeat(finalDecimals)}a`), 'aUEC')
   }
   // Percent
   else if (format === MValueFormat.percent) {
-    finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}%`)
+    finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals || 0)}%`)
   } else if (format === MValueFormat.modifier) {
     const prefix = (value as number) > 0 ? '+' : ''
     finalVal = prefix + Numeral(value).format(`0,0`) + '%'
@@ -87,12 +100,13 @@ export const MValueFormatter = (
     finalVal = dayjs(value as number).format('MMM D h:mma')
   } else if (format === MValueFormat.volSCU) {
     const val = value as number
-    const finalDecimals = val && val > 0 && val < 1 && decimals === 0 ? decimals + 1 : decimals
+    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimals(value as number, true)
     finalVal = MValueAddUnit(Numeral(val).format(`0,0.${'0'.repeat(finalDecimals)}`), 'SCU')
   } else if (format === MValueFormat.volcSCU) {
-    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals)}`), 'cSCU')
+    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals || 0)}`), 'cSCU')
   } else if (format === MValueFormat.mass_sm) {
-    finalVal = MValueAddUnit(Numeral(value).format(`0.${'0'.repeat(decimals)}a`), 'kg')
+    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimals(value as number, true)
+    finalVal = MValueAddUnit(Numeral(value).format(`0.${'0'.repeat(finalDecimals)}a`), 't')
   } else {
     finalVal = value as string
   }
@@ -103,7 +117,7 @@ export const MValueFormatter = (
 export const MValue: React.FC<MValueProps> = ({
   value,
   onClick,
-  decimals = 0,
+  decimals,
   format = MValueFormat.number,
   approx,
   typoProps,

@@ -9,19 +9,10 @@ import {
   SelectChangeEvent,
   Select,
   MenuItem,
-  Box,
   useTheme,
 } from '@mui/material'
 import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum, ShareTypeToolTip } from '@regolithco/common'
-import {
-  Toll as TollIcon,
-  PieChart as PieChartIcon,
-  Percent,
-  Delete,
-  Description,
-  NoteAdd,
-  Cancel,
-} from '@mui/icons-material'
+import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Cancel } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
 import numeral from 'numeral'
 import { fontFamilies } from '../../../theme'

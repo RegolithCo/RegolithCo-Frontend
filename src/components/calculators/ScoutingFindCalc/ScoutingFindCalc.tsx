@@ -44,7 +44,7 @@ import {
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { AddCircle, EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
-import { MValueFormat, MValueFormatter } from '../../fields/MValue'
+import { MValueFormat, MValueFormatter, findDecimals } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
 import { DeleteModal } from '../../modals/DeleteModal'
@@ -479,10 +479,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           <TableRow key={oreKey}>
                             <TableCell>{getOreName(oreKey)}</TableCell>
                             <TableCell align="right">
-                              {MValueFormatter(volumeUnitted, MValueFormat.number_sm, volumeUnitted > 100 ? 0 : 1)}
+                              {MValueFormatter(
+                                volumeUnitted,
+                                MValueFormat.number_sm,
+                                findDecimals(volumeUnitted, true)
+                              )}
                             </TableCell>
                             <TableCell align="right">
-                              {MValueFormatter(value, MValueFormat.number_sm, summaryVolume > 100 ? 1 : 0)}
+                              {MValueFormatter(value, MValueFormat.number_sm, findDecimals(value))}
                             </TableCell>
                           </TableRow>
                         )
@@ -492,11 +496,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   <TableRow sx={styles.totalRow}>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">
-                      {MValueFormatter(summaryVolume, MValueFormat.number_sm, summaryVolume > 100 ? 0 : 1)}
+                      {MValueFormatter(summaryVolume, MValueFormat.number_sm, findDecimals(summaryVolume, true))}
                     </TableCell>
                     <TableCell align="right">
                       {/* {profitSymbol} */}
-                      {MValueFormatter(summary.value, MValueFormat.number_sm, summaryVolume > 100 ? 1 : 0)}
+                      {MValueFormatter(summary.value, MValueFormat.number_sm, findDecimals(summary.value))}
                     </TableCell>
                   </TableRow>
                 </TableFooter>
