@@ -229,7 +229,10 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
         </Tooltip>
       </TableCell>
       <TableCell>
-        <MValue value={makeHumanIds(workOrder.owner?.scName, workOrder.orderId)} format={MValueFormat.string} />
+        <MValue
+          value={makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)}
+          format={MValueFormat.string}
+        />
       </TableCell>
       {/* State */}
       <TableCell align="center">

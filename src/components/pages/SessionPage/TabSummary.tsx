@@ -328,7 +328,9 @@ const OwingList: React.FC<OwingListProps> = ({
         if (payerUser?.owner?.scName === payeeUser?.owner?.scName) return null
 
         const crewShares = (session.workOrders?.items || [])
-          .filter(({ owner }) => payerUser?.owner?.scName === payerSCName)
+          .filter(({ owner, sellerscName }) => {
+            return (sellerscName || owner?.scName) === payerSCName
+          })
           .reduce((acc, wo) => {
             const crewShare = (wo.crewShares || []).find((cs) => cs.scName === payeeSCName)
             if (crewShare) acc.push(crewShare)
@@ -451,7 +453,9 @@ const OwingList: React.FC<OwingListProps> = ({
                             }}
                           >
                             <TableCell>
-                              <Link>{makeHumanIds(payerSCName, cs.orderId)}</Link>
+                              <Link>
+                                {makeHumanIds(workOrder?.sellerscName || workOrder?.owner?.scName, cs.orderId)}
+                              </Link>
                             </TableCell>
                             <Tooltip title={`Share type: ${cs.shareType}`}>
                               <TableCell>{crewShareTypeIcons[cs.shareType as ShareTypeEnum]}</TableCell>
