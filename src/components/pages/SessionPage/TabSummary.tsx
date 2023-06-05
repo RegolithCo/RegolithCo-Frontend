@@ -328,7 +328,7 @@ const OwingList: React.FC<OwingListProps> = ({
         if (payerUser?.owner?.scName === payeeUser?.owner?.scName) return null
 
         const crewShares = (session.workOrders?.items || [])
-          .filter(({ owner }) => owner?.scName === payerSCName)
+          .filter(({ owner }) => payerUser?.owner?.scName === payerSCName)
           .reduce((acc, wo) => {
             const crewShare = (wo.crewShares || []).find((cs) => cs.scName === payeeSCName)
             if (crewShare) acc.push(crewShare)

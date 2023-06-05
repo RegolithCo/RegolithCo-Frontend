@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
   InputAdornment,
   Slider,
   SxProps,
@@ -41,7 +40,7 @@ import { ShipOreChooser } from '../fields/ShipOreChooser'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
 import { Stack } from '@mui/system'
-import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
+import { MValue, MValueFormat } from '../fields/MValue'
 import { fontFamilies, theme as themeOrig } from '../../theme'
 import { Cancel, Delete, Save } from '@mui/icons-material'
 import { isEqual } from 'lodash'
@@ -189,21 +188,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const setNewShipRock = React.useCallback(
     (newRock: ShipRock) => {
       _setNewShipRock((oldRock) => {
-        const newOres = [...(newRock.ores || [])]
-        // if ShipOreEnum.Inertmaterial isn't in the list, add it
-        if (!newOres.find(({ ore }) => ore === ShipOreEnum.Inertmaterial)) {
-          newOres.push({ ore: ShipOreEnum.Inertmaterial, percent: 0, __typename: 'ShipRockOre' })
-        }
+        const newOres = [...(newRock.ores || []).filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)]
         // Set the entry for ShipOreEnum.Inertmaterial to be 1- the sum of all other ores
         const total = newOres.reduce(
           (acc, { ore, percent }) => (ore === ShipOreEnum.Inertmaterial ? acc : acc + percent),
           0
         )
-        const inertMaterial = newOres.find(({ ore }) => ore === ShipOreEnum.Inertmaterial)
-        if (inertMaterial) {
-          inertMaterial.percent = 1 - total
-          if (inertMaterial?.percent < 0) inertMaterial.percent = 0
-        }
+        newOres.push({ ore: ShipOreEnum.Inertmaterial, percent: 1 - total, __typename: 'ShipRockOre' })
         newOres.sort((a, b) => {
           const aPrice = findPrice(a.ore as ShipOreEnum, undefined, true)
           const bPrice = findPrice(b.ore as ShipOreEnum, undefined, true)
@@ -225,7 +216,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         rock: { volume, value },
         byOre,
       } = shipRockCalc(newShipRock)
-      const percentTotal = (newShipRock.ores || []).reduce((acc, { percent }) => acc + percent, 0)
+      const percentTotal = (newShipRock.ores || [])
+        .filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)
+        .reduce((acc, { percent }) => acc + percent, 0)
       return [volume, value, percentTotal, byOre]
     } catch (e) {
       log.error(e)
@@ -256,6 +249,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
       SHIP_ROCK_BOUNDS[1]
     ).format('0,0')} tonnes`
   }
+  const massError = Boolean(massErrorReason.length > 0)
   return (
     <>
       <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs">
@@ -280,8 +274,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Object.entries(byOre || {}).map(([ore, { value: oreValue, volume: oreVolume }]) => (
-                      <TableRow>
+                    {Object.entries(byOre || {}).map(([ore, { value: oreValue, volume: oreVolume }], idx) => (
+                      <TableRow key={`tt-row-${idx}`}>
                         <TableCell padding="none">{getShipOreName(ore as ShipOreEnum).slice(0, 4)}</TableCell>
                         <TableCell padding="none" align="right">
                           <MValue value={oreVolume} />
@@ -348,7 +342,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 InputProps={{
                   endAdornment: <Typography sx={{ mr: 1 }}>t</Typography>,
                 }}
-                error={disabled}
+                error={massError}
                 helperText={disabled ? massErrorReason : 'Enter the rock mass'}
                 value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
                 onChange={(event) => {
