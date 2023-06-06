@@ -154,6 +154,34 @@ export const SessionUpdateFragmentFragmentDoc = gql`
     ${UserFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}
 ${SessionSummaryFragmentFragmentDoc}`;
+export const VehicleFragmentFragmentDoc = gql`
+    fragment VehicleFragment on Vehicle {
+  maker
+  name
+  code
+  cargo
+  miningHold
+  role
+  buyAt
+  rentAt
+}
+    `;
+export const LoadoutFragmentFragmentDoc = gql`
+    fragment LoadoutFragment on MiningLoadout {
+  loadoutId
+  name
+  ship
+  createdAt
+  updatedAt
+  gadgets
+  lasers {
+    laser
+    modules
+  }
+  spareLasers
+  spareModules
+}
+    `;
 export const SessionUserFragmentFragmentDoc = gql`
     fragment SessionUserFragment on SessionUser {
   sessionId
@@ -165,10 +193,17 @@ export const SessionUserFragmentFragmentDoc = gql`
   updatedAt
   isPilot
   pilotSCName
-  miningVehicle
+  vehicle {
+    ...VehicleFragment
+  }
+  loadout {
+    ...LoadoutFragment
+  }
   state
 }
-    ${UserFragmentFragmentDoc}`;
+    ${UserFragmentFragmentDoc}
+${VehicleFragmentFragmentDoc}
+${LoadoutFragmentFragmentDoc}`;
 export const ScoutingFindFragmentFragmentDoc = gql`
     fragment ScoutingFindFragment on ScoutingFindInterface {
   sessionId
@@ -360,14 +395,26 @@ export const UserProfileFragmentFragmentDoc = gql`
   updatedAt
   state
   verifyCode
-  deliveryShip
+  deliveryShip {
+    ...VehicleFragment
+  }
   sessionSettings {
     ...SessionSettingFragment
   }
   userSettings
   friends
 }
-    ${SessionSettingFragmentFragmentDoc}`;
+    ${VehicleFragmentFragmentDoc}
+${SessionSettingFragmentFragmentDoc}`;
+export const UserProfileLoadoutFragmentFragmentDoc = gql`
+    fragment UserProfileLoadoutFragment on UserProfile {
+  userId
+  scName
+  loadouts {
+    ...LoadoutFragment
+  }
+}
+    ${LoadoutFragmentFragmentDoc}`;
 export const UpsertUserDocument = gql`
     mutation upsertUser($userProfile: UserProfileInput!, $sessionSettings: SessionSettingsInput, $workOrderDefaults: WorkOrderDefaultsInput, $crewSharesDefaults: [CrewShareTemplateInput!], $shipOreDefaults: [ShipOreEnum!], $vehicleOreDefaults: [VehicleOreEnum!], $salvageOreDefaults: [SalvageOreEnum!]) {
   upsertUserProfile(

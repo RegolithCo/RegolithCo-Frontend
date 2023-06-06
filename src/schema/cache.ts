@@ -41,15 +41,34 @@ export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
 	UEX?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MiningLaserLoadoutKeySpecifier = ('laser' | 'modules' | MiningLaserLoadoutKeySpecifier)[];
+export type MiningLaserLoadoutFieldPolicy = {
+	laser?: FieldPolicy<any> | FieldReadFunction<any>,
+	modules?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MiningLoadoutKeySpecifier = ('createdAt' | 'gadgets' | 'lasers' | 'loadoutId' | 'name' | 'ship' | 'spareLasers' | 'spareModules' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
+export type MiningLoadoutFieldPolicy = {
+	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	gadgets?: FieldPolicy<any> | FieldReadFunction<any>,
+	lasers?: FieldPolicy<any> | FieldReadFunction<any>,
+	loadoutId?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	ship?: FieldPolicy<any> | FieldReadFunction<any>,
+	spareLasers?: FieldPolicy<any> | FieldReadFunction<any>,
+	spareModules?: FieldPolicy<any> | FieldReadFunction<any>,
+	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateLoadout' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	addSessionMentions?: FieldPolicy<any> | FieldReadFunction<any>,
 	claimWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
+	createLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	createSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	createWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	deleteCrewShare?: FieldPolicy<any> | FieldReadFunction<any>,
+	deleteLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	deleteScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	deleteSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	deleteUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -65,6 +84,7 @@ export type MutationFieldPolicy = {
 	removeSessionMentions?: FieldPolicy<any> | FieldReadFunction<any>,
 	requestVerifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
 	setLookupData?: FieldPolicy<any> | FieldReadFunction<any>,
+	updateLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -259,17 +279,18 @@ export type SessionSummaryTotalsFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'miningVehicle' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'state' | 'updatedAt' | SessionUserKeySpecifier)[];
+export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'state' | 'updatedAt' | 'vehicle' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	isPilot?: FieldPolicy<any> | FieldReadFunction<any>,
-	miningVehicle?: FieldPolicy<any> | FieldReadFunction<any>,
+	loadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	pilotSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
-	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
+	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ShipClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'shipRocks' | 'state' | 'updatedAt' | ShipClusterFindKeySpecifier)[];
 export type ShipClusterFindFieldPolicy = {
@@ -355,7 +376,7 @@ export type UserInterfaceFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShip' | 'friends' | 'joinedSessions' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShip' | 'friends' | 'joinedSessions' | 'loadouts' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -364,6 +385,7 @@ export type UserProfileFieldPolicy = {
 	deliveryShip?: FieldPolicy<any> | FieldReadFunction<any>,
 	friends?: FieldPolicy<any> | FieldReadFunction<any>,
 	joinedSessions?: FieldPolicy<any> | FieldReadFunction<any>,
+	loadouts?: FieldPolicy<any> | FieldReadFunction<any>,
 	mySessions?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionSettings?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -373,6 +395,17 @@ export type UserProfileFieldPolicy = {
 	userSettings?: FieldPolicy<any> | FieldReadFunction<any>,
 	verifyCode?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type VehicleKeySpecifier = ('buyAt' | 'cargo' | 'code' | 'maker' | 'miningHold' | 'name' | 'rentAt' | 'role' | VehicleKeySpecifier)[];
+export type VehicleFieldPolicy = {
+	buyAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	cargo?: FieldPolicy<any> | FieldReadFunction<any>,
+	code?: FieldPolicy<any> | FieldReadFunction<any>,
+	maker?: FieldPolicy<any> | FieldReadFunction<any>,
+	miningHold?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	rentAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	role?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type VehicleClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | 'vehicleRocks' | VehicleClusterFindKeySpecifier)[];
 export type VehicleClusterFindFieldPolicy = {
@@ -487,6 +520,14 @@ export type StrictTypedTypePolicies = {
 	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
 		fields?: LookupDataFieldPolicy,
+	},
+	MiningLaserLoadout?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MiningLaserLoadoutKeySpecifier | (() => undefined | MiningLaserLoadoutKeySpecifier),
+		fields?: MiningLaserLoadoutFieldPolicy,
+	},
+	MiningLoadout?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MiningLoadoutKeySpecifier | (() => undefined | MiningLoadoutKeySpecifier),
+		fields?: MiningLoadoutFieldPolicy,
 	},
 	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
@@ -607,6 +648,10 @@ export type StrictTypedTypePolicies = {
 	UserProfile?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UserProfileKeySpecifier | (() => undefined | UserProfileKeySpecifier),
 		fields?: UserProfileFieldPolicy,
+	},
+	Vehicle?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | VehicleKeySpecifier | (() => undefined | VehicleKeySpecifier),
+		fields?: VehicleFieldPolicy,
 	},
 	VehicleClusterFind?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | VehicleClusterFindKeySpecifier | (() => undefined | VehicleClusterFindKeySpecifier),
