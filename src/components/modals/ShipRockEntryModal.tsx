@@ -437,7 +437,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       const newOres = newShipRock.ores?.map((o) => {
                         let retVal = Math.round(Number(event.target.value) + Number.EPSILON) / 100
                         if (retVal < 0) retVal = 0
-                        if (retVal > 0.5) retVal = 0.5
+                        if (retVal > 1) retVal = 1
                         if (o.ore === ore.ore) {
                           return { ...o, percent: retVal }
                         }
