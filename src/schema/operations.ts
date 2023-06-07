@@ -166,20 +166,20 @@ export const VehicleFragmentFragmentDoc = gql`
   rentAt
 }
     `;
-export const LoadoutFragmentFragmentDoc = gql`
-    fragment LoadoutFragment on MiningLoadout {
+export const MiningLoadoutFragmentFragmentDoc = gql`
+    fragment MiningLoadoutFragment on MiningLoadout {
   loadoutId
   name
-  ship
   createdAt
   updatedAt
-  gadgets
-  lasers {
+  ship
+  activeLasers {
     laser
     modules
   }
-  spareLasers
-  spareModules
+  inventorylasers
+  inventorySpareModules
+  inventoryGadgets
 }
     `;
 export const SessionUserFragmentFragmentDoc = gql`
@@ -197,13 +197,13 @@ export const SessionUserFragmentFragmentDoc = gql`
     ...VehicleFragment
   }
   loadout {
-    ...LoadoutFragment
+    ...MiningLoadoutFragment
   }
   state
 }
     ${UserFragmentFragmentDoc}
 ${VehicleFragmentFragmentDoc}
-${LoadoutFragmentFragmentDoc}`;
+${MiningLoadoutFragmentFragmentDoc}`;
 export const ScoutingFindFragmentFragmentDoc = gql`
     fragment ScoutingFindFragment on ScoutingFindInterface {
   sessionId
@@ -411,10 +411,10 @@ export const UserProfileLoadoutFragmentFragmentDoc = gql`
   userId
   scName
   loadouts {
-    ...LoadoutFragment
+    ...MiningLoadoutFragment
   }
 }
-    ${LoadoutFragmentFragmentDoc}`;
+    ${MiningLoadoutFragmentFragmentDoc}`;
 export const UpsertUserDocument = gql`
     mutation upsertUser($userProfile: UserProfileInput!, $sessionSettings: SessionSettingsInput, $workOrderDefaults: WorkOrderDefaultsInput, $crewSharesDefaults: [CrewShareTemplateInput!], $shipOreDefaults: [ShipOreEnum!], $vehicleOreDefaults: [VehicleOreEnum!], $salvageOreDefaults: [SalvageOreEnum!]) {
   upsertUserProfile(

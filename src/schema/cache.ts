@@ -8,6 +8,11 @@ export type APIEventFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type ActiveMiningLaserLoadoutKeySpecifier = ('laser' | 'modules' | ActiveMiningLaserLoadoutKeySpecifier)[];
+export type ActiveMiningLaserLoadoutFieldPolicy = {
+	laser?: FieldPolicy<any> | FieldReadFunction<any>,
+	modules?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type CIGLookupsKeySpecifier = ('mineralDensities' | 'refiningBaseParams' | 'refiningBonuses' | 'refiningMethods' | CIGLookupsKeySpecifier)[];
 export type CIGLookupsFieldPolicy = {
 	mineralDensities?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -41,21 +46,16 @@ export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
 	UEX?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MiningLaserLoadoutKeySpecifier = ('laser' | 'modules' | MiningLaserLoadoutKeySpecifier)[];
-export type MiningLaserLoadoutFieldPolicy = {
-	laser?: FieldPolicy<any> | FieldReadFunction<any>,
-	modules?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type MiningLoadoutKeySpecifier = ('createdAt' | 'gadgets' | 'lasers' | 'loadoutId' | 'name' | 'ship' | 'spareLasers' | 'spareModules' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
+export type MiningLoadoutKeySpecifier = ('activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventorySpareModules' | 'inventorylasers' | 'loadoutId' | 'name' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
 export type MiningLoadoutFieldPolicy = {
+	activeLasers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
-	gadgets?: FieldPolicy<any> | FieldReadFunction<any>,
-	lasers?: FieldPolicy<any> | FieldReadFunction<any>,
+	inventoryGadgets?: FieldPolicy<any> | FieldReadFunction<any>,
+	inventorySpareModules?: FieldPolicy<any> | FieldReadFunction<any>,
+	inventorylasers?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadoutId?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
-	spareLasers?: FieldPolicy<any> | FieldReadFunction<any>,
-	spareModules?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateLoadout' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
@@ -505,6 +505,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | APIEventKeySpecifier | (() => undefined | APIEventKeySpecifier),
 		fields?: APIEventFieldPolicy,
 	},
+	ActiveMiningLaserLoadout?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ActiveMiningLaserLoadoutKeySpecifier | (() => undefined | ActiveMiningLaserLoadoutKeySpecifier),
+		fields?: ActiveMiningLaserLoadoutFieldPolicy,
+	},
 	CIGLookups?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CIGLookupsKeySpecifier | (() => undefined | CIGLookupsKeySpecifier),
 		fields?: CIGLookupsFieldPolicy,
@@ -520,10 +524,6 @@ export type StrictTypedTypePolicies = {
 	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
 		fields?: LookupDataFieldPolicy,
-	},
-	MiningLaserLoadout?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | MiningLaserLoadoutKeySpecifier | (() => undefined | MiningLaserLoadoutKeySpecifier),
-		fields?: MiningLaserLoadoutFieldPolicy,
 	},
 	MiningLoadout?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MiningLoadoutKeySpecifier | (() => undefined | MiningLoadoutKeySpecifier),
