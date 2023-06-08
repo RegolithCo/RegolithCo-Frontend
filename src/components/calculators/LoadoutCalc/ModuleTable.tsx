@@ -10,69 +10,98 @@ import {
   useTheme,
   SxProps,
   Theme,
-  IconButton,
   Chip,
   Paper,
   ToggleButtonGroup,
   ToggleButton,
+  Stack,
+  FormControlLabel,
+  Button,
+  Switch,
+  Tooltip,
+  alpha,
 } from '@mui/material'
 import {
+  BackwardStats,
+  LaserLoadoutStats,
   LoadoutShipEnum,
   MiningGadgetEnum,
   MiningModuleEnum,
   MiningStoreEnum,
+  ObjectValues,
   getMiningStoreName,
   lookups,
 } from '@regolithco/common'
-import { AddShoppingCart, Check } from '@mui/icons-material'
+import { Bolt, Check, ClearAll, Store } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
-
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-  cellDivider: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-  },
-  shortHeaders: {
-    verticalAlign: 'bottom',
-  },
-  longHeaders: {
-    p: 0,
-    position: 'relative',
-    verticalAlign: 'bottom',
-    pt: 15,
-    '& .MuiTypography-root': {
-      width: 250,
-      pl: 5,
-      pt: 0,
-      borderTop: `1px solid ${theme.palette.divider}`,
-      position: 'absolute',
-      transform: 'rotate(-30deg)',
-      transformOrigin: '0% 0%',
-      whiteSpace: 'nowrap',
-    },
-  },
-})
+import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
 }
 
+const ColumnGroupEnum = {
+  Buffs: 'Buffs',
+  Market: 'Market',
+} as const
+type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
+
 export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
-  const [filter, setFilter] = React.useState<string | null>(null)
+  const styles = tableStylesThunk(theme)
+  const [categoryFilter, setCategoryFilter] = React.useState<string | null>(null)
 
-  const handleFilter = (event: React.MouseEvent<HTMLElement>, newFilter: LoadoutShipEnum | 'ALL') => {
-    if (newFilter === 'ALL') setFilter(null)
-    else setFilter(newFilter)
-  }
+  const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
+  const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
+  const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
 
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#229f63')
-    .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .setMidpoint(100)
     .getColors()
+    .map((c) => alpha(c, 0.3))
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+
+  const [maxMin] = React.useMemo(() => {
+    // Create a dictionary of max and min values for each of the following laser.stats:
+    // optimumRange,maxRange,minPower,maxPower,extrPower,minPowerPct,resistance,instability,optimalChargeRate,optimalChargeWindow,inertMaterials,overchargeRate,clusterMod,shatterDamage,  }, [])
+    const maxMin: Record<string, { max: number; min: number }> = {}
+    Object.values(lookups.loadout.lasers).forEach((laser) => {
+      Object.entries(laser.stats).forEach(([key, value]) => {
+        if (typeof value === 'number') {
+          if (!maxMin[key]) maxMin[key] = { max: value, min: value }
+          else {
+            maxMin[key].max = Math.max(maxMin[key].max, value)
+            maxMin[key].min = Math.min(maxMin[key].min, value)
+          }
+        }
+      })
+    })
+    return [maxMin]
+  }, [])
+
+  const handleCategoryFilter = (event: React.MouseEvent<HTMLElement>, newFilter: LoadoutShipEnum | 'ALL') => {
+    if (newFilter === 'ALL') setCategoryFilter(null)
+    else setCategoryFilter(newFilter)
+  }
+
+  const handleColumnGroupChange = (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    newColumnGroups: ColumnGroupEnum[]
+  ) => {
+    setColumnGroups(newColumnGroups)
+  }
+
+  const handleSelectedChange = (laser: MiningGadgetEnum | MiningModuleEnum, checked: boolean) => {
+    if (checked) setSelected([...selected, laser])
+    else {
+      const newSelected = selected.filter((s) => s !== laser)
+      setSelected(newSelected)
+      if (newSelected.length === 0) setFilterSelected(false)
+    }
+  }
 
   const stores = Object.values(MiningStoreEnum)
 
@@ -84,10 +113,10 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
 
   const filteredValues = [...Object.values(lookups.loadout.modules), ...Object.values(lookups.loadout.gadgets)].filter(
     (mod) => {
-      if (filter === null) return true
-      if (filter === 'A' && mod.category === 'A') return true
-      if (filter === 'P' && mod.category === 'P') return true
-      if (filter === 'G' && mod.category === 'G') return true
+      if (categoryFilter === null) return true
+      if (categoryFilter === 'A' && mod.category === 'A') return true
+      if (categoryFilter === 'P' && mod.category === 'P') return true
+      if (categoryFilter === 'G' && mod.category === 'G') return true
     }
   )
   return (
@@ -95,93 +124,248 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
       <Typography variant="h6" sx={{ mb: 2 }}>
         Mining Modules
       </Typography>
-      <ToggleButtonGroup value={filter || 'all'} exclusive onChange={handleFilter} aria-label="text alignment">
-        <ToggleButton value={'ALL'} aria-label="left aligned">
-          All
-        </ToggleButton>
-        <ToggleButton value={'A'} aria-label="centered">
-          {modTypeIcons['A']}
-        </ToggleButton>
-        <ToggleButton value={'P'} aria-label="right aligned">
-          {modTypeIcons['P']}
-        </ToggleButton>
-        <ToggleButton value={'G'} aria-label="right aligned">
-          {modTypeIcons['G']}
-        </ToggleButton>
-      </ToggleButtonGroup>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+        <ToggleButtonGroup
+          value={categoryFilter || 'all'}
+          exclusive
+          size="small"
+          onChange={handleCategoryFilter}
+          aria-label="text alignment"
+        >
+          <ToggleButton value={'ALL'} aria-label="left aligned">
+            All
+          </ToggleButton>
+          <ToggleButton
+            value={'A'}
+            color="primary"
+            sx={{
+              color: theme.palette.primary.dark,
+            }}
+          >
+            Active
+          </ToggleButton>
+          <ToggleButton
+            value={'P'}
+            color="secondary"
+            sx={{
+              color: theme.palette.secondary.dark,
+            }}
+          >
+            Passive
+          </ToggleButton>
+          <ToggleButton
+            value={'G'}
+            color="info"
+            sx={{
+              color: theme.palette.info.dark,
+            }}
+          >
+            Gadgets
+          </ToggleButton>
+        </ToggleButtonGroup>
 
-      <Paper sx={{ width: '100%', mb: 4 }}>
-        <TableContainer>
+        <ToggleButtonGroup
+          size="small"
+          value={columnGroups}
+          onChange={handleColumnGroupChange}
+          aria-label="text alignment"
+        >
+          <ToggleButton value={ColumnGroupEnum.Buffs} aria-label="Buffs">
+            <Bolt /> Buffs
+          </ToggleButton>
+          <ToggleButton value={ColumnGroupEnum.Market} aria-label="Stores">
+            <Store /> Stores
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        <FormControlLabel
+          disabled={selected.length === 0}
+          control={
+            <Switch
+              checked={filterSelected && selected.length > 0}
+              onChange={(e) => setFilterSelected(e.target.checked)}
+            />
+          }
+          label="Selected"
+        />
+        <Button
+          onClick={() => {
+            setSelected([])
+            setFilterSelected(false)
+          }}
+          variant="text"
+          size="small"
+          startIcon={<ClearAll />}
+        >
+          Clear Selection
+        </Button>
+      </Stack>
+
+      <Paper sx={{ mb: 4 }}>
+        <TableContainer sx={styles.table}>
           <Table size="small" aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell sx={styles.shortHeader}>Add</TableCell>
-                <TableCell sx={styles.shortHeader}>Type</TableCell>
                 <TableCell sx={styles.shortHeader}>Module</TableCell>
-                <TableCell sx={styles.shortHeader}>Price</TableCell>
-
-                <LongCellHeader>Resistance</LongCellHeader>
-                <LongCellHeader>Instability</LongCellHeader>
-                <LongCellHeader>Optimal Charge Rate</LongCellHeader>
-                <LongCellHeader>Optimal Charge Window</LongCellHeader>
-                <LongCellHeader>Inert Materials</LongCellHeader>
-                <LongCellHeader>Overcharge Rate</LongCellHeader>
-                <LongCellHeader>Clustering</LongCellHeader>
-                <LongCellHeader>Shatter Damage</LongCellHeader>
-                <LongCellHeader>Extract Power Mod</LongCellHeader>
-
-                {stores.map((store, idx) => (
-                  <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
-                ))}
+                <TableCell sx={styles.shortHeader} align="center">
+                  Type
+                </TableCell>
+                <TableCell sx={styles.shortHeader} align="right">
+                  Price
+                </TableCell>
+                {columnGroups.includes(ColumnGroupEnum.Buffs) && (
+                  <>
+                    <LongCellHeader>Resistance</LongCellHeader>
+                    <LongCellHeader>Instability</LongCellHeader>
+                    <LongCellHeader>Optimal Charge Rate</LongCellHeader>
+                    <LongCellHeader>Optimal Charge Window</LongCellHeader>
+                    <LongCellHeader>Inert Materials</LongCellHeader>
+                    <LongCellHeader>Overcharge Rate</LongCellHeader>
+                    <LongCellHeader>Clustering</LongCellHeader>
+                    <LongCellHeader>Shatter Damage</LongCellHeader>
+                    <LongCellHeader>Extract Power Mod</LongCellHeader>
+                  </>
+                )}
+                {columnGroups.includes(ColumnGroupEnum.Market) && (
+                  <>
+                    {stores.map((store, idx) => (
+                      <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
+                    ))}
+                  </>
+                )}
+                {/* We add a cell at the end to let it grow*/}
+                <TableCell sx={styles.spacerCell}> </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredValues.map((lm, idx) => {
-                const topBorder =
-                  idx > 0 && filteredValues[idx - 1].category !== lm.category ? { borderTop: '2px solid' } : {}
+                const topBorder: SxProps<Theme> =
+                  idx > 0 && filteredValues[idx - 1].category !== lm.category
+                    ? { borderTop: `6px solid ${theme.palette.divider}` }
+                    : {}
+
+                const rowSelected = selected.includes(lm.code as MiningGadgetEnum | MiningModuleEnum)
+                const rowEven = idx % 2 === 0
+
+                const bgColor = rowSelected
+                  ? theme.palette.action.selected
+                  : rowEven
+                  ? theme.palette.background.paper
+                  : theme.palette.background.default
+
                 return (
                   <TableRow
                     key={`${lm.code}-${idx}`}
+                    onClick={() => handleSelectedChange(lm.code as MiningGadgetEnum | MiningModuleEnum, !rowSelected)}
                     sx={{
-                      '&:nth-of-type(even)': { backgroundColor: theme.palette.action.hover },
+                      backgroundColor: bgColor,
+                      '&:hover': {
+                        backgroundColor: rowSelected ? theme.palette.action.selected : theme.palette.action.hover,
+                      },
                     }}
                   >
-                    <TableCell sx={topBorder}>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => onAddToLoadout(lm.code as MiningModuleEnum | MiningGadgetEnum)}
-                      >
-                        <AddShoppingCart />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell sx={{ ...topBorder, fontFamily: fontFamilies.robotoMono, whiteSpace: 'nowrap' }}>
+                    <TableCell
+                      sx={Object.assign({}, topBorder, {
+                        fontFamily: fontFamilies.robotoMono,
+                        whiteSpace: 'nowrap',
+                        fontWeight: 'bold',
+                      })}
+                    >
                       {lm.name}
                     </TableCell>
-                    <TableCell sx={topBorder}>{modTypeIcons[lm.category]}</TableCell>
-                    <TableCell sx={{ ...topBorder, fontFamily: fontFamilies.robotoMono, whiteSpace: 'nowrap' }}>
-                      {lm.price ? MValueFormatter(lm.price, MValueFormat.currency_sm) : ' '}
+                    <TableCell sx={topBorder} align="center">
+                      {modTypeIcons[lm.category]}
                     </TableCell>
-
-                    <StatsCell value={lm.stats.resistance} sx={topBorder} flip />
-                    <StatsCell value={lm.stats.instability} sx={topBorder} flip />
-                    <StatsCell value={lm.stats.optimalChargeRate} sx={topBorder} />
-                    <StatsCell value={lm.stats.optimalChargeWindow} sx={topBorder} />
-                    <StatsCell value={lm.stats.inertMaterials} sx={topBorder} flip />
-                    <StatsCell value={lm.stats.overchargeRate} sx={topBorder} />
-                    <StatsCell value={lm.stats.clusterMod} sx={topBorder} />
-                    <StatsCell value={lm.stats.shatterDamage} sx={topBorder} />
-                    <StatsCell value={lm.stats.powerMod} sx={topBorder} />
-
-                    {stores.map((store, idx) => (
+                    <Tooltip
+                      placement="top"
+                      title={lm.price ? MValueFormatter(lm.price, MValueFormat.currency) : 'Price Unknown'}
+                    >
                       <TableCell
-                        key={`${store}-${idx}`}
-                        sx={Object.assign({}, styles.cellDivider, topBorder)}
-                        padding="checkbox"
+                        sx={Object.assign({}, topBorder, styles.sectionDivider, {
+                          fontFamily: fontFamilies.robotoMono,
+                          whiteSpace: 'nowrap',
+                        })}
+                        align="right"
                       >
-                        {lm.stores.includes(store) ? <Check color="success" /> : null}
+                        {lm.price ? MValueFormatter(lm.price, MValueFormat.currency_sm) : '--'}
                       </TableCell>
-                    ))}
+                    </Tooltip>
+
+                    {columnGroups.includes(ColumnGroupEnum.Buffs) && (
+                      <>
+                        <StatsCell
+                          value={lm.stats.resistance}
+                          maxMin={maxMin['resistance']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('resistance')}
+                        />
+                        <StatsCell
+                          value={lm.stats.instability}
+                          maxMin={maxMin['instability']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('instability')}
+                        />
+                        <StatsCell
+                          value={lm.stats.optimalChargeRate}
+                          maxMin={maxMin['optimalChargeRate']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('optimalChargeRate')}
+                        />
+                        <StatsCell
+                          value={lm.stats.optimalChargeWindow}
+                          maxMin={maxMin['optimalChargeWindow']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('optimalChargeWindow')}
+                        />
+                        <StatsCell
+                          value={lm.stats.inertMaterials}
+                          maxMin={maxMin['inertMaterials']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('inertMaterials')}
+                        />
+                        <StatsCell
+                          value={lm.stats.overchargeRate}
+                          maxMin={maxMin['overchargeRate']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('overchargeRate')}
+                        />
+                        <StatsCell
+                          value={lm.stats.clusterMod}
+                          maxMin={maxMin['clusterMod']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('clusterMod')}
+                        />
+                        <StatsCell
+                          value={lm.stats.shatterDamage}
+                          maxMin={maxMin['shatterDamage']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('shatterDamage')}
+                        />
+                        <StatsCell
+                          value={lm.stats.powerMod}
+                          maxMin={maxMin['powerMod']}
+                          sx={Object.assign({}, styles.sectionDivider, topBorder)}
+                          reversed={BackwardStats.includes('powerMod')}
+                        />
+                      </>
+                    )}
+
+                    {columnGroups.includes(ColumnGroupEnum.Market) && (
+                      <>
+                        {stores.map((store, idx) => (
+                          <TableCell
+                            key={`${store}-${idx}`}
+                            sx={Object.assign({}, styles.cellDivider, topBorder)}
+                            padding="checkbox"
+                          >
+                            {lm.stores.includes(store) ? <Check color="success" /> : null}
+                          </TableCell>
+                        ))}
+                      </>
+                    )}
+
+                    {/* We add a cell at the end to let it grow*/}
+                    <TableCell sx={styles.spacerCell}> </TableCell>
                   </TableRow>
                 )
               })}
@@ -190,39 +374,5 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
         </TableContainer>
       </Paper>
     </>
-  )
-}
-
-const StatsCell: React.FC<{ value?: number; sx?: SxProps<Theme>; flip?: boolean }> = ({ value, sx, flip }) => {
-  const theme = useTheme()
-  const styles = stylesThunk(theme)
-  const finalSx: SxProps<Theme> = Object.assign({}, styles.cellDivider, sx || {})
-
-  if (typeof value === 'undefined') {
-    return <TableCell sx={finalSx}> </TableCell>
-  }
-  const color = flip
-    ? value <= 0
-      ? theme.palette.success.main
-      : theme.palette.error.main
-    : value > 0
-    ? theme.palette.success.main
-    : theme.palette.error.main
-  return (
-    <TableCell sx={finalSx}>
-      <span style={{ color }}>{MValueFormatter(value, MValueFormat.percent)}</span>
-    </TableCell>
-  )
-}
-
-const LongCellHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const theme = useTheme()
-  const styles = stylesThunk(theme)
-  return (
-    <TableCell sx={styles.longHeaders}>
-      <Typography variant="caption" component="div">
-        {children}
-      </Typography>
-    </TableCell>
   )
 }
