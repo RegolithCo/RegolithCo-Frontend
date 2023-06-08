@@ -91,6 +91,8 @@ export const App: React.FC = () => {
           <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
           <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<Error />} />
 
+          <Route path="/loadouts/:tab" element={<DataTablesPageContainer />} errorElement={<Error />} />
+
           {/**
            * This is the authentication section. Everything below here needs the AuthGate
            */}

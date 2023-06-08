@@ -1,148 +1,174 @@
 import * as React from 'react'
-import { getShipOreName, ShipOreEnum, findPrice } from '@regolithco/common'
-import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
+import {
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  useTheme,
+  SxProps,
+  Theme,
+  IconButton,
+  Chip,
+} from '@mui/material'
+import {
+  LoadoutShipEnum,
+  MiningGadgetEnum,
+  MiningModuleEnum,
+  MiningStoreEnum,
+  getMiningStoreName,
+  lookups,
+} from '@regolithco/common'
+import { AddShoppingCart, Check } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
+import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 
-export const ShipOreTable: React.FC = () => {
+const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+  cellDivider: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
+  longHeaders: {
+    position: 'relative',
+    '& .MuiTypography-root': {
+      position: 'absolute',
+      transform: 'rotate(-30deg)',
+      transformOrigin: '0% 0%',
+      whiteSpace: 'nowrap',
+    },
+  },
+})
+
+export interface ModuleTableProps {
+  onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
+}
+
+export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
-  const shipRowKeys = Object.values(ShipOreEnum)
+  const styles = stylesThunk(theme)
+  const [filter, setFilter] = React.useState<LoadoutShipEnum | null>()
+
   const bgColors = new Gradient()
-    .setColorGradient('#b93327', '#a46800', '#246f9a', '#246f9a', '#246f9a', '#229f63')
+    .setColorGradient('#b93327', '#229f63')
     .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
-  const priceLookups = shipRowKeys.reduce((acc, shipOreKey) => {
-    acc[shipOreKey] = [
-      findPrice(shipOreKey as ShipOreEnum, undefined, true),
-      findPrice(shipOreKey as ShipOreEnum, undefined, false),
-    ]
-    return acc
-  }, {} as { [key in ShipOreEnum]: [number, number] })
 
-  // Sort descendng value
-  shipRowKeys.sort((a, b) => {
-    const aPrice = priceLookups[a as ShipOreEnum]
-    const bPrice = priceLookups[b as ShipOreEnum]
-    return bPrice[0] - aPrice[0]
-  })
+  const stores = Object.values(MiningStoreEnum)
 
-  const rowStats: { max: number; min: number }[] = []
+  const modTypeIcons: Record<string, React.ReactNode> = {
+    A: <Chip label="Active" size="small" color="primary" />,
+    P: <Chip label="Passive" size="small" color="secondary" />,
+    G: <Chip label="Gadget" size="small" color="info" />,
+  }
 
-  const finalTable: [number, number, number, number, number, number][] = shipRowKeys.map((shipOreKey, rowIdx) => {
-    const orePriceRefined = priceLookups[shipOreKey][0]
-    const orePriceUnrefined = priceLookups[shipOreKey][1]
-    const retVals = [
-      orePriceUnrefined,
-      orePriceRefined,
-      orePriceUnrefined * 32,
-      orePriceRefined * 32,
-      orePriceUnrefined * 96,
-      orePriceRefined * 96,
-    ]
-    if (rowIdx === 0) {
-      retVals.forEach((value) => rowStats.push({ max: value, min: value }))
-    } else {
-      retVals.forEach((value, colIdx) => {
-        if (value > rowStats[colIdx].max) rowStats[colIdx].max = value
-        if (value < rowStats[colIdx].min) rowStats[colIdx].min = value
-      })
-    }
-    return retVals as [number, number, number, number, number, number]
-  })
-  // Now map the values to a color index
-  const colorizedRows: [number, number, number, number, number, number][] = shipRowKeys.map((_, rowIdx) => {
-    const normalizedValues = finalTable[rowIdx].map((value, colIdx) => {
-      return (value - rowStats[colIdx].min) / (rowStats[colIdx].max - rowStats[colIdx].min)
-    })
-    const colorIdxs = normalizedValues.map((value) => Math.round(value * 99))
-    return colorIdxs as [number, number, number, number, number, number]
-  })
-
+  const filteredValues = [...Object.values(lookups.loadout.modules), ...Object.values(lookups.loadout.gadgets)]
   return (
-    <TableContainer>
-      <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ backgroundColor: '#00000033' }}></TableCell>
-            <TableCell align="left" colSpan={2} valign="top" sx={{ backgroundColor: '#00000055' }}>
-              <Typography variant="h5" component="div">
-                1 SCU
-              </Typography>
-              <Typography variant="caption" component="div">
-                &nbsp;
-              </Typography>
-            </TableCell>
-            <TableCell align="left" colSpan={2} valign="top" sx={{ backgroundColor: '#00000033' }}>
-              <Typography variant="h5" component="div">
-                32 SCU
-              </Typography>
-              <Typography variant="caption" component="div">
-                Full Prospector
-              </Typography>
-            </TableCell>
-            <TableCell align="left" colSpan={2} valign="top" sx={{ backgroundColor: '#00000055' }}>
-              <Typography variant="h5" component="div">
-                96 SCU
-              </Typography>
-              <Typography variant="caption" component="div">
-                Full Argo Mole
-              </Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ backgroundColor: '#00000055' }} />
-            <TableCell align="right" sx={{ backgroundColor: '#00000077' }}>
-              <MValue value="Unrefined" format={MValueFormat.string} />
-            </TableCell>
-            <TableCell align="right" sx={{ backgroundColor: '#00000055' }}>
-              <MValue value="Refined" format={MValueFormat.string} />
-            </TableCell>
-            <TableCell align="right" sx={{ backgroundColor: '#00000077' }}>
-              <MValue value="Unrefined" format={MValueFormat.string} />
-            </TableCell>
-            <TableCell align="right" sx={{ backgroundColor: '#00000077' }}>
-              <MValue value="Refined" format={MValueFormat.string} />
-            </TableCell>
-            <TableCell align="right" sx={{ backgroundColor: '#00000055' }}>
-              <MValue value="Unrefined" format={MValueFormat.string} />
-            </TableCell>
-            <TableCell align="right" sx={{ backgroundColor: '#00000077' }}>
-              <MValue value="Refined" format={MValueFormat.string} />
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {shipRowKeys.map((shipRowKey, rowIdx) => {
-            return (
-              <TableRow key={`row-${rowIdx}`}>
-                <TableCell component="th" scope="row">
-                  <MValue value={getShipOreName(shipRowKey)} format={MValueFormat.string} />
-                </TableCell>
-                {finalTable[rowIdx].map((colVal, colIdx) => {
-                  return (
-                    <TableCell
-                      align="right"
-                      key={`tcell-${rowIdx}-${colIdx}`}
-                      sx={{
-                        background: bgColors[colorizedRows[rowIdx][colIdx]] + (colIdx % 2 === 0 ? '22' : '55'),
-                        color: fgColors[colorizedRows[rowIdx][colIdx]],
-                      }}
+    <>
+      <TableContainer sx={{ pt: 10 }}>
+        <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Add</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Module</TableCell>
+              <TableCell>Price</TableCell>
+
+              <LongCellHeader>Resistance</LongCellHeader>
+              <LongCellHeader>Instability</LongCellHeader>
+              <LongCellHeader>Optimal Charge Rate</LongCellHeader>
+              <LongCellHeader>Optimal Charge Window</LongCellHeader>
+              <LongCellHeader>Inert Materials</LongCellHeader>
+              <LongCellHeader>Overcharge Rate</LongCellHeader>
+              <LongCellHeader>Clustering</LongCellHeader>
+              <LongCellHeader>Shatter Damage</LongCellHeader>
+              <LongCellHeader>Extract Power Mod</LongCellHeader>
+
+              {stores.map((store, idx) => (
+                <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredValues.map((lm, idx) => {
+              const topBorder =
+                idx > 0 && filteredValues[idx - 1].category !== lm.category ? { borderTop: '2px solid' } : {}
+              return (
+                <TableRow
+                  key={`${lm.code}-${idx}`}
+                  sx={{
+                    '&:nth-of-type(even)': { backgroundColor: theme.palette.action.hover },
+                  }}
+                >
+                  <TableCell sx={topBorder}>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => onAddToLoadout(lm.code as MiningModuleEnum | MiningGadgetEnum)}
                     >
-                      <MValue
-                        key={`cell-${rowIdx}-${colIdx}`}
-                        value={colVal}
-                        format={colIdx < 2 ? MValueFormat.currency : MValueFormat.currency_sm}
-                      />
+                      <AddShoppingCart />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell sx={topBorder}>{lm.name}</TableCell>
+                  <TableCell sx={topBorder}>{modTypeIcons[lm.category]}</TableCell>
+                  <TableCell sx={topBorder}>
+                    {lm.price ? MValueFormatter(lm.price, MValueFormat.currency_sm) : ' '}
+                  </TableCell>
+
+                  <StatsCell value={lm.stats.resistance} sx={topBorder} />
+                  <StatsCell value={lm.stats.instability} sx={topBorder} />
+                  <StatsCell value={lm.stats.optimalChargeRate} sx={topBorder} />
+                  <StatsCell value={lm.stats.optimalChargeWindow} sx={topBorder} />
+                  <StatsCell value={lm.stats.inertMaterials} sx={topBorder} />
+                  <StatsCell value={lm.stats.overchargeRate} sx={topBorder} />
+                  <StatsCell value={lm.stats.clusterMod} sx={topBorder} />
+                  <StatsCell value={lm.stats.shatterDamage} sx={topBorder} />
+                  <StatsCell value={lm.stats.powerMod} sx={topBorder} />
+
+                  {stores.map((store, idx) => (
+                    <TableCell
+                      key={`${store}-${idx}`}
+                      sx={Object.assign({}, styles.cellDivider, topBorder)}
+                      padding="checkbox"
+                    >
+                      {lm.stores.includes(store) ? <Check color="success" /> : null}
                     </TableCell>
-                  )
-                })}
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                  ))}
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
+  )
+}
+
+const StatsCell: React.FC<{ value?: number; sx?: SxProps<Theme> }> = ({ value, sx }) => {
+  const theme = useTheme()
+  const styles = stylesThunk(theme)
+  const finalSx: SxProps<Theme> = Object.assign({}, styles.cellDivider, sx || {})
+
+  if (typeof value === 'undefined') {
+    return <TableCell sx={finalSx}> </TableCell>
+  }
+  const color = value > 0 ? theme.palette.success.main : theme.palette.error.main
+  return (
+    <TableCell sx={finalSx}>
+      <span style={{ color }}>{MValueFormatter(value, MValueFormat.percent)}</span>
+    </TableCell>
+  )
+}
+
+const LongCellHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const theme = useTheme()
+  const styles = stylesThunk(theme)
+  return (
+    <TableCell sx={styles.longHeaders}>
+      <Typography variant="caption" component="div">
+        {children}
+      </Typography>
+    </TableCell>
   )
 }

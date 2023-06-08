@@ -8,7 +8,7 @@ import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
-import { green, red, yellow } from '@mui/material/colors'
+import { yellow } from '@mui/material/colors'
 import { CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import { Login } from '@mui/icons-material'
@@ -21,6 +21,7 @@ const pages = {
   '/session': 'Sessions',
   '/cluster': 'Cluster Calc.',
   '/workorder': 'Work Order',
+  '/loadouts': 'Loadouts',
   '/tables': 'Data Tables',
   '/about': 'About',
 }

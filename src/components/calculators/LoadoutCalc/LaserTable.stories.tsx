@@ -15,4 +15,6 @@ export default {
 const Template: ComponentStory<typeof LaserTableC> = (args) => <LaserTableC {...args} />
 
 export const LaserTable = Template.bind({})
-LaserTable.args = {}
+LaserTable.args = {
+  onAddToLoadout: (module) => console.log(module),
+}
