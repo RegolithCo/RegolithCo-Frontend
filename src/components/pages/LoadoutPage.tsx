@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Box, SxProps, Tab, Tabs, Theme, useTheme } from '@mui/material'
+import { Box, Link, SxProps, Tab, Tabs, Theme, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { BorderAll, Calculate, Info, Person, QuestionAnswer } from '@mui/icons-material'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -67,6 +67,18 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLogge
         <ModuleTable onAddToLoadout={(module) => console.log('Add to loadout', module)} />
       )}
       {finalTab === LoadoutTabIndex.MyLoadouts && <Box sx={{ mb: 3 }}>Put My stuff here</Box>}
+
+      <Typography variant="caption">
+        Big thanks to{' '}
+        <Link href="https://redmonstergaming.com/" target="_blank">
+          RedMonsterSC
+        </Link>{' '}
+        for compiling the{' '}
+        <Link href="https://redmonstergaming.com/" target="_blank">
+          original spreadsheet
+        </Link>{' '}
+        with this data.
+      </Typography>
     </PageWrapper>
   )
 }
