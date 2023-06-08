@@ -178,7 +178,7 @@ export const MiningLoadoutFragmentFragmentDoc = gql`
     modules
   }
   inventorylasers
-  inventorySpareModules
+  inventoryModules
   inventoryGadgets
 }
     `;
@@ -395,17 +395,14 @@ export const UserProfileFragmentFragmentDoc = gql`
   updatedAt
   state
   verifyCode
-  deliveryShip {
-    ...VehicleFragment
-  }
+  deliveryShipCode
   sessionSettings {
     ...SessionSettingFragment
   }
   userSettings
   friends
 }
-    ${VehicleFragmentFragmentDoc}
-${SessionSettingFragmentFragmentDoc}`;
+    ${SessionSettingFragmentFragmentDoc}`;
 export const UserProfileLoadoutFragmentFragmentDoc = gql`
     fragment UserProfileLoadoutFragment on UserProfile {
   userId

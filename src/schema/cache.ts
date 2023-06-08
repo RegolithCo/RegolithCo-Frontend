@@ -46,15 +46,16 @@ export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
 	UEX?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MiningLoadoutKeySpecifier = ('activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventorySpareModules' | 'inventorylasers' | 'loadoutId' | 'name' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
+export type MiningLoadoutKeySpecifier = ('activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryModules' | 'inventorylasers' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
 export type MiningLoadoutFieldPolicy = {
 	activeLasers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	inventoryGadgets?: FieldPolicy<any> | FieldReadFunction<any>,
-	inventorySpareModules?: FieldPolicy<any> | FieldReadFunction<any>,
+	inventoryModules?: FieldPolicy<any> | FieldReadFunction<any>,
 	inventorylasers?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadoutId?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -376,13 +377,13 @@ export type UserInterfaceFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShip' | 'friends' | 'joinedSessions' | 'loadouts' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'loadouts' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewSharesPayee?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewSharesPayer?: FieldPolicy<any> | FieldReadFunction<any>,
-	deliveryShip?: FieldPolicy<any> | FieldReadFunction<any>,
+	deliveryShipCode?: FieldPolicy<any> | FieldReadFunction<any>,
 	friends?: FieldPolicy<any> | FieldReadFunction<any>,
 	joinedSessions?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadouts?: FieldPolicy<any> | FieldReadFunction<any>,

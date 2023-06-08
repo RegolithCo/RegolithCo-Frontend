@@ -115,20 +115,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const [modalOpen, setModalOpen] = React.useState<ProfileModals | null>(null)
   const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>(
-    pick(userProfile, ['deliveryShip', 'scName', 'userSettings'])
+    pick(userProfile, ['deliveryShipCode', 'scName', 'userSettings'])
   )
   const [activeTab, setActiveTab] = React.useState<ProfileTabsEnum>(ProfileTabsEnum.PROFILE)
   const [friend2remove, setFriend2remove] = React.useState<string>()
 
   React.useEffect(() => {
-    if (userProfile) setNewUserProfile(pick(userProfile, ['deliveryShip', 'scName', 'userSettings']))
+    if (userProfile) setNewUserProfile(pick(userProfile, ['deliveryShipCode', 'scName', 'userSettings']))
   }, [userProfile])
 
   const friends: string[] = [...(userProfile?.friends || [])]
   // Alphabetically sort friends
   friends.sort((a, b) => a.localeCompare(b))
   const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
-  // const sortedShips = [...DeliveryShips]
+  // const sortedShips = [...deliveryShipCodes]
   // sortedShips.sort((a, b) => {
   //   const { cargo: cargoA }: ShipStats = lookups.shipLookups[a] as ShipStats
   //   const { cargo: cargoB }: ShipStats = lookups.shipLookups[b] as ShipStats
@@ -289,7 +289,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     lineHeight: 1.6,
                     mb: 2,
                   }}
-                  value={newUserProfile.deliveryShip || ''}
+                  value={newUserProfile.deliveryShipCode || ''}
                   renderValue={(ship) => {
                     const shipObj: ShipStats = lookups.shipLookup[ship] as ShipStats
                     return (
@@ -301,9 +301,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     )
                   }}
                   onChange={(e) => {
-                    const newDeliveryShip =
+                    const newdeliveryShipCode =
                       e.target.value && e.target.value.length > 0 ? (e.target.value as ShipEnum) : null
-                    const updatedNewUserProfile = { ...newUserProfile, deliveryShip: newDeliveryShip }
+                    const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newdeliveryShipCode }
                     setNewUserProfile(updatedNewUserProfile)
                     updateUserProfile && updateUserProfile(updatedNewUserProfile)
                   }}
