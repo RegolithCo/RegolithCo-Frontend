@@ -1,1 +1,1 @@
-improt re
+export default {}

@@ -20,6 +20,7 @@ export const BGImagesEnum = {
   CITY1: 'city1.jpg',
   PROFILE: 'profile.jpg',
   REFINERY1: 'refinery1.png',
+  HANGAR: 'hangar.png',
 } as const
 export type BGImagesEnum = ObjectValues<typeof BGImagesEnum>
 
@@ -73,6 +74,9 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       break
     case '/cluster':
       bgImage = BGImagesEnum.ASTEROIDS2
+      break
+    case '/loadouts':
+      bgImage = BGImagesEnum.HANGAR
       break
     default:
       bgImage = BGImagesEnum.DEFAULT

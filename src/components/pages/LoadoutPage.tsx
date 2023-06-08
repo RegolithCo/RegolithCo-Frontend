@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Box, Link, SxProps, Tab, Tabs, Theme, Typography, useTheme } from '@mui/material'
+import { Box, SxProps, Tab, Tabs, Theme, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
-import { Celebration, Coffee, HelpCenter, Info, QuestionAnswer } from '@mui/icons-material'
+import { BorderAll, Calculate, Info, Person, QuestionAnswer } from '@mui/icons-material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLogin } from '../../hooks/useOAuth2'
 import { LaserTable } from '../calculators/LoadoutCalc/LaserTable'
+import { ModuleTable } from '../calculators/LoadoutCalc/ModuleTable'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -13,7 +14,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const AboutPageContainer: React.FC = () => {
+export const LoadoutPageContainer: React.FC = () => {
   const navigate = useNavigate()
   const { isInitialized } = useLogin()
   const { tab } = useParams()
@@ -28,8 +29,10 @@ export interface LoadoutPageProps {
 }
 
 export const LoadoutTabIndex = {
-  Calculator: 'tables',
+  Calculator: 'calculator',
   MyLoadouts: 'my',
+  Lasers: 'lasers',
+  Modules: 'modules',
 }
 
 export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLoggedIn }) => {
@@ -39,25 +42,29 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLogge
   const finalTab = typeof tab === 'undefined' ? LoadoutTabIndex.Calculator : tab
 
   return (
-    <PageWrapper title="About Regolith Co." maxWidth="sm" sx={{ marginLeft: { lg: '7%' } }}>
-      <Typography variant="body2" component="div" gutterBottom>
-        <em>"Don't mine alone"</em>
-      </Typography>
+    <PageWrapper title="Mining Loadout" maxWidth="xl">
       <Tabs
         value={finalTab}
-        aria-label="basic tabs example"
         sx={{ mb: 3 }}
         onChange={(event, newValue) => {
-          navigate && navigate(`/about/${newValue}`)
+          navigate && navigate(`/loadouts/${newValue}`)
         }}
       >
-        <Tab label="Calculator" icon={<Info />} value={LoadoutTabIndex.Calculator} />
-        <Tab label="My Loadouts" disabled={!isLoggedIn} icon={<QuestionAnswer />} value={LoadoutTabIndex.MyLoadouts} />
+        <Tab label="Calculator" icon={<Calculate />} value={LoadoutTabIndex.Calculator} />
+        <Tab label="My Loadouts" disabled={!isLoggedIn} icon={<Person />} value={LoadoutTabIndex.MyLoadouts} />
+        <Tab label="Lasers" icon={<BorderAll />} value={LoadoutTabIndex.Lasers} />
+        <Tab label="Modules" icon={<BorderAll />} value={LoadoutTabIndex.Modules} />
       </Tabs>
-      {finalTab === LoadoutTabIndex.Calculator && (
-        <Box sx={{ mb: 3 }}>
-          <LaserTable />
-        </Box>
+      {finalTab === LoadoutTabIndex.Calculator && <>CALCULATOR</>}
+      {finalTab === LoadoutTabIndex.Lasers && (
+        <LaserTable
+          onAddToLoadout={(laser) => {
+            console.log('Add to loadout', laser)
+          }}
+        />
+      )}
+      {finalTab === LoadoutTabIndex.Modules && (
+        <ModuleTable onAddToLoadout={(module) => console.log('Add to loadout', module)} />
       )}
       {finalTab === LoadoutTabIndex.MyLoadouts && <Box sx={{ mb: 3 }}>Put My stuff here</Box>}
     </PageWrapper>

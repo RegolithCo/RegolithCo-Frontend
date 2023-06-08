@@ -15,6 +15,7 @@ import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage
 import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
 import { useLogin } from './hooks/useOAuth2'
 import { StagingWarning } from './components/modals/StagingWarning'
+import { LoadoutPageContainer } from './components/pages/LoadoutPage'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -91,7 +92,8 @@ export const App: React.FC = () => {
           <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
           <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<Error />} />
 
-          <Route path="/loadouts/:tab" element={<DataTablesPageContainer />} errorElement={<Error />} />
+          <Route path="/loadouts/" element={<Navigate to="/loadouts/calculator" replace />} />
+          <Route path="/loadouts/:tab" element={<LoadoutPageContainer />} errorElement={<Error />} />
 
           {/**
            * This is the authentication section. Everything below here needs the AuthGate

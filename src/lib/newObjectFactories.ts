@@ -241,6 +241,7 @@ export function dummyUserProfile(): UserProfile {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     friends: [],
+    loadouts: [],
     sessionSettings: {
       __typename: 'SessionSettings',
     },
@@ -256,6 +257,7 @@ export function newUserProfile(scName: string): UserProfile {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     friends: [],
+    loadouts: [],
     sessionSettings: {
       __typename: 'SessionSettings',
     },

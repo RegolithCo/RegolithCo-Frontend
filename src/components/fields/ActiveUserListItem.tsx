@@ -3,15 +3,13 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Avatar,
   ListItemSecondaryAction,
   IconButton,
   Tooltip,
-  Badge,
   Link,
 } from '@mui/material'
-import { getSessionUserStateName, makeAvatar, ScoutingFind, SessionUser, User, UserStateEnum } from '@regolithco/common'
-import { Engineering, Person, PersonAdd, Verified } from '@mui/icons-material'
+import { getSessionUserStateName, makeAvatar, ScoutingFind, SessionUser, User } from '@regolithco/common'
+import { Person, PersonAdd } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
 import { UserAvatar } from '../UserAvatar'
 
@@ -67,8 +65,8 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         )
       } else secondaryText.push(getSessionUserStateName(sessionUser.state))
     }
-    if (sessionUser.miningVehicle) {
-      secondaryText.push(sessionUser.miningVehicle)
+    if (sessionUser.vehicle) {
+      secondaryText.push(sessionUser.vehicle.name)
     }
     if (sessionUser.pilotSCName) {
       secondaryText.push(`Crew of: ${sessionUser.pilotSCName}`)
