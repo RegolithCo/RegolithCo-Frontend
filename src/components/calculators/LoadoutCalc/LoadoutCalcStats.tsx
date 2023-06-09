@@ -8,29 +8,42 @@ export interface LoadoutCalcStatsProps {
   stats: AllStats
 }
 
-const statsOrder: Record<string, { label: string; tooltip: string; percent?: boolean; unit?: string }> = {
-  minPower: { label: 'Min Pwr', tooltip: 'Minimum Laser Power (All Active lasers combined)' },
-  maxPower: { label: 'Max Pwr', tooltip: 'Maximum Laser Power (All active lasers combined)' },
-  extrPower: { label: 'Ext Pwr', tooltip: 'Total extraction power (All Active lasers combined)' },
-  optimumRange: {
+const statsOrder: { key: keyof AllStats; label: string; tooltip: string; percent?: boolean; unit?: string }[] = [
+  { key: 'minPower', label: 'Min Pwr', tooltip: 'Minimum Laser Power (All Active lasers combined)' },
+  { key: 'maxPower', label: 'Max Pwr', tooltip: 'Maximum Laser Power (All active lasers combined)' },
+  {
+    key: 'optimumRange',
     label: 'Opt Rng',
     percent: false,
     unit: 'm',
     tooltip: 'Optimum Range (Average for all active lasers)',
   },
-  maxRange: { label: 'Max Rng', percent: false, unit: 'm', tooltip: 'Maximum Range (Average for all active lasers)' },
-  resistance: { label: 'Resistance', percent: true, tooltip: 'Resistance Modifier' },
-  instability: { label: 'Instability', percent: true, tooltip: 'Instability Modifier' },
-  overchargeRate: { label: 'Overcharge', percent: true, tooltip: 'Overcharge Rate Modifier' },
-  clusterMod: { label: 'Clust.', percent: true, tooltip: 'Cluster Modifier' },
-  inertMaterials: { label: 'Inert', percent: true, tooltip: 'Inert Materials filtering' },
-  optimalChargeRate: { label: 'Opt Chrg Rt', percent: true, tooltip: 'Optimal Charge Rate Modifier' },
-  optimalChargeWindow: { label: 'Opt Chrg Wnd', percent: true, tooltip: 'Optimal Charge Window Modifier' },
-  shatterDamage: { label: 'Shatter', percent: true, tooltip: 'Shatter Damage Modifier' },
+  {
+    key: 'maxRange',
+    label: 'Max Rng',
+    percent: false,
+    unit: 'm',
+    tooltip: 'Maximum Range (Average for all active lasers)',
+  },
+  { key: 'resistance', label: 'Resistance', percent: true, tooltip: 'Resistance Modifier' },
+  { key: 'instability', label: 'Instability', percent: true, tooltip: 'Instability Modifier' },
+  { key: 'overchargeRate', label: 'Overcharge', percent: true, tooltip: 'Overcharge Rate Modifier' },
+  { key: 'clusterMod', label: 'Clust.', percent: true, tooltip: 'Cluster Modifier' },
+  { key: 'inertMaterials', label: 'Inert', percent: true, tooltip: 'Inert Materials filtering' },
+  { key: 'optimalChargeRate', label: 'Opt Chrg Rt', percent: true, tooltip: 'Optimal Charge Rate Modifier' },
+  { key: 'optimalChargeWindow', label: 'Opt Chrg Wnd', percent: true, tooltip: 'Optimal Charge Window Modifier' },
+  { key: 'shatterDamage', label: 'Shatter', percent: true, tooltip: 'Shatter Damage Modifier' },
+  { key: 'extrPower', label: 'Ext Pwr', tooltip: 'Total extraction power (All Active lasers combined)' },
 
   // minPowerPct: { label: 'Min Power %', percent: true },
   // extrPowerMod: { label: 'Extraction Power Mod', percent: true },
   // powerMod: { label: 'Power Mod', percent: true },
+]
+
+const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
+  maxPower: 'powerMod',
+  minPower: 'powerMod',
+  extrPower: 'extrPowerMod',
 }
 
 export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => {
@@ -46,18 +59,24 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
       }}
     >
       <Grid container>
-        {Object.entries(statsOrder).map(([key, { label, percent, unit, tooltip }]) => (
-          <Grid key={key} xs={3}>
-            <NumberStat
-              label={label}
-              percent={percent}
-              unit={unit}
-              tooltip={tooltip}
-              value={stats[key as keyof AllStats]}
-              reversed={BackwardStats.includes(key)}
-            />
-          </Grid>
-        ))}
+        {statsOrder.map(({ key, label, percent, unit, tooltip }) => {
+          const modPercent = MODMAP[key as keyof AllStats]
+            ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
+            : undefined
+          return (
+            <Grid key={key} xs={4}>
+              <NumberStat
+                label={label}
+                isPercent={percent}
+                modPercent={modPercent}
+                unit={unit}
+                tooltip={tooltip}
+                value={stats[key as keyof AllStats]}
+                reversed={BackwardStats.includes(key)}
+              />
+            </Grid>
+          )
+        })}
       </Grid>
     </Box>
   )
