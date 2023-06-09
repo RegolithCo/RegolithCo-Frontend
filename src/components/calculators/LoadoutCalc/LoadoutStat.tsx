@@ -58,7 +58,7 @@ export const NumberStat: React.FC<NumberStatProps> = ({ label, value, reversed, 
     <Tooltip title={tooltip || ''} placement="top">
       <Box
         sx={Object.assign({}, styles.container, {
-          color,
+          color: percent && Math.abs(value || 0) > 0.01 ? color : null,
           fontWeight: isNumeric && active ? 'bold' : 'normal',
           animation: isNumeric && active ? `${pulse} 1s infinite ease` : '',
         })}
@@ -66,7 +66,7 @@ export const NumberStat: React.FC<NumberStatProps> = ({ label, value, reversed, 
         <Box sx={styles.number}>
           {!isNumeric && '--'}
           {isNumeric && percent && value > 0 ? '+' : ''}
-          {isNumeric && percent && MValueFormatter(value, MValueFormat.percent)}
+          {isNumeric && percent && MValueFormatter(1 - value, MValueFormat.percent)}
           {isNumeric && !percent && MValueFormatter(value, MValueFormat.number)}
           {unit}
         </Box>

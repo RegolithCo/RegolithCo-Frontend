@@ -1,8 +1,12 @@
 import {
+  ActiveMiningLaserLoadout,
   ActivityEnum,
   CrewShare,
+  DEFAULT_MOLE_LASER,
+  DEFAULT_PROSPECTOR_LASER,
   LoadoutShipEnum,
   Maybe,
+  MiningLaserEnum,
   MiningLoadout,
   OtherOrder,
   RefineryEnum,
@@ -289,18 +293,33 @@ export function dummySessionUser(owner: UserProfile): SessionUser {
   }
 }
 
-export function newMiningLoadout(userProfile: UserProfile): MiningLoadout {
+export function newMiningLoadout(ship: LoadoutShipEnum, userProfile: UserProfile): MiningLoadout {
   return {
     name: 'New Loadout',
     loadoutId: 'NEWLOADOUT',
     createdAt: Date.now(),
     updatedAt: Date.now(),
     owner: profile2User(userProfile),
-    ship: LoadoutShipEnum.Prospector,
-    activeLasers: [],
+    ship,
+    activeLasers:
+      ship === LoadoutShipEnum.Mole
+        ? [
+            newMiningLoadoutActiveLaser(DEFAULT_MOLE_LASER),
+            newMiningLoadoutActiveLaser(DEFAULT_MOLE_LASER),
+            newMiningLoadoutActiveLaser(DEFAULT_MOLE_LASER),
+          ]
+        : [newMiningLoadoutActiveLaser(DEFAULT_PROSPECTOR_LASER)],
     inventoryGadgets: [],
     inventorylasers: [],
     inventoryModules: [],
     __typename: 'MiningLoadout',
+  }
+}
+
+export function newMiningLoadoutActiveLaser(laser: MiningLaserEnum): ActiveMiningLaserLoadout {
+  return {
+    laser,
+    modules: [],
+    __typename: 'ActiveMiningLaserLoadout',
   }
 }

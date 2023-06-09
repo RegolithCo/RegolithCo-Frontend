@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Typography, TableCell, useTheme, SxProps, Theme } from '@mui/material'
-import { MValueFormat, MValueFormatter } from '../../fields/MValue'
+import { MValueFormat, MValueFormatter } from '../fields/MValue'
 
 export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   table: {

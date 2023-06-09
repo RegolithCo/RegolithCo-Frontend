@@ -4,9 +4,9 @@ import { PageWrapper } from '../PageWrapper'
 import { BorderAll, Calculate, Info, Person, QuestionAnswer } from '@mui/icons-material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLogin } from '../../hooks/useOAuth2'
-import { LaserTable } from '../calculators/LoadoutCalc/LaserTable'
-import { ModuleTable } from '../calculators/LoadoutCalc/ModuleTable'
 import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
+import { LaserTable } from '../tables/LaserTable'
+import { ModuleTable } from '../tables/ModuleTable'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {

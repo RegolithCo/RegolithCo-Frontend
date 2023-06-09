@@ -31,10 +31,9 @@ import {
   lookups,
 } from '@regolithco/common'
 import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
-import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { fontFamilies } from '../../../theme'
+import { fontFamilies } from '../../theme'
+import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
-import { filter } from 'lodash'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void

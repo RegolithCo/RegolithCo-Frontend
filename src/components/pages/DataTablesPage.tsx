@@ -3,12 +3,13 @@ import { Typography, Tab, Tabs, useTheme, Theme, Alert, AlertTitle, Link } from 
 import { Box, SxProps } from '@mui/system'
 import { PageWrapper } from '../PageWrapper'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ShipOreTable } from '../calculators/ShipOreTable'
-import { VehicleOreTable } from '../calculators/VehicleOreTable'
+import { ShipOreTable } from '../tables/ShipOreTable'
+
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { RefineryBonusTable } from '../calculators/RefineryCalc/RefineryBonusTable'
 import { RefineryCalc } from '../calculators/RefineryCalc'
 import { ObjectValues } from '@regolithco/common'
+import { VehicleOreTable } from '../tables/VehicleOreTable'
 
 export const DataTablesPageContainer: React.FC = () => {
   const navigate = useNavigate()

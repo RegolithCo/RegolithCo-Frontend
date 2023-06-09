@@ -33,9 +33,9 @@ import {
 } from '@regolithco/common'
 import { BarChart, Bolt, Check, ClearAll, Store } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
-import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { fontFamilies } from '../../../theme'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
+import { fontFamilies } from '../../theme'
+import { MValueFormat, MValueFormatter } from '../fields/MValue'
 
 export interface LaserTableProps {
   onAddToLoadout: (module: MiningLaserEnum) => void
