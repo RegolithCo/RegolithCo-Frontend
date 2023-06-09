@@ -1,7 +1,9 @@
 import {
   ActivityEnum,
   CrewShare,
+  LoadoutShipEnum,
   Maybe,
+  MiningLoadout,
   OtherOrder,
   RefineryEnum,
   RefineryMethodEnum,
@@ -284,5 +286,21 @@ export function dummySessionUser(owner: UserProfile): SessionUser {
       __typename: 'User',
     },
     __typename: 'SessionUser',
+  }
+}
+
+export function newMiningLoadout(userProfile: UserProfile): MiningLoadout {
+  return {
+    name: 'New Loadout',
+    loadoutId: 'NEWLOADOUT',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    owner: profile2User(userProfile),
+    ship: LoadoutShipEnum.Prospector,
+    activeLasers: [],
+    inventoryGadgets: [],
+    inventorylasers: [],
+    inventoryModules: [],
+    __typename: 'MiningLoadout',
   }
 }

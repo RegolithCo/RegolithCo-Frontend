@@ -63,11 +63,27 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     .map((c) => alpha(c, 0.3))
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
+  const filteredVals = React.useMemo(
+    () =>
+      Object.values(lookups.loadout.lasers)
+        .filter((laser) => {
+          if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
+          if (shipFilter === LoadoutShipEnum.Prospector) return laser.size === 1
+          return true
+        })
+        .filter((laser) => {
+          if (!filterSelected) return true
+          if (selected.length === 0) return true
+          return selected.includes(laser.code as MiningLaserEnum)
+        }),
+    [filterSelected, selected, shipFilter]
+  )
+
   const [maxMin, statsRank] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
     // optimumRange,maxRange,minPower,maxPower,extrPower,minPowerPct,resistance,instability,optimalChargeRate,optimalChargeWindow,inertMaterials,overchargeRate,clusterMod,shatterDamage,  }, [])
     const maxMin: Record<string, { max: number; min: number }> = {}
-    Object.values(lookups.loadout.lasers).forEach((laser) => {
+    filteredVals.forEach((laser) => {
       Object.entries(laser.stats).forEach(([key, value]) => {
         if (typeof value === 'number') {
           if (!maxMin[key]) maxMin[key] = { max: value, min: value }
@@ -82,7 +98,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     const statsRank: Record<string, Partial<Record<MiningLaserEnum, number | null>>> = {}
     Object.entries(maxMin).forEach(([key, { max, min }]) => {
       statsRank[key] = {}
-      Object.values(lookups.loadout.lasers).forEach((laser) => {
+      filteredVals.forEach((laser) => {
         const value = laser.stats[key as keyof LaserLoadoutStats] as number | undefined
         if (typeof value === 'number') {
           statsRank[key][laser.code as MiningLaserEnum] = (value - min) / (max - min)
@@ -93,7 +109,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     })
 
     return [maxMin, statsRank]
-  }, [])
+  }, [filteredVals])
 
   const handleShipFilter = (event: React.MouseEvent<HTMLElement>, newFilter: LoadoutShipEnum | 'ALL') => {
     if (newFilter === 'ALL') setShipFilter(null)
@@ -116,18 +132,6 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     }
   }
 
-  const filteredVals = Object.values(lookups.loadout.lasers)
-    .filter((laser) => {
-      if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
-      if (shipFilter === LoadoutShipEnum.Prospector) return laser.size === 1
-      return true
-    })
-    .filter((laser) => {
-      if (!filterSelected) return true
-      if (selected.length === 0) return true
-      return selected.includes(laser.code as MiningLaserEnum)
-    })
-
   const stores = Object.values(MiningStoreEnum)
   return (
     <>
@@ -135,6 +139,9 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         Mining Lasers
       </Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+        <Typography variant="overline" sx={{ alignSelf: 'center' }}>
+          Filter:
+        </Typography>
         <ToggleButtonGroup
           size="small"
           value={shipFilter || 'ALL'}
@@ -174,7 +181,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
           aria-label="text alignment"
         >
           <ToggleButton value={ColumnGroupEnum.Base} aria-label="Base stats">
-            <BarChart /> Base
+            <BarChart /> Attributes
           </ToggleButton>
           <ToggleButton value={ColumnGroupEnum.Buffs} aria-label="Buffs">
             <Bolt /> Buffs
@@ -222,7 +229,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                   Slots
                 </TableCell>
 
-                {columnGroups.includes(ColumnGroupEnum.Base) && (
+                {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Base) && (
                   <>
                     <LongCellHeader>Optimum Range</LongCellHeader>
                     <LongCellHeader>Max. Range</LongCellHeader>
@@ -232,7 +239,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     <LongCellHeader>Extract Power</LongCellHeader>
                   </>
                 )}
-                {columnGroups.includes(ColumnGroupEnum.Buffs) && (
+                {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Buffs) && (
                   <>
                     <LongCellHeader>Resistance</LongCellHeader>
                     <LongCellHeader>Instability</LongCellHeader>
@@ -244,7 +251,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
               <LongCellHeader>Shatter Damage</LongCellHeader> */}
                   </>
                 )}
-                {columnGroups.includes(ColumnGroupEnum.Market) && (
+                {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Market) && (
                   <>
                     {stores.map((store, idx) => (
                       <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
@@ -256,6 +263,15 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
               </TableRow>
             </TableHead>
             <TableBody>
+              {filteredVals.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={100} sx={{ textAlign: 'center' }}>
+                    <Typography variant="overline">
+                      <em>No lasers found after filtering</em>
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
               {filteredVals.map((laser, idx) => {
                 const rowSelected = selected.includes(laser.code as MiningLaserEnum)
                 const rowEven = idx % 2 === 0

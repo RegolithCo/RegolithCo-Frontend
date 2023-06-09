@@ -64,19 +64,41 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           >
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/mining.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline">Mining Sessions {userCtx.isInitialized ? '' : '(Login)'}</Typography>
+              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+                Mining Sessions {userCtx.isInitialized ? '' : '(Login)'}
+              </Typography>
               <Typography variant="body2">
                 Organize your multi-crew mining with multiple ships, crew sharing etc.
               </Typography>
             </CardContent>
-            <CardActions>{userCtx.isInitialized ? <Button>My Sessions</Button> : <Button>Login</Button>}</CardActions>
+            <CardActions>
+              {userCtx.isInitialized ? <Button>My Sessions</Button> : <Button>Mining Sessions (Login)</Button>}
+            </CardActions>
+          </Card>
+        </Grid>
+        <Grid sm={4} sx={cardCSS}>
+          <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/loadouts')}>
+            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/workshop.jpg`} title="mining" />
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+                Mining Loadouts
+              </Typography>
+              <Typography variant="body2">
+                Plan and tweak your mining ship loadouts using the right components for the right kind of ores.
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button>Mining Loadouts</Button>
+            </CardActions>
           </Card>
         </Grid>
         <Grid sm={4} sx={cardCSS}>
           <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/workorder')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/refinery.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline">Work Order Calculator</Typography>
+              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+                Work Order Calculator
+              </Typography>
               <Typography variant="body2">Standalone calculator for refinery calculation and aUEC Shares</Typography>
             </CardContent>
             <CardActions>
@@ -88,7 +110,9 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/cluster')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/cluster.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline">Cluster Calculator</Typography>
+              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+                Cluster Calculator
+              </Typography>
               <Typography variant="body2">
                 Standalone calculator figuring out the value of a rock or cluster.
               </Typography>
@@ -102,7 +126,9 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/tables/ore')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/market.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline">Market & Refinery Data</Typography>
+              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
+                Market & Refinery Data
+              </Typography>
               <Typography variant="body2">Data tables to compare refineries.</Typography>
             </CardContent>
             <CardActions>

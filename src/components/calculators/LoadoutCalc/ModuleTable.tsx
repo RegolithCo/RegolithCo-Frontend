@@ -19,11 +19,9 @@ import {
   Button,
   Switch,
   Tooltip,
-  alpha,
 } from '@mui/material'
 import {
   BackwardStats,
-  LaserLoadoutStats,
   LoadoutShipEnum,
   MiningGadgetEnum,
   MiningModuleEnum,
@@ -32,11 +30,11 @@ import {
   getMiningStoreName,
   lookups,
 } from '@regolithco/common'
-import { Bolt, Check, ClearAll, Store } from '@mui/icons-material'
-import Gradient from 'javascript-color-gradient'
+import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
+import { filter } from 'lodash'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
@@ -51,25 +49,34 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
-  const [categoryFilter, setCategoryFilter] = React.useState<string | null>(null)
+  const [categoryFilter, setCategoryFilter] = React.useState<string[]>(['A', 'P', 'G'])
 
   const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
 
-  const bgColors = new Gradient()
-    .setColorGradient('#b93327', '#229f63')
-    .setMidpoint(100)
-    .getColors()
-    .map((c) => alpha(c, 0.3))
-  const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+  const filteredValues = React.useMemo(
+    () =>
+      [...Object.values(lookups.loadout.modules), ...Object.values(lookups.loadout.gadgets)]
+        .filter((mod) => {
+          if (filterSelected && !selected.includes(mod.code as MiningGadgetEnum | MiningModuleEnum)) return false
+          return true
+        })
+        .filter((mod) => {
+          if (categoryFilter === null) return true
+          if (categoryFilter.includes('A') && mod.category === 'A') return true
+          if (categoryFilter.includes('P') && mod.category === 'P') return true
+          if (categoryFilter.includes('G') && mod.category === 'G') return true
+        }),
+    [categoryFilter, filterSelected]
+  )
 
   const [maxMin] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
     // optimumRange,maxRange,minPower,maxPower,extrPower,minPowerPct,resistance,instability,optimalChargeRate,optimalChargeWindow,inertMaterials,overchargeRate,clusterMod,shatterDamage,  }, [])
     const maxMin: Record<string, { max: number; min: number }> = {}
-    Object.values(lookups.loadout.lasers).forEach((laser) => {
-      Object.entries(laser.stats).forEach(([key, value]) => {
+    filteredValues.forEach((mod) => {
+      Object.entries(mod.stats).forEach(([key, value]) => {
         if (typeof value === 'number') {
           if (!maxMin[key]) maxMin[key] = { max: value, min: value }
           else {
@@ -80,10 +87,10 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
       })
     })
     return [maxMin]
-  }, [])
+  }, [filteredValues])
 
-  const handleCategoryFilter = (event: React.MouseEvent<HTMLElement>, newFilter: LoadoutShipEnum | 'ALL') => {
-    if (newFilter === 'ALL') setCategoryFilter(null)
+  const handleCategoryFilter = (event: React.MouseEvent<HTMLElement>, newFilter: LoadoutShipEnum[]) => {
+    if (newFilter.length === 0) setCategoryFilter([])
     else setCategoryFilter(newFilter)
   }
 
@@ -111,30 +118,21 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
     G: <Chip label="Gadget" size="small" color="info" />,
   }
 
-  const filteredValues = [...Object.values(lookups.loadout.modules), ...Object.values(lookups.loadout.gadgets)].filter(
-    (mod) => {
-      if (categoryFilter === null) return true
-      if (categoryFilter === 'A' && mod.category === 'A') return true
-      if (categoryFilter === 'P' && mod.category === 'P') return true
-      if (categoryFilter === 'G' && mod.category === 'G') return true
-    }
-  )
   return (
     <>
       <Typography variant="h6" sx={{ mb: 2 }}>
         Mining Modules
       </Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+        <Typography variant="overline" sx={{ alignSelf: 'center' }}>
+          Filter:
+        </Typography>
         <ToggleButtonGroup
           value={categoryFilter || 'all'}
-          exclusive
           size="small"
           onChange={handleCategoryFilter}
           aria-label="text alignment"
         >
-          <ToggleButton value={'ALL'} aria-label="left aligned">
-            All
-          </ToggleButton>
           <ToggleButton
             value={'A'}
             color="primary"
@@ -195,9 +193,24 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
           }}
           variant="text"
           size="small"
+          disabled={selected.length === 0}
           startIcon={<ClearAll />}
         >
           Clear Selection
+        </Button>
+        <Button
+          onClick={() => {
+            setSelected([])
+            setFilterSelected(false)
+            setCategoryFilter(['A', 'P', 'G'])
+            setColumnGroups([ColumnGroupEnum.Buffs, ColumnGroupEnum.Market])
+          }}
+          color="error"
+          variant="text"
+          size="small"
+          startIcon={<Refresh />}
+        >
+          Reset Form
         </Button>
       </Stack>
 
@@ -213,7 +226,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                 <TableCell sx={styles.shortHeader} align="right">
                   Price
                 </TableCell>
-                {columnGroups.includes(ColumnGroupEnum.Buffs) && (
+                {filteredValues.length > 0 && columnGroups.includes(ColumnGroupEnum.Buffs) && (
                   <>
                     <LongCellHeader>Resistance</LongCellHeader>
                     <LongCellHeader>Instability</LongCellHeader>
@@ -226,7 +239,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                     <LongCellHeader>Extract Power Mod</LongCellHeader>
                   </>
                 )}
-                {columnGroups.includes(ColumnGroupEnum.Market) && (
+                {filteredValues.length > 0 && columnGroups.includes(ColumnGroupEnum.Market) && (
                   <>
                     {stores.map((store, idx) => (
                       <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
@@ -238,6 +251,15 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
               </TableRow>
             </TableHead>
             <TableBody>
+              {filteredValues.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={100} sx={{ textAlign: 'center' }}>
+                    <Typography variant="overline">
+                      <em>No modules found after filtering</em>
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
               {filteredValues.map((lm, idx) => {
                 const topBorder: SxProps<Theme> =
                   idx > 0 && filteredValues[idx - 1].category !== lm.category

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useLogin } from '../../hooks/useOAuth2'
 import { LaserTable } from '../calculators/LoadoutCalc/LaserTable'
 import { ModuleTable } from '../calculators/LoadoutCalc/ModuleTable'
+import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -55,7 +56,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLogge
         <Tab label="Lasers" icon={<BorderAll />} value={LoadoutTabIndex.Lasers} />
         <Tab label="Modules" icon={<BorderAll />} value={LoadoutTabIndex.Modules} />
       </Tabs>
-      {finalTab === LoadoutTabIndex.Calculator && <>CALCULATOR</>}
+      {finalTab === LoadoutTabIndex.Calculator && <LoadoutCalc />}
       {finalTab === LoadoutTabIndex.Lasers && (
         <LaserTable
           onAddToLoadout={(laser) => {
