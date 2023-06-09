@@ -7,6 +7,8 @@ import { useLogin } from '../../hooks/useOAuth2'
 import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
 import { LaserTable } from '../tables/LaserTable'
 import { ModuleTable } from '../tables/ModuleTable'
+import { LaserIcon } from '../../icons/Laser'
+import { ModuleIcon } from '../../icons/Module'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -53,8 +55,8 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLogge
       >
         <Tab label="Calculator" icon={<Calculate />} value={LoadoutTabIndex.Calculator} />
         <Tab label="My Loadouts" disabled={!isLoggedIn} icon={<Person />} value={LoadoutTabIndex.MyLoadouts} />
-        <Tab label="Lasers" icon={<BorderAll />} value={LoadoutTabIndex.Lasers} />
-        <Tab label="Modules" icon={<BorderAll />} value={LoadoutTabIndex.Modules} />
+        <Tab label="Lasers" icon={<LaserIcon />} value={LoadoutTabIndex.Lasers} />
+        <Tab label="Modules" icon={<ModuleIcon />} value={LoadoutTabIndex.Modules} />
       </Tabs>
       {finalTab === LoadoutTabIndex.Calculator && <LoadoutCalc />}
       {finalTab === LoadoutTabIndex.Lasers && (

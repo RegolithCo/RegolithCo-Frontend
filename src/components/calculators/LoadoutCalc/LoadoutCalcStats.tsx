@@ -53,9 +53,12 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
     <Box
       sx={{
         ml: 2,
-        border: '4px solid black',
+        // border: '4px solid black',
         backgroundColor: 'black',
+        border: `1px solid ${theme.palette.secondary.light}`,
         borderRadius: 4,
+        p: 1,
+        mb: 1,
       }}
     >
       <Grid container>

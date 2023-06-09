@@ -1,7 +1,4 @@
-import { Backpack } from '@mui/icons-material'
 import { createSvgIcon } from '@mui/material'
-
-Backpack
 
 export const ClawIcon = createSvgIcon(
   <g>
