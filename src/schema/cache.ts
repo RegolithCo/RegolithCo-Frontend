@@ -8,10 +8,12 @@ export type APIEventFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ActiveMiningLaserLoadoutKeySpecifier = ('laser' | 'modules' | ActiveMiningLaserLoadoutKeySpecifier)[];
+export type ActiveMiningLaserLoadoutKeySpecifier = ('laser' | 'laserActive' | 'modules' | 'modulesActive' | ActiveMiningLaserLoadoutKeySpecifier)[];
 export type ActiveMiningLaserLoadoutFieldPolicy = {
 	laser?: FieldPolicy<any> | FieldReadFunction<any>,
-	modules?: FieldPolicy<any> | FieldReadFunction<any>
+	laserActive?: FieldPolicy<any> | FieldReadFunction<any>,
+	modules?: FieldPolicy<any> | FieldReadFunction<any>,
+	modulesActive?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type CIGLookupsKeySpecifier = ('mineralDensities' | 'refiningBaseParams' | 'refiningBonuses' | 'refiningMethods' | CIGLookupsKeySpecifier)[];
 export type CIGLookupsFieldPolicy = {
@@ -46,8 +48,9 @@ export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
 	UEX?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MiningLoadoutKeySpecifier = ('activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryModules' | 'inventorylasers' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
+export type MiningLoadoutKeySpecifier = ('activeGadgetIndex' | 'activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryModules' | 'inventorylasers' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
 export type MiningLoadoutFieldPolicy = {
+	activeGadgetIndex?: FieldPolicy<any> | FieldReadFunction<any>,
 	activeLasers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	inventoryGadgets?: FieldPolicy<any> | FieldReadFunction<any>,

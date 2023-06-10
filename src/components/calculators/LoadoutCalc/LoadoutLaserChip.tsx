@@ -1,5 +1,5 @@
 import React from 'react'
-import { Chip, ChipProps, Switch, useTheme } from '@mui/material'
+import { Chip, PaletteColor, Switch, useTheme } from '@mui/material'
 import { MiningGadgetEnum, MiningLaserEnum, MiningModuleEnum, lookups } from '@regolithco/common'
 import { Delete } from '@mui/icons-material'
 
@@ -21,14 +21,28 @@ export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({ laserCode, i
   return (
     <Chip
       label={laser.name}
-      color="error"
       clickable
+      onClickCapture={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        onToggle && onToggle(!isOn)
+      }}
       onClick={(e) => {
         e.stopPropagation()
         e.preventDefault()
         onToggle && onToggle(!isOn)
       }}
-      sx={{ width: '100%' }}
+      sx={{
+        width: '100%',
+        color: theme.palette.error.contrastText,
+        boxShadow: isOn
+          ? `0 0 4px 2px ${theme.palette.error.main}66, 0 0 10px 5px ${theme.palette.error.light}33`
+          : undefined,
+        backgroundColor: isOn ? theme.palette.error.main : theme.palette.error.dark,
+        '&:hover': {
+          backgroundColor: theme.palette.error.light,
+        },
+      }}
       size="small"
       icon={
         !isMenu ? (
@@ -59,24 +73,33 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
   const theme = useTheme()
   const module = MODULES[moduleCode as MiningModuleEnum] || GADGETS[moduleCode as MiningGadgetEnum]
   const canBeOnFinal = (canBeOn && module.category === 'A') || module.category === 'G'
-  let color: ChipProps['color'] = 'error'
+  let pColor: PaletteColor = theme.palette.error
   switch (module.category) {
     case 'A':
-      color = 'primary'
+      pColor = theme.palette.primary
       break
     case 'P':
-      color = 'secondary'
+      pColor = theme.palette.secondary
       break
     case 'G':
-      color = 'info'
+      pColor = theme.palette.info
       break
+    default:
+      pColor = theme.palette.error
   }
-  console.log('color', color)
+
   return (
     <Chip
       label={module.name}
-      color={color}
-      sx={{ width: '100%' }}
+      clickable={canBeOnFinal}
+      sx={{
+        width: '100%',
+        color: pColor.contrastText,
+        backgroundColor: isOn ? pColor.main : pColor.dark,
+        '&:hover': {
+          backgroundColor: canBeOnFinal ? pColor.light : undefined,
+        },
+      }}
       size="small"
       icon={
         canBeOnFinal ? (

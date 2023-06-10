@@ -6,12 +6,16 @@ import {
   CardContent,
   CardHeader,
   FormControlLabel,
+  PaletteColor,
   Stack,
   Switch,
+  SxProps,
+  Theme,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  alpha,
   useTheme,
 } from '@mui/material'
 import {
@@ -21,6 +25,7 @@ import {
   MiningModuleEnum,
   UserProfile,
   calcLoadoutStats,
+  sanitizeLoadout,
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -31,7 +36,7 @@ import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
 import { LoadoutCalcStats } from './LoadoutCalcStats'
-import { LoadoutLaserRow } from './LoadoutLaserRow'
+import { LoadoutLaserTool } from './LoadoutLaserTool'
 
 export interface LoadoutCalcProps {
   miningLoadout?: MiningLoadout
@@ -53,14 +58,17 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
   const stats = React.useMemo(() => {
-    return calcLoadoutStats(hoverLoadout || newLoadout || miningLoadout)
+    const loadout = hoverLoadout || newLoadout || miningLoadout
+    if (!loadout) return null
+    const sanitizedLoadout = sanitizeLoadout(loadout)
+    return calcLoadoutStats(sanitizedLoadout)
   }, [miningLoadout, newLoadout, hoverLoadout])
 
   const activeLasers = newLoadout.activeLasers || []
   const laserSize = newLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
 
   const handleShipChange = (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
-    if (newShip === newLoadout.ship) return
+    if (newShip === newLoadout.ship || !newShip) return
     setNewLoadout(newMiningLoadout(newShip, owner))
   }
 
@@ -89,67 +97,43 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
               {miningLoadout && miningLoadout.name ? miningLoadout.name : 'Loadout Calculator'}
             </Typography>
             <div style={{ flexGrow: 1 }} />
-            <ToggleButtonGroup
-              size="small"
-              value={newLoadout.ship}
-              exclusive
-              onChange={handleShipChange}
-              aria-label="text alignment"
-            >
-              <ToggleButton
-                value={LoadoutShipEnum.Prospector}
-                aria-label="centered"
-                color="info"
-                sx={{
-                  color: theme.palette.info.dark,
-                }}
-              >
-                Prospector
-              </ToggleButton>
-              <ToggleButton
-                value={LoadoutShipEnum.Mole}
-                aria-label="right aligned"
-                color="success"
-                sx={{
-                  color: theme.palette.success.dark,
-                }}
-              >
-                Mole
-              </ToggleButton>
-            </ToggleButtonGroup>
+            <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} />
           </Stack>
         }
       ></CardHeader>
       <CardContent>
-        <Grid container>
-          <Grid xs={12} sm={12} md={7} lg={8}>
-            <Typography variant="h6">Mounted</Typography>
-            <Typography variant="caption">Choose your ship's mounted lasers and components</Typography>
+        <Typography variant="h6">Mounted</Typography>
+        <Typography variant="caption">Choose your ship's mounted lasers and components</Typography>
 
-            <LoadoutLaserRow
-              activeLaser={activeLasers[0]}
-              laserSize={laserSize}
-              label={laserSize < 2 ? 'Laser' : 'Center'}
-              onChange={(activeLaser, isHover) => {
-                if (isHover) {
-                  setHoverLoadout({
-                    ...newLoadout,
-                    activeLasers: [activeLaser, ...activeLasers.slice(1)],
-                  })
-                } else {
-                  setNewLoadout({
-                    ...newLoadout,
-                    activeLasers: [activeLaser, ...activeLasers.slice(1)],
-                  })
-                }
-              }}
-            />
+        <Grid container spacing={2}>
+          {/* This grid has the lasers and the stats */}
+          <Grid container xs={12} sm={12} md={7} lg={8}>
+            <Grid xs={6}>
+              <LoadoutLaserTool
+                activeLaser={activeLasers[0]}
+                laserSize={laserSize}
+                label={laserSize < 2 ? 'Laser' : 'Front Turret'}
+                onChange={(activeLaser, isHover) => {
+                  if (isHover) {
+                    setHoverLoadout({
+                      ...newLoadout,
+                      activeLasers: [activeLaser, ...activeLasers.slice(1)],
+                    })
+                  } else {
+                    setNewLoadout({
+                      ...newLoadout,
+                      activeLasers: [activeLaser, ...activeLasers.slice(1)],
+                    })
+                  }
+                }}
+              />
+            </Grid>
             {newLoadout.ship === LoadoutShipEnum.Mole && (
-              <>
-                <LoadoutLaserRow
+              <Grid xs={6}>
+                <LoadoutLaserTool
                   activeLaser={activeLasers[1]}
                   laserSize={laserSize}
-                  label="Port"
+                  label="Port Turret"
                   onChange={(activeLaser, isHover) => {
                     if (isHover) {
                       setHoverLoadout({
@@ -164,10 +148,14 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                     }
                   }}
                 />
-                <LoadoutLaserRow
+              </Grid>
+            )}
+            {newLoadout.ship === LoadoutShipEnum.Mole && (
+              <Grid xs={6}>
+                <LoadoutLaserTool
                   activeLaser={activeLasers[2]}
                   laserSize={laserSize}
-                  label="Starboard"
+                  label="Starboard Turret"
                   onChange={(activeLaser, isHover) => {
                     if (isHover) {
                       setHoverLoadout({
@@ -181,33 +169,59 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                       })
                     }
                   }}
+                />
+              </Grid>
+            )}
+            <Grid xs={6}>
+              <Card sx={{ borderRadius: 5, height: '100%' }}>
+                <CardHeader title="Inventory" />
+                <CardContent>
+                  <Typography variant="caption">Gadgets and backup modules</Typography>
+                  <Grid container spacing={2}>
+                    <Grid xs={3}>
+                      <LoadoutModuleChip moduleCode={MiningGadgetEnum.Optimax} canBeOn onDelete={noop} />
+                    </Grid>
+                    <Grid xs={3}>
+                      <LoadoutModuleChip moduleCode={MiningGadgetEnum.Boremax} canBeOn onDelete={noop} />
+                    </Grid>
+                    <Grid xs={3}>
+                      <LoadoutModuleChip moduleCode={MiningModuleEnum.Brandt} canBeOn onDelete={noop} />
+                    </Grid>
+                    <Grid xs={3}>
+                      <LoadoutModuleChip moduleCode={MiningModuleEnum.Fltrxl} canBeOn onDelete={noop} />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+          <Grid xs={12} sm={12} md={5} lg={4}>
+            {stats && (
+              <>
+                <LoadoutCalcStats stats={stats} />
+                <Typography>
+                  Loadout Price:{' '}
+                  <span style={{ fontFamily: fontFamilies.robotoMono }}>
+                    {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency_sm)}
+                  </span>
+                </Typography>
+                <FormControlLabel
+                  required
+                  control={
+                    <Switch
+                      size="small"
+                      checked={includeStockPrices}
+                      onChange={(e) => setIncludeStockPrices(e.target.checked)}
+                    />
+                  }
+                  label="Incl. Stock lasers"
                 />
               </>
             )}
-            <Box sx={{ my: 2 }}>
-              <Typography variant="h6">Inventory</Typography>
-              <Typography variant="caption">Gadgets and backup modules</Typography>
-              <Grid container spacing={2}>
-                <Grid xs={3}>
-                  <LoadoutModuleChip moduleCode={MiningGadgetEnum.Optimax} canBeOn onDelete={noop} />
-                </Grid>
-                <Grid xs={3}>
-                  <LoadoutModuleChip moduleCode={MiningGadgetEnum.Boremax} canBeOn onDelete={noop} />
-                </Grid>
-                <Grid xs={3}>
-                  <LoadoutModuleChip moduleCode={MiningModuleEnum.Brandt} canBeOn onDelete={noop} />
-                </Grid>
-                <Grid xs={3}>
-                  <LoadoutModuleChip moduleCode={MiningModuleEnum.Fltrxl} canBeOn onDelete={noop} />
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
-          <Grid xs={12} sm={12} md={5} lg={4}>
-            <LoadoutCalcStats stats={stats} />
           </Grid>
         </Grid>
 
+        {/* MENU */}
         <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
           <Button
             variant="contained"
@@ -217,24 +231,6 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
           >
             Reset
           </Button>
-          <div style={{ flexGrow: 1 }} />
-          <Typography>
-            Loadout Price:{' '}
-            <span style={{ fontFamily: fontFamilies.robotoMono }}>
-              {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency_sm)}
-            </span>
-          </Typography>
-          <FormControlLabel
-            required
-            control={
-              <Switch
-                size="small"
-                checked={includeStockPrices}
-                onChange={(e) => setIncludeStockPrices(e.target.checked)}
-              />
-            }
-            label="Incl. Stock lasers"
-          />
           <div style={{ flexGrow: 1 }} />
           {onDelete && (
             <Tooltip title="Permanently delete this loadout">
@@ -267,5 +263,48 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
         onClose={() => setDeleteModalOpen(false)}
       />
     </Card>
+  )
+}
+
+export interface ShipChooserProps {
+  onChange: (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => void
+  ship: LoadoutShipEnum
+}
+
+const makeButtonTheme = (active: boolean, color: PaletteColor): SxProps<Theme> => ({
+  // color: color.dark,
+  // border: `1px solid ${color.dark}`,
+  // background: alpha(color.contrastText, 0.5),
+  '&.Mui-selected, &:hover, &.Mui-selected:hover': {
+    boxShadow: `0 0 4px 2px ${color.main}66, 0 0 10px 5px ${color.light}33`,
+    border: `1px solid ${color.dark}`,
+    background: color.main,
+    color: color.contrastText,
+  },
+  '&:hover': {
+    border: `1px solid ${color.dark}`,
+    background: color.light,
+  },
+})
+
+export const ShipChooser: React.FC<ShipChooserProps> = ({ onChange, ship: value }) => {
+  const theme = useTheme()
+  return (
+    <ToggleButtonGroup value={value} exclusive size="small" onChange={onChange} color="primary">
+      <ToggleButton
+        value={LoadoutShipEnum.Prospector}
+        aria-label="centered"
+        sx={makeButtonTheme(value === LoadoutShipEnum.Prospector, theme.palette.info)}
+      >
+        Prospector
+      </ToggleButton>
+      <ToggleButton
+        value={LoadoutShipEnum.Mole}
+        aria-label="right aligned"
+        sx={makeButtonTheme(value === LoadoutShipEnum.Mole, theme.palette.success)}
+      >
+        Mole
+      </ToggleButton>
+    </ToggleButtonGroup>
   )
 }

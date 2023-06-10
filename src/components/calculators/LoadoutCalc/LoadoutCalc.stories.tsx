@@ -28,7 +28,9 @@ LoadoutCalcProspector.args = {
     activeLasers: [
       {
         laser: MiningLaserEnum.ArborMh1,
-        modules: [MiningModuleEnum.Brandt],
+        laserActive: true,
+        modules: [MiningModuleEnum.Brandt, null, null],
+        modulesActive: [true, false, false],
         __typename: 'ActiveMiningLaserLoadout',
       },
     ],
@@ -51,23 +53,30 @@ LoadoutCalcMole.args = {
     activeLasers: [
       {
         laser: MiningLaserEnum.ArborMh2,
+        laserActive: true,
         modules: [],
+        modulesActive: [false, false, false],
         __typename: 'ActiveMiningLaserLoadout',
       },
       {
         laser: MiningLaserEnum.KleinS2,
+        laserActive: true,
         modules: [MiningModuleEnum.Brandt],
+        modulesActive: [false, false, false],
         __typename: 'ActiveMiningLaserLoadout',
       },
       {
         laser: MiningLaserEnum.HelixIi,
+        laserActive: true,
         modules: [MiningModuleEnum.Lifeline, MiningModuleEnum.Fltrxl],
+        modulesActive: [false, false, false],
         __typename: 'ActiveMiningLaserLoadout',
       },
     ],
     inventoryGadgets: [],
     inventorylasers: [],
     inventoryModules: [],
+    activeGadgetIndex: null,
     ship: LoadoutShipEnum.Mole,
   },
 }

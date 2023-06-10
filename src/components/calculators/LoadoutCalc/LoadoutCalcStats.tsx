@@ -8,7 +8,7 @@ export interface LoadoutCalcStatsProps {
   stats: AllStats
 }
 
-const statsOrder: { key: keyof AllStats; label: string; tooltip: string; percent?: boolean; unit?: string }[] = [
+export const statsOrder: { key: keyof AllStats; label: string; tooltip: string; percent?: boolean; unit?: string }[] = [
   { key: 'minPower', label: 'Min Pwr', tooltip: 'Minimum Laser Power (All Active lasers combined)' },
   { key: 'maxPower', label: 'Max Pwr', tooltip: 'Maximum Laser Power (All active lasers combined)' },
   {

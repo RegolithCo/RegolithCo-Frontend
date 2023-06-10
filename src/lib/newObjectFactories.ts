@@ -32,7 +32,9 @@ import {
   WorkOrder,
   WorkOrderDefaults,
   WorkOrderStateEnum,
+  lookups,
 } from '@regolithco/common'
+const LASERS = lookups.loadout.lasers
 
 export function profile2User(profile: UserProfile): User {
   const { createdAt, updatedAt, userId, scName, state } = profile
@@ -317,9 +319,12 @@ export function newMiningLoadout(ship: LoadoutShipEnum, userProfile: UserProfile
 }
 
 export function newMiningLoadoutActiveLaser(laser: MiningLaserEnum): ActiveMiningLaserLoadout {
+  const slots = LASERS[laser].slots
   return {
     laser,
-    modules: [],
+    laserActive: true,
+    modules: Array.from({ length: slots }, () => null),
+    modulesActive: Array.from({ length: slots }, () => false),
     __typename: 'ActiveMiningLaserLoadout',
   }
 }
