@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, ListSubheader, MenuItem, Select, Stack, Typography, darken, lighten, useTheme } from '@mui/material'
+import { Box, ListSubheader, MenuItem, Select, Stack, Typography, lighten, useTheme } from '@mui/material'
 import {
   AllStats,
   BackwardStats,
@@ -22,21 +22,14 @@ const MODULES = lookups.loadout.modules
 
 export interface ModuleChooserMenuProps {
   value: MiningModuleEnum | null
-  onChange: (value: MiningModuleEnum | '', slotIdx: number, isActive: boolean, isHover: boolean) => void
+  onChange: (value: MiningModuleEnum | '', isActive: boolean, isHover: boolean) => void
   label: string
 }
-
-const NoneMenu: React.FC = () => (
-  <MenuItem value="">
-    <em>-- None -- </em>
-  </MenuItem>
-)
 
 const baseProps: React.ComponentProps<typeof Select> = {
   fullWidth: true,
   variant: 'standard',
   displayEmpty: true,
-  disableUnderline: true,
   sx: {
     '& .MuiInput-input': {
       overflow: 'visible',
@@ -61,6 +54,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
   return (
     <Select
       {...baseProps}
+      disableUnderline
       value={value || ''}
       sx={{}}
       MenuProps={{
@@ -74,7 +68,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
           },
         },
       }}
-      onChange={(e) => onChange(e.target.value as MiningModuleEnum, 0, true, false)}
+      onChange={(e) => onChange(e.target.value as MiningModuleEnum, true, false)}
       renderValue={(value) => {
         if (!value) {
           return (
@@ -94,7 +88,16 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
         return <LoadoutModuleChip moduleCode={value as MiningModuleEnum} canBeOn />
       }}
     >
-      <NoneMenu />
+      <MenuItem
+        value=""
+        sx={{
+          fontFamily: fontFamilies.robotoMono,
+          fontSize: '1rem',
+          border: `4px solid ${theme.palette.divider}`,
+        }}
+      >
+        <em>Select None</em>
+      </MenuItem>
       <ListSubheader
         sx={{
           backgroundColor: theme.palette.primary.main,
@@ -116,58 +119,20 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
                 color: theme.palette.secondary.contrastText,
               }}
             >
-              Inactive Modules
+              Passive Modules
             </ListSubheader>
           ) : null,
           <MenuItem
-            key={`${key}-${idx}`}
+            key={key}
             sx={{
               backgroundColor:
                 idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
             }}
-            value={key}
-            onMouseOut={() => onChange('', idx, true, true)}
-            onMouseOver={() => onChange(key as MiningModuleEnum, idx, true, true)}
+            value={module.code}
+            onMouseOut={() => onChange('', true, true)}
+            onMouseOver={() => onChange(module.code as MiningModuleEnum, true, true)}
           >
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              sx={{
-                fontSize: '0.8rem',
-              }}
-            >
-              <Box
-                sx={{
-                  width: 60,
-                  fontWeight: 'bold',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  color: module.active ? theme.palette.primary.main : theme.palette.secondary.main,
-                }}
-              >
-                {module.name}
-              </Box>
-              <Box sx={{ width: 60, fontFamily: fontFamilies.robotoMono, textAlign: 'right' }}>
-                {MValueFormatter(module.price, MValueFormat.currency_sm)}
-              </Box>
-              {statsOrder
-                .filter(
-                  ({ key }) =>
-                    !MODULE_NO_MENU_STAT.includes(key as keyof ModuleLoadoutStats) &&
-                    module.stats[key as keyof ModuleLoadoutStats] !== undefined
-                )
-                .map(({ key, label, percent, unit, tooltip }) => (
-                  <NumberStat
-                    label={label}
-                    isPercent={percent}
-                    unit={unit}
-                    value={module.stats[key as keyof ModuleLoadoutStats]}
-                    reversed={BackwardStats.includes(key)}
-                  />
-                ))}
-            </Stack>
+            <ModuleMenuItem moduleCode={key} />
           </MenuItem>,
         ]
       }, [] as React.ReactNode[])}
@@ -193,58 +158,136 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, va
     <Select
       {...baseProps}
       value={value}
-      onChange={(e) => onChange(e.target.value as MiningLaserEnum, true, false)}
+      onChange={(e) => {
+        onChange(e.target.value as MiningLaserEnum, true, false)
+      }}
       renderValue={(laserCode) => {
         if (!laserCode) {
           return <em>No Laser</em>
         }
-        return <LoadoutLaserChip laserCode={laserCode as MiningLaserEnum} isOn />
+        return <LoadoutLaserChip canBeOn isOn laserCode={laserCode as MiningLaserEnum} />
       }}
     >
-      <NoneMenu />
-      {laserChoices.map((key, idx) => {
-        const laser = LASERS[key as MiningLaserEnum]
-        return (
-          <MenuItem
-            key={`${key}-${idx}`}
-            value={key}
-            onMouseOut={() => onChange('', true, true)}
-            onMouseOver={() => onChange(key, true, true)}
-          >
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: '0.8rem' }}>
-              <Box
-                sx={{
-                  width: 80,
-                  fontWeight: 'bold',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                  color: theme.palette.error.main,
-                }}
-              >
-                {laser.name}
-              </Box>
-              <Box sx={{ width: 30, color: theme.palette.info.light }}>
-                <ModuleIcon style={{ fontSize: 15 }} /> {laser.slots}
-              </Box>
-              <Box sx={{ width: 50, textAlign: 'right', fontFamily: fontFamilies.robotoMono }}>
-                {MValueFormatter(laser.price, MValueFormat.currency_sm)}
-              </Box>
-              {statsOrder
-                .filter(({ key }) => !LASER_NO_MENU_STAT.includes(key as keyof LaserLoadoutStats))
-                .map(({ key, label, percent, unit, tooltip }) => (
-                  <NumberStat
-                    label={label}
-                    isPercent={percent}
-                    unit={unit}
-                    value={laser.stats[key as keyof LaserLoadoutStats]}
-                    reversed={BackwardStats.includes(key)}
-                  />
-                ))}
-            </Stack>
-          </MenuItem>
-        )
-      })}
+      <MenuItem
+        value=""
+        sx={{
+          fontFamily: fontFamilies.robotoMono,
+          fontSize: '1rem',
+          border: `4px solid ${theme.palette.divider}`,
+        }}
+      >
+        <em>Select None</em>
+      </MenuItem>
+      {laserChoices.map((key, idx) => (
+        <MenuItem
+          key={key}
+          value={key}
+          onMouseOut={() => onChange('', true, true)}
+          onMouseOver={() => onChange(key, true, true)}
+          sx={{
+            backgroundColor:
+              idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
+          }}
+        >
+          <LaserMenuItem laserCode={key} />
+        </MenuItem>
+      ))}
     </Select>
+  )
+}
+
+export interface LaserMenuItemProps {
+  laserCode: MiningLaserEnum
+}
+
+const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
+  const theme = useTheme()
+  const laser = LASERS[laserCode as MiningLaserEnum]
+  return (
+    <>
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: '0.8rem' }}>
+        <Box
+          sx={{
+            width: 80,
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            color: theme.palette.error.main,
+          }}
+        >
+          {laser.name}
+        </Box>
+        <Box sx={{ width: 30, color: theme.palette.info.light }}>
+          <ModuleIcon style={{ fontSize: 15 }} /> {laser.slots}
+        </Box>
+        <Box sx={{ width: 50, textAlign: 'right', fontFamily: fontFamilies.robotoMono }}>
+          {MValueFormatter(laser.price, MValueFormat.currency_sm)}
+        </Box>
+        {statsOrder
+          .filter(({ key }) => !LASER_NO_MENU_STAT.includes(key as keyof LaserLoadoutStats))
+          .map(({ key, label, percent, unit, tooltip }) => (
+            <NumberStat
+              label={label}
+              isPercent={percent}
+              unit={unit}
+              value={laser.stats[key as keyof LaserLoadoutStats]}
+              reversed={BackwardStats.includes(key)}
+            />
+          ))}
+      </Stack>
+    </>
+  )
+}
+
+export interface ModuleMenuItemProps {
+  moduleCode: MiningModuleEnum
+}
+
+const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
+  const theme = useTheme()
+  const module = MODULES[moduleCode as MiningModuleEnum]
+  return (
+    <>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        sx={{
+          fontSize: '0.8rem',
+        }}
+      >
+        <Box
+          sx={{
+            width: 60,
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            color: module.active ? theme.palette.primary.main : theme.palette.secondary.main,
+          }}
+        >
+          {module.name}
+        </Box>
+        <Box sx={{ width: 60, fontFamily: fontFamilies.robotoMono, textAlign: 'right' }}>
+          {MValueFormatter(module.price, MValueFormat.currency_sm)}
+        </Box>
+        {statsOrder
+          .filter(
+            ({ key }) =>
+              !MODULE_NO_MENU_STAT.includes(key as keyof ModuleLoadoutStats) &&
+              module.stats[key as keyof ModuleLoadoutStats] !== undefined
+          )
+          .map(({ key, label, percent, unit, tooltip }) => (
+            <NumberStat
+              label={label}
+              isPercent={percent}
+              unit={unit}
+              value={module.stats[key as keyof ModuleLoadoutStats]}
+              reversed={BackwardStats.includes(key)}
+            />
+          ))}
+      </Stack>
+    </>
   )
 }

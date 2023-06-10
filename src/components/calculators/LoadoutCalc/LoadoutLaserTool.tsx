@@ -41,7 +41,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
     )
   }
 
-  const onModuleChange = (module: MiningModuleEnum | '', slotIdx: number, isActive: boolean, hover: boolean) => {
+  const onModuleChange = (slotIdx: number) => (module: MiningModuleEnum | '', isActive: boolean, hover: boolean) => {
     if (!hasLaser) return onChange(null, hover)
     const newModules = Array.from({ length: slots }).map((_, idx) => {
       if ((activeLaser?.modules || []).length <= idx) return null
@@ -71,15 +71,32 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
   }
 
   return (
-    <Card sx={{ borderRadius: 5, height: '100%' }}>
-      <CardHeader title={label} />
+    <Card
+      sx={{
+        //
+        borderRadius: 4,
+        height: '100%',
+        minWidth: theme.spacing(25),
+      }}
+    >
+      <CardHeader
+        title={label}
+        titleTypographyProps={{ variant: 'overline' }}
+        sx={{
+          fontWeight: 'bold',
+          px: 2,
+          py: 0.5,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+        }}
+      />
       <CardContent>
         <LaserChooserMenu laserSize={laserSize} value={laserCode || null} onChange={onLaserChange} />
         {slots > 0 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[0] as MiningModuleEnum) || null}
             label="Module 1"
-            onChange={onModuleChange}
+            onChange={onModuleChange(0)}
           />
         ) : (
           <ModulePlaceholder />
@@ -88,7 +105,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
           <ModuleChooserMenu
             value={(activeModuleSelectValues[1] as MiningModuleEnum) || null}
             label="Module 2"
-            onChange={onModuleChange}
+            onChange={onModuleChange(1)}
           />
         ) : (
           <ModulePlaceholder />
@@ -97,7 +114,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
           <ModuleChooserMenu
             value={(activeModuleSelectValues[2] as MiningModuleEnum) || null}
             label="Module 3"
-            onChange={onModuleChange}
+            onChange={onModuleChange(2)}
           />
         ) : (
           <ModulePlaceholder />
@@ -112,6 +129,7 @@ const ModulePlaceholder: React.FC = () => {
   return (
     <Typography
       component="div"
+      variant="overline"
       sx={{
         textAlign: 'center',
         fontStyle: 'italic',

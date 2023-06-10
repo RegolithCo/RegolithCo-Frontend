@@ -52,7 +52,6 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
   return (
     <Box
       sx={{
-        ml: 2,
         // border: '4px solid black',
         backgroundColor: 'black',
         border: `1px solid ${theme.palette.secondary.light}`,
@@ -67,7 +66,8 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
             ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
             : undefined
           return (
-            <Grid key={key} xs={4}>
+            // xs={12} sm={12} md={4} lg={5}
+            <Grid sx={{ width: 90 }}>
               <NumberStat
                 label={label}
                 isPercent={percent}

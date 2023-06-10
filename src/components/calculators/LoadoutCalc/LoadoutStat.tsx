@@ -3,14 +3,14 @@ import { Box, SxProps, Theme, Tooltip, keyframes, useTheme } from '@mui/material
 import { fontFamilies } from '../../../theme'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const stylesThunk = (theme: Theme, isBig?: boolean): Record<string, SxProps<Theme>> => ({
   container: {
     fontFamily: fontFamilies.robotoMono,
     p: 1,
   },
   number: {
     textAlign: 'center',
-    fontSize: '1rem',
+    fontSize: isBig ? '1.4rem' : '0.9',
   },
   modPercent: {
     fontSize: '0.6rem',
@@ -19,12 +19,13 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     textAlign: 'center',
-    fontSize: '0.6rem',
+    fontSize: isBig ? '0.8rem' : '0.6rem',
   },
 })
 
 export interface NumberStatProps {
   label: string
+  isBig?: boolean
   value?: number
   modPercent?: number
   unit?: string
@@ -36,6 +37,7 @@ export interface NumberStatProps {
 
 export const NumberStat: React.FC<NumberStatProps> = ({
   label,
+  isBig,
   value,
   reversed,
   isPercent: percent,
@@ -45,7 +47,7 @@ export const NumberStat: React.FC<NumberStatProps> = ({
   tooltip,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const styles = stylesThunk(theme, isBig)
 
   const isNumeric = Boolean(typeof value === 'number')
   const valNum = isNumeric ? (value as number) : 0

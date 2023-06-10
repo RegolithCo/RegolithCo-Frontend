@@ -6,6 +6,7 @@ import {
   CardContent,
   CardHeader,
   FormControlLabel,
+  Grid2Props,
   PaletteColor,
   Stack,
   Switch,
@@ -15,28 +16,18 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
-  alpha,
   useTheme,
 } from '@mui/material'
-import {
-  LoadoutShipEnum,
-  MiningGadgetEnum,
-  MiningLoadout,
-  MiningModuleEnum,
-  UserProfile,
-  calcLoadoutStats,
-  sanitizeLoadout,
-} from '@regolithco/common'
+import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { LoadoutModuleChip } from './LoadoutLaserChip'
 import { Delete, Refresh, Save } from '@mui/icons-material'
-import { noop } from 'lodash'
 import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
 import { LoadoutCalcStats } from './LoadoutCalcStats'
 import { LoadoutLaserTool } from './LoadoutLaserTool'
+import { LoadoutInventory } from './LoadoutInventory'
 
 export interface LoadoutCalcProps {
   miningLoadout?: MiningLoadout
@@ -46,6 +37,31 @@ export interface LoadoutCalcProps {
 }
 
 const DEFAULT_SHIP = LoadoutShipEnum.Mole
+
+interface ToolGridProps {
+  ship: LoadoutShipEnum
+  children: React.ReactNode | React.ReactNode[]
+}
+
+const ToolGrid: React.FC<ToolGridProps> = ({ ship, children }) => {
+  const gridProps: Grid2Props =
+    ship === LoadoutShipEnum.Mole
+      ? {
+          xs: 12,
+          sm: 6,
+          md: 6,
+          lg: 4,
+          xl: 3,
+        }
+      : {
+          xs: 12,
+          sm: 6,
+          md: 6,
+          lg: 4,
+          xl: 3,
+        }
+  return <Grid {...gridProps}>{children}</Grid>
+}
 
 export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userProfile, onSave, onDelete }) => {
   const theme = useTheme()
@@ -107,115 +123,100 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
 
         <Grid container spacing={2}>
           {/* This grid has the lasers and the stats */}
-          <Grid container xs={12} sm={12} md={7} lg={8}>
-            <Grid xs={6}>
-              <LoadoutLaserTool
-                activeLaser={activeLasers[0]}
-                laserSize={laserSize}
-                label={laserSize < 2 ? 'Laser' : 'Front Turret'}
-                onChange={(activeLaser, isHover) => {
-                  if (isHover) {
-                    setHoverLoadout({
-                      ...newLoadout,
-                      activeLasers: [activeLaser, ...activeLasers.slice(1)],
-                    })
-                  } else {
-                    setNewLoadout({
-                      ...newLoadout,
-                      activeLasers: [activeLaser, ...activeLasers.slice(1)],
-                    })
-                  }
-                }}
-              />
-            </Grid>
-            {newLoadout.ship === LoadoutShipEnum.Mole && (
-              <Grid xs={6}>
-                <LoadoutLaserTool
-                  activeLaser={activeLasers[1]}
-                  laserSize={laserSize}
-                  label="Port Turret"
-                  onChange={(activeLaser, isHover) => {
-                    if (isHover) {
-                      setHoverLoadout({
-                        ...newLoadout,
-                        activeLasers: [activeLasers[0], activeLaser, activeLasers[2]],
-                      })
-                    } else {
-                      setNewLoadout({
-                        ...newLoadout,
-                        activeLasers: [activeLasers[0], activeLaser, activeLasers[2]],
-                      })
-                    }
-                  }}
-                />
+
+          <Grid xs={12} md={8} spacing={2}>
+            <div>
+              <Grid container spacing={2}>
+                <ToolGrid ship={newLoadout.ship}>
+                  <LoadoutLaserTool
+                    activeLaser={activeLasers[0]}
+                    laserSize={laserSize}
+                    label={laserSize < 2 ? 'Laser' : 'Front Turret'}
+                    onChange={(activeLaser, isHover) => {
+                      if (isHover) {
+                        setHoverLoadout({
+                          ...newLoadout,
+                          activeLasers: [activeLaser, ...activeLasers.slice(1)],
+                        })
+                      } else {
+                        setNewLoadout({
+                          ...newLoadout,
+                          activeLasers: [activeLaser, ...activeLasers.slice(1)],
+                        })
+                      }
+                    }}
+                  />
+                </ToolGrid>
+                {newLoadout.ship === LoadoutShipEnum.Mole && (
+                  <ToolGrid ship={newLoadout.ship}>
+                    <LoadoutLaserTool
+                      activeLaser={activeLasers[1]}
+                      laserSize={laserSize}
+                      label="Port Turret"
+                      onChange={(activeLaser, isHover) => {
+                        if (isHover) {
+                          setHoverLoadout({
+                            ...newLoadout,
+                            activeLasers: [activeLasers[0], activeLaser, activeLasers[2]],
+                          })
+                        } else {
+                          setNewLoadout({
+                            ...newLoadout,
+                            activeLasers: [activeLasers[0], activeLaser, activeLasers[2]],
+                          })
+                        }
+                      }}
+                    />
+                  </ToolGrid>
+                )}
+                {newLoadout.ship === LoadoutShipEnum.Mole && (
+                  <ToolGrid ship={newLoadout.ship}>
+                    <LoadoutLaserTool
+                      activeLaser={activeLasers[2]}
+                      laserSize={laserSize}
+                      label="Starboard Turret"
+                      onChange={(activeLaser, isHover) => {
+                        if (isHover) {
+                          setHoverLoadout({
+                            ...newLoadout,
+                            activeLasers: [activeLasers[0], activeLasers[1], activeLaser],
+                          })
+                        } else {
+                          setNewLoadout({
+                            ...newLoadout,
+                            activeLasers: [activeLasers[0], activeLasers[1], activeLaser],
+                          })
+                        }
+                      }}
+                    />
+                  </ToolGrid>
+                )}
+                <ToolGrid ship={newLoadout.ship}>
+                  <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} />
+                </ToolGrid>
               </Grid>
-            )}
-            {newLoadout.ship === LoadoutShipEnum.Mole && (
-              <Grid xs={6}>
-                <LoadoutLaserTool
-                  activeLaser={activeLasers[2]}
-                  laserSize={laserSize}
-                  label="Starboard Turret"
-                  onChange={(activeLaser, isHover) => {
-                    if (isHover) {
-                      setHoverLoadout({
-                        ...newLoadout,
-                        activeLasers: [activeLasers[0], activeLasers[1], activeLaser],
-                      })
-                    } else {
-                      setNewLoadout({
-                        ...newLoadout,
-                        activeLasers: [activeLasers[0], activeLasers[1], activeLaser],
-                      })
-                    }
-                  }}
-                />
-              </Grid>
-            )}
-            <Grid xs={6}>
-              <Card sx={{ borderRadius: 5, height: '100%' }}>
-                <CardHeader title="Inventory" />
-                <CardContent>
-                  <Typography variant="caption">Gadgets and backup modules</Typography>
-                  <Grid container spacing={2}>
-                    <Grid xs={3}>
-                      <LoadoutModuleChip moduleCode={MiningGadgetEnum.Optimax} canBeOn onDelete={noop} />
-                    </Grid>
-                    <Grid xs={3}>
-                      <LoadoutModuleChip moduleCode={MiningGadgetEnum.Boremax} canBeOn onDelete={noop} />
-                    </Grid>
-                    <Grid xs={3}>
-                      <LoadoutModuleChip moduleCode={MiningModuleEnum.Brandt} canBeOn onDelete={noop} />
-                    </Grid>
-                    <Grid xs={3}>
-                      <LoadoutModuleChip moduleCode={MiningModuleEnum.Fltrxl} canBeOn onDelete={noop} />
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
+            </div>
           </Grid>
-          <Grid xs={12} sm={12} md={5} lg={4}>
+          <Grid xs={12} md={4}>
             {stats && (
               <>
                 <LoadoutCalcStats stats={stats} />
-                <Typography>
-                  Loadout Price:{' '}
-                  <span style={{ fontFamily: fontFamilies.robotoMono }}>
+                <Box sx={{ p: 4 }}>
+                  <Typography variant="overline">Loadout Price:</Typography>
+                  <Typography variant="h4" sx={{ fontFamily: fontFamilies.robotoMono, textAlign: 'center' }}>
                     {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency_sm)}
-                  </span>
-                </Typography>
-                <FormControlLabel
-                  required
-                  control={
-                    <Switch
-                      size="small"
-                      checked={includeStockPrices}
-                      onChange={(e) => setIncludeStockPrices(e.target.checked)}
-                    />
-                  }
-                  label="Incl. Stock lasers"
-                />
+                  </Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={includeStockPrices}
+                        onChange={(e) => setIncludeStockPrices(e.target.checked)}
+                      />
+                    }
+                    label="Incl. Stock lasers"
+                  />
+                </Box>
               </>
             )}
           </Grid>
