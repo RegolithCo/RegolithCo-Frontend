@@ -28,7 +28,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
   }
 
   const onLaserChange = (laser: MiningLaserEnum | '', isActive: boolean, hover: boolean) => {
-    if (laser !== '') onChange(null, hover)
+    if (laser === '') return onChange(null, hover)
     onChange(
       {
         laser: laser as MiningLaserEnum,

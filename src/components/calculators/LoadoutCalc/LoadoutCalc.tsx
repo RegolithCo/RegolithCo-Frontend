@@ -85,10 +85,13 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
 
   const setNewLoadout = (sbl: MiningLoadout) => {
     if (hoverLoadout) _setHoverLoadout(null)
-    _setNewLoadout(sanitizeLoadout(sbl))
+    const sanitizedLoadout = sanitizeLoadout(sbl)
+    _setNewLoadout(sanitizedLoadout)
   }
   const setHoverLoadout = (hl: MiningLoadout | null) => {
-    _setHoverLoadout(hl ? sanitizeLoadout(hl) : null)
+    if (hl === null) return _setHoverLoadout(null)
+    const sanitizedLoadout = sanitizeLoadout(hl)
+    _setHoverLoadout(sanitizedLoadout)
   }
 
   const handleShipChange = (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
@@ -139,16 +142,16 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                     activeLaser={activeLasers[0]}
                     laserSize={laserSize}
                     label={laserSize < 2 ? 'Laser' : 'Front Turret'}
-                    onChange={(activeLaser, isHover) => {
+                    onChange={(currAl, isHover) => {
                       if (isHover) {
                         setHoverLoadout({
                           ...newLoadout,
-                          activeLasers: [activeLaser, activeLasers[1], activeLasers[2]],
+                          activeLasers: [currAl, activeLasers[1], activeLasers[2]],
                         })
                       } else {
                         setNewLoadout({
                           ...newLoadout,
-                          activeLasers: [activeLaser, activeLasers[1], activeLasers[2]],
+                          activeLasers: [currAl, activeLasers[1], activeLasers[2]],
                         })
                       }
                     }}
@@ -160,16 +163,16 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                       activeLaser={activeLasers[1]}
                       laserSize={laserSize}
                       label="Port Turret"
-                      onChange={(activeLaser, isHover) => {
+                      onChange={(currAl, isHover) => {
                         if (isHover) {
                           setHoverLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], activeLaser, activeLasers[2]],
+                            activeLasers: [activeLasers[0], currAl, activeLasers[2]],
                           })
                         } else {
                           setNewLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], activeLaser, activeLasers[2]],
+                            activeLasers: [activeLasers[0], currAl, activeLasers[2]],
                           })
                         }
                       }}
@@ -182,16 +185,16 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                       activeLaser={activeLasers[2]}
                       laserSize={laserSize}
                       label="Starboard Turret"
-                      onChange={(activeLaser, isHover) => {
+                      onChange={(currAl, isHover) => {
                         if (isHover) {
                           setHoverLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], activeLasers[1], activeLaser],
+                            activeLasers: [activeLasers[0], activeLasers[1], currAl],
                           })
                         } else {
                           setNewLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], activeLasers[1], activeLaser],
+                            activeLasers: [activeLasers[0], activeLasers[1], currAl],
                           })
                         }
                       }}
@@ -222,7 +225,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                   Total Loadout Price
                 </Typography>
                 <Typography variant="h4" sx={{ fontFamily: fontFamilies.robotoMono, textAlign: 'center' }}>
-                  {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency_sm)}
+                  {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency)}
                 </Typography>
                 <FormControlLabel
                   control={
