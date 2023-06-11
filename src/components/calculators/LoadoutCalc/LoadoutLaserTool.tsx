@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, CardContent, CardHeader, Typography, useTheme } from '@mui/material'
+import { Card, CardContent, CardHeader, Stack, Typography, useTheme } from '@mui/material'
 import { ActiveMiningLaserLoadout, Maybe, MiningLaserEnum, MiningModuleEnum, lookups } from '@regolithco/common'
 import { LaserChooserMenu, ModuleChooserMenu } from './loadoutMenus'
 
@@ -54,9 +54,13 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
         return (activeLaser?.modulesActive || []).length > idx ? Boolean(activeLaser?.modulesActive[idx]) : false
 
       const moduleCode = activeLaser?.modules[idx] || null
-      const module = moduleCode ? MODULES[moduleCode as MiningModuleEnum] : null
+      if (!moduleCode) return false
 
-      return Boolean(laserIsActive && module && (module.active || isActive))
+      const module = MODULES[moduleCode as MiningModuleEnum]
+      // Passive modules are alwaus activeif the laser is
+      if (laserIsActive && !module.active) return true
+
+      return Boolean(laserIsActive && module.active && isActive)
     })
     onChange(
       {
@@ -81,20 +85,28 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
     >
       <CardHeader
         title={label}
-        titleTypographyProps={{ variant: 'overline' }}
+        titleTypographyProps={{ variant: 'subtitle1' }}
         sx={{
           fontWeight: 'bold',
+          fontSize: '1.2rem',
           px: 2,
           py: 0.5,
-          backgroundColor: theme.palette.background.paper,
           color: theme.palette.text.primary,
+          backgroundColor: theme.palette.background.default,
         }}
       />
       <CardContent>
-        <LaserChooserMenu laserSize={laserSize} value={laserCode || null} onChange={onLaserChange} />
+        <LaserChooserMenu
+          laserSize={laserSize}
+          value={laserCode || null}
+          onChange={onLaserChange}
+          isOn={laserIsActive}
+        />
         {slots > 0 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[0] as MiningModuleEnum) || null}
+            isOn={laserIsActive && activeLaser?.modulesActive[0]}
+            locked={!laserIsActive}
             label="Module 1"
             onChange={onModuleChange(0)}
           />
@@ -104,6 +116,8 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
         {slots > 1 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[1] as MiningModuleEnum) || null}
+            isOn={laserIsActive && activeLaser?.modulesActive[1]}
+            locked={!laserIsActive}
             label="Module 2"
             onChange={onModuleChange(1)}
           />
@@ -113,6 +127,8 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
         {slots > 2 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[2] as MiningModuleEnum) || null}
+            isOn={laserIsActive && activeLaser?.modulesActive[2]}
+            locked={!laserIsActive}
             label="Module 3"
             onChange={onModuleChange(2)}
           />
@@ -127,16 +143,19 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
 const ModulePlaceholder: React.FC = () => {
   const theme = useTheme()
   return (
-    <Typography
-      component="div"
-      variant="overline"
-      sx={{
-        textAlign: 'center',
-        fontStyle: 'italic',
-        color: theme.palette.text.disabled,
-      }}
-    >
-      No Slot
-    </Typography>
+    <Stack direction="row" spacing={1} paddingBottom={2}>
+      <Typography
+        variant="overline"
+        sx={{
+          opacity: 0.5,
+          width: '100%',
+          textAlign: 'center',
+          fontStyle: 'italic',
+          color: theme.palette.text.disabled,
+        }}
+      >
+        No Slot
+      </Typography>
+    </Stack>
   )
 }

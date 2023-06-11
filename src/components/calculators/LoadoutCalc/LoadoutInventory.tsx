@@ -62,13 +62,14 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
     >
       <CardHeader
         title={'Inventory'}
-        titleTypographyProps={{ variant: 'overline' }}
+        titleTypographyProps={{ variant: 'subtitle1' }}
         sx={{
           fontWeight: 'bold',
+          fontSize: '1.2rem',
           px: 2,
           py: 0.5,
-          backgroundColor: theme.palette.background.paper,
-          color: theme.palette.text.primary,
+          color: theme.palette.background.paper,
+          backgroundColor: theme.palette.grey[500],
         }}
       />
       <CardContent>
@@ -119,9 +120,9 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
           ))}
 
           <Autocomplete
-            disablePortal
             options={autoCompleteItems}
-            value={value}
+            value={value ? value : null}
+            // isOptionEqualToValue={(option, value) => option === value}
             onChange={(event: React.SyntheticEvent<Element, Event>, value: string | null) => {
               if (!value || value.length === 0) return
               setValue('')

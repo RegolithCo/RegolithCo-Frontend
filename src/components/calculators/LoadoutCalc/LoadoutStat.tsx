@@ -31,6 +31,7 @@ export interface NumberStatProps {
   unit?: string
   reversed?: boolean
   isPercent?: boolean
+  isMod?: boolean
   active?: boolean
   tooltip?: string
 }
@@ -40,7 +41,8 @@ export const NumberStat: React.FC<NumberStatProps> = ({
   isBig,
   value,
   reversed,
-  isPercent: percent,
+  isPercent,
+  isMod,
   modPercent,
   active,
   unit,
@@ -51,6 +53,9 @@ export const NumberStat: React.FC<NumberStatProps> = ({
 
   const isNumeric = Boolean(typeof value === 'number')
   const valNum = isNumeric ? (value as number) : 0
+
+  const hasModPercent = Boolean(modPercent && Math.abs(modPercent) > 0.01)
+  const modPercentNum = hasModPercent ? (modPercent as number) : 0
 
   let color = theme.palette.text.primary
   if (isNumeric && valNum > 0) color = reversed ? theme.palette.error.main : theme.palette.success.main
@@ -69,29 +74,29 @@ export const NumberStat: React.FC<NumberStatProps> = ({
     50% { color: ${lightColor}; }
     100% { color: ${darkColor}; }
 `
-  const hasModPercent = Boolean(modPercent && Math.abs(modPercent) > 0.01)
-  const modPercentNum = hasModPercent ? (modPercent as number) : 0
-  const hasValue = Boolean(isNumeric && Math.abs(value || 0) > 0.01)
+
+  const finalValue = isMod && isPercent ? valNum : valNum
+  const hasValue = Boolean(isNumeric && Math.abs(finalValue || 0) > 0.01)
 
   return (
     <Tooltip title={tooltip || ''} placement="top">
       <Box
         sx={Object.assign({}, styles.container, {
-          color: percent && hasValue ? color : null,
+          color: isPercent && hasValue ? color : null,
           fontWeight: isNumeric && active ? 'bold' : 'normal',
           animation: isNumeric && active ? `${pulse} 1s infinite ease` : '',
         })}
       >
         <Box sx={styles.number}>
           {!isNumeric && '--'}
-          {isNumeric && percent && valNum > 0 ? '+' : ''}
-          {isNumeric && percent && MValueFormatter(1 - valNum, MValueFormat.percent)}
-          {isNumeric && !percent && MValueFormatter(valNum, MValueFormat.number)}
+          {isNumeric && isPercent && finalValue > 0 ? '+' : ''}
+          {isNumeric && isPercent && MValueFormatter(finalValue, MValueFormat.percent)}
+          {isNumeric && !isPercent && MValueFormatter(finalValue, MValueFormat.number)}
           {unit}
           {hasModPercent && (
             <Box sx={styles.modPercent}>
-              ({modPercentNum > 0 ? '+' : ''}
-              {MValueFormatter(1 - modPercentNum, MValueFormat.percent)})
+              ({modPercentNum - 1 > 0 ? '+' : ''}
+              {MValueFormatter(modPercentNum - 1, MValueFormat.percent)})
             </Box>
           )}
         </Box>

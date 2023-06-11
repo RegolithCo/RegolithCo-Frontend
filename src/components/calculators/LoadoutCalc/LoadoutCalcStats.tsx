@@ -8,7 +8,14 @@ export interface LoadoutCalcStatsProps {
   stats: AllStats
 }
 
-export const statsOrder: { key: keyof AllStats; label: string; tooltip: string; percent?: boolean; unit?: string }[] = [
+export const statsOrder: {
+  key: keyof AllStats
+  label: string
+  tooltip: string
+  percent?: boolean
+  unit?: string
+  isMod?: boolean
+}[] = [
   { key: 'minPower', label: 'Min Pwr', tooltip: 'Minimum Laser Power (All Active lasers combined)' },
   { key: 'maxPower', label: 'Max Pwr', tooltip: 'Maximum Laser Power (All active lasers combined)' },
   {
@@ -32,12 +39,12 @@ export const statsOrder: { key: keyof AllStats; label: string; tooltip: string; 
   { key: 'inertMaterials', label: 'Inert', percent: true, tooltip: 'Inert Materials filtering' },
   { key: 'optimalChargeRate', label: 'Opt Chrg Rt', percent: true, tooltip: 'Optimal Charge Rate Modifier' },
   { key: 'optimalChargeWindow', label: 'Opt Chrg Wnd', percent: true, tooltip: 'Optimal Charge Window Modifier' },
-  { key: 'shatterDamage', label: 'Shatter', percent: true, tooltip: 'Shatter Damage Modifier' },
+  { key: 'shatterDamage', label: 'Shatter', percent: true, isMod: true, tooltip: 'Shatter Damage Modifier' },
   { key: 'extrPower', label: 'Ext Pwr', tooltip: 'Total extraction power (All Active lasers combined)' },
 
   // minPowerPct: { label: 'Min Power %', percent: true },
   // extrPowerMod: { label: 'Extraction Power Mod', percent: true },
-  // powerMod: { label: 'Power Mod', percent: true },
+  { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', percent: true },
 ]
 
 const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
@@ -54,32 +61,36 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
       sx={{
         // border: '4px solid black',
         backgroundColor: 'black',
-        border: `1px solid ${theme.palette.secondary.light}`,
+        border: `4px solid ${theme.palette.background.paper}`,
         borderRadius: 4,
         p: 1,
         mb: 1,
       }}
     >
       <Grid container>
-        {statsOrder.map(({ key, label, percent, unit, tooltip }) => {
-          const modPercent = MODMAP[key as keyof AllStats]
-            ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
-            : undefined
-          return (
-            // xs={12} sm={12} md={4} lg={5}
-            <Grid sx={{ width: 90 }}>
-              <NumberStat
-                label={label}
-                isPercent={percent}
-                modPercent={modPercent}
-                unit={unit}
-                tooltip={tooltip}
-                value={stats[key as keyof AllStats]}
-                reversed={BackwardStats.includes(key)}
-              />
-            </Grid>
-          )
-        })}
+        {statsOrder
+          // PowerMod is a special case and it gets folded into other stats
+          .filter(({ key }) => key !== 'powerMod')
+          .map(({ key, label, percent, unit, tooltip, isMod }, idx) => {
+            const modPercent = MODMAP[key as keyof AllStats]
+              ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
+              : undefined
+            return (
+              // xs={12} sm={12} md={4} lg={5}
+              <Grid sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
+                <NumberStat
+                  label={label}
+                  isPercent={percent}
+                  modPercent={modPercent}
+                  isMod={isMod}
+                  unit={unit}
+                  tooltip={tooltip}
+                  value={stats[key as keyof AllStats]}
+                  reversed={BackwardStats.includes(key)}
+                />
+              </Grid>
+            )
+          })}
       </Grid>
     </Box>
   )

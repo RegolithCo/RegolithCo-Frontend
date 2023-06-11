@@ -66,22 +66,32 @@ const ToolGrid: React.FC<ToolGridProps> = ({ ship, children }) => {
 export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userProfile, onSave, onDelete }) => {
   const theme = useTheme()
   const owner = userProfile || dummyUserProfile()
-  const [newLoadout, setNewLoadout] = React.useState<MiningLoadout>(
-    miningLoadout || newMiningLoadout(DEFAULT_SHIP, owner)
+  const [ticker, setTicker] = React.useState(0)
+  const [newLoadout, _setNewLoadout] = React.useState<MiningLoadout>(
+    sanitizeLoadout(miningLoadout || newMiningLoadout(DEFAULT_SHIP, owner))
   )
-  const [hoverLoadout, setHoverLoadout] = React.useState<MiningLoadout | null>(null)
+  const [hoverLoadout, _setHoverLoadout] = React.useState<MiningLoadout | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
   const stats = React.useMemo(() => {
-    const loadout = hoverLoadout || newLoadout || miningLoadout
+    const loadout = newLoadout
     if (!loadout) return null
     const sanitizedLoadout = sanitizeLoadout(loadout)
     return calcLoadoutStats(sanitizedLoadout)
-  }, [miningLoadout, newLoadout, hoverLoadout])
+  }, [newLoadout, hoverLoadout, ticker])
 
   const activeLasers = newLoadout.activeLasers || []
   const laserSize = newLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+
+  const setNewLoadout = (newLoadout: MiningLoadout) => {
+    _setNewLoadout(sanitizeLoadout(newLoadout))
+    setTicker((ticker) => ticker % 10)
+  }
+  const setHoverLoadout = (newLoadout: MiningLoadout | null) => {
+    _setHoverLoadout(newLoadout ? sanitizeLoadout(newLoadout) : null)
+    setTicker((ticker) => ticker % 10)
+  }
 
   const handleShipChange = (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
     if (newShip === newLoadout.ship || !newShip) return
@@ -94,39 +104,38 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
       sx={{
         m: 3,
         backgroundColor: theme.palette.background.default,
-        borderRadius: 10,
-        border: `10px solid ${theme.palette.secondary.light}`,
-        // border: `1px solid #444444`,
+        borderRadius: 5,
+        border: `2px solid ${theme.palette.background.default}`,
         boxShadow: 24,
         mb: 6,
       }}
     >
       <CardHeader
-        sx={{
-          color: theme.palette.secondary.contrastText,
-          backgroundColor: theme.palette.secondary.light,
-        }}
+        sx={
+          {
+            // color: theme.palette.secondary.contrastText,
+            // backgroundColor: theme.palette.secondary.light,
+          }
+        }
         title={
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={3} alignItems="center">
             {/* Don't show the name if it's a new loadout */}
             <Typography variant="h5">
-              {miningLoadout && miningLoadout.name ? miningLoadout.name : 'Loadout Calculator'}
+              {miningLoadout && miningLoadout.name ? miningLoadout.name : 'Calculator'}
             </Typography>
             <div style={{ flexGrow: 1 }} />
+            <Typography variant="overline">Ship:</Typography>
             <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} />
           </Stack>
         }
       ></CardHeader>
-      <CardContent>
-        <Typography variant="h6">Mounted</Typography>
-        <Typography variant="caption">Choose your ship's mounted lasers and components</Typography>
-
-        <Grid container spacing={2}>
+      <CardContent sx={{}}>
+        <Grid container spacing={3}>
           {/* This grid has the lasers and the stats */}
 
-          <Grid xs={12} md={8} spacing={2}>
+          <Grid xs={12} md={8}>
             <div>
-              <Grid container spacing={2}>
+              <Grid container spacing={3} rowSpacing={3}>
                 <ToolGrid ship={newLoadout.ship}>
                   <LoadoutLaserTool
                     activeLaser={activeLasers[0]}
@@ -136,12 +145,12 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
                       if (isHover) {
                         setHoverLoadout({
                           ...newLoadout,
-                          activeLasers: [activeLaser, ...activeLasers.slice(1)],
+                          activeLasers: [activeLaser, activeLasers[1], activeLasers[2]],
                         })
                       } else {
                         setNewLoadout({
                           ...newLoadout,
-                          activeLasers: [activeLaser, ...activeLasers.slice(1)],
+                          activeLasers: [activeLaser, activeLasers[1], activeLasers[2]],
                         })
                       }
                     }}
@@ -197,27 +206,45 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
               </Grid>
             </div>
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column' }}>
+            {stats && <LoadoutCalcStats stats={stats} />}
             {stats && (
-              <>
-                <LoadoutCalcStats stats={stats} />
-                <Box sx={{ p: 4 }}>
-                  <Typography variant="overline">Loadout Price:</Typography>
-                  <Typography variant="h4" sx={{ fontFamily: fontFamilies.robotoMono, textAlign: 'center' }}>
-                    {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency_sm)}
-                  </Typography>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        size="small"
-                        checked={includeStockPrices}
-                        onChange={(e) => setIncludeStockPrices(e.target.checked)}
-                      />
-                    }
-                    label="Incl. Stock lasers"
-                  />
-                </Box>
-              </>
+              <Box
+                sx={{
+                  py: 2,
+                  px: 4,
+                  borderRadius: 4,
+                  flex: '1 1',
+                  textAlign: 'center',
+                  backgroundColor: theme.palette.background.paper,
+                  border: `4px solid ${theme.palette.background.default}`,
+                }}
+              >
+                <Typography variant="overline" sx={{ textAlign: 'center' }} component="div">
+                  Total Loadout Price
+                </Typography>
+                <Typography variant="h4" sx={{ fontFamily: fontFamilies.robotoMono, textAlign: 'center' }}>
+                  {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency_sm)}
+                </Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      size="small"
+                      color="secondary"
+                      checked={includeStockPrices}
+                      onChange={(e) => setIncludeStockPrices(e.target.checked)}
+                    />
+                  }
+                  sx={{
+                    pt: 2,
+                    '& .MuiTypography-root': {
+                      fontSize: '0.7rem',
+                      color: theme.palette.text.secondary,
+                    },
+                  }}
+                  label="Incl. Stock lasers"
+                />
+              </Box>
             )}
           </Grid>
         </Grid>
