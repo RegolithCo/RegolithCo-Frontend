@@ -107,14 +107,14 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
               }}
             />
           ))}
-          {loadout?.inventorylasers.map((module, index) => (
+          {loadout?.inventoryLasers.map((module, index) => (
             <LoadoutLaserChip
               key={index}
               laserCode={module}
               onDelete={() => {
-                const inventorylasers = [...(loadout?.inventorylasers || [])]
-                inventorylasers.splice(index, 1)
-                onChange({ ...loadout, inventorylasers })
+                const inventoryLasers = [...(loadout?.inventoryLasers || [])]
+                inventoryLasers.splice(index, 1)
+                onChange({ ...loadout, inventoryLasers })
               }}
             />
           ))}
@@ -129,7 +129,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
               if (LASERS[value as MiningLaserEnum])
                 onChange({
                   ...loadout,
-                  inventorylasers: [...(loadout?.inventorylasers || []), value as MiningLaserEnum],
+                  inventoryLasers: [...(loadout?.inventoryLasers || []), value as MiningLaserEnum],
                 })
               else if (GADGETS[value as MiningGadgetEnum])
                 onChange({

@@ -2,8 +2,8 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { LoadoutCalc as LoadoutCalcC } from './LoadoutCalc'
-import { fakeUser } from '@regolithco/common/dist/mock'
 import { LoadoutShipEnum, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
+import { fakeUser } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Calcul/LoadoutCalc',
@@ -35,7 +35,7 @@ LoadoutCalcProspector.args = {
       },
     ],
     inventoryGadgets: [],
-    inventorylasers: [],
+    inventoryLasers: [],
     inventoryModules: [],
     ship: LoadoutShipEnum.Prospector,
   },
@@ -74,7 +74,7 @@ LoadoutCalcMole.args = {
       },
     ],
     inventoryGadgets: [],
-    inventorylasers: [],
+    inventoryLasers: [],
     inventoryModules: [],
     activeGadgetIndex: null,
     ship: LoadoutShipEnum.Mole,

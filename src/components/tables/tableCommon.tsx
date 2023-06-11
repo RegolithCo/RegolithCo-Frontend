@@ -59,20 +59,21 @@ export const StatsCell: React.FC<{
 }> = ({ value, sx, reversed, maxMin }) => {
   const theme = useTheme()
   const isBold = maxMin && typeof value !== 'undefined' && (value === maxMin.max || value === maxMin.min)
-  const finalSx: SxProps<Theme> = Object.assign({ fontWeight: isBold ? 'bold' : null }, sx || {})
+  const finalSx: SxProps<Theme> = Object.assign({ fontWeight: isBold ? 'bold' : null, textAlign: 'right' }, sx || {})
 
   if (typeof value === 'undefined') {
     return <TableCell sx={finalSx}> </TableCell>
   }
+  const finalValue = value > 0 ? value - 1 : 0
   const color = reversed
-    ? value <= 0
+    ? finalValue <= 0
       ? isBold
         ? theme.palette.success.main
         : theme.palette.success.dark
       : isBold
       ? theme.palette.error.main
       : theme.palette.error.dark
-    : value > 0
+    : finalValue > 0
     ? isBold
       ? theme.palette.success.main
       : theme.palette.success.dark
@@ -82,8 +83,8 @@ export const StatsCell: React.FC<{
   return (
     <TableCell sx={finalSx}>
       <span style={{ color }}>
-        {value > 0 ? '+' : ''}
-        {MValueFormatter(value, MValueFormat.percent)}
+        {finalValue > 0 ? '+' : ''}
+        {finalValue === 0 ? ' ' : MValueFormatter(finalValue, MValueFormat.percent)}
       </span>
     </TableCell>
   )

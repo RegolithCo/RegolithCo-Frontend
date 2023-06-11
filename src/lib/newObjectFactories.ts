@@ -312,7 +312,7 @@ export function newMiningLoadout(ship: LoadoutShipEnum, userProfile: UserProfile
           ]
         : [newMiningLoadoutActiveLaser(DEFAULT_PROSPECTOR_LASER)],
     inventoryGadgets: [],
-    inventorylasers: [],
+    inventoryLasers: [],
     inventoryModules: [],
     __typename: 'MiningLoadout',
   }

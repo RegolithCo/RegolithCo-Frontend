@@ -177,7 +177,7 @@ export const MiningLoadoutFragmentFragmentDoc = gql`
     laser
     modules
   }
-  inventorylasers
+  inventoryLasers
   inventoryModules
   inventoryGadgets
 }
