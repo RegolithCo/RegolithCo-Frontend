@@ -66,7 +66,6 @@ const ToolGrid: React.FC<ToolGridProps> = ({ ship, children }) => {
 export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userProfile, onSave, onDelete }) => {
   const theme = useTheme()
   const owner = userProfile || dummyUserProfile()
-  const [ticker, setTicker] = React.useState(0)
   const [newLoadout, _setNewLoadout] = React.useState<MiningLoadout>(
     sanitizeLoadout(miningLoadout || newMiningLoadout(DEFAULT_SHIP, owner))
   )
@@ -75,22 +74,21 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({ miningLoadout, userPro
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
   const stats = React.useMemo(() => {
-    const loadout = newLoadout
+    const loadout = hoverLoadout || newLoadout
     if (!loadout) return null
     const sanitizedLoadout = sanitizeLoadout(loadout)
     return calcLoadoutStats(sanitizedLoadout)
-  }, [newLoadout, hoverLoadout, ticker])
+  }, [newLoadout, hoverLoadout])
 
   const activeLasers = newLoadout.activeLasers || []
   const laserSize = newLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
 
-  const setNewLoadout = (newLoadout: MiningLoadout) => {
-    _setNewLoadout(sanitizeLoadout(newLoadout))
-    setTicker((ticker) => ticker % 10)
+  const setNewLoadout = (sbl: MiningLoadout) => {
+    if (hoverLoadout) _setHoverLoadout(null)
+    _setNewLoadout(sanitizeLoadout(sbl))
   }
-  const setHoverLoadout = (newLoadout: MiningLoadout | null) => {
-    _setHoverLoadout(newLoadout ? sanitizeLoadout(newLoadout) : null)
-    setTicker((ticker) => ticker % 10)
+  const setHoverLoadout = (hl: MiningLoadout | null) => {
+    _setHoverLoadout(hl ? sanitizeLoadout(hl) : null)
   }
 
   const handleShipChange = (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {

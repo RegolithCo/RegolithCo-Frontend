@@ -13,8 +13,8 @@ export const statsOrder: {
   label: string
   tooltip: string
   percent?: boolean
-  unit?: string
   isMod?: boolean
+  unit?: string
 }[] = [
   { key: 'minPower', label: 'Min Pwr', tooltip: 'Minimum Laser Power (All Active lasers combined)' },
   { key: 'maxPower', label: 'Max Pwr', tooltip: 'Maximum Laser Power (All active lasers combined)' },
@@ -39,12 +39,12 @@ export const statsOrder: {
   { key: 'inertMaterials', label: 'Inert', percent: true, tooltip: 'Inert Materials filtering' },
   { key: 'optimalChargeRate', label: 'Opt Chrg Rt', percent: true, tooltip: 'Optimal Charge Rate Modifier' },
   { key: 'optimalChargeWindow', label: 'Opt Chrg Wnd', percent: true, tooltip: 'Optimal Charge Window Modifier' },
-  { key: 'shatterDamage', label: 'Shatter', percent: true, isMod: true, tooltip: 'Shatter Damage Modifier' },
-  { key: 'extrPower', label: 'Ext Pwr', tooltip: 'Total extraction power (All Active lasers combined)' },
+  { key: 'shatterDamage', label: 'Shatter', percent: true, tooltip: 'Shatter Damage Modifier' },
+  { key: 'extrPower', label: 'Ext Pwr', isMod: true, tooltip: 'Total extraction power (All Active lasers combined)' },
 
   // minPowerPct: { label: 'Min Power %', percent: true },
   // extrPowerMod: { label: 'Extraction Power Mod', percent: true },
-  { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', percent: true },
+  { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', isMod: true, percent: true },
 ]
 
 const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
@@ -76,14 +76,13 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
               ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
               : undefined
             return (
-              // xs={12} sm={12} md={4} lg={5}
               <Grid sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
                 <NumberStat
                   label={label}
                   isPercent={percent}
                   modPercent={modPercent}
-                  isMod={isMod}
                   unit={unit}
+                  isMod={isMod}
                   tooltip={tooltip}
                   value={stats[key as keyof AllStats]}
                   reversed={BackwardStats.includes(key)}

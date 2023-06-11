@@ -73,7 +73,7 @@ const pulse = (color: PaletteColor) => keyframes`
   background-color: ${color.dark} 
 }
 50% { 
-  box-shadow: 0 0 10px 10px  ${color.light}44; 
+  box-shadow: 0 0 5px 5px ${alpha(color.light, 0.5)}; 
   background-color: ${color.light} 
 }
 100% { 
@@ -125,9 +125,10 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
           borderRadius: 3,
           fontFamily: fontFamilies.robotoMono,
           color: pColor.contrastText,
-          boxShadow: isOn ? `0 0 4px 2px ${pColor.main}66, 0 0 10px 5px ${pColor.light}33` : undefined,
+          // boxShadow: isOn ? `0 0 4px 2px ${pColor.main}66, 0 0 10px 5px ${pColor.light}33` : undefined,
+          boxShadow: isOn ? `0 0 10px 10px  ${pColor.light}44` : undefined,
           backgroundColor: isOn ? pColor.main : alpha(pColor.dark, 0.5),
-          animation: isPulsing ? `${pulse(pColor)} 1s infinite` : '',
+          animation: isPulsing ? `${pulse(pColor)} 1.5s infinite` : '',
           '& .MuiChip-label': {
             flex: '1 1',
           },
