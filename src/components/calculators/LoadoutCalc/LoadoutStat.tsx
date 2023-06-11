@@ -24,20 +24,19 @@ const stylesThunk = (theme: Theme, isBig?: boolean): Record<string, SxProps<Them
   },
 })
 
-export interface NumberStatProps {
+export interface LoadoutStatProps {
   label: string
   isBig?: boolean
   value?: number
   modPercent?: number
   unit?: string
-  isMod?: boolean
   reversed?: boolean
   isPercent?: boolean
   active?: boolean
   tooltip?: string
 }
 
-export const NumberStat: React.FC<NumberStatProps> = ({
+export const LoadoutStat: React.FC<LoadoutStatProps> = ({
   label,
   isBig,
   value,
@@ -45,7 +44,6 @@ export const NumberStat: React.FC<NumberStatProps> = ({
   isPercent,
   modPercent,
   active,
-  isMod,
   unit,
   tooltip,
 }) => {
@@ -56,7 +54,7 @@ export const NumberStat: React.FC<NumberStatProps> = ({
   const valNum = isNumeric ? (value as number) : 0
 
   const hasValue = Boolean(isNumeric && Math.abs(valNum || 0) > 0.001)
-  const finalVal = isMod && hasValue ? valNum - 1 : valNum
+  const finalVal = isPercent && hasValue ? valNum - 1 : valNum
 
   let color = theme.palette.text.primary
   if (isNumeric && finalVal > 0) color = reversed ? theme.palette.error.main : theme.palette.success.main

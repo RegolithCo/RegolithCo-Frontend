@@ -11,7 +11,7 @@ import {
   lookups,
 } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
-import { NumberStat } from './LoadoutStat'
+import { LoadoutStat } from './LoadoutStat'
 import { statsOrder } from './LoadoutCalcStats'
 import { ModuleIcon } from '../../../icons/Module'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -270,13 +270,12 @@ const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
         </Box>
         {statsOrder
           .filter(({ key }) => !LASER_NO_MENU_STAT.includes(key as keyof LaserLoadoutStats))
-          .map(({ key, label, percent, unit, tooltip, isMod }, idx) => (
-            <NumberStat
+          .map(({ key, label, percent, unit, tooltip }, idx) => (
+            <LoadoutStat
               label={label}
               key={`lmi-${key}-${idx}`}
               isPercent={percent}
               unit={unit}
-              isMod={isMod}
               value={laser.stats[key as keyof LaserLoadoutStats]}
               reversed={BackwardStats.includes(key)}
             />
@@ -322,14 +321,14 @@ const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
           .filter(
             ({ key }) =>
               !MODULE_NO_MENU_STAT.includes(key as keyof ModuleLoadoutStats) &&
-              module.stats[key as keyof ModuleLoadoutStats] !== undefined
+              module.stats[key as keyof ModuleLoadoutStats] !== undefined &&
+              module.stats[key as keyof ModuleLoadoutStats] !== 1
           )
-          .map(({ key, label, percent, unit, tooltip, isMod }) => (
-            <NumberStat
+          .map(({ key, label, percent, unit, tooltip }) => (
+            <LoadoutStat
               label={label}
               isPercent={percent}
               key={key}
-              isMod={isMod}
               unit={unit}
               value={module.stats[key as keyof ModuleLoadoutStats]}
               reversed={BackwardStats.includes(key)}

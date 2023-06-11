@@ -40,7 +40,7 @@ export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({ laserCode, i
           flex: '1 1',
         },
         '&:hover': {
-          backgroundColor: theme.palette.error.main,
+          backgroundColor: isOn ? alpha(theme.palette.error.main, 0.8) : alpha(theme.palette.error.dark, 0.4),
         },
       }}
       icon={
@@ -133,7 +133,8 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
             flex: '1 1',
           },
           '&:hover': {
-            backgroundColor: canBeToggled && !locked ? pColor.main : undefined,
+            backgroundColor:
+              canBeToggled && !locked ? (isOn ? alpha(pColor.main, 0.8) : alpha(pColor.dark, 0.4)) : undefined,
           },
         }}
         icon={

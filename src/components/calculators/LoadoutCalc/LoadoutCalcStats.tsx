@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, useTheme } from '@mui/material'
 import { AllStats, BackwardStats } from '@regolithco/common'
-import { NumberStat } from './LoadoutStat'
+import { LoadoutStat } from './LoadoutStat'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 
 export interface LoadoutCalcStatsProps {
@@ -71,18 +71,17 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
         {statsOrder
           // PowerMod is a special case and it gets folded into other stats
           .filter(({ key }) => key !== 'powerMod')
-          .map(({ key, label, percent, unit, tooltip, isMod }, idx) => {
+          .map(({ key, label, percent, unit, tooltip }, idx) => {
             const modPercent = MODMAP[key as keyof AllStats]
               ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
               : undefined
             return (
               <Grid sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
-                <NumberStat
+                <LoadoutStat
                   label={label}
                   isPercent={percent}
                   modPercent={modPercent}
                   unit={unit}
-                  isMod={isMod}
                   tooltip={tooltip}
                   value={stats[key as keyof AllStats]}
                   reversed={BackwardStats.includes(key)}
