@@ -175,8 +175,14 @@ export const MiningLoadoutFragmentFragmentDoc = gql`
   ship
   activeLasers {
     laser
+    laserActive
     modules
+    modulesActive
   }
+  owner {
+    userId
+  }
+  activeGadgetIndex
   inventoryLasers
   inventoryModules
   inventoryGadgets
@@ -1427,6 +1433,106 @@ export function useLeaveScoutingFindMutation(baseOptions?: Apollo.MutationHookOp
 export type LeaveScoutingFindMutationHookResult = ReturnType<typeof useLeaveScoutingFindMutation>;
 export type LeaveScoutingFindMutationResult = Apollo.MutationResult<types.LeaveScoutingFindMutation>;
 export type LeaveScoutingFindMutationOptions = Apollo.BaseMutationOptions<types.LeaveScoutingFindMutation, types.LeaveScoutingFindMutationVariables>;
+export const CreateLoadoutDocument = gql`
+    mutation createLoadout($miningLoadout: MiningLoadoutInput!) {
+  createLoadout(shipLoadout: $miningLoadout) {
+    ...MiningLoadoutFragment
+  }
+}
+    ${MiningLoadoutFragmentFragmentDoc}`;
+export type CreateLoadoutMutationFn = Apollo.MutationFunction<types.CreateLoadoutMutation, types.CreateLoadoutMutationVariables>;
+
+/**
+ * __useCreateLoadoutMutation__
+ *
+ * To run a mutation, you first call `useCreateLoadoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateLoadoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createLoadoutMutation, { data, loading, error }] = useCreateLoadoutMutation({
+ *   variables: {
+ *      miningLoadout: // value for 'miningLoadout'
+ *   },
+ * });
+ */
+export function useCreateLoadoutMutation(baseOptions?: Apollo.MutationHookOptions<types.CreateLoadoutMutation, types.CreateLoadoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.CreateLoadoutMutation, types.CreateLoadoutMutationVariables>(CreateLoadoutDocument, options);
+      }
+export type CreateLoadoutMutationHookResult = ReturnType<typeof useCreateLoadoutMutation>;
+export type CreateLoadoutMutationResult = Apollo.MutationResult<types.CreateLoadoutMutation>;
+export type CreateLoadoutMutationOptions = Apollo.BaseMutationOptions<types.CreateLoadoutMutation, types.CreateLoadoutMutationVariables>;
+export const UpdateLoadoutDocument = gql`
+    mutation updateLoadout($loadoutId: String!, $shipLoadout: MiningLoadoutInput!) {
+  updateLoadout(loadoutId: $loadoutId, shipLoadout: $shipLoadout) {
+    ...MiningLoadoutFragment
+  }
+}
+    ${MiningLoadoutFragmentFragmentDoc}`;
+export type UpdateLoadoutMutationFn = Apollo.MutationFunction<types.UpdateLoadoutMutation, types.UpdateLoadoutMutationVariables>;
+
+/**
+ * __useUpdateLoadoutMutation__
+ *
+ * To run a mutation, you first call `useUpdateLoadoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateLoadoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateLoadoutMutation, { data, loading, error }] = useUpdateLoadoutMutation({
+ *   variables: {
+ *      loadoutId: // value for 'loadoutId'
+ *      shipLoadout: // value for 'shipLoadout'
+ *   },
+ * });
+ */
+export function useUpdateLoadoutMutation(baseOptions?: Apollo.MutationHookOptions<types.UpdateLoadoutMutation, types.UpdateLoadoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.UpdateLoadoutMutation, types.UpdateLoadoutMutationVariables>(UpdateLoadoutDocument, options);
+      }
+export type UpdateLoadoutMutationHookResult = ReturnType<typeof useUpdateLoadoutMutation>;
+export type UpdateLoadoutMutationResult = Apollo.MutationResult<types.UpdateLoadoutMutation>;
+export type UpdateLoadoutMutationOptions = Apollo.BaseMutationOptions<types.UpdateLoadoutMutation, types.UpdateLoadoutMutationVariables>;
+export const DeleteLoadoutDocument = gql`
+    mutation deleteLoadout($loadoutId: String!) {
+  deleteLoadout(loadoutId: $loadoutId) {
+    loadoutId
+  }
+}
+    `;
+export type DeleteLoadoutMutationFn = Apollo.MutationFunction<types.DeleteLoadoutMutation, types.DeleteLoadoutMutationVariables>;
+
+/**
+ * __useDeleteLoadoutMutation__
+ *
+ * To run a mutation, you first call `useDeleteLoadoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteLoadoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteLoadoutMutation, { data, loading, error }] = useDeleteLoadoutMutation({
+ *   variables: {
+ *      loadoutId: // value for 'loadoutId'
+ *   },
+ * });
+ */
+export function useDeleteLoadoutMutation(baseOptions?: Apollo.MutationHookOptions<types.DeleteLoadoutMutation, types.DeleteLoadoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.DeleteLoadoutMutation, types.DeleteLoadoutMutationVariables>(DeleteLoadoutDocument, options);
+      }
+export type DeleteLoadoutMutationHookResult = ReturnType<typeof useDeleteLoadoutMutation>;
+export type DeleteLoadoutMutationResult = Apollo.MutationResult<types.DeleteLoadoutMutation>;
+export type DeleteLoadoutMutationOptions = Apollo.BaseMutationOptions<types.DeleteLoadoutMutation, types.DeleteLoadoutMutationVariables>;
 export const GetUserProfileDocument = gql`
     query getUserProfile {
   profile {
@@ -1461,6 +1567,40 @@ export function useGetUserProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetUserProfileQueryHookResult = ReturnType<typeof useGetUserProfileQuery>;
 export type GetUserProfileLazyQueryHookResult = ReturnType<typeof useGetUserProfileLazyQuery>;
 export type GetUserProfileQueryResult = Apollo.QueryResult<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>;
+export const GetLoadoutsDocument = gql`
+    query getLoadouts {
+  profile {
+    ...UserProfileLoadoutFragment
+  }
+}
+    ${UserProfileLoadoutFragmentFragmentDoc}`;
+
+/**
+ * __useGetLoadoutsQuery__
+ *
+ * To run a query within a React component, call `useGetLoadoutsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLoadoutsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLoadoutsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetLoadoutsQuery(baseOptions?: Apollo.QueryHookOptions<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>(GetLoadoutsDocument, options);
+      }
+export function useGetLoadoutsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>(GetLoadoutsDocument, options);
+        }
+export type GetLoadoutsQueryHookResult = ReturnType<typeof useGetLoadoutsQuery>;
+export type GetLoadoutsLazyQueryHookResult = ReturnType<typeof useGetLoadoutsLazyQuery>;
+export type GetLoadoutsQueryResult = Apollo.QueryResult<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>;
 export const GetSessionUserDocument = gql`
     query getSessionUser($sessionId: ID!) {
   sessionUser(sessionId: $sessionId) {

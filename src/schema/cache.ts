@@ -48,14 +48,14 @@ export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
 	UEX?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MiningLoadoutKeySpecifier = ('activeGadgetIndex' | 'activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryModules' | 'inventoryLasers' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
+export type MiningLoadoutKeySpecifier = ('activeGadgetIndex' | 'activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryLasers' | 'inventoryModules' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
 export type MiningLoadoutFieldPolicy = {
 	activeGadgetIndex?: FieldPolicy<any> | FieldReadFunction<any>,
 	activeLasers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	inventoryGadgets?: FieldPolicy<any> | FieldReadFunction<any>,
-	inventoryModules?: FieldPolicy<any> | FieldReadFunction<any>,
 	inventoryLasers?: FieldPolicy<any> | FieldReadFunction<any>,
+	inventoryModules?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadoutId?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,

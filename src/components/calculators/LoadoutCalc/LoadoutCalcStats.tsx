@@ -47,7 +47,7 @@ export const statsOrder: {
   { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', isMod: true, percent: true },
 ]
 
-const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
+export const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
   maxPower: 'powerMod',
   minPower: 'powerMod',
   extrPower: 'extrPowerMod',

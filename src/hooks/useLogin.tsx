@@ -96,6 +96,9 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
               },
             },
           },
+          MiningLoadout: {
+            keyFields: ['loadoutId'],
+          },
           CrewShare: {
             keyFields: ['sessionId', 'scName', 'orderId'],
           },

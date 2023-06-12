@@ -135,6 +135,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
                 onChange({
                   ...loadout,
                   inventoryGadgets: [...(loadout.inventoryGadgets || []), value as MiningGadgetEnum],
+                  activeGadgetIndex: loadout.inventoryGadgets?.length || 0,
                 })
               else if (MODULES[value as MiningModuleEnum])
                 onChange({

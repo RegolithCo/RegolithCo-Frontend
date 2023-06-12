@@ -82,6 +82,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
 
   return (
     <Card
+      elevation={hasLaser && laserIsActive ? 8 : 1}
       sx={{
         //
         borderRadius: 4,
@@ -98,7 +99,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
           px: 2,
           py: 0.5,
           color: theme.palette.text.primary,
-          backgroundColor: theme.palette.background.default,
+          backgroundColor: theme.palette.grey[800],
         }}
       />
       <CardContent>

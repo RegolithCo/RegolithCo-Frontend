@@ -1,14 +1,15 @@
 import * as React from 'react'
-import { Box, Link, SxProps, Tab, Tabs, Theme, Typography, useTheme } from '@mui/material'
+import { Alert, Link, SxProps, Tab, Tabs, Theme, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
-import { BorderAll, Calculate, Info, Person, QuestionAnswer } from '@mui/icons-material'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useLogin } from '../../hooks/useOAuth2'
+import { Calculate, Person } from '@mui/icons-material'
 import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
 import { LaserTable } from '../tables/LaserTable'
 import { ModuleTable } from '../tables/ModuleTable'
 import { LaserIcon } from '../../icons/Laser'
 import { ModuleIcon } from '../../icons/Module'
+import { MiningLoadout, UserProfile } from '@regolithco/common'
+import log from 'loglevel'
+import { MyLoadouts } from './MyLoadouts'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -17,17 +18,16 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const LoadoutPageContainer: React.FC = () => {
-  const navigate = useNavigate()
-  const { isInitialized } = useLogin()
-  const { tab } = useParams()
-
-  return <LoadoutPage navigate={navigate} tab={tab as string} isLoggedIn={isInitialized} />
-}
-
 export interface LoadoutPageProps {
   tab: string
   isLoggedIn?: boolean
+  loadouts: MiningLoadout[]
+  loading?: boolean
+  userProfile?: UserProfile
+  activeLoadout?: string
+  createLoadout?: (loadout: MiningLoadout) => Promise<void>
+  updateLoadout?: (loadout: MiningLoadout) => Promise<void>
+  deleteLoadout?: (loadoutId: string) => Promise<void>
   navigate?: (path: string) => void
 }
 
@@ -38,7 +38,18 @@ export const LoadoutTabIndex = {
   Modules: 'modules',
 }
 
-export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLoggedIn }) => {
+export const LoadoutPage: React.FC<LoadoutPageProps> = ({
+  navigate,
+  tab,
+  isLoggedIn,
+  loading,
+  loadouts,
+  userProfile,
+  activeLoadout,
+  createLoadout,
+  updateLoadout,
+  deleteLoadout,
+}) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
 
@@ -54,22 +65,58 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({ navigate, tab, isLogge
         }}
       >
         <Tab label="Calculator" icon={<Calculate />} value={LoadoutTabIndex.Calculator} />
-        <Tab label="My Loadouts" disabled={!isLoggedIn} icon={<Person />} value={LoadoutTabIndex.MyLoadouts} />
+        <Tab label="My Loadouts" icon={<Person />} value={LoadoutTabIndex.MyLoadouts} />
         <Tab label="Lasers" icon={<LaserIcon />} value={LoadoutTabIndex.Lasers} />
         <Tab label="Modules" icon={<ModuleIcon />} value={LoadoutTabIndex.Modules} />
       </Tabs>
-      {finalTab === LoadoutTabIndex.Calculator && <LoadoutCalc />}
+      {finalTab === LoadoutTabIndex.Calculator && (
+        <LoadoutCalc
+          loading={loading}
+          loadoutCount={loadouts.length}
+          userProfile={userProfile}
+          onCreate={(loadout) => {
+            log.debug('Create loadout', loadout)
+            createLoadout && createLoadout(loadout)
+          }}
+        />
+      )}
+      {finalTab === LoadoutTabIndex.MyLoadouts && !isLoggedIn && (
+        <Alert severity="info">You must be logged in to save loadouts.</Alert>
+      )}
+      {finalTab === LoadoutTabIndex.MyLoadouts && isLoggedIn && userProfile && (
+        <MyLoadouts
+          loadouts={loadouts}
+          loading={Boolean(loading)}
+          activeLoadout={activeLoadout}
+          onCloseDialog={() => {
+            log.debug('Close dialog')
+            navigate && navigate('/loadouts/my')
+          }}
+          onOpenDialog={(loadoutId) => {
+            log.debug('Open dialog', loadoutId)
+            navigate && navigate(`/loadouts/my/${loadoutId}`)
+          }}
+          onDeleteLoadout={(loadoutId) => {
+            log.debug('Delete loadout', loadoutId)
+            deleteLoadout && deleteLoadout(loadoutId)
+          }}
+          userProfile={userProfile}
+          onUpdateLoadout={(loadout) => {
+            log.debug('Save loadout', loadout)
+            updateLoadout && updateLoadout(loadout)
+          }}
+        />
+      )}
       {finalTab === LoadoutTabIndex.Lasers && (
         <LaserTable
           onAddToLoadout={(laser) => {
-            console.log('Add to loadout', laser)
+            // console.log('Add to loadout', laser)
           }}
         />
       )}
       {finalTab === LoadoutTabIndex.Modules && (
         <ModuleTable onAddToLoadout={(module) => console.log('Add to loadout', module)} />
       )}
-      {finalTab === LoadoutTabIndex.MyLoadouts && <Box sx={{ mb: 3 }}>Put My stuff here</Box>}
 
       <Typography variant="caption">
         Big thanks to{' '}
