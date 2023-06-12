@@ -8,11 +8,13 @@ import {
   Stack,
   TextField,
   Typography,
+  lighten,
   useTheme,
 } from '@mui/material'
 import { MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum, lookups } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { noop } from 'lodash'
+import { LaserMenuItem, ModuleMenuItem } from './loadoutMenus'
 
 const LASERS = lookups.loadout.lasers
 const GADGETS = lookups.loadout.gadgets
@@ -122,6 +124,9 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
           <Autocomplete
             options={autoCompleteItems}
             value={value ? value : null}
+            componentsProps={{
+              popper: { style: { width: 'fit-content', maxWidth: '500px' } },
+            }}
             // isOptionEqualToValue={(option, value) => option === value}
             onChange={(event: React.SyntheticEvent<Element, Event>, value: string | null) => {
               if (!value || value.length === 0) return
@@ -158,13 +163,12 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
                 : ''
 
               return (
-                <MenuItem {...props} sx={{ display: 'flex' }}>
-                  <Typography>{option}</Typography>
-                  <div style={{ flexGrow: 1 }} />
-                  <Typography variant="caption">
-                    {qualifier}
-                    {itemType}
-                  </Typography>
+                <MenuItem {...props} value={option}>
+                  {itemType === 'Laser' ? (
+                    <LaserMenuItem laserCode={option as MiningLaserEnum} />
+                  ) : (
+                    <ModuleMenuItem moduleCode={option as MiningModuleEnum} />
+                  )}
                 </MenuItem>
               )
             }}

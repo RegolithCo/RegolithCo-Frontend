@@ -29,7 +29,7 @@ export const LoadoutCreateModal: React.FC<LoadoutCreateModalProps> = ({ open, ed
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="xs"
+      maxWidth="sm"
       fullWidth
       sx={{
         '& .MuiDialog-paper': {
@@ -51,8 +51,8 @@ export const LoadoutCreateModal: React.FC<LoadoutCreateModalProps> = ({ open, ed
           fullWidth
           error={!valid}
           variant="standard"
-          sx={{ fontSize: 40 }}
-          inputProps={{ sx: { fontSize: 40 } }}
+          sx={{ fontSize: 30 }}
+          inputProps={{ sx: { fontSize: 30 } }}
           helperText={!valid && loadoutName.length > 0 ? 'Must be at least 4 - 100 characters' : ' '}
           value={loadoutName}
           onChange={(e) => setLoadoutName(e.target.value.trimStart())}

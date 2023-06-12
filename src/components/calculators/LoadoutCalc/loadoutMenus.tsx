@@ -244,7 +244,7 @@ export interface LaserMenuItemProps {
   laserCode: MiningLaserEnum
 }
 
-const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
+export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   const theme = useTheme()
   const laser = LASERS[laserCode as MiningLaserEnum]
   return (
@@ -286,12 +286,14 @@ const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
 }
 
 export interface ModuleMenuItemProps {
-  moduleCode: MiningModuleEnum
+  moduleCode: MiningModuleEnum | MiningGadgetEnum
 }
 
-const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
+export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
   const theme = useTheme()
-  const module = MODULES[moduleCode as MiningModuleEnum]
+  const module = MODULES[moduleCode as MiningModuleEnum] || GADGETS[moduleCode as MiningGadgetEnum]
+  if (!module) return null
+  const isGadget = module.category === 'G'
   return (
     <>
       <Stack
@@ -309,7 +311,11 @@ const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
-            color: module.active ? theme.palette.primary.main : theme.palette.secondary.main,
+            color: isGadget
+              ? theme.palette.info.main
+              : module.active
+              ? theme.palette.primary.main
+              : theme.palette.secondary.main,
           }}
         >
           {module.name}

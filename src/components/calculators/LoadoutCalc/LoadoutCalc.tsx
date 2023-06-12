@@ -60,14 +60,12 @@ const ToolGrid: React.FC<ToolGridProps> = ({ ship, children }) => {
           sm: 6,
           md: 6,
           lg: 4,
-          xl: 3,
         }
       : {
           xs: 12,
           sm: 6,
           md: 6,
           lg: 4,
-          xl: 3,
         }
   return <Grid {...gridProps}>{children}</Grid>
 }
