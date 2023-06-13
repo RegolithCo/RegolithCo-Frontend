@@ -32,8 +32,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { MODMAP, statsOrder } from '../calculators/LoadoutCalc/LoadoutCalcStats'
 import { LoadoutStat } from '../calculators/LoadoutCalc/LoadoutStat'
-import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
-import { red } from '@mui/material/colors'
+import { MValue, MValueFormat } from '../fields/MValue'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 dayjs.extend(relativeTime)
 
@@ -126,85 +125,88 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
                   backgroundColor: idx % 2 === 0 ? alpha(theme.palette.background.paper, 0.5) : undefined,
                 }}
               >
-                <ListItemText
-                  sx={{
-                    flex: '1 1 10%',
-                  }}
-                  primaryTypographyProps={{
-                    component: 'div',
-                  }}
-                  primary={
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {loadout.name}
-                    </Typography>
-                  }
-                  secondaryTypographyProps={{
-                    component: 'div',
-                  }}
-                  secondary={
-                    <Stack>
-                      {loadout.ship === LoadoutShipEnum.Mole ? (
-                        <Chip size="small" label="Mole" color="success" sx={{ width: 100 }} />
-                      ) : (
-                        <Chip size="small" label="Prospector" color="info" sx={{ width: 100 }} />
-                      )}
-                      <Typography variant="caption">{dayjs(loadout.createdAt).fromNow()}</Typography>
-                      <Typography>
-                        <MValue value={stats?.priceNoStock} format={MValueFormat.currency_sm} />
-                      </Typography>
-                    </Stack>
-                  }
-                />
-                <Box
-                  sx={{
-                    overflow: 'hidden',
-                    maxHeight: 200,
-                    maxWidth: 650,
-                    borderRadius: 4,
-                    flex: '1 1 75%',
-                    display: 'flex',
-                    marginRight: 4,
-                    flexDirection: 'row',
-                  }}
-                >
-                  <Grid2
-                    container
+                <Stack direction={{ sm: 'column', md: 'row' }}>
+                  <ListItemText
                     sx={{
-                      width: '100%',
+                      flex: '1 1 10%',
+                    }}
+                    primaryTypographyProps={{
+                      component: 'div',
+                    }}
+                    primary={
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {loadout.name}
+                      </Typography>
+                    }
+                    secondaryTypographyProps={{
+                      component: 'div',
+                    }}
+                    secondary={
+                      <Stack spacing={1}>
+                        {loadout.ship === LoadoutShipEnum.Mole ? (
+                          <Chip size="small" label="Mole" color="success" sx={{ width: 100 }} />
+                        ) : (
+                          <Chip size="small" label="Prospector" color="info" sx={{ width: 100 }} />
+                        )}
+                        <Typography variant="caption">{dayjs(loadout.createdAt).fromNow()}</Typography>
+                        <Typography>
+                          <MValue value={stats?.priceNoStock} format={MValueFormat.currency_sm} />
+                        </Typography>
+                      </Stack>
+                    }
+                  />
+                  <Box
+                    sx={{
+                      overflow: 'hidden',
+                      maxHeight: 200,
+                      maxWidth: 650,
+                      borderRadius: 4,
+                      flex: '1 1 75%',
+                      display: 'flex',
+                      marginRight: 4,
+                      flexDirection: 'row',
                     }}
                   >
-                    {statsOrder
-                      // PowerMod is a special case and it gets folded into other stats
-                      .filter(({ key }) => key !== 'powerMod')
-                      .map(({ key, label, percent, unit, tooltip }, idy) => {
-                        if (!stats) return null
-                        const modPercent = MODMAP[key as keyof AllStats]
-                          ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
-                          : undefined
-                        return (
-                          <Grid2 sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
-                            <LoadoutStat
-                              label={label}
-                              key={`key-${key}-${idy}`}
-                              isPercent={percent}
-                              modPercent={modPercent}
-                              unit={unit}
-                              tooltip={tooltip}
-                              value={stats[key as keyof AllStats]}
-                              reversed={BackwardStats.includes(key)}
-                            />
-                          </Grid2>
-                        )
-                      })}
-                  </Grid2>
-                </Box>
+                    <Grid2
+                      container
+                      sx={{
+                        width: '100%',
+                      }}
+                    >
+                      {statsOrder
+                        // PowerMod is a special case and it gets folded into other stats
+                        .filter(({ key }) => key !== 'powerMod')
+                        .map(({ key, label, percent, unit, tooltip }, idy) => {
+                          if (!stats) return null
+                          const modPercent = MODMAP[key as keyof AllStats]
+                            ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
+                            : undefined
+                          return (
+                            <Grid2 sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
+                              <LoadoutStat
+                                label={label}
+                                key={`key-${key}-${idy}`}
+                                isPercent={percent}
+                                modPercent={modPercent}
+                                unit={unit}
+                                tooltip={tooltip}
+                                value={stats[key as keyof AllStats]}
+                                reversed={BackwardStats.includes(key)}
+                              />
+                            </Grid2>
+                          )
+                        })}
+                    </Grid2>
+                  </Box>
+                </Stack>
+
                 <ListItemSecondaryAction>
                   <IconButton
                     onClick={(e) => {

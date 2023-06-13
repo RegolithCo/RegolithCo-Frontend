@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   CardHeader,
   Dialog,
@@ -18,12 +19,13 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { Delete, Edit, Refresh, Save } from '@mui/icons-material'
+import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
@@ -83,6 +85,8 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 }) => {
   const theme = useTheme()
   const owner = userProfile || dummyUserProfile()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
+
   const [createModalOpen, setCreateModalOpen] = React.useState(false)
   const [countWarningModalOpen, setCountWarningModalOpen] = React.useState(false)
   const [editingName, setEditingName] = React.useState(false)
@@ -135,14 +139,21 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
           fullWidth
           sx={{
             '& .MuiDialog-paper': {
-              // border: '1px solid blue',
-              m: 0,
-              p: 2,
+              [theme.breakpoints.down('md')]: {
+                margin: 0,
+                borderRadius: 0,
+                maxHeight: '100%',
+                width: '100%',
+              },
+              [theme.breakpoints.up('md')]: {
+                m: 0,
+                p: 2,
+                borderRadius: 10,
+                boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+                border: `10px solid ${theme.palette.primary.main}`,
+              },
               background: theme.palette.background.default,
               backgroundImage: bgImage,
-              borderRadius: 10,
-              boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-              border: `10px solid ${theme.palette.primary.main}`,
             },
           }}
         >
@@ -153,15 +164,20 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
       return (
         <Box
           sx={{
-            mx: 3,
-            my: 6,
-            px: 2,
-            py: 2,
+            [theme.breakpoints.down('sm')]: {
+              borderRadius: 0,
+            },
+            [theme.breakpoints.up('md')]: {
+              mx: 3,
+              my: 6,
+              px: 2,
+              py: 2,
+              borderRadius: 10,
+              boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+              border: `10px solid ${theme.palette.primary.main}`,
+            },
             background: theme.palette.background.default,
             backgroundImage: bgImage,
-            borderRadius: 10,
-            boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-            border: `10px solid ${theme.palette.primary.main}`,
           }}
         >
           {children}
@@ -173,31 +189,59 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     <Wrapper>
       <Card
         sx={{
+          [theme.breakpoints.down('sm')]: {
+            borderRadius: 0,
+          },
+          [theme.breakpoints.up('md')]: {
+            borderRadius: 10,
+          },
           boxShadow: 'none',
           backgroundImage: 'none',
           background: 'none',
-          borderRadius: 10,
+          height: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <CardHeader
           title={
-            <Stack direction="row" spacing={3} alignItems="center">
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               {/* Don't show the name if it's a new loadout */}
-              <Typography variant="h5">
-                {miningLoadout && miningLoadout.name ? newLoadout.name : 'Calculator'}
-              </Typography>
-              {miningLoadout && miningLoadout.name && (
-                <IconButton onClick={() => setEditingName(!editingName)} size="small" sx={{ ml: 1 }}>
-                  <Edit />
+              <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                <Typography variant="h5" sx={{ m: 0 }}>
+                  {miningLoadout && miningLoadout.name ? newLoadout.name : 'Calculator'}
+                </Typography>
+                {miningLoadout && miningLoadout.name && (
+                  <IconButton onClick={() => setEditingName(!editingName)} size="small" sx={{ ml: 1 }}>
+                    <Edit />
+                  </IconButton>
+                )}
+
+                {isSmall && isModal && (
+                  <>
+                    <div style={{ flexGrow: 1 }} />
+                    <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
+                      <Close />
+                    </IconButton>
+                  </>
+                )}
+              </Box>
+              <div style={{ flexGrow: 1 }} />
+              <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} />
+              {!isSmall && isModal && (
+                <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
+                  <Close />
                 </IconButton>
               )}
-              <div style={{ flexGrow: 1 }} />
-              <Typography variant="overline">Ship:</Typography>
-              <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} />
             </Stack>
           }
         ></CardHeader>
-        <CardContent sx={{}}>
+        <CardContent
+          sx={{
+            overflowY: 'scroll',
+          }}
+        >
           <Grid container spacing={3}>
             {/* This grid has the lasers and the stats */}
 
@@ -316,53 +360,50 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
               )}
             </Grid>
           </Grid>
-
-          {/* MENU */}
-          <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-            {onDelete && userProfile && (
-              <Tooltip title="Permanently delete this loadout">
-                <Button variant="contained" color="error" onClick={onDelete} startIcon={<Delete />} disabled={loading}>
-                  Delete
-                </Button>
-              </Tooltip>
-            )}
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() =>
-                setNewLoadout(miningLoadout || newMiningLoadout(newLoadout.ship as LoadoutShipEnum, owner))
-              }
-              startIcon={<Refresh />}
-            >
-              Reset
-            </Button>
-            <div style={{ flexGrow: 1 }} />
-            <Tooltip title={!onCreate || !userProfile ? 'Log in to save multiple loadouts' : 'Save Loadout'}>
-              <>
-                <Button
-                  variant="contained"
-                  disabled={!userProfile || loading}
-                  onClick={() => {
-                    if (onCreate && !miningLoadout && loadoutCount && loadoutCount >= 20) {
-                      setCountWarningModalOpen(true)
-                      return
-                    }
-                    if (onCreate && !miningLoadout) {
-                      setCreateModalOpen(true)
-                    }
-                    if (onUpdate && miningLoadout) {
-                      onUpdate(newLoadout)
-                    }
-                  }}
-                  startIcon={<Save />}
-                >
-                  {loading && <>Loading...</>}
-                  {!loading && !miningLoadout ? <>Save New</> : <>Save</>}
-                </Button>
-              </>
-            </Tooltip>
-          </Stack>
         </CardContent>
+        {/* MENU */}
+        <Stack direction="row" spacing={2} sx={{ mt: 3, p: 1, px: 2 }}>
+          {onDelete && userProfile && (
+            <Tooltip title="Permanently delete this loadout">
+              <Button variant="contained" color="error" onClick={onDelete} startIcon={<Delete />} disabled={loading}>
+                Delete
+              </Button>
+            </Tooltip>
+          )}
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setNewLoadout(miningLoadout || newMiningLoadout(newLoadout.ship as LoadoutShipEnum, owner))}
+            startIcon={<Refresh />}
+          >
+            Reset
+          </Button>
+          <div style={{ flexGrow: 1 }} />
+          <Tooltip title={!onCreate || !userProfile ? 'Log in to save multiple loadouts' : 'Save Loadout'}>
+            <>
+              <Button
+                variant="contained"
+                disabled={!userProfile || loading}
+                onClick={() => {
+                  if (onCreate && !miningLoadout && loadoutCount && loadoutCount >= 20) {
+                    setCountWarningModalOpen(true)
+                    return
+                  }
+                  if (onCreate && !miningLoadout) {
+                    setCreateModalOpen(true)
+                  }
+                  if (onUpdate && miningLoadout) {
+                    onUpdate(newLoadout)
+                  }
+                }}
+                startIcon={<Save />}
+              >
+                {loading && <>Loading...</>}
+                {!loading && !miningLoadout ? <>Save New</> : <>Save</>}
+              </Button>
+            </>
+          </Tooltip>
+        </Stack>
         <LoadoutCreateModal
           open={editingName}
           edit
