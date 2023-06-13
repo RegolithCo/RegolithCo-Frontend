@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { SxProps, Theme } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLogin } from '../../hooks/useOAuth2'
 import {
@@ -19,7 +18,7 @@ export const LoadoutPageContainer: React.FC = () => {
   const { tab, activeLoadout } = useParams()
 
   const loadoutsQuery = useGetLoadoutsQuery({
-    skip: !isInitialized,
+    skip: !isInitialized || !userProfile,
   })
 
   //   createLoadout
@@ -31,6 +30,7 @@ export const LoadoutPageContainer: React.FC = () => {
       ...rest,
       activeLasers: removeKeyRecursive(activeLasers, '__typename'),
     }
+    if (!isInitialized) return
     return createLoadoutMutation({
       variables: {
         miningLoadout: loadoutInput,
@@ -65,6 +65,7 @@ export const LoadoutPageContainer: React.FC = () => {
   const updateLoadout = async (loadout: MiningLoadout) => {
     const { __typename, updatedAt, createdAt, owner, loadoutId, activeLasers, ...rest } = loadout
     const loadoutInput: MiningLoadoutInput = { ...rest, activeLasers: removeKeyRecursive(activeLasers, '__typename') }
+    if (!isInitialized) return
     return updateLoadoutMutation({
       variables: {
         loadoutId,
@@ -86,6 +87,7 @@ export const LoadoutPageContainer: React.FC = () => {
   // deleteLoadout
   const [deleteLoadoutMutation, { loading: deleteLoadoutLoading }] = useDeleteLoadoutMutation()
   const deleteLoadout = async (loadoutId: string) => {
+    if (!isInitialized) return
     return deleteLoadoutMutation({
       variables: {
         loadoutId,

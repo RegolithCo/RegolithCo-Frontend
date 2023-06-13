@@ -71,7 +71,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
       </Tabs>
       {finalTab === LoadoutTabIndex.Calculator && (
         <LoadoutCalc
-          loading={loading}
+          loading={isLoggedIn && !userProfile}
           loadoutCount={loadouts.length}
           userProfile={userProfile}
           onCreate={(loadout) => {
@@ -81,7 +81,15 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
         />
       )}
       {finalTab === LoadoutTabIndex.MyLoadouts && !isLoggedIn && (
-        <Alert severity="info">You must be logged in to save loadouts.</Alert>
+        <Alert
+          severity="info"
+          sx={{
+            mx: 3,
+            my: 5,
+          }}
+        >
+          You must be logged in to save loadouts.
+        </Alert>
       )}
       {finalTab === LoadoutTabIndex.MyLoadouts && isLoggedIn && userProfile && (
         <MyLoadouts

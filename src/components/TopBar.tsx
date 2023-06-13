@@ -116,8 +116,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
       icon: <Calculate />,
       children: [
         { path: '/workorder', name: 'Work Order', icon: <Engineering /> },
-        { path: '/cluster', name: 'Rock Calculator', icon: <RockIcon /> },
-        { path: '/loadouts', name: 'Loadouts', icon: <ModuleIcon /> },
+        { path: '/cluster', name: 'Rock / Cluster Calculator', icon: <RockIcon /> },
+        { path: '/loadouts', name: 'Ship Loadouts', icon: <ModuleIcon /> },
       ],
     },
     {
@@ -151,7 +151,15 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const profileMenu: MenuItemType[] = [
     { path: '/profile', name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
     { path: '/verify', name: 'Verify Account', icon: <Verified />, show: userCtx.isInitialized && !userCtx.isVerified },
-    { path: '/verify', name: 'Logout', icon: <Logout />, show: Boolean(userCtx.isAuthenticated) },
+    {
+      path: '/',
+      name: 'Logout',
+      icon: <Logout />,
+      show: Boolean(userCtx.isAuthenticated),
+      action: () => {
+        userCtx.logOut()
+      },
+    },
   ]
 
   return (
@@ -200,13 +208,19 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                   <TopBarMenuItem handleAction={handleNavigate} key={`menuItem-${idx}`} item={item} />,
                   item.children && (
                     <Divider
+                      key={`divider-${idx}`}
                       sx={{
                         borderColor: alpha(theme.palette.secondary.contrastText, 0.2),
                       }}
                     />
                   ),
-                  (item.children || []).map((child, idx) => (
-                    <TopBarMenuItem indent={3} handleAction={handleNavigate} key={`menuItem-${idx}`} item={child} />
+                  (item.children || []).map((child, idy) => (
+                    <TopBarMenuItem
+                      indent={3}
+                      handleAction={handleNavigate}
+                      key={`menuItem-${idx}-${idy}`}
+                      item={child}
+                    />
                   )),
                 ]
             }, [] as React.ReactNode[])}

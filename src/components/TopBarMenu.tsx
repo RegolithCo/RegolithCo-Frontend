@@ -57,6 +57,7 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({ open, name, anchorEl, ha
         .map((item, idx) =>
           item.isDivider ? (
             <Divider
+              key={`divider-${idx}`}
               sx={{
                 border: `1px solid ${yellow[700]}`,
               }}
@@ -84,6 +85,8 @@ export const TopBarMenuItem: React.FC<TopBarMenuItemProps> = ({ item, indent, ha
       sx={{
         pr: 3,
         pl: theme.spacing((indent || 0) + 1 || 1),
+        // color: indent ? theme.palette.secondary.light : undefined,
+        // background: indent ? theme.palette.secondary.contrastText : undefined,
         '&:hover': {
           background: theme.palette.secondary.contrastText,
           color: theme.palette.secondary.light,

@@ -184,7 +184,6 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         </Box>
       )
   }, [])
-
   return (
     <Wrapper>
       <Card
