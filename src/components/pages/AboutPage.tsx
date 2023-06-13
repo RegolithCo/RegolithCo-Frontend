@@ -54,9 +54,26 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
   const styles = stylesThunk(theme)
 
   const finalTab = typeof tab === 'undefined' ? TabIndex.General : tab
+  let finalTitle = 'About Regolith Co.'
+  switch (finalTab) {
+    case TabIndex.FAQ:
+      finalTitle = 'Frequently Asked Questions'
+      break
+    case TabIndex.HelpUs:
+      finalTitle = 'Support Us'
+      break
+    case TabIndex.GetHelp:
+      finalTitle = 'Get Help'
+      break
+    case TabIndex.Thanks:
+      finalTitle = 'Acknowledgements'
+      break
+    default:
+      break
+  }
 
   return (
-    <PageWrapper title="About Regolith Co." maxWidth="sm" sx={{ marginLeft: { lg: '7%' } }}>
+    <PageWrapper title={finalTitle} maxWidth="sm" sx={{ marginLeft: { lg: '7%' } }}>
       <Typography variant="body2" component="div" gutterBottom>
         <em>"Don't mine alone"</em>
       </Typography>

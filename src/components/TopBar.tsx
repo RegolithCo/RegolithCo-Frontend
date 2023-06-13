@@ -7,23 +7,41 @@ import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
-import MenuItem from '@mui/material/MenuItem'
 import { yellow } from '@mui/material/colors'
-import { CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
+import { CircularProgress, Divider, SxProps, Theme, alpha, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
-import { Login } from '@mui/icons-material'
-// import { LoginExpiryTimer } from './fields/LoginExpiryTimer'
+import {
+  Calculate,
+  CalendarMonth,
+  Celebration,
+  Coffee,
+  Engineering,
+  HelpCenter,
+  Info,
+  Login,
+  Logout,
+  Person,
+  QuestionAnswer,
+  Store,
+  TableChart,
+  Verified,
+} from '@mui/icons-material'
 import { RockIcon } from '../icons'
 import { LoginContextObj } from '../hooks/useOAuth2'
 import { UserAvatar } from './UserAvatar'
+import { ModuleIcon } from '../icons/Module'
+import { TopBarMenu, TopBarMenuItem } from './TopBarMenu'
+import { LaserIcon } from '../icons/Laser'
 
-const pages = {
-  '/session': 'Sessions',
-  '/cluster': 'Cluster Calc.',
-  '/workorder': 'Work Order',
-  '/loadouts': 'Loadouts',
-  '/tables': 'Data Tables',
-  '/about': 'About',
+export type MenuItemType = {
+  path?: string
+  isDivider?: boolean
+  action?: () => void
+  disabled?: boolean
+  show?: boolean
+  name?: string
+  icon?: React.ReactNode
+  children?: MenuItemType[]
 }
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
@@ -69,34 +87,72 @@ export interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
+  const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement }>(null)
   const theme = useTheme()
   const styles = stylesThunk(theme)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
-  }
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
+  const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {
+    setMenuOpen({ name: name, el: event.currentTarget })
   }
 
-  const handleNavigate = (path: string) => {
-    setAnchorElNav(null)
-    setAnchorElUser(null)
-    if (navigate) {
-      navigate(path)
-    }
+  const handleNavigate = (path?: string, action?: () => void) => {
+    setMenuOpen(null)
+    // take the action (if any)
+    if (action) action()
+    // navigate to the path (if any)
+    if (path && navigate) navigate(path)
   }
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
+  const handleCloseMenu = () => {
+    setMenuOpen(null)
   }
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
-  }
+  const topBarMenu: MenuItemType[] = [
+    //
+    { path: '/session', name: 'Mining Sessions', icon: <CalendarMonth /> },
+    {
+      name: 'Calculators',
+      icon: <Calculate />,
+      children: [
+        { path: '/workorder', name: 'Work Order', icon: <Engineering /> },
+        { path: '/cluster', name: 'Rock Calculator', icon: <RockIcon /> },
+        { path: '/loadouts', name: 'Loadouts', icon: <ModuleIcon /> },
+      ],
+    },
+    {
+      path: '/tables/ore',
+      name: 'Data Tables',
+      icon: <TableChart />,
+      children: [
+        { path: '/tables/ore', name: 'Refinery Methods', icon: <TableChart /> },
+        { path: '/tables/refinery', name: 'Refining Bonuses', icon: <TableChart /> },
+        { path: '/tables/market', name: 'Market Prices', icon: <Store /> },
+        { isDivider: true },
+        { path: '/loadouts/lasers', name: 'Mining Lasers', icon: <LaserIcon /> },
+        { path: '/loadouts/modules', name: 'Mining Modules & Gadgets', icon: <ModuleIcon /> },
+      ],
+    },
+    {
+      path: '/about',
+      name: 'About',
+      icon: <Info />,
+      children: [
+        { path: '/about/general', name: 'About Regolith Co.', icon: <Info /> },
+        { isDivider: true },
+        { path: '/about/faq', name: 'FAQ', icon: <QuestionAnswer /> },
+        { path: '/about/support-us', name: 'Help / Support Us', icon: <Coffee /> },
+        { path: '/about/get-help', name: 'Get Help', icon: <HelpCenter /> },
+        { path: '/about/acknowledgements', name: 'acknowledgements', icon: <Celebration /> },
+      ],
+    },
+  ]
+
+  const profileMenu: MenuItemType[] = [
+    { path: '/profile', name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
+    { path: '/verify', name: 'Verify Account', icon: <Verified />, show: userCtx.isInitialized && !userCtx.isVerified },
+    { path: '/verify', name: 'Logout', icon: <Logout />, show: Boolean(userCtx.isAuthenticated) },
+  ]
 
   return (
     <AppBar position="static" sx={styles.appBar}>
@@ -109,14 +165,14 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
             aria-label="account of current user"
             aria-controls="menu-appbar"
             aria-haspopup="true"
-            onClick={handleOpenNavMenu}
+            onClick={handleOpenMenu('mobile')}
             color="inherit"
           >
             <MenuIcon />
           </IconButton>
           <Menu
             id="menu-appbar"
-            anchorEl={anchorElNav}
+            anchorEl={openMenu && openMenu.el}
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'left',
@@ -126,18 +182,34 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
               vertical: 'top',
               horizontal: 'left',
             }}
-            open={Boolean(anchorElNav)}
-            onClose={handleCloseNavMenu}
+            open={Boolean(openMenu && openMenu.name === 'mobile')}
+            onClose={handleCloseMenu}
             sx={{
               display: { xs: 'block', md: 'none' },
-              color: 'inherit',
+              '& .MuiPaper-root': {
+                background: yellow[700],
+                color: theme.palette.secondary.contrastText,
+              },
             }}
           >
-            {Object.entries(pages).map(([path, name]) => (
-              <MenuItem key={path} onClick={() => handleNavigate(path)}>
-                <Typography textAlign="center">{name}</Typography>
-              </MenuItem>
-            ))}
+            {topBarMenu.reduce((acc, item, idx) => {
+              if (item.isDivider || item.show === false) return acc
+              else
+                return [
+                  ...acc,
+                  <TopBarMenuItem handleAction={handleNavigate} key={`menuItem-${idx}`} item={item} />,
+                  item.children && (
+                    <Divider
+                      sx={{
+                        borderColor: alpha(theme.palette.secondary.contrastText, 0.2),
+                      }}
+                    />
+                  ),
+                  (item.children || []).map((child, idx) => (
+                    <TopBarMenuItem indent={3} handleAction={handleNavigate} key={`menuItem-${idx}`} item={child} />
+                  )),
+                ]
+            }, [] as React.ReactNode[])}
           </Menu>
         </Box>
         {/* This is our mini menu for mobile */}
@@ -147,14 +219,42 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         </Typography>
         {/* This is the login Menu for non-mobile */}
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-          {Object.entries(pages).map(([path, name]) => (
-            <Button key={path} onClick={() => handleNavigate(path)} sx={{ my: 2, color: 'inherit', display: 'block' }}>
-              {name}
-            </Button>
-          ))}
+          {topBarMenu.map(
+            ({ path, name, icon, isDivider, disabled, show, children }, idx) =>
+              !isDivider &&
+              show !== false && (
+                <Button
+                  key={`menuItem-${idx}`}
+                  startIcon={icon}
+                  disabled={disabled}
+                  onMouseOver={children && handleOpenMenu(name as string)}
+                  onClick={() => path && handleNavigate(path)}
+                  sx={{
+                    background: openMenu && openMenu.name === name ? theme.palette.secondary.contrastText : undefined,
+                    color: openMenu && openMenu.name === name ? theme.palette.secondary.light : 'inherit',
+                  }}
+                >
+                  {name}
+                </Button>
+              )
+          )}
+          {topBarMenu
+            .filter(({ disabled, show, children, isDivider }) => !disabled && show !== false && children && !isDivider)
+            .map(({ name, children }, idx) => {
+              return (
+                <TopBarMenu
+                  open={Boolean(openMenu && openMenu.name === name)}
+                  name={name}
+                  onClose={handleCloseMenu}
+                  key={`menu-${idx}`}
+                  anchorEl={openMenu && openMenu.el}
+                  handleAction={handleNavigate}
+                  menu={children || []}
+                />
+              )
+            })}
         </Box>
         {/* Debugger for oauth token expiry */}
-        {/* <Box sx={{ flexGrow: 0 }}>{userCtx.isAuthenticated && <LoginExpiryTimer />}</Box> */}
         {/* Profile icon, username and badge */}
         <div style={{ flexGrow: 1 }} />
         {IS_STAGING && '[TEST SERVER]'}
@@ -165,7 +265,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                 <CircularProgress color="secondary" thickness={7} />
               ) : (
                 <Button
-                  onClick={handleOpenUserMenu}
+                  onMouseOver={handleOpenMenu('profile')}
+                  onClick={navigate ? () => navigate('/profile') : undefined}
                   sx={{
                     fontFamily: fontFamilies.robotoMono,
                     fontWeight: 'bold',
@@ -176,41 +277,13 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                   {userCtx.userProfile?.scName}
                 </Button>
               )}
-              <Menu
-                sx={{ mt: '45px', color: 'inherit' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {userCtx.isInitialized && (
-                  <MenuItem onClick={() => handleNavigate('/profile')} sx={{ color: 'inherit' }}>
-                    <Typography textAlign="center">Profile</Typography>
-                  </MenuItem>
-                )}
-                {userCtx.isInitialized && !userCtx.isVerified && (
-                  <MenuItem onClick={() => handleNavigate('/verify')}>
-                    <Typography textAlign="center">Verify Account</Typography>
-                  </MenuItem>
-                )}
-                <MenuItem
-                  onClick={() => {
-                    userCtx.logOut()
-                    handleNavigate('/')
-                  }}
-                >
-                  <Typography textAlign="center">Signout</Typography>
-                </MenuItem>
-              </Menu>
+              <TopBarMenu
+                open={Boolean(openMenu && openMenu.name === 'profile')}
+                onClose={handleCloseMenu}
+                anchorEl={openMenu && openMenu.el}
+                handleAction={handleNavigate}
+                menu={profileMenu}
+              />
             </>
           )}
           {!userCtx.isAuthenticated && (
