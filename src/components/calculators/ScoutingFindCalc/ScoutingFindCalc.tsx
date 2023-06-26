@@ -656,7 +656,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         {/* Rock scans */}
         {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
           <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
-            <Box sx={{ width: '100%' }}>
+            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ display: 'flex' }}>
                 <Typography variant="overline" component="div">
                   Rocks Scanned: {shipFind.shipRocks?.length || vehicleFind.vehicleRocks?.length || 0}/

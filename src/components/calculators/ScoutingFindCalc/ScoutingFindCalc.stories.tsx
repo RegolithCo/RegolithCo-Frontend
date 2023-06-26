@@ -1,8 +1,13 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { ScoutingFindCalc } from './ScoutingFindCalc'
-import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/mock'
+import { ScoutingFindCalc, ScoutingFindCalcProps } from './ScoutingFindCalc'
+import {
+  fakeSalvageFind,
+  fakeSessionUser,
+  fakeShipClusterFind,
+  fakeVehicleClusterFind,
+} from '@regolithco/common/dist/mock'
 import { ScoutingFindTypeEnum } from '@regolithco/common'
 
 export default {
@@ -18,7 +23,7 @@ export default {
   },
 } as ComponentMeta<typeof ScoutingFindCalc>
 
-const Template: ComponentStory<typeof ScoutingFindCalc> = (args) => {
+const Template: ComponentStory<typeof ScoutingFindCalc> = (args: ScoutingFindCalcProps) => {
   const { findType, ...props } = args as any
   switch (findType) {
     case ScoutingFindTypeEnum.Ship:
@@ -38,14 +43,17 @@ const Template: ComponentStory<typeof ScoutingFindCalc> = (args) => {
 export const New = Template.bind({})
 New.args = {
   scoutingFind: fakeShipClusterFind(),
+  me: fakeSessionUser(),
 }
 
 export const Scout = Template.bind({})
 Scout.args = {
   scoutingFind: fakeShipClusterFind(),
+  me: fakeSessionUser(),
 }
 
 export const Observer = Template.bind({})
 Observer.args = {
   scoutingFind: fakeShipClusterFind(),
+  me: fakeSessionUser(),
 }
