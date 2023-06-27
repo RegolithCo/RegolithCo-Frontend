@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   ListItem,
   ListItemAvatar,
@@ -19,6 +19,8 @@ export interface ActiveUserListItemProps {
   sessionOwnerId?: string
   scoutingFind?: ScoutingFind
   friends?: string[]
+  openUserPopup?: (userId: string) => void
+  openContextMenu?: (el: HTMLElement, userId: string) => void
   navigate?: (path: string) => void
   addFriend?: () => void
 }
@@ -28,6 +30,8 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   sessionOwnerId,
   friends,
   scoutingFind,
+  openUserPopup,
+  openContextMenu,
   addFriend,
   navigate,
   meId,
@@ -35,6 +39,25 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const secondaryText = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
+
+  useEffect(() => {
+    // define a custom handler function
+    // for the contextmenu event
+    const handleContextMenu = (event: MouseEvent) => {
+      // prevent the right-click menu from appearing
+      event.preventDefault()
+    }
+
+    // attach the event listener to
+    // the document object
+    document.addEventListener('contextmenu', handleContextMenu)
+
+    // clean up the event listener when
+    // the component unmounts
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu)
+    }
+  }, [])
 
   const user = sessionUser.owner as User
   if (sessionUser) {
@@ -75,7 +98,18 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   }
 
   return (
-    <ListItem sx={{ background: meId ? '#33333366' : 'transparent' }}>
+    <ListItem
+      anchorEl={anchorEl}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        openContextMenu(anchorEl, userId)
+      }}
+      onDoubleClick={(e) => {
+        e.preventDefault()
+        openUserPopup && openUserPopup(sessionUser.ownerId)
+      }}
+      sx={{ background: meId ? '#33333366' : 'transparent' }}
+    >
       <ListItemAvatar>
         <UserAvatar size="small" user={user} sessionOwner={isOwner} />
       </ListItemAvatar>

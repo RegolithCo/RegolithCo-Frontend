@@ -19,6 +19,7 @@ const fakeSessionUsers = Array.from({ length: 20 }, (_, i) => fakeSessionUser())
 
 export const UserList = Template.bind({})
 UserList.args = {
+  meId: fakeSessionUsers[3].ownerId,
   friends: fakeSessionUsers.slice(0, 4).map((u) => u.owner?.scName as string),
   // sessionUsers: fakeUsers.map((u) => ({
   //   fakeSessionUser,

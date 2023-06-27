@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { List } from '@mui/material'
 import { ScoutingFind, SessionUser } from '@regolithco/common'
 import { ActiveUserListItem } from './ActiveUserListItem'
@@ -9,6 +9,7 @@ export interface ActiveUserListProps {
   scoutingMap?: Map<string, ScoutingFind>
   sessionOwnerId?: string
   friends?: string[]
+  openUserModal?: (userId: string) => void
   navigate?: (path: string) => void
   addFriend?: (friendName: string) => void
 }
@@ -18,10 +19,12 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
   sessionOwnerId,
   meId,
   navigate,
+  openUserModal,
   scoutingMap,
   friends,
   addFriend,
 }) => {
+  const [menuOpen, setMenuOpen] = React.useState<[HTMLElement, string] | null>(null)
   const sortedSessionUsers = [...sessionUsers]
   sortedSessionUsers.sort((a, b) => {
     // session owner gets the top spot
@@ -60,6 +63,8 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
           key={`user-${idx}`}
           meId={meId}
           sessionOwnerId={sessionOwnerId}
+          openContextMenu={openUserModal}
+          openUserPopup={(el: HTMLElement, userId: string) => setMenuOpen([el, userId])}
           scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
           sessionUser={sessionUser}
           navigate={navigate}
