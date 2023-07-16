@@ -44,11 +44,11 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
-      <Alert severity="info" sx={{ mb: 2 }}>
+      {/* <Alert severity="info" sx={{ mb: 2 }}>
         <AlertTitle>A note about 3.19</AlertTitle>
         TL;DR: Expect weirdness and <strong>thank you</strong> for your patience while we all learn the new meta.
         <Link onClick={() => setAlertModalOpen(true)}>Read More</Link>
-      </Alert>
+      </Alert> */}
       <Divider sx={{ my: 2 }} />
       {/* OUR MAIN CHOICE */}
       <Grid container spacing={4}>

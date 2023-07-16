@@ -71,17 +71,26 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
   const styles = stylesThunk(theme)
 
   let itemName = 'rocks'
+  let maxItems = 16
   switch (clusterType) {
     case ScoutingFindTypeEnum.Ship:
       itemName = 'mineable rocks'
+      maxItems = 20
       break
     case ScoutingFindTypeEnum.Vehicle:
       itemName = 'mineable rocks'
+      maxItems = 30
       break
     case ScoutingFindTypeEnum.Salvage:
       itemName = 'wrecks'
+      maxItems = 16
       break
   }
+
+  const marks = Array.from(Array(maxItems).keys()).map((i) => {
+    const label = i == 0 || i == maxItems - 1 || (i + 1) % 4 == 0 ? i + 1 : ''
+    return { value: i + 1, label }
+  })
 
   const minVal = clusterType === ScoutingFindTypeEnum.Ship && numScans && numScans > 0 ? numScans : 1
 
@@ -149,24 +158,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           aria-label="Temperature"
           sx={{ pt: 4 }}
           size="medium"
-          marks={[
-            { value: 1, label: '1' },
-            { value: 2, label: '' },
-            { value: 3, label: '' },
-            { value: 4, label: '4' },
-            { value: 5, label: '' },
-            { value: 6, label: '' },
-            { value: 7, label: '' },
-            { value: 8, label: '8' },
-            { value: 9, label: '' },
-            { value: 10, label: '' },
-            { value: 11, label: '' },
-            { value: 12, label: '12' },
-            { value: 13, label: '' },
-            { value: 14, label: '' },
-            { value: 15, label: '' },
-            { value: 16, label: '16' },
-          ]}
+          marks={marks}
           value={newClusterCount || numScans}
           valueLabelDisplay="off"
           onChange={(event: Event, newValue: number | number[]) => {
@@ -181,7 +173,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
           }}
           step={1}
           min={1}
-          max={16}
+          max={maxItems}
         />
         {clusterType === ScoutingFindTypeEnum.Vehicle && (
           <>

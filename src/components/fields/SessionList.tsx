@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Session, SessionStateEnum, defaultSessionName, User } from '@regolithco/common'
 import {
+  AvatarGroup,
   Box,
   List,
   ListItem,
@@ -9,11 +10,12 @@ import {
   Paper,
   Stack,
   SxProps,
+  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
 import dayjs from 'dayjs'
-import { keyframes, Theme } from '@mui/system'
+import { alpha, keyframes, Theme } from '@mui/system'
 import { sessionSubtitleArr } from '../pages/SessionPage/SessionHeader'
 import {
   Timeline,
@@ -114,7 +116,18 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
 
         return (
           <Box key={`yeamonth-${idx}`} sx={{ margin: '0 auto' }}>
-            <Typography variant="h6" sx={{ textAlign: 'left' }}>
+            <Typography
+              variant="h5"
+              sx={{
+                // background: alpha(theme.palette.background.paper, 0.5),
+                p: 1,
+                fontFamily: fontFamilies.robotoMono,
+                borderBottom: `2px solid ${theme.palette.primary.main}`,
+                color: theme.palette.primary.main,
+                textShadow: '1px 1px 1px #000000aa',
+                textAlign: 'left',
+              }}
+            >
               {currHeading}
             </Typography>
             <Timeline
@@ -137,7 +150,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                 return (
                   <TimelineItem key={`days-${idy}`}>
                     <TimelineOppositeContent
-                      color="text.secondary"
+                      color="text.primary"
                       sx={{
                         fontStyle: 'italic',
                         fontSize: '0.75rem',
@@ -157,8 +170,11 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                       <Paper
                         elevation={10}
                         sx={{
-                          border: '1px solid #666666',
+                          borderRadius: 5,
+                          border: `2px solid ${theme.palette.primary.dark}`,
+                          background: '#000000aa',
                           mb: 5,
+                          overflow: 'hidden',
                         }}
                       >
                         <List dense disablePadding>
@@ -176,7 +192,8 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                 sx={{
                                   ...pulseCssThunk(sessionActive),
                                   cursor: 'pointer',
-                                  p: 0.5,
+                                  px: 0.5,
+                                  py: 1,
                                   // Leave a little space for the session summary
                                   pb: 6,
                                   '&:hover': {
@@ -215,7 +232,54 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                     },
                                   }}
                                 >
-                                  <UserAvatar user={session.owner as User} size="large" />
+                                  <Tooltip
+                                    placement="top-end"
+                                    title={
+                                      <List>
+                                        <ListItem>
+                                          <ListItemAvatar>
+                                            <UserAvatar user={session.owner as User} size="small" hideTooltip />
+                                          </ListItemAvatar>
+                                          <ListItemText>
+                                            <Typography variant="subtitle1">
+                                              {session.owner?.scName} (Session Owner)
+                                            </Typography>
+                                          </ListItemText>
+                                        </ListItem>
+                                        {session.activeMembers?.items
+                                          .filter((member) => member.ownerId !== session.ownerId)
+                                          .map((member, idx) => (
+                                            <ListItem key={`${member.ownerId}-${idx}`}>
+                                              <ListItemAvatar>
+                                                <UserAvatar
+                                                  key={member.ownerId}
+                                                  user={member.owner as User}
+                                                  size="small"
+                                                  hideTooltip
+                                                />
+                                              </ListItemAvatar>
+                                              <ListItemText>
+                                                <Typography variant="subtitle1">{member.owner?.scName}</Typography>
+                                              </ListItemText>
+                                            </ListItem>
+                                          ))}
+                                      </List>
+                                    }
+                                  >
+                                    <AvatarGroup max={4} color="primary">
+                                      <UserAvatar user={session.owner as User} size="large" hideTooltip />
+                                      {session.activeMembers?.items
+                                        .filter((member) => member.ownerId !== session.ownerId)
+                                        .map((member) => (
+                                          <UserAvatar
+                                            key={member.ownerId}
+                                            user={member.owner as User}
+                                            size="large"
+                                            hideTooltip
+                                          />
+                                        ))}
+                                    </AvatarGroup>
+                                  </Tooltip>
                                   <div style={{ flexGrow: 1 }} />
                                 </ListItemAvatar>
                               </ListItem>
@@ -232,7 +296,13 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
               <Stack
                 direction="row"
                 spacing={1}
-                sx={{ justifyContent: 'center', mb: 4, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
+                sx={{
+                  textShadow: '2px 2px 4px #000000',
+                  justifyContent: 'center',
+                  mb: 4,
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                }}
               >
                 Monthly Total: {MValueFormatter(monthlyAUEC, MValueFormat.currency)}
               </Stack>

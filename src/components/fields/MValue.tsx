@@ -71,8 +71,8 @@ export const MValueFormatter = (
     if (decimals) finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}`)
     else finalVal = Numeral(value).format('0,0')
   } else if (format === MValueFormat.number_sm) {
-    if (decimals) finalVal = Numeral(value).format(`0.${'0'.repeat(decimals)}a`)
-    else finalVal = Numeral(value).format('0a')
+    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimals(value as number, true)
+    finalVal = Numeral(value).format(`0.${'0'.repeat(finalDecimals)}a`)
   }
   // aUEC
   else if (format === MValueFormat.currency) {

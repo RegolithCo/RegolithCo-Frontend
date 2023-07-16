@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Session, SessionStateEnum, SessionSummary } from '@regolithco/common'
-import { Box, Divider, SxProps, Tooltip, Typography, useTheme } from '@mui/material'
-import { Theme } from '@mui/system'
+import { Box, Divider, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { AccessTime, Assignment, Factory, Groups, TravelExplore } from '@mui/icons-material'
 import { MValue, MValueFormat, MValueFormatter } from './MValue'
 import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
@@ -13,12 +12,10 @@ export interface SessionListSummaryProps {
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   refineryBox: {
-    p: 0.5,
     display: 'flex',
-    position: 'absolute',
+    py: 0.5,
     textAlign: 'right',
-    right: 0,
-    bottom: 20,
+    color: theme.palette.text.secondary,
     '&.MuiTypography-root': {
       whiteSpace: 'nowrap',
       fontSize: 10,
@@ -27,7 +24,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     },
   },
   refineryName: {
-    mx: 0.5,
+    // mx: 0.5,
     // p: 0.5,
     // border: '1px solid',
     // borderRadius: 2,

@@ -51,6 +51,21 @@ export const SessionIdFragmentFragmentDoc = gql`
   name
 }
     `;
+export const SessionUsersFragmentFragmentDoc = gql`
+    fragment SessionUsersFragment on Session {
+  activeMembers {
+    items {
+      ownerId
+      sessionId
+      owner {
+        userId
+        scName
+        avatarUrl
+      }
+    }
+  }
+}
+    `;
 export const UserFragmentFragmentDoc = gql`
     fragment UserFragment on User {
   userId
@@ -1644,13 +1659,15 @@ export const GetMyUserSessionsDocument = gql`
       items {
         ...SessionListFragment
         ...SessionSummaryFragment
+        ...SessionUsersFragment
       }
       nextToken
     }
   }
 }
     ${SessionListFragmentFragmentDoc}
-${SessionSummaryFragmentFragmentDoc}`;
+${SessionSummaryFragmentFragmentDoc}
+${SessionUsersFragmentFragmentDoc}`;
 
 /**
  * __useGetMyUserSessionsQuery__
@@ -1687,13 +1704,15 @@ export const GetJoinedUserSessionsDocument = gql`
       items {
         ...SessionListFragment
         ...SessionSummaryFragment
+        ...SessionUsersFragment
       }
       nextToken
     }
   }
 }
     ${SessionListFragmentFragmentDoc}
-${SessionSummaryFragmentFragmentDoc}`;
+${SessionSummaryFragmentFragmentDoc}
+${SessionUsersFragmentFragmentDoc}`;
 
 /**
  * __useGetJoinedUserSessionsQuery__

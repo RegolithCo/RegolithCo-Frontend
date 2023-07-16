@@ -78,13 +78,13 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
         <Tab label="Refineries" value={DataTabsEnum.REFINERY} sx={styles.smallTabs} />
         <Tab label="Market" value={DataTabsEnum.MARKET} sx={styles.smallTabs} />
       </Tabs>
-      <Alert severity="warning" sx={{ mb: 2 }}>
+      {/* <Alert severity="warning" sx={{ mb: 2 }}>
         <AlertTitle>A note about 3.19.x Prices</AlertTitle>
         <Typography paragraph>
           In 3.19 prices have become a lot more dynamic. A more interactive, comprehensive view of prices is coming but
           for now these are just the maximum prices reported by <Link href="https://uexcorp.space/">UEX</Link>.
         </Typography>
-      </Alert>
+      </Alert> */}
 
       {tab === 'ore' && (
         <Box>

@@ -45,10 +45,11 @@ export interface UserAvatarProps {
   user?: User | UserProfile
   error?: boolean
   sessionOwner?: boolean
+  hideTooltip?: boolean
   size: 'small' | 'medium' | 'large'
 }
 
-export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessionOwner }) => {
+export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessionOwner, hideTooltip }) => {
   const myAvatar = makeAvatar(user?.avatarUrl as string)
   const theme = useTheme()
   const styles = stylesThunk(theme)
@@ -67,37 +68,35 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessi
   }
 
   return (
-    <Tooltip title={tooltipText}>
+    <Badge
+      badgeContent={user?.state === UserStateEnum.Verified ? <Verified color="success" /> : null}
+      sx={user?.state === UserStateEnum.Verified ? badgeStyle : {}}
+      overlap="circular"
+    >
       <Badge
-        badgeContent={user?.state === UserStateEnum.Verified ? <Verified color="success" /> : null}
-        sx={user?.state === UserStateEnum.Verified ? badgeStyle : {}}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        badgeContent={sessionOwner ? <Engineering color="secondary" /> : null}
+        sx={sessionOwner ? badgeStyle : {}}
         overlap="circular"
       >
-        <Badge
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
+        <Avatar
+          alt={user?.scName}
+          src={myAvatar}
+          imgProps={{ referrerPolicy: 'no-referrer' }}
+          color="secondary"
+          sx={{
+            background: theme.palette.secondary.main,
+            color: theme.palette.secondary.contrastText,
+            border: '1px solid',
           }}
-          badgeContent={sessionOwner ? <Engineering color="secondary" /> : null}
-          sx={sessionOwner ? badgeStyle : {}}
-          overlap="circular"
         >
-          <Avatar
-            alt={user?.scName}
-            src={myAvatar}
-            imgProps={{ referrerPolicy: 'no-referrer' }}
-            color="secondary"
-            sx={{
-              background: theme.palette.secondary.main,
-              color: theme.palette.secondary.contrastText,
-              border: '1px solid',
-            }}
-          >
-            {/* Fallbacks */}
-            {error && !user ? <Error color="error" /> : <Person color="inherit" />}
-          </Avatar>
-        </Badge>
+          {/* Fallbacks */}
+          {error && !user ? <Error color="error" /> : <Person color="inherit" />}
+        </Avatar>
       </Badge>
-    </Tooltip>
+    </Badge>
   )
 }

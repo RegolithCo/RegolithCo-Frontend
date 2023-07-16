@@ -6,7 +6,6 @@ import { SessionList } from '../fields/SessionList'
 import { AddCircle } from '@mui/icons-material'
 import { Container, Stack } from '@mui/system'
 import { PageLoader } from './PageLoader'
-import dayjs from 'dayjs'
 
 export interface SessionChooserPageProps {
   userProfile: UserProfile
@@ -50,9 +49,9 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
         md: 4,
       },
       border: {
-        md: '1px solid #444444',
+        // md: '1px solid #444444',
       },
-      backgroundColor: '#09090bec',
+      backgroundColor: '#000000cc',
     },
   }
 

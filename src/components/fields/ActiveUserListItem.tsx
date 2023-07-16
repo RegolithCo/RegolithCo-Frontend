@@ -8,7 +8,15 @@ import {
   Tooltip,
   Link,
 } from '@mui/material'
-import { getSessionUserStateName, makeAvatar, ScoutingFind, SessionUser, User } from '@regolithco/common'
+import {
+  getSessionUserStateName,
+  makeAvatar,
+  ScoutingFind,
+  SessionStateEnum,
+  SessionUser,
+  SessionUserStateEnum,
+  User,
+} from '@regolithco/common'
 import { Person, PersonAdd } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
 import { UserAvatar } from '../UserAvatar'
@@ -35,7 +43,6 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const secondaryText = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
-  const userAvatar = makeAvatar(sessionUser.owner?.avatarUrl as string)
 
   const user = sessionUser.owner as User
   if (sessionUser) {
@@ -63,7 +70,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
             </Link>
           </>
         )
-      } else secondaryText.push(getSessionUserStateName(sessionUser.state))
+      } else if (sessionUser.state !== SessionUserStateEnum.Unknown) {
+        secondaryText.push(getSessionUserStateName(sessionUser.state))
+      }
     }
     if (sessionUser.vehicle) {
       secondaryText.push(sessionUser.vehicle.name)

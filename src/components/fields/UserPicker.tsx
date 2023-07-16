@@ -17,16 +17,17 @@ export interface UserPickerProps {
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
 
-const filter = createFilterOptions<
-  [
-    string,
-    {
-      friend: boolean
-      session: boolean
-      named: boolean
-    }
-  ]
->()
+const filter =
+  createFilterOptions<
+    [
+      string,
+      {
+        friend: boolean
+        session: boolean
+        named: boolean
+      }
+    ]
+  >()
 
 export const UserPicker: React.FC<UserPickerProps> = ({
   label,
