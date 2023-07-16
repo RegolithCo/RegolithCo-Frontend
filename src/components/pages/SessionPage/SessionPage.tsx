@@ -14,7 +14,6 @@ import {
   createUserSuggest,
   ScoutingFind,
   session2Json,
-  downloadFile,
   createSafeFileName,
   session2csv,
   CrewShare,
@@ -50,6 +49,7 @@ import { SessionSettingsTab } from './TabSettings'
 import { DeleteModal } from '../../modals/DeleteModal'
 import { TabUsers } from './TabUsers'
 import { TabSummary } from './TabSummary'
+import { downloadFile } from '../../../lib/utils'
 
 export interface SessionPageProps {
   session: Session
