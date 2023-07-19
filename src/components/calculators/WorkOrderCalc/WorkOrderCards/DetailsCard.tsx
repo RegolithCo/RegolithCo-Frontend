@@ -35,6 +35,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
   workOrder,
   onChange,
   allowEdit,
+  isCalculator,
   failWorkOrder,
   isEditing,
   isNew,
@@ -193,7 +194,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
                 control={
                   <Switch
                     checked={Boolean(workOrder.state === WorkOrderStateEnum.Failed)}
-                    disabled={!isEditing}
+                    disabled={!isEditing || isCalculator}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                       if (event.target.checked) {
                         setIsFailModalOpen(true)

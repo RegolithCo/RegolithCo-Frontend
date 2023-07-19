@@ -528,9 +528,13 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       })
     },
     createWorkOrder: async (newOrder: WorkOrder) => {
-      const { crewShares, includeTransferFee, note, shareAmount, sellStore, sellerscName } = newOrder
+      const { crewShares, includeTransferFee, note, shareAmount, sellStore, sellerscName, expenses } = newOrder
       const shipOrder = newOrder as ShipMiningOrder
       const { processStartTime, processDurationS, refinery, method, isRefined, shareRefinedValue } = shipOrder
+
+      const filteredExpenses = (expenses || [])
+        .filter(({ name }) => name && name.trim().length > 0)
+        .map(({ name, amount }) => ({ name, amount }))
       const workOrderInput: WorkOrderInput = {
         includeTransferFee,
         isRefined,
@@ -539,6 +543,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         processStartTime,
         processDurationS,
         sellerscName,
+        expenses: filteredExpenses,
         refinery,
         shareRefinedValue,
         shareAmount,

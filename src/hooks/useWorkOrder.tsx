@@ -123,6 +123,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         processStartTime,
         processDurationS,
         refinery,
+        expenses,
         shareAmount,
         sellStore,
         includeTransferFee,
@@ -131,6 +132,9 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
       } = newWorkOrder as ShipMiningOrder
       const { salvageOres } = newWorkOrder as SalvageOrder
       const { vehicleOres } = newWorkOrder as VehicleMiningOrder
+      const filteredExpenses = (expenses || [])
+        .filter(({ name }) => name && name.trim().length > 0)
+        .map(({ name, amount }) => ({ name, amount }))
 
       updateWorkOrderMutation[0]({
         variables: {
@@ -143,6 +147,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             sellerscName,
             includeTransferFee,
             method,
+            expenses: filteredExpenses,
             processStartTime,
             processDurationS,
             refinery,
@@ -160,6 +165,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             updateWorkOrder: {
               ...workOrderQry.data?.workOrder,
               ...newWorkOrder,
+              expenses: filteredExpenses.map(({ name, amount }) => ({ name, amount, __typename: 'WorkOrderExpense' })),
             },
           }
           return optimisticresponse

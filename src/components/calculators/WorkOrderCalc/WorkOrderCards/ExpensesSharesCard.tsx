@@ -14,7 +14,6 @@ import {
   List,
   IconButton,
   Tooltip,
-  alpha,
   ListItem,
   ListItemText,
 } from '@mui/material'
@@ -28,6 +27,7 @@ import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
+import { on } from 'events'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -133,11 +133,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 
           {workOrder.orderType === ActivityEnum.Other ? (
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-              Share Amount:
+              Share Amount <em>(Gross profit)</em>:
             </Typography>
           ) : (
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-              Final Sell Price:
+              Final Sell Price <em>(Gross profit)</em>:
             </Typography>
           )}
           {isEditing && workOrder.orderType === ActivityEnum.Other && (
@@ -247,7 +247,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
             Expenses:
           </Typography>
-          <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} />
+          <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} onChange={onChange} />
 
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
             Crew Shares:

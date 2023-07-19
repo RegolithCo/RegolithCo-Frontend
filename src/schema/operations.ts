@@ -301,6 +301,10 @@ export const WorkOrderFragmentFragmentDoc = gql`
   note
   shareAmount
   sellStore
+  expenses {
+    amount
+    name
+  }
   crewShares {
     ...CrewShareFragment
   }

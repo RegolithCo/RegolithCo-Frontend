@@ -24,6 +24,7 @@ export interface WorkOrderCalcProps {
   allowEdit?: boolean
   allowPay?: boolean
   isNew?: boolean
+  isCalculator?: boolean
   isEditing?: boolean
   templateJob?: WorkOrderDefaults
   userSuggest?: UserSuggest
