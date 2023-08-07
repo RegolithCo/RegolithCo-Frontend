@@ -18,7 +18,7 @@ interface InitializeUserProps {
     initializeUser: (scName: string) => void
     requestVerify: () => void
     verifyUser: () => void
-    deleteUser: () => void
+    deleteUser: (leaveData: boolean) => void
   }
 }
 

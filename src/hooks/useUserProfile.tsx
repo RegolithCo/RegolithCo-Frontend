@@ -53,7 +53,7 @@ type useSessionsReturn = {
   verifyUser: () => void
   deleteUser: () => void
   updateUserProfile: (newUserProfile: UserProfileInput, settings?: DestructuredSettings) => void
-  deleteProfile: () => void
+  deleteProfile: (leaveData: boolean) => void
   resetDefaultSettings: () => void
   addFriend: (friend: string) => void
   refreshAvatar: (remove?: boolean) => void
@@ -317,7 +317,12 @@ export const useUserProfile = (): useSessionsReturn => {
         },
       })
     },
-    deleteProfile: () => deleteUserProfileMutation[0]().then(() => navigate('/')),
+    deleteProfile: (leaveData) =>
+      deleteUserProfileMutation[0]({
+        variables: {
+          leaveData,
+        },
+      }).then(() => navigate('/')),
     addFriend: (friend: string) => {
       addFriendsMutation[0]({
         variables: {

@@ -56,7 +56,7 @@ export interface ProfilePageProps {
   resetDefaultSettings?: () => void
   refreshAvatar: (remove?: boolean) => void
   updateUserProfile?: (userProfile: UserProfileInput, settings?: DestructuredSettings) => void
-  deleteProfile?: () => void
+  deleteProfile?: (leaveData: boolean) => void
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -455,8 +455,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         open={modalOpen === ProfileModals.DeleteProfile}
         scName={userProfile.scName}
         onClose={() => setModalOpen(null)}
-        onConfirm={() => {
-          deleteProfile && deleteProfile()
+        onConfirm={(leaveData) => {
+          deleteProfile && deleteProfile(leaveData)
           setModalOpen(null)
         }}
       />

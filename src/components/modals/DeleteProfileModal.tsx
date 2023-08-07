@@ -18,7 +18,7 @@ export interface DeleteProfileModalProps {
   open: boolean
   scName: string
   onClose: () => void
-  onConfirm: () => void
+  onConfirm: (leaveData: boolean) => void
 }
 
 const bulletStyleYES: React.CSSProperties = {
@@ -40,7 +40,7 @@ const bulletStyleNO: React.CSSProperties = {
 
 export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({ open, scName, onClose, onConfirm }) => {
   const [confirm, setConfirm] = React.useState<string>('')
-  const [clean, setClean] = React.useState<boolean>(false)
+  const [leaveData, setLeaveData] = React.useState<boolean>(true)
   const good2go = confirm === scName
   return (
     <Dialog open={open} onClose={onClose}>
@@ -48,8 +48,12 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({ open, sc
       <DialogContent>
         <Typography paragraph>Your user profile and login will be cleaned up.</Typography>
         <Typography paragraph>
-          Additionally you can choose to delete all sessions and work orders you created. There is no harm in leaving
-          those behind though, especially if others would find it useful.
+          Additionally you can choose to completely delete all sessions and work orders you created in OTHER peopl's
+          sessions. There is no harm in leaving those behind though, especially if others would find it useful.
+        </Typography>
+        <Typography paragraph>
+          If you don't check this box all your past work will be left behind and attributed to a user named
+          "DELETED_USER".
         </Typography>
         <FormGroup
           sx={{
@@ -61,7 +65,10 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({ open, sc
         >
           <FormControlLabel
             control={
-              <Checkbox onChange={(event: React.ChangeEvent<HTMLInputElement>) => setClean(event.target.checked)} />
+              <Checkbox
+                value={!leaveData}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLeaveData(!event.target.checked)}
+              />
             }
             label="Remove my data as well"
           />
@@ -80,8 +87,8 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({ open, sc
           </Typography>
           <ul className={'yesno'}>
             <li className={'yes'}>Remove your login</li>
-            <li className={clean ? 'yes' : 'no'}>Remove work orders and sessions you created</li>
-            <li className={clean ? 'yes' : 'no'}>Change past shares with your username to "DELETED_USER"</li>
+            <li className={!leaveData ? 'yes' : 'no'}>Remove work orders and sessions you created</li>
+            <li className={!leaveData ? 'yes' : 'no'}>Change past data with your username to "DELETED_USER"</li>
           </ul>
         </Box>
         <Typography variant="body1" color="primary">
@@ -97,7 +104,7 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({ open, sc
         <Button
           color="secondary"
           disabled={!good2go}
-          onClick={onConfirm}
+          onClick={() => onConfirm(leaveData)}
           size="large"
           variant={good2go ? 'contained' : 'text'}
         >

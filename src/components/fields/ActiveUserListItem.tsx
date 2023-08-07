@@ -8,15 +8,7 @@ import {
   Tooltip,
   Link,
 } from '@mui/material'
-import {
-  getSessionUserStateName,
-  makeAvatar,
-  ScoutingFind,
-  SessionStateEnum,
-  SessionUser,
-  SessionUserStateEnum,
-  User,
-} from '@regolithco/common'
+import { getSessionUserStateName, ScoutingFind, SessionUser, SessionUserStateEnum, User } from '@regolithco/common'
 import { Person, PersonAdd } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
 import { UserAvatar } from '../UserAvatar'
