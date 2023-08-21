@@ -12,7 +12,7 @@ import { Box, Stack, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { DialogEnum } from './SessionPage.container'
 import { ActiveUserList } from '../../fields/ActiveUserList'
-import { ExpandMore, HelpOutline, Info, QuestionAnswer } from '@mui/icons-material'
+import { ExpandMore, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { MentionedUserList } from '../../fields/MentionedUserList'
 
@@ -21,7 +21,8 @@ export interface TabUsersProps {
   userProfile: UserProfile
   sessionUser: SessionUser
   navigate: (path: string) => void
-  addFriend: (username: string) => void
+  addFriend?: (username: string) => void
+  removeFriend?: (username: string) => void
   verifiedMentionedUsers: VerifiedUserLookup
   addSessionMentions: (scNames: string[]) => void
   removeSessionMentions: (scNames: string[]) => void
@@ -61,6 +62,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
   userProfile,
   navigate,
   addFriend,
+  removeFriend,
   verifiedMentionedUsers,
   addSessionMentions,
   removeSessionMentions,
@@ -99,6 +101,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
               meId={userProfile.userId}
               sessionUsers={session.activeMembers?.items as SessionUser[]}
               addFriend={addFriend}
+              removeFriend={removeFriend}
             />
           </AccordionDetails>
         </Accordion>

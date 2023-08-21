@@ -63,6 +63,7 @@ export interface SessionPageProps {
   // The
   verifiedMentionedUsers: VerifiedUserLookup
   addFriend: (username: string) => void
+  removeFriend: (username: string) => void
   navigate: (path: string) => void
   // Tab navigation
   activeTab: SessionTabs
@@ -127,6 +128,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   scoutingFindId,
   leaveSession,
   addFriend,
+  removeFriend,
   updateWorkOrder,
   onUpdateSession,
   markCrewSharePaid,
@@ -207,6 +209,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
             sessionUser={sessionUser}
             navigate={navigate}
             addFriend={addFriend}
+            removeFriend={removeFriend}
             addSessionMentions={addSessionMentions}
             removeSessionMentions={removeSessionMentions}
             verifiedMentionedUsers={verifiedMentionedUsers}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   ListItem,
   ListItemAvatar,
@@ -9,7 +9,7 @@ import {
   Link,
 } from '@mui/material'
 import { getSessionUserStateName, ScoutingFind, SessionUser, SessionUserStateEnum, User } from '@regolithco/common'
-import { Person, PersonAdd } from '@mui/icons-material'
+import { PeopleAlt, Person, PersonAdd } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
 import { UserAvatar } from '../UserAvatar'
 
@@ -19,8 +19,9 @@ export interface ActiveUserListItemProps {
   sessionOwnerId?: string
   scoutingFind?: ScoutingFind
   friends?: string[]
-  openUserPopup?: (userId: string) => void
-  openContextMenu?: (el: HTMLElement, userId: string) => void
+  menuOpen: boolean
+  openUserPopup?: () => void
+  openContextMenu?: (el: HTMLElement) => void
   navigate?: (path: string) => void
   addFriend?: () => void
 }
@@ -31,6 +32,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   friends,
   scoutingFind,
   openUserPopup,
+  menuOpen,
   openContextMenu,
   addFriend,
   navigate,
@@ -39,6 +41,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const secondaryText = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
+  const menuRef = useRef<HTMLLIElement>()
 
   useEffect(() => {
     // define a custom handler function
@@ -99,14 +102,13 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
 
   return (
     <ListItem
-      anchorEl={anchorEl}
       onContextMenu={(e) => {
         e.preventDefault()
-        openContextMenu(anchorEl, userId)
+        openContextMenu && openContextMenu(e.currentTarget)
       }}
       onDoubleClick={(e) => {
         e.preventDefault()
-        openUserPopup && openUserPopup(sessionUser.ownerId)
+        openUserPopup && openUserPopup()
       }}
       sx={{ background: meId ? '#33333366' : 'transparent' }}
     >
@@ -132,27 +134,13 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
             : null
         }
       />
-      {(isOwner || !isMe) && addFriend && (
-        <ListItemSecondaryAction>
-          {!isMe && friends && (friends || []).indexOf(user.scName) < 0 ? (
-            <Tooltip title="Add username to friend list" arrow>
-              <span>
-                <IconButton onClick={addFriend}>
-                  <PersonAdd />
-                </IconButton>
-              </span>
-            </Tooltip>
-          ) : (
-            !isMe && (
-              <Tooltip title="Username is already in your friend list" arrow>
-                <span>
-                  <Person color="disabled" />
-                </span>
-              </Tooltip>
-            )
-          )}
-        </ListItemSecondaryAction>
-      )}
+      <ListItemSecondaryAction>
+        {!isMe && (friends || []).includes(user.scName) && (
+          <Tooltip title="Friend" arrow>
+            <PeopleAlt color="info" />
+          </Tooltip>
+        )}
+      </ListItemSecondaryAction>
     </ListItem>
   )
 }

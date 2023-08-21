@@ -80,6 +80,7 @@ export const SessionPageContainer2: React.FC = () => {
       // A bit redundant but we need it
       sessionUser={sessionQueries.sessionUser as SessionUser}
       addFriend={userQry.addFriend}
+      removeFriend={userQry.removeFriend}
       // Session stuff
       onCloseSession={sessionQueries.closeSession}
       onUpdateSession={sessionQueries.onUpdateSession}
