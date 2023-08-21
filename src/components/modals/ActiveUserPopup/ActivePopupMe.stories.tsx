@@ -1,22 +1,24 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { ActiveUserPopup as ActiveUserPopupC } from './ActiveUserPopup'
+import { ActivePopupMe as ActivePopupMeC } from './ActivePopupMe'
+import { fakeSessionUser } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Modals/DeleteProfileModal',
-  component: ActiveUserPopupC,
+  component: ActivePopupMeC,
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ActiveUserPopupC>
+} as ComponentMeta<typeof ActivePopupMeC>
 
-const Template: ComponentStory<typeof ActiveUserPopupC> = (args) => <ActiveUserPopupC {...args} />
+const Template: ComponentStory<typeof ActivePopupMeC> = (args) => <ActivePopupMeC {...args} />
 
 export const DeleteProfileModal = Template.bind({})
 DeleteProfileModal.args = {
   open: true,
+  sessionUser: fakeSessionUser(),
   onClose: () => {
     console.log('Closed')
   },

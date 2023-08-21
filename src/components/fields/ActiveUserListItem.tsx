@@ -4,14 +4,16 @@ import {
   ListItemAvatar,
   ListItemText,
   ListItemSecondaryAction,
-  IconButton,
   Tooltip,
   Link,
+  IconButton,
 } from '@mui/material'
 import { getSessionUserStateName, ScoutingFind, SessionUser, SessionUserStateEnum, User } from '@regolithco/common'
-import { PeopleAlt, Person, PersonAdd } from '@mui/icons-material'
+import { MoreVert } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
 import { UserAvatar } from '../UserAvatar'
+import { ModuleIcon } from '../../icons/Module'
+import { text } from 'stream/consumers'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
@@ -34,7 +36,6 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   openUserPopup,
   menuOpen,
   openContextMenu,
-  addFriend,
   navigate,
   meId,
 }) => {
@@ -112,8 +113,20 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       }}
       sx={{ background: meId ? '#33333366' : 'transparent' }}
     >
-      <ListItemAvatar>
-        <UserAvatar size="small" user={user} sessionOwner={isOwner} />
+      <ListItemAvatar
+        sx={{
+          cursor: 'pointer',
+        }}
+        onClick={() => {
+          openUserPopup && openUserPopup()
+        }}
+      >
+        <UserAvatar
+          size="small"
+          user={user}
+          sessionOwner={isOwner}
+          isFriend={friends?.includes(user?.scName as string)}
+        />
       </ListItemAvatar>
 
       <ListItemText
@@ -122,6 +135,17 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
             fontSize: '0.7rem',
           },
           //
+        }}
+        primaryTypographyProps={{
+          onClick: () => {
+            openUserPopup && openUserPopup()
+          },
+          sx: {
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          },
         }}
         primary={user?.scName}
         secondary={
@@ -135,11 +159,22 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         }
       />
       <ListItemSecondaryAction>
-        {!isMe && (friends || []).includes(user.scName) && (
-          <Tooltip title="Friend" arrow>
-            <PeopleAlt color="info" />
-          </Tooltip>
-        )}
+        <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
+          <span>
+            <IconButton color="primary" disabled>
+              <ModuleIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
+
+        <IconButton
+          color="primary"
+          onClick={(e) => {
+            openContextMenu && openContextMenu(e.currentTarget)
+          }}
+        >
+          <MoreVert />
+        </IconButton>
       </ListItemSecondaryAction>
     </ListItem>
   )

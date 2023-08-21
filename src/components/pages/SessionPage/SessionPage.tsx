@@ -50,6 +50,8 @@ import { DeleteModal } from '../../modals/DeleteModal'
 import { TabUsers } from './TabUsers'
 import { TabSummary } from './TabSummary'
 import { downloadFile } from '../../../lib/utils'
+import { ActivePopupMe } from '../../modals/ActiveUserPopup/ActivePopupMe'
+import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
 
 export interface SessionPageProps {
   session: Session
@@ -157,6 +159,22 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   const styles = stylesThunk(theme, isActive)
   // Only one major modal at a time please.
   const [activeModal, setActiveModal] = React.useState<DialogEnum | null>(null)
+  const [activeUserModalId, setActiveUserModalId] = React.useState<string | null>(null)
+  const activeUserModelSessionUser = session.activeMembers?.items?.find(
+    ({ owner }) => owner?.userId === activeUserModalId
+  ) as SessionUser
+
+  // make a map of useIds to their scouting find attendance
+  const scoutingMap = React.useMemo(() => {
+    const map = new Map<string, ScoutingFind>()
+    session.scouting?.items?.forEach((scoutingFind) => {
+      // This will get overwritten if there are duplicates but that's ok
+      scoutingFind.attendance?.forEach((attendance) => {
+        map.set(attendance.owner?.userId as string, scoutingFind)
+      })
+    })
+    return map
+  }, [session.scouting?.items])
 
   // For temporary objects before we commit them to the DB
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>()
@@ -184,6 +202,11 @@ export const SessionPage: React.FC<SessionPageProps> = ({
       setActiveTab(SessionTabs.DASHBOARD)
     }
   }, [mediumUp, activeTab, setActiveTab])
+
+  const openUserModal = (userId: string) => {
+    setActiveUserModalId(userId)
+    setActiveModal(DialogEnum.USER_STATUS)
+  }
 
   return (
     <Box sx={{ display: 'flex', height: '100%', backdropFilter: 'blur(7px)', backgroundColor: '#0e0c1b77' }}>
@@ -213,7 +236,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
             addSessionMentions={addSessionMentions}
             removeSessionMentions={removeSessionMentions}
             verifiedMentionedUsers={verifiedMentionedUsers}
-            setActiveModal={setActiveModal}
+            openUserModal={openUserModal}
           />
           <Stack direction="row" spacing={2} sx={{ p: 2 }}>
             <Tooltip title="Back to sessions">
@@ -291,7 +314,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
               addSessionMentions={addSessionMentions}
               removeSessionMentions={removeSessionMentions}
               verifiedMentionedUsers={verifiedMentionedUsers}
-              setActiveModal={setActiveModal}
+              openUserModal={openUserModal}
             />
           )}
           {activeTab === SessionTabs.DASHBOARD && (
@@ -391,6 +414,24 @@ export const SessionPage: React.FC<SessionPageProps> = ({
         url={shareUrl}
         onClose={() => setActiveModal(null)}
       />
+
+      {/* The popup is different if the user is you */}
+      {activeUserModelSessionUser && activeUserModalId === userProfile.userId && (
+        <ActivePopupMe
+          open={activeModal === DialogEnum.USER_STATUS}
+          onClose={() => setActiveModal(null)}
+          scoutingMap={scoutingMap}
+          sessionUser={activeUserModelSessionUser}
+          loadouts={userProfile.loadouts || []}
+        />
+      )}
+      {activeUserModelSessionUser && activeUserModalId !== userProfile.userId && (
+        <ActivePopupUser
+          open={activeModal === DialogEnum.USER_STATUS}
+          onClose={() => setActiveModal(null)}
+          sessionUser={activeUserModelSessionUser}
+        />
+      )}
 
       {/* This is the ADD workordermodal */}
       {isActive && newWorkOrder && (

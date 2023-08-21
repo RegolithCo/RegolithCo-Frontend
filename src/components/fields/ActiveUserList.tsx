@@ -87,6 +87,7 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
         open={!!menuOpen}
         anchorEl={menuOpen?.el}
         onClose={() => setMenuOpen(null)}
+        openUserModal={openUserModal}
         sessionUser={sessionUsers.find((su) => su.owner?.userId === menuOpen?.userId) as SessionUser}
         friends={friends || []}
         addFriend={addFriend && menuOpenUser ? () => addFriend(menuOpenUser?.owner?.scName as string) : undefined}

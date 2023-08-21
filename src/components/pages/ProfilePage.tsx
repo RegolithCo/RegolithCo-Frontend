@@ -130,8 +130,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
   // const sortedShips = [...deliveryShipCodes]
   // sortedShips.sort((a, b) => {
-  //   const { cargo: cargoA }: ShipStats = lookups.shipLookups[a] as ShipStats
-  //   const { cargo: cargoB }: ShipStats = lookups.shipLookups[b] as ShipStats
+  //   const { cargo: cargoA }: Vehicle = lookups.shipLookups[a] as Vehicle
+  //   const { cargo: cargoB }: Vehicle = lookups.shipLookups[b] as Vehicle
   //   return cargoA && cargoB ? cargoB - cargoA : 0
   // })
 
@@ -291,7 +291,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   }}
                   value={newUserProfile.deliveryShipCode || ''}
                   renderValue={(ship) => {
-                    const shipObj: ShipStats = lookups.shipLookup[ship] as ShipStats
+                    const shipObj: Vehicle = lookups.shipLookup[ship] as Vehicle
                     return (
                       <Box sx={{ display: 'flex' }}>
                         {shipObj.name}
@@ -312,7 +312,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     <em>None</em>
                   </MenuItem>
                   {sortedShips.map((ship) => {
-                    const shipObj: ShipStats = lookups.shipLookups[ship] as ShipStats
+                    const shipObj: Vehicle = lookups.shipLookups[ship] as Vehicle
                     return (
                       <MenuItem key={`ship-${ship}`} value={ship}>
                         {shipObj.name}

@@ -421,13 +421,17 @@ export const UserProfileFragmentFragmentDoc = gql`
   state
   verifyCode
   deliveryShipCode
+  loadouts {
+    ...MiningLoadoutFragment
+  }
   sessionSettings {
     ...SessionSettingFragment
   }
   userSettings
   friends
 }
-    ${SessionSettingFragmentFragmentDoc}`;
+    ${MiningLoadoutFragmentFragmentDoc}
+${SessionSettingFragmentFragmentDoc}`;
 export const UserProfileLoadoutFragmentFragmentDoc = gql`
     fragment UserProfileLoadoutFragment on UserProfile {
   userId

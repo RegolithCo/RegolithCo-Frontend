@@ -10,7 +10,6 @@ import {
 } from '@regolithco/common'
 import { Box, Stack, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
-import { DialogEnum } from './SessionPage.container'
 import { ActiveUserList } from '../../fields/ActiveUserList'
 import { ExpandMore, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
@@ -20,13 +19,14 @@ export interface TabUsersProps {
   session: Session
   userProfile: UserProfile
   sessionUser: SessionUser
+  scoutingMap?: Map<string, ScoutingFind>
   navigate: (path: string) => void
   addFriend?: (username: string) => void
   removeFriend?: (username: string) => void
   verifiedMentionedUsers: VerifiedUserLookup
   addSessionMentions: (scNames: string[]) => void
   removeSessionMentions: (scNames: string[]) => void
-  setActiveModal: (modal: DialogEnum) => void
+  openUserModal: (userId: string) => void
 }
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
@@ -39,13 +39,24 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   },
   gridContainer: {},
   gridColumn: {},
-  drawerAccordionSummary: {
+  drawerAccordionSummaryPrimary: {
     '& .MuiTypography-root': {
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
     },
     color: theme.palette.secondary.contrastText,
     backgroundColor: theme.palette.secondary.main,
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      color: theme.palette.secondary.contrastText,
+    },
+  },
+  drawerAccordionSummarySecondary: {
+    '& .MuiTypography-root': {
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+    },
+    color: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.secondary.dark,
     '& .MuiAccordionSummary-expandIconWrapper': {
       color: theme.palette.secondary.contrastText,
     },
@@ -63,45 +74,35 @@ export const TabUsers: React.FC<TabUsersProps> = ({
   navigate,
   addFriend,
   removeFriend,
+  scoutingMap,
   verifiedMentionedUsers,
   addSessionMentions,
   removeSessionMentions,
-  setActiveModal,
+  openUserModal,
 }) => {
   const theme = useTheme()
   const isActive = session.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
   const isSessionOwner = session.ownerId === userProfile.userId
 
-  // make a map of useIds to their scouting find attendance
-  const userScoutingAttendance = React.useMemo(() => {
-    const map = new Map<string, ScoutingFind>()
-    session.scouting?.items?.forEach((scoutingFind) => {
-      // This will get overwritten if there are duplicates but that's ok
-      scoutingFind.attendance?.forEach((attendance) => {
-        map.set(attendance.owner?.userId as string, scoutingFind)
-      })
-    })
-    return map
-  }, [session.scouting?.items])
-
   return (
     <>
       <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
         <Accordion defaultExpanded={true} disableGutters>
-          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummary}>
+          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryPrimary}>
             <Typography>Session Members: ({session.activeMembers?.items?.length})</Typography>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <ActiveUserList
               friends={userProfile.friends}
-              scoutingMap={userScoutingAttendance}
+              scoutingMap={scoutingMap}
               sessionOwnerId={session.ownerId}
               navigate={navigate}
               meId={userProfile.userId}
               sessionUsers={session.activeMembers?.items as SessionUser[]}
               addFriend={addFriend}
               removeFriend={removeFriend}
+              openUserModal={openUserModal}
             />
           </AccordionDetails>
         </Accordion>
@@ -110,10 +111,10 @@ export const TabUsers: React.FC<TabUsersProps> = ({
             expandIcon={<ExpandMore />}
             aria-controls="panel1a-content"
             id="panel1a-header"
-            sx={styles.drawerAccordionSummary}
+            sx={styles.drawerAccordionSummarySecondary}
           >
             <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
-              <Typography sx={{ flexGrow: 1 }}>Mentioned: ({session.mentionedUsers?.length})</Typography>
+              <Typography sx={{ flexGrow: 1 }}>Not Joined Yet: ({session.mentionedUsers?.length})</Typography>
               <Tooltip
                 title={
                   <>

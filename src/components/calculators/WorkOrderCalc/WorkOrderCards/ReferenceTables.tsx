@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { ActivityEnum, lookups, ShipStats } from '@regolithco/common'
+import { ActivityEnum, lookups, Vehicle } from '@regolithco/common'
 import { fontFamilies } from '../../../../theme'
 
 export interface ReferenceTablesProps {
@@ -9,20 +9,20 @@ export interface ReferenceTablesProps {
 
 export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) => {
   const lups = lookups.shipLookups
-  const rows: [ShipStats, number, string, string][] = []
+  const rows: [Vehicle, number, string, string][] = []
   let show = true
   switch (activity) {
     case ActivityEnum.ShipMining:
-      rows.push([lups.find(({ code }) => code === 'MPROSP') as ShipStats, 100, 'miningHold', 'cSCU'])
-      rows.push([lups.find(({ code }) => code === 'ARMOLE') as ShipStats, 100, 'miningHold', 'cSCU'])
+      rows.push([lups.find(({ code }) => code === 'MPROSP') as Vehicle, 100, 'miningHold', 'cSCU'])
+      rows.push([lups.find(({ code }) => code === 'ARMOLE') as Vehicle, 100, 'miningHold', 'cSCU'])
       break
     case ActivityEnum.VehicleMining:
-      rows.push([lups.find(({ code }) => code === 'GREROC') as ShipStats, 1000, 'miningHold', 'mSCU'])
-      rows.push([lups.find(({ code }) => code === 'GRERCD') as ShipStats, 1000, 'miningHold', 'mSCU'])
+      rows.push([lups.find(({ code }) => code === 'GREROC') as Vehicle, 1000, 'miningHold', 'mSCU'])
+      rows.push([lups.find(({ code }) => code === 'GRERCD') as Vehicle, 1000, 'miningHold', 'mSCU'])
       break
     case ActivityEnum.Salvage:
-      rows.push([lups.find(({ code }) => code === 'RECLAI') as ShipStats, 1, 'cargo', 'SCU'])
-      rows.push([lups.find(({ code }) => code === 'VULTUR') as ShipStats, 1, 'cargo', 'SCU'])
+      rows.push([lups.find(({ code }) => code === 'RECLAI') as Vehicle, 1, 'cargo', 'SCU'])
+      rows.push([lups.find(({ code }) => code === 'VULTUR') as Vehicle, 1, 'cargo', 'SCU'])
       break
     default:
       show = false

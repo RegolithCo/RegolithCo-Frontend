@@ -11,6 +11,7 @@ interface ActiveUserContextMenuProps {
   anchorEl?: HTMLElement
   addFriend?: () => void
   removeFriend?: () => void
+  openUserModal?: (userId: string) => void
   onClose: () => void
 }
 
@@ -22,6 +23,7 @@ export const ActiveUserContextMenu: React.FC<ActiveUserContextMenuProps> = ({
   isMe,
   addFriend,
   removeFriend,
+  openUserModal,
   friends,
 }) => {
   return (
@@ -55,7 +57,12 @@ export const ActiveUserContextMenu: React.FC<ActiveUserContextMenuProps> = ({
           </ListItemText>
         </ListItem>
         <Divider />
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            openUserModal && openUserModal(sessionUser?.owner?.userId as string)
+            onClose()
+          }}
+        >
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
@@ -92,6 +99,39 @@ export const ActiveUserContextMenu: React.FC<ActiveUserContextMenuProps> = ({
             </ListItemText>
           </MenuItem>
         )}
+
+        <MenuItem disabled>
+          <ListItemIcon>
+            <PersonRemove fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography>Join Crew</Typography>
+          </ListItemText>
+        </MenuItem>
+        <MenuItem disabled>
+          <ListItemIcon>
+            <PersonRemove fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography>Add to Crew</Typography>
+          </ListItemText>
+        </MenuItem>
+        <MenuItem disabled>
+          <ListItemIcon>
+            <PersonRemove fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography>Leave Crew</Typography>
+          </ListItemText>
+        </MenuItem>
+        <MenuItem disabled>
+          <ListItemIcon>
+            <PersonRemove fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography>Remove from Crew</Typography>
+          </ListItemText>
+        </MenuItem>
       </MenuList>
     </Menu>
   )

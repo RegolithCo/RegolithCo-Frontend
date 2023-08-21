@@ -1,17 +1,4 @@
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Divider,
-  Link,
-  Paper,
-  SxProps,
-  Typography,
-} from '@mui/material'
+import { Button, Card, CardActions, CardContent, CardMedia, Divider, Paper, SxProps, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
@@ -68,7 +55,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
                 Mining Sessions {userCtx.isInitialized ? '' : '(Login)'}
               </Typography>
               <Typography variant="body2">
-                Organize your multi-crew mining with multiple ships, crew sharing etc.
+                Organize your multi-crew mining with multiple ships, crew sharing, coordinated scouting etc.
               </Typography>
             </CardContent>
             <CardActions>
