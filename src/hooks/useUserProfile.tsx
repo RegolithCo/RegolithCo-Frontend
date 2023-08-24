@@ -39,6 +39,7 @@ import { ApolloError } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 import { useLogin } from './useOAuth2'
+import LogRocket from 'logrocket'
 
 type useSessionsReturn = {
   userProfile?: UserProfile
@@ -73,6 +74,21 @@ export const useUserProfile = (): useSessionsReturn => {
     notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
   })
+
+  useEffect(() => {
+    // Logrocket only runs when not in production since we only get the free plan
+    if (process.env.NODE_ENV !== 'production') {
+      const logrocketname = userProfileQry.data?.profile?.scName || 'UNAUTHENTICATED'
+      const logRocketObj: Record<string, string | number | boolean> = userProfileQry.data
+        ? {
+            scName: userProfileQry.data?.profile?.scName as string,
+            avatar: userProfileQry.data?.profile?.avatarUrl as string,
+            userId: userProfileQry.data?.profile?.userId as string,
+          }
+        : {}
+      LogRocket.identify(logrocketname, logRocketObj)
+    }
+  }, [userProfileQry.data])
 
   useEffect(() => {
     if (mySessionsQry.data?.profile?.mySessions?.nextToken) {

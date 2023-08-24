@@ -9,9 +9,12 @@ import { APIProvider } from './hooks/useLogin'
 import App from './App'
 import { SnackbarProvider } from 'notistack'
 import { MyAuthProvider } from './hooks/useOAuth2'
+import LogRocket from 'logrocket'
 
 if (process.env.NODE_ENV !== 'production') {
+  // Logrocket only runs when not in production since we only get the free plan
   log.setLevel('debug')
+  LogRocket.init('xiwxu9/regolith')
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)

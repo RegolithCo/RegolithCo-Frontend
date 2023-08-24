@@ -25,6 +25,7 @@
     "javascript-color-gradient": "^2.4.4",
     "lodash": "^4.17.15",
     "loglevel": "^1.7.1",
+    "logrocket": "^5.0.1",
     "notistack": "^2.0.8",
     "numeral": "^2.0.6",
     "qrcode.react": "^3.1.0",
