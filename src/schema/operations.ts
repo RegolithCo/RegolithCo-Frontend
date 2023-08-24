@@ -418,6 +418,7 @@ export const UserProfileFragmentFragmentDoc = gql`
   avatarUrl
   createdAt
   updatedAt
+  lastActive
   state
   verifyCode
   deliveryShipCode

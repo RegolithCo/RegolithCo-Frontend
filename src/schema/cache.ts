@@ -380,7 +380,7 @@ export type UserInterfaceFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'loadouts' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'scName' | 'sessionSettings' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -389,6 +389,7 @@ export type UserProfileFieldPolicy = {
 	deliveryShipCode?: FieldPolicy<any> | FieldReadFunction<any>,
 	friends?: FieldPolicy<any> | FieldReadFunction<any>,
 	joinedSessions?: FieldPolicy<any> | FieldReadFunction<any>,
+	lastActive?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadouts?: FieldPolicy<any> | FieldReadFunction<any>,
 	mySessions?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>,

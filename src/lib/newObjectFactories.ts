@@ -248,6 +248,7 @@ export function dummyUserProfile(): UserProfile {
     scName: 'YOU',
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    lastActive: Date.now(),
     friends: [],
     loadouts: [],
     sessionSettings: {
@@ -264,6 +265,7 @@ export function newUserProfile(scName: string): UserProfile {
     scName,
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    lastActive: Date.now(),
     friends: [],
     loadouts: [],
     sessionSettings: {
