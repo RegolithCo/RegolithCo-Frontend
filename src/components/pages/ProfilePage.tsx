@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import {
   VerifiedUserLookup,
   UserProfile,
@@ -37,6 +36,7 @@ import { pick } from 'lodash'
 import { fontFamilies } from '../../theme'
 import { Theme } from '@mui/system'
 import { SessionSettingsTab } from './SessionPage/TabSettings'
+import { VehicleChooser } from '../fields/VehicleChooser'
 
 type ObjectValues<T> = T[keyof T]
 export const ProfileModals = {
@@ -115,25 +115,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const [modalOpen, setModalOpen] = React.useState<ProfileModals | null>(null)
   const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>(
-    pick(userProfile, ['deliveryShipCode', 'scName', 'userSettings'])
+    pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings'])
   )
   const [activeTab, setActiveTab] = React.useState<ProfileTabsEnum>(ProfileTabsEnum.PROFILE)
   const [friend2remove, setFriend2remove] = React.useState<string>()
 
   React.useEffect(() => {
-    if (userProfile) setNewUserProfile(pick(userProfile, ['deliveryShipCode', 'scName', 'userSettings']))
+    if (userProfile)
+      setNewUserProfile(pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings']))
   }, [userProfile])
 
   const friends: string[] = [...(userProfile?.friends || [])]
   // Alphabetically sort friends
   friends.sort((a, b) => a.localeCompare(b))
   const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
-  // const sortedShips = [...deliveryShipCodes]
-  // sortedShips.sort((a, b) => {
-  //   const { cargo: cargoA }: Vehicle = lookups.shipLookups[a] as Vehicle
-  //   const { cargo: cargoB }: Vehicle = lookups.shipLookups[b] as Vehicle
-  //   return cargoA && cargoB ? cargoB - cargoA : 0
-  // })
 
   const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'sm'
 
@@ -271,62 +266,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 </Box>
               </Box>
             )}
-            <Box sx={styles.section}>
-              {/* <Typography component="div" sx={styles.sectionTitle}>
-                Preferred Delivery Ship
-              </Typography> */}
-              {/* <Box sx={styles.sectionBody}>
-                <Select
-                  labelId="demo-select-small-label"
-                  id="delivery-ship-select"
-                  disabled={loading}
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    fontFamily: fontFamilies.robotoMono,
-                    fontWeight: 'bold',
-                    fontSize: '1rem',
-                    lineHeight: 1.6,
-                    mb: 2,
-                  }}
-                  value={newUserProfile.deliveryShipCode || ''}
-                  renderValue={(ship) => {
-                    const shipObj: Vehicle = lookups.shipLookup[ship] as Vehicle
-                    return (
-                      <Box sx={{ display: 'flex' }}>
-                        {shipObj.name}
-                        <div style={{ flexGrow: 1 }} />
-                        <div>({shipObj.cargo} SCU)</div>
-                      </Box>
-                    )
-                  }}
-                  onChange={(e) => {
-                    const newdeliveryShipCode =
-                      e.target.value && e.target.value.length > 0 ? (e.target.value as ShipEnum) : null
-                    const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newdeliveryShipCode }
-                    setNewUserProfile(updatedNewUserProfile)
-                    updateUserProfile && updateUserProfile(updatedNewUserProfile)
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {sortedShips.map((ship) => {
-                    const shipObj: Vehicle = lookups.shipLookups[ship] as Vehicle
-                    return (
-                      <MenuItem key={`ship-${ship}`} value={ship}>
-                        {shipObj.name}
-                        <div style={{ flexGrow: 1 }} />
-                        <Typography variant="caption">({shipObj.cargo} SCU)</Typography>
-                      </MenuItem>
-                    )
-                  })}
-                </Select>
-                <Typography variant="caption" sx={{ mt: 1 }}>
-                  The ship you prefer to use for taking your ore to market.
-                </Typography>
-              </Box> */}
-            </Box>
 
             {/* Avatar controls */}
             <Box sx={styles.section}>
@@ -426,28 +365,70 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
         {/* Sessions Tab */}
         {activeTab === ProfileTabsEnum.SESSION_DEFAULTS && (
-          <Box sx={styles.section}>
-            <Typography component="div" sx={styles.sectionTitle}>
-              Session Defaults
-            </Typography>
-            <Typography paragraph variant="body2">
-              These settings will be used as your session defaults. You can always override them when you create a
-              session.
-            </Typography>
-            <Box sx={styles.sectionBody}>
-              <SessionSettingsTab
-                sessionSettings={userProfile.sessionSettings}
-                resetDefaultSystemSettings={resetDefaultSettings}
-                onChangeSettings={(newSettings) => {
-                  updateUserProfile && updateUserProfile(newUserProfile, newSettings)
-                  setModalOpen(null)
-                }}
-                userSuggest={userProfile.friends.reduce((acc, friendName) => {
-                  return { ...acc, [friendName]: { friend: true, session: false, named: false } }
-                }, {} as UserSuggest)}
-              />
+          <>
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                Preferred Mining Session Vehicle
+              </Typography>
+              <Box sx={styles.sectionBody}>
+                <VehicleChooser
+                  vehicle={userProfile.sessionShipCode as string | undefined}
+                  onChange={(newCode) => {
+                    const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newCode }
+                    setNewUserProfile(updatedNewUserProfile)
+                    updateUserProfile && updateUserProfile(updatedNewUserProfile)
+                  }}
+                />
+                <Typography variant="caption" sx={{ mt: 1 }}>
+                  This ship will be your default when you start or join a session. This can be changed during a session.
+                </Typography>
+              </Box>
             </Box>
-          </Box>
+
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                Preferred Delivery Vehicle
+              </Typography>
+              <Box sx={styles.sectionBody}>
+                <VehicleChooser
+                  vehicle={userProfile.deliveryShipCode as string | undefined}
+                  onlyCargo
+                  onChange={(newCode) => {
+                    const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newCode }
+                    setNewUserProfile(updatedNewUserProfile)
+                    updateUserProfile && updateUserProfile(updatedNewUserProfile)
+                  }}
+                />
+                <Typography variant="caption" sx={{ mt: 1 }}>
+                  (This is not used yet but later we will be able to calculate the number of trips you need to make to
+                  market from refineries)
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                Session Defaults
+              </Typography>
+              <Typography paragraph variant="body2">
+                These settings will be used as your session defaults. You can always override them when you create a
+                session.
+              </Typography>
+              <Box sx={styles.sectionBody}>
+                <SessionSettingsTab
+                  sessionSettings={userProfile.sessionSettings}
+                  resetDefaultSystemSettings={resetDefaultSettings}
+                  onChangeSettings={(newSettings) => {
+                    updateUserProfile && updateUserProfile(newUserProfile, newSettings)
+                    setModalOpen(null)
+                  }}
+                  userSuggest={userProfile.friends.reduce((acc, friendName) => {
+                    return { ...acc, [friendName]: { friend: true, session: false, named: false } }
+                  }, {} as UserSuggest)}
+                />
+              </Box>
+            </Box>
+          </>
         )}
       </Box>
 

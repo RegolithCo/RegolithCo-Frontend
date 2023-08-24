@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import {
-  Autocomplete,
   Button,
   ButtonGroup,
   Dialog,
@@ -10,7 +9,6 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
@@ -21,7 +19,6 @@ import {
   SessionUser,
   Vehicle,
   User,
-  UserStateEnum,
   lookups,
   ScoutingFind,
   SessionUserStateEnum,
@@ -32,6 +29,7 @@ import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { Cancel, RocketLaunch } from '@mui/icons-material'
+import { VehicleChooser } from '../../fields/VehicleChooser'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
@@ -44,25 +42,6 @@ export interface ActivePopupMeProps {
 
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, sessionUser, loadouts, scoutingMap }) => {
   const theme = useTheme()
-
-  const sortedShips: Vehicle[] = useMemo(() => {
-    const newShips = [...lookups.shipLookups]
-    newShips.sort((a, b) => {
-      if (a.miningHold || b.miningHold) {
-        return (b.miningHold || 0) - (a.miningHold || 0)
-      }
-      return (b.cargo || 0) - (a.cargo || 0)
-    })
-    return newShips
-  }, [])
-
-  const shipColorLookup: Record<string, string> = {
-    Mining: theme.palette.secondary.main,
-    Freight: theme.palette.primary.main,
-    Transport: theme.palette.primary.main,
-    Gunship: theme.palette.error.main,
-    Fighter: theme.palette.error.main,
-  }
 
   return (
     <Dialog
@@ -132,37 +111,10 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, ses
           <Typography variant="overline" color="primary" component="div">
             Current Vehicle
           </Typography>
-          <Autocomplete
-            id="shipChooser"
-            value={sessionUser.vehicle}
-            renderOption={(props, ship) => (
-              <MenuItem
-                {...props}
-                value={ship.code}
-                sx={{
-                  color: shipColorLookup[ship.role] || 'inherit',
-                }}
-              >
-                {ship.name}
-                <div style={{ flexGrow: 1 }} />
-                <Typography variant="caption">
-                  {ship.role} ({ship.miningHold || ship.cargo || '0'} SCU)
-                </Typography>
-              </MenuItem>
-            )}
-            clearOnBlur
-            blurOnSelect
-            fullWidth
-            freeSolo
-            getOptionLabel={(option) => {
-              if (option === null) return ''
-              if (typeof option === 'string') return option
-              else return option.name + ` (${option.miningHold || option.cargo || '0'} SCU)`
-            }}
-            options={sortedShips}
-            renderInput={(params) => <TextField {...params} label="Current Ship" />}
-            onChange={(event, option) => {
-              console.log('event', event, option)
+          <VehicleChooser
+            vehicle={sessionUser.vehicle?.code}
+            onChange={(vehicleCode) => {
+              console.log('vehicleCode', vehicleCode)
             }}
           />
         </Box>

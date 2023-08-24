@@ -421,6 +421,7 @@ export const UserProfileFragmentFragmentDoc = gql`
   lastActive
   state
   verifyCode
+  sessionShipCode
   deliveryShipCode
   loadouts {
     ...MiningLoadoutFragment
