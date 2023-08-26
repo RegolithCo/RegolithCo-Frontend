@@ -283,7 +283,7 @@ export type SessionSummaryTotalsFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'state' | 'updatedAt' | 'vehicle' | SessionUserKeySpecifier)[];
+export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'state' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	isPilot?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -294,7 +294,7 @@ export type SessionUserFieldPolicy = {
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
-	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
+	vehicleCode?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ShipClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'shipRocks' | 'state' | 'updatedAt' | ShipClusterFindKeySpecifier)[];
 export type ShipClusterFindFieldPolicy = {

@@ -47,11 +47,19 @@ export interface ModuleChooserMenuProps {
   value: MiningModuleEnum | null
   isOn?: boolean
   locked?: boolean
+  readonly?: boolean
   onChange: (value: MiningModuleEnum | '', isActive: boolean, isHover: boolean) => void
   label: string
 }
 
-export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, value, isOn, locked, label }) => {
+export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
+  onChange,
+  value,
+  isOn,
+  locked,
+  label,
+  readonly,
+}) => {
   const theme = useTheme()
   const moduleKeys: MiningModuleEnum[] = Object.keys(MODULES).map((key) => key as MiningModuleEnum)
   return (
@@ -61,6 +69,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
           canBeOn
           isOn={isOn}
           locked={locked}
+          readonly={readonly}
           moduleCode={value as MiningModuleEnum | MiningGadgetEnum}
           onToggle={(isOn: boolean) => onChange(value, isOn, false)}
           onDelete={() => onChange('', true, false)}
@@ -68,6 +77,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
       )}
       <Select
         {...baseProps}
+        disabled={readonly}
         disableUnderline
         value={value || ''}
         sx={{
@@ -98,7 +108,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({ onChange, 
                   color: theme.palette.text.disabled,
                 }}
               >
-                CHOOSE {label}
+                {readonly ? 'No Module Mounted' : `CHOOSE ${label}`}
               </Typography>
             )
           }
@@ -162,12 +172,13 @@ export interface LaserChooserMenuProps {
   value: MiningLaserEnum | null
   isOn?: boolean
   onChange: (value: MiningLaserEnum | '', isActive: boolean, isHover: boolean) => void
+  readonly?: boolean
   laserSize: number
 }
 
 const LASER_NO_MENU_STAT: (keyof AllStats)[] = ['shatterDamage', 'overchargeRate', 'clusterMod', 'extrPower']
 
-export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, value, laserSize, isOn }) => {
+export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, value, laserSize, isOn, readonly }) => {
   const theme = useTheme()
   const laserChoices: MiningLaserEnum[] = Object.keys(LASERS)
     .filter((key) => LASERS[key as MiningLaserEnum].size === laserSize)
@@ -179,6 +190,7 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, va
         <LoadoutLaserChip
           canBeOn
           isOn={isOn}
+          readonly={readonly}
           laserCode={value as MiningLaserEnum}
           onToggle={(isOn: boolean) => onChange(value, isOn, false)}
           onDelete={() => onChange('', true, false)}
@@ -186,6 +198,7 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, va
       )}
       <Select
         {...baseProps}
+        disabled={readonly}
         disableUnderline
         value={value || ''}
         sx={{
@@ -204,7 +217,7 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, va
                   fontStyle: 'italic',
                 }}
               >
-                Choose a laser
+                {readonly ? 'No Laser Mounted' : 'Choose a laser'}
               </Typography>
             )
           }

@@ -1,4 +1,15 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Divider, Paper, SxProps, Typography } from '@mui/material'
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Divider,
+  Link,
+  Paper,
+  SxProps,
+  Typography,
+} from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Theme } from '@mui/system'
 import * as React from 'react'
@@ -30,7 +41,9 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
   const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
-      <Typography paragraph>This is a tool for organizing miners in Star Citizen.</Typography>
+      <Typography paragraph>
+        This is a tool for organizing miners in <Link href="https://robertsspaceindustries.com/">Star Citizen</Link>.
+      </Typography>
       {/* <Alert severity="info" sx={{ mb: 2 }}>
         <AlertTitle>A note about 3.19</AlertTitle>
         TL;DR: Expect weirdness and <strong>thank you</strong> for your patience while we all learn the new meta.

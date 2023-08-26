@@ -6,14 +6,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  MenuItem,
-  Select,
   Stack,
   Typography,
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { SessionUser, User, UserStateEnum, lookups, Vehicle } from '@regolithco/common'
+import { lookups, SessionUser, User, UserStateEnum } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -28,6 +26,7 @@ export interface ActivePopupUserProps {
 
 export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose, sessionUser }) => {
   const theme = useTheme()
+  const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
   return (
     <Dialog
       open={open}
@@ -80,7 +79,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             {sessionUser.loadout.name}
           </Typography>
         )}
-        <Typography>Vehicle: {sessionUser.vehicle?.name || 'UNKNOWN'}</Typography>
+        <Typography>Vehicle: {vehicle?.name || 'UNKNOWN'}</Typography>
         {/* Either a list of MY Crew (if there are any) or specify whose crew I am on */}
         <Typography>{sessionUser.pilotSCName ? `Crew of: ${sessionUser.pilotSCName}` : 'No crew'}</Typography>
 
@@ -95,7 +94,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             Current Vehicle
           </Typography>
           <Typography>
-            {sessionUser.vehicle?.name} ({sessionUser.vehicle?.maker})
+            {vehicle?.name} ({vehicle?.maker})
           </Typography>
         </Box>
 

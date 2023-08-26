@@ -27,6 +27,7 @@ export interface TabUsersProps {
   addSessionMentions: (scNames: string[]) => void
   removeSessionMentions: (scNames: string[]) => void
   openUserModal: (userId: string) => void
+  openLoadoutModal: (userId: string) => void
 }
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
@@ -79,6 +80,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
   addSessionMentions,
   removeSessionMentions,
   openUserModal,
+  openLoadoutModal,
 }) => {
   const theme = useTheme()
   const isActive = session.state === SessionStateEnum.Active
@@ -103,6 +105,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
               addFriend={addFriend}
               removeFriend={removeFriend}
               openUserModal={openUserModal}
+              openLoadoutModal={openLoadoutModal}
             />
           </AccordionDetails>
         </Accordion>

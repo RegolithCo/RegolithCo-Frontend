@@ -47,12 +47,12 @@ autoCompleteItems.sort((a, b) => {
 export interface LoadoutInventoryProps {
   loadout: MiningLoadout
   onChange: (miningLoadout: MiningLoadout) => void
+  readonly?: boolean
 }
 
-export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onChange }) => {
+export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onChange, readonly }) => {
   const theme = useTheme()
   const [value, setValue] = useState('')
-
   return (
     <Card
       sx={{
@@ -80,6 +80,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
           {loadout?.inventoryGadgets.map((gadget, index) => (
             <LoadoutModuleChip
               key={index}
+              readonly={readonly}
               moduleCode={gadget}
               onDelete={() => {
                 const inventoryGadgets = [...(loadout?.inventoryGadgets || [])]
@@ -101,6 +102,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
           {loadout?.inventoryModules.map((module, index) => (
             <LoadoutModuleChip
               key={index}
+              readonly={readonly}
               moduleCode={module}
               onDelete={() => {
                 const inventoryModules = [...(loadout?.inventoryModules || [])]
@@ -113,6 +115,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
             <LoadoutLaserChip
               key={index}
               laserCode={module}
+              readonly={readonly}
               onDelete={() => {
                 const inventoryLasers = [...(loadout?.inventoryLasers || [])]
                 inventoryLasers.splice(index, 1)
@@ -120,62 +123,66 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
               }}
             />
           ))}
+          {!readonly && (
+            <Autocomplete
+              options={autoCompleteItems}
+              value={value ? value : null}
+              disabled={readonly}
+              componentsProps={{
+                popper: { style: { width: 'fit-content', maxWidth: '500px' } },
+              }}
+              // isOptionEqualToValue={(option, value) => option === value}
+              onChange={(event: React.SyntheticEvent<Element, Event>, value: string | null) => {
+                if (!value || value.length === 0) return
+                setValue('')
+                if (LASERS[value as MiningLaserEnum])
+                  onChange({
+                    ...loadout,
+                    inventoryLasers: [...(loadout?.inventoryLasers || []), value as MiningLaserEnum],
+                  })
+                else if (GADGETS[value as MiningGadgetEnum])
+                  onChange({
+                    ...loadout,
+                    inventoryGadgets: [...(loadout.inventoryGadgets || []), value as MiningGadgetEnum],
+                    activeGadgetIndex: loadout.inventoryGadgets?.length || 0,
+                  })
+                else if (MODULES[value as MiningModuleEnum])
+                  onChange({
+                    ...loadout,
+                    inventoryModules: [...(loadout.inventoryModules || []), value as MiningModuleEnum],
+                  })
+              }}
+              renderOption={(props, option) => {
+                const itemType = LASERS[option as MiningLaserEnum]
+                  ? 'Laser'
+                  : GADGETS[option as MiningGadgetEnum]
+                  ? 'Gadget'
+                  : MODULES[option as MiningModuleEnum]
+                  ? 'Module'
+                  : ''
+                const qualifier = MODULES[option as MiningModuleEnum]
+                  ? MODULES[option as MiningModuleEnum].active
+                    ? 'Active '
+                    : 'Passive '
+                  : ''
 
-          <Autocomplete
-            options={autoCompleteItems}
-            value={value ? value : null}
-            componentsProps={{
-              popper: { style: { width: 'fit-content', maxWidth: '500px' } },
-            }}
-            // isOptionEqualToValue={(option, value) => option === value}
-            onChange={(event: React.SyntheticEvent<Element, Event>, value: string | null) => {
-              if (!value || value.length === 0) return
-              setValue('')
-              if (LASERS[value as MiningLaserEnum])
-                onChange({
-                  ...loadout,
-                  inventoryLasers: [...(loadout?.inventoryLasers || []), value as MiningLaserEnum],
-                })
-              else if (GADGETS[value as MiningGadgetEnum])
-                onChange({
-                  ...loadout,
-                  inventoryGadgets: [...(loadout.inventoryGadgets || []), value as MiningGadgetEnum],
-                  activeGadgetIndex: loadout.inventoryGadgets?.length || 0,
-                })
-              else if (MODULES[value as MiningModuleEnum])
-                onChange({
-                  ...loadout,
-                  inventoryModules: [...(loadout.inventoryModules || []), value as MiningModuleEnum],
-                })
-            }}
-            renderOption={(props, option) => {
-              const itemType = LASERS[option as MiningLaserEnum]
-                ? 'Laser'
-                : GADGETS[option as MiningGadgetEnum]
-                ? 'Gadget'
-                : MODULES[option as MiningModuleEnum]
-                ? 'Module'
-                : ''
-              const qualifier = MODULES[option as MiningModuleEnum]
-                ? MODULES[option as MiningModuleEnum].active
-                  ? 'Active '
-                  : 'Passive '
-                : ''
-
-              return (
-                <MenuItem {...props} value={option}>
-                  {itemType === 'Laser' ? (
-                    <LaserMenuItem laserCode={option as MiningLaserEnum} />
-                  ) : (
-                    <ModuleMenuItem moduleCode={option as MiningModuleEnum} />
-                  )}
-                </MenuItem>
-              )
-            }}
-            fullWidth
-            size="small"
-            renderInput={(params) => <TextField variant="standard" {...params} label="Add laser/gadget/module" />}
-          />
+                return (
+                  <MenuItem {...props} value={option}>
+                    {itemType === 'Laser' ? (
+                      <LaserMenuItem laserCode={option as MiningLaserEnum} />
+                    ) : (
+                      <ModuleMenuItem moduleCode={option as MiningModuleEnum} />
+                    )}
+                  </MenuItem>
+                )
+              }}
+              fullWidth
+              size="small"
+              renderInput={(params) => (
+                <TextField variant="standard" {...params} label={readonly ? '--' : 'Add laser/gadget/module'} />
+              )}
+            />
+          )}
         </Stack>
       </CardContent>
     </Card>

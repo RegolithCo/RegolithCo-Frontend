@@ -18,6 +18,7 @@ export const DialogEnum = {
   DELETE_SESSION: 'DELETE_SESSION',
   CLOSE_SESSION: 'CLOSE_SESSION',
   DOWNLOAD_SESSION: 'DOWNLOAD_SESSION',
+  LOADOUT_MODAL: 'LOADOUT_MODAL',
   ADD_SCOUTING: 'ADD_SCOUTING',
   SESSION_PREFERENCES: 'SESSION_PREFERENCES',
   ADD_FRIEND: 'ADD_FRIEND',
@@ -92,6 +93,8 @@ export const SessionPageContainer2: React.FC = () => {
       removeSessionCrew={sessionQueries.removeSessionCrew}
       leaveSession={sessionQueries.leaveSession}
       deleteSession={sessionQueries.deleteSession}
+      // Session User Stuff
+      updateSessionUser={sessionQueries.updateSessionUser}
       // CrewShares
       markCrewSharePaid={sessionQueries.markCrewSharePaid}
       // Work orders

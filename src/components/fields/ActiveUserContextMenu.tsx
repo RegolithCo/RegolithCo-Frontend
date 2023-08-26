@@ -66,7 +66,7 @@ export const ActiveUserContextMenu: React.FC<ActiveUserContextMenuProps> = ({
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
-          <ListItemText>User Details</ListItemText>
+          <ListItemText>{isMe ? 'Edit My Status' : 'User Details'}</ListItemText>
         </MenuItem>
 
         {!isMe && <Divider />}

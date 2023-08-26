@@ -11,6 +11,7 @@ export interface ActiveUserListProps {
   sessionOwnerId?: string
   friends?: string[]
   openUserModal?: (userId: string) => void
+  openLoadoutModal?: (userId: string) => void
   navigate?: (path: string) => void
   addFriend?: (friendName: string) => void
   removeFriend?: (friendName: string) => void
@@ -22,6 +23,7 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
   meId,
   navigate,
   openUserModal,
+  openLoadoutModal,
   scoutingMap,
   friends,
   addFriend,
@@ -29,6 +31,7 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = React.useState<{ el: HTMLElement; userId: string } | null>(null)
   const sortedSessionUsers = [...sessionUsers]
+
   sortedSessionUsers.sort((a, b) => {
     // session owner gets the top spot
     if (a.owner?.userId === sessionOwnerId) {
@@ -70,10 +73,11 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
             meId={meId}
             sessionOwnerId={sessionOwnerId}
             // Context menu
-            menuOpen={!!menuOpen}
+            // menuOpen={!!menuOpen}
             openContextMenu={(el: HTMLElement) => setMenuOpen({ el, userId: sessionUser.owner?.userId as string })}
             // User popup
             openUserPopup={() => openUserModal && openUserModal(sessionUser.owner?.userId as string)}
+            openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(sessionUser.owner?.userId as string)}
             scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
             sessionUser={sessionUser}
             navigate={navigate}

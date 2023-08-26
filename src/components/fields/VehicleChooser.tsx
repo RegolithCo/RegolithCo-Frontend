@@ -96,11 +96,11 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({ vehicle, onChang
       renderInput={(params) => <TextField {...params} label="Current Ship" />}
       onChange={(event, option) => {
         const finalVal: string | null = typeof option === 'string' ? option : option?.code || null
-        if (finalVal === NONEOPTION.code) onChange(null)
+        if (finalVal === NONEOPTION.code) return onChange(null)
         if (finalVal && !sortedShips.find((ship) => ship.code === finalVal)) {
-          onChange(null)
+          return onChange(null)
         }
-        onChange(finalVal)
+        return onChange(finalVal)
       }}
     />
   )

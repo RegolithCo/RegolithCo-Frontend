@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   Button,
   ButtonGroup,
@@ -6,8 +6,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  MenuItem,
-  Select,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -17,12 +15,12 @@ import {
 import { fontFamilies } from '../../../theme'
 import {
   SessionUser,
-  Vehicle,
   User,
-  lookups,
   ScoutingFind,
   SessionUserStateEnum,
   MiningLoadout,
+  lookups,
+  SessionUserInput,
 } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
@@ -30,19 +28,29 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { Cancel, RocketLaunch } from '@mui/icons-material'
 import { VehicleChooser } from '../../fields/VehicleChooser'
+import { LoadoutSelect } from '../../fields/LoadoutSelect'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
   open: boolean
   onClose: () => void
+  onChange: (newSessionUser: SessionUserInput) => void
   sessionUser: SessionUser
   loadouts: MiningLoadout[]
   scoutingMap: Map<string, ScoutingFind>
 }
 
-export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, sessionUser, loadouts, scoutingMap }) => {
+export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
+  open,
+  onClose,
+  sessionUser,
+  loadouts,
+  onChange,
+  scoutingMap,
+}) => {
   const theme = useTheme()
 
+  const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
   return (
     <Dialog
       open={open}
@@ -89,10 +97,28 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, ses
           <Typography variant="overline" color="primary" component="div">
             Your Status: {sessionUser.state}
           </Typography>
-          <ToggleButtonGroup value={sessionUser.state} fullWidth size="small">
-            <ToggleButton value={SessionUserStateEnum.Unknown}>None</ToggleButton>
-            <ToggleButton value={SessionUserStateEnum.RefineryRun}>Refinery Run</ToggleButton>
-            <ToggleButton value={SessionUserStateEnum.Scouting}>Scouting</ToggleButton>
+          <ToggleButtonGroup
+            value={sessionUser.state}
+            fullWidth
+            exclusive
+            size="small"
+            onChange={(e, state) => {
+              if (!state) return
+              onChange({
+                isPilot: sessionUser.isPilot,
+                state: state as SessionUserStateEnum,
+              })
+            }}
+          >
+            <ToggleButton value={SessionUserStateEnum.Unknown} color="error">
+              None
+            </ToggleButton>
+            <ToggleButton value={SessionUserStateEnum.RefineryRun} color="primary">
+              Refinery Run
+            </ToggleButton>
+            <ToggleButton value={SessionUserStateEnum.Scouting} color="info">
+              Scouting
+            </ToggleButton>
             <ToggleButton value={SessionUserStateEnum.Afk}>AFK</ToggleButton>
             {/* <ToggleButton value={SessionUserStateEnum.Travelling} disabled>
               En Route
@@ -112,9 +138,12 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, ses
             Current Vehicle
           </Typography>
           <VehicleChooser
-            vehicle={sessionUser.vehicle?.code}
+            vehicle={vehicle?.code}
             onChange={(vehicleCode) => {
-              console.log('vehicleCode', vehicleCode)
+              onChange({
+                isPilot: true,
+                vehicleCode: vehicleCode,
+              })
             }}
           />
         </Box>
@@ -123,36 +152,16 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, ses
           <Typography variant="overline" color="primary" component="div">
             Current Vehicle Loadout
           </Typography>
-          <Select
-            fullWidth
-            value={sessionUser.loadout?.name || ''}
-            renderValue={(value) => {
-              if (!value || value.length === 0 || value === 'none') return 'None'
-              return value
+          <LoadoutSelect
+            loadouts={loadouts}
+            sessionUser={sessionUser}
+            disabled={Boolean(!vehicle || !vehicle.miningHold || vehicle.miningHold < 20)}
+            onChange={(loadoutId) => {
+              onChange({
+                loadoutId,
+              })
             }}
-            onChange={(e) => {
-              console.log('e', e)
-            }}
-          >
-            {sessionUser.loadout && <MenuItem value={sessionUser.loadout.name}>{sessionUser.loadout.name}</MenuItem>}
-            <MenuItem value="none">None</MenuItem>
-            {loadouts.map((loadout) => (
-              <MenuItem key={loadout.loadoutId} value={loadout.loadoutId}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography variant="overline" color="text.secondary">
-                    {loadout.ship.toUpperCase()}
-                  </Typography>
-                  <Typography>{loadout.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {(loadout?.activeLasers || [])
-                      .reduce((acc, laser) => (laser?.laser ? [...acc, laser?.laser] : acc), [] as string[])
-                      .filter((a) => !!a)
-                      .join(' - ')}
-                  </Typography>
-                </Stack>
-              </MenuItem>
-            ))}
-          </Select>
+          />
           <Typography variant="caption" color="text.secondary">
             You can create a save named loadouts in the loadout calculator tool.
           </Typography>
@@ -166,9 +175,11 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose, ses
         </Typography>
         <ButtonGroup variant="contained" color="error" aria-label="contained primary button group">
           {sessionUser.pilotSCName && <Button startIcon={<RocketLaunch />}>Leave USERNAME's Crew</Button>}
-          <Button color="error" startIcon={<Cancel />}>
-            Leave Session
-          </Button>
+          {sessionUser.ownerId !== sessionUser.ownerId && (
+            <Button color="error" startIcon={<Cancel />}>
+              Leave Session
+            </Button>
+          )}
         </ButtonGroup>
       </DialogContent>
       <DialogActions>

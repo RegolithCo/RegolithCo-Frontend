@@ -169,18 +169,6 @@ export const SessionUpdateFragmentFragmentDoc = gql`
     ${UserFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}
 ${SessionSummaryFragmentFragmentDoc}`;
-export const VehicleFragmentFragmentDoc = gql`
-    fragment VehicleFragment on Vehicle {
-  maker
-  name
-  code
-  cargo
-  miningHold
-  role
-  buyAt
-  rentAt
-}
-    `;
 export const MiningLoadoutFragmentFragmentDoc = gql`
     fragment MiningLoadoutFragment on MiningLoadout {
   loadoutId
@@ -214,16 +202,13 @@ export const SessionUserFragmentFragmentDoc = gql`
   updatedAt
   isPilot
   pilotSCName
-  vehicle {
-    ...VehicleFragment
-  }
+  vehicleCode
   loadout {
     ...MiningLoadoutFragment
   }
   state
 }
     ${UserFragmentFragmentDoc}
-${VehicleFragmentFragmentDoc}
 ${MiningLoadoutFragmentFragmentDoc}`;
 export const ScoutingFindFragmentFragmentDoc = gql`
     fragment ScoutingFindFragment on ScoutingFindInterface {
@@ -411,6 +396,18 @@ export const SessionWorkOrdersFragmentFragmentDoc = gql`
   }
 }
     ${WorkOrderFragmentFragmentDoc}`;
+export const VehicleFragmentFragmentDoc = gql`
+    fragment VehicleFragment on Vehicle {
+  maker
+  name
+  code
+  cargo
+  miningHold
+  role
+  buyAt
+  rentAt
+}
+    `;
 export const UserProfileFragmentFragmentDoc = gql`
     fragment UserProfileFragment on UserProfile {
   userId
@@ -865,9 +862,17 @@ export const CreateSessionDocument = gql`
     salvageOreDefaults: $salvageOreDefaults
   ) {
     ...SessionUpdateFragment
+    activeMemberIds
+    activeMembers {
+      items {
+        ...SessionUserFragment
+      }
+      nextToken
+    }
   }
 }
-    ${SessionUpdateFragmentFragmentDoc}`;
+    ${SessionUpdateFragmentFragmentDoc}
+${SessionUserFragmentFragmentDoc}`;
 export type CreateSessionMutationFn = Apollo.MutationFunction<types.CreateSessionMutation, types.CreateSessionMutationVariables>;
 
 /**

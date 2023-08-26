@@ -17,6 +17,7 @@ import {
   createSafeFileName,
   session2csv,
   CrewShare,
+  SessionUserInput,
 } from '@regolithco/common'
 import {
   Box,
@@ -52,6 +53,7 @@ import { TabSummary } from './TabSummary'
 import { downloadFile } from '../../../lib/utils'
 import { ActivePopupMe } from '../../modals/ActiveUserPopup/ActivePopupMe'
 import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
+import { LoadoutCalc } from '../../calculators/LoadoutCalc/LoadoutCalc'
 
 export interface SessionPageProps {
   session: Session
@@ -80,6 +82,8 @@ export interface SessionPageProps {
   resetDefaultUserSettings: () => void
   leaveSession: () => void
   deleteSession: () => void
+  // Sessionuser
+  updateSessionUser: (sessionUser: SessionUserInput) => void
   // CrewShares
   markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
   // Work orders
@@ -133,6 +137,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
   removeFriend,
   updateWorkOrder,
   onUpdateSession,
+  updateSessionUser,
   markCrewSharePaid,
   removeSessionMentions,
   addSessionMentions,
@@ -207,6 +212,10 @@ export const SessionPage: React.FC<SessionPageProps> = ({
     setActiveUserModalId(userId)
     setActiveModal(DialogEnum.USER_STATUS)
   }
+  const openLoadoutModal = (userId: string) => {
+    setActiveUserModalId(userId)
+    setActiveModal(DialogEnum.LOADOUT_MODAL)
+  }
 
   return (
     <Box sx={{ display: 'flex', height: '100%', backdropFilter: 'blur(7px)', backgroundColor: '#0e0c1b77' }}>
@@ -233,10 +242,12 @@ export const SessionPage: React.FC<SessionPageProps> = ({
             navigate={navigate}
             addFriend={addFriend}
             removeFriend={removeFriend}
+            scoutingMap={scoutingMap}
             addSessionMentions={addSessionMentions}
             removeSessionMentions={removeSessionMentions}
             verifiedMentionedUsers={verifiedMentionedUsers}
             openUserModal={openUserModal}
+            openLoadoutModal={openLoadoutModal}
           />
           <Stack direction="row" spacing={2} sx={{ p: 2 }}>
             <Tooltip title="Back to sessions">
@@ -315,6 +326,7 @@ export const SessionPage: React.FC<SessionPageProps> = ({
               removeSessionMentions={removeSessionMentions}
               verifiedMentionedUsers={verifiedMentionedUsers}
               openUserModal={openUserModal}
+              openLoadoutModal={openLoadoutModal}
             />
           )}
           {activeTab === SessionTabs.DASHBOARD && (
@@ -420,6 +432,9 @@ export const SessionPage: React.FC<SessionPageProps> = ({
         <ActivePopupMe
           open={activeModal === DialogEnum.USER_STATUS}
           onClose={() => setActiveModal(null)}
+          onChange={(newSessionUser) => {
+            updateSessionUser(newSessionUser)
+          }}
           scoutingMap={scoutingMap}
           sessionUser={activeUserModelSessionUser}
           loadouts={userProfile.loadouts || []}
@@ -584,6 +599,16 @@ export const SessionPage: React.FC<SessionPageProps> = ({
           deleteSession && deleteSession()
         }}
       />
+
+      {activeUserModelSessionUser && activeUserModelSessionUser.loadout && (
+        <LoadoutCalc
+          isModal
+          readonly
+          onClose={() => setActiveModal(null)}
+          open={activeModal === DialogEnum.LOADOUT_MODAL}
+          miningLoadout={activeUserModelSessionUser.loadout}
+        />
+      )}
 
       <DeleteModal
         title={'Permanently end this session?'}

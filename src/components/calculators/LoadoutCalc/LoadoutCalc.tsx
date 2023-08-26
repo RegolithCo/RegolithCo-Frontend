@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
   CardContent,
   CardHeader,
   Dialog,
@@ -40,6 +39,8 @@ export interface LoadoutCalcProps {
   userProfile?: UserProfile
   loading?: boolean
   isModal?: boolean
+  open?: boolean
+  readonly?: boolean
   loadoutCount?: number
   onClose?: () => void
   onUpdate?: (newLoadout: MiningLoadout) => void
@@ -76,7 +77,9 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   miningLoadout,
   userProfile,
   loading,
+  open,
   isModal,
+  readonly,
   loadoutCount,
   onClose,
   onUpdate,
@@ -128,62 +131,65 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     })
   }
 
-  const Wrapper = useCallback(({ children }: { children: React.ReactNode }) => {
-    const bgImage = 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));'
-    if (isModal)
-      return (
-        <Dialog
-          open
-          onClose={onClose}
-          maxWidth="lg"
-          fullWidth
-          sx={{
-            '& .MuiDialog-paper': {
-              [theme.breakpoints.down('md')]: {
-                margin: 0,
+  const Wrapper = useCallback(
+    ({ children }: { children: React.ReactNode }) => {
+      const bgImage = 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));'
+      if (isModal)
+        return (
+          <Dialog
+            open={!!open}
+            onClose={onClose}
+            maxWidth="lg"
+            fullWidth
+            sx={{
+              '& .MuiDialog-paper': {
+                [theme.breakpoints.down('md')]: {
+                  margin: 0,
+                  borderRadius: 0,
+                  maxHeight: '100%',
+                  width: '100%',
+                },
+                [theme.breakpoints.up('md')]: {
+                  m: 0,
+                  p: 2,
+                  borderRadius: 10,
+                  boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+                  border: `10px solid ${theme.palette.primary.main}`,
+                },
+                background: theme.palette.background.default,
+                backgroundImage: bgImage,
+              },
+            }}
+          >
+            {children}
+          </Dialog>
+        )
+      else
+        return (
+          <Box
+            sx={{
+              [theme.breakpoints.down('sm')]: {
                 borderRadius: 0,
-                maxHeight: '100%',
-                width: '100%',
               },
               [theme.breakpoints.up('md')]: {
-                m: 0,
-                p: 2,
+                mx: 3,
+                my: 6,
+                px: 2,
+                py: 2,
                 borderRadius: 10,
                 boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
                 border: `10px solid ${theme.palette.primary.main}`,
               },
               background: theme.palette.background.default,
               backgroundImage: bgImage,
-            },
-          }}
-        >
-          {children}
-        </Dialog>
-      )
-    else
-      return (
-        <Box
-          sx={{
-            [theme.breakpoints.down('sm')]: {
-              borderRadius: 0,
-            },
-            [theme.breakpoints.up('md')]: {
-              mx: 3,
-              my: 6,
-              px: 2,
-              py: 2,
-              borderRadius: 10,
-              boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-              border: `10px solid ${theme.palette.primary.main}`,
-            },
-            background: theme.palette.background.default,
-            backgroundImage: bgImage,
-          }}
-        >
-          {children}
-        </Box>
-      )
-  }, [])
+            }}
+          >
+            {children}
+          </Box>
+        )
+    },
+    [onClose, open]
+  )
   return (
     <Wrapper>
       <Card
@@ -211,7 +217,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 <Typography variant="h5" sx={{ m: 0 }}>
                   {miningLoadout && miningLoadout.name ? newLoadout.name : 'Calculator'}
                 </Typography>
-                {miningLoadout && miningLoadout.name && (
+                {miningLoadout && miningLoadout.name && !readonly && (
                   <IconButton onClick={() => setEditingName(!editingName)} size="small" sx={{ ml: 1 }}>
                     <Edit />
                   </IconButton>
@@ -227,7 +233,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 )}
               </Box>
               <div style={{ flexGrow: 1 }} />
-              <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} />
+              <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} readonly={readonly} />
               {!isSmall && isModal && (
                 <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
                   <Close />
@@ -250,6 +256,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   <ToolGrid ship={newLoadout.ship}>
                     <LoadoutLaserTool
                       activeLaser={activeLasers[0]}
+                      readonly={readonly}
                       laserSize={laserSize}
                       label={laserSize < 2 ? 'Laser' : 'Front Turret'}
                       onChange={(currAl, isHover) => {
@@ -272,6 +279,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                       <LoadoutLaserTool
                         activeLaser={activeLasers[1]}
                         laserSize={laserSize}
+                        readonly={readonly}
                         label="Port Turret"
                         onChange={(currAl, isHover) => {
                           if (isHover) {
@@ -294,6 +302,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                       <LoadoutLaserTool
                         activeLaser={activeLasers[2]}
                         laserSize={laserSize}
+                        readonly={readonly}
                         label="Starboard Turret"
                         onChange={(currAl, isHover) => {
                           if (isHover) {
@@ -312,7 +321,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                     </ToolGrid>
                   )}
                   <ToolGrid ship={newLoadout.ship}>
-                    <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} />
+                    <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} readonly={readonly} />
                   </ToolGrid>
                 </Grid>
               </div>
@@ -361,48 +370,52 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
           </Grid>
         </CardContent>
         {/* MENU */}
-        <Stack direction="row" spacing={2} sx={{ mt: 3, p: 1, px: 2 }}>
-          {onDelete && userProfile && (
-            <Tooltip title="Permanently delete this loadout">
-              <Button variant="contained" color="error" onClick={onDelete} startIcon={<Delete />} disabled={loading}>
-                Delete
-              </Button>
+        {!readonly && (
+          <Stack direction="row" spacing={2} sx={{ mt: 3, p: 1, px: 2 }}>
+            {onDelete && userProfile && (
+              <Tooltip title="Permanently delete this loadout">
+                <Button variant="contained" color="error" onClick={onDelete} startIcon={<Delete />} disabled={loading}>
+                  Delete
+                </Button>
+              </Tooltip>
+            )}
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() =>
+                setNewLoadout(miningLoadout || newMiningLoadout(newLoadout.ship as LoadoutShipEnum, owner))
+              }
+              startIcon={<Refresh />}
+            >
+              Reset
+            </Button>
+            <div style={{ flexGrow: 1 }} />
+            <Tooltip title={!onCreate || !userProfile ? 'Log in to save multiple loadouts' : 'Save Loadout'}>
+              <>
+                <Button
+                  variant="contained"
+                  disabled={!userProfile || loading}
+                  onClick={() => {
+                    if (onCreate && !miningLoadout && loadoutCount && loadoutCount >= 20) {
+                      setCountWarningModalOpen(true)
+                      return
+                    }
+                    if (onCreate && !miningLoadout) {
+                      setCreateModalOpen(true)
+                    }
+                    if (onUpdate && miningLoadout) {
+                      onUpdate(newLoadout)
+                    }
+                  }}
+                  startIcon={<Save />}
+                >
+                  {loading && <>Loading...</>}
+                  {!loading && !miningLoadout ? <>Save New</> : <>Save</>}
+                </Button>
+              </>
             </Tooltip>
-          )}
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => setNewLoadout(miningLoadout || newMiningLoadout(newLoadout.ship as LoadoutShipEnum, owner))}
-            startIcon={<Refresh />}
-          >
-            Reset
-          </Button>
-          <div style={{ flexGrow: 1 }} />
-          <Tooltip title={!onCreate || !userProfile ? 'Log in to save multiple loadouts' : 'Save Loadout'}>
-            <>
-              <Button
-                variant="contained"
-                disabled={!userProfile || loading}
-                onClick={() => {
-                  if (onCreate && !miningLoadout && loadoutCount && loadoutCount >= 20) {
-                    setCountWarningModalOpen(true)
-                    return
-                  }
-                  if (onCreate && !miningLoadout) {
-                    setCreateModalOpen(true)
-                  }
-                  if (onUpdate && miningLoadout) {
-                    onUpdate(newLoadout)
-                  }
-                }}
-                startIcon={<Save />}
-              >
-                {loading && <>Loading...</>}
-                {!loading && !miningLoadout ? <>Save New</> : <>Save</>}
-              </Button>
-            </>
-          </Tooltip>
-        </Stack>
+          </Stack>
+        )}
         <LoadoutCreateModal
           open={editingName}
           edit
@@ -460,6 +473,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 export interface ShipChooserProps {
   onChange: (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => void
   ship: LoadoutShipEnum
+  readonly?: boolean
 }
 
 const makeButtonTheme = (active: boolean, color: PaletteColor): SxProps<Theme> => ({
@@ -478,10 +492,10 @@ const makeButtonTheme = (active: boolean, color: PaletteColor): SxProps<Theme> =
   },
 })
 
-export const ShipChooser: React.FC<ShipChooserProps> = ({ onChange, ship: value }) => {
+export const ShipChooser: React.FC<ShipChooserProps> = ({ onChange, ship: value, readonly }) => {
   const theme = useTheme()
   return (
-    <ToggleButtonGroup value={value} exclusive size="small" onChange={onChange} color="primary">
+    <ToggleButtonGroup value={value} exclusive size="small" onChange={onChange} color="primary" disabled={readonly}>
       <ToggleButton
         value={LoadoutShipEnum.Prospector}
         aria-label="centered"

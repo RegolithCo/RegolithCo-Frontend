@@ -3,7 +3,14 @@ import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, Normalized
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
 import log from 'loglevel'
-import { CrewShare, mergeSessionSettingsInplace, SessionSettings, UserProfile, UserStateEnum } from '@regolithco/common'
+import {
+  CrewShare,
+  mergeSessionSettingsInplace,
+  SessionSettings,
+  SessionUser,
+  UserProfile,
+  UserStateEnum,
+} from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
 import { LoginContext, useOAuth2 } from './useOAuth2'
@@ -90,6 +97,16 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
             fields: {
               attendance: {
                 merge(existing: CrewShare[] = [], incoming: CrewShare[]) {
+                  const merged = incoming || existing
+                  return merged
+                },
+              },
+            },
+          },
+          PaginatedSessionUsers: {
+            fields: {
+              items: {
+                merge(existing: SessionUser[] = [], incoming: SessionUser[]) {
                   const merged = incoming || existing
                   return merged
                 },

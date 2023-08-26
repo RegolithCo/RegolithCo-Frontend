@@ -7,13 +7,23 @@ import {
   Tooltip,
   Link,
   IconButton,
+  Stack,
+  Typography,
 } from '@mui/material'
-import { getSessionUserStateName, ScoutingFind, SessionUser, SessionUserStateEnum, User } from '@regolithco/common'
+import {
+  getSessionUserStateName,
+  lookups,
+  ScoutingFind,
+  SessionUser,
+  SessionUserStateEnum,
+  User,
+} from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
 import { makeSessionUrls } from '../../lib/routingUrls'
 import { UserAvatar } from '../UserAvatar'
 import { ModuleIcon } from '../../icons/Module'
-import { text } from 'stream/consumers'
+import { alpha, Box, useTheme } from '@mui/system'
+import { fontFamilies } from '../../theme'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
@@ -21,8 +31,8 @@ export interface ActiveUserListItemProps {
   sessionOwnerId?: string
   scoutingFind?: ScoutingFind
   friends?: string[]
-  menuOpen: boolean
   openUserPopup?: () => void
+  openLoadoutPopup?: () => void
   openContextMenu?: (el: HTMLElement) => void
   navigate?: (path: string) => void
   addFriend?: () => void
@@ -34,15 +44,34 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   friends,
   scoutingFind,
   openUserPopup,
-  menuOpen,
+  openLoadoutPopup: openModalPopup,
   openContextMenu,
   navigate,
   meId,
 }) => {
+  const theme = useTheme()
   const secondaryText = []
+  const stateObjects = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
   const menuRef = useRef<HTMLLIElement>()
+
+  const STATE_COLORS_BG: Record<SessionUserStateEnum, string> = {
+    [SessionUserStateEnum.Unknown]: '#000000',
+    [SessionUserStateEnum.Afk]: '#666666',
+    [SessionUserStateEnum.OnSite]: theme.palette.info.main,
+    [SessionUserStateEnum.RefineryRun]: theme.palette.secondary.main,
+    [SessionUserStateEnum.Scouting]: theme.palette.info.light,
+    [SessionUserStateEnum.Travelling]: theme.palette.info.light,
+  }
+  const STATE_COLORS_FG: Record<SessionUserStateEnum, string> = {
+    [SessionUserStateEnum.Unknown]: '#000000',
+    [SessionUserStateEnum.Afk]: '#000000',
+    [SessionUserStateEnum.OnSite]: theme.palette.info.contrastText,
+    [SessionUserStateEnum.RefineryRun]: theme.palette.secondary.contrastText,
+    [SessionUserStateEnum.Scouting]: theme.palette.info.contrastText,
+    [SessionUserStateEnum.Travelling]: theme.palette.info.contrastText,
+  }
 
   useEffect(() => {
     // define a custom handler function
@@ -65,41 +94,38 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
 
   const user = sessionUser.owner as User
   if (sessionUser) {
-    if (sessionUser.isPilot) {
-      secondaryText.push('Pilot')
+    if (sessionUser.vehicleCode) {
+      const vehicle = sessionUser.vehicleCode
+        ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode)
+        : null
+      if (vehicle) {
+        // Truncate to 16 characters with an ellipsis if necessary
+        const vehicleName = vehicle.name.length > 16 ? vehicle.name.substring(0, 16) + '...' : vehicle.name
+        secondaryText.push(vehicleName)
+      }
     }
     if (sessionUser.state) {
       if (scoutingFind) {
-        secondaryText.push(' - ')
-        secondaryText.push(
+        stateObjects.push(
           <>
-            {getSessionUserStateName(sessionUser.state)} -
-            <Link
-              sx={{
-                fontSize: '0.75rem',
-              }}
-              onClick={() => {
-                navigate &&
-                  navigate(
-                    makeSessionUrls({ sessionId: scoutingFind.sessionId, scoutingFindId: scoutingFind.scoutingFindId })
-                  )
-              }}
-            >
-              {scoutingFind.scoutingFindId.split('_')[0]}
-            </Link>
+            {getSessionUserStateName(sessionUser.state)}
+            {sessionUser.state === SessionUserStateEnum.OnSite && ' at '}
+            {sessionUser.state === SessionUserStateEnum.Travelling && ' to '}
+            {(sessionUser.state === SessionUserStateEnum.OnSite ||
+              sessionUser.state === SessionUserStateEnum.Travelling) &&
+              scoutingFind.scoutingFindId.split('_')[0]}
           </>
         )
       } else if (sessionUser.state !== SessionUserStateEnum.Unknown) {
-        secondaryText.push(getSessionUserStateName(sessionUser.state))
+        stateObjects.push(getSessionUserStateName(sessionUser.state))
       }
     }
-    if (sessionUser.vehicle) {
-      secondaryText.push(sessionUser.vehicle.name)
-    }
+
     if (sessionUser.pilotSCName) {
       secondaryText.push(`Crew of: ${sessionUser.pilotSCName}`)
     }
   }
+  const stateColor = STATE_COLORS_BG[sessionUser.state] || 'transparent'
 
   return (
     <ListItem
@@ -111,16 +137,48 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         e.preventDefault()
         openUserPopup && openUserPopup()
       }}
-      sx={{ background: meId ? '#33333366' : 'transparent' }}
+      onClick={() => {
+        openUserPopup && openUserPopup()
+      }}
+      sx={{
+        background: alpha(stateColor, 0.2),
+        cursor: 'pointer',
+        borderLeft: isMe ? `5px solid ${theme.palette.secondary.light}` : '1px solid transparent',
+      }}
     >
-      <ListItemAvatar
-        sx={{
-          cursor: 'pointer',
-        }}
-        onClick={() => {
-          openUserPopup && openUserPopup()
-        }}
-      >
+      {sessionUser.state && sessionUser.state !== SessionUserStateEnum.Unknown && (
+        <Box
+          sx={{
+            background: STATE_COLORS_BG[sessionUser.state],
+            color: STATE_COLORS_FG[sessionUser.state],
+            position: 'absolute',
+            fontFamily: fontFamilies.robotoMono,
+            textTransform: 'uppercase',
+            fontSize: '0.6rem',
+            fontWeight: 'bold',
+            borderRadius: '0 0 0 0.2rem',
+            px: 0.5,
+            top: 0,
+            right: 0,
+          }}
+          onClick={(e) => {
+            if (!scoutingFind) return
+            e.stopPropagation()
+            e.preventDefault()
+            navigate &&
+              navigate(
+                makeSessionUrls({ sessionId: scoutingFind.sessionId, scoutingFindId: scoutingFind.scoutingFindId })
+              )
+          }}
+        >
+          <Stack direction="row" spacing={1}>
+            {stateObjects.map((it, idx) => (
+              <Box key={`stat$-${idx}`}>{it}</Box>
+            ))}
+          </Stack>
+        </Box>
+      )}
+      <ListItemAvatar>
         <UserAvatar
           size="small"
           user={user}
@@ -136,36 +194,35 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           },
           //
         }}
-        primaryTypographyProps={{
-          onClick: () => {
-            openUserPopup && openUserPopup()
-          },
-          sx: {
-            cursor: 'pointer',
-            '&:hover': {
-              textDecoration: 'underline',
-            },
-          },
-        }}
         primary={user?.scName}
+        secondaryTypographyProps={{
+          component: 'div',
+        }}
         secondary={
-          secondaryText.length > 0
-            ? secondaryText.map((it, idx) => (
-                <span key={`it-${idx}`} style={{ fontSize: 'inherit' }}>
-                  {it}
-                </span>
-              ))
-            : null
+          <Stack direction="row" spacing={1}>
+            {secondaryText.length > 0
+              ? secondaryText.map((it, idx) => (
+                  <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
+                    {it}
+                  </Typography>
+                ))
+              : null}
+          </Stack>
         }
       />
       <ListItemSecondaryAction>
-        <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
-          <span>
-            <IconButton color="primary" disabled>
+        {sessionUser.loadout && (
+          <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                openModalPopup && openModalPopup()
+              }}
+            >
               <ModuleIcon />
             </IconButton>
-          </span>
-        </Tooltip>
+          </Tooltip>
+        )}
 
         <IconButton
           color="primary"

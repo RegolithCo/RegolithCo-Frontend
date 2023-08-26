@@ -13,10 +13,18 @@ export interface LoadoutLaserChipProps {
   isOn?: boolean
   canBeOn?: boolean
   onToggle?: (isOn: boolean) => void
+  readonly?: boolean
   onDelete?: () => void
 }
 
-export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({ laserCode, isOn, onDelete, onToggle, canBeOn }) => {
+export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({
+  laserCode,
+  isOn,
+  onDelete,
+  onToggle,
+  canBeOn,
+  readonly,
+}) => {
   const theme = useTheme()
   const laser = LASERS[laserCode]
   return (
@@ -52,8 +60,8 @@ export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({ laserCode, i
           size="small"
         />
       }
-      onDelete={onDelete}
-      deleteIcon={<Cancel />}
+      onDelete={!readonly ? onDelete : undefined}
+      deleteIcon={!readonly ? <Cancel /> : undefined}
     />
   )
 }
@@ -63,6 +71,7 @@ export interface LoadoutModuleChipProps {
   isOn?: boolean
   canBeOn?: boolean
   locked?: boolean
+  readonly?: boolean
   onToggle?: (isOn: boolean) => void
   onDelete?: () => void
 }
@@ -86,6 +95,7 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
   moduleCode,
   isOn,
   canBeOn,
+  readonly,
   locked,
   onToggle,
   onDelete,
@@ -146,8 +156,8 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
             sx={{ flexGrow: 0, opacity: canBeToggled ? 1 : 0 }}
           />
         }
-        onDelete={onDelete}
-        deleteIcon={<Cancel />}
+        onDelete={!readonly ? onDelete : undefined}
+        deleteIcon={!readonly ? <Cancel /> : undefined}
       />
     </Tooltip>
   )

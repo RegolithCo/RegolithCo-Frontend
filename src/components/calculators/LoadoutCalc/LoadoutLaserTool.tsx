@@ -11,10 +11,17 @@ export interface LoadoutLaserRowProps {
   activeLaser: Maybe<ActiveMiningLaserLoadout | null>
   laserSize: number
   label: string
+  readonly?: boolean
   onChange: (laser: ActiveMiningLaserLoadout | null, hover: boolean) => void
 }
 
-export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, laserSize, label, onChange }) => {
+export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
+  activeLaser,
+  laserSize,
+  label,
+  onChange,
+  readonly,
+}) => {
   const theme = useTheme()
   const hasLaser = Boolean(activeLaser && activeLaser.laser)
   const laserCode = activeLaser?.laser
@@ -105,6 +112,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
       <CardContent>
         <LaserChooserMenu
           laserSize={laserSize}
+          readonly={readonly}
           value={laserCode || null}
           onChange={onLaserChange}
           isOn={laserIsActive}
@@ -112,6 +120,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
         {slots > 0 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[0] as MiningModuleEnum) || null}
+            readonly={readonly}
             isOn={laserIsActive && activeLaser?.modulesActive[0]}
             locked={!laserIsActive}
             label="Module 1"
@@ -123,6 +132,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
         {slots > 1 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[1] as MiningModuleEnum) || null}
+            readonly={readonly}
             isOn={laserIsActive && activeLaser?.modulesActive[1]}
             locked={!laserIsActive}
             label="Module 2"
@@ -134,6 +144,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({ activeLaser, 
         {slots > 2 ? (
           <ModuleChooserMenu
             value={(activeModuleSelectValues[2] as MiningModuleEnum) || null}
+            readonly={readonly}
             isOn={laserIsActive && activeLaser?.modulesActive[2]}
             locked={!laserIsActive}
             label="Module 3"
