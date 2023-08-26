@@ -6,15 +6,15 @@ import * as React from 'react'
 import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
-import { StatsObject } from '@regolithco/common'
+import { StatsObjectSummary } from '@regolithco/common'
 import { Alert319 } from '../modals/Alert319'
 
 interface HomePageProps {
   userCtx: LoginContextObj
   navigate?: (path: string) => void
   handleLogin?: () => void
-  stats?: StatsObject
-  statsLoading?: boolean
+  stats: Partial<StatsObjectSummary>
+  statsLoading: Record<keyof StatsObjectSummary, boolean>
 }
 
 const cardCSS: SxProps<Theme> = {
@@ -132,7 +132,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
         <Typography variant="h5" sx={{ mb: 2 }} gutterBottom>
           Site Stats
         </Typography>
-        <SiteStats stats={stats} loading={statsLoading} />
+        <SiteStats stats={stats} statsLoading={statsLoading} />
       </Paper>
     </PageWrapper>
   )

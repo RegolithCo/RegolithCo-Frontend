@@ -11,6 +11,9 @@
 # production
 /build
 
+# stats should be omitted (but will still be deployed if it exists
+public/stats
+
 # misc
 .DS_Store
 .env.local

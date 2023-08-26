@@ -12,6 +12,8 @@
     "@mui/material": "^5.14.0",
     "@mui/system": "^5.14.0",
     "@mui/x-date-pickers": "^5.0.13",
+    "@nivo/line": "^0.83.0",
+    "@nivo/pie": "^0.83.0",
     "@react-oauth/google": "^0.6.0",
     "@regolithco/common": "^1.0.16",
     "@types/jest": "^27.5.2",

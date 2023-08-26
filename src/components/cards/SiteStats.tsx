@@ -1,13 +1,25 @@
 import * as React from 'react'
-import { useTheme, SxProps, Theme, Card, Typography, CardMedia, Tooltip } from '@mui/material'
-import { StatsObject } from '@regolithco/common'
+import {
+  useTheme,
+  SxProps,
+  Theme,
+  Card,
+  Typography,
+  CardMedia,
+  Tooltip,
+  useMediaQuery,
+  CircularProgress,
+} from '@mui/material'
+import { StatsObjectSummary } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Textfit } from 'react-textfit'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { DailyMonthlyChart } from './charts/DailyMonthlyChart'
+import { PieChart } from './charts/PieChart'
 
 export interface SiteStatsProps {
-  stats?: StatsObject
-  loading?: boolean
+  stats: Partial<StatsObjectSummary>
+  statsLoading: Record<keyof StatsObjectSummary, boolean>
 }
 
 /**
@@ -15,27 +27,78 @@ export interface SiteStatsProps {
  * @param param0
  * @returns
  */
-export const SiteStats: React.FC<SiteStatsProps> = ({ stats, loading }) => {
-  if (!stats || loading) return null
+export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up('md'))
+
   return (
     <Grid spacing={3} container sx={{ width: '100%' }}>
-      <SiteStatsCard value={stats?.users} subText="Users" tooltip="Registered Users on the site" />
       <SiteStatsCard
-        value={MValueFormatter(stats?.aUEC || 0, MValueFormat.number_sm)}
-        subText="aUEC Earned"
-        tooltip={`${MValueFormatter(stats?.aUEC || 0, MValueFormat.number)} aUEC Earned by users`}
+        value={stats?.total?.users}
+        subText="Total Users"
+        tooltip="Registered Users on the site"
+        loading={statsLoading.total}
       />
       <SiteStatsCard
-        value={MValueFormatter(stats?.rawOreSCU || 0, MValueFormat.number_sm)}
+        value={MValueFormatter(stats?.total?.aUEC || 0, MValueFormat.number_sm)}
+        subText="aUEC Earned"
+        tooltip={`${MValueFormatter(stats?.total?.aUEC || 0, MValueFormat.number)} aUEC Earned by users`}
+        loading={statsLoading.total}
+      />
+      <SiteStatsCard
+        value={MValueFormatter(stats?.total?.rawOreSCU || 0, MValueFormat.number_sm)}
         subText="SCU of Raw Ore"
         tooltip={`${MValueFormatter(
-          stats?.rawOreSCU || 0,
+          stats?.total?.rawOreSCU || 0,
           MValueFormat.number
         )} SCU of raw material mined, collected or salvaged`}
+        loading={statsLoading.total}
       />
-      <SiteStatsCard value={stats?.sessions} subText="Sessions" tooltip="User sessions" />
-      <SiteStatsCard value={stats?.workOrders} subText="Work Orders" />
-      <SiteStatsCard value={stats?.scoutingRocks} subText="Rocks Scouted" />
+      <SiteStatsCard
+        value={MValueFormatter(stats?.total?.sessions, MValueFormat.number_sm)}
+        subText="Mining Sessions"
+        tooltip="User sessions"
+        loading={statsLoading.total}
+      />
+      <SiteStatsCard
+        value={MValueFormatter(stats?.total?.workOrders, MValueFormat.number_sm)}
+        subText="Work Orders"
+        loading={statsLoading.total}
+      />
+      <SiteStatsCard
+        value={MValueFormatter(stats?.total?.scoutingRocks, MValueFormat.number_sm)}
+        subText="Rocks Scouted"
+        loading={statsLoading.total}
+      />
+      {matches && !statsLoading.daily && !statsLoading.monthly && stats.daily && stats.monthly && (
+        <Grid xs={12}>
+          <DailyMonthlyChart stats={stats} statsLoading={statsLoading} />
+        </Grid>
+      )}
+      {matches && !statsLoading.total && (
+        <Grid xs={6}>
+          <PieChart
+            title="Activity Types"
+            activityTypes={stats?.total?.workOrderTypes || {}}
+            loading={statsLoading.total}
+          />
+        </Grid>
+      )}
+      {matches && !statsLoading.total && (
+        <Grid xs={6}>
+          <PieChart title="Ship Ores" ores={stats?.total?.shipOres || {}} loading={statsLoading.total} />
+        </Grid>
+      )}
+      {matches && !statsLoading.total && (
+        <Grid xs={6}>
+          <PieChart title="Vehicle Ores" ores={stats?.total?.vehicleOres || {}} loading={statsLoading.total} />
+        </Grid>
+      )}
+      {matches && !statsLoading.total && (
+        <Grid xs={6}>
+          <PieChart title="Salvage Ores" ores={stats?.total?.salvageOres || {}} loading={statsLoading.total} />
+        </Grid>
+      )}
     </Grid>
   )
 }
@@ -44,6 +107,7 @@ interface SiteStatsCardProps {
   value: number | string | React.ReactNode
   subText: string
   tooltip?: React.ReactNode
+  loading?: boolean
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -54,7 +118,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, tooltip }) => {
+export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, tooltip, loading }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   return (
@@ -63,9 +127,13 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, to
         <Card sx={styles.card} elevation={7}>
           <div style={{ flexGrow: 1 }} />
           <CardMedia sx={{ textAlign: 'center', minHeight: 30, mx: 2 }}>
-            <Textfit mode="single" max={30}>
-              {value}
-            </Textfit>
+            {loading ? (
+              <CircularProgress size={20} />
+            ) : (
+              <Textfit mode="single" max={30}>
+                {value}
+              </Textfit>
+            )}
           </CardMedia>
           <div style={{ flexGrow: 1 }} />
           <Typography sx={{ mb: 1, textAlign: 'center' }} color="text.secondary" variant="caption" component="div">
