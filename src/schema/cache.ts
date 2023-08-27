@@ -283,7 +283,7 @@ export type SessionSummaryTotalsFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'state' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
+export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'shipName' | 'state' | 'unjoinedCrew' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	isPilot?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -292,7 +292,9 @@ export type SessionUserFieldPolicy = {
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	pilotSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
+	shipName?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
+	unjoinedCrew?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicleCode?: FieldPolicy<any> | FieldReadFunction<any>
 };

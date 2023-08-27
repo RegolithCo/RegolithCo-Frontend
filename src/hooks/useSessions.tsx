@@ -450,13 +450,14 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           workSessionUser: sessionUser,
         },
         optimisticResponse: () => {
-          const { isPilot, state, ...retVal } = {
+          const { isPilot, unjoinedCrew, state, ...retVal } = {
             ...(sessionUserQry.data?.sessionUser as SessionUser),
             ...sessionUser,
           }
           return {
             upsertSessionUser: {
               isPilot: typeof isPilot === 'boolean' ? isPilot : sessionUserQry.data?.sessionUser?.isPilot || true,
+              unjoinedCrew: unjoinedCrew || sessionUserQry.data?.sessionUser?.unjoinedCrew || [],
               state: state || sessionUserQry.data?.sessionUser?.state || SessionUserStateEnum.Unknown,
               ...retVal,
             },

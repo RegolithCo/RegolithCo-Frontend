@@ -18,16 +18,24 @@ import {
   ListItemText,
 } from '@mui/material'
 import Numeral from 'numeral'
-import { ActivityEnum, ShipMiningOrder, WorkOrderSummary, findAllStoreChoices, jsRound } from '@regolithco/common'
+import {
+  ActivityEnum,
+  ShipMiningOrder,
+  WorkOrderSummary,
+  findAllStoreChoices,
+  jsRound,
+  CrewShare,
+  ShareTypeEnum,
+} from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
-import { ExpandMore, Help, Percent, PieChart, RestartAlt, Store, Toll } from '@mui/icons-material'
+import { Clear, ExpandMore, GroupAdd, Help, Percent, PieChart, RestartAlt, Store, Toll } from '@mui/icons-material'
 import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
 import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
-import { on } from 'events'
+import { Stack } from '@mui/system'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -249,9 +257,77 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           </Typography>
           <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} onChange={onChange} />
 
-          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-            Crew Shares:
-          </Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+            <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
+              Crew Shares:
+            </Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            {isEditing && (
+              <>
+                {userSuggest && (
+                  <Tooltip title="Add ALL session users">
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={() => {
+                        const newShares: string[] = Object.entries(userSuggest)
+                          .reduce((acc, [scName, { named, session }]) => {
+                            if (named || session) {
+                              acc.push(scName)
+                            }
+                            return acc
+                          }, [] as string[])
+                          .filter((scName) => {
+                            return !workOrder.crewShares?.find((cs) => cs.scName === scName)
+                          })
+
+                        // Make sure we have something to add
+                        if (newShares.length === 0) return
+                        onChange({
+                          ...workOrder,
+                          crewShares: [
+                            ...(workOrder.crewShares || []),
+                            ...newShares.map(
+                              (scName) =>
+                                ({
+                                  scName,
+                                  shareType: ShareTypeEnum.Share,
+                                  share: 1,
+                                  note: null,
+                                  createdAt: Date.now(),
+                                  orderId: workOrder.orderId,
+                                  sessionId: workOrder.sessionId,
+                                  updatedAt: Date.now(),
+                                  state: false,
+                                  __typename: 'CrewShare',
+                                } as CrewShare)
+                            ),
+                          ],
+                        })
+                      }}
+                    >
+                      <GroupAdd fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                <Tooltip title="Clear all crew shares (except owner)">
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => {
+                      const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
+                      onChange({
+                        ...workOrder,
+                        crewShares: workOrder.crewShares?.filter((cs) => cs.scName === ownerSCName) || [],
+                      })
+                    }}
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+          </Stack>
           {/* The actual control for the crew shares */}
           <CrewShareTable
             allowEdit={allowEdit}

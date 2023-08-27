@@ -202,6 +202,8 @@ export const SessionUserFragmentFragmentDoc = gql`
   updatedAt
   isPilot
   pilotSCName
+  shipName
+  unjoinedCrew
   vehicleCode
   loadout {
     ...MiningLoadoutFragment
