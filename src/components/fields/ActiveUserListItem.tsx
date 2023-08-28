@@ -5,7 +5,6 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Tooltip,
-  Link,
   IconButton,
   Stack,
   Typography,
@@ -31,6 +30,7 @@ export interface ActiveUserListItemProps {
   sessionOwnerId?: string
   scoutingFind?: ScoutingFind
   friends?: string[]
+  captain?: SessionUser
   openUserPopup?: () => void
   openLoadoutPopup?: () => void
   openContextMenu?: (el: HTMLElement) => void
@@ -45,6 +45,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   scoutingFind,
   openUserPopup,
   openLoadoutPopup: openModalPopup,
+  captain,
   openContextMenu,
   navigate,
   meId,
@@ -121,8 +122,8 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       }
     }
 
-    if (sessionUser.pilotSCName) {
-      secondaryText.push(`Crew of: ${sessionUser.pilotSCName}`)
+    if (captain) {
+      secondaryText.push(`Crew of: ${captain.owner?.scName}`)
     }
   }
   const stateColor = STATE_COLORS_BG[sessionUser.state] || 'transparent'

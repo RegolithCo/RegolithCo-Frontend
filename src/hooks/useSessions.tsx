@@ -28,6 +28,7 @@ import {
   destructureSettings,
   ErrorCode,
   GetSessionQuery,
+  InnactiveUser,
   mergeDestructured,
   PaginatedScoutingFinds,
   PaginatedSessions,
@@ -355,11 +356,18 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         scNames,
       },
       optimisticResponse: () => {
-        const newMentionedMembers = [
-          ...((sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']) || []),
-          ...scNames,
+        const newMentionedMembers: InnactiveUser[] = [
+          ...((sessionQry.data?.session?.mentionedUsers as InnactiveUser[]) || []),
+          ...scNames.map(
+            (s) =>
+              ({
+                scName: s,
+                captainId: null,
+                __typename: 'InnactiveUser',
+              } as InnactiveUser)
+          ),
         ]
-        newMentionedMembers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        newMentionedMembers.sort(({ scName: a }, { scName: b }) => a.toLowerCase().localeCompare(b.toLowerCase()))
 
         return {
           addSessionMentions: {
@@ -401,7 +409,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           removeSessionMentions: {
             ...(sessionQry.data?.session as Session),
             mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).filter(
-              (m) => !scNames.includes(m)
+              (m) => !scNames.includes(m.scName)
             ),
           },
           __typename: 'Mutation',
@@ -418,7 +426,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           removeSessionCrew: {
             ...(sessionQry.data?.session as Session),
             mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).filter(
-              (m) => m !== scName
+              (m) => m.scName !== scName
             ),
           },
           __typename: 'Mutation',
@@ -450,14 +458,13 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           workSessionUser: sessionUser,
         },
         optimisticResponse: () => {
-          const { isPilot, unjoinedCrew, state, ...retVal } = {
+          const { isPilot, state, ...retVal } = {
             ...(sessionUserQry.data?.sessionUser as SessionUser),
             ...sessionUser,
           }
           return {
             upsertSessionUser: {
               isPilot: typeof isPilot === 'boolean' ? isPilot : sessionUserQry.data?.sessionUser?.isPilot || true,
-              unjoinedCrew: unjoinedCrew || sessionUserQry.data?.sessionUser?.unjoinedCrew || [],
               state: state || sessionUserQry.data?.sessionUser?.state || SessionUserStateEnum.Unknown,
               ...retVal,
             },

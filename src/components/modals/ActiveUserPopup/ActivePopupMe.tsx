@@ -168,13 +168,13 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
         </Box>
 
         {/* Either a list of MY Crew (if there are any) or specify whose crew I am on */}
-        <Typography>{sessionUser.pilotSCName ? `Crew of: ${sessionUser.pilotSCName}` : 'No crew'}</Typography>
+        <Typography>{sessionUser.captainId ? `Crew of: ${sessionUser.captainId}` : 'No crew'}</Typography>
 
         <Typography variant="overline" color="primary" component="div">
           Actions
         </Typography>
         <ButtonGroup variant="contained" color="error" aria-label="contained primary button group">
-          {sessionUser.pilotSCName && <Button startIcon={<RocketLaunch />}>Leave USERNAME's Crew</Button>}
+          {sessionUser.captainId && <Button startIcon={<RocketLaunch />}>Leave USERNAME's Crew</Button>}
           {sessionUser.ownerId !== sessionUser.ownerId && (
             <Button color="error" startIcon={<Cancel />}>
               Leave Session

@@ -5,6 +5,7 @@ import config from '../config'
 import log from 'loglevel'
 import {
   CrewShare,
+  InnactiveUser,
   mergeSessionSettingsInplace,
   SessionSettings,
   SessionUser,
@@ -125,6 +126,12 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           Session: {
             keyFields: ['sessionId'],
             fields: {
+              mentionedUsers: {
+                merge(existing: InnactiveUser[] = [], incoming: InnactiveUser[]) {
+                  const merged = incoming || existing
+                  return merged
+                },
+              },
               settings: {
                 merge(existing: Partial<SessionSettings> = {}, incoming: Partial<SessionSettings> = {}) {
                   const merged = mergeSessionSettingsInplace(existing, incoming)

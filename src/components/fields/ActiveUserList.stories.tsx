@@ -24,5 +24,5 @@ UserList.args = {
   // sessionUsers: fakeUsers.map((u) => ({
   //   fakeSessionUser,
   // })),
-  sessionUsers: fakeSessionUsers,
+  listUsers: fakeSessionUsers,
 }

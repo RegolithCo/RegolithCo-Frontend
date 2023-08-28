@@ -1,16 +1,18 @@
 import React from 'react'
 import { List } from '@mui/material'
-import { ScoutingFind, SessionUser } from '@regolithco/common'
+import { CrewHierarchy, InnactiveUser, ScoutingFind, Session, SessionUser } from '@regolithco/common'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { ActiveUserContextMenu } from './ActiveUserContextMenu'
 import { Box } from '@mui/system'
 
-export interface ActiveUserListProps {
+export interface CrewUserListProps {
   listUsers: SessionUser[]
+  session: Session
   meId?: string
   scoutingMap?: Map<string, ScoutingFind>
   sessionOwnerId?: string
   friends?: string[]
+  crewHierarchy?: CrewHierarchy
   openUserModal?: (userId: string) => void
   openLoadoutModal?: (userId: string) => void
   navigate?: (path: string) => void
@@ -18,14 +20,16 @@ export interface ActiveUserListProps {
   removeFriend?: (friendName: string) => void
 }
 
-export const ActiveUserList: React.FC<ActiveUserListProps> = ({
+export const CrewUserList: React.FC<CrewUserListProps> = ({
   listUsers,
+  session,
   sessionOwnerId,
   meId,
   navigate,
   openUserModal,
   openLoadoutModal,
   scoutingMap,
+  crewHierarchy,
   friends,
   addFriend,
   removeFriend,
@@ -89,6 +93,47 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
               friends={friends}
               addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
             />
+
+            {crewHierarchy && crewHierarchy[sessionUser.owner?.userId as string] && (
+              <Box sx={{ pl: 2, pr: 2, pt: 1, pb: 1, backgroundColor: 'rgba(0,0,0,0.1)' }}>
+                {crewHierarchy[sessionUser.owner?.userId as string]?.activeIds.map((actId) => {
+                  const thisUser = session.activeMembers?.items.find((su) => su.owner?.userId === actId) as SessionUser
+                  if (!thisUser) {
+                    console.error(`Could not find session user ${actId}`)
+                    return null
+                  }
+                  return (
+                    <ActiveUserListItem
+                      key={`user-${actId}`}
+                      meId={meId}
+                      sessionOwnerId={sessionOwnerId}
+                      captain={sessionUser}
+                      // Context menu
+                      // menuOpen={!!menuOpen}
+                      openContextMenu={(el: HTMLElement) =>
+                        setMenuOpen({ el, userId: sessionUser.owner?.userId as string })
+                      }
+                      // User popup
+                      openUserPopup={() => openUserModal && openUserModal(sessionUser.owner?.userId as string)}
+                      openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(sessionUser.owner?.userId as string)}
+                      scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
+                      sessionUser={thisUser}
+                      navigate={navigate}
+                      friends={friends}
+                      addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
+                    />
+                  )
+                })}
+                {crewHierarchy[sessionUser.owner?.userId as string]?.innactiveSCNames.map((inactScName, idx) => {
+                  const thisUser = session.mentionedUsers.find(({ scName }) => scName === inactScName) as InnactiveUser
+                  if (!thisUser) {
+                    console.error(`Could not find session user ${inactScName}`)
+                    return null
+                  }
+                  return <div key={`user-${idx}`}>{inactScName}</div>
+                })}
+              </Box>
+            )}
           </Box>
         ))}
         <div style={{ flexGrow: 1 }} />

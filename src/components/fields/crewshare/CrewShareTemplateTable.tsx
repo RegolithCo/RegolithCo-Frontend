@@ -45,6 +45,7 @@ const filter =
         friend: boolean
         session: boolean
         named: boolean
+        crew: boolean
       }
     ]
   >()
@@ -138,7 +139,7 @@ export const CrewShareTemplateTable: React.FC<CrewShareTemplateTableProps> = ({
         filterOptions={(options, params) => {
           const filtered = filter(options, params)
           if (params.inputValue !== '') {
-            filtered.push([params.inputValue, { session: false, friend: false, named: false }])
+            filtered.push([params.inputValue, { session: false, friend: false, named: false, crew: false }])
           }
           return filtered
         }}

@@ -7,7 +7,6 @@ import {
   fakeSCNameList,
   fakeSession,
   fakeUserProfile,
-  fakeWorkOrders,
 } from '@regolithco/common/dist/mock'
 import { SessionTabs } from './SessionPage.container'
 

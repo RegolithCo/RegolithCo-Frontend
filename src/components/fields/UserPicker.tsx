@@ -2,7 +2,6 @@ import React from 'react'
 import { useTheme, Theme, SxProps, Autocomplete, TextField, createFilterOptions, Tooltip } from '@mui/material'
 import { UserSuggest } from '@regolithco/common'
 import { UserListItem } from './UserListItem'
-import { PersonAdd } from '@mui/icons-material'
 // import log from 'loglevel'
 
 export interface UserPickerProps {
@@ -25,6 +24,7 @@ const filter =
         friend: boolean
         session: boolean
         named: boolean
+        crew: boolean
       }
     ]
   >()
@@ -76,7 +76,10 @@ export const UserPicker: React.FC<UserPickerProps> = ({
         filterOptions={(options, params) => {
           const filtered = filter(options, params)
           if (params.inputValue !== '') {
-            filtered.push([params.inputValue, { session: false, friend: !includeFriends, named: !includeMentioned }])
+            filtered.push([
+              params.inputValue,
+              { session: false, friend: !includeFriends, named: !includeMentioned, crew: false },
+            ])
           }
           return filtered
         }}

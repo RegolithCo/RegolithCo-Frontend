@@ -201,9 +201,8 @@ export const SessionUserFragmentFragmentDoc = gql`
   createdAt
   updatedAt
   isPilot
-  pilotSCName
+  captainId
   shipName
-  unjoinedCrew
   vehicleCode
   loadout {
     ...MiningLoadoutFragment
@@ -339,7 +338,10 @@ export const SessionFragmentFragmentDoc = gql`
   sessionSettings {
     ...SessionSettingFragment
   }
-  mentionedUsers
+  mentionedUsers {
+    scName
+    captainId
+  }
   activeMemberIds
   activeMembers {
     items {
@@ -960,7 +962,10 @@ export const AddSessionMentionsDocument = gql`
     mutation addSessionMentions($sessionId: ID!, $scNames: [String]!) {
   addSessionMentions(sessionId: $sessionId, scNames: $scNames) {
     sessionId
-    mentionedUsers
+    mentionedUsers {
+      scName
+      captainId
+    }
   }
 }
     `;
@@ -995,7 +1000,10 @@ export const RemoveSessionMentionsDocument = gql`
     mutation removeSessionMentions($sessionId: ID!, $scNames: [String]!) {
   removeSessionMentions(sessionId: $sessionId, scNames: $scNames) {
     sessionId
-    mentionedUsers
+    mentionedUsers {
+      scName
+      captainId
+    }
   }
 }
     `;
@@ -1030,7 +1038,10 @@ export const RemoveSessionCrewDocument = gql`
     mutation removeSessionCrew($sessionId: ID!, $scNames: [String]!) {
   removeSessionCrew(sessionId: $sessionId, scNames: $scNames) {
     sessionId
-    mentionedUsers
+    mentionedUsers {
+      scName
+      captainId
+    }
   }
 }
     `;

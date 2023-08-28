@@ -342,7 +342,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Box sx={styles.sectionBody}>
                 <MentionedUserList
                   verifiedUsers={verifiedFriends}
-                  mentionedUsers={userProfile.friends}
+                  mentionedUsers={userProfile.friends.map((f) => ({ scName: f, __typename: 'InnactiveUser' }))}
                   myFriends={userProfile.friends}
                   addToList={addFriend}
                   removeFriend={removeFriend}
@@ -423,7 +423,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     setModalOpen(null)
                   }}
                   userSuggest={userProfile.friends.reduce((acc, friendName) => {
-                    return { ...acc, [friendName]: { friend: true, session: false, named: false } }
+                    return { ...acc, [friendName]: { friend: true, session: false, named: false, crew: false } }
                   }, {} as UserSuggest)}
                 />
               </Box>

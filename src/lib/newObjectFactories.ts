@@ -284,7 +284,6 @@ export function dummySessionUser(owner: UserProfile): SessionUser {
     state: SessionUserStateEnum.OnSite,
     isPilot: true,
     sessionId: 'DUMMYSESSION',
-    unjoinedCrew: [],
     ownerId: owner.userId,
     owner: {
       createdAt,

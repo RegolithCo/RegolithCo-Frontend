@@ -52,7 +52,7 @@ export const SessionPageContainer2: React.FC = () => {
       const shareNames = newShares.map((s) => s.scName)
       const activeNames = (sessionQueries.session?.activeMembers?.items || []).map(({ owner }) => owner?.scName)
       const addToMentioned = shareNames.filter(
-        (s) => !sessionQueries.session?.mentionedUsers?.includes(s) && !activeNames.includes(s)
+        (s) => !sessionQueries.session?.mentionedUsers?.find((u) => u.scName === s) && !activeNames.includes(s)
       )
       if (addToMentioned.length > 0) await sessionQueries.addSessionMentions(addToMentioned)
     }

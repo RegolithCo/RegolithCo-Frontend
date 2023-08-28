@@ -7,13 +7,16 @@ import {
   ScoutingFind,
   UserProfile,
   VerifiedUserLookup,
+  InnactiveUser,
 } from '@regolithco/common'
-import { Box, Stack, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { ActiveUserList } from '../../fields/ActiveUserList'
 import { ExpandMore, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { MentionedUserList } from '../../fields/MentionedUserList'
+import { crewHierarchyCalc } from '@regolithco/common'
+import { CrewUserList } from '../../fields/CrewUserList'
 
 export interface TabUsersProps {
   session: Session
@@ -40,7 +43,18 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   },
   gridContainer: {},
   gridColumn: {},
-  drawerAccordionSummaryPrimary: {
+  drawerAccordionSummaryCrews: {
+    '& .MuiTypography-root': {
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+    },
+    color: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.secondary.dark,
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      color: theme.palette.secondary.contrastText,
+    },
+  },
+  drawerAccordionSummaryActive: {
     '& .MuiTypography-root': {
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
@@ -57,7 +71,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       fontWeight: 'bold',
     },
     color: theme.palette.secondary.contrastText,
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.secondary.light,
     '& .MuiAccordionSummary-expandIconWrapper': {
       color: theme.palette.secondary.contrastText,
     },
@@ -87,12 +101,73 @@ export const TabUsers: React.FC<TabUsersProps> = ({
   const styles = stylesThunk(theme, isActive)
   const isSessionOwner = session.ownerId === userProfile.userId
 
+  const { crewHierarchy, singleActives, captains, singleInnactives } = React.useMemo(() => {
+    const crewHierarchy = crewHierarchyCalc(session.activeMembers?.items as SessionUser[], session.mentionedUsers || [])
+    const { captains, singleActives } = (session.activeMembers?.items || []).reduce(
+      (acc, su) => {
+        if (!su.owner?.userId || !crewHierarchy[su.owner?.userId]) {
+          acc.singleActives.push(su)
+          return acc
+        }
+        const crew = crewHierarchy[su.owner?.userId]
+        if (crew.activeIds.length === 0 || crew.innactiveSCNames.length === 0) {
+          acc.singleActives.push(su)
+        } else {
+          acc.captains.push(su)
+        }
+        return acc
+      },
+      { singleActives: [], captains: [] } as { singleActives: SessionUser[]; captains: SessionUser[] }
+    )
+    const singleInnactives: InnactiveUser[] = (session.mentionedUsers || []).filter(
+      ({ captainId }) => !captainId || !crewHierarchy[captainId]
+    )
+    return { crewHierarchy, singleActives, captains, singleInnactives }
+  }, [session.activeMembers?.items, session.mentionedUsers])
+
   return (
     <>
       <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
+        <Toolbar
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.secondary.contrastText,
+            '&.MuiToolbar-root': {
+              px: 2,
+              fontSize: `1.2rem`,
+              minHeight: 50,
+              textTransform: 'uppercase',
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+            },
+          }}
+        >
+          Session Members ({(session.activeMembers?.items?.length || 0) + session.mentionedUsers.length})
+        </Toolbar>
         <Accordion defaultExpanded={true} disableGutters>
-          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryPrimary}>
-            <Typography>Session Members: ({session.activeMembers?.items?.length})</Typography>
+          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
+            <Typography>Crews ({captains.length})</Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={styles.drawerAccordionDetails}>
+            <CrewUserList
+              friends={userProfile.friends}
+              scoutingMap={scoutingMap}
+              sessionOwnerId={session.ownerId}
+              crewHierarchy={crewHierarchy}
+              navigate={navigate}
+              meId={userProfile.userId}
+              listUsers={captains}
+              session={session}
+              addFriend={addFriend}
+              removeFriend={removeFriend}
+              openUserModal={openUserModal}
+              openLoadoutModal={openLoadoutModal}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion defaultExpanded={true} disableGutters>
+          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
+            <Typography>Active Users ({(session.activeMembers?.items || []).length})</Typography>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <ActiveUserList
@@ -101,7 +176,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
               sessionOwnerId={session.ownerId}
               navigate={navigate}
               meId={userProfile.userId}
-              sessionUsers={session.activeMembers?.items as SessionUser[]}
+              listUsers={session.activeMembers?.items || []}
               addFriend={addFriend}
               removeFriend={removeFriend}
               openUserModal={openUserModal}
@@ -117,7 +192,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
             sx={styles.drawerAccordionSummarySecondary}
           >
             <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
-              <Typography sx={{ flexGrow: 1 }}>Not Joined Yet: ({session.mentionedUsers?.length})</Typography>
+              <Typography sx={{ flexGrow: 1 }}>Not Joined Yet: ({session.mentionedUsers.length})</Typography>
               <Tooltip
                 title={
                   <>

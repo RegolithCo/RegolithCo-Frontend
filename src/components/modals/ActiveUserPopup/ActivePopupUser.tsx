@@ -46,13 +46,14 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
     >
       <DialogTitle
         sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
           position: 'relative',
           fontFamily: fontFamilies.robotoMono,
           fontWeight: 'bold',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
+          pl: 14,
           mb: 2,
         }}
       >
@@ -62,8 +63,8 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
         <Stack direction="row" spacing={2} alignItems="center" sx={{ ml: 6 }}>
           <Typography variant="h4">{sessionUser.owner?.scName}</Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Typography variant="overline" color="secondary.dark">
-            ({sessionUser?.owner?.state === UserStateEnum.Verified ? 'Verified' : 'Unverified'})
+          <Typography variant="overline" color="secondary.contrastText">
+            ({sessionUser?.owner?.state === UserStateEnum.Verified ? 'Verified User' : 'Unverified User'})
           </Typography>
         </Stack>
       </DialogTitle>
@@ -81,7 +82,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
         )}
         <Typography>Vehicle: {vehicle?.name || 'UNKNOWN'}</Typography>
         {/* Either a list of MY Crew (if there are any) or specify whose crew I am on */}
-        <Typography>{sessionUser.pilotSCName ? `Crew of: ${sessionUser.pilotSCName}` : 'No crew'}</Typography>
+        <Typography>{sessionUser.captainId ? `Crew of: ${sessionUser.captainId}` : 'No crew'}</Typography>
 
         <Typography>State: {sessionUser.state}</Typography>
 

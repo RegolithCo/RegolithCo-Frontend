@@ -233,9 +233,17 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                   }}
                                 >
                                   <Tooltip
-                                    placement="top-end"
+                                    placement="left"
+                                    arrow
+                                    sx={{ maxHeight: 200, overflow: 'hidden' }}
                                     title={
-                                      <List>
+                                      <List
+                                        sx={{
+                                          maxHeight: 200,
+                                          overflow: 'auto',
+                                          overflowY: 'scroll',
+                                        }}
+                                      >
                                         <ListItem>
                                           <ListItemAvatar>
                                             <UserAvatar user={session.owner as User} size="small" hideTooltip />
@@ -266,7 +274,18 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                       </List>
                                     }
                                   >
-                                    <AvatarGroup max={4} color="primary">
+                                    <AvatarGroup
+                                      max={4}
+                                      color="primary"
+                                      sx={{
+                                        '& .MuiAvatarGroup-avatar': {
+                                          border: `2px solid ${theme.palette.primary.main}`,
+                                          color: theme.palette.primary.main,
+                                          backgroundColor: alpha(theme.palette.primary.dark, 0.2),
+                                          fontSize: '0.75rem',
+                                        },
+                                      }}
+                                    >
                                       <UserAvatar user={session.owner as User} size="large" hideTooltip />
                                       {session.activeMembers?.items
                                         .filter((member) => member.ownerId !== session.ownerId)

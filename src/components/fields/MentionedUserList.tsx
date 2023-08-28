@@ -12,13 +12,13 @@ import {
   Tooltip,
   useTheme,
 } from '@mui/material'
-import { UserSuggest, validateSCName, VerifiedUserLookup } from '@regolithco/common'
+import { InnactiveUser, UserSuggest, validateSCName, VerifiedUserLookup } from '@regolithco/common'
 import { Cancel, PersonAdd } from '@mui/icons-material'
 import { UserListItem } from './UserListItem'
 
 export interface MentionedUserListProps {
   verifiedUsers: VerifiedUserLookup
-  mentionedUsers: string[]
+  mentionedUsers: InnactiveUser[]
   myFriends: string[]
   useAutocomplete?: boolean
   addToList?: (friendName: string) => void
@@ -35,6 +35,7 @@ const filter =
         friend: boolean
         session: boolean
         named: boolean
+        crew: boolean
       }
     ]
   >()
@@ -60,6 +61,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
         friend: true,
         session: false,
         named: false,
+        crew: false,
       },
     }),
     {} as UserSuggest
@@ -76,8 +78,8 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
           overflowX: 'hidden',
         }}
       >
-        {(mentionedUsers || []).map((mentionedUserName, idx) => {
-          const isVerified = Boolean(verifiedUsers[mentionedUserName])
+        {(mentionedUsers || []).map((mentionedUser, idx) => {
+          const isVerified = Boolean(verifiedUsers[mentionedUser.scName])
           return (
             <ListItem
               key={`userlist-${idx}`}
@@ -90,20 +92,20 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
                   </Avatar>
                 </Badge>
               </ListItemAvatar> */}
-              <ListItemText primary={mentionedUserName} />
+              <ListItemText primary={mentionedUser.scName} />
               <ListItemSecondaryAction>
-                {addFriend && myFriends.indexOf(mentionedUserName) < 0 && (
+                {addFriend && myFriends.indexOf(mentionedUser.scName) < 0 && (
                   <Tooltip title="Add this user as a friend">
-                    <IconButton onClick={() => addFriend(mentionedUserName)}>
+                    <IconButton onClick={() => addFriend(mentionedUser.scName)}>
                       <PersonAdd />
                     </IconButton>
                   </Tooltip>
                 )}
-                {((removeFriend && myFriends.indexOf(mentionedUserName) > -1) || removeFromList) && (
+                {((removeFriend && myFriends.indexOf(mentionedUser.scName) > -1) || removeFromList) && (
                   <IconButton
                     onClick={() => {
-                      removeFriend && removeFriend(mentionedUserName)
-                      removeFromList && removeFromList(mentionedUserName)
+                      removeFriend && removeFriend(mentionedUser.scName)
+                      removeFromList && removeFromList(mentionedUser.scName)
                     }}
                   >
                     <Cancel />
@@ -159,7 +161,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
             else return ''
           }}
           getOptionDisabled={(option) =>
-            (mentionedUsers || []).find((scName) => scName.toLowerCase() === option[0].toLowerCase()) !== undefined
+            (mentionedUsers || []).find(({ scName }) => scName.toLowerCase() === option[0].toLowerCase()) !== undefined
           }
           options={Object.entries(userSuggest || {})}
           sx={{ mb: 3 }}
@@ -167,7 +169,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
           filterOptions={(options, params) => {
             const filtered = filter(options, params)
             if (params.inputValue !== '') {
-              filtered.push([params.inputValue, { session: false, friend: false, named: false }])
+              filtered.push([params.inputValue, { session: false, friend: false, named: false, crew: false }])
             }
             return filtered
           }}
@@ -175,7 +177,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
             const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
             if (
               validateSCName(addName) &&
-              !(mentionedUsers || []).find((scName) => scName.toLowerCase() === addName.toLowerCase())
+              !(mentionedUsers || []).find(({ scName }) => scName.toLowerCase() === addName.toLowerCase())
             ) {
               setKeyCounter(keyCounter + 1)
               addToList(addName)

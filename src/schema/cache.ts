@@ -43,6 +43,11 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type InnactiveUserKeySpecifier = ('captainId' | 'scName' | InnactiveUserKeySpecifier)[];
+export type InnactiveUserFieldPolicy = {
+	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
+	scName?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type LookupDataKeySpecifier = ('CIG' | 'UEX' | LookupDataKeySpecifier)[];
 export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -283,18 +288,17 @@ export type SessionSummaryTotalsFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionUserKeySpecifier = ('createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'pilotSCName' | 'sessionId' | 'shipName' | 'state' | 'unjoinedCrew' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
+export type SessionUserKeySpecifier = ('captainId' | 'createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'sessionId' | 'shipName' | 'state' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
+	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	isPilot?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
-	pilotSCName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	shipName?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
-	unjoinedCrew?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicleCode?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -528,6 +532,10 @@ export type StrictTypedTypePolicies = {
 	CrewShareTemplate?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CrewShareTemplateKeySpecifier | (() => undefined | CrewShareTemplateKeySpecifier),
 		fields?: CrewShareTemplateFieldPolicy,
+	},
+	InnactiveUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | InnactiveUserKeySpecifier | (() => undefined | InnactiveUserKeySpecifier),
+		fields?: InnactiveUserFieldPolicy,
 	},
 	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
