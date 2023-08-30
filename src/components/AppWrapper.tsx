@@ -3,9 +3,6 @@ import { SxProps, Theme } from '@mui/system'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 import { Copyright } from './Copyright'
-import { AppVersion } from './fields/AppVersion'
-import { SCVersion } from './fields/SCVersion'
-// import { Box, SxProps, Theme } from '@mui/material'
 
 type ObjectValues<T> = T[keyof T]
 export const BGImagesEnum = {
@@ -17,6 +14,7 @@ export const BGImagesEnum = {
   ASTEROIDS1: 'asteroids1.png',
   ASTEROIDS2: 'asteroids2.jpg',
   CONCOURSE: 'concourse.jpg',
+  MARKET1: 'market1.jpg',
   CITY1: 'city1.jpg',
   PROFILE: 'profile.jpg',
   REFINERY1: 'refinery1.png',
@@ -71,6 +69,9 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       break
     case '/session':
       bgImage = BGImagesEnum.OPTION2
+      break
+    case '/marketPrice':
+      bgImage = BGImagesEnum.MARKET1
       break
     case '/cluster':
       bgImage = BGImagesEnum.ASTEROIDS2

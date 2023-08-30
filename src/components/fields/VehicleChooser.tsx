@@ -12,8 +12,9 @@ export const ShipTypeEnum = {
 export type ShipTypeEnum = ObjectValues<typeof ShipTypeEnum>
 
 export interface VehicleChooserProps {
+  label?: string
   vehicle?: string
-  onChange: (vehicleCode: string | null) => void
+  onChange: (vehicleCode: Vehicle | null) => void
   hide?: [ShipTypeEnum]
   show?: [ShipTypeEnum]
   onlyCargo?: boolean
@@ -31,7 +32,7 @@ const NONEOPTION: Vehicle = {
   __typename: 'Vehicle',
 }
 
-export const VehicleChooser: React.FC<VehicleChooserProps> = ({ vehicle, onChange, hide, show, onlyCargo }) => {
+export const VehicleChooser: React.FC<VehicleChooserProps> = ({ label, vehicle, onChange, hide, show, onlyCargo }) => {
   const theme = useTheme()
 
   if (hide && show) throw new Error('Cannot use both hide and show')
@@ -93,14 +94,13 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({ vehicle, onChang
         }
       }}
       options={[NONEOPTION, ...sortedShips]}
-      renderInput={(params) => <TextField {...params} label="Current Ship" />}
+      renderInput={(params) => <TextField {...params} label={label || 'Current Ship'} />}
       onChange={(event, option) => {
-        const finalVal: string | null = typeof option === 'string' ? option : option?.code || null
-        if (finalVal === NONEOPTION.code) return onChange(null)
-        if (finalVal && !sortedShips.find((ship) => ship.code === finalVal)) {
+        if (option && option.code === NONEOPTION.code) return onChange(null)
+        if (option && !sortedShips.find((ship) => ship.code === option.code)) {
           return onChange(null)
         }
-        return onChange(finalVal)
+        return onChange(option)
       }}
     />
   )

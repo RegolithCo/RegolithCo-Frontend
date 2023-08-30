@@ -16,6 +16,7 @@ import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
 import { useLogin } from './hooks/useOAuth2'
 import { StagingWarning } from './components/modals/StagingWarning'
 import { LoadoutPageContainer } from './components/pages/LoadoutPage.container'
+import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -77,6 +78,7 @@ export const App: React.FC = () => {
           <Route path="/terms" element={<AboutPageContainer />} errorElement={<Error />} />
           <Route path="/privacy" element={<AboutPageContainer />} errorElement={<Error />} />
           <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<Error />} />
+          <Route path="/marketPrice" element={<MarketPriceCalcPage />} errorElement={<Error />} />
           <Route
             path="/verify"
             element={

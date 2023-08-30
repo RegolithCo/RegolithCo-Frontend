@@ -9,6 +9,7 @@ export interface PageWrapperProps {
   maxWidth?: false | Breakpoint | undefined
   loading?: boolean
   sx?: SxProps<Theme>
+  titleSx?: SxProps<Theme>
 }
 
 const styles = {
@@ -31,7 +32,7 @@ const styles = {
   },
 }
 
-export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWidth, loading, sx }) => {
+export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWidth, loading, sx, titleSx }) => {
   return (
     <>
       <Container maxWidth={maxWidth || 'sm'} sx={sx}>
@@ -48,6 +49,7 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
                   md: '1.8rem',
                   lg: '2rem',
                 },
+                ...(titleSx || {}),
               }}
             >
               {title}

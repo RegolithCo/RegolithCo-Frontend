@@ -1,9 +1,9 @@
 import React from 'react'
-import { List } from '@mui/material'
+import { List, Typography } from '@mui/material'
 import { CrewHierarchy, InnactiveUser, ScoutingFind, Session, SessionUser } from '@regolithco/common'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { ActiveUserContextMenu } from './ActiveUserContextMenu'
-import { Box } from '@mui/system'
+import { alpha, Box, useTheme } from '@mui/system'
 
 export interface CrewUserListProps {
   listUsers: SessionUser[]
@@ -34,6 +34,7 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({
   addFriend,
   removeFriend,
 }) => {
+  const theme = useTheme()
   const [menuOpen, setMenuOpen] = React.useState<{ el: HTMLElement; userId: string } | null>(null)
   const sortedSessionUsers = [...listUsers]
 
@@ -72,31 +73,29 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({
           overflowX: 'hidden',
         }}
       >
-        {sortedSessionUsers.map((sessionUser, idx) => (
+        {sortedSessionUsers.map((captain, idx) => (
           <Box key={`user-${idx}`}>
             <ActiveUserListItem
               key={`user-${idx}`}
               meId={meId}
               sessionOwnerId={sessionOwnerId}
-              captain={
-                sessionUser.captainId ? listUsers.find((su) => su.owner?.userId === sessionUser.captainId) : undefined
-              }
+              captain={captain.captainId ? listUsers.find((su) => su.owner?.userId === captain.captainId) : undefined}
               // Context menu
               // menuOpen={!!menuOpen}
-              openContextMenu={(el: HTMLElement) => setMenuOpen({ el, userId: sessionUser.owner?.userId as string })}
+              openContextMenu={(el: HTMLElement) => setMenuOpen({ el, userId: captain.owner?.userId as string })}
               // User popup
-              openUserPopup={() => openUserModal && openUserModal(sessionUser.owner?.userId as string)}
-              openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(sessionUser.owner?.userId as string)}
-              scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
-              sessionUser={sessionUser}
+              openUserPopup={() => openUserModal && openUserModal(captain.owner?.userId as string)}
+              openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(captain.owner?.userId as string)}
+              scoutingFind={scoutingMap ? scoutingMap.get(captain.owner?.userId as string) : undefined}
+              sessionUser={captain}
               navigate={navigate}
               friends={friends}
-              addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
+              addFriend={addFriend ? () => addFriend(captain?.owner?.scName as string) : undefined}
             />
 
-            {crewHierarchy && crewHierarchy[sessionUser.owner?.userId as string] && (
-              <Box sx={{ pl: 2, pr: 2, pt: 1, pb: 1, backgroundColor: 'rgba(0,0,0,0.1)' }}>
-                {crewHierarchy[sessionUser.owner?.userId as string]?.activeIds.map((actId) => {
+            {crewHierarchy && crewHierarchy[captain.owner?.userId as string] && (
+              <Box sx={{ pl: 2, backgroundColor: alpha(theme.palette.secondary.dark, 0.2) }}>
+                {crewHierarchy[captain.owner?.userId as string]?.activeIds.map((actId) => {
                   const thisUser = session.activeMembers?.items.find((su) => su.owner?.userId === actId) as SessionUser
                   if (!thisUser) {
                     console.error(`Could not find session user ${actId}`)
@@ -107,30 +106,39 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({
                       key={`user-${actId}`}
                       meId={meId}
                       sessionOwnerId={sessionOwnerId}
-                      captain={sessionUser}
+                      captain={captain}
                       // Context menu
                       // menuOpen={!!menuOpen}
                       openContextMenu={(el: HTMLElement) =>
-                        setMenuOpen({ el, userId: sessionUser.owner?.userId as string })
+                        setMenuOpen({ el, userId: captain.owner?.userId as string })
                       }
                       // User popup
-                      openUserPopup={() => openUserModal && openUserModal(sessionUser.owner?.userId as string)}
-                      openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(sessionUser.owner?.userId as string)}
-                      scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
+                      openUserPopup={() => openUserModal && openUserModal(captain.owner?.userId as string)}
+                      openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(captain.owner?.userId as string)}
+                      scoutingFind={scoutingMap ? scoutingMap.get(captain.owner?.userId as string) : undefined}
                       sessionUser={thisUser}
                       navigate={navigate}
                       friends={friends}
-                      addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
+                      addFriend={addFriend ? () => addFriend(captain?.owner?.scName as string) : undefined}
                     />
                   )
                 })}
-                {crewHierarchy[sessionUser.owner?.userId as string]?.innactiveSCNames.map((inactScName, idx) => {
+                {crewHierarchy[captain.owner?.userId as string]?.innactiveSCNames.map((inactScName, idx) => {
                   const thisUser = session.mentionedUsers.find(({ scName }) => scName === inactScName) as InnactiveUser
                   if (!thisUser) {
                     console.error(`Could not find session user ${inactScName}`)
                     return null
                   }
-                  return <div key={`user-${idx}`}>{inactScName}</div>
+                  return (
+                    <Box key={`user-${idx}`} sx={{ pl: 2 }}>
+                      <Typography variant="body2" color="text.primary">
+                        {inactScName}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        crew of {captain.owner?.scName}
+                      </Typography>
+                    </Box>
+                  )
                 })}
               </Box>
             )}

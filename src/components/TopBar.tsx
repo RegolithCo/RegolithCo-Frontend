@@ -20,9 +20,11 @@ import {
   Info,
   Login,
   Logout,
+  NewReleases,
   Person,
   QuestionAnswer,
   Store,
+  Storefront,
   TableChart,
   Verified,
 } from '@mui/icons-material'
@@ -118,6 +120,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         { path: '/workorder', name: 'Work Order', icon: <Engineering /> },
         { path: '/cluster', name: 'Rock / Cluster Calculator', icon: <RockIcon /> },
         { path: '/loadouts', name: 'Ship Loadouts', icon: <ModuleIcon /> },
+        { path: '/marketPrice', name: 'Market Price Calculator', icon: <Storefront /> },
       ],
     },
     {
@@ -143,7 +146,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         { path: '/about/faq', name: 'FAQ', icon: <QuestionAnswer /> },
         { path: '/about/support-us', name: 'Help / Support Us', icon: <Coffee /> },
         { path: '/about/get-help', name: 'Get Help', icon: <HelpCenter /> },
-        { path: '/about/acknowledgements', name: 'acknowledgements', icon: <Celebration /> },
+        { path: '/about/acknowledgements', name: 'Acknowledgements', icon: <Celebration /> },
+        { path: '/about/release-notes', name: 'Release Notes', icon: <NewReleases /> },
       ],
     },
   ]

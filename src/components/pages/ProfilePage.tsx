@@ -373,8 +373,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Box sx={styles.sectionBody}>
                 <VehicleChooser
                   vehicle={userProfile.sessionShipCode as string | undefined}
-                  onChange={(newCode) => {
-                    const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newCode }
+                  onChange={(newVehicle) => {
+                    const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.code }
                     setNewUserProfile(updatedNewUserProfile)
                     updateUserProfile && updateUserProfile(updatedNewUserProfile)
                   }}
@@ -393,8 +393,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <VehicleChooser
                   vehicle={userProfile.deliveryShipCode as string | undefined}
                   onlyCargo
-                  onChange={(newCode) => {
-                    const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newCode }
+                  onChange={(newVehicle) => {
+                    const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newVehicle?.code }
                     setNewUserProfile(updatedNewUserProfile)
                     updateUserProfile && updateUserProfile(updatedNewUserProfile)
                   }}

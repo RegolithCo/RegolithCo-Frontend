@@ -3,7 +3,6 @@
 
 **TODO**
 
-- Market price calc tool
 - Error sweep through UI
 - Crew user UI design
 - Session list rework
@@ -11,12 +10,12 @@
 
 **DONE**
 
-
 - **MultiCrew** is here! Now you can join someone's ship as a crewmate.
     - New work orders will automatically add all crew members.
     - Crew members that create work orders will assign the order to the Captain automatically.
     - Captains can add or remove crew members to their ship
     - Crew members can join or leave the a ship.
+- **New Tool: Market Price Calculator**. This tool will help you figure out what the best price is for your ore and where to sell it.
 - **User list Rework** It's been confusing a lot of people what a "Mentioned" user is. Hopefully it's clearer now.
     - Context menus avaialble on right-click.
 - **Session users can now have loadouts** Advertise to the session what tools you're bringing to the party.

@@ -1,61 +1,61 @@
 import React from 'react'
 import { ToggleButton, Tooltip } from '@mui/material'
-import { VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
+import { getVehicleOreName, findPrice, SalvageOreEnum, getSalvageOreName } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { blue, green } from '@mui/material/colors'
 
-export interface VehicleOreChooserProps {
+export interface SalvageOreChooserProps {
   multiple?: boolean
   requireValue?: boolean
   showAllBtn?: boolean
-  values?: VehicleOreEnum[]
-  onChange?: (value: VehicleOreEnum[]) => void
+  values?: SalvageOreEnum[]
+  onChange?: (value: SalvageOreEnum[]) => void
 }
 
-export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
+export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
   multiple,
   onChange,
   values,
   showAllBtn,
   requireValue,
 }) => {
-  const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
+  const [selected, setSelected] = React.useState<SalvageOreEnum[]>(values || [])
   // const theme = useTheme()
-  const vehicleRowKeys = Object.values(VehicleOreEnum)
-  const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
-  const fgColors = ['#000000', '#ffffff', '#ffffff']
+  const vehicleRowKeys = Object.values(SalvageOreEnum)
+  const bgColors = ['#666666', '#aaaaaa']
+  const fgColors = ['#000000', '#000000']
   // Sort descendng value
   vehicleRowKeys.sort((a, b) => {
-    const aPrice = findPrice(a as VehicleOreEnum)
-    const bPrice = findPrice(b as VehicleOreEnum)
+    const aPrice = findPrice(a as SalvageOreEnum)
+    const bPrice = findPrice(b as SalvageOreEnum)
     return bPrice - aPrice
   })
 
   return (
     <Grid container spacing={0.5}>
-      {vehicleRowKeys.map((vehicleOreKey, rowIdx) => {
+      {vehicleRowKeys.map((salvageOreKey, rowIdx) => {
         const fgc = fgColors[rowIdx]
         const bgc = bgColors[rowIdx]
-        const active = selected.includes(vehicleOreKey)
+        const active = selected.includes(salvageOreKey)
         return (
           <Grid xs={3} key={`grid-${rowIdx}`}>
             <ToggleButton
-              value={vehicleOreKey}
+              value={salvageOreKey}
               fullWidth
               tabIndex={-1}
               selected={active}
               size="small"
-              key={`tbutt-${vehicleOreKey}`}
+              key={`tbutt-${salvageOreKey}`}
               onChange={() => {
-                let newValue: VehicleOreEnum[] = []
+                let newValue: SalvageOreEnum[] = []
                 if (!active) {
                   if (multiple) {
-                    newValue = [...selected, vehicleOreKey]
+                    newValue = [...selected, salvageOreKey]
                   } else {
-                    newValue = [vehicleOreKey]
+                    newValue = [salvageOreKey]
                   }
                 } else {
-                  newValue = selected.filter((v) => v !== vehicleOreKey)
+                  newValue = selected.filter((v) => v !== salvageOreKey)
                 }
                 if (requireValue && newValue.length === 0) {
                   return
@@ -87,7 +87,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 },
               }}
             >
-              {getVehicleOreName(vehicleOreKey)}
+              {getSalvageOreName(salvageOreKey)}
             </ToggleButton>
           </Grid>
         )

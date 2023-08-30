@@ -139,10 +139,10 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
           </Typography>
           <VehicleChooser
             vehicle={vehicle?.code}
-            onChange={(vehicleCode) => {
+            onChange={(vehicle) => {
               onChange({
                 isPilot: true,
-                vehicleCode: vehicleCode,
+                vehicleCode: vehicle?.code,
               })
             }}
           />

@@ -103,18 +103,17 @@ export const TabUsers: React.FC<TabUsersProps> = ({
 
   const { crewHierarchy, singleActives, captains, singleInnactives } = React.useMemo(() => {
     const crewHierarchy = crewHierarchyCalc(session.activeMembers?.items as SessionUser[], session.mentionedUsers || [])
+    console.log(crewHierarchy, JSON.stringify(crewHierarchy))
     const { captains, singleActives } = (session.activeMembers?.items || []).reduce(
       (acc, su) => {
-        if (!su.owner?.userId || !crewHierarchy[su.owner?.userId]) {
+        const suUserId = su.owner?.userId as string
+        const crew = crewHierarchy[suUserId as string]
+        // If I'm not a captain or I don't have a captain, I'm a single active
+        if (!su.captainId && !crew) {
           acc.singleActives.push(su)
           return acc
         }
-        const crew = crewHierarchy[su.owner?.userId]
-        if (crew.activeIds.length === 0 || crew.innactiveSCNames.length === 0) {
-          acc.singleActives.push(su)
-        } else {
-          acc.captains.push(su)
-        }
+        if (crew) acc.captains.push(su)
         return acc
       },
       { singleActives: [], captains: [] } as { singleActives: SessionUser[]; captains: SessionUser[] }
@@ -144,30 +143,34 @@ export const TabUsers: React.FC<TabUsersProps> = ({
         >
           Session Members ({(session.activeMembers?.items?.length || 0) + session.mentionedUsers.length})
         </Toolbar>
-        <Accordion defaultExpanded={true} disableGutters>
-          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
-            <Typography>Crews ({captains.length})</Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={styles.drawerAccordionDetails}>
-            <CrewUserList
-              friends={userProfile.friends}
-              scoutingMap={scoutingMap}
-              sessionOwnerId={session.ownerId}
-              crewHierarchy={crewHierarchy}
-              navigate={navigate}
-              meId={userProfile.userId}
-              listUsers={captains}
-              session={session}
-              addFriend={addFriend}
-              removeFriend={removeFriend}
-              openUserModal={openUserModal}
-              openLoadoutModal={openLoadoutModal}
-            />
-          </AccordionDetails>
-        </Accordion>
+        {captains.length > 0 && (
+          <Accordion defaultExpanded={true} disableGutters>
+            <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
+              <Typography>Crews ({captains.length})</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={styles.drawerAccordionDetails}>
+              <CrewUserList
+                friends={userProfile.friends}
+                scoutingMap={scoutingMap}
+                sessionOwnerId={session.ownerId}
+                crewHierarchy={crewHierarchy}
+                navigate={navigate}
+                meId={userProfile.userId}
+                listUsers={captains}
+                session={session}
+                addFriend={addFriend}
+                removeFriend={removeFriend}
+                openUserModal={openUserModal}
+                openLoadoutModal={openLoadoutModal}
+              />
+            </AccordionDetails>
+          </Accordion>
+        )}
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
-            <Typography>Active Users ({(session.activeMembers?.items || []).length})</Typography>
+            <Typography>
+              {captains.length === 0 ? 'Active Users' : 'Solo Active'} ({singleActives.length})
+            </Typography>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <ActiveUserList
@@ -176,7 +179,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
               sessionOwnerId={session.ownerId}
               navigate={navigate}
               meId={userProfile.userId}
-              listUsers={session.activeMembers?.items || []}
+              listUsers={singleActives}
               addFriend={addFriend}
               removeFriend={removeFriend}
               openUserModal={openUserModal}
@@ -192,7 +195,9 @@ export const TabUsers: React.FC<TabUsersProps> = ({
             sx={styles.drawerAccordionSummarySecondary}
           >
             <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
-              <Typography sx={{ flexGrow: 1 }}>Not Joined Yet: ({session.mentionedUsers.length})</Typography>
+              <Typography sx={{ flexGrow: 1 }}>
+                {captains.length === 0 ? 'Innactive Users' : 'Solo Innactive'} ({session.mentionedUsers.length})
+              </Typography>
               <Tooltip
                 title={
                   <>
@@ -216,7 +221,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <MentionedUserList
-              mentionedUsers={session.mentionedUsers}
+              mentionedUsers={singleInnactives}
               verifiedUsers={verifiedMentionedUsers}
               myFriends={userProfile.friends}
               useAutocomplete
