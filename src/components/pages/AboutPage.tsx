@@ -1,8 +1,11 @@
 import * as React from 'react'
 import {
+  Alert,
+  AlertTitle,
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Divider,
   Link,
   Paper,
@@ -15,12 +18,15 @@ import {
   useTheme,
 } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
-import { Celebration, Coffee, HelpCenter, Info, QuestionAnswer, Twitter } from '@mui/icons-material'
+import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer, Twitter } from '@mui/icons-material'
 import { DiscordIcon } from '../../icons/Discord'
 import { AppVersion } from '../fields/AppVersion'
 import { SCVersion } from '../fields/SCVersion'
 import { fontFamilies } from '../../theme'
 import { useNavigate, useParams } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
+import axios from 'axios'
+import log from 'loglevel'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -47,11 +53,27 @@ const TabIndex = {
   GetHelp: 'get-help',
   FAQ: 'faq',
   Thanks: 'acknowledgements',
+  ReleaseNotes: 'release-notes',
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const [changelist, setChangelist] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    // Loop over all the possible keys of StatsObjectSummary and fetch them
+    axios
+      .get(`/CHANGELIST.md`)
+      .then((response) => {
+        setChangelist(response.data)
+      })
+      .catch((error) => {
+        //If there is an error, log it. DO NOT FAIL
+        log.error(error)
+        setChangelist('CHANGELIST NOT FOUND')
+      })
+  }, [])
 
   const finalTab = typeof tab === 'undefined' ? TabIndex.General : tab
   let finalTitle = 'About Regolith Co.'
@@ -68,28 +90,45 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
     case TabIndex.Thanks:
       finalTitle = 'Acknowledgements'
       break
+    case TabIndex.ReleaseNotes:
+      finalTitle = 'Release Notes'
+      break
     default:
       break
   }
 
   return (
-    <PageWrapper title={finalTitle} maxWidth="sm" sx={{ marginLeft: { lg: '7%' } }}>
-      <Typography variant="body2" component="div" gutterBottom>
-        <em>"Don't mine alone"</em>
-      </Typography>
+    <PageWrapper
+      title={finalTitle}
+      maxWidth="md"
+      sx={{ marginLeft: { lg: '7%' } }}
+      titleSx={{
+        textAlign: 'center',
+        fontSize: '2.5rem',
+        color: theme.palette.primary.main,
+        borderBottom: `1px solid ${theme.palette.primary.main}`,
+      }}
+    >
       <Tabs
         value={finalTab}
         aria-label="basic tabs example"
-        sx={{ mb: 3 }}
+        sx={{
+          mb: 3,
+          // Center the flex items
+          '& .MuiTabs-flexContainer': {
+            justifyContent: 'center',
+          },
+        }}
         onChange={(event, newValue) => {
           navigate && navigate(`/about/${newValue}`)
         }}
       >
         <Tab label="General" icon={<Info />} value={TabIndex.General} />
         <Tab label="FAQ" icon={<QuestionAnswer />} value={TabIndex.FAQ} />
-        <Tab label="Help Us" icon={<Coffee />} value={TabIndex.HelpUs} />
         <Tab label="Get Help" icon={<HelpCenter />} value={TabIndex.GetHelp} />
+        <Tab label="Support Us" icon={<Coffee />} value={TabIndex.HelpUs} />
         <Tab label="Thanks" icon={<Celebration />} value={TabIndex.Thanks} />
+        <Tab label="Release Notes" icon={<NewReleases />} value={TabIndex.ReleaseNotes} />
       </Tabs>
       {finalTab === TabIndex.General && (
         <Box sx={{ mb: 3 }}>
@@ -328,9 +367,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       )}
       {finalTab === TabIndex.Thanks && (
         <Box sx={{ mb: 3 }}>
-          <Typography paragraph>
-            Regolith is a community-driven app and would not exist without a lot of support and hard work from people.
-          </Typography>
+          <Paper elevation={5} sx={styles.innerPaper}>
+            <Typography paragraph variant="subtitle1">
+              Regolith is a community-driven app and would not exist without a lot of support and hard work from people.
+            </Typography>
+          </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5">
               <Link href="https://uexcorp.space/" target="_blank">
@@ -387,6 +428,43 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               and help us make Regolith even better!
             </Typography>
           </Paper>
+        </Box>
+      )}
+      {finalTab === TabIndex.ReleaseNotes && (
+        <Box
+          sx={{
+            mb: 3,
+            '& h2': {
+              fontSize: '1.5rem',
+              mt: 0,
+              color: theme.palette.secondary.dark,
+            },
+            '& h3': {
+              fontSize: '0.9rem',
+              fontFamilies: fontFamilies.robotoMono,
+              color: theme.palette.primary.light,
+              textAlign: 'right',
+              margin: 0,
+            },
+          }}
+        >
+          <Alert severity="info">
+            <AlertTitle>Also Available on Discord in the "Updates" channel</AlertTitle>
+          </Alert>
+          {!changelist ? (
+            <CircularProgress />
+          ) : (
+            changelist
+              // Split on anything greater than 3 dashes
+              .split(/-{3,}/)
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .map((change, index) => (
+                <Paper elevation={5} sx={styles.innerPaper} key={`changelist-${index}`}>
+                  <ReactMarkdown>{change}</ReactMarkdown>
+                </Paper>
+              ))
+          )}
         </Box>
       )}
 
