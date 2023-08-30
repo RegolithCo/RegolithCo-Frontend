@@ -11,13 +11,7 @@ export const MarketPriceCalcPage: React.FC<MarketPriceCalcPageProps> = ({ propA 
   const theme = useTheme()
 
   return (
-    <PageWrapper
-      title="Market Price Finder"
-      maxWidth="md"
-      titleSx={{
-        fontSize: '2.5rem',
-      }}
-    >
+    <PageWrapper title="Market Price Finder" maxWidth="md">
       <MarketPriceCalc />
     </PageWrapper>
   )

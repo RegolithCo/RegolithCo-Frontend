@@ -372,6 +372,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Typography>
               <Box sx={styles.sectionBody}>
                 <VehicleChooser
+                  label="Mining Vehicle"
                   vehicle={userProfile.sessionShipCode as string | undefined}
                   onChange={(newVehicle) => {
                     const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.code }
@@ -391,6 +392,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Typography>
               <Box sx={styles.sectionBody}>
                 <VehicleChooser
+                  label="Delivery Vehicle"
                   vehicle={userProfile.deliveryShipCode as string | undefined}
                   onlyCargo
                   onChange={(newVehicle) => {

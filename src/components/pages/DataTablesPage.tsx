@@ -56,7 +56,17 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
   const finalTab = typeof tab === 'undefined' ? 'ore' : tab
   return (
     <PageWrapper title="Data Tables" maxWidth="lg">
-      <Typography paragraph>Use these calculators to figure out where you should take your hard-won ore. </Typography>
+      <Typography paragraph>
+        Use these calculators to figure out where you should take your hard-won ore. You can also use Regolith's{' '}
+        <Link
+          onClick={() => {
+            navigate && navigate('/marketPrice')
+          }}
+        >
+          Market Price Calculator
+        </Link>{' '}
+        to figure out how much you'll get from a given load of ore.
+      </Typography>
       <Tabs
         value={finalTab}
         sx={{
@@ -78,13 +88,14 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
         <Tab label="Refineries" value={DataTabsEnum.REFINERY} sx={styles.smallTabs} />
         <Tab label="Market" value={DataTabsEnum.MARKET} sx={styles.smallTabs} />
       </Tabs>
-      {/* <Alert severity="warning" sx={{ mb: 2 }}>
-        <AlertTitle>A note about 3.19.x Prices</AlertTitle>
-        <Typography paragraph>
-          In 3.19 prices have become a lot more dynamic. A more interactive, comprehensive view of prices is coming but
-          for now these are just the maximum prices reported by <Link href="https://uexcorp.space/">UEX</Link>.
-        </Typography>
-      </Alert> */}
+
+      <Alert severity="info">
+        All prices are the maximum Stanton prices reported by{' '}
+        <Link href="https://uexcorp.space/" target="_blank" rel="noopener noreferrer">
+          UEX
+        </Link>
+        .
+      </Alert>
 
       {tab === 'ore' && (
         <Box>

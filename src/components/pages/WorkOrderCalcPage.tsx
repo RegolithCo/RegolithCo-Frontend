@@ -49,7 +49,8 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
     <PageWrapper title="Work Order Calculator" maxWidth="lg" sx={{}}>
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography variant="body1" paragraph>
-        This is where you can calculate the cost of a work order and how to share it between members of your org/party.
+        This is where you can calculate the cost of a work order and how to share it between members of your
+        org/party/crew.
       </Typography>
 
       <Stack

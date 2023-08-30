@@ -41,7 +41,12 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
   const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
-      <Typography paragraph>
+      <Typography
+        paragraph
+        sx={{
+          m: 2,
+        }}
+      >
         This is a tool for organizing miners in <Link href="https://robertsspaceindustries.com/">Star Citizen</Link>.
       </Typography>
       {/* <Alert severity="info" sx={{ mb: 2 }}>
@@ -54,7 +59,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
       <Grid container spacing={4}>
         <Grid sm={4} sx={cardCSS}>
           <Card
-            elevation={8}
+            elevation={10}
             sx={cardCSS}
             onClick={() => {
               if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')
@@ -77,7 +82,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
         <Grid sm={4} sx={cardCSS}>
-          <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/loadouts')}>
+          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/loadouts')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/workshop.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
@@ -93,7 +98,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
         <Grid sm={4} sx={cardCSS}>
-          <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/workorder')}>
+          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/workorder')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/refinery.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
@@ -107,7 +112,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
         <Grid sm={4} sx={cardCSS}>
-          <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/cluster')}>
+          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/cluster')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/cluster.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
@@ -123,7 +128,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
         <Grid sm={4} sx={cardCSS}>
-          <Card elevation={5} sx={cardCSS} onClick={() => navigate && navigate('/tables/ore')}>
+          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/tables/ore')}>
             <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/market.jpg`} title="mining" />
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
@@ -143,7 +148,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
       <Divider sx={{ my: 2 }} />
       <Paper sx={{ p: 2, my: 3 }} elevation={1}>
         <Typography variant="h5" sx={{ mb: 2 }} gutterBottom>
-          Site Stats
+          Stats
         </Typography>
         <SiteStats stats={stats} statsLoading={statsLoading} />
       </Paper>

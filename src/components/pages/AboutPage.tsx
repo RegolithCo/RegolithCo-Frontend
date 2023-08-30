@@ -98,17 +98,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
   }
 
   return (
-    <PageWrapper
-      title={finalTitle}
-      maxWidth="md"
-      sx={{ marginLeft: { lg: '7%' } }}
-      titleSx={{
-        textAlign: 'center',
-        fontSize: '2.5rem',
-        color: theme.palette.primary.main,
-        borderBottom: `1px solid ${theme.palette.primary.main}`,
-      }}
-    >
+    <PageWrapper title={finalTitle} maxWidth="md" sx={{ marginLeft: { lg: '7%' } }}>
       <Tabs
         value={finalTab}
         aria-label="basic tabs example"
@@ -149,10 +139,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       )}
       {/* FAQ TAB =================================== */}
       {finalTab === TabIndex.FAQ && (
-        <Box sx={{ mb: 3 }}>
+        <Box
+          sx={{
+            mb: 3,
+            '& p': {
+              mb: 2,
+            },
+            '& h5': {
+              color: theme.palette.secondary.dark,
+            },
+          }}
+        >
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
-              What is this? Where did it come from?
+              "What is this site/app? Where did it come from?"
             </Typography>
             <Typography gutterBottom>
               This tool was created in response to the need for better organization and tracking of mining jobs within
@@ -174,7 +174,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
-              How do I report a bug or ask for a feature?
+              "How do I report a bug or ask for a feature?"
             </Typography>
             <Typography gutterBottom>
               If you're a discord user that's probably the best place. It really helps me if you can take a screenshot
@@ -184,18 +184,26 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </strong>{' '}
               (you can find it on the bottom of the user profile page)
             </Typography>
-            <Button
-              startIcon={<DiscordIcon />}
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ fontSize: '1rem', p: 2 }}
-              href="https://discord.gg/6TKSYHNJha"
-              target="_blank"
+            <Box
+              sx={{
+                p: 2,
+                textAlign: 'center',
+              }}
             >
-              Discord Server
-            </Button>
-            <Typography gutterBottom>
+              <Button
+                startIcon={<DiscordIcon />}
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ fontSize: '1rem', p: 2, maxWidth: 200 }}
+                href="https://discord.gg/6TKSYHNJha"
+                target="_blank"
+              >
+                Discord Server
+              </Button>
+            </Box>
+
+            <Typography gutterBottom paragraph>
               If you're not a discord user, you can also{' '}
               <Link href="https://twitter.com/RegolithCo" target="_blank">
                 hit me up on twitter
@@ -204,7 +212,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
-              3.19 is going to change mining. Can Regolith adapt?
+              "3.19 is going to change mining. Can Regolith adapt?"
             </Typography>
             <Typography gutterBottom>
               3.19 is here and we're adapting! Lots of changes for sure and some of them (like no more prices in the
@@ -216,7 +224,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
-              Will this tool always be free?
+              "Will this tool always be free?"
             </Typography>
             <Typography paragraph>
               First off, this is not about profit. It is a passion project that I created for myself, my friends and my
@@ -368,6 +376,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.Thanks && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+              Acknowledgements
+            </Typography>
             <Typography paragraph variant="subtitle1">
               Regolith is a community-driven app and would not exist without a lot of support and hard work from people.
             </Typography>

@@ -117,27 +117,31 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           subheaderTypographyProps={{ color: 'iherit' }}
         />
         <CardContent sx={{ flex: '1 1', overflowX: { md: 'hidden', sm: 'scroll' }, overflow: { md: 'scroll' } }}>
-          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-            Sell Price Estimate:
-          </Typography>
-          <List dense>
-            {storeChoices.length > 0 ? (
-              <StoreChooserListItem
-                onClick={() => isEditing && setStoreChooserOpen(true)}
-                ores={summary.oreSummary}
-                compact
-                disabled={!isEditing}
-                isSelected={isEditing}
-                storeChoice={myStoreChoice}
-                isMax={!workOrder.sellStore}
-                priceColor={theme.palette.success.main}
-              />
-            ) : (
-              <ListItem>
-                <ListItemText primary="No stores found" />
-              </ListItem>
-            )}
-          </List>
+          {workOrder.orderType !== ActivityEnum.Other && (
+            <>
+              <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
+                Sell Price Estimate:
+              </Typography>
+              <List dense>
+                {storeChoices.length > 0 ? (
+                  <StoreChooserListItem
+                    onClick={() => isEditing && setStoreChooserOpen(true)}
+                    ores={summary.oreSummary}
+                    compact
+                    disabled={!isEditing}
+                    isSelected={isEditing}
+                    storeChoice={myStoreChoice}
+                    isMax={!workOrder.sellStore}
+                    priceColor={theme.palette.success.main}
+                  />
+                ) : (
+                  <ListItem>
+                    <ListItemText primary="No stores found" />
+                  </ListItem>
+                )}
+              </List>
+            </>
+          )}
 
           {workOrder.orderType === ActivityEnum.Other ? (
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">

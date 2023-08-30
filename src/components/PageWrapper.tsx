@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Breakpoint, Container, Paper, SxProps, Typography } from '@mui/material'
 import { PageLoader } from './pages/PageLoader'
-import { Theme } from '@mui/system'
+import { Theme, useTheme } from '@mui/system'
 
 export interface PageWrapperProps {
   title?: string
@@ -15,10 +15,12 @@ export interface PageWrapperProps {
 const styles = {
   container: {
     py: {
+      sm: 2,
       md: 3,
       lg: 4,
     },
     px: {
+      sm: 2,
       md: 2,
       lg: 4,
     },
@@ -33,6 +35,7 @@ const styles = {
 }
 
 export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWidth, loading, sx, titleSx }) => {
+  const theme = useTheme()
   return (
     <>
       <Container maxWidth={maxWidth || 'sm'} sx={sx}>
@@ -47,8 +50,13 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
                   xs: '1.5rem',
                   sm: '1.7rem',
                   md: '1.8rem',
-                  lg: '2rem',
+                  lg: '2.5rem',
                 },
+                textAlign: 'center',
+                color: theme.palette.primary.light,
+                textShadow: `1px 1px 5px ${theme.palette.primary.contrastText}`,
+                textTransform: 'capitalize',
+                borderBottom: `2px solid ${theme.palette.primary.contrastText}`,
                 ...(titleSx || {}),
               }}
             >
