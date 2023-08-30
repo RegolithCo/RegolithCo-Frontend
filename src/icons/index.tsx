@@ -1,3 +1,6 @@
 export * from './Rock'
 export * from './Gem'
 export * from './Claw'
+export * from './Laser'
+export * from './Module'
+export * from './Discord'

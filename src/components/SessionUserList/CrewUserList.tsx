@@ -1,8 +1,8 @@
 import React from 'react'
 import { List, Typography } from '@mui/material'
 import { CrewHierarchy, InnactiveUser, ScoutingFind, Session, SessionUser } from '@regolithco/common'
-import { ActiveUserListItem } from './ActiveUserListItem'
-import { ActiveUserContextMenu } from './ActiveUserContextMenu'
+import { ActiveUser } from './ActiveUser'
+import { SessionUserContextMenu } from './SessionUserContextMenu'
 import { alpha, Box, useTheme } from '@mui/system'
 
 export interface CrewUserListProps {
@@ -75,7 +75,7 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({
       >
         {sortedSessionUsers.map((captain, idx) => (
           <Box key={`user-${idx}`}>
-            <ActiveUserListItem
+            <ActiveUser
               key={`user-${idx}`}
               meId={meId}
               sessionOwnerId={sessionOwnerId}
@@ -102,7 +102,7 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({
                     return null
                   }
                   return (
-                    <ActiveUserListItem
+                    <ActiveUser
                       key={`user-${actId}`}
                       meId={meId}
                       sessionOwnerId={sessionOwnerId}
@@ -146,7 +146,7 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({
         ))}
         <div style={{ flexGrow: 1 }} />
       </List>
-      <ActiveUserContextMenu
+      <SessionUserContextMenu
         open={!!menuOpen}
         anchorEl={menuOpen?.el}
         onClose={() => setMenuOpen(null)}

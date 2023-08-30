@@ -3,7 +3,7 @@ import { Divider, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, MenuList
 import { Person, PersonAdd, PersonRemove } from '@mui/icons-material'
 import { SessionUser } from '@regolithco/common'
 
-interface ActiveUserContextMenuProps {
+interface SessionUserContextMenuProps {
   open: boolean
   isMe: boolean
   sessionUser: SessionUser
@@ -15,7 +15,7 @@ interface ActiveUserContextMenuProps {
   onClose: () => void
 }
 
-export const ActiveUserContextMenu: React.FC<ActiveUserContextMenuProps> = ({
+export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   open,
   anchorEl,
   sessionUser,

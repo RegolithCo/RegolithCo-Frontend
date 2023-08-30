@@ -11,12 +11,12 @@ import {
 } from '@regolithco/common'
 import { Box, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
-import { ActiveUserList } from '../../fields/ActiveUserList'
 import { ExpandMore, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { MentionedUserList } from '../../fields/MentionedUserList'
 import { crewHierarchyCalc } from '@regolithco/common'
-import { CrewUserList } from '../../fields/CrewUserList'
+import { CrewUserList } from '../../SessionUserList/CrewUserList'
+import { SessionUserList } from '../../SessionUserList/SessionUserList'
 
 export interface TabUsersProps {
   session: Session
@@ -173,7 +173,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
             </Typography>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
-            <ActiveUserList
+            <SessionUserList
               friends={userProfile.friends}
               scoutingMap={scoutingMap}
               sessionOwnerId={session.ownerId}

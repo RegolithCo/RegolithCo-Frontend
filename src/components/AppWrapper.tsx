@@ -83,7 +83,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       bgImage = BGImagesEnum.DEFAULT
   }
 
-  return <AppWrapper bgImage={bgImage} children={children} />
+  return <AppWrapper bgImage={bgImage}>{children}</AppWrapper>
 }
 
 export const AppWrapper = ({

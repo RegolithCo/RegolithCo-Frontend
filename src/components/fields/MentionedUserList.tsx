@@ -27,18 +27,17 @@ export interface MentionedUserListProps {
   removeFromList?: (friendName: string) => void
 }
 
-const filter =
-  createFilterOptions<
-    [
-      string,
-      {
-        friend: boolean
-        session: boolean
-        named: boolean
-        crew: boolean
-      }
-    ]
-  >()
+const filter = createFilterOptions<
+  [
+    string,
+    {
+      friend: boolean
+      session: boolean
+      named: boolean
+      crew: boolean
+    }
+  ]
+>()
 
 export const MentionedUserList: React.FC<MentionedUserListProps> = ({
   verifiedUsers,

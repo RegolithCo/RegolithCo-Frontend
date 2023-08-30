@@ -24,7 +24,7 @@ import { ModuleIcon } from '../../icons/Module'
 import { alpha, Box, useTheme } from '@mui/system'
 import { fontFamilies } from '../../theme'
 
-export interface ActiveUserListItemProps {
+export interface ActiveUserProps {
   sessionUser: SessionUser
   meId?: string
   sessionOwnerId?: string
@@ -38,7 +38,7 @@ export interface ActiveUserListItemProps {
   addFriend?: () => void
 }
 
-export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
+export const ActiveUser: React.FC<ActiveUserProps> = ({
   sessionUser,
   sessionOwnerId,
   friends,
@@ -55,7 +55,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const stateObjects = []
   const isMe = meId && sessionUser.owner?.userId === meId
   const isOwner = sessionUser.ownerId === sessionOwnerId
-  const menuRef = useRef<HTMLLIElement>()
+  // const menuRef = useRef<HTMLLIElement>()
 
   const STATE_COLORS_BG: Record<SessionUserStateEnum, string> = {
     [SessionUserStateEnum.Unknown]: '#000000',
@@ -126,7 +126,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       secondaryText.push(`Crew of: ${captain.owner?.scName}`)
     }
   }
-  const stateColor = STATE_COLORS_BG[sessionUser.state] || 'transparent'
+  const stateColor = STATE_COLORS_BG[sessionUser.state] || undefined
 
   return (
     <ListItem
@@ -142,7 +142,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         openUserPopup && openUserPopup()
       }}
       sx={{
-        background: alpha(stateColor, 0.2),
+        background: stateColor && alpha(stateColor, 0.2),
         cursor: 'pointer',
         borderLeft: isMe ? `5px solid ${theme.palette.secondary.light}` : '1px solid transparent',
       }}

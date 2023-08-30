@@ -45,7 +45,7 @@ export const LoadoutSelect: React.FC<LoadoutSelectPRops> = ({ sessionUser, loado
 }
 
 const LoadoutItem: React.FC<{ loadout: MiningLoadout }> = ({ loadout }) => {
-  if (!loadout) return <>'None'</>
+  if (!loadout) return <>{'None'}</>
   return (
     <Stack direction="row" spacing={1} alignItems="center">
       <Typography variant="overline" color="text.secondary">

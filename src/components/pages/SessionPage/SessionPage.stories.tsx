@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionPage as SessionPageComponent } from './SessionPage'
 import {
@@ -14,9 +14,9 @@ export default {
   title: 'Pages/SessionPage2',
   component: SessionPageComponent,
   parameters: {},
-} as ComponentMeta<typeof SessionPageComponent>
+} as Meta<typeof SessionPageComponent>
 
-const Template: ComponentStory<typeof SessionPageComponent> = (args) => {
+const Template: StoryFn<typeof SessionPageComponent> = (args) => {
   const [orderId, setActiveOrder] = React.useState<string>()
   const [scoutingFind, setScoutingFind] = React.useState<string>()
   const [activeTab, setActiveTab] = React.useState<SessionTabs>(SessionTabs.SETTINGS)

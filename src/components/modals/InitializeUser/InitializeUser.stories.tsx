@@ -1,3 +1,4 @@
+import React from 'react'
 import { AuthTypeEnum } from '@regolithco/common'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import log from 'loglevel'

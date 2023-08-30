@@ -1,11 +1,11 @@
 import React from 'react'
 import { List } from '@mui/material'
 import { ScoutingFind, SessionUser } from '@regolithco/common'
-import { ActiveUserListItem } from './ActiveUserListItem'
-import { ActiveUserContextMenu } from './ActiveUserContextMenu'
+import { ActiveUser } from './ActiveUser'
+import { SessionUserContextMenu } from './SessionUserContextMenu'
 import { Box } from '@mui/system'
 
-export interface ActiveUserListProps {
+export interface SessionUserListProps {
   listUsers: SessionUser[]
   meId?: string
   scoutingMap?: Map<string, ScoutingFind>
@@ -18,7 +18,7 @@ export interface ActiveUserListProps {
   removeFriend?: (friendName: string) => void
 }
 
-export const ActiveUserList: React.FC<ActiveUserListProps> = ({
+export const SessionUserList: React.FC<SessionUserListProps> = ({
   listUsers,
   sessionOwnerId,
   meId,
@@ -70,7 +70,7 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
       >
         {sortedSessionUsers.map((sessionUser, idx) => (
           <Box key={`user-${idx}`}>
-            <ActiveUserListItem
+            <ActiveUser
               key={`user-${idx}`}
               meId={meId}
               sessionOwnerId={sessionOwnerId}
@@ -93,7 +93,7 @@ export const ActiveUserList: React.FC<ActiveUserListProps> = ({
         ))}
         <div style={{ flexGrow: 1 }} />
       </List>
-      <ActiveUserContextMenu
+      <SessionUserContextMenu
         open={!!menuOpen}
         anchorEl={menuOpen?.el}
         onClose={() => setMenuOpen(null)}

@@ -247,8 +247,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <Box sx={styles.sectionBody}>
                   <Typography component="div" variant="caption">
                     If your handle above is the same as your Star Citizen username you can verify it to prove that you
-                    control both accounts. (This might give your session-mates confidence that they're dealing with the
-                    right person and not some tricksy pirate using the same name).
+                    control both accounts. (This might give your session-mates confidence that they{"'"}re dealing with
+                    the right person and not some tricksy pirate using the same name).
                   </Typography>
                   <Box sx={{ textAlign: 'center', p: 2 }}>
                     <Button

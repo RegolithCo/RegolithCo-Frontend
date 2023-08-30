@@ -1,7 +1,7 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
-import { ActiveUserList as ActiveUserListComponent } from './ActiveUserList'
+import { SessionUserList as ActiveUserListComponent } from './SessionUserList'
 import { fakeSessionUser } from '@regolithco/common/dist/mock'
 
 export default {
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ActiveUserListComponent>
+} as Meta<typeof ActiveUserListComponent>
 
-const Template: ComponentStory<typeof ActiveUserListComponent> = (args) => <ActiveUserListComponent {...args} />
+const Template: StoryFn<typeof ActiveUserListComponent> = (args) => <ActiveUserListComponent {...args} />
 
 const fakeSessionUsers = Array.from({ length: 20 }, (_, i) => fakeSessionUser())
 

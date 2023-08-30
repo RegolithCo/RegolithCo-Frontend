@@ -1,3 +1,4 @@
+import React from 'react'
 import { createSvgIcon } from '@mui/material'
 
 export const GemIcon = createSvgIcon(

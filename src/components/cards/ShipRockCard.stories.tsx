@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ClusterCard } from './ClusterCard'
 import { SalvageFind, ScoutingFindStateEnum, ShipClusterFind, VehicleClusterFind } from '@regolithco/common'
@@ -52,15 +52,15 @@ const AllThree: React.FC<AllThreeProps> = () => (
 )
 
 export default {
-  title: 'ScoutingFind/ClusterCards',
+  title: 'ScoutingFind/ShipRockCards',
   component: AllThree,
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof AllThree>
+} as Meta<typeof AllThree>
 
-const Template: ComponentStory<typeof AllThree> = (args) => <AllThree {...args} />
+const Template: StoryFn<typeof AllThree> = (args) => <AllThree {...args} />
 
 export const ClusterCards = Template.bind({})
 
