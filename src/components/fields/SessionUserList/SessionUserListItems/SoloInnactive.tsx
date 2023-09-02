@@ -11,17 +11,16 @@ import {
 import { InnactiveUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
 import { useTheme } from '@mui/system'
-import { SessionContext } from '../../context/session.context'
+import { SessionContext } from '../../../../context/session.context'
 
-export interface InnactiveUserRowProps {
+export interface SoloInnactiveProps {
   innactiveUser: InnactiveUser
+  openContextMenu: (e: HTMLElement) => void
 }
 
-export const InnactiveUserRow: React.FC<InnactiveUserRowProps> = ({ innactiveUser }) => {
+export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ innactiveUser, openContextMenu }) => {
   const theme = useTheme()
   const { openInnactiveUserModal } = React.useContext(SessionContext)
-
-  const [contextMenuEl, setContextMenuEl] = React.useState<HTMLElement | null>(null)
   useEffect(() => {
     // define a custom handler function
     // for the contextmenu event
@@ -45,7 +44,7 @@ export const InnactiveUserRow: React.FC<InnactiveUserRowProps> = ({ innactiveUse
     <ListItem
       onContextMenu={(e) => {
         e.preventDefault()
-        setContextMenuEl(e.currentTarget)
+        openContextMenu(e.currentTarget)
       }}
       onDoubleClick={(e) => {
         e.preventDefault()
@@ -84,7 +83,7 @@ export const InnactiveUserRow: React.FC<InnactiveUserRowProps> = ({ innactiveUse
           color="primary"
           onClick={(e) => {
             e.stopPropagation()
-            setContextMenuEl(e.currentTarget)
+            openContextMenu(e.currentTarget)
           }}
         >
           <MoreVert />

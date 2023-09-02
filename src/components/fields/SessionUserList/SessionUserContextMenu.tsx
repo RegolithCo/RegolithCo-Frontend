@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { Divider, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Typography } from '@mui/material'
 import { Person, PersonAdd, PersonRemove } from '@mui/icons-material'
-import { SessionContext } from '../../context/session.context'
-import { SessionUser } from '@regolithco/common'
+import { SessionContext } from '../../../context/session.context'
+import { InnactiveUser, SessionUser } from '@regolithco/common'
 
 interface SessionUserContextMenuProps {
   open: boolean
-  sessionUser: SessionUser
+  sessionUser?: SessionUser
+  innactiveUser?: InnactiveUser
   anchorEl?: HTMLElement
   onClose: () => void
 }
@@ -16,11 +17,13 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   anchorEl,
   onClose,
   sessionUser,
+  innactiveUser,
 }) => {
   const { myUserProfile, addFriend, removeFriend, openActiveUserModal, openInnactiveUserModal } =
     React.useContext(SessionContext)
 
-  const isMe = sessionUser.ownerId === myUserProfile.userId
+  const isActive = sessionUser
+  const isMe = sessionUser?.ownerId === myUserProfile.userId
 
   return (
     <Menu

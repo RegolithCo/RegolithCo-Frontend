@@ -15,7 +15,6 @@ import {
   VerifiedUserLookup,
   WorkOrder,
 } from '@regolithco/common'
-import { noop } from 'lodash'
 import { createContext } from 'react'
 
 type ObjectValues<T> = T[keyof T]

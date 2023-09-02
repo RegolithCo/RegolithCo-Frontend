@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import {
   getSessionUserStateName,
+  InnactiveUser,
   lookups,
   MiningLoadout,
   SessionUser,
@@ -18,27 +19,26 @@ import {
   User,
 } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
-import { makeSessionUrls } from '../../lib/routingUrls'
-import { UserAvatar } from '../UserAvatar'
-import { ModuleIcon } from '../../icons/Module'
 import { alpha, Box, useTheme } from '@mui/system'
-import { fontFamilies } from '../../theme'
-import { SessionContext } from '../../context/session.context'
+import { SessionContext } from '../../../../context/session.context'
+import { makeSessionUrls } from '../../../../lib/routingUrls'
+import { UserAvatar } from '../../../UserAvatar'
+import { fontFamilies } from '../../../../theme'
+import { ModuleIcon } from '../../../../icons'
 
-export interface ActiveUserProps {
-  sessionUser: SessionUser
-  captain?: SessionUser
+export interface CrewProps {
+  captain: SessionUser
+  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, innactiveUser?: InnactiveUser) => void
 }
 
-export const ActiveUser: React.FC<ActiveUserProps> = ({ sessionUser, captain }) => {
+export const Crew: React.FC<CrewProps> = ({ captain, openContextMenu }) => {
   const theme = useTheme()
   const { session, navigate, myUserProfile, scoutingAttendanceMap, openLoadoutModal, openActiveUserModal } =
     React.useContext(SessionContext)
-  const isMe = myUserProfile.userId === sessionUser.ownerId
-  const [contextMenuEl, setContextMenuEl] = React.useState<HTMLElement | null>(null)
+  const isMe = myUserProfile.userId === captain.ownerId
   const secondaryText = []
   const stateObjects = []
-  const isOwner = sessionUser.ownerId === session.ownerId
+  const isOwner = captain.ownerId === session.ownerId
   // const menuRef = useRef<HTMLLIElement>()
 
   const STATE_COLORS_BG: Record<SessionUserStateEnum, string> = {
@@ -58,7 +58,7 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ sessionUser, captain }) 
     [SessionUserStateEnum.Travelling]: theme.palette.info.contrastText,
   }
 
-  const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
+  const scoutingFind = scoutingAttendanceMap.get(captain.ownerId)
 
   useEffect(() => {
     // define a custom handler function
@@ -79,54 +79,51 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ sessionUser, captain }) 
     }
   }, [])
 
-  const user = sessionUser.owner as User
-  if (sessionUser) {
-    if (sessionUser.vehicleCode) {
-      const vehicle = sessionUser.vehicleCode
-        ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode)
-        : null
+  const user = captain.owner as User
+  if (captain) {
+    if (captain.vehicleCode) {
+      const vehicle = captain.vehicleCode ? lookups.shipLookups.find((s) => s.code === captain.vehicleCode) : null
       if (vehicle) {
         // Truncate to 16 characters with an ellipsis if necessary
         const vehicleName = vehicle.name.length > 16 ? vehicle.name.substring(0, 16) + '...' : vehicle.name
         secondaryText.push(vehicleName)
       }
     }
-    if (sessionUser.state) {
+    if (captain.state) {
       if (scoutingFind) {
         stateObjects.push(
           <>
-            {getSessionUserStateName(sessionUser.state)}
-            {sessionUser.state === SessionUserStateEnum.OnSite && ' at '}
-            {sessionUser.state === SessionUserStateEnum.Travelling && ' to '}
-            {(sessionUser.state === SessionUserStateEnum.OnSite ||
-              sessionUser.state === SessionUserStateEnum.Travelling) &&
+            {getSessionUserStateName(captain.state)}
+            {captain.state === SessionUserStateEnum.OnSite && ' at '}
+            {captain.state === SessionUserStateEnum.Travelling && ' to '}
+            {(captain.state === SessionUserStateEnum.OnSite || captain.state === SessionUserStateEnum.Travelling) &&
               scoutingFind.scoutingFindId.split('_')[0]}
           </>
         )
-      } else if (sessionUser.state !== SessionUserStateEnum.Unknown) {
-        stateObjects.push(getSessionUserStateName(sessionUser.state))
+      } else if (captain.state !== SessionUserStateEnum.Unknown) {
+        stateObjects.push(getSessionUserStateName(captain.state))
       }
     }
 
-    if (captain) {
-      secondaryText.push(`Crew of: ${captain.owner?.scName}`)
-    }
+    // if (captain) {
+    //   secondaryText.push(`Crew of: ${captain.owner?.scName}`)
+    // }
   }
-  const stateColor = STATE_COLORS_BG[sessionUser.state] || undefined
+  const stateColor = STATE_COLORS_BG[captain.state] || undefined
 
   return (
     <>
       <ListItem
         onContextMenu={(e) => {
           e.preventDefault()
-          setContextMenuEl(e.currentTarget)
+          openContextMenu(e.currentTarget, captain)
         }}
         onDoubleClick={(e) => {
           e.preventDefault()
-          openActiveUserModal(sessionUser.ownerId)
+          openActiveUserModal(captain.ownerId)
         }}
         onClick={() => {
-          openActiveUserModal(sessionUser.ownerId)
+          openActiveUserModal(captain.ownerId)
         }}
         sx={{
           background: stateColor && alpha(stateColor, 0.1),
@@ -134,11 +131,11 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ sessionUser, captain }) 
           borderLeft: isMe ? `5px solid ${theme.palette.secondary.light}` : '1px solid transparent',
         }}
       >
-        {sessionUser.state && sessionUser.state !== SessionUserStateEnum.Unknown && (
+        {captain.state && captain.state !== SessionUserStateEnum.Unknown && (
           <Box
             sx={{
-              background: STATE_COLORS_BG[sessionUser.state],
-              color: STATE_COLORS_FG[sessionUser.state],
+              background: STATE_COLORS_BG[captain.state],
+              color: STATE_COLORS_FG[captain.state],
               position: 'absolute',
               fontFamily: fontFamilies.robotoMono,
               textTransform: 'uppercase',
@@ -199,12 +196,12 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ sessionUser, captain }) 
           }
         />
         <ListItemSecondaryAction>
-          {sessionUser.loadout && (
-            <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
+          {captain.loadout && (
+            <Tooltip title={`Vehicle Loadout: ${captain.loadout?.name || 'None'}`} arrow>
               <IconButton
                 color="primary"
                 onClick={() => {
-                  openLoadoutModal(sessionUser.loadout as MiningLoadout)
+                  openLoadoutModal(captain.loadout as MiningLoadout)
                 }}
               >
                 <ModuleIcon />
@@ -216,7 +213,7 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ sessionUser, captain }) 
             color="primary"
             onClick={(e) => {
               e.stopPropagation()
-              setContextMenuEl(e.currentTarget)
+              openContextMenu(e.currentTarget, captain)
             }}
           >
             <MoreVert />

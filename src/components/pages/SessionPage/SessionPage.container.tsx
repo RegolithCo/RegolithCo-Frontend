@@ -45,6 +45,7 @@ import { downloadFile } from '../../../lib/utils'
 import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { ActivePopupMe } from '../../modals/ActiveUserPopup/ActivePopupMe'
 import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
+import { InnactiveUserPopup } from '../../modals/ActiveUserPopup/InnactiveUserPopup'
 
 export const SessionPageContainer2: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -79,11 +80,11 @@ export const SessionPageContainer2: React.FC = () => {
 
   // Only one major modal at a time please.
 
-  const activeUserModelSessionUser: SessionUser | undefined = session.activeMembers?.items?.find(
+  const sessionUserModalSessionUser: SessionUser | undefined = session.activeMembers?.items?.find(
     ({ owner }) => owner?.userId === activeUserModalId
   )
 
-  const innactiveUserModelSessionUser: InnactiveUser | undefined = session.mentionedUsers?.find(
+  const sessionUserModalInnactiveUser: InnactiveUser | undefined = session.mentionedUsers?.find(
     ({ scName }) => scName === innactiveUserModalScName
   )
 
@@ -287,7 +288,8 @@ export const SessionPageContainer2: React.FC = () => {
       >
         <SessionPage />
       </SessionContext.Provider>
-      {/* This is the EDIT Workorder modal */}
+
+      {/* Workorder Modal: EDITING */}
       {modalWorkOrder && (
         <ThemeProvider theme={workOrderStateThemes[modalWorkOrder.state]}>
           <WorkOrderContext.Provider
@@ -321,7 +323,7 @@ export const SessionPageContainer2: React.FC = () => {
         </ThemeProvider>
       )}
 
-      {/* This is the ADD workordermodal */}
+      {/* Workorder Modal: NEW */}
       {isActive && newWorkOrder && (
         // NEW WORK ORDER
         <WorkOrderContext.Provider
@@ -345,16 +347,19 @@ export const SessionPageContainer2: React.FC = () => {
           <WorkOrderModal open={activeModal === DialogEnum.ADD_WORKORDER} onClose={() => setActiveModal(null)} />
         </WorkOrderContext.Provider>
       )}
-      {activeUserModelSessionUser && activeUserModelSessionUser.loadout && (
+
+      {/* LOADOUT Modal */}
+      {activeLoadout && (
         <LoadoutCalc
           isModal
           readonly
           onClose={() => setActiveModal(null)}
           open={activeModal === DialogEnum.LOADOUT_MODAL}
-          miningLoadout={activeUserModelSessionUser.loadout}
+          miningLoadout={activeLoadout}
         />
       )}
 
+      {/* ScoutingFind Modal: NEW */}
       {isActive && newScoutingFind && (
         <ScoutingFindContext.Provider
           value={{
@@ -373,6 +378,8 @@ export const SessionPageContainer2: React.FC = () => {
           <ScoutingFindModal open={activeModal === DialogEnum.ADD_SCOUTING} onClose={() => setActiveModal(null)} />
         </ScoutingFindContext.Provider>
       )}
+
+      {/* ScoutingFind Modal: EDITING */}
       {modalScoutingFind && (
         <ScoutingFindContext.Provider
           value={{
@@ -399,6 +406,7 @@ export const SessionPageContainer2: React.FC = () => {
         </ScoutingFindContext.Provider>
       )}
 
+      {/* Delete Session Modal */}
       <DeleteModal
         title={'Permanently DELETE session?'}
         confirmBtnText={'Yes, Delete Session!'}
@@ -414,6 +422,7 @@ export const SessionPageContainer2: React.FC = () => {
         onConfirm={() => setActiveModal(null)}
       />
 
+      {/* Close Session Modal */}
       <DeleteModal
         title={'Permanently end this session?'}
         confirmBtnText={'Yes, End Session!'}
@@ -429,6 +438,8 @@ export const SessionPageContainer2: React.FC = () => {
         onClose={() => setActiveModal(null)}
         onConfirm={() => setActiveModal(null)}
       />
+
+      {/* Share Session Modal */}
       <ShareModal
         open={activeModal === DialogEnum.SHARE_SESSION}
         warn={!session.sessionSettings.specifyUsers}
@@ -436,6 +447,7 @@ export const SessionPageContainer2: React.FC = () => {
         onClose={() => setActiveModal(null)}
       />
 
+      {/* Leave Session Modal */}
       <ConfirmModal
         title="Leave the session?"
         message="Are you sure you want to leave this session? You will not be able to find it again unless you still have the URL."
@@ -446,6 +458,7 @@ export const SessionPageContainer2: React.FC = () => {
         confirmBtnText="Yes, Leave"
       />
 
+      {/* Download Data Modal */}
       <DownloadModal
         open={activeModal === DialogEnum.DOWNLOAD_SESSION}
         onClose={() => setActiveModal(null)}
@@ -465,15 +478,26 @@ export const SessionPageContainer2: React.FC = () => {
         }}
       />
 
-      {/* The popup is different if the user is you */}
-      {activeUserModelSessionUser && mySessionUser.owner?.userId === activeUserModelSessionUser.ownerId && (
+      {/* Active User Popup Modal: ME */}
+      {sessionUserModalSessionUser && mySessionUser.owner?.userId === sessionUserModalSessionUser.ownerId && (
         <ActivePopupMe open={activeModal === DialogEnum.USER_STATUS} onClose={() => setActiveModal(null)} />
       )}
-      {activeUserModelSessionUser && mySessionUser.owner?.userId !== activeUserModelSessionUser.ownerId && (
+
+      {/* Active User Popup Modal: Active User */}
+      {sessionUserModalSessionUser && mySessionUser.owner?.userId !== sessionUserModalSessionUser.ownerId && (
         <ActivePopupUser
           open={activeModal === DialogEnum.USER_STATUS}
           onClose={() => setActiveModal(null)}
-          sessionUser={activeUserModelSessionUser}
+          sessionUser={sessionUserModalSessionUser}
+        />
+      )}
+
+      {/* Innactive User Popup Modal */}
+      {sessionUserModalInnactiveUser && (
+        <InnactiveUserPopup
+          open={activeModal === DialogEnum.USER_STATUS}
+          onClose={() => setActiveModal(null)}
+          innactiveUser={sessionUserModalInnactiveUser}
         />
       )}
     </>
