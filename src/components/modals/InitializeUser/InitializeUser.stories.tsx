@@ -1,6 +1,6 @@
 import React from 'react'
 import { AuthTypeEnum } from '@regolithco/common'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 import log from 'loglevel'
 import { LoginContextObj } from '../../../hooks/useOAuth2'
 import { InitializeUser } from './InitializeUser'
@@ -12,9 +12,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof InitializeUser>
+} as Meta<typeof InitializeUser>
 
-const Template: ComponentStory<typeof InitializeUser> = (args) => <InitializeUser {...args} />
+const Template: StoryFn<typeof InitializeUser> = (args) => <InitializeUser {...args} />
 
 const fns = {
   backToPage: () => {

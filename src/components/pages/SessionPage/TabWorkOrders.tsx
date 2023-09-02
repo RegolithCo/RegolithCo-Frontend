@@ -1,22 +1,16 @@
 import * as React from 'react'
 
 import { ActivityEnum, Session, SessionStateEnum, UserProfile, WorkOrder } from '@regolithco/common'
-import { Accordion, Box, FormControlLabel, FormGroup, Switch, Theme, Typography, useTheme } from '@mui/material'
+import { Box, FormControlLabel, FormGroup, Switch, Theme, Typography, useTheme } from '@mui/material'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
 import { WorkOrderTable } from './WorkOrderTable'
 import { newWorkOrderMaker } from '../../../lib/newObjectFactories'
-import { DialogEnum } from './SessionPage.container'
 import { Stack, SxProps } from '@mui/system'
 import { fontFamilies } from '../../../theme'
+import { DialogEnum, SessionContext } from '../../../context/session.context'
 
 export interface TabWorkOrdersProps {
-  session: Session
-  userProfile: UserProfile
-  // For the two modals that take us deeper
-  openWorkOrderModal: (workOrderId?: string) => void
-  //
-  setNewWorkOrder: (workOrder: WorkOrder) => void
-  setActiveModal: (modal: DialogEnum) => void
+  propA?: string
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -57,15 +51,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const TabWorkOrders: React.FC<TabWorkOrdersProps> = ({
-  session,
-  userProfile,
-  openWorkOrderModal,
-  setNewWorkOrder,
-  setActiveModal,
-}) => {
+export const TabWorkOrders: React.FC<TabWorkOrdersProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { session, openWorkOrderModal, createNewWorkOrder, setActiveModal } = React.useContext(SessionContext)
   const isActive = session.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
@@ -108,10 +97,7 @@ export const TabWorkOrders: React.FC<TabWorkOrdersProps> = ({
 
       <WorkOrderTable workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
       <WorkOrderAddFAB
-        onClick={(activity: ActivityEnum) => {
-          setNewWorkOrder(newWorkOrderMaker(session, userProfile, activity))
-          setActiveModal(DialogEnum.ADD_WORKORDER)
-        }}
+        onClick={createNewWorkOrder}
         sessionSettings={session.sessionSettings}
         fabProps={{
           disabled: !isActive,

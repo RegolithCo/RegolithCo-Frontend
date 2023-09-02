@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { LoadoutCalc as LoadoutCalcC } from './LoadoutCalc'
 import { LoadoutShipEnum, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
@@ -12,9 +12,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof LoadoutCalcC>
+} as Meta<typeof LoadoutCalcC>
 
-const Template: ComponentStory<typeof LoadoutCalcC> = (args) => <LoadoutCalcC {...args} />
+const Template: StoryFn<typeof LoadoutCalcC> = (args) => <LoadoutCalcC {...args} />
 
 export const LoadoutCalcProspector = Template.bind({})
 LoadoutCalcProspector.args = {

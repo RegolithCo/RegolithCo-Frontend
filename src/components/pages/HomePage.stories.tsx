@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { HomePage as HomePageComponent } from './HomePage'
 import { fakeUserProfile } from '@regolithco/common/dist/mock'
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof HomePageComponent>
+} as Meta<typeof HomePageComponent>
 
-const Template: ComponentStory<typeof HomePageComponent> = (args) => <HomePageComponent {...args} />
+const Template: StoryFn<typeof HomePageComponent> = (args) => <HomePageComponent {...args} />
 
 export const HomePage = Template.bind({})
 HomePage.args = {

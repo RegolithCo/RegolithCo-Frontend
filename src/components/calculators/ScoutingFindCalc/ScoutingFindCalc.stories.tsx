@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ScoutingFindCalc, ScoutingFindCalcProps } from './ScoutingFindCalc'
 import {
@@ -21,9 +21,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof ScoutingFindCalc>
+} as Meta<typeof ScoutingFindCalc>
 
-const Template: ComponentStory<typeof ScoutingFindCalc> = (args: ScoutingFindCalcProps) => {
+const Template: StoryFn<typeof ScoutingFindCalc> = (args: ScoutingFindCalcProps) => {
   const { findType, ...props } = args as any
   switch (findType) {
     case ScoutingFindTypeEnum.Ship:

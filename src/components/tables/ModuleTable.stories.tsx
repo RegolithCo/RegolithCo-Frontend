@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ModuleTable as ModuleTableC } from './ModuleTable'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ModuleTableC>
+} as Meta<typeof ModuleTableC>
 
-const Template: ComponentStory<typeof ModuleTableC> = (args) => <ModuleTableC {...args} />
+const Template: StoryFn<typeof ModuleTableC> = (args) => <ModuleTableC {...args} />
 
 export const ModuleTable = Template.bind({})
 ModuleTable.args = {

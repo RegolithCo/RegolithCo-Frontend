@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ShareModal as ShareModalC } from './ShareModal'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ShareModalC>
+} as Meta<typeof ShareModalC>
 
-const Template: ComponentStory<typeof ShareModalC> = (args) => <ShareModalC {...args} />
+const Template: StoryFn<typeof ShareModalC> = (args) => <ShareModalC {...args} />
 
 export const ShareModal = Template.bind({})
 ShareModal.args = {

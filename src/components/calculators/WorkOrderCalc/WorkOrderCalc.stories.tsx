@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { WorkOrderCalc } from './WorkOrderCalc'
 import {
@@ -52,9 +52,9 @@ export default {
       ],
     },
   },
-} as ComponentMeta<typeof WorkOrderCalc>
+} as Meta<typeof WorkOrderCalc>
 
-const Template: ComponentStory<typeof WorkOrderCalc> = (args) => {
+const Template: StoryFn<typeof WorkOrderCalc> = (args) => {
   const { onChange, workOrder, ...other } = args
   if (workOrder) {
     const otherWorkOrder = other as Partial<WorkOrder>

@@ -1,31 +1,27 @@
 import * as React from 'react'
 import { Divider, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Typography } from '@mui/material'
 import { Person, PersonAdd, PersonRemove } from '@mui/icons-material'
+import { SessionContext } from '../../context/session.context'
 import { SessionUser } from '@regolithco/common'
 
 interface SessionUserContextMenuProps {
   open: boolean
-  isMe: boolean
   sessionUser: SessionUser
-  friends: string[]
   anchorEl?: HTMLElement
-  addFriend?: () => void
-  removeFriend?: () => void
-  openUserModal?: (userId: string) => void
   onClose: () => void
 }
 
 export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   open,
   anchorEl,
-  sessionUser,
   onClose,
-  isMe,
-  addFriend,
-  removeFriend,
-  openUserModal,
-  friends,
+  sessionUser,
 }) => {
+  const { myUserProfile, addFriend, removeFriend, openActiveUserModal, openInnactiveUserModal } =
+    React.useContext(SessionContext)
+
+  const isMe = sessionUser.ownerId === myUserProfile.userId
+
   return (
     <Menu
       id="menu-appbar"
@@ -59,7 +55,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
         <Divider />
         <MenuItem
           onClick={() => {
-            openUserModal && openUserModal(sessionUser?.owner?.userId as string)
+            openActiveUserModal(sessionUser?.owner?.userId as string)
             onClose()
           }}
         >
@@ -70,10 +66,10 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
         </MenuItem>
 
         {!isMe && <Divider />}
-        {!isMe && addFriend && !friends.includes(sessionUser?.owner?.scName as string) && (
+        {!isMe && addFriend && !myUserProfile.friends.includes(sessionUser?.owner?.scName as string) && (
           <MenuItem
             onClick={() => {
-              addFriend()
+              addFriend('FRIENDNAME')
               onClose()
             }}
           >
@@ -83,11 +79,11 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
             <ListItemText>Add Friend</ListItemText>
           </MenuItem>
         )}
-        {!isMe && removeFriend && friends.includes(sessionUser?.owner?.scName as string) && (
+        {!isMe && removeFriend && myUserProfile.friends.includes(sessionUser?.owner?.scName as string) && (
           <MenuItem
             color="error"
             onClick={() => {
-              removeFriend()
+              removeFriend('nope')
               onClose()
             }}
           >

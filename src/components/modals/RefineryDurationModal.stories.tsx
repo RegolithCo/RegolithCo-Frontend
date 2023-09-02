@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { RefineryDurationModal as RefineryDurationModalC } from './RefineryDurationModal'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof RefineryDurationModalC>
+} as Meta<typeof RefineryDurationModalC>
 
-const Template: ComponentStory<typeof RefineryDurationModalC> = (args) => <RefineryDurationModalC {...args} />
+const Template: StoryFn<typeof RefineryDurationModalC> = (args) => <RefineryDurationModalC {...args} />
 
 export const DeleteProfileModal = Template.bind({})
 DeleteProfileModal.args = {

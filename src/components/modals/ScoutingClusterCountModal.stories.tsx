@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ScoutingClusterCountModal as ScoutingClusterCountModalC } from './ScoutingClusterCountModal'
 import { fakeShipClusterFind } from '@regolithco/common/dist/mock'
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ScoutingClusterCountModalC>
+} as Meta<typeof ScoutingClusterCountModalC>
 
-const Template: ComponentStory<typeof ScoutingClusterCountModalC> = (args) => <ScoutingClusterCountModalC {...args} />
+const Template: StoryFn<typeof ScoutingClusterCountModalC> = (args) => <ScoutingClusterCountModalC {...args} />
 
 export const ShareModal = Template.bind({})
 ShareModal.args = {

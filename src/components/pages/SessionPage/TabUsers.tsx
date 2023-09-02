@@ -1,36 +1,15 @@
 import * as React from 'react'
-
-import {
-  Session,
-  SessionStateEnum,
-  SessionUser,
-  ScoutingFind,
-  UserProfile,
-  VerifiedUserLookup,
-  InnactiveUser,
-} from '@regolithco/common'
+import { SessionStateEnum } from '@regolithco/common'
 import { Box, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { ExpandMore, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
-import { MentionedUserList } from '../../fields/MentionedUserList'
-import { crewHierarchyCalc } from '@regolithco/common'
 import { CrewUserList } from '../../SessionUserList/CrewUserList'
 import { SessionUserList } from '../../SessionUserList/SessionUserList'
+import { SessionContext } from '../../../context/session.context'
 
 export interface TabUsersProps {
-  session: Session
-  userProfile: UserProfile
-  sessionUser: SessionUser
-  scoutingMap?: Map<string, ScoutingFind>
-  navigate: (path: string) => void
-  addFriend?: (username: string) => void
-  removeFriend?: (username: string) => void
-  verifiedMentionedUsers: VerifiedUserLookup
-  addSessionMentions: (scNames: string[]) => void
-  removeSessionMentions: (scNames: string[]) => void
-  openUserModal: (userId: string) => void
-  openLoadoutModal: (userId: string) => void
+  propa?: string
 }
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
@@ -83,46 +62,11 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   paper: {},
 })
 
-export const TabUsers: React.FC<TabUsersProps> = ({
-  session,
-  userProfile,
-  navigate,
-  addFriend,
-  removeFriend,
-  scoutingMap,
-  verifiedMentionedUsers,
-  addSessionMentions,
-  removeSessionMentions,
-  openUserModal,
-  openLoadoutModal,
-}) => {
+export const TabUsers: React.FC<TabUsersProps> = () => {
   const theme = useTheme()
+  const { navigate, session, captains, singleActives, myUserProfile } = React.useContext(SessionContext)
   const isActive = session.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
-  const isSessionOwner = session.ownerId === userProfile.userId
-
-  const { crewHierarchy, singleActives, captains, singleInnactives } = React.useMemo(() => {
-    const crewHierarchy = crewHierarchyCalc(session.activeMembers?.items as SessionUser[], session.mentionedUsers || [])
-    console.log(crewHierarchy, JSON.stringify(crewHierarchy))
-    const { captains, singleActives } = (session.activeMembers?.items || []).reduce(
-      (acc, su) => {
-        const suUserId = su.owner?.userId as string
-        const crew = crewHierarchy[suUserId as string]
-        // If I'm not a captain or I don't have a captain, I'm a single active
-        if (!su.captainId && !crew) {
-          acc.singleActives.push(su)
-          return acc
-        }
-        if (crew) acc.captains.push(su)
-        return acc
-      },
-      { singleActives: [], captains: [] } as { singleActives: SessionUser[]; captains: SessionUser[] }
-    )
-    const singleInnactives: InnactiveUser[] = (session.mentionedUsers || []).filter(
-      ({ captainId }) => !captainId || !crewHierarchy[captainId]
-    )
-    return { crewHierarchy, singleActives, captains, singleInnactives }
-  }, [session.activeMembers?.items, session.mentionedUsers])
 
   return (
     <>
@@ -149,20 +93,7 @@ export const TabUsers: React.FC<TabUsersProps> = ({
               <Typography>Crews ({captains.length})</Typography>
             </AccordionSummary>
             <AccordionDetails sx={styles.drawerAccordionDetails}>
-              <CrewUserList
-                friends={userProfile.friends}
-                scoutingMap={scoutingMap}
-                sessionOwnerId={session.ownerId}
-                crewHierarchy={crewHierarchy}
-                navigate={navigate}
-                meId={userProfile.userId}
-                listUsers={captains}
-                session={session}
-                addFriend={addFriend}
-                removeFriend={removeFriend}
-                openUserModal={openUserModal}
-                openLoadoutModal={openLoadoutModal}
-              />
+              <CrewUserList listUsers={captains} />
             </AccordionDetails>
           </Accordion>
         )}
@@ -174,16 +105,11 @@ export const TabUsers: React.FC<TabUsersProps> = ({
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <SessionUserList
-              friends={userProfile.friends}
-              scoutingMap={scoutingMap}
+              friends={myUserProfile.friends}
               sessionOwnerId={session.ownerId}
               navigate={navigate}
-              meId={userProfile.userId}
+              meId={myUserProfile.userId}
               listUsers={singleActives}
-              addFriend={addFriend}
-              removeFriend={removeFriend}
-              openUserModal={openUserModal}
-              openLoadoutModal={openLoadoutModal}
             />
           </AccordionDetails>
         </Accordion>
@@ -220,15 +146,13 @@ export const TabUsers: React.FC<TabUsersProps> = ({
             </Stack>
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
-            <MentionedUserList
+            {/* <MentionedUserList
               mentionedUsers={singleInnactives}
               verifiedUsers={verifiedMentionedUsers}
-              myFriends={userProfile.friends}
               useAutocomplete
-              addFriend={addFriend}
               addToList={isActive ? (scName: string) => addSessionMentions([scName]) : undefined}
               removeFromList={isActive ? (scName: string) => removeSessionMentions([scName]) : undefined}
-            />
+            /> */}
           </AccordionDetails>
         </Accordion>
       </Box>

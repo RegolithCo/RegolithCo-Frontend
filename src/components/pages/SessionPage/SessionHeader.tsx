@@ -3,7 +3,6 @@ import * as React from 'react'
 import {
   Session,
   SessionSettings,
-  UserProfile,
   getLocationName,
   getPlanetName,
   defaultSessionName,
@@ -15,13 +14,11 @@ import dayjs from 'dayjs'
 import { fontFamilies } from '../../../theme'
 import { CloudDownload, Share } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { DialogEnum } from './SessionPage.container'
 import { SessionState } from '../../SessionState'
+import { DialogEnum, SessionContext } from '../../../context/session.context'
 
 export interface SesionHeaderProps {
-  session: Session
-  userProfile: UserProfile
-  setActiveModal: (modal: DialogEnum) => void
+  propA?: string
 }
 
 export const sessionSubtitleArr = (session: Session): string[] => {
@@ -75,13 +72,11 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const SessionHeader: React.FC<SesionHeaderProps> = ({ session, userProfile, setActiveModal }) => {
+export const SessionHeader: React.FC<SesionHeaderProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { session, myUserProfile, setActiveModal } = React.useContext(SessionContext)
   const subtitleArr = sessionSubtitleArr(session)
-
-  // Some convenience variables so we don't have to keep checking for null
-  const isSessionOwner = session.ownerId === userProfile.userId
 
   return (
     <Box sx={styles.container}>

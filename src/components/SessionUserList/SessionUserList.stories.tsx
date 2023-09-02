@@ -1,19 +1,24 @@
 import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
-import { SessionUserList as ActiveUserListComponent } from './SessionUserList'
+import { SessionUserList as SessionUserListComponent } from './SessionUserList'
 import { fakeSessionUser } from '@regolithco/common/dist/mock'
+import { Box } from '@mui/system'
 
 export default {
-  title: 'UserList',
-  component: ActiveUserListComponent,
+  title: 'UserList/UserList',
+  component: SessionUserListComponent,
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as Meta<typeof ActiveUserListComponent>
+} as Meta<typeof SessionUserListComponent>
 
-const Template: StoryFn<typeof ActiveUserListComponent> = (args) => <ActiveUserListComponent {...args} />
+const Template: StoryFn<typeof SessionUserListComponent> = (args) => (
+  <Box sx={{ maxWidth: 400 }}>
+    <SessionUserListComponent {...args} />
+  </Box>
+)
 
 const fakeSessionUsers = Array.from({ length: 20 }, (_, i) => fakeSessionUser())
 

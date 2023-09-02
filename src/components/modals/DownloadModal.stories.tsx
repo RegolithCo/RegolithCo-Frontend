@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { DownloadModal as DownloadModalC } from './DownloadModal'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof DownloadModalC>
+} as Meta<typeof DownloadModalC>
 
-const Template: ComponentStory<typeof DownloadModalC> = (args) => <DownloadModalC {...args} />
+const Template: StoryFn<typeof DownloadModalC> = (args) => <DownloadModalC {...args} />
 
 export const DeleteProfileModal = Template.bind({})
 DeleteProfileModal.args = {

@@ -1,15 +1,6 @@
 import * as React from 'react'
 
-import {
-  ActivityEnum,
-  ScoutingFindStateEnum,
-  Session,
-  SessionStateEnum,
-  UserProfile,
-  SessionUser,
-  WorkOrder,
-  ScoutingFind,
-} from '@regolithco/common'
+import { ScoutingFindStateEnum, SessionStateEnum } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import {
   Accordion,
@@ -29,21 +20,11 @@ import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
 import { ExpandMore } from '@mui/icons-material'
 import { WorkOrderTable } from './WorkOrderTable'
 import { ClusterCard } from '../../cards/ClusterCard'
-import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
-import { DialogEnum } from './SessionPage.container'
 import { fontFamilies } from '../../../theme'
+import { SessionContext } from '../../../context/session.context'
 
 export interface TabDashboardProps {
-  session: Session
-  userProfile: UserProfile
-  sessionUser: SessionUser
-  // For the two modals that take us deeper
-  openWorkOrderModal: (workOrderId?: string) => void
-  openScoutingModal: (scoutinfFindId?: string) => void
-  //
-  setNewWorkOrder: (workOrder: WorkOrder) => void
-  setNewScoutingFind: (scoutingFind: ScoutingFind) => void
-  setActiveModal: (modal: DialogEnum) => void
+  propA?: string
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -96,18 +77,11 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const TabDashboard: React.FC<TabDashboardProps> = ({
-  session,
-  userProfile,
-  sessionUser,
-  openWorkOrderModal,
-  openScoutingModal,
-  setNewWorkOrder,
-  setNewScoutingFind,
-  setActiveModal,
-}) => {
+export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { session, openWorkOrderModal, openScoutingModal, createNewWorkOrder, createNewScoutingFind } =
+    React.useContext(SessionContext)
   const isActive = session.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)
@@ -160,10 +134,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
         <AccordionDetails>
           <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
           <WorkOrderAddFAB
-            onClick={(activity: ActivityEnum) => {
-              setNewWorkOrder(newWorkOrderMaker(session, userProfile, activity))
-              setActiveModal(DialogEnum.ADD_WORKORDER)
-            }}
+            onClick={createNewWorkOrder}
             sessionSettings={session.sessionSettings}
             fabProps={{
               disabled: !isActive,
@@ -229,10 +200,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = ({
             })}
           </Grid>
           <ScoutingAddFAB
-            onClick={(scoutingType) => {
-              setNewScoutingFind(newEmptyScoutingFind(session, sessionUser, scoutingType))
-              setActiveModal(DialogEnum.ADD_SCOUTING)
-            }}
+            onClick={createNewScoutingFind}
             sessionSettings={session.sessionSettings}
             fabProps={{
               disabled: !isActive,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ShipRockEntryModal as ShipRockEntryModalC } from './ShipRockEntryModal'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ShipRockEntryModalC>
+} as Meta<typeof ShipRockEntryModalC>
 
-const Template: ComponentStory<typeof ShipRockEntryModalC> = (args) => <ShipRockEntryModalC {...args} />
+const Template: StoryFn<typeof ShipRockEntryModalC> = (args) => <ShipRockEntryModalC {...args} />
 
 export const ShareModal = Template.bind({})
 ShareModal.args = {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { LoadoutPage as LoadoutPageC, LoadoutTabIndex } from './LoadoutPage'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof LoadoutPageC>
+} as Meta<typeof LoadoutPageC>
 
-const Template: ComponentStory<typeof LoadoutPageC> = (args) => <LoadoutPageC {...args} />
+const Template: StoryFn<typeof LoadoutPageC> = (args) => <LoadoutPageC {...args} />
 
 export const LoadoutPage = Template.bind({})
 LoadoutPage.args = {

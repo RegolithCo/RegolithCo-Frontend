@@ -2,7 +2,6 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ActivePopupMe as ActivePopupMeC } from './ActivePopupMe'
-import { fakeSessionUser } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Modals/ActivePopupMe',
@@ -18,7 +17,6 @@ const Template: StoryFn<typeof ActivePopupMeC> = (args) => <ActivePopupMeC {...a
 export const DeleteProfileModal = Template.bind({})
 DeleteProfileModal.args = {
   open: true,
-  sessionUser: fakeSessionUser(),
   onClose: () => {
     console.log('Closed')
   },

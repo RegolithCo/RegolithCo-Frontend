@@ -12,7 +12,7 @@ module.exports = {
     getAbsolutePath("@storybook/preset-create-react-app"),
     getAbsolutePath("@storybook/addon-mdx-gfm")
   ],
-
+  staticDirs: ['../public'],
   "framework": {
     name: getAbsolutePath("@storybook/react-webpack5"),
     options: {}

@@ -17,17 +17,11 @@ import {
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { ClusterCard } from '../../cards/ClusterCard'
 import { newEmptyScoutingFind } from '../../../lib/newObjectFactories'
-import { DialogEnum } from './SessionPage.container'
 import { fontFamilies } from '../../../theme'
+import { SessionContext } from '../../../context/session.context'
 
 export interface TabScoutingProps {
-  session: Session
-  sessionUser: SessionUser
-  // For the two modals that take us deeper
-  openScoutingModal: (scoutinfFindId?: string) => void
-  //
-  setNewScoutingFind: (scoutingFind: ScoutingFind) => void
-  setActiveModal: (modal: DialogEnum) => void
+  propA?: string
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -70,15 +64,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const TabScouting: React.FC<TabScoutingProps> = ({
-  session,
-  sessionUser,
-  openScoutingModal,
-  setNewScoutingFind,
-  setActiveModal,
-}) => {
+export const TabScouting: React.FC<TabScoutingProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { session, openScoutingModal, createNewScoutingFind, setActiveModal } = React.useContext(SessionContext)
   const isActive = session.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)
@@ -141,10 +130,7 @@ export const TabScouting: React.FC<TabScoutingProps> = ({
         })}
       </Grid>
       <ScoutingAddFAB
-        onClick={(scoutingType) => {
-          setNewScoutingFind(newEmptyScoutingFind(session, sessionUser, scoutingType))
-          setActiveModal(DialogEnum.ADD_SCOUTING)
-        }}
+        onClick={createNewScoutingFind}
         sessionSettings={session.sessionSettings}
         fabProps={{
           disabled: !isActive,

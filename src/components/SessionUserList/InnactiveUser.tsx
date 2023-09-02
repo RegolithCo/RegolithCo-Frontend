@@ -11,18 +11,17 @@ import {
 import { InnactiveUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
 import { useTheme } from '@mui/system'
+import { SessionContext } from '../../context/session.context'
 
-export interface ActiveUserProps {
+export interface InnactiveUserRowProps {
   innactiveUser: InnactiveUser
-  friends?: string[]
-  openUserPopup?: () => void
-  openContextMenu?: (el: HTMLElement) => void
-  addFriend?: () => void
 }
 
-export const ActiveUser: React.FC<ActiveUserProps> = ({ innactiveUser, friends, openUserPopup, openContextMenu }) => {
+export const InnactiveUserRow: React.FC<InnactiveUserRowProps> = ({ innactiveUser }) => {
   const theme = useTheme()
+  const { openInnactiveUserModal } = React.useContext(SessionContext)
 
+  const [contextMenuEl, setContextMenuEl] = React.useState<HTMLElement | null>(null)
   useEffect(() => {
     // define a custom handler function
     // for the contextmenu event
@@ -46,14 +45,14 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ innactiveUser, friends, 
     <ListItem
       onContextMenu={(e) => {
         e.preventDefault()
-        openContextMenu && openContextMenu(e.currentTarget)
+        setContextMenuEl(e.currentTarget)
       }}
       onDoubleClick={(e) => {
         e.preventDefault()
-        openUserPopup && openUserPopup()
+        openInnactiveUserModal(innactiveUser.scName)
       }}
       onClick={() => {
-        openUserPopup && openUserPopup()
+        openInnactiveUserModal(innactiveUser.scName)
       }}
       sx={{
         cursor: 'pointer',
@@ -84,7 +83,8 @@ export const ActiveUser: React.FC<ActiveUserProps> = ({ innactiveUser, friends, 
         <IconButton
           color="primary"
           onClick={(e) => {
-            openContextMenu && openContextMenu(e.currentTarget)
+            e.stopPropagation()
+            setContextMenuEl(e.currentTarget)
           }}
         >
           <MoreVert />

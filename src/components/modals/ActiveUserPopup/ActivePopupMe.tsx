@@ -13,15 +13,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import {
-  SessionUser,
-  User,
-  ScoutingFind,
-  SessionUserStateEnum,
-  MiningLoadout,
-  lookups,
-  SessionUserInput,
-} from '@regolithco/common'
+import { User, SessionUserStateEnum, lookups } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -29,28 +21,21 @@ import dayjs from 'dayjs'
 import { Cancel, RocketLaunch } from '@mui/icons-material'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { LoadoutSelect } from '../../fields/LoadoutSelect'
+import { SessionContext } from '../../../context/session.context'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
   open: boolean
   onClose: () => void
-  onChange: (newSessionUser: SessionUserInput) => void
-  sessionUser: SessionUser
-  loadouts: MiningLoadout[]
-  scoutingMap: Map<string, ScoutingFind>
 }
 
-export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
-  open,
-  onClose,
-  sessionUser,
-  loadouts,
-  onChange,
-  scoutingMap,
-}) => {
+export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
+  const { mySessionUser, updateSessionUser, myUserProfile } = React.useContext(SessionContext)
 
-  const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
+  const vehicle = mySessionUser.vehicleCode
+    ? lookups.shipLookups.find((s) => s.code === mySessionUser.vehicleCode)
+    : null
   return (
     <Dialog
       open={open}
@@ -82,30 +67,30 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
         }}
       >
         <Box sx={{ position: 'absolute', top: 0, left: 0 }}>
-          <UserAvatar size="xlarge" user={sessionUser?.owner as User} />
+          <UserAvatar size="xlarge" user={mySessionUser?.owner as User} />
         </Box>
         <Stack direction="row" spacing={2} alignItems="baseline">
-          <Typography variant="h4">{sessionUser.owner?.scName}</Typography>
+          <Typography variant="h4">{mySessionUser.owner?.scName}</Typography>
           <Typography variant="caption">(You)</Typography>
         </Stack>
         <Stack direction="row" spacing={2}>
-          <Typography>last session activity {dayjs(sessionUser.updatedAt).fromNow()}</Typography>
+          <Typography>last session activity {dayjs(mySessionUser.updatedAt).fromNow()}</Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>
         <Box>
           <Typography variant="overline" color="primary" component="div">
-            Your Status: {sessionUser.state}
+            Your Status: {mySessionUser.state}
           </Typography>
           <ToggleButtonGroup
-            value={sessionUser.state}
+            value={mySessionUser.state}
             fullWidth
             exclusive
             size="small"
             onChange={(e, state) => {
               if (!state) return
-              onChange({
-                isPilot: sessionUser.isPilot,
+              updateSessionUser({
+                isPilot: mySessionUser.isPilot,
                 state: state as SessionUserStateEnum,
               })
             }}
@@ -132,7 +117,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
           </Typography>
         </Box>
 
-        <Typography>{sessionUser.isPilot ? 'Pilot' : 'Crew'}</Typography>
+        <Typography>{mySessionUser.isPilot ? 'Pilot' : 'Crew'}</Typography>
         <Box>
           <Typography variant="overline" color="primary" component="div">
             Current Vehicle
@@ -140,7 +125,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
           <VehicleChooser
             vehicle={vehicle?.code}
             onChange={(vehicle) => {
-              onChange({
+              updateSessionUser({
                 isPilot: true,
                 vehicleCode: vehicle?.code,
               })
@@ -153,11 +138,11 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
             Current Vehicle Loadout
           </Typography>
           <LoadoutSelect
-            loadouts={loadouts}
-            sessionUser={sessionUser}
+            loadouts={myUserProfile.loadouts}
+            sessionUser={mySessionUser}
             disabled={Boolean(!vehicle || !vehicle.miningHold || vehicle.miningHold < 20)}
             onChange={(loadoutId) => {
-              onChange({
+              updateSessionUser({
                 loadoutId,
               })
             }}
@@ -168,14 +153,14 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({
         </Box>
 
         {/* Either a list of MY Crew (if there are any) or specify whose crew I am on */}
-        <Typography>{sessionUser.captainId ? `Crew of: ${sessionUser.captainId}` : 'No crew'}</Typography>
+        <Typography>{mySessionUser.captainId ? `Crew of: ${mySessionUser.captainId}` : 'No crew'}</Typography>
 
         <Typography variant="overline" color="primary" component="div">
           Actions
         </Typography>
         <ButtonGroup variant="contained" color="error" aria-label="contained primary button group">
-          {sessionUser.captainId && <Button startIcon={<RocketLaunch />}>Leave USERNAME's Crew</Button>}
-          {sessionUser.ownerId !== sessionUser.ownerId && (
+          {mySessionUser.captainId && <Button startIcon={<RocketLaunch />}>Leave USERNAME's Crew</Button>}
+          {mySessionUser.ownerId !== mySessionUser.ownerId && (
             <Button color="error" startIcon={<Cancel />}>
               Leave Session
             </Button>

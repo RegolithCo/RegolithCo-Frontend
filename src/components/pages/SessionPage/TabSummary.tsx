@@ -35,7 +35,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { DialogEnum } from './SessionPage.container'
 import { fontFamilies } from '../../../theme'
 import {
   ChevronRight,
@@ -51,14 +50,10 @@ import { UserAvatar } from '../../UserAvatar'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import numeral from 'numeral'
 import { ConfirmModal } from '../../modals/ConfirmModal'
+import { SessionContext } from '../../../context/session.context'
 
 export interface TabSummaryProps {
-  session: Session
-  sessionUser: SessionUser
-  mutating: boolean
-  setActiveModal: (modal: DialogEnum) => void
-  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
-  openWorkOrderModal: (workOrderId?: string) => void
+  propA?: string
 }
 
 const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
@@ -123,15 +118,10 @@ type ConfirmModalState = {
   crewShares: CrewShare[]
 }
 
-export const TabSummary: React.FC<TabSummaryProps> = ({
-  session,
-  sessionUser,
-  mutating,
-  markCrewSharePaid,
-  openWorkOrderModal,
-}) => {
+export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
   const sessionSummary: SessionBreakdown = React.useMemo(
     () => sessionReduce(session.workOrders?.items || []),
@@ -205,7 +195,7 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
         openWorkOrderModal={openWorkOrderModal}
         session={session}
         sessionSummary={sessionSummary}
-        sessionUser={sessionUser}
+        sessionUser={mySessionUser}
       />
       <Box sx={{ mb: 2 }} />
 
@@ -217,7 +207,7 @@ export const TabSummary: React.FC<TabSummaryProps> = ({
         openWorkOrderModal={openWorkOrderModal}
         session={session}
         sessionSummary={sessionSummary}
-        sessionUser={sessionUser}
+        sessionUser={mySessionUser}
       />
       <ConfirmModal
         open={Boolean(payConfirm)}
@@ -269,7 +259,7 @@ interface OwingListProps {
   mutating: boolean
   isPaid: boolean
   setPayConfirm?: (state: ConfirmModalState) => void
-  openWorkOrderModal: (workOrderId?: string) => void
+  openWorkOrderModal: (workOrderId: string) => void
 }
 
 const OwingList: React.FC<OwingListProps> = ({

@@ -1,7 +1,7 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
-import { ScoutingFindModal as ScoutingFindModalC } from './ScoutingFindModal'
+import { ScoutingFindModal as ScoutingFindModalC, ScoutingFindModalProps } from './ScoutingFindModal'
 import {
   fakeSalvageFind,
   fakeSessionUser,
@@ -10,6 +10,11 @@ import {
 } from '@regolithco/common/dist/mock'
 import log from 'loglevel'
 import { ScoutingFind, ScoutingFindTypeEnum } from '@regolithco/common'
+import {
+  ScoutingFindContext,
+  scoutingFindContextDefault,
+  ScoutingFindContextType,
+} from '../../context/scoutingFind.context'
 
 export default {
   title: 'Modals/ScoutingFindModal',
@@ -26,67 +31,71 @@ export default {
   parameters: {
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ScoutingFindModalC>
+} as Meta<typeof ScoutingFindModalC>
 
-const Template: ComponentStory<typeof ScoutingFindModalC> = ({ ...args }) => {
-  let workOrder: ScoutingFind
-  const { scoutingFindType } = args as any
+interface TemplateProps {
+  scoutingFindType: ScoutingFindTypeEnum
+  componentProps: Partial<ScoutingFindModalProps>
+  contextProps: Partial<ScoutingFindContextType>
+}
+
+const Template: StoryFn<TemplateProps> = ({ scoutingFindType, componentProps, contextProps }: TemplateProps) => {
+  let scoutingFind: ScoutingFind
   switch (scoutingFindType) {
     case ScoutingFindTypeEnum.Ship:
-      workOrder = fakeShipClusterFind()
+      scoutingFind = fakeShipClusterFind()
       break
     case ScoutingFindTypeEnum.Vehicle:
-      workOrder = fakeVehicleClusterFind()
+      scoutingFind = fakeVehicleClusterFind()
       break
     case ScoutingFindTypeEnum.Salvage:
-      workOrder = fakeSalvageFind()
+      scoutingFind = fakeSalvageFind()
       break
     default:
       return <div>Activity is required</div>
   }
-  return <ScoutingFindModalC {...args} scoutingFind={workOrder} />
+  return (
+    <ScoutingFindContext.Provider
+      value={{
+        ...scoutingFindContextDefault,
+        ...contextProps,
+        scoutingFind,
+      }}
+    >
+      <ScoutingFindModalC
+        {...componentProps}
+        open
+        onClose={() => {
+          console.log('Closed')
+        }}
+      />
+    </ScoutingFindContext.Provider>
+  )
 }
 
 export const Create = Template.bind({})
 Create.args = {
-  open: true,
-  isNew: true,
-  allowEdit: true,
-  meUser: fakeSessionUser(),
-  onChange: (scoutingFind) => {
-    log.debug('ShipMiningOrderUpdate', scoutingFind)
-  },
-  onClose: () => {
-    console.log('Closed')
+  contextProps: {
+    isNew: true,
+    allowEdit: true,
+    meUser: fakeSessionUser(),
   },
 }
 
 export const Edit = Template.bind({})
 Edit.args = {
-  open: true,
-  isNew: false,
-  allowEdit: true,
-  meUser: fakeSessionUser(),
-
-  onChange: (order) => {
-    log.debug('ShipMiningOrderUpdate', order)
-  },
-  onClose: () => {
-    console.log('Closed')
+  contextProps: {
+    isNew: false,
+    allowEdit: true,
+    meUser: fakeSessionUser(),
   },
 }
 
 export const View = Template.bind({})
 View.args = {
-  open: true,
-  isNew: false,
-  allowEdit: false,
-  meUser: fakeSessionUser(),
-
-  onChange: (order) => {
-    log.debug('ShipMiningOrderUpdate', order)
-  },
-  onClose: () => {
-    console.log('Closed')
+  contextProps: {
+    isNew: false,
+    allowEdit: false,
+    meUser: fakeSessionUser(),
   },
 }

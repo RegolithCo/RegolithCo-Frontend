@@ -81,8 +81,8 @@
     "build": "dotenv -e ../../.env.staging -- ./scripts/fancyBuild.sh",
     "test": "react-scripts test",
     "lint": "tsc --noEmit && eslint src/**/* --fix",
-    "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build -s public",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
     "build:gql": "graphql-codegen",
     "watch:gql": "graphql-codegen --watch"
   },

@@ -13,35 +13,16 @@ import {
 } from '@mui/material'
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
-import {
-  ActivityEnum,
-  CrewShare,
-  makeHumanIds,
-  UserSuggest,
-  WorkOrder,
-  WorkOrderDefaults,
-  WorkOrderStateEnum,
-} from '@regolithco/common'
+import { ActivityEnum, CrewShare, makeHumanIds, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
 import { Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
 import { DeleteModal } from './DeleteModal'
+import { WorkOrderContext } from '../../context/workOrder.context'
 
 export interface WorkOrderModalProps {
   open: boolean
-  workOrder: WorkOrder
-  onUpdate: (workOrder: WorkOrder, setFail?: boolean) => void
-  deleteWorkOrder?: () => void
-  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
-  failWorkOrder?: (reason?: string) => void
-  allowEdit?: boolean
-  allowPay?: boolean
-  isSessionActive?: boolean
-  templateJob?: WorkOrderDefaults
-  forceTemplate?: boolean
-  userSuggest?: UserSuggest
-  isNew?: boolean
   onClose: () => void
 }
 
@@ -117,23 +98,22 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({
-  open,
-  isNew,
-  workOrder,
-  onUpdate,
-  deleteWorkOrder,
-  markCrewSharePaid,
-  allowEdit,
-  allowPay,
-  isSessionActive,
-  templateJob,
-  failWorkOrder,
-  forceTemplate,
-  userSuggest,
-  onClose,
-}) => {
+export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose }) => {
   const theme = useTheme()
+  const {
+    isNew,
+    workOrder,
+    onUpdate,
+    deleteWorkOrder,
+    markCrewSharePaid,
+    allowEdit,
+    allowPay,
+    isSessionActive,
+    templateJob,
+    failWorkOrder,
+    forceTemplate,
+    userSuggest,
+  } = React.useContext(WorkOrderContext)
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>(workOrder)
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)

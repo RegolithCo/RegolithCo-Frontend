@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { LoginChoice as LoginChoiceC } from './LoginChoice'
 import { AuthTypeEnum } from '@regolithco/common'
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof LoginChoiceC>
+} as Meta<typeof LoginChoiceC>
 
-const Template: ComponentStory<typeof LoginChoiceC> = (args) => <LoginChoiceC {...args} />
+const Template: StoryFn<typeof LoginChoiceC> = (args) => <LoginChoiceC {...args} />
 
 export const DeleteProfileModal = Template.bind({})
 DeleteProfileModal.args = {

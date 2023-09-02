@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { RefineryCalc as RefineryCalcComponent } from './RefineryCalc'
 
@@ -18,9 +18,9 @@ export default {
       ],
     },
   },
-} as ComponentMeta<typeof RefineryCalcComponent>
+} as Meta<typeof RefineryCalcComponent>
 
-const Template: ComponentStory<typeof RefineryCalcComponent> = (args) => <RefineryCalcComponent {...args} />
+const Template: StoryFn<typeof RefineryCalcComponent> = (args) => <RefineryCalcComponent {...args} />
 
 export const RefineryCalc = Template.bind({})
 RefineryCalc.args = {}

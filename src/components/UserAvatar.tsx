@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Avatar from '@mui/material/Avatar'
 import { Badge, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
-import { Engineering, Error, PeopleAlt, Person, Verified } from '@mui/icons-material'
+import { Engineering, Error, Image, PeopleAlt, Person, Verified } from '@mui/icons-material'
 import { makeAvatar, User, UserProfile, UserStateEnum } from '@regolithco/common'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -27,21 +27,21 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     width: 90,
   },
   xlargeBadge: {
-    '& svg': {
+    '& .MuiBadge-badge svg': {
       height: 30,
       width: 30,
     },
   },
   largeAvatar: {},
   largeBadge: {
-    '& svg': {
+    '& .MuiBadge-badge svg': {
       height: 15,
       width: 15,
     },
   },
   smallAvatar: {},
   smallBadge: {
-    '& svg': {
+    '& .MuiBadge-badge svg': {
       height: 15,
       width: 15,
     },
@@ -49,7 +49,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
   mediumAvatar: {},
   mediumBadge: {
-    '& svg': {
+    '& .MuiBadge-badge svg': {
       height: 18,
       width: 18,
     },
@@ -127,7 +127,17 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessi
               }}
             >
               {/* Fallbacks */}
-              {error && !user ? <Error color="error" /> : <Person color="inherit" />}
+              {error && !user ? (
+                <Error color="error" />
+              ) : (
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/avatars/NoAvatar.jpg`}
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                  }}
+                />
+              )}
             </Avatar>
           </Tooltip>
         </Badge>

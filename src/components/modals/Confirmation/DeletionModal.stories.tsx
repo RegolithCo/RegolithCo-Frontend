@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { DeletionModal } from './DeletionModal'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof DeletionModal>
+} as Meta<typeof DeletionModal>
 
-const Template: ComponentStory<typeof DeletionModal> = (args) => <DeletionModal {...args} />
+const Template: StoryFn<typeof DeletionModal> = (args) => <DeletionModal {...args} />
 
 export const Default = Template.bind({})
 Default.args = {

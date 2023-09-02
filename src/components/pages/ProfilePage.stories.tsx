@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { ProfilePage as ProfilePageComponent } from './ProfilePage'
 import { fakeUserProfile, fakeVerifiedUserLookup } from '@regolithco/common/dist/mock'
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof ProfilePageComponent>
+} as Meta<typeof ProfilePageComponent>
 
-const Template: ComponentStory<typeof ProfilePageComponent> = (args) => <ProfilePageComponent {...args} />
+const Template: StoryFn<typeof ProfilePageComponent> = (args) => <ProfilePageComponent {...args} />
 
 export const ProfilePage = Template.bind({})
 const userProfile = fakeUserProfile()

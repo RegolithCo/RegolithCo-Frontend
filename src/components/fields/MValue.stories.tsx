@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { MValue } from './MValue'
 import { Typography } from '@mui/material'
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof MValue>
+} as Meta<typeof MValue>
 
-const Template: ComponentStory<typeof MValue> = (args) => (
+const Template: StoryFn<typeof MValue> = (args) => (
   <div>
     <Typography>Zero</Typography>
     <MValue {...args} value={0} />

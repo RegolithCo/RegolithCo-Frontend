@@ -1,5 +1,5 @@
 import React from 'react'
-// import { ComponentStory, ComponentMeta } from '@storybook/react'
+// import { StoryFn, Meta } from '@storybook/react'
 
 import { WorkOrderAddFAB } from './WorkOrderAddFAB'
 import { ScoutingAddFAB } from './ScoutingAddFAB'

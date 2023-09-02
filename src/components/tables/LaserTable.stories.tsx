@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { LaserTable as LaserTableC } from './LaserTable'
 
@@ -10,9 +10,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof LaserTableC>
+} as Meta<typeof LaserTableC>
 
-const Template: ComponentStory<typeof LaserTableC> = (args) => <LaserTableC {...args} />
+const Template: StoryFn<typeof LaserTableC> = (args) => <LaserTableC {...args} />
 
 export const LaserTable = Template.bind({})
 LaserTable.args = {

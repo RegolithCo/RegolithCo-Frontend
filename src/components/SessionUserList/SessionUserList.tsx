@@ -72,22 +72,12 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({
           <Box key={`user-${idx}`}>
             <ActiveUser
               key={`user-${idx}`}
-              meId={meId}
-              sessionOwnerId={sessionOwnerId}
               captain={
                 sessionUser.captainId ? listUsers.find((su) => su.owner?.userId === sessionUser.captainId) : undefined
               }
               // Context menu
-              // menuOpen={!!menuOpen}
-              openContextMenu={(el: HTMLElement) => setMenuOpen({ el, userId: sessionUser.owner?.userId as string })}
               // User popup
-              openUserPopup={() => openUserModal && openUserModal(sessionUser.owner?.userId as string)}
-              openLoadoutPopup={() => openLoadoutModal && openLoadoutModal(sessionUser.owner?.userId as string)}
-              scoutingFind={scoutingMap ? scoutingMap.get(sessionUser.owner?.userId as string) : undefined}
               sessionUser={sessionUser}
-              navigate={navigate}
-              friends={friends}
-              addFriend={addFriend ? () => addFriend(sessionUser?.owner?.scName as string) : undefined}
             />
           </Box>
         ))}
@@ -97,14 +87,7 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({
         open={!!menuOpen}
         anchorEl={menuOpen?.el}
         onClose={() => setMenuOpen(null)}
-        openUserModal={openUserModal}
         sessionUser={listUsers.find((su) => su.owner?.userId === menuOpen?.userId) as SessionUser}
-        friends={friends || []}
-        addFriend={addFriend && menuOpenUser ? () => addFriend(menuOpenUser?.owner?.scName as string) : undefined}
-        removeFriend={
-          removeFriend && menuOpenUser ? () => removeFriend(menuOpenUser?.owner?.scName as string) : undefined
-        }
-        isMe={menuOpen?.userId === meId}
       />
     </>
   )

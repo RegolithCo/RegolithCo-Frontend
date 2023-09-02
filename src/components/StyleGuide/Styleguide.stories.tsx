@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { Meta, StoryFn } from '@storybook/react'
 import { StyleGuide as StyleGuideComponent } from './StyleGuide'
 
 export default {
@@ -9,8 +9,8 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof StyleGuideComponent>
+} as Meta<typeof StyleGuideComponent>
 
-const Template: ComponentStory<typeof StyleGuideComponent> = (args) => <StyleGuideComponent {...args} />
+const Template: StoryFn<typeof StyleGuideComponent> = (args) => <StyleGuideComponent {...args} />
 
 export const StyleGuide = Template.bind({})

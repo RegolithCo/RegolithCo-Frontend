@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionChooserPage as SessionChooserPageC } from './SessionChooserPage'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
@@ -13,9 +13,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof SessionChooserPageC>
+} as Meta<typeof SessionChooserPageC>
 
-const Template: ComponentStory<typeof SessionChooserPageC> = (args) => <SessionChooserPageC {...args} />
+const Template: StoryFn<typeof SessionChooserPageC> = (args) => <SessionChooserPageC {...args} />
 
 export const SessionChooserPage = Template.bind({})
 const userProfile = fakeUserProfile()

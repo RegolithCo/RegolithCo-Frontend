@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { AppWrapper as AppWrapperComponent, BGImagesEnum } from './AppWrapper'
 
@@ -19,9 +19,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof AppWrapperComponent>
+} as Meta<typeof AppWrapperComponent>
 
-const Template: ComponentStory<typeof AppWrapperComponent> = (args) => {
+const Template: StoryFn<typeof AppWrapperComponent> = (args) => {
   const { backgroundSelect } = args as any
   return (
     <div style={{ display: 'flex', height: '100%' }}>

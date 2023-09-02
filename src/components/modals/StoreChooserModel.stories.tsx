@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { StoreChooserModal as StoreChooserModalC } from './StoreChooserModal'
 import { ShipOreEnum, VehicleOreEnum } from '@regolithco/common'
@@ -11,9 +11,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof StoreChooserModalC>
+} as Meta<typeof StoreChooserModalC>
 
-const Template: ComponentStory<typeof StoreChooserModalC> = (args) => <StoreChooserModalC {...args} />
+const Template: StoryFn<typeof StoreChooserModalC> = (args) => <StoreChooserModalC {...args} />
 
 export const StoreChooserModal = Template.bind({})
 StoreChooserModal.args = {

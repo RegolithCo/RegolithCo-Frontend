@@ -47,7 +47,7 @@ import { VehicleOreChooser } from '../../fields/VehicleOreChooser'
 import { CrewShareTemplateTable } from '../../fields/crewshare/CrewShareTemplateTable'
 import { omit } from 'lodash'
 import { fontFamilies } from '../../../theme'
-import { DialogEnum } from './SessionPage.container'
+import { DialogEnum } from '../../../context/session.context'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version

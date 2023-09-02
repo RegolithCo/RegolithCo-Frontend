@@ -1,23 +1,15 @@
 import * as React from 'react'
 import { Box, Button, Dialog, DialogActions, SxProps, Theme, ThemeProvider } from '@mui/material'
 
-import { ScoutingFind, ScoutingFindStateEnum, SessionUser } from '@regolithco/common'
+import { ScoutingFind, ScoutingFindStateEnum } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
 import { Cancel, Create, Delete, Save } from '@mui/icons-material'
 import { DeleteModal } from './DeleteModal'
+import { ScoutingFindContext } from '../../context/scoutingFind.context'
 
 export interface ScoutingFindModalProps {
   open: boolean
-  scoutingFind: ScoutingFind
-  meUser: SessionUser
-  onChange: (scoutingFind: ScoutingFind) => void
-  onDelete?: () => void
-  joinScoutingFind?: (findId: string, enRoute: boolean) => void
-  leaveScoutingFind?: (findId: string) => void
-  allowEdit?: boolean
-  allowWork?: boolean
-  isNew?: boolean
   onClose: () => void
 }
 
@@ -39,20 +31,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({
-  open,
-  scoutingFind,
-  isNew,
-  onChange,
-  onDelete,
-  joinScoutingFind,
-  leaveScoutingFind,
-  meUser,
-  allowWork,
-  allowEdit,
-  onClose,
-}) => {
+export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onClose }) => {
   // This is just used int he live case. In every other case we just edit it live
+  const { scoutingFind, isNew, onChange, onDelete, joinScoutingFind, leaveScoutingFind, meUser, allowWork, allowEdit } =
+    React.useContext(ScoutingFindContext)
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const [theme, setTheme] = React.useState<Theme>(

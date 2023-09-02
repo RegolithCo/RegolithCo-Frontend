@@ -1,5 +1,5 @@
 import React from 'react'
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { StoryFn, Meta } from '@storybook/react'
 
 import { WorkOrderModal as WorkOrderModalC } from './WorkOrderModal'
 import {
@@ -10,6 +10,7 @@ import {
 } from '@regolithco/common/dist/mock'
 import log from 'loglevel'
 import { ActivityEnum, WorkOrder } from '@regolithco/common'
+import { WorkOrderContext, workOrderContextDefaults } from '../../context/workOrder.context'
 
 export default {
   title: 'Modals/WorkOrderModal',
@@ -27,9 +28,9 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof WorkOrderModalC>
+} as Meta<typeof WorkOrderModalC>
 
-const Template: ComponentStory<typeof WorkOrderModalC> = ({ ...args }) => {
+const Template: StoryFn<typeof WorkOrderModalC> = ({ ...args }) => {
   let workOrder: WorkOrder
   const { activity } = args as any
   switch (activity) {
@@ -48,17 +49,23 @@ const Template: ComponentStory<typeof WorkOrderModalC> = ({ ...args }) => {
     default:
       return <div>Activity is required</div>
   }
-  return <WorkOrderModalC {...args} workOrder={workOrder} />
+  return (
+    <WorkOrderContext.Provider
+      value={{
+        ...workOrderContextDefaults,
+        workOrder,
+      }}
+    >
+      <WorkOrderModalC {...args} />
+    </WorkOrderContext.Provider>
+  )
 }
 
 export const Create = Template.bind({})
 Create.args = {
   open: true,
-  isNew: true,
-  allowEdit: true,
-  onUpdate: (order) => {
-    log.debug('ShipMiningOrderUpdate', order)
-  },
+  // isNew: true,
+  // allowEdit: true,
   onClose: () => {
     console.log('Closed')
   },
@@ -67,11 +74,8 @@ Create.args = {
 export const Edit = Template.bind({})
 Edit.args = {
   open: true,
-  isNew: false,
-  allowEdit: true,
-  onUpdate: (order) => {
-    log.debug('ShipMiningOrderUpdate', order)
-  },
+  // isNew: false,
+  // allowEdit: true,
   onClose: () => {
     console.log('Closed')
   },
@@ -80,11 +84,11 @@ Edit.args = {
 export const View = Template.bind({})
 View.args = {
   open: true,
-  isNew: false,
-  allowEdit: false,
-  onUpdate: (order) => {
-    log.debug('ShipMiningOrderUpdate', order)
-  },
+  // isNew: false,
+  // allowEdit: false,
+  // onUpdate: (order) => {
+  //   log.debug('ShipMiningOrderUpdate', order)
+  // },
   onClose: () => {
     console.log('Closed')
   },
