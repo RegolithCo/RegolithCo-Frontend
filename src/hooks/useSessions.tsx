@@ -303,12 +303,10 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       cache.modify({
         id: cache.identify(userProfile as UserProfile),
         fields: {
-          joinedSessions(existingSessions: PaginatedSessions) {
-            if (!existingSessions) return existingSessions
-            return {
-              ...existingSessions,
-              items: existingSessions.items?.filter((s) => s?.sessionId !== sessionId),
-            }
+          joinedSessions(existingSessionsRefs, { readField }) {
+            return existingSessionsRefs.filter((sessionRef: any) => {
+              return sessionId !== readField('sessionId', sessionRef)
+            })
           },
         },
       })

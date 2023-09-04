@@ -15,9 +15,12 @@
     - Crew members that create work orders will assign the order to the Captain automatically.
     - Captains can add or remove crew members to their ship
     - Crew members can join or leave the a ship.
+- **Mnetioned users are now "Pending Users"** There used to be two lists, one for "Mentioned Users" and one for "Active Users" this was really confusing to people so I changed it to be one big, integrated list.
 - **New Tool: Market Price Calculator**. This tool will help you figure out what the best price is for your ore and where to sell it.
-- **User list Rework** It's been confusing a lot of people what a "Mentioned" user is. Hopefully it's clearer now.
+- **User list Rework** The user list should be simpler to work with now and a lot more feature-rich
     - Context menus avaialble on right-click.
+    - Click on the user to get a popup with their status.
+    - Click on yourself to get a popup where you can change your status.
 - **Session users can now have loadouts** Advertise to the session what tools you're bringing to the party.
 - **User status tool** 
     - Click a user in the user list to see a card showing their status, crew, ship, loadout etc.
