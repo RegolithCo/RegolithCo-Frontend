@@ -1,94 +1,96 @@
 import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
-import { Crew as CrewComponent } from './Crew'
-import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/mock'
-import { SessionUser, SessionUserStateEnum } from '@regolithco/common'
+import { CrewListItem as CrewC, CrewListItemProps } from './CrewListItem'
+import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { crewHierarchyCalc, Session, SessionUser, User } from '@regolithco/common'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
+import { List, Typography } from '@mui/material'
 
 export default {
   title: 'UserList/Crew',
-  component: CrewComponent,
+  component: CrewC,
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-} as Meta<typeof CrewComponent>
-
-const meUser = fakeSessionUser(
-  { state: SessionUserStateEnum.Unknown },
-  { avatarUrl: '/images/avatars/dummyAvatar.png' }
-)
-const otherUser = fakeSessionUser(
-  { state: SessionUserStateEnum.Unknown },
-  { avatarUrl: '/images/avatars/dummyAvatar.png' }
-)
+} as Meta<typeof CrewC>
 
 interface TemplateProps {
-  componentProps: SessionUser
+  componentProps: CrewListItemProps
   contextProps: Partial<SessionContextType>
 }
+const session = fakeSession()
+const sessionMembers: SessionUser[] = session.activeMembers?.items || []
+const mySessionUser = sessionMembers[Math.floor(Math.random() * sessionMembers.length)]
+const notMySessionUser = sessionMembers.filter((m) => m.ownerId !== mySessionUser.ownerId)[
+  Math.floor(Math.random() * sessionMembers.length)
+]
+const meUser = fakeUserProfile(mySessionUser.owner as User)
+const notMeUser = fakeUserProfile(notMySessionUser.owner as User)
+// Random session member chosen from sessionMembers
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const session = fakeSession()
-  const meUser = fakeUserProfile({ friends: ['userB_Friend'] })
-  // const userStates: SessionUser[] = [
-  //   { ...args.captain, state: SessionUserStateEnum.Unknown },
-  //   { ...args.captain, state: SessionUserStateEnum.Afk },
-  //   { ...args.captain, state: SessionUserStateEnum.RefineryRun },
-  //   { ...args.captain, state: SessionUserStateEnum.Scouting },
-  //   { ...args.captain, state: SessionUserStateEnum.OnSite },
-  //   { ...args.captain, state: SessionUserStateEnum.Travelling },
-  // ]
-  // const userAvatarStates: SessionUser[] = [
-  //   {
-  //     ...args.captain,
-  //     owner: { ...(args.captain.owner as User), avatarUrl: undefined, state: UserStateEnum.Verified },
-  //   },
-  //   {
-  //     ...args.captain,
-  //     owner: { ...(args.captain.owner as User), avatarUrl: undefined, state: UserStateEnum.Unverified },
-  //   },
-  //   { ...args.captain, owner: { ...(args.captain.owner as User), avatarUrl: 'https://localhost/noimage.png' } },
-  //   { ...args.captain, owner: { ...(args.captain.owner as User) } },
-  // ]
+  const captain = { ...componentProps.captain, vehicleCode: 'ARMOLE' }
+  const newSession: Session = {
+    ...session,
+    mentionedUsers: (session.mentionedUsers || []).map((u) => ({
+      ...u,
+      captainId: captain.ownerId,
+    })),
+    // Now make sure all the active members get the right captain
+    activeMembers: {
+      ...session.activeMembers,
+      items: (session.activeMembers?.items || []).map((u) =>
+        u.ownerId === captain.ownerId
+          ? { ...u, vehicleCode: 'ARMOLE' }
+          : {
+              ...u,
+              captainId: captain.ownerId,
+              vehicleCode: 'ARMOLE',
+            }
+      ),
+      __typename: 'PaginatedSessionUsers',
+    },
+  }
+
   return (
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session,
+        session: newSession,
+        captains: [captain],
         myUserProfile: meUser,
+        mySessionUser: mySessionUser,
+        crewHierarchy: crewHierarchyCalc(newSession.activeMembers?.items || [], newSession.mentionedUsers || []),
         ...contextProps,
       }}
     >
-      {/* <List sx={{ maxWidth: 400, border: '1px solid blue' }}>
-        <Typography variant="h6">Me</Typography>
-        <CrewComponent {...args} />
-        <Typography variant="h6">Session Owner</Typography>
-        <CrewComponent {...args} />
-        <Typography variant="h6">Is Friend</Typography>
-        <CrewComponent {...args} />
-      </List>
-      <Typography variant="h6">User States</Typography>
       <List sx={{ maxWidth: 400, border: '1px solid blue' }}>
-        {userStates.map((u, idx) => (
-          <CrewComponent {...args} captain={u} key={idx} />
-        ))}
+        <Typography variant="h6">Me Captain</Typography>
+        <CrewC {...componentProps} />
       </List>
-      <Typography variant="h6">Avatar States</Typography>
-      <List sx={{ maxWidth: 400, border: '1px solid blue' }}>
-        {userAvatarStates.map((u, idx) => (
-          <CrewComponent {...args} captain={u} key={idx} />
-        ))}
-      </List> */}
     </SessionContext.Provider>
   )
 }
 
-export const ActiveUser = Template.bind({})
-ActiveUser.args = {
+export const Crew = Template.bind({})
+Crew.args = {
   componentProps: {
-    ...meUser,
+    captain: mySessionUser,
+    openContextMenu: () => {
+      console.log('openContextMenu')
+    },
+  },
+  contextProps: {},
+}
+export const CrewMeCaptain = Template.bind({})
+CrewMeCaptain.args = {
+  componentProps: {
+    captain: notMySessionUser,
+    openContextMenu: () => {
+      console.log('openContextMenu')
+    },
   },
   contextProps: {},
 }

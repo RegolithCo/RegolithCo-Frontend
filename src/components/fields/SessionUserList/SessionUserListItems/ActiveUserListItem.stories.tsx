@@ -1,7 +1,7 @@
 import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
-import { SoloActive as ActiveUserComponent, SoloActiveProps } from './SoloActive'
+import { ActiveUserListItem as ActiveUserComponent, ActiveUserListItemProps } from './ActiveUserListItem'
 import { fakeSession, fakeSessionUser } from '@regolithco/common/dist/mock'
 import { List, Typography } from '@mui/material'
 import { SessionUser, SessionUserStateEnum, User, UserStateEnum } from '@regolithco/common'
@@ -26,7 +26,7 @@ const otherUser = fakeSessionUser(
 )
 
 interface TemplateProps {
-  componentProps: SoloActiveProps
+  componentProps: ActiveUserListItemProps
   contextProps: Partial<SessionContextType>
 }
 

@@ -1,10 +1,10 @@
 import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
-import { SoloActive as SoloInnactiveComponent } from './SoloActive'
+import { ActiveUserListItem as SoloInnactiveComponent } from './ActiveUserListItem'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
 import { List, Typography } from '@mui/material'
-import { SoloInnactive as SoloInnactiveC, SoloInnactiveProps } from './SoloInnactive'
+import { PendingUserListItem as SoloInnactiveC, PendingUserListItemProps } from './PendingUserListItem'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
 
 export default {
@@ -17,7 +17,7 @@ export default {
 } as Meta<typeof SoloInnactiveComponent>
 
 interface TemplateProps {
-  componentProps: Partial<SoloInnactiveProps>
+  componentProps: Partial<PendingUserListItemProps>
   contextProps: Partial<SessionContextType>
 }
 

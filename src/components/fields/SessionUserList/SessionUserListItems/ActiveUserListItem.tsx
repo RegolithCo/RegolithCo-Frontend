@@ -18,45 +18,35 @@ import {
   User,
 } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
-import { alpha, Box, useTheme } from '@mui/system'
+import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
-import { makeSessionUrls } from '../../../../lib/routingUrls'
 import { UserAvatar } from '../../../UserAvatar'
-import { fontFamilies } from '../../../../theme'
 import { ModuleIcon } from '../../../../icons'
+import { StateChip, stateColorsBGThunk } from './StateChip'
+import { fontFamilies } from '../../../../theme'
 
-export interface SoloActiveProps {
+export interface ActiveUserListItemProps {
   sessionUser: SessionUser
+  // Crew gets a smaller row and less info
+  isCrewDisplay?: boolean
   openContextMenu: (e: HTMLElement) => void
 }
 
-export const SoloActive: React.FC<SoloActiveProps> = ({ sessionUser, openContextMenu }) => {
+export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
+  sessionUser,
+  isCrewDisplay,
+  openContextMenu,
+}) => {
   const theme = useTheme()
   const { session, navigate, myUserProfile, scoutingAttendanceMap, openLoadoutModal, openActiveUserModal, captains } =
     React.useContext(SessionContext)
+  const stateColorsBg = stateColorsBGThunk(theme)
   const isMe = myUserProfile.userId === sessionUser.ownerId
   const secondaryText = []
   const stateObjects = []
   const isOwner = sessionUser.ownerId === session.ownerId
   const captain = sessionUser.captainId ? captains.find((su) => su.ownerId === sessionUser.captainId) : undefined
   // const menuRef = useRef<HTMLLIElement>()
-
-  const STATE_COLORS_BG: Record<SessionUserStateEnum, string> = {
-    [SessionUserStateEnum.Unknown]: '#000000',
-    [SessionUserStateEnum.Afk]: '#666666',
-    [SessionUserStateEnum.OnSite]: theme.palette.info.main,
-    [SessionUserStateEnum.RefineryRun]: theme.palette.secondary.main,
-    [SessionUserStateEnum.Scouting]: theme.palette.info.light,
-    [SessionUserStateEnum.Travelling]: theme.palette.info.light,
-  }
-  const STATE_COLORS_FG: Record<SessionUserStateEnum, string> = {
-    [SessionUserStateEnum.Unknown]: '#000000',
-    [SessionUserStateEnum.Afk]: '#000000',
-    [SessionUserStateEnum.OnSite]: theme.palette.info.contrastText,
-    [SessionUserStateEnum.RefineryRun]: theme.palette.secondary.contrastText,
-    [SessionUserStateEnum.Scouting]: theme.palette.info.contrastText,
-    [SessionUserStateEnum.Travelling]: theme.palette.info.contrastText,
-  }
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
 
@@ -81,7 +71,7 @@ export const SoloActive: React.FC<SoloActiveProps> = ({ sessionUser, openContext
 
   const user = sessionUser.owner as User
   if (sessionUser) {
-    if (sessionUser.vehicleCode) {
+    if (sessionUser.vehicleCode && !isCrewDisplay) {
       const vehicle = sessionUser.vehicleCode
         ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode)
         : null
@@ -109,14 +99,43 @@ export const SoloActive: React.FC<SoloActiveProps> = ({ sessionUser, openContext
     }
 
     if (captain) {
-      secondaryText.push(`Crew of: ${captain.owner?.scName}`)
-    }
+      if (!isCrewDisplay) secondaryText.push(`Crew of: ${captain.owner?.scName}`)
+      else
+        secondaryText.push(
+          <Typography
+            sx={{
+              color: theme.palette.text.secondary,
+              textTransform: 'uppercase',
+              fontSize: '0.6rem',
+              fontWeight: 'bold',
+              fontFamily: fontFamilies.robotoMono,
+            }}
+          >
+            Crew
+          </Typography>
+        )
+    } else if (isCrewDisplay)
+      secondaryText.push(
+        <Typography
+          sx={{
+            color: theme.palette.secondary.light,
+            textTransform: 'uppercase',
+            fontSize: '0.6rem',
+            fontWeight: 'bold',
+            fontFamily: fontFamilies.robotoMono,
+          }}
+        >
+          Captain
+        </Typography>
+      )
   }
-  const stateColor = STATE_COLORS_BG[sessionUser.state] || undefined
+  const stateColor = stateColorsBg[sessionUser.state] || undefined
 
   return (
     <>
       <ListItem
+        dense={isCrewDisplay}
+        disableGutters={isCrewDisplay}
         onContextMenu={(e) => {
           e.preventDefault()
           openContextMenu(e.currentTarget)
@@ -131,41 +150,10 @@ export const SoloActive: React.FC<SoloActiveProps> = ({ sessionUser, openContext
         sx={{
           background: stateColor && alpha(stateColor, 0.1),
           cursor: 'pointer',
-          borderLeft: isMe ? `5px solid ${theme.palette.secondary.light}` : '1px solid transparent',
+          border: isMe ? `2px solid ${theme.palette.secondary.light}` : '1px solid transparent',
         }}
       >
-        {sessionUser.state && sessionUser.state !== SessionUserStateEnum.Unknown && (
-          <Box
-            sx={{
-              background: STATE_COLORS_BG[sessionUser.state],
-              color: STATE_COLORS_FG[sessionUser.state],
-              position: 'absolute',
-              fontFamily: fontFamilies.robotoMono,
-              textTransform: 'uppercase',
-              fontSize: '0.6rem',
-              fontWeight: 'bold',
-              borderRadius: '0 0 0 0.2rem',
-              px: 0.5,
-              top: 0,
-              right: 0,
-            }}
-            onClick={(e) => {
-              if (!scoutingFind) return
-              e.stopPropagation()
-              e.preventDefault()
-              navigate &&
-                navigate(
-                  makeSessionUrls({ sessionId: scoutingFind.sessionId, scoutingFindId: scoutingFind.scoutingFindId })
-                )
-            }}
-          >
-            <Stack direction="row" spacing={1}>
-              {stateObjects.map((it, idx) => (
-                <Box key={`stat$-${idx}`}>{it}</Box>
-              ))}
-            </Stack>
-          </Box>
-        )}
+        <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
         <ListItemAvatar>
           <UserAvatar
             size="small"
@@ -199,7 +187,7 @@ export const SoloActive: React.FC<SoloActiveProps> = ({ sessionUser, openContext
           }
         />
         <ListItemSecondaryAction>
-          {sessionUser.loadout && (
+          {sessionUser.loadout && !isCrewDisplay && (
             <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
               <IconButton
                 color="primary"

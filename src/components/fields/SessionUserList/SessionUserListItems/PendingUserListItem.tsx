@@ -15,12 +15,18 @@ import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
 
-export interface SoloInnactiveProps {
+export interface PendingUserListItemProps {
   pendingUser: PendingUser
+  // Crew gets a smaller row and less info
+  isCrewDisplay?: boolean
   openContextMenu: (e: HTMLElement) => void
 }
 
-export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ pendingUser, openContextMenu }) => {
+export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
+  pendingUser,
+  isCrewDisplay,
+  openContextMenu,
+}) => {
   const theme = useTheme()
   const { openPendingUserModal, myUserProfile } = React.useContext(SessionContext)
   useEffect(() => {
@@ -44,6 +50,8 @@ export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ pendingUser, openC
 
   return (
     <ListItem
+      dense={isCrewDisplay}
+      disableGutters={isCrewDisplay}
       onContextMenu={(e) => {
         e.preventDefault()
         openContextMenu(e.currentTarget)
@@ -80,7 +88,7 @@ export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ pendingUser, openC
           component: 'div',
         }}
         secondary={
-          <Stack direction="row" spacing={1}>
+          !isCrewDisplay ? (
             <Typography
               sx={{
                 fontFamily: fontFamilies.robotoMono,
@@ -91,7 +99,19 @@ export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ pendingUser, openC
             >
               Pending User
             </Typography>
-          </Stack>
+          ) : (
+            <Typography
+              sx={{
+                color: theme.palette.info.dark,
+                textTransform: 'uppercase',
+                fontSize: '0.6rem',
+                fontWeight: 'bold',
+                fontFamily: fontFamilies.robotoMono,
+              }}
+            >
+              Crew (Pending User)
+            </Typography>
+          )
         }
       />
       <ListItemSecondaryAction>

@@ -2,8 +2,8 @@ import React from 'react'
 import { List } from '@mui/material'
 import { PendingUser, SessionUser } from '@regolithco/common'
 import { SessionContext } from '../../../context/session.context'
-import { SoloInnactive } from './SessionUserListItems/SoloInnactive'
-import { SoloActive } from './SessionUserListItems/SoloActive'
+import { PendingUserListItem } from './SessionUserListItems/PendingUserListItem'
+import { ActiveUserListItem } from './SessionUserListItems/ActiveUserListItem'
 
 export interface SessionUserListProps {
   openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
@@ -50,13 +50,13 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
     >
       {scNameList.map(([, uType, uBj], idx) =>
         uType === 'Innactive' ? (
-          <SoloInnactive
+          <PendingUserListItem
             key={`user-${idx}`}
             pendingUser={uBj as PendingUser}
             openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
           />
         ) : (
-          <SoloActive
+          <ActiveUserListItem
             key={`user-${idx}`}
             sessionUser={uBj as SessionUser}
             openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
