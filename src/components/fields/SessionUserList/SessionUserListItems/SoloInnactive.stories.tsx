@@ -4,7 +4,7 @@ import { StoryFn, Meta } from '@storybook/react'
 import { SoloActive as SoloInnactiveComponent } from './SoloActive'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
 import { List, Typography } from '@mui/material'
-import { SoloInnactive, SoloInnactiveProps } from './SoloInnactive'
+import { SoloInnactive as SoloInnactiveC, SoloInnactiveProps } from './SoloInnactive'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
 
 export default {
@@ -33,15 +33,15 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
         ...contextProps,
       }}
     >
-      <Typography variant="h6">Innactive Users</Typography>
+      <Typography variant="h6">OPendi Users</Typography>
       <List sx={{ maxWidth: 400, border: '1px solid blue' }}>
-        <SoloInnactive
-          innactiveUser={{ scName: 'userA', __typename: 'InnactiveUser' }}
+        <SoloInnactiveC
+          pendingUser={{ scName: 'userA', __typename: 'PendingUser' }}
           openContextMenu={(el: HTMLElement) => console.log('openContextMenu', el)}
           {...componentProps}
         />
-        <SoloInnactive
-          innactiveUser={{ scName: 'userB_Friend', __typename: 'InnactiveUser' }}
+        <SoloInnactiveC
+          pendingUser={{ scName: 'userB_Friend', __typename: 'PendingUser' }}
           openContextMenu={(el: HTMLElement) => console.log('openContextMenu', el)}
           {...componentProps}
         />
@@ -50,8 +50,8 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
   )
 }
 
-export const ActiveUser = Template.bind({})
-ActiveUser.args = {
+export const SoloInnactive = Template.bind({})
+SoloInnactive.args = {
   componentProps: {},
   contextProps: {},
 }

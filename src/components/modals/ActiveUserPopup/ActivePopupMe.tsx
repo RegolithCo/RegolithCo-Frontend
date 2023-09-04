@@ -13,12 +13,12 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { User, SessionUserStateEnum, lookups } from '@regolithco/common'
+import { User, SessionUserStateEnum, lookups, SessionUser } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
-import { Cancel, RocketLaunch } from '@mui/icons-material'
+import { Cancel, Logout } from '@mui/icons-material'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { LoadoutSelect } from '../../fields/LoadoutSelect'
 import { SessionContext } from '../../../context/session.context'
@@ -31,11 +31,13 @@ export interface ActivePopupMeProps {
 
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
-  const { mySessionUser, updateSessionUser, myUserProfile } = React.useContext(SessionContext)
-
-  const vehicle = mySessionUser.vehicleCode
-    ? lookups.shipLookups.find((s) => s.code === mySessionUser.vehicleCode)
+  const { mySessionUser, updateMySessionUser, myUserProfile, captains } = React.useContext(SessionContext)
+  const myCaptain: SessionUser | null = mySessionUser.captainId
+    ? captains.find((c) => c.ownerId === mySessionUser.captainId) || null
     : null
+
+  const vehicleCode = myCaptain?.vehicleCode || mySessionUser.vehicleCode
+  const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
   return (
     <Dialog
       open={open}
@@ -74,13 +76,20 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           <Typography variant="caption">(You)</Typography>
         </Stack>
         <Stack direction="row" spacing={2}>
-          <Typography>last session activity {dayjs(mySessionUser.updatedAt).fromNow()}</Typography>
+          <Typography>last session activity: {dayjs(mySessionUser.updatedAt).fromNow()}</Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>
         <Box>
           <Typography variant="overline" color="primary" component="div">
-            Your Status: {mySessionUser.state}
+            Your Status: <strong>{mySessionUser.state}</strong>{' '}
+            {mySessionUser.captainId ? (
+              <span>
+                on <strong>{myCaptain?.owner?.scName}'s</strong> crew
+              </span>
+            ) : (
+              ''
+            )}
           </Typography>
           <ToggleButtonGroup
             value={mySessionUser.state}
@@ -89,7 +98,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             size="small"
             onChange={(e, state) => {
               if (!state) return
-              updateSessionUser({
+              updateMySessionUser({
                 isPilot: mySessionUser.isPilot,
                 state: state as SessionUserStateEnum,
               })
@@ -117,60 +126,90 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           </Typography>
         </Box>
 
-        <Typography>{mySessionUser.isPilot ? 'Pilot' : 'Crew'}</Typography>
         <Box>
           <Typography variant="overline" color="primary" component="div">
             Current Vehicle
           </Typography>
-          <VehicleChooser
-            vehicle={vehicle?.code}
-            onChange={(vehicle) => {
-              updateSessionUser({
-                isPilot: true,
-                vehicleCode: vehicle?.code,
-              })
-            }}
-          />
+
+          {!myCaptain ? (
+            <VehicleChooser
+              vehicle={vehicle?.code}
+              onChange={(vehicle) => {
+                updateMySessionUser({
+                  isPilot: true,
+                  vehicleCode: vehicle?.code,
+                })
+              }}
+            />
+          ) : (
+            <Typography variant="caption" color="text.secondary">
+              {vehicle ? (
+                <>
+                  <strong>{myCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
+                  {vehicle?.miningHold || vehicle?.cargo} SCU)
+                </>
+              ) : (
+                <>
+                  <strong>{myCaptain.owner?.scName}'s</strong> does not have a vehicle selected.
+                </>
+              )}
+            </Typography>
+          )}
         </Box>
 
         <Box>
           <Typography variant="overline" color="primary" component="div">
             Current Vehicle Loadout
           </Typography>
-          <LoadoutSelect
-            loadouts={myUserProfile.loadouts}
-            sessionUser={mySessionUser}
-            disabled={Boolean(!vehicle || !vehicle.miningHold || vehicle.miningHold < 20)}
-            onChange={(loadoutId) => {
-              updateSessionUser({
-                loadoutId,
-              })
-            }}
-          />
+          {!myCaptain && (
+            <LoadoutSelect
+              loadouts={myUserProfile.loadouts}
+              sessionUser={mySessionUser}
+              disabled={Boolean(!vehicle || !vehicle.miningHold || vehicle.miningHold < 20)}
+              onChange={(loadoutId) => {
+                updateMySessionUser({
+                  loadoutId,
+                })
+              }}
+            />
+          )}
           <Typography variant="caption" color="text.secondary">
-            You can create a save named loadouts in the loadout calculator tool.
+            {!myCaptain
+              ? 'You can create a save named loadouts in the loadout calculator tool.'
+              : 'Not available to crew members.'}
           </Typography>
         </Box>
 
-        {/* Either a list of MY Crew (if there are any) or specify whose crew I am on */}
-        <Typography>{mySessionUser.captainId ? `Crew of: ${mySessionUser.captainId}` : 'No crew'}</Typography>
+        {myCaptain && (
+          <Box>
+            <Typography variant="overline" color="primary" component="div">
+              Actions
+            </Typography>
+            <ButtonGroup variant="contained" color="error" aria-label="contained primary button group" fullWidth>
+              <Button
+                startIcon={<Logout />}
+                onClick={() => {
+                  updateMySessionUser({
+                    captainId: null,
+                  })
+                }}
+              >
+                Leave {myCaptain.owner?.scName}'s Crew
+              </Button>
 
-        <Typography variant="overline" color="primary" component="div">
-          Actions
-        </Typography>
-        <ButtonGroup variant="contained" color="error" aria-label="contained primary button group">
-          {mySessionUser.captainId && <Button startIcon={<RocketLaunch />}>Leave USERNAME's Crew</Button>}
-          {mySessionUser.ownerId !== mySessionUser.ownerId && (
-            <Button color="error" startIcon={<Cancel />}>
-              Leave Session
-            </Button>
-          )}
-        </ButtonGroup>
+              {mySessionUser.ownerId !== mySessionUser.ownerId && (
+                <Button color="error" startIcon={<Cancel />}>
+                  Leave Session
+                </Button>
+              )}
+            </ButtonGroup>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <div style={{ flexGrow: 1 }} />
-        <Button color="primary" onClick={onClose}>
-          Ok
+        <Button color="info" onClick={onClose}>
+          Dismiss
         </Button>
       </DialogActions>
     </Dialog>

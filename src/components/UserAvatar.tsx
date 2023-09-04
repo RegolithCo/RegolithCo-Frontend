@@ -2,7 +2,7 @@ import * as React from 'react'
 import Avatar from '@mui/material/Avatar'
 import { Badge, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
 import { Engineering, Error, Image, PeopleAlt, Person, Verified } from '@mui/icons-material'
-import { makeAvatar, User, UserProfile, UserStateEnum } from '@regolithco/common'
+import { PendingUser, makeAvatar, User, UserProfile, UserStateEnum } from '@regolithco/common'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   allbadge: {
@@ -58,6 +58,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export interface UserAvatarProps {
   user?: User | UserProfile
+  pendingUser?: PendingUser
   isFriend?: boolean
   error?: boolean
   sessionOwner?: boolean
@@ -65,11 +66,21 @@ export interface UserAvatarProps {
   size: 'small' | 'medium' | 'large' | 'xlarge'
 }
 
-export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessionOwner, isFriend, hideTooltip }) => {
-  const myAvatar = makeAvatar(user?.avatarUrl as string)
+export const UserAvatar: React.FC<UserAvatarProps> = ({
+  size,
+  user,
+  pendingUser,
+  error,
+  sessionOwner,
+  isFriend,
+  hideTooltip,
+}) => {
+  const myAvatar = user
+    ? makeAvatar(user?.avatarUrl as string)
+    : `${process.env.PUBLIC_URL}/images/avatars/PendingUser.jpg`
+  const isInnactive = !user && pendingUser
   const theme = useTheme()
   const styles = stylesThunk(theme)
-
   const badgeStyle = {
     ...styles.allbadge,
     ...(styles[`${size}Badge`] || {}),
@@ -80,8 +91,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessi
     ...(styles[`${size}Avatar`] || {}),
   }
 
-  const tooltipText: string[] = [user?.scName as string]
-  tooltipText.push(user?.state === UserStateEnum.Verified ? 'Verified User' : 'Unverified User')
+  const scName = user?.scName || pendingUser?.scName || 'USER'
+  const tooltipText: string[] = [scName]
+  if (user) tooltipText.push(user?.state === UserStateEnum.Verified ? 'Verified User' : 'Unverified User')
+  else tooltipText.push('Pending User')
   if (sessionOwner) {
     tooltipText.push('Session Owner')
   }
@@ -115,15 +128,15 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ size, user, error, sessi
         >
           <Tooltip title={hideTooltip ? '' : tooltipText.join(' - ')} placement="bottom" arrow>
             <Avatar
-              alt={user?.scName}
+              alt={scName}
               src={myAvatar}
               imgProps={{ referrerPolicy: 'no-referrer' }}
               color="secondary"
               sx={{
                 ...avatarStyle,
+                border: isInnactive ? '3px solid #193671' : '1px solid',
                 background: theme.palette.secondary.main,
                 color: theme.palette.secondary.contrastText,
-                border: '1px solid',
               }}
             >
               {/* Fallbacks */}

@@ -1,15 +1,15 @@
 import React from 'react'
 import { List } from '@mui/material'
-import { InnactiveUser, SessionUser } from '@regolithco/common'
+import { PendingUser, SessionUser } from '@regolithco/common'
 import { SessionContext } from '../../../context/session.context'
 import { SoloInnactive } from './SessionUserListItems/SoloInnactive'
 import { SoloActive } from './SessionUserListItems/SoloActive'
 
 export interface SessionUserListProps {
-  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, innactiveUser?: InnactiveUser) => void
+  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
 }
 
-type SortedUserList = [scName: string, uType: 'Active' | 'Innactive', userObj: InnactiveUser | SessionUser][]
+type SortedUserList = [scName: string, uType: 'Active' | 'Innactive', userObj: PendingUser | SessionUser][]
 
 export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMenu }) => {
   const [menuOpen, setMenuOpen] = React.useState<{ el: HTMLElement; userId: string } | null>(null)
@@ -20,7 +20,7 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
   const scNameList: SortedUserList = React.useMemo(() => {
     const retVal: SortedUserList = [
       ...singleActives.map((su) => [su.owner?.scName, 'Active', su] as [string, 'Active', SessionUser]),
-      ...session.mentionedUsers.map((iu) => [iu.scName, 'Innactive', iu] as [string, 'Innactive', InnactiveUser]),
+      ...session.mentionedUsers.map((iu) => [iu.scName, 'Innactive', iu] as [string, 'Innactive', PendingUser]),
     ]
     // Sorting the user list so that important stuff is at the top
     scNameList.sort((a, b) => {
@@ -52,8 +52,8 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
         uType === 'Innactive' ? (
           <SoloInnactive
             key={`user-${idx}`}
-            innactiveUser={uBj as InnactiveUser}
-            openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as InnactiveUser)}
+            pendingUser={uBj as PendingUser}
+            openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
           />
         ) : (
           <SoloActive

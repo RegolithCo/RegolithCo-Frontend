@@ -9,7 +9,7 @@ import {
   createUserSuggest,
   crewHierarchyCalc,
   CrewShareInput,
-  InnactiveUser,
+  PendingUser,
   MiningLoadout,
   ScoutingFind,
   ScoutingFindTypeEnum,
@@ -45,7 +45,7 @@ import { downloadFile } from '../../../lib/utils'
 import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { ActivePopupMe } from '../../modals/ActiveUserPopup/ActivePopupMe'
 import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
-import { InnactiveUserPopup } from '../../modals/ActiveUserPopup/InnactiveUserPopup'
+import { PendingUserPopup } from '../../modals/ActiveUserPopup/PendingUserPopup'
 
 export const SessionPageContainer2: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -58,7 +58,7 @@ export const SessionPageContainer2: React.FC = () => {
   const [activeModal, setActiveModal] = React.useState<DialogEnum | null>(null)
   const [activeLoadout, setActiveLoadout] = React.useState<MiningLoadout | null>(null)
   const [activeUserModalId, setActiveUserModalId] = React.useState<string | null>(null)
-  const [innactiveUserModalScName, setInnactiveUserModalScName] = React.useState<string | null>(null)
+  const [pendingUserModalScName, setPendingUserModalScName] = React.useState<string | null>(null)
 
   const sessionQueries = useSessions(sessionId as string)
   const workOrderQry = useWorkOrders(sessionId as string, modalOrderId as string)
@@ -84,8 +84,8 @@ export const SessionPageContainer2: React.FC = () => {
     ({ owner }) => owner?.userId === activeUserModalId
   )
 
-  const sessionUserModalInnactiveUser: InnactiveUser | undefined = session.mentionedUsers?.find(
-    ({ scName }) => scName === innactiveUserModalScName
+  const sessionUserModalPendingUser: PendingUser | undefined = session.mentionedUsers?.find(
+    ({ scName }) => scName === pendingUserModalScName
   )
 
   const userSuggest: UserSuggest = React.useMemo(
@@ -110,7 +110,7 @@ export const SessionPageContainer2: React.FC = () => {
       },
       { singleActives: [], captains: [] } as { singleActives: SessionUser[]; captains: SessionUser[] }
     )
-    const singleInnactives: InnactiveUser[] = (session.mentionedUsers || []).filter(
+    const singleInnactives: PendingUser[] = (session.mentionedUsers || []).filter(
       ({ captainId }) => !captainId || !crewHierarchy[captainId]
     )
     return { crewHierarchy, singleActives, captains, singleInnactives }
@@ -120,8 +120,8 @@ export const SessionPageContainer2: React.FC = () => {
     setActiveUserModalId(userId)
     setActiveModal(DialogEnum.USER_STATUS)
   }
-  const openInnactiveUserModal = (scName: string | null) => {
-    setInnactiveUserModalScName(scName)
+  const openPendingUserModal = (scName: string | null) => {
+    setPendingUserModalScName(scName)
     setActiveModal(DialogEnum.USER_STATUS)
   }
   const openLoadoutModal = (loadout: MiningLoadout | null) => {
@@ -262,9 +262,12 @@ export const SessionPageContainer2: React.FC = () => {
           deleteSession: sessionQueries.deleteSession,
           // Session User Stuff
           setActiveModal,
-          updateSessionUser: sessionQueries.updateSessionUser,
+          updateMySessionUser: sessionQueries.updateMySessionUser,
+          updateSessionUserCaptain: sessionQueries.updateSessionUserCaptain,
+          updatePendingUserCaptain: sessionQueries.updatePendingUserCaptain,
+
           openActiveUserModal,
-          openInnactiveUserModal,
+          openPendingUserModal,
           openLoadoutModal,
           openScoutingModal,
           openWorkOrderModal,
@@ -492,12 +495,12 @@ export const SessionPageContainer2: React.FC = () => {
         />
       )}
 
-      {/* Innactive User Popup Modal */}
-      {sessionUserModalInnactiveUser && (
-        <InnactiveUserPopup
+      {/* Pending User Popup Modal */}
+      {sessionUserModalPendingUser && (
+        <PendingUserPopup
           open={activeModal === DialogEnum.USER_STATUS}
           onClose={() => setActiveModal(null)}
-          innactiveUser={sessionUserModalInnactiveUser}
+          pendingUser={sessionUserModalPendingUser}
         />
       )}
     </>

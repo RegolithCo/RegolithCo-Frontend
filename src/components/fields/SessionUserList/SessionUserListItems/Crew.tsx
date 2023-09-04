@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import {
   getSessionUserStateName,
-  InnactiveUser,
+  PendingUser,
   lookups,
   MiningLoadout,
   SessionUser,
@@ -28,7 +28,7 @@ import { ModuleIcon } from '../../../../icons'
 
 export interface CrewProps {
   captain: SessionUser
-  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, innactiveUser?: InnactiveUser) => void
+  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
 }
 
 export const Crew: React.FC<CrewProps> = ({ captain, openContextMenu }) => {

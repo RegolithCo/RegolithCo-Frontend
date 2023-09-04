@@ -12,13 +12,13 @@ import {
   Tooltip,
   useTheme,
 } from '@mui/material'
-import { InnactiveUser, UserSuggest, validateSCName, VerifiedUserLookup } from '@regolithco/common'
+import { PendingUser, UserSuggest, validateSCName, VerifiedUserLookup } from '@regolithco/common'
 import { Cancel, PersonAdd } from '@mui/icons-material'
 import { UserListItem } from './UserListItem'
 
 export interface MentionedUserListProps {
   verifiedUsers: VerifiedUserLookup
-  mentionedUsers: InnactiveUser[]
+  mentionedUsers: PendingUser[]
   myFriends: string[]
   useAutocomplete?: boolean
   addToList?: (friendName: string) => void

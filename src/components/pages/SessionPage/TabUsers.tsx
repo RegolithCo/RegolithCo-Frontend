@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { InnactiveUser, SessionStateEnum, SessionUser } from '@regolithco/common'
+import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
 import { Box, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { ExpandMore, HelpOutline } from '@mui/icons-material'
@@ -72,7 +72,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
   const [userContexMenu, setUserContextMenu] = React.useState<{
     el: HTMLElement
     sessionUser?: SessionUser
-    innactiveUser?: InnactiveUser
+    pendingUser?: PendingUser
   } | null>(null)
 
   return (
@@ -100,8 +100,8 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <CrewUserList
-              openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: InnactiveUser) =>
-                setUserContextMenu({ el, sessionUser: su, innactiveUser: iu })
+              openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
+                setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
               }
             />
           </AccordionDetails>
@@ -115,8 +115,8 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
         </AccordionSummary>
         <AccordionDetails sx={styles.drawerAccordionDetails}>
           <SessionUserList
-            openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: InnactiveUser) =>
-              setUserContextMenu({ el, sessionUser: su, innactiveUser: iu })
+            openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
+              setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
             }
           />
         </AccordionDetails>
@@ -170,7 +170,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           anchorEl={userContexMenu?.el}
           onClose={() => setUserContextMenu(null)}
           sessionUser={userContexMenu?.sessionUser}
-          innactiveUser={userContexMenu?.innactiveUser}
+          pendingUser={userContexMenu?.pendingUser}
         />
       )}
     </Box>

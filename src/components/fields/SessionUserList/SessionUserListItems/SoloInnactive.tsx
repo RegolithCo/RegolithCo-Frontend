@@ -8,19 +8,21 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { InnactiveUser } from '@regolithco/common'
+import { PendingUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
 import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
+import { UserAvatar } from '../../../UserAvatar'
+import { fontFamilies } from '../../../../theme'
 
 export interface SoloInnactiveProps {
-  innactiveUser: InnactiveUser
+  pendingUser: PendingUser
   openContextMenu: (e: HTMLElement) => void
 }
 
-export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ innactiveUser, openContextMenu }) => {
+export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ pendingUser, openContextMenu }) => {
   const theme = useTheme()
-  const { openInnactiveUserModal } = React.useContext(SessionContext)
+  const { openPendingUserModal, myUserProfile } = React.useContext(SessionContext)
   useEffect(() => {
     // define a custom handler function
     // for the contextmenu event
@@ -48,17 +50,22 @@ export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ innactiveUser, ope
       }}
       onDoubleClick={(e) => {
         e.preventDefault()
-        openInnactiveUserModal(innactiveUser.scName)
+        openPendingUserModal(pendingUser.scName)
       }}
       onClick={() => {
-        openInnactiveUserModal(innactiveUser.scName)
+        openPendingUserModal(pendingUser.scName)
       }}
       sx={{
+        background: '#15163455',
         cursor: 'pointer',
       }}
     >
       <ListItemAvatar>
-        {/* <UserAvatar size="small" user={user} isFriend={friends?.includes(user?.scName as string)} /> */}
+        <UserAvatar
+          size="small"
+          pendingUser={pendingUser}
+          isFriend={myUserProfile.friends?.includes(pendingUser?.scName as string)}
+        />
       </ListItemAvatar>
 
       <ListItemText
@@ -68,13 +75,22 @@ export const SoloInnactive: React.FC<SoloInnactiveProps> = ({ innactiveUser, ope
           },
           //
         }}
-        primary={innactiveUser.scName}
+        primary={pendingUser.scName}
         secondaryTypographyProps={{
           component: 'div',
         }}
         secondary={
           <Stack direction="row" spacing={1}>
-            <Typography>Innactive User</Typography>
+            <Typography
+              sx={{
+                fontFamily: fontFamilies.robotoMono,
+                color: theme.palette.info.dark,
+                fontWeight: 'bold',
+                fontSize: '0.7rem',
+              }}
+            >
+              Pending User
+            </Typography>
           </Stack>
         }
       />

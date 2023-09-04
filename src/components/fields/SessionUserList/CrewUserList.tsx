@@ -1,12 +1,12 @@
 import React from 'react'
 import { List } from '@mui/material'
-import { InnactiveUser, SessionUser } from '@regolithco/common'
+import { PendingUser, SessionUser } from '@regolithco/common'
 import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../context/session.context'
 import { Crew } from './SessionUserListItems/Crew'
 
 export interface CrewUserListProps {
-  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, innactiveUser?: InnactiveUser) => void
+  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
 }
 
 export const CrewUserList: React.FC<CrewUserListProps> = ({ openContextMenu }) => {

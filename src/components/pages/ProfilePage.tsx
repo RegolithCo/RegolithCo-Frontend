@@ -342,7 +342,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Box sx={styles.sectionBody}>
                 <MentionedUserList
                   verifiedUsers={verifiedFriends}
-                  mentionedUsers={userProfile.friends.map((f) => ({ scName: f, __typename: 'InnactiveUser' }))}
+                  mentionedUsers={userProfile.friends.map((f) => ({ scName: f, __typename: 'PendingUser' }))}
                   myFriends={userProfile.friends}
                   addToList={addFriend}
                   removeFriend={removeFriend}

@@ -14,6 +14,7 @@ export type ShipTypeEnum = ObjectValues<typeof ShipTypeEnum>
 export interface VehicleChooserProps {
   label?: string
   vehicle?: string
+  disabled?: boolean
   onChange: (vehicleCode: Vehicle | null) => void
   hide?: [ShipTypeEnum]
   show?: [ShipTypeEnum]
@@ -32,7 +33,15 @@ const NONEOPTION: Vehicle = {
   __typename: 'Vehicle',
 }
 
-export const VehicleChooser: React.FC<VehicleChooserProps> = ({ label, vehicle, onChange, hide, show, onlyCargo }) => {
+export const VehicleChooser: React.FC<VehicleChooserProps> = ({
+  label,
+  vehicle,
+  disabled,
+  onChange,
+  hide,
+  show,
+  onlyCargo,
+}) => {
   const theme = useTheme()
 
   if (hide && show) throw new Error('Cannot use both hide and show')
@@ -67,6 +76,7 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({ label, vehicle, 
     <Autocomplete
       id="shipChooser"
       value={currVal}
+      disabled={disabled}
       renderOption={(props, ship) => (
         <MenuItem
           {...props}
@@ -96,6 +106,7 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({ label, vehicle, 
       options={[NONEOPTION, ...sortedShips]}
       renderInput={(params) => <TextField {...params} label={label || 'Current Ship'} />}
       onChange={(event, option) => {
+        if (disabled) return
         if (option && option.code === NONEOPTION.code) return onChange(null)
         if (option && !sortedShips.find((ship) => ship.code === option.code)) {
           return onChange(null)

@@ -43,11 +43,6 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type InnactiveUserKeySpecifier = ('captainId' | 'scName' | InnactiveUserKeySpecifier)[];
-export type InnactiveUserFieldPolicy = {
-	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
-	scName?: FieldPolicy<any> | FieldReadFunction<any>
-};
 export type LookupDataKeySpecifier = ('CIG' | 'UEX' | LookupDataKeySpecifier)[];
 export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -67,7 +62,7 @@ export type MiningLoadoutFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateLoadout' | 'updateScoutingFind' | 'updateSession' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -94,8 +89,10 @@ export type MutationFieldPolicy = {
 	requestVerifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
 	setLookupData?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
+	updatePendingUserCaptain?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateSession?: FieldPolicy<any> | FieldReadFunction<any>,
+	updateSessionUserCaptain?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	upsertCrewShare?: FieldPolicy<any> | FieldReadFunction<any>,
 	upsertSessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -152,6 +149,11 @@ export type PaginatedWorkOrdersKeySpecifier = ('items' | 'nextToken' | Paginated
 export type PaginatedWorkOrdersFieldPolicy = {
 	items?: FieldPolicy<any> | FieldReadFunction<any>,
 	nextToken?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type PendingUserKeySpecifier = ('captainId' | 'scName' | PendingUserKeySpecifier)[];
+export type PendingUserFieldPolicy = {
+	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
+	scName?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
@@ -533,10 +535,6 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | CrewShareTemplateKeySpecifier | (() => undefined | CrewShareTemplateKeySpecifier),
 		fields?: CrewShareTemplateFieldPolicy,
 	},
-	InnactiveUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | InnactiveUserKeySpecifier | (() => undefined | InnactiveUserKeySpecifier),
-		fields?: InnactiveUserFieldPolicy,
-	},
 	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
 		fields?: LookupDataFieldPolicy,
@@ -576,6 +574,10 @@ export type StrictTypedTypePolicies = {
 	PaginatedWorkOrders?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PaginatedWorkOrdersKeySpecifier | (() => undefined | PaginatedWorkOrdersKeySpecifier),
 		fields?: PaginatedWorkOrdersFieldPolicy,
+	},
+	PendingUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PendingUserKeySpecifier | (() => undefined | PendingUserKeySpecifier),
+		fields?: PendingUserFieldPolicy,
 	},
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),

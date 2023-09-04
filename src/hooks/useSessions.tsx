@@ -20,6 +20,8 @@ import {
   useUpdateSessionMutation,
   useUpsertSessionUserMutation,
   useMarkCrewSharePaidMutation,
+  useUpdateSessionUserCaptainMutation,
+  useUpdatePendingUserCaptainMutation,
 } from '../schema'
 import {
   CrewShare,
@@ -28,7 +30,7 @@ import {
   destructureSettings,
   ErrorCode,
   GetSessionQuery,
-  InnactiveUser,
+  PendingUser,
   mergeDestructured,
   PaginatedScoutingFinds,
   PaginatedSessions,
@@ -76,7 +78,9 @@ type useSessionsReturn = {
   leaveSession: () => void
   onUpdateSession: (session: SessionInput, settings: DestructuredSettings) => void
   deleteSession: () => void
-  updateSessionUser: (sessionUser: SessionUserInput) => void
+  updateMySessionUser: (sessionUser: SessionUserInput) => void
+  updateSessionUserCaptain: (userId: string, newCaptainId: string | null) => void
+  updatePendingUserCaptain: (userId: string, newCaptainId: string | null) => void
   createWorkOrder: (workOrder: WorkOrder) => void
   createScoutingFind: (newFind: ScoutingFind) => void
   markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
@@ -284,6 +288,9 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
   })
   const upsertSessionUserMutation = useUpsertSessionUserMutation()
+  const updateSessionUserCaptainMutation = useUpdateSessionUserCaptainMutation()
+  const updatePendingUserCaptain = useUpdatePendingUserCaptainMutation()
+
   const leaveSessionMutation = useLeaveSessionMutation({
     variables: {
       sessionId: sessionId as string,
@@ -356,15 +363,15 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         scNames,
       },
       optimisticResponse: () => {
-        const newMentionedMembers: InnactiveUser[] = [
-          ...((sessionQry.data?.session?.mentionedUsers as InnactiveUser[]) || []),
+        const newMentionedMembers: PendingUser[] = [
+          ...((sessionQry.data?.session?.mentionedUsers as PendingUser[]) || []),
           ...scNames.map(
             (s) =>
               ({
                 scName: s,
                 captainId: null,
-                __typename: 'InnactiveUser',
-              } as InnactiveUser)
+                __typename: 'PendingUser',
+              } as PendingUser)
           ),
         ]
         newMentionedMembers.sort(({ scName: a }, { scName: b }) => a.toLowerCase().localeCompare(b.toLowerCase()))
@@ -451,7 +458,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         },
       })
     },
-    updateSessionUser: (sessionUser: SessionUserInput) => {
+    updateMySessionUser: (sessionUser: SessionUserInput) => {
       upsertSessionUserMutation[0]({
         variables: {
           sessionId: sessionId as string,
@@ -467,6 +474,55 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
               isPilot: typeof isPilot === 'boolean' ? isPilot : sessionUserQry.data?.sessionUser?.isPilot || true,
               state: state || sessionUserQry.data?.sessionUser?.state || SessionUserStateEnum.Unknown,
               ...retVal,
+            },
+            __typename: 'Mutation',
+          }
+        },
+      })
+    },
+    updateSessionUserCaptain: (userId: string, newCaptainId: string | null) => {
+      updateSessionUserCaptainMutation[0]({
+        variables: {
+          sessionId: sessionId as string,
+          userId,
+          newCaptainId,
+        },
+        optimisticResponse: () => {
+          const foundSessionUser = sessionQry.data?.session?.activeMembers?.items?.find(
+            (m) => m.ownerId === userId
+          ) as SessionUser
+          const { isPilot, ...retVal } = foundSessionUser
+          return {
+            updateSessionUserCaptain: {
+              captainId: newCaptainId,
+              isPilot: !newCaptainId,
+              ...retVal,
+            },
+            __typename: 'Mutation',
+          }
+        },
+      })
+    },
+    updatePendingUserCaptain: (scName: string, newCaptainId: string | null) => {
+      updatePendingUserCaptain[0]({
+        variables: {
+          sessionId: sessionId as string,
+          scName,
+          newCaptainId,
+        },
+        optimisticResponse: () => {
+          return {
+            updatePendingUserCaptain: {
+              ...(sessionQry.data?.session as Session),
+              mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).map((m) => {
+                if (m.scName === scName) {
+                  return {
+                    ...m,
+                    captainId: newCaptainId,
+                  }
+                }
+                return m
+              }),
             },
             __typename: 'Mutation',
           }

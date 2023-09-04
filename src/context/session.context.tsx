@@ -3,7 +3,7 @@ import {
   CrewHierarchy,
   CrewShare,
   DestructuredSettings,
-  InnactiveUser,
+  PendingUser,
   MiningLoadout,
   ScoutingFind,
   ScoutingFindTypeEnum,
@@ -64,13 +64,13 @@ export interface SessionContextType {
   crewHierarchy: CrewHierarchy
   singleActives: SessionUser[]
   captains: SessionUser[]
-  singleInnactives: InnactiveUser[]
+  singleInnactives: PendingUser[]
   scoutingAttendanceMap: Map<string, ScoutingFind>
 
   // User-related modals
   setActiveModal: (modal: DialogEnum | null) => void
   openActiveUserModal: (userId: string) => void
-  openInnactiveUserModal: (scName: string) => void
+  openPendingUserModal: (scName: string) => void
   openLoadoutModal: (loadout: MiningLoadout) => void
 
   createNewWorkOrder: (activity: ActivityEnum) => void
@@ -92,7 +92,10 @@ export interface SessionContextType {
   openScoutingModal: (scoutinfFindId: string) => void
 
   // Sessionuser
-  updateSessionUser: (sessionUser: SessionUserInput) => void
+  updateMySessionUser: (sessionUser: SessionUserInput) => void
+  updateSessionUserCaptain: (userId: string, newCaptainId: string | null) => void
+  updatePendingUserCaptain: (userId: string, newCaptainId: string | null) => void
+
   // CrewShares
   markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
 
@@ -110,9 +113,12 @@ export interface SessionContextType {
   leaveScoutingFind: (findId: string) => void
 }
 
-const notAvailable = (name: string) => () => {
-  console.log(`${name} not available in session context`)
-}
+const notAvailable =
+  (name: string) =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (...args: any) => {
+    console.log(`${name} not available in session context`, args)
+  }
 
 export const sessionContextDefault: SessionContextType = {
   session: {} as Session,
@@ -156,7 +162,10 @@ export const sessionContextDefault: SessionContextType = {
   openWorkOrderModal: notAvailable('openWorkOrderModal'),
   openScoutingModal: notAvailable('openScoutingModal'),
 
-  updateSessionUser: notAvailable('updateSessionUser'),
+  updateMySessionUser: notAvailable('updateSessionUser'),
+  updateSessionUserCaptain: notAvailable('updateSessionUserCaptain'),
+  updatePendingUserCaptain: notAvailable('updatePendingUserCaptain'),
+
   markCrewSharePaid: notAvailable('markCrewSharePaid'),
 
   createWorkOrder: notAvailable('createWorkOrder'),
@@ -172,7 +181,7 @@ export const sessionContextDefault: SessionContextType = {
 
   // For the session view
   openActiveUserModal: notAvailable('openUserModal'),
-  openInnactiveUserModal: notAvailable('openUserModal'),
+  openPendingUserModal: notAvailable('openUserModal'),
   openLoadoutModal: notAvailable('openLoadoutModal'),
 }
 
