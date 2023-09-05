@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
-import { Box, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
-import { ExpandMore, HelpOutline } from '@mui/icons-material'
+import { ExpandMore, GroupAdd, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { CrewUserList } from '../../fields/SessionUserList/CrewUserList'
 import { SessionUserList } from '../../fields/SessionUserList/SessionUserList'
@@ -66,7 +66,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 export const TabUsers: React.FC<TabUsersProps> = () => {
   const theme = useTheme()
   const { session, captains, singleActives } = React.useContext(SessionContext)
-  const isSessionActive = session.state === SessionStateEnum.Active
+  const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
 
   const [userContexMenu, setUserContextMenu] = React.useState<{
@@ -78,20 +78,35 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
   return (
     <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
       <Toolbar
+        disableGutters
         sx={{
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.secondary.contrastText,
           '&.MuiToolbar-root': {
-            px: 2,
-            fontSize: `1.2rem`,
             minHeight: 50,
-            textTransform: 'uppercase',
-            fontFamily: fontFamilies.robotoMono,
-            fontWeight: 'bold',
+            pl: 1,
+            pr: 1,
           },
         }}
       >
-        Session Members ({(session.activeMembers?.items?.length || 0) + session.mentionedUsers.length})
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ width: '100%' }}>
+          <Typography
+            sx={{
+              fontSize: `1rem`,
+              textTransform: 'uppercase',
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+            }}
+          >
+            Session Members ({(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length})
+          </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Tooltip title="Add a pending user to this session" placement="right" arrow>
+            <IconButton color="inherit" size="small">
+              <GroupAdd />
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Toolbar>
       {captains.length > 0 && (
         <Accordion defaultExpanded={true} disableGutters>
@@ -107,62 +122,28 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           </AccordionDetails>
         </Accordion>
       )}
-      <Accordion defaultExpanded={true} disableGutters>
-        <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
-          <Typography>
-            {captains.length === 0 ? 'Active Users' : 'Solo Active'} ({singleActives.length})
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={styles.drawerAccordionDetails}>
-          <SessionUserList
-            openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
-              setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
-            }
-          />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion defaultExpanded={true} disableGutters>
-        <AccordionSummary
-          expandIcon={<ExpandMore />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          sx={styles.drawerAccordionSummarySecondary}
-        >
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
-            <Typography sx={{ flexGrow: 1 }}>
-              {captains.length === 0 ? 'Innactive Users' : 'Solo Innactive'} ({session.mentionedUsers.length})
-            </Typography>
-            <Tooltip
-              title={
-                <>
-                  <Typography paragraph variant="caption">
-                    "Mentioned" users haven't joined the session yet (Or they don't want to). But mentioning them means
-                    you can still track what you owe them.
-                  </Typography>
-                  <Typography paragraph variant="caption">
-                    When users with the same name log in they become "Session Members".
-                  </Typography>
-                  <Typography paragraph variant="caption">
-                    If you have enabled the session setting <strong>"Require joining users to be "Mentioned"</strong>{' '}
-                    then only users that are mentioned can join this session, even if they have the share link.
-                  </Typography>
-                </>
+      {captains.length > 0 && (
+        <Accordion defaultExpanded={true} disableGutters>
+          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
+            <Typography>Solo Players ({singleActives.length})</Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={styles.drawerAccordionDetails}>
+            <SessionUserList
+              openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
+                setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
               }
-            >
-              <HelpOutline />
-            </Tooltip>
-          </Stack>
-        </AccordionSummary>
-        <AccordionDetails sx={styles.drawerAccordionDetails}>
-          {/* <MentionedUserList
-              mentionedUsers={singleInnactives}
-              verifiedUsers={verifiedMentionedUsers}
-              useAutocomplete
-              addToList={isActive ? (scName: string) => addSessionMentions([scName]) : undefined}
-              removeFromList={isActive ? (scName: string) => removeSessionMentions([scName]) : undefined}
-            /> */}
-        </AccordionDetails>
-      </Accordion>
+            />
+          </AccordionDetails>
+        </Accordion>
+      )}
+
+      {captains.length === 0 && (
+        <SessionUserList
+          openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
+            setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
+          }
+        />
+      )}
 
       {!!userContexMenu && (
         <SessionUserContextMenu

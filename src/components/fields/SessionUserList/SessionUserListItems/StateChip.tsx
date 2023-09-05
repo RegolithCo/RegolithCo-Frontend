@@ -8,6 +8,7 @@ import { fontFamilies } from '../../../../theme'
 
 export interface StateChipProps {
   userState?: SessionUserStateEnum
+  vehicleName?: string
   scoutingFind?: ScoutingFind
 }
 
@@ -20,7 +21,7 @@ export const stateColorsBGThunk = (theme: Theme): Record<SessionUserStateEnum, s
   [SessionUserStateEnum.Travelling]: theme.palette.info.light,
 })
 export const stateColorsFGThunk = (theme: Theme): Record<SessionUserStateEnum, string> => ({
-  [SessionUserStateEnum.Unknown]: '#000000',
+  [SessionUserStateEnum.Unknown]: '#FFFFFF',
   [SessionUserStateEnum.Afk]: '#000000',
   [SessionUserStateEnum.OnSite]: theme.palette.info.contrastText,
   [SessionUserStateEnum.RefineryRun]: theme.palette.secondary.contrastText,
@@ -28,14 +29,17 @@ export const stateColorsFGThunk = (theme: Theme): Record<SessionUserStateEnum, s
   [SessionUserStateEnum.Travelling]: theme.palette.info.contrastText,
 })
 
-export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind }) => {
+export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind, vehicleName }) => {
   const theme = useTheme()
   const colorsBg = stateColorsBGThunk(theme)
   const colorsFg = stateColorsFGThunk(theme)
   const { navigate } = React.useContext(SessionContext)
   const stateObjects = []
 
+  const finalVehicleName = vehicleName && vehicleName.length > 16 ? vehicleName.substring(0, 16) + '...' : vehicleName
+
   if (userState) {
+    if (vehicleName) stateObjects.push(finalVehicleName)
     if (scoutingFind) {
       stateObjects.push(
         <>
@@ -51,19 +55,21 @@ export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind })
     }
   }
 
-  if (!userState || userState === SessionUserStateEnum.Unknown) return null
+  if (!vehicleName && (!userState || userState === SessionUserStateEnum.Unknown)) return null
+  const finalUserState = userState || SessionUserStateEnum.Unknown
   return (
     <Box
       sx={{
-        background: colorsBg[userState],
-        color: colorsFg[userState],
+        background: colorsBg[finalUserState],
+        color: colorsFg[finalUserState],
         position: 'absolute',
         fontFamily: fontFamilies.robotoMono,
         textTransform: 'uppercase',
         fontSize: '0.6rem',
         fontWeight: 'bold',
-        borderRadius: '0 0 0 0.2rem',
+        borderRadius: '0 0 0 0.4rem',
         px: 0.5,
+        pl: 1,
         top: 0,
         right: 0,
       }}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { List } from '@mui/material'
+import { Divider, List } from '@mui/material'
 import { PendingUser, SessionUser } from '@regolithco/common'
 import { SessionContext } from '../../../context/session.context'
 import { PendingUserListItem } from './SessionUserListItems/PendingUserListItem'
@@ -12,7 +12,6 @@ export interface SessionUserListProps {
 type SortedUserList = [scName: string, uType: 'Active' | 'Innactive', userObj: PendingUser | SessionUser][]
 
 export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMenu }) => {
-  const [menuOpen, setMenuOpen] = React.useState<{ el: HTMLElement; userId: string } | null>(null)
   const { singleActives, session, myUserProfile } = React.useContext(SessionContext)
   const meId = myUserProfile.userId
 
@@ -20,13 +19,15 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
   const scNameList: SortedUserList = React.useMemo(() => {
     const retVal: SortedUserList = [
       ...singleActives.map((su) => [su.owner?.scName, 'Active', su] as [string, 'Active', SessionUser]),
-      ...session.mentionedUsers.map((iu) => [iu.scName, 'Innactive', iu] as [string, 'Innactive', PendingUser]),
+      ...(session?.mentionedUsers || []).map(
+        (iu) => [iu.scName, 'Innactive', iu] as [string, 'Innactive', PendingUser]
+      ),
     ]
     // Sorting the user list so that important stuff is at the top
-    scNameList.sort((a, b) => {
+    retVal.sort((a, b) => {
       if (a[1] === 'Active') {
         // session owner gets the top spot
-        if ((a[2] as SessionUser).owner?.userId === session.ownerId) return -1
+        if ((a[2] as SessionUser).owner?.userId === session?.ownerId) return -1
         // I get the second spot
         else if ((a[2] as SessionUser).owner?.userId === meId) return -1
       }
@@ -35,8 +36,6 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
     })
     return retVal
   }, [singleActives, session, meId])
-
-  const menuOpenUser = singleActives.find((su) => su.owner?.userId === menuOpen?.userId) as SessionUser | undefined
 
   return (
     <List
@@ -50,17 +49,23 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
     >
       {scNameList.map(([, uType, uBj], idx) =>
         uType === 'Innactive' ? (
-          <PendingUserListItem
-            key={`user-${idx}`}
-            pendingUser={uBj as PendingUser}
-            openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
-          />
+          <>
+            <PendingUserListItem
+              key={`user-${idx}`}
+              pendingUser={uBj as PendingUser}
+              openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
+            />
+            <Divider />
+          </>
         ) : (
-          <ActiveUserListItem
-            key={`user-${idx}`}
-            sessionUser={uBj as SessionUser}
-            openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
-          />
+          <>
+            <ActiveUserListItem
+              key={`user-${idx}`}
+              sessionUser={uBj as SessionUser}
+              openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
+            />
+            <Divider />
+          </>
         )
       )}
       <div style={{ flexGrow: 1 }} />

@@ -44,7 +44,7 @@ export const SessionTabs = {
 export type SessionTabs = ObjectValues<typeof SessionTabs>
 
 export interface SessionContextType {
-  session: Session
+  session?: Session
   // Utility for finding out if I'm the leader etc.
   myUserProfile: UserProfile
   mySessionUser: SessionUser
@@ -121,7 +121,6 @@ const notAvailable =
   }
 
 export const sessionContextDefault: SessionContextType = {
-  session: {} as Session,
   mySessionUser: {} as SessionUser,
   myUserProfile: {} as UserProfile,
 

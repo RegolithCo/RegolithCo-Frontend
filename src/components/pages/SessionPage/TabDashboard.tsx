@@ -82,17 +82,17 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const styles = stylesThunk(theme)
   const { session, openWorkOrderModal, openScoutingModal, createNewWorkOrder, createNewScoutingFind } =
     React.useContext(SessionContext)
-  const isActive = session.state === SessionStateEnum.Active
+  const isActive = session?.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
 
-  const allScouts = session.scouting?.items || []
+  const allScouts = session?.scouting?.items || []
   const filteredScouts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
   filteredScouts.sort((a, b) => b.createdAt - a.createdAt)
 
-  const allWorkOrders = session.workOrders?.items || []
+  const allWorkOrders = session?.workOrders?.items || []
   const filteredWorkOrders = filterPaidWorkOrders
     ? allWorkOrders.filter(({ crewShares }) => crewShares?.some(({ state }) => !state))
     : [...allWorkOrders]
@@ -135,7 +135,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
           <WorkOrderAddFAB
             onClick={createNewWorkOrder}
-            sessionSettings={session.sessionSettings}
+            sessionSettings={session?.sessionSettings}
             fabProps={{
               disabled: !isActive,
             }}
@@ -201,7 +201,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           </Grid>
           <ScoutingAddFAB
             onClick={createNewScoutingFind}
-            sessionSettings={session.sessionSettings}
+            sessionSettings={session?.sessionSettings}
             fabProps={{
               disabled: !isActive,
             }}

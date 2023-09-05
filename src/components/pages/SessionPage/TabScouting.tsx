@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { ScoutingFindStateEnum, Session, SessionStateEnum, SessionUser, ScoutingFind } from '@regolithco/common'
+import { ScoutingFindStateEnum, SessionStateEnum } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import {
   Box,
@@ -16,7 +16,6 @@ import {
 } from '@mui/material'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { ClusterCard } from '../../cards/ClusterCard'
-import { newEmptyScoutingFind } from '../../../lib/newObjectFactories'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 
@@ -68,11 +67,11 @@ export const TabScouting: React.FC<TabScoutingProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { session, openScoutingModal, createNewScoutingFind, setActiveModal } = React.useContext(SessionContext)
-  const isActive = session.state === SessionStateEnum.Active
+  const isActive = session?.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
-  const allScouts = session.scouting?.items || []
+  const allScouts = session?.scouting?.items || []
   const filteredScouts = allScouts.filter(({ state }) => !filterClosedScout || badStates.indexOf(state) < 0)
   filteredScouts.sort((a, b) => b.createdAt - a.createdAt)
   const scountingCounts = [filteredScouts.length, allScouts.length]
@@ -131,7 +130,7 @@ export const TabScouting: React.FC<TabScoutingProps> = () => {
       </Grid>
       <ScoutingAddFAB
         onClick={createNewScoutingFind}
-        sessionSettings={session.sessionSettings}
+        sessionSettings={session?.sessionSettings}
         fabProps={{
           disabled: !isActive,
         }}

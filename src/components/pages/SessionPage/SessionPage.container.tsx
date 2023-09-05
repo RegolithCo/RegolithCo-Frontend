@@ -13,7 +13,6 @@ import {
   MiningLoadout,
   ScoutingFind,
   ScoutingFindTypeEnum,
-  Session,
   session2csv,
   session2Json,
   SessionStateEnum,
@@ -67,12 +66,12 @@ export const SessionPageContainer2: React.FC = () => {
     modalScoutingFindId as string,
     sessionQueries.sessionUser
   )
-  const session = sessionQueries.session as Session
+  const session = sessionQueries.session
   const myUserProfile = userQry.userProfile as UserProfile
   const mySessionUser = sessionQueries.sessionUser as SessionUser
-  const isActive = session.state === SessionStateEnum.Active
-  const amISessionOwner = session.ownerId === myUserProfile.userId
-  const shareUrl = `${window.location.origin}${process.env.PUBLIC_URL}/session/${session.sessionId}`
+  const isActive = session?.state === SessionStateEnum.Active
+  const amISessionOwner = session?.ownerId === myUserProfile.userId
+  const shareUrl = `${window.location.origin}${process.env.PUBLIC_URL}/session/${session?.sessionId}`
 
   const returnToSession = () => navigate(makeSessionUrls({ tab }))
   const openWorkOrderModal = (orderId: string) => navigate(makeSessionUrls({ sessionId, orderId, tab }))
@@ -80,23 +79,26 @@ export const SessionPageContainer2: React.FC = () => {
 
   // Only one major modal at a time please.
 
-  const sessionUserModalSessionUser: SessionUser | undefined = session.activeMembers?.items?.find(
+  const sessionUserModalSessionUser: SessionUser | undefined = session?.activeMembers?.items?.find(
     ({ owner }) => owner?.userId === activeUserModalId
   )
 
-  const sessionUserModalPendingUser: PendingUser | undefined = session.mentionedUsers?.find(
+  const sessionUserModalPendingUser: PendingUser | undefined = session?.mentionedUsers?.find(
     ({ scName }) => scName === pendingUserModalScName
   )
 
   const userSuggest: UserSuggest = React.useMemo(
-    () => createUserSuggest(session.activeMembers?.items || [], session.mentionedUsers, myUserProfile.friends),
+    () => createUserSuggest(session?.activeMembers?.items || [], session?.mentionedUsers || [], myUserProfile.friends),
     [session, myUserProfile]
   )
 
   const { crewHierarchy, singleActives, captains, singleInnactives } = React.useMemo(() => {
-    const crewHierarchy = crewHierarchyCalc(session.activeMembers?.items as SessionUser[], session.mentionedUsers || [])
-    console.log(crewHierarchy, JSON.stringify(crewHierarchy))
-    const { captains, singleActives } = (session.activeMembers?.items || []).reduce(
+    const crewHierarchy = crewHierarchyCalc(
+      (session?.activeMembers?.items as SessionUser[]) || [],
+      session?.mentionedUsers || []
+    )
+
+    const { captains, singleActives } = (session?.activeMembers?.items || []).reduce(
       (acc, su) => {
         const suUserId = su.owner?.userId as string
         const crew = crewHierarchy[suUserId as string]
@@ -110,11 +112,11 @@ export const SessionPageContainer2: React.FC = () => {
       },
       { singleActives: [], captains: [] } as { singleActives: SessionUser[]; captains: SessionUser[] }
     )
-    const singleInnactives: PendingUser[] = (session.mentionedUsers || []).filter(
+    const singleInnactives: PendingUser[] = (session?.mentionedUsers || []).filter(
       ({ captainId }) => !captainId || !crewHierarchy[captainId]
     )
     return { crewHierarchy, singleActives, captains, singleInnactives }
-  }, [session.activeMembers?.items, session.mentionedUsers])
+  }, [session?.activeMembers?.items, session?.mentionedUsers])
 
   const openActiveUserModal = (userId: string | null) => {
     setActiveUserModalId(userId)
@@ -130,11 +132,13 @@ export const SessionPageContainer2: React.FC = () => {
   }
 
   const createNewWorkOrder = (activity: ActivityEnum) => {
+    if (!session) return
     setNewWorkOrder(newWorkOrderMaker(session, myUserProfile, activity))
     setActiveModal(DialogEnum.ADD_WORKORDER)
   }
 
   const createNewScoutingFind = (scoutingType: ScoutingFindTypeEnum) => {
+    if (!session) return
     setNewScoutingFind(newEmptyScoutingFind(session, mySessionUser, scoutingType))
     setActiveModal(DialogEnum.ADD_SCOUTING)
   }
@@ -172,14 +176,14 @@ export const SessionPageContainer2: React.FC = () => {
   // make a map of useIds to their scouting find attendance
   const scoutingAttendanceMap = React.useMemo(() => {
     const map = new Map<string, ScoutingFind>()
-    session.scouting?.items?.forEach((scoutingFind) => {
+    session?.scouting?.items?.forEach((scoutingFind) => {
       // This will get overwritten if there are duplicates but that's ok
       scoutingFind.attendance?.forEach((attendance) => {
         map.set(attendance.owner?.userId as string, scoutingFind)
       })
     })
     return map
-  }, [session.scouting?.items])
+  }, [session?.scouting?.items])
 
   // TODO: Need to fold this into the API call I think OR let session users add referenced users
   const createNewMentionedUsers = async (newShares: CrewShareInput[]): Promise<void> => {
@@ -192,9 +196,6 @@ export const SessionPageContainer2: React.FC = () => {
       if (addToMentioned.length > 0) await sessionQueries.addSessionMentions(addToMentioned)
     }
   }
-
-  if (sessionQueries.loading && !sessionQueries.session && !sessionQueries.sessionStub)
-    return <PageLoader title="loading session..." loading />
 
   const modalWorkOrder: WorkOrder | undefined = React.useMemo(() => {
     return (
@@ -216,6 +217,11 @@ export const SessionPageContainer2: React.FC = () => {
       undefined
     )
   }, [sessionQueries.session, modalScoutingFindId])
+
+  // NO HOOKS BELOW HERE PLEASE
+
+  if (sessionQueries.loading && !sessionQueries.session && !sessionQueries.sessionStub)
+    return <PageLoader title="loading session..." loading />
 
   if (sessionQueries.sessionStub || sessionQueries.sessionError)
     return (
@@ -303,7 +309,7 @@ export const SessionPageContainer2: React.FC = () => {
               },
               markCrewSharePaid: sessionQueries.markCrewSharePaid,
               workOrder: modalWorkOrder as WorkOrder,
-              templateJob: session.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
+              templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
               userSuggest,
               allowPay: amISessionOwner || modalWorkOrder.ownerId === myUserProfile?.userId,
               deleteWorkOrder: () => workOrderQry.deleteWorkOrder(),
@@ -445,7 +451,7 @@ export const SessionPageContainer2: React.FC = () => {
       {/* Share Session Modal */}
       <ShareModal
         open={activeModal === DialogEnum.SHARE_SESSION}
-        warn={!session.sessionSettings.specifyUsers}
+        warn={!session?.sessionSettings.specifyUsers}
         url={shareUrl}
         onClose={() => setActiveModal(null)}
       />
@@ -468,10 +474,12 @@ export const SessionPageContainer2: React.FC = () => {
         title="Download Session"
         description="Download the session data as a CSV or JSON file."
         downloadCSV={() => {
+          if (!session) return
           const csvObj = session2csv(session)
           downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
         }}
         downloadJSON={() => {
+          if (!session) return
           const jsonObj = JSON.stringify(session2Json(session), null, 2)
           downloadFile(
             jsonObj,

@@ -38,14 +38,25 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   openContextMenu,
 }) => {
   const theme = useTheme()
-  const { session, navigate, myUserProfile, scoutingAttendanceMap, openLoadoutModal, openActiveUserModal, captains } =
-    React.useContext(SessionContext)
+  const {
+    session,
+    navigate,
+    myUserProfile,
+    scoutingAttendanceMap,
+    openLoadoutModal,
+    openActiveUserModal,
+    captains,
+    crewHierarchy,
+  } = React.useContext(SessionContext)
   const stateColorsBg = stateColorsBGThunk(theme)
   const isMe = myUserProfile.userId === sessionUser.ownerId
   const secondaryText = []
   const stateObjects = []
-  const isOwner = sessionUser.ownerId === session.ownerId
+  const isOwner = sessionUser.ownerId === session?.ownerId
   const captain = sessionUser.captainId ? captains.find((su) => su.ownerId === sessionUser.captainId) : undefined
+  const isCaptain = !sessionUser.captainId
+  const crew = crewHierarchy[sessionUser.ownerId] || { activeIds: [], innactiveSCNames: [] }
+  const totalCrew = crew.activeIds.length + crew.innactiveSCNames.length
   // const menuRef = useRef<HTMLLIElement>()
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
@@ -68,19 +79,10 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       document.removeEventListener('contextmenu', handleContextMenu)
     }
   }, [])
+  const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
 
   const user = sessionUser.owner as User
   if (sessionUser) {
-    if (sessionUser.vehicleCode && !isCrewDisplay) {
-      const vehicle = sessionUser.vehicleCode
-        ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode)
-        : null
-      if (vehicle) {
-        // Truncate to 16 characters with an ellipsis if necessary
-        const vehicleName = vehicle.name.length > 16 ? vehicle.name.substring(0, 16) + '...' : vehicle.name
-        secondaryText.push(vehicleName)
-      }
-    }
     if (sessionUser.state) {
       if (scoutingFind) {
         stateObjects.push(
@@ -125,92 +127,109 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
             fontFamily: fontFamilies.robotoMono,
           }}
         >
-          Captain
+          {totalCrew} {totalCrew === 1 ? 'Crew Member' : 'Crew Members'}
         </Typography>
       )
   }
   const stateColor = stateColorsBg[sessionUser.state] || undefined
 
   return (
-    <>
-      <ListItem
-        dense={isCrewDisplay}
-        disableGutters={isCrewDisplay}
-        onContextMenu={(e) => {
-          e.preventDefault()
-          openContextMenu(e.currentTarget)
-        }}
-        onDoubleClick={(e) => {
-          e.preventDefault()
-          openActiveUserModal(sessionUser.ownerId)
-        }}
-        onClick={() => {
-          openActiveUserModal(sessionUser.ownerId)
-        }}
-        sx={{
-          background: stateColor && alpha(stateColor, 0.1),
-          cursor: 'pointer',
-          border: isMe ? `2px solid ${theme.palette.secondary.light}` : '1px solid transparent',
-        }}
-      >
-        <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
-        <ListItemAvatar>
-          <UserAvatar
-            size="small"
-            user={user}
-            sessionOwner={isOwner}
-            isFriend={myUserProfile.friends?.includes(user?.scName as string)}
-          />
-        </ListItemAvatar>
-
-        <ListItemText
-          sx={{
-            '& .MuiListItemText-secondary': {
-              fontSize: '0.7rem',
-            },
-            //
-          }}
-          primary={user?.scName}
-          secondaryTypographyProps={{
-            component: 'div',
-          }}
-          secondary={
-            <Stack direction="row" spacing={1}>
-              {secondaryText.length > 0
-                ? secondaryText.map((it, idx) => (
-                    <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
-                      {it}
-                    </Typography>
-                  ))
-                : null}
-            </Stack>
-          }
+    <ListItem
+      dense={isCrewDisplay && !isCaptain}
+      disableGutters={isCrewDisplay && !isCaptain}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openContextMenu(e.currentTarget)
+      }}
+      onDoubleClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openActiveUserModal(sessionUser.ownerId)
+      }}
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openActiveUserModal(sessionUser.ownerId)
+      }}
+      sx={{
+        background: stateColor && alpha(stateColor, 0.1),
+        cursor: 'pointer',
+        overflow: 'hidden',
+        position: 'relative',
+        '&::after': isMe
+          ? {
+              content: '""',
+              display: 'block',
+              top: -10,
+              left: -10,
+              position: 'absolute',
+              width: 20,
+              height: 20,
+              transform: 'rotate(45deg)',
+              backgroundColor: theme.palette.secondary.light,
+            }
+          : {},
+        '&.MuiListItem-root': {},
+      }}
+    >
+      <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} vehicleName={vehicle?.name} />
+      <ListItemAvatar>
+        <UserAvatar
+          size="small"
+          user={user}
+          sessionOwner={isOwner}
+          isFriend={myUserProfile.friends?.includes(user?.scName as string)}
         />
-        <ListItemSecondaryAction>
-          {sessionUser.loadout && !isCrewDisplay && (
-            <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  openLoadoutModal(sessionUser.loadout as MiningLoadout)
-                }}
-              >
-                <ModuleIcon />
-              </IconButton>
-            </Tooltip>
-          )}
+      </ListItemAvatar>
 
-          <IconButton
-            color="primary"
-            onClick={(e) => {
-              e.stopPropagation()
-              openContextMenu(e.currentTarget)
-            }}
-          >
-            <MoreVert />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    </>
+      <ListItemText
+        sx={{
+          '& .MuiListItemText-secondary': {
+            fontSize: '0.7rem',
+          },
+          //
+        }}
+        primary={user?.scName}
+        secondaryTypographyProps={{
+          component: 'div',
+        }}
+        secondary={
+          <Stack direction="row" spacing={1}>
+            {secondaryText.length > 0
+              ? secondaryText.map((it, idx) => (
+                  <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
+                    {it}
+                  </Typography>
+                ))
+              : null}
+          </Stack>
+        }
+      />
+      <ListItemSecondaryAction>
+        {sessionUser.loadout && !isCrewDisplay && (
+          <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                openLoadoutModal(sessionUser.loadout as MiningLoadout)
+              }}
+            >
+              <ModuleIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        <IconButton
+          color="default"
+          onClick={(e) => {
+            e.stopPropagation()
+            openContextMenu(e.currentTarget)
+          }}
+        >
+          <MoreVert />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
   )
 }

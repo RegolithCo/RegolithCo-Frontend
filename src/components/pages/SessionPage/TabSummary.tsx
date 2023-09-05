@@ -124,7 +124,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
   const sessionSummary: SessionBreakdown = React.useMemo(
-    () => sessionReduce(session.workOrders?.items || []),
+    () => sessionReduce(session?.workOrders?.items || []),
     [session]
   )
 
@@ -253,7 +253,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
 }
 
 interface OwingListProps {
-  session: Session
+  session?: Session
   sessionUser: SessionUser
   sessionSummary: SessionBreakdown
   mutating: boolean
@@ -299,7 +299,7 @@ const OwingList: React.FC<OwingListProps> = ({
       </Typography>
     )
   }
-
+  if (!session) return null
   return (
     <List
       sx={{

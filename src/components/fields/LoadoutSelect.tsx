@@ -35,7 +35,7 @@ export const LoadoutSelect: React.FC<LoadoutSelectPRops> = ({ sessionUser, loado
       }}
     >
       <MenuItem value="none">None</MenuItem>
-      {loadouts.map((loadout) => (
+      {(loadouts || []).map((loadout) => (
         <MenuItem key={loadout.loadoutId} value={loadout.loadoutId}>
           <LoadoutItem loadout={loadout} />
         </MenuItem>

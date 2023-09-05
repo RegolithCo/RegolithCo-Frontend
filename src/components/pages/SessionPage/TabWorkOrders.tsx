@@ -1,13 +1,12 @@
 import * as React from 'react'
 
-import { ActivityEnum, Session, SessionStateEnum, UserProfile, WorkOrder } from '@regolithco/common'
+import { SessionStateEnum } from '@regolithco/common'
 import { Box, FormControlLabel, FormGroup, Switch, Theme, Typography, useTheme } from '@mui/material'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
 import { WorkOrderTable } from './WorkOrderTable'
-import { newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { Stack, SxProps } from '@mui/system'
 import { fontFamilies } from '../../../theme'
-import { DialogEnum, SessionContext } from '../../../context/session.context'
+import { SessionContext } from '../../../context/session.context'
 
 export interface TabWorkOrdersProps {
   propA?: string
@@ -55,10 +54,10 @@ export const TabWorkOrders: React.FC<TabWorkOrdersProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { session, openWorkOrderModal, createNewWorkOrder, setActiveModal } = React.useContext(SessionContext)
-  const isActive = session.state === SessionStateEnum.Active
+  const isActive = session?.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
-  const allWorkOrders = session.workOrders?.items || []
+  const allWorkOrders = session?.workOrders?.items || []
   const filteredWorkOrders = filterPaidWorkOrders
     ? allWorkOrders.filter(({ crewShares }) => crewShares?.some(({ state }) => !state))
     : [...allWorkOrders]
@@ -98,7 +97,7 @@ export const TabWorkOrders: React.FC<TabWorkOrdersProps> = () => {
       <WorkOrderTable workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
       <WorkOrderAddFAB
         onClick={createNewWorkOrder}
-        sessionSettings={session.sessionSettings}
+        sessionSettings={session?.sessionSettings}
         fabProps={{
           disabled: !isActive,
         }}

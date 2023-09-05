@@ -17,10 +17,10 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({ openContextMenu }) =
 
   sortedCaptains.sort((a, b) => {
     // session owner gets the top spot
-    if (a.owner?.userId === session.ownerId) {
+    if (a.owner?.userId === session?.ownerId) {
       return -1
     }
-    if (b.owner?.userId === session.ownerId) {
+    if (b.owner?.userId === session?.ownerId) {
       return 1
     }
     // I get the second top spot

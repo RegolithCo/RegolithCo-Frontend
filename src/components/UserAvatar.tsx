@@ -39,7 +39,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       width: 15,
     },
   },
-  smallAvatar: {},
+  smallAvatar: {
+    height: 30,
+    width: 30,
+  },
   smallBadge: {
     '& .MuiBadge-badge svg': {
       height: 15,

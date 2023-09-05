@@ -76,6 +76,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { session, myUserProfile, setActiveModal } = React.useContext(SessionContext)
+  if (!session) return null
   const subtitleArr = sessionSubtitleArr(session)
 
   return (

@@ -42,10 +42,10 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
   const { navigate, activeTab, setActiveTab, setActiveModal, session, myUserProfile } = React.useContext(SessionContext)
   const theme = useTheme()
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
-  const isActive = session.state === SessionStateEnum.Active
+  const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
 
-  const isSessionOwner = session.ownerId === myUserProfile.userId
+  const isSessionOwner = session?.ownerId === myUserProfile.userId
 
   // Some contextual subtitle stuff
 
