@@ -33,7 +33,7 @@ export interface LoadoutStatProps {
   reversed?: boolean
   isPercent?: boolean
   active?: boolean
-  tooltip?: string
+  tooltip?: string | React.ReactNode
 }
 
 export const LoadoutStat: React.FC<LoadoutStatProps> = ({

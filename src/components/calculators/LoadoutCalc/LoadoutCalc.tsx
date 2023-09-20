@@ -1,5 +1,8 @@
 import React, { useCallback } from 'react'
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Card,
@@ -24,7 +27,7 @@ import {
 import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
+import { Close, Delete, Edit, ExpandMore, Help, Refresh, Save } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
@@ -251,80 +254,78 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
             {/* This grid has the lasers and the stats */}
 
             <Grid xs={12} md={8}>
-              <div>
-                <Grid container spacing={3} rowSpacing={3}>
+              <Grid container spacing={3} rowSpacing={3}>
+                <ToolGrid ship={newLoadout.ship}>
+                  <LoadoutLaserTool
+                    activeLaser={activeLasers[0]}
+                    readonly={readonly}
+                    laserSize={laserSize}
+                    label={laserSize < 2 ? 'Laser' : 'Front Turret'}
+                    onChange={(currAl, isHover) => {
+                      if (isHover) {
+                        setHoverLoadout({
+                          ...newLoadout,
+                          activeLasers: [currAl, activeLasers[1], activeLasers[2]],
+                        })
+                      } else {
+                        setNewLoadout({
+                          ...newLoadout,
+                          activeLasers: [currAl, activeLasers[1], activeLasers[2]],
+                        })
+                      }
+                    }}
+                  />
+                </ToolGrid>
+                {newLoadout.ship === LoadoutShipEnum.Mole && (
                   <ToolGrid ship={newLoadout.ship}>
                     <LoadoutLaserTool
-                      activeLaser={activeLasers[0]}
-                      readonly={readonly}
+                      activeLaser={activeLasers[1]}
                       laserSize={laserSize}
-                      label={laserSize < 2 ? 'Laser' : 'Front Turret'}
+                      readonly={readonly}
+                      label="Port Turret"
                       onChange={(currAl, isHover) => {
                         if (isHover) {
                           setHoverLoadout({
                             ...newLoadout,
-                            activeLasers: [currAl, activeLasers[1], activeLasers[2]],
+                            activeLasers: [activeLasers[0], currAl, activeLasers[2]],
                           })
                         } else {
                           setNewLoadout({
                             ...newLoadout,
-                            activeLasers: [currAl, activeLasers[1], activeLasers[2]],
+                            activeLasers: [activeLasers[0], currAl, activeLasers[2]],
                           })
                         }
                       }}
                     />
                   </ToolGrid>
-                  {newLoadout.ship === LoadoutShipEnum.Mole && (
-                    <ToolGrid ship={newLoadout.ship}>
-                      <LoadoutLaserTool
-                        activeLaser={activeLasers[1]}
-                        laserSize={laserSize}
-                        readonly={readonly}
-                        label="Port Turret"
-                        onChange={(currAl, isHover) => {
-                          if (isHover) {
-                            setHoverLoadout({
-                              ...newLoadout,
-                              activeLasers: [activeLasers[0], currAl, activeLasers[2]],
-                            })
-                          } else {
-                            setNewLoadout({
-                              ...newLoadout,
-                              activeLasers: [activeLasers[0], currAl, activeLasers[2]],
-                            })
-                          }
-                        }}
-                      />
-                    </ToolGrid>
-                  )}
-                  {newLoadout.ship === LoadoutShipEnum.Mole && (
-                    <ToolGrid ship={newLoadout.ship}>
-                      <LoadoutLaserTool
-                        activeLaser={activeLasers[2]}
-                        laserSize={laserSize}
-                        readonly={readonly}
-                        label="Starboard Turret"
-                        onChange={(currAl, isHover) => {
-                          if (isHover) {
-                            setHoverLoadout({
-                              ...newLoadout,
-                              activeLasers: [activeLasers[0], activeLasers[1], currAl],
-                            })
-                          } else {
-                            setNewLoadout({
-                              ...newLoadout,
-                              activeLasers: [activeLasers[0], activeLasers[1], currAl],
-                            })
-                          }
-                        }}
-                      />
-                    </ToolGrid>
-                  )}
+                )}
+                {newLoadout.ship === LoadoutShipEnum.Mole && (
                   <ToolGrid ship={newLoadout.ship}>
-                    <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} readonly={readonly} />
+                    <LoadoutLaserTool
+                      activeLaser={activeLasers[2]}
+                      laserSize={laserSize}
+                      readonly={readonly}
+                      label="Starboard Turret"
+                      onChange={(currAl, isHover) => {
+                        if (isHover) {
+                          setHoverLoadout({
+                            ...newLoadout,
+                            activeLasers: [activeLasers[0], activeLasers[1], currAl],
+                          })
+                        } else {
+                          setNewLoadout({
+                            ...newLoadout,
+                            activeLasers: [activeLasers[0], activeLasers[1], currAl],
+                          })
+                        }
+                      }}
+                    />
                   </ToolGrid>
-                </Grid>
-              </div>
+                )}
+                <ToolGrid ship={newLoadout.ship}>
+                  <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} readonly={readonly} />
+                </ToolGrid>
+              </Grid>
             </Grid>
             <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column' }}>
               {stats && <LoadoutCalcStats stats={stats} />}

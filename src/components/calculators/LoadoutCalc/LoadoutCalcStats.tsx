@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import { AllStats, BackwardStats } from '@regolithco/common'
 import { LoadoutStat } from './LoadoutStat'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -11,7 +11,7 @@ export interface LoadoutCalcStatsProps {
 export const statsOrder: {
   key: keyof AllStats
   label: string
-  tooltip: string
+  tooltip: string | React.ReactNode
   percent?: boolean
   isMod?: boolean
   unit?: string
@@ -38,7 +38,19 @@ export const statsOrder: {
   { key: 'clusterMod', label: 'Clust.', percent: true, tooltip: 'Cluster Modifier' },
   { key: 'inertMaterials', label: 'Inert', percent: true, tooltip: 'Inert Materials filtering' },
   { key: 'optimalChargeRate', label: 'Opt Chrg Rt', percent: true, tooltip: 'Optimal Charge Rate Modifier' },
-  { key: 'optimalChargeWindow', label: 'Opt Chrg Wnd', percent: true, tooltip: 'Optimal Charge Window Modifier' },
+  {
+    key: 'optimalChargeWindow',
+    label: 'Opt Chrg Wnd',
+    percent: true,
+    tooltip: (
+      <>
+        <Typography>Optimal Charge Window Modifier</Typography>
+        <Typography variant="caption" color="error">
+          NOTE: This can never be greater than 50% of the total window
+        </Typography>
+      </>
+    ),
+  },
   { key: 'shatterDamage', label: 'Shatter', percent: true, tooltip: 'Shatter Damage Modifier' },
   { key: 'extrPower', label: 'Ext Pwr', isMod: true, tooltip: 'Total extraction power (All Active lasers combined)' },
 
