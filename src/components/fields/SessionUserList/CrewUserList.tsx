@@ -1,7 +1,7 @@
 import React from 'react'
 import { List } from '@mui/material'
 import { PendingUser, SessionUser } from '@regolithco/common'
-import { useTheme } from '@mui/system'
+// import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../context/session.context'
 import { CrewListItem } from './SessionUserListItems/CrewListItem'
 
@@ -10,7 +10,7 @@ export interface CrewUserListProps {
 }
 
 export const CrewUserList: React.FC<CrewUserListProps> = ({ openContextMenu }) => {
-  const theme = useTheme()
+  // const theme = useTheme()
   const { captains, session, mySessionUser } = React.useContext(SessionContext)
   const sortedCaptains = [...captains]
   const meId = mySessionUser.owner?.userId

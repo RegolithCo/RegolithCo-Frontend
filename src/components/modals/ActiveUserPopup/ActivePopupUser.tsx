@@ -47,8 +47,11 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
 
   const isMyFriend = myUserProfile?.friends?.includes(sessionUser.owner?.scName as string)
   const meIsCaptain = !mySessionUser?.captainId
-  const theyOnMyCrew = !!sessionUser?.captainId && mySessionUser?.captainId === sessionUser?.captainId
+  const iAmOnCrew = !!mySessionUser?.captainId
+  const myCrewCaptain = meIsCaptain ? mySessionUser?.ownerId : mySessionUser?.captainId
+
   const theyOnAnyCrew = !!sessionUser?.captainId
+  const theyOnMyCrew = theyOnAnyCrew && theirCaptain?.ownerId === myCrewCaptain
 
   return (
     <Dialog
@@ -163,7 +166,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             Actions
           </Typography>
           <ButtonGroup fullWidth variant="text" aria-label="contained primary button group" orientation="vertical">
-            {meIsCaptain && !theyOnAnyCrew && (
+            {(meIsCaptain || iAmOnCrew) && !theyOnAnyCrew && (
               <Button
                 startIcon={<RocketLaunch />}
                 onClick={() => {
@@ -173,7 +176,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
                 Add to my crew
               </Button>
             )}
-            {meIsCaptain && theyOnMyCrew && (
+            {(meIsCaptain || iAmOnCrew) && theyOnMyCrew && (
               <Button
                 color="error"
                 startIcon={<Logout />}

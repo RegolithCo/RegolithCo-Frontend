@@ -41,8 +41,11 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
 
   const isMyFriend = myUserProfile?.friends?.includes(pendingUser?.scName as string)
   const meIsCaptain = !mySessionUser?.captainId
-  const theyOnMyCrew = !!pendingUser?.captainId && mySessionUser?.captainId === pendingUser?.captainId
+  const iAmOnCrew = !!mySessionUser?.captainId
+  const myCrewCaptain = meIsCaptain ? mySessionUser?.ownerId : mySessionUser?.captainId
   const theyOnAnyCrew = !!pendingUser?.captainId
+
+  const theyOnMyCrew = theyOnAnyCrew && pendingUser?.captainId === myCrewCaptain
 
   return (
     <Dialog
@@ -101,7 +104,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             </Typography>
 
             <Typography variant="caption" color="text.secondary">
-              <strong>{theirCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
+              1<strong>{theirCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
               {vehicle?.miningHold || vehicle?.cargo} SCU)
             </Typography>
           </Box>
@@ -112,17 +115,17 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             Actions
           </Typography>
           <ButtonGroup fullWidth variant="text" color="info" orientation="vertical">
-            {meIsCaptain && !theyOnAnyCrew && (
+            {(meIsCaptain || iAmOnCrew) && !theyOnAnyCrew && (
               <Button
                 startIcon={<RocketLaunch />}
                 onClick={() => {
-                  updatePendingUserCaptain(pendingUser.scName, mySessionUser.ownerId)
+                  if (myCrewCaptain) updatePendingUserCaptain(pendingUser.scName, myCrewCaptain)
                 }}
               >
                 Add to my crew
               </Button>
             )}
-            {meIsCaptain && theyOnMyCrew && (
+            {(meIsCaptain || iAmOnCrew) && theyOnMyCrew && (
               <Button
                 color="error"
                 startIcon={<Logout />}

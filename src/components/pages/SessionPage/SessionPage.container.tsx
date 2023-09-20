@@ -119,10 +119,12 @@ export const SessionPageContainer2: React.FC = () => {
   )
 
   const openActiveUserModal = (userId: string | null) => {
+    setPendingUserModalScName(null)
     setActiveUserModalId(userId)
     setActiveModal(DialogEnum.USER_STATUS)
   }
   const openPendingUserModal = (scName: string | null) => {
+    setActiveUserModalId(null)
     setPendingUserModalScName(scName)
     setActiveModal(DialogEnum.USER_STATUS)
   }
