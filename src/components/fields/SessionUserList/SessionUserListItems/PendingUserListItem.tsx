@@ -70,7 +70,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
     >
       <ListItemAvatar>
         <UserAvatar
-          size="small"
+          size={isCrewDisplay ? 'tiny' : 'small'}
           pendingUser={pendingUser}
           isFriend={myUserProfile.friends?.includes(pendingUser?.scName as string)}
         />
@@ -81,6 +81,9 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
           '& .MuiListItemText-secondary': {
             fontSize: '0.7rem',
           },
+          '& .MuiListItemText-primary': {
+            fontSize: isCrewDisplay ? '0.7rem' : undefined,
+          },
           //
         }}
         primary={pendingUser.scName}
@@ -88,28 +91,16 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
           component: 'div',
         }}
         secondary={
-          !isCrewDisplay ? (
+          !isCrewDisplay && (
             <Typography
               sx={{
                 fontFamily: fontFamilies.robotoMono,
                 color: alpha(theme.palette.text.secondary, 0.3),
                 fontWeight: 'bold',
-                fontSize: '0.7rem',
+                fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
               }}
             >
               Pending User
-            </Typography>
-          ) : (
-            <Typography
-              sx={{
-                color: theme.palette.info.dark,
-                textTransform: 'uppercase',
-                fontSize: '0.6rem',
-                fontWeight: 'bold',
-                fontFamily: fontFamilies.robotoMono,
-              }}
-            >
-              Crew (Pending User)
             </Typography>
           )
         }

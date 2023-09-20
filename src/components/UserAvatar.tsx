@@ -49,6 +49,16 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       width: 15,
     },
   },
+  tinyAvatar: {
+    height: 20,
+    width: 20,
+  },
+  tinyBadge: {
+    '& .MuiBadge-badge svg': {
+      height: 15,
+      width: 15,
+    },
+  },
 
   mediumAvatar: {},
   mediumBadge: {
@@ -66,7 +76,7 @@ export interface UserAvatarProps {
   error?: boolean
   sessionOwner?: boolean
   hideTooltip?: boolean
-  size: 'small' | 'medium' | 'large' | 'xlarge'
+  size: 'tiny' | 'small' | 'medium' | 'large' | 'xlarge'
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({

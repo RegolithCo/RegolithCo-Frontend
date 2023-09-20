@@ -18,7 +18,7 @@ import {
   User,
 } from '@regolithco/common'
 import { Group, MoreVert, RocketLaunch } from '@mui/icons-material'
-import { alpha, useTheme } from '@mui/system'
+import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { ModuleIcon } from '../../../../icons'
@@ -223,7 +223,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
       <ListItemAvatar>
         <UserAvatar
-          size="small"
+          size={isCrewDisplay && !isCaptain ? 'tiny' : 'small'}
           user={user}
           sessionOwner={isOwner}
           isFriend={myUserProfile.friends?.includes(user?.scName as string)}
@@ -235,6 +235,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           '& .MuiListItemText-secondary': {
             fontSize: '0.7rem',
           },
+          '& .MuiListItemText-primary': {
+            fontSize: isCrewDisplay && !isCaptain ? '0.7rem' : undefined,
+          },
           //
         }}
         primary={user?.scName}
@@ -242,15 +245,17 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           component: 'div',
         }}
         secondary={
-          <Stack direction="row" spacing={1}>
-            {secondaryText.length > 0
-              ? secondaryText.map((it, idx) => (
-                  <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
-                    {it}
-                  </Typography>
-                ))
-              : null}
-          </Stack>
+          (!isCrewDisplay || isCaptain) && (
+            <Stack direction="row" spacing={1}>
+              {secondaryText.length > 0
+                ? secondaryText.map((it, idx) => (
+                    <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
+                      {it}
+                    </Typography>
+                  ))
+                : null}
+            </Stack>
+          )
         }
       />
       <ListItemSecondaryAction>
