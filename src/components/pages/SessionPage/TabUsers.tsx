@@ -1,6 +1,18 @@
 import * as React from 'react'
 import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
-import { Box, IconButton, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
+import {
+  alpha,
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  SxProps,
+  Theme,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { ExpandMore, GroupAdd, HelpOutline } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
@@ -84,7 +96,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           color: theme.palette.secondary.contrastText,
           '&.MuiToolbar-root': {
             minHeight: 50,
-            pl: 1,
+            pl: 2,
             pr: 1,
           },
         }}
@@ -98,20 +110,39 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
               fontWeight: 'bold',
             }}
           >
-            Session Members ({(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length})
+            {(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length} Session Members
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
+          {/* <CircleNumber
+            number={(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length}
+            color={theme.palette.primary.main}
+            tooltip="Total Session Members"
+          /> */}
           <Tooltip title="Add a pending user to this session" placement="right" arrow>
-            <IconButton color="inherit" size="small">
-              <GroupAdd />
-            </IconButton>
+            <Button
+              size="small"
+              variant="outlined"
+              endIcon={<GroupAdd />}
+              color="inherit"
+              sx={{
+                background: theme.palette.secondary.main,
+              }}
+            >
+              Add
+            </Button>
           </Tooltip>
         </Stack>
       </Toolbar>
       {captains.length > 0 && (
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
-            <Typography>Crews ({captains.length})</Typography>
+            <Typography>{captains.length} Crews</Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            {/* <CircleNumber
+              number={captains.length}
+              color={theme.palette.secondary.dark}
+              tooltip="Total crews in this session"
+            /> */}
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <CrewUserList
@@ -125,7 +156,13 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
       {captains.length > 0 && (
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
-            <Typography>Solo Players ({singleActives.length})</Typography>
+            <Typography>{singleActives.length} Solo Players</Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            {/* <CircleNumber
+              number={singleActives.length}
+              color={theme.palette.secondary.dark}
+              tooltip="Total solor players in this session"
+            /> */}
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <SessionUserList
@@ -155,5 +192,34 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
         />
       )}
     </Box>
+  )
+}
+
+const CircleNumber: React.FC<{ number: number; color?: string; tooltip?: string }> = ({ number, color, tooltip }) => {
+  const theme = useTheme()
+  const colorFg = color || theme.palette.primary.main
+  const contrastColor = alpha(theme.palette.getContrastText(color || theme.palette.primary.main), 0.5)
+  return (
+    <Tooltip title={tooltip || ''} arrow>
+      <Box
+        sx={{
+          width: 30,
+          height: 30,
+          p: 0.2,
+          borderRadius: '50%',
+          border: `2px solid ${contrastColor}`,
+          fontWeight: 'bold',
+          fontFamily: fontFamilies.robotoMono,
+          backgroundColor: colorFg,
+          color: contrastColor,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '0.8rem',
+        }}
+      >
+        {number}
+      </Box>
+    </Tooltip>
   )
 }

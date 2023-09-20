@@ -399,8 +399,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                 Session Join permissions
               </Typography>
               <Typography variant="caption" component="div" gutterBottom sx={{ mb: 2 }}>
-                These settings control who can join this session. You can insist that users are verified, or you can use
-                your "mentioned" list to control who can join.
+                These settings control who can join this session. You can insist that users must be verified to join or
+                you can limit the session to only users you have already added as "pending".
               </Typography>
               <Box sx={styles.sectionBody}>
                 <FormControlLabel
@@ -436,7 +436,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       }}
                     />
                   }
-                  label={`Require joining users to be "Mentioned"`}
+                  label={`Require users to be added first.`}
                 />
               </Box>
             </Box>

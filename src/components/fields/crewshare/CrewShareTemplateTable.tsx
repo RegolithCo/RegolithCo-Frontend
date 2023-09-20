@@ -111,13 +111,14 @@ export const CrewShareTemplateTable: React.FC<CrewShareTemplateTableProps> = ({
 
       <Autocomplete
         id="adduser"
-        renderOption={(props, [scName, { friend, session, named }]) => (
+        renderOption={(props, [scName, { friend, session, named, crew }]) => (
           <UserListItem
             scName={scName}
             key={`scname-${scName}`}
             props={props}
             session={session}
             named={named}
+            crew={crew}
             friend={friend}
           />
         )}

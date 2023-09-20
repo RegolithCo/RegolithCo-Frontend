@@ -47,8 +47,6 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
 
   const isSessionOwner = session?.ownerId === myUserProfile.userId
 
-  // Some contextual subtitle stuff
-
   // USER Tab is not allowed on desktop
   React.useEffect(() => {
     if (mediumUp && activeTab === SessionTabs.USERS) {

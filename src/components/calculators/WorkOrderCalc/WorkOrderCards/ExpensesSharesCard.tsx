@@ -16,6 +16,7 @@ import {
   Tooltip,
   ListItem,
   ListItemText,
+  Button,
 } from '@mui/material'
 import Numeral from 'numeral'
 import {
@@ -29,7 +30,17 @@ import {
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
-import { Clear, ExpandMore, GroupAdd, Help, Percent, PieChart, RestartAlt, Store, Toll } from '@mui/icons-material'
+import {
+  ExpandMore,
+  GroupAdd,
+  GroupAddTwoTone,
+  Help,
+  Percent,
+  PieChart,
+  RestartAlt,
+  Store,
+  Toll,
+} from '@mui/icons-material'
 import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
 import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
@@ -270,9 +281,10 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               <>
                 {userSuggest && (
                   <Tooltip title="Add ALL session users">
-                    <IconButton
+                    <Button
                       size="small"
-                      color="secondary"
+                      color="primary"
+                      startIcon={<GroupAddTwoTone />}
                       onClick={() => {
                         const newShares: string[] = Object.entries(userSuggest)
                           .reduce((acc, [scName, { named, session }]) => {
@@ -310,12 +322,59 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         })
                       }}
                     >
-                      <GroupAdd fontSize="small" />
-                    </IconButton>
+                      All
+                    </Button>
+                  </Tooltip>
+                )}
+                {userSuggest && (
+                  <Tooltip title="Add ALL Crew users">
+                    <Button
+                      size="small"
+                      color="secondary"
+                      startIcon={<GroupAdd />}
+                      onClick={() => {
+                        const newShares: string[] = Object.entries(userSuggest)
+                          .reduce((acc, [scName, { crew }]) => {
+                            if (crew) {
+                              acc.push(scName)
+                            }
+                            return acc
+                          }, [] as string[])
+                          .filter((scName) => {
+                            return !workOrder.crewShares?.find((cs) => cs.scName === scName)
+                          })
+
+                        // Make sure we have something to add
+                        if (newShares.length === 0) return
+                        onChange({
+                          ...workOrder,
+                          crewShares: [
+                            ...(workOrder.crewShares || []),
+                            ...newShares.map(
+                              (scName) =>
+                                ({
+                                  scName,
+                                  shareType: ShareTypeEnum.Share,
+                                  share: 1,
+                                  note: null,
+                                  createdAt: Date.now(),
+                                  orderId: workOrder.orderId,
+                                  sessionId: workOrder.sessionId,
+                                  updatedAt: Date.now(),
+                                  state: false,
+                                  __typename: 'CrewShare',
+                                } as CrewShare)
+                            ),
+                          ],
+                        })
+                      }}
+                    >
+                      Crew
+                    </Button>
                   </Tooltip>
                 )}
                 <Tooltip title="Clear all crew shares (except owner)">
-                  <IconButton
+                  <Button
                     size="small"
                     color="error"
                     onClick={() => {
@@ -326,8 +385,8 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                       })
                     }}
                   >
-                    <Clear fontSize="small" />
-                  </IconButton>
+                    Clear
+                  </Button>
                 </Tooltip>
               </>
             )}

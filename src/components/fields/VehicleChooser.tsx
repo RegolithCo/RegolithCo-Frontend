@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { Autocomplete, MenuItem, TextField, Typography, useTheme } from '@mui/material'
 import { Vehicle, lookups, ObjectValues } from '@regolithco/common'
+import { Theme } from '@mui/system'
 
 export const ShipTypeEnum = {
   Mining: 'Mining',
@@ -20,6 +21,14 @@ export interface VehicleChooserProps {
   show?: [ShipTypeEnum]
   onlyCargo?: boolean
 }
+
+export const shipColorLookup = (theme: Theme): Record<ShipTypeEnum, string> => ({
+  [ShipTypeEnum.Mining]: theme.palette.secondary.main,
+  [ShipTypeEnum.Freight]: theme.palette.info.main,
+  [ShipTypeEnum.Transport]: theme.palette.info.main,
+  [ShipTypeEnum.Gunship]: theme.palette.error.main,
+  [ShipTypeEnum.Fighter]: theme.palette.error.main,
+})
 
 const NONEOPTION: Vehicle = {
   code: 'NONE',
@@ -62,14 +71,6 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
     return newShips
   }, [])
 
-  const shipColorLookup: Record<ShipTypeEnum, string> = {
-    [ShipTypeEnum.Mining]: theme.palette.secondary.main,
-    [ShipTypeEnum.Freight]: theme.palette.primary.main,
-    [ShipTypeEnum.Transport]: theme.palette.primary.main,
-    [ShipTypeEnum.Gunship]: theme.palette.error.main,
-    [ShipTypeEnum.Fighter]: theme.palette.error.main,
-  }
-
   const currVal: Vehicle = sortedShips ? sortedShips.find((ship) => ship.code === vehicle) || NONEOPTION : NONEOPTION
 
   return (
@@ -82,7 +83,7 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
           {...props}
           value={ship.code}
           sx={{
-            color: shipColorLookup[ship.role as ShipTypeEnum] || 'inherit',
+            color: shipColorLookup(theme)[ship.role as ShipTypeEnum] || 'inherit',
           }}
         >
           {ship.name}

@@ -139,13 +139,14 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
         <Autocomplete
           id="adduser"
           key={`uniquekey-${keyCounter}`}
-          renderOption={(props, [scName, { friend, session, named }]) => (
+          renderOption={(props, [scName, { friend, session, named, crew }]) => (
             <UserListItem
               scName={scName}
               key={`scname-${scName}`}
               session={session}
               named={named}
               friend={friend}
+              crew={crew}
               props={props}
             />
           )}

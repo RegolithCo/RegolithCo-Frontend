@@ -8,7 +8,6 @@ import { fontFamilies } from '../../../../theme'
 
 export interface StateChipProps {
   userState?: SessionUserStateEnum
-  vehicleName?: string
   scoutingFind?: ScoutingFind
 }
 
@@ -29,17 +28,14 @@ export const stateColorsFGThunk = (theme: Theme): Record<SessionUserStateEnum, s
   [SessionUserStateEnum.Travelling]: theme.palette.info.contrastText,
 })
 
-export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind, vehicleName }) => {
+export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind }) => {
   const theme = useTheme()
   const colorsBg = stateColorsBGThunk(theme)
   const colorsFg = stateColorsFGThunk(theme)
   const { navigate } = React.useContext(SessionContext)
   const stateObjects = []
 
-  const finalVehicleName = vehicleName && vehicleName.length > 16 ? vehicleName.substring(0, 16) + '...' : vehicleName
-
   if (userState) {
-    if (vehicleName) stateObjects.push(finalVehicleName)
     if (scoutingFind) {
       stateObjects.push(
         <>
@@ -55,7 +51,7 @@ export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind, v
     }
   }
 
-  if (!vehicleName && (!userState || userState === SessionUserStateEnum.Unknown)) return null
+  if (!userState || userState === SessionUserStateEnum.Unknown) return null
   const finalUserState = userState || SessionUserStateEnum.Unknown
   return (
     <Box

@@ -17,18 +17,20 @@ import {
   SessionUserStateEnum,
   User,
 } from '@regolithco/common'
-import { MoreVert } from '@mui/icons-material'
+import { Group, MoreVert, RocketLaunch } from '@mui/icons-material'
 import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { ModuleIcon } from '../../../../icons'
 import { StateChip, stateColorsBGThunk } from './StateChip'
 import { fontFamilies } from '../../../../theme'
+import { shipColorLookup, ShipTypeEnum } from '../../VehicleChooser'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
   // Crew gets a smaller row and less info
   isCrewDisplay?: boolean
+  expandButton?: React.ReactNode
   openContextMenu: (e: HTMLElement) => void
 }
 
@@ -36,6 +38,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   sessionUser,
   isCrewDisplay,
   openContextMenu,
+  expandButton,
 }) => {
   const theme = useTheme()
   const {
@@ -60,6 +63,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   // const menuRef = useRef<HTMLLIElement>()
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
+  const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
+  const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.code : vehicle?.name
+  const vehicleColor = vehicle ? shipColorLookup(theme)[vehicle.role as ShipTypeEnum] : 'inherit'
 
   useEffect(() => {
     // define a custom handler function
@@ -79,9 +85,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       document.removeEventListener('contextmenu', handleContextMenu)
     }
   }, [])
-  const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
 
   const user = sessionUser.owner as User
+
   if (sessionUser) {
     if (sessionUser.state) {
       if (scoutingFind) {
@@ -120,17 +126,58 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
       secondaryText.push(
         <Typography
           sx={{
+            // align all elements on the baseline
             color: theme.palette.secondary.light,
             textTransform: 'uppercase',
-            fontSize: '0.6rem',
+            fontSize: '0.8rem',
             fontWeight: 'bold',
             fontFamily: fontFamilies.robotoMono,
           }}
         >
-          {totalCrew} {totalCrew === 1 ? 'Crew Member' : 'Crew Members'}
+          <Group
+            fontSize="small"
+            sx={{
+              fontSize: '1rem',
+              position: 'relative',
+              right: theme.spacing(0.5),
+              top: theme.spacing(0.5),
+            }}
+          />
+          {totalCrew}
         </Typography>
       )
   }
+
+  if (vehicle && (!isCrewDisplay || isCaptain)) {
+    secondaryText.push(
+      <Typography
+        sx={{
+          // align all elements on the baseline
+          color: vehicleColor,
+          textTransform: 'uppercase',
+          fontSize: '0.7rem',
+          fontWeight: 'bold',
+          fontFamily: fontFamilies.robotoMono,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          maxWidth: '100px',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        <RocketLaunch
+          fontSize="small"
+          sx={{
+            fontSize: '1rem',
+            position: 'relative',
+            right: theme.spacing(0.5),
+            top: theme.spacing(0.5),
+          }}
+        />
+        {finalVehicleName}
+      </Typography>
+    )
+  }
+
   const stateColor = stateColorsBg[sessionUser.state] || undefined
 
   return (
@@ -153,7 +200,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         openActiveUserModal(sessionUser.ownerId)
       }}
       sx={{
-        background: stateColor && alpha(stateColor, 0.1),
+        // background: stateColor && alpha(stateColor, 0.1),
         cursor: 'pointer',
         overflow: 'hidden',
         position: 'relative',
@@ -167,13 +214,13 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
               width: 20,
               height: 20,
               transform: 'rotate(45deg)',
-              backgroundColor: theme.palette.secondary.light,
+              backgroundColor: theme.palette.error.dark,
             }
           : {},
         '&.MuiListItem-root': {},
       }}
     >
-      <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} vehicleName={vehicle?.name} />
+      <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
       <ListItemAvatar>
         <UserAvatar
           size="small"
@@ -229,6 +276,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         >
           <MoreVert />
         </IconButton>
+        {expandButton}
       </ListItemSecondaryAction>
     </ListItem>
   )

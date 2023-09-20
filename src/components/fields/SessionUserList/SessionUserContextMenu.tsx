@@ -29,7 +29,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     openPendingUserModal,
     updateSessionUserCaptain,
     updatePendingUserCaptain,
-    captains,
+    updateMySessionUser,
     openLoadoutModal,
   } = React.useContext(SessionContext)
 
@@ -37,14 +37,10 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   const isActiveUser = !!sessionUser
   const theirSCName = (sessionUser?.owner?.scName || pendingUser?.scName) as string
   const theirCaptainId = sessionUser?.captainId || pendingUser?.captainId
-  const theirCaptain: SessionUser | null = theirCaptainId
-    ? captains.find((c) => c.ownerId === theirCaptainId) || null
-    : null
 
   const isMyFriend = myUserProfile?.friends?.includes(theirSCName as string)
   const meIsCaptain = !theirCaptainId
   const theyOnMyCrew = !!theirCaptainId && theirCaptainId === sessionUser?.captainId
-  const theyOnAnyCrew = !!theirCaptainId
 
   return (
     <Menu
@@ -139,7 +135,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
         )}
 
         {/* Add to my crew */}
-        {meIsCaptain && !theyOnMyCrew && (
+        {!isMe && meIsCaptain && !theyOnMyCrew && (
           <MenuItem
             onClick={() => {
               if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, mySessionUser.ownerId)
@@ -167,6 +163,22 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
             </ListItemIcon>
             <ListItemText>
               <Typography color="error">Remove from my crew</Typography>
+            </ListItemText>
+          </MenuItem>
+        )}
+        {isMe && !meIsCaptain && (
+          <MenuItem
+            onClick={() => {
+              updateMySessionUser({
+                captainId: null,
+              })
+            }}
+          >
+            <ListItemIcon>
+              <RocketLaunch fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography color="error">Leave This Crew</Typography>
             </ListItemText>
           </MenuItem>
         )}

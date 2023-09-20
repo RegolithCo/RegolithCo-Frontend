@@ -79,15 +79,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onCl
             borderTop: `2px solid ${theme.palette.primary.main}`,
           }}
         >
-          <Button
-            color="error"
-            variant="text"
-            size="small"
-            startIcon={<Cancel />}
-            onClick={() => {
-              onClose()
-            }}
-          >
+          <Button color="error" variant="text" size="small" startIcon={<Cancel />} onClick={() => onClose()}>
             {isNew ? 'Cancel' : 'Close'}
           </Button>
           <div style={{ flexGrow: 1 }} />

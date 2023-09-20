@@ -87,11 +87,6 @@ export const SessionPageContainer2: React.FC = () => {
     ({ scName }) => scName === pendingUserModalScName
   )
 
-  const userSuggest: UserSuggest = React.useMemo(
-    () => createUserSuggest(session?.activeMembers?.items || [], session?.mentionedUsers || [], myUserProfile.friends),
-    [session, myUserProfile]
-  )
-
   const { crewHierarchy, singleActives, captains, singleInnactives } = React.useMemo(() => {
     const crewHierarchy = crewHierarchyCalc(
       (session?.activeMembers?.items as SessionUser[]) || [],
@@ -118,6 +113,11 @@ export const SessionPageContainer2: React.FC = () => {
     return { crewHierarchy, singleActives, captains, singleInnactives }
   }, [session?.activeMembers?.items, session?.mentionedUsers])
 
+  const userSuggest: UserSuggest = React.useMemo(
+    () => createUserSuggest(session, myUserProfile, mySessionUser, crewHierarchy),
+    [session, myUserProfile, mySessionUser, crewHierarchy]
+  )
+
   const openActiveUserModal = (userId: string | null) => {
     setActiveUserModalId(userId)
     setActiveModal(DialogEnum.USER_STATUS)
@@ -133,7 +133,7 @@ export const SessionPageContainer2: React.FC = () => {
 
   const createNewWorkOrder = (activity: ActivityEnum) => {
     if (!session) return
-    setNewWorkOrder(newWorkOrderMaker(session, myUserProfile, activity))
+    setNewWorkOrder(newWorkOrderMaker(session, myUserProfile, activity, crewHierarchy))
     setActiveModal(DialogEnum.ADD_WORKORDER)
   }
 
@@ -296,221 +296,226 @@ export const SessionPageContainer2: React.FC = () => {
         }}
       >
         <SessionPage />
-      </SessionContext.Provider>
 
-      {/* Workorder Modal: EDITING */}
-      {modalWorkOrder && (
-        <ThemeProvider theme={workOrderStateThemes[modalWorkOrder.state]}>
+        {/* Workorder Modal: EDITING */}
+        {modalWorkOrder && (
+          <ThemeProvider theme={workOrderStateThemes[modalWorkOrder.state]}>
+            <WorkOrderContext.Provider
+              value={{
+                onUpdate: (newOrder) => {
+                  setActiveModal(null)
+                  updateWorkOrder(newOrder)
+                },
+                markCrewSharePaid: sessionQueries.markCrewSharePaid,
+                workOrder: modalWorkOrder as WorkOrder,
+                templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
+                userSuggest,
+                allowPay: amISessionOwner || modalWorkOrder.ownerId === myUserProfile?.userId,
+                deleteWorkOrder: () => workOrderQry.deleteWorkOrder(),
+                failWorkOrder: workOrderQry.failWorkOrder,
+                isSessionActive: isActive,
+                allowEdit:
+                  myUserProfile?.userId === modalWorkOrder?.ownerId ||
+                  amISessionOwner ||
+                  modalWorkOrder.sellerscName === myUserProfile?.scName,
+              }}
+            >
+              <WorkOrderModal
+                open={Boolean(modalWorkOrder)}
+                onClose={() => {
+                  setActiveModal(null)
+                  returnToSession()
+                }}
+              />
+            </WorkOrderContext.Provider>
+          </ThemeProvider>
+        )}
+
+        {/* Workorder Modal: NEW */}
+        {isActive && newWorkOrder && (
+          // NEW WORK ORDER
           <WorkOrderContext.Provider
             value={{
               onUpdate: (newOrder) => {
                 setActiveModal(null)
-                updateWorkOrder(newOrder)
+                createWorkOrder(newOrder)
+                setNewWorkOrder(null)
               },
-              markCrewSharePaid: sessionQueries.markCrewSharePaid,
-              workOrder: modalWorkOrder as WorkOrder,
-              templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
-              userSuggest,
-              allowPay: amISessionOwner || modalWorkOrder.ownerId === myUserProfile?.userId,
-              deleteWorkOrder: () => workOrderQry.deleteWorkOrder(),
-              failWorkOrder: workOrderQry.failWorkOrder,
+              allowEdit: isActive,
+              allowPay: true,
               isSessionActive: isActive,
-              allowEdit:
-                myUserProfile?.userId === modalWorkOrder?.ownerId ||
-                amISessionOwner ||
-                modalWorkOrder.sellerscName === myUserProfile?.scName,
+              forceTemplate: true,
+              userSuggest: userSuggest,
+              isNew: true,
+              markCrewSharePaid: sessionQueries.markCrewSharePaid,
+              templateJob: session.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
+              workOrder: newWorkOrder as WorkOrder,
             }}
           >
-            <WorkOrderModal
-              open={Boolean(modalWorkOrder)}
+            <WorkOrderModal open={activeModal === DialogEnum.ADD_WORKORDER} onClose={() => setActiveModal(null)} />
+          </WorkOrderContext.Provider>
+        )}
+
+        {/* LOADOUT Modal */}
+        {activeLoadout && (
+          <LoadoutCalc
+            isModal
+            readonly
+            onClose={() => setActiveModal(null)}
+            open={activeModal === DialogEnum.LOADOUT_MODAL}
+            miningLoadout={activeLoadout}
+          />
+        )}
+
+        {/* ScoutingFind Modal: NEW */}
+        {isActive && newScoutingFind && (
+          <ScoutingFindContext.Provider
+            value={{
+              meUser: mySessionUser,
+              allowEdit: isActive,
+              allowWork: isActive,
+              scoutingFind: newScoutingFind as ScoutingFind,
+              isNew: true,
+              onChange: (newScouting) => {
+                setActiveModal(null)
+                sessionQueries.createScoutingFind(newScouting)
+                setNewScoutingFind(null)
+              },
+            }}
+          >
+            <ScoutingFindModal
+              open={activeModal === DialogEnum.ADD_SCOUTING}
               onClose={() => {
                 setActiveModal(null)
-                returnToSession()
               }}
             />
-          </WorkOrderContext.Provider>
-        </ThemeProvider>
-      )}
+          </ScoutingFindContext.Provider>
+        )}
 
-      {/* Workorder Modal: NEW */}
-      {isActive && newWorkOrder && (
-        // NEW WORK ORDER
-        <WorkOrderContext.Provider
-          value={{
-            onUpdate: (newOrder) => {
-              setActiveModal(null)
-              createWorkOrder(newOrder)
-              setNewWorkOrder(null)
-            },
-            allowEdit: isActive,
-            allowPay: true,
-            isSessionActive: isActive,
-            forceTemplate: true,
-            userSuggest: userSuggest,
-            isNew: true,
-            markCrewSharePaid: sessionQueries.markCrewSharePaid,
-            templateJob: session.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
-            workOrder: newWorkOrder as WorkOrder,
-          }}
-        >
-          <WorkOrderModal open={activeModal === DialogEnum.ADD_WORKORDER} onClose={() => setActiveModal(null)} />
-        </WorkOrderContext.Provider>
-      )}
+        {/* ScoutingFind Modal: EDITING */}
+        {modalScoutingFind && (
+          <ScoutingFindContext.Provider
+            value={{
+              meUser: mySessionUser,
+              allowEdit:
+                amISessionOwner ||
+                modalScoutingFind.ownerId === myUserProfile?.userId ||
+                modalScoutingFind.attendanceIds.includes(myUserProfile?.userId as string),
+              allowWork:
+                amISessionOwner ||
+                modalScoutingFind.ownerId === myUserProfile?.userId ||
+                modalScoutingFind.attendanceIds.includes(myUserProfile?.userId as string),
+              scoutingFind: modalScoutingFind,
+              joinScoutingFind: scoutingFindQry.joinScoutingFind,
+              leaveScoutingFind: scoutingFindQry.leaveScoutingFind,
+              onDelete: () => setActiveModal(null),
+              onChange: (newScouting) => {
+                scoutingFindQry.updateScoutingFind(newScouting)
+                setNewScoutingFind(null)
+              },
+            }}
+          >
+            <ScoutingFindModal open={Boolean(modalScoutingFind)} onClose={() => returnToSession()} />
+          </ScoutingFindContext.Provider>
+        )}
 
-      {/* LOADOUT Modal */}
-      {activeLoadout && (
-        <LoadoutCalc
-          isModal
-          readonly
+        {/* Delete Session Modal */}
+        <DeleteModal
+          title={'Permanently DELETE session?'}
+          confirmBtnText={'Yes, Delete Session!'}
+          cancelBtnText="No, keep session"
+          message={
+            <DialogContentText id="alert-dialog-description">
+              Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lots.
+              THIS IS A PERMANENT ACTION. Are you sure you want to delete this session?
+            </DialogContentText>
+          }
+          open={activeModal === DialogEnum.DELETE_SESSION}
           onClose={() => setActiveModal(null)}
-          open={activeModal === DialogEnum.LOADOUT_MODAL}
-          miningLoadout={activeLoadout}
+          onConfirm={() => setActiveModal(null)}
         />
-      )}
 
-      {/* ScoutingFind Modal: NEW */}
-      {isActive && newScoutingFind && (
-        <ScoutingFindContext.Provider
-          value={{
-            meUser: mySessionUser,
-            allowEdit: isActive,
-            allowWork: isActive,
-            scoutingFind: newScoutingFind as ScoutingFind,
-            isNew: true,
-            onChange: (newScouting) => {
-              setActiveModal(null)
-              sessionQueries.createScoutingFind(newScouting)
-              setNewScoutingFind(null)
-            },
-          }}
-        >
-          <ScoutingFindModal open={activeModal === DialogEnum.ADD_SCOUTING} onClose={() => setActiveModal(null)} />
-        </ScoutingFindContext.Provider>
-      )}
-
-      {/* ScoutingFind Modal: EDITING */}
-      {modalScoutingFind && (
-        <ScoutingFindContext.Provider
-          value={{
-            meUser: mySessionUser,
-            allowEdit:
-              amISessionOwner ||
-              modalScoutingFind.ownerId === myUserProfile?.userId ||
-              modalScoutingFind.attendanceIds.includes(myUserProfile?.userId as string),
-            allowWork:
-              amISessionOwner ||
-              modalScoutingFind.ownerId === myUserProfile?.userId ||
-              modalScoutingFind.attendanceIds.includes(myUserProfile?.userId as string),
-            scoutingFind: modalScoutingFind,
-            joinScoutingFind: scoutingFindQry.joinScoutingFind,
-            leaveScoutingFind: scoutingFindQry.leaveScoutingFind,
-            onDelete: () => setActiveModal(null),
-            onChange: (newScouting) => {
-              scoutingFindQry.updateScoutingFind(newScouting)
-              setNewScoutingFind(null)
-            },
-          }}
-        >
-          <ScoutingFindModal open={Boolean(modalScoutingFind)} onClose={() => returnToSession()} />
-        </ScoutingFindContext.Provider>
-      )}
-
-      {/* Delete Session Modal */}
-      <DeleteModal
-        title={'Permanently DELETE session?'}
-        confirmBtnText={'Yes, Delete Session!'}
-        cancelBtnText="No, keep session"
-        message={
-          <DialogContentText id="alert-dialog-description">
-            Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lots. THIS
-            IS A PERMANENT ACTION. Are you sure you want to delete this session?
-          </DialogContentText>
-        }
-        open={activeModal === DialogEnum.DELETE_SESSION}
-        onClose={() => setActiveModal(null)}
-        onConfirm={() => setActiveModal(null)}
-      />
-
-      {/* Close Session Modal */}
-      <DeleteModal
-        title={'Permanently end this session?'}
-        confirmBtnText={'Yes, End Session!'}
-        cancelBtnText="No, keep session"
-        message={
-          <DialogContentText id="alert-dialog-description">
-            Closing a session will lock it permanently. Crew shares can still be marked paid but no new jobs or scouting
-            finds can be added and no new users can join. THIS IS A PERMANENT ACTION. Are you sure you want to close
-            this session?
-          </DialogContentText>
-        }
-        open={activeModal === DialogEnum.CLOSE_SESSION}
-        onClose={() => setActiveModal(null)}
-        onConfirm={() => setActiveModal(null)}
-      />
-
-      {/* Share Session Modal */}
-      <ShareModal
-        open={activeModal === DialogEnum.SHARE_SESSION}
-        warn={!session?.sessionSettings.specifyUsers}
-        url={shareUrl}
-        onClose={() => setActiveModal(null)}
-      />
-
-      {/* Leave Session Modal */}
-      <ConfirmModal
-        title="Leave the session?"
-        message="Are you sure you want to leave this session? You will not be able to find it again unless you still have the URL."
-        onClose={() => setActiveModal(null)}
-        open={activeModal === DialogEnum.LEAVE_SESSION}
-        onConfirm={sessionQueries.leaveSession}
-        cancelBtnText="Cancel"
-        confirmBtnText="Yes, Leave"
-      />
-
-      {/* Download Data Modal */}
-      <DownloadModal
-        open={activeModal === DialogEnum.DOWNLOAD_SESSION}
-        onClose={() => setActiveModal(null)}
-        title="Download Session"
-        description="Download the session data as a CSV or JSON file."
-        downloadCSV={() => {
-          if (!session) return
-          const csvObj = session2csv(session)
-          downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
-        }}
-        downloadJSON={() => {
-          if (!session) return
-          const jsonObj = JSON.stringify(session2Json(session), null, 2)
-          downloadFile(
-            jsonObj,
-            createSafeFileName(session.name || 'Session', session.sessionId) + '.json',
-            'application/json'
-          )
-        }}
-      />
-
-      {/* Active User Popup Modal: ME */}
-      {sessionUserModalSessionUser && mySessionUser.owner?.userId === sessionUserModalSessionUser.ownerId && (
-        <ActivePopupMe open={activeModal === DialogEnum.USER_STATUS} onClose={() => setActiveModal(null)} />
-      )}
-
-      {/* Active User Popup Modal: Active User */}
-      {sessionUserModalSessionUser && mySessionUser.owner?.userId !== sessionUserModalSessionUser.ownerId && (
-        <ActivePopupUser
-          open={activeModal === DialogEnum.USER_STATUS}
+        {/* Close Session Modal */}
+        <DeleteModal
+          title={'Permanently end this session?'}
+          confirmBtnText={'Yes, End Session!'}
+          cancelBtnText="No, keep session"
+          message={
+            <DialogContentText id="alert-dialog-description">
+              Closing a session will lock it permanently. Crew shares can still be marked paid but no new jobs or
+              scouting finds can be added and no new users can join. THIS IS A PERMANENT ACTION. Are you sure you want
+              to close this session?
+            </DialogContentText>
+          }
+          open={activeModal === DialogEnum.CLOSE_SESSION}
           onClose={() => setActiveModal(null)}
-          sessionUser={sessionUserModalSessionUser}
+          onConfirm={() => setActiveModal(null)}
         />
-      )}
 
-      {/* Pending User Popup Modal */}
-      {sessionUserModalPendingUser && (
-        <PendingUserPopup
-          open={activeModal === DialogEnum.USER_STATUS}
+        {/* Share Session Modal */}
+        <ShareModal
+          open={activeModal === DialogEnum.SHARE_SESSION}
+          warn={!session?.sessionSettings.specifyUsers}
+          url={shareUrl}
           onClose={() => setActiveModal(null)}
-          pendingUser={sessionUserModalPendingUser}
         />
-      )}
+
+        {/* Leave Session Modal */}
+        <ConfirmModal
+          title="Leave the session?"
+          message="Are you sure you want to leave this session? You will not be able to find it again unless you still have the URL."
+          onClose={() => setActiveModal(null)}
+          open={activeModal === DialogEnum.LEAVE_SESSION}
+          onConfirm={sessionQueries.leaveSession}
+          cancelBtnText="Cancel"
+          confirmBtnText="Yes, Leave"
+        />
+
+        {/* Download Data Modal */}
+        <DownloadModal
+          open={activeModal === DialogEnum.DOWNLOAD_SESSION}
+          onClose={() => setActiveModal(null)}
+          title="Download Session"
+          description="Download the session data as a CSV or JSON file."
+          downloadCSV={() => {
+            if (!session) return
+            const csvObj = session2csv(session)
+            downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
+          }}
+          downloadJSON={() => {
+            if (!session) return
+            const jsonObj = JSON.stringify(session2Json(session), null, 2)
+            downloadFile(
+              jsonObj,
+              createSafeFileName(session.name || 'Session', session.sessionId) + '.json',
+              'application/json'
+            )
+          }}
+        />
+
+        {/* Active User Popup Modal: ME */}
+        {sessionUserModalSessionUser && sessionUserModalSessionUser.ownerId === mySessionUser.ownerId && (
+          <ActivePopupMe open={activeModal === DialogEnum.USER_STATUS} onClose={() => setActiveModal(null)} />
+        )}
+
+        {/* Active User Popup Modal: Active User */}
+        {sessionUserModalSessionUser && mySessionUser.owner?.userId !== sessionUserModalSessionUser.ownerId && (
+          <ActivePopupUser
+            open={activeModal === DialogEnum.USER_STATUS}
+            onClose={() => setActiveModal(null)}
+            sessionUser={sessionUserModalSessionUser}
+          />
+        )}
+
+        {/* Pending User Popup Modal */}
+        {sessionUserModalPendingUser && (
+          <PendingUserPopup
+            open={activeModal === DialogEnum.USER_STATUS}
+            onClose={() => setActiveModal(null)}
+            pendingUser={sessionUserModalPendingUser}
+          />
+        )}
+      </SessionContext.Provider>
     </>
   )
 }

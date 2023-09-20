@@ -33,6 +33,7 @@ import {
   WorkOrderDefaults,
   WorkOrderStateEnum,
   lookups,
+  CrewHierarchy,
 } from '@regolithco/common'
 const LASERS = lookups.loadout.lasers
 
@@ -81,7 +82,7 @@ export function booleanDefault(cascade: (Maybe<boolean> | undefined)[]): boolean
   return undefined
 }
 
-export function myDefaultCrewShare(sessionId: string, scName: string): CrewShare {
+export function defaultCrewShare(sessionId: string, scName: string, isPaid: boolean): CrewShare {
   return {
     orderId: 'NEWWORKORDER', // This is a placeholder. it will never be committed
     scName: scName,
@@ -89,7 +90,7 @@ export function myDefaultCrewShare(sessionId: string, scName: string): CrewShare
     shareType: ShareTypeEnum.Share,
     share: 1,
     // note
-    state: true,
+    state: isPaid,
 
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -97,7 +98,12 @@ export function myDefaultCrewShare(sessionId: string, scName: string): CrewShare
   }
 }
 
-export function newWorkOrderMaker(session: Session, owner: UserProfile, activityType: ActivityEnum): WorkOrder {
+export function newWorkOrderMaker(
+  session: Session,
+  owner: UserProfile,
+  activityType: ActivityEnum,
+  crewHierarchy?: CrewHierarchy
+): WorkOrder {
   const defaults: WorkOrderDefaults = session.sessionSettings?.workOrderDefaults ||
     owner.sessionSettings.workOrderDefaults || {
       __typename: 'WorkOrderDefaults',
@@ -106,6 +112,7 @@ export function newWorkOrderMaker(session: Session, owner: UserProfile, activity
   // Convenience typings
   const defaultCrewShares: CrewShare[] = defaults.crewShares
     ? defaults.crewShares.map(({ scName, share, shareType, note }) => ({
+        ...defaultCrewShare(session.sessionId, scName, false),
         createdAt: Date.now(),
         updatedAt: Date.now(),
         orderId: 'NEWWORKORDER', // This is a placeholder. it will never be committed
@@ -118,11 +125,62 @@ export function newWorkOrderMaker(session: Session, owner: UserProfile, activity
         __typename: 'CrewShare',
       }))
     : []
+  // this is for reference and easy searching
+  const defaultCrewScNames = defaultCrewShares.map((cs) => cs.scName)
 
-  const crewShares = [...defaultCrewShares]
+  const crewHierarchyShares: CrewShare[] = []
+  let sellerscName: string | undefined
+
+  // If we're a member of a crew then we need to add our crew as a default
+  if (crewHierarchy) {
+    // If I'm not the captain of my crew, I need to add a crewShare for my captain
+    const mySessionUser = (session.activeMembers?.items || []).find((su) => su.ownerId === owner.userId) as SessionUser
+    const myCaptain = mySessionUser.captainId
+      ? ((session.activeMembers?.items || []).find((su) => su.ownerId === mySessionUser.captainId) as SessionUser)
+      : undefined
+    if (myCaptain) {
+      sellerscName = myCaptain.owner?.scName
+      // Make sure the captain gets a crew share
+      // If they are already added through default crew share then just set them paid
+      if (defaultCrewScNames.includes(myCaptain.owner?.scName as string)) {
+        const found = defaultCrewShares.find((cs) => cs.scName === myCaptain.owner?.scName) as CrewShare
+        found.state = true
+      }
+      // Otherwise add a new row
+      else {
+        crewHierarchyShares.push(defaultCrewShare(session.sessionId, myCaptain.owner?.scName as string, true))
+      }
+    }
+    const crew = crewHierarchy[myCaptain ? myCaptain.ownerId : mySessionUser.ownerId]
+    session.activeMembers?.items.forEach((su) => {
+      if (
+        crew.activeIds.includes(su.ownerId) && // Active member of my crew
+        su.ownerId !== mySessionUser.ownerId && // Not me (I get added later)
+        !defaultCrewScNames.includes(su.owner?.scName as string) // not already added as a default share
+      ) {
+        crewHierarchyShares.push(defaultCrewShare(session.sessionId, su.owner?.scName as string, false))
+      }
+    })
+    // All the inactive members of the crew get a crew share
+    session.mentionedUsers.forEach((mu) => {
+      if (
+        crew.innactiveSCNames.includes(mu.scName) &&
+        !defaultCrewScNames.includes(mu.scName) // not already added as a default share
+      ) {
+        crewHierarchyShares.push(defaultCrewShare(session.sessionId, mu.scName as string, false))
+      }
+    })
+  }
+
+  const crewShares = [...defaultCrewShares, ...crewHierarchyShares]
   // Push a default crewShare for me if there isn't one already
-  if (!crewShares.some((cs) => cs.scName === owner.scName)) {
-    crewShares.push(myDefaultCrewShare(session.sessionId, owner.scName))
+  // Only set it paid if the seller is not set
+  if (!defaultCrewScNames.includes(owner.scName)) {
+    crewShares.push(defaultCrewShare(session.sessionId, owner.scName, !sellerscName))
+  } else {
+    // If I'm already in the default crew shares, then set me paid
+    const found = crewShares.find((cs) => cs.scName === owner.scName) as CrewShare
+    found.state = true
   }
 
   const workOrderFields: Partial<WorkOrder> = {
@@ -134,6 +192,7 @@ export function newWorkOrderMaker(session: Session, owner: UserProfile, activity
     ownerId: owner.userId,
     owner: profile2User(owner),
     // note: defaults.note,
+    sellerscName,
 
     shipOres: undefined,
     vehicleOres: undefined,

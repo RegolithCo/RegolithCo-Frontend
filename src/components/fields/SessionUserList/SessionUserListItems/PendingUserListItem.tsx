@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { PendingUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
-import { useTheme } from '@mui/system'
+import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
@@ -64,7 +64,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
         openPendingUserModal(pendingUser.scName)
       }}
       sx={{
-        background: '#15163455',
+        // background: '#15163455',
         cursor: 'pointer',
       }}
     >
@@ -92,7 +92,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
             <Typography
               sx={{
                 fontFamily: fontFamilies.robotoMono,
-                color: theme.palette.info.dark,
+                color: alpha(theme.palette.text.secondary, 0.3),
                 fontWeight: 'bold',
                 fontSize: '0.7rem',
               }}
@@ -116,7 +116,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
       />
       <ListItemSecondaryAction>
         <IconButton
-          color="primary"
+          color="default"
           onClick={(e) => {
             e.stopPropagation()
             openContextMenu(e.currentTarget)

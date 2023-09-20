@@ -1,11 +1,11 @@
 import React from 'react'
 import { PendingUser, SessionUser } from '@regolithco/common'
-import { alpha, useTheme } from '@mui/system'
+import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { PendingUserListItem } from './PendingUserListItem'
-import { Accordion, AccordionDetails, AccordionSummary, List } from '@mui/material'
-import { ExpandMore } from '@mui/icons-material'
+import { Accordion, AccordionDetails, Divider, IconButton, List } from '@mui/material'
+import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { stateColorsBGThunk } from './StateChip'
 
 export interface CrewListItemProps {
@@ -17,9 +17,10 @@ type SortedUserList = [scName: string, uType: 'Active' | 'Pending', userObj: Pen
 
 export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContextMenu }) => {
   const theme = useTheme()
-  const { session, crewHierarchy, myUserProfile, scoutingAttendanceMap, openActiveUserModal } =
-    React.useContext(SessionContext)
-  const [expanded, setExpanded] = React.useState(false)
+  const { session, crewHierarchy, myUserProfile } = React.useContext(SessionContext)
+  const theCrew = crewHierarchy[captain.ownerId] || { activeIds: [], innactiveSCNames: [] }
+  const isMyCrew = captain.ownerId === myUserProfile.userId || theCrew.activeIds.includes(myUserProfile.userId)
+  const [expanded, setExpanded] = React.useState(isMyCrew)
   const meId = myUserProfile.userId
 
   const stateColorsBg = stateColorsBGThunk(theme)
@@ -70,37 +71,40 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContext
         m: 0,
         borderTop: '3px solid transparent',
         borderBottom: '3px solid transparent',
-        background: stateColorBg && alpha(stateColorBg, 0.05),
+        background: theme.palette.background.paper,
         '&.Mui-expanded': {
           borderTop: `3px solid ${stateColorBg}`,
           borderBottom: `3px solid ${stateColorBg}`,
-          background: stateColorBg && alpha(stateColorBg, 0.1),
+          background: '#252525',
+          // background: stateColorBg && alpha(stateColorBg, 0.1),
           margin: 0,
         },
       }}
     >
-      <AccordionSummary
-        expandIcon={<ExpandMore />}
+      <List
+        disablePadding
         sx={{
-          position: 'relative',
-          pl: 0,
-          // minHeight: 48,
-          '& .MuiAccordionSummary-content': {
-            my: 0,
-            '&.Mui-expanded': {
-              my: 0,
-            },
-          },
-          '&.Mui-expanded': {
-            // minHeight: 48,
-            // m: 0,
-          },
+          width: '100%',
+          // background: stateColorBg && alpha(stateColorBg, 0.05)
         }}
       >
-        <List disablePadding sx={{ width: '100%' }}>
-          <ActiveUserListItem sessionUser={captain} isCrewDisplay openContextMenu={openContextMenu} />
-        </List>
-      </AccordionSummary>
+        <ActiveUserListItem
+          sessionUser={captain}
+          isCrewDisplay
+          openContextMenu={(el) => openContextMenu(el, captain as SessionUser, undefined)}
+          expandButton={
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation()
+                setExpanded(!expanded)
+              }}
+            >
+              {expanded ? <ExpandMore /> : <ExpandLess />}
+            </IconButton>
+          }
+        />
+      </List>
       <AccordionDetails
         sx={{
           p: 0,
@@ -111,19 +115,25 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContext
           {/* <ActiveUserListItem sessionUser={captain} isCrewDisplay openContextMenu={openContextMenu} /> */}
           {scNameList.map(([, uType, uBj], idx) =>
             uType === 'Pending' ? (
-              <PendingUserListItem
-                key={`user-${idx}`}
-                isCrewDisplay
-                pendingUser={uBj as PendingUser}
-                openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
-              />
+              <>
+                <Divider />
+                <PendingUserListItem
+                  key={`user-${idx}`}
+                  isCrewDisplay
+                  pendingUser={uBj as PendingUser}
+                  openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
+                />
+              </>
             ) : (
-              <ActiveUserListItem
-                key={`user-${idx}`}
-                isCrewDisplay
-                sessionUser={uBj as SessionUser}
-                openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
-              />
+              <>
+                <Divider />
+                <ActiveUserListItem
+                  key={`user-${idx}`}
+                  isCrewDisplay
+                  sessionUser={uBj as SessionUser}
+                  openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
+                />
+              </>
             )
           )}
         </List>
