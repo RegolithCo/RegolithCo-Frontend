@@ -18,7 +18,7 @@ import {
   User,
 } from '@regolithco/common'
 import { Group, MoreVert, RocketLaunch } from '@mui/icons-material'
-import { useTheme } from '@mui/system'
+import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { ModuleIcon } from '../../../../icons'
@@ -150,31 +150,33 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
 
   if (vehicle && (!isCrewDisplay || isCaptain)) {
     secondaryText.push(
-      <Typography
-        sx={{
-          // align all elements on the baseline
-          color: vehicleColor,
-          textTransform: 'uppercase',
-          fontSize: '0.7rem',
-          fontWeight: 'bold',
-          fontFamily: fontFamilies.robotoMono,
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          maxWidth: '100px',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        <RocketLaunch
-          fontSize="small"
+      <Tooltip title={`${vehicle?.maker} ${vehicle?.name} (${vehicle?.role})`} arrow>
+        <Typography
           sx={{
-            fontSize: '1rem',
-            position: 'relative',
-            right: theme.spacing(0.5),
-            top: theme.spacing(0.5),
+            // align all elements on the baseline
+            color: vehicleColor,
+            textTransform: 'uppercase',
+            fontSize: '0.7rem',
+            fontWeight: 'bold',
+            fontFamily: fontFamilies.robotoMono,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            maxWidth: '100px',
+            textOverflow: 'ellipsis',
           }}
-        />
-        {finalVehicleName}
-      </Typography>
+        >
+          <RocketLaunch
+            fontSize="small"
+            sx={{
+              fontSize: '1rem',
+              position: 'relative',
+              right: theme.spacing(0.5),
+              top: theme.spacing(0.5),
+            }}
+          />
+          {finalVehicleName}
+        </Typography>
+      </Tooltip>
     )
   }
 
@@ -247,13 +249,24 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         secondary={
           (!isCrewDisplay || isCaptain) && (
             <Stack direction="row" spacing={1}>
-              {secondaryText.length > 0
-                ? secondaryText.map((it, idx) => (
-                    <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
-                      {it}
-                    </Typography>
-                  ))
-                : null}
+              {secondaryText.length > 0 ? (
+                secondaryText.map((it, idx) => (
+                  <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
+                    {it}
+                  </Typography>
+                ))
+              ) : (
+                <Typography
+                  sx={{
+                    fontFamily: fontFamilies.robotoMono,
+                    color: alpha(theme.palette.text.secondary, 0.3),
+                    fontWeight: 'bold',
+                    fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
+                  }}
+                >
+                  Session User
+                </Typography>
+              )}
             </Stack>
           )
         }
