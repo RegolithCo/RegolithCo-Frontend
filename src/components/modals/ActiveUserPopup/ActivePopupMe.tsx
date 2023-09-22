@@ -6,6 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -184,11 +185,10 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           </Typography>
         </Box>
 
+        <Divider sx={{ my: 3 }} />
+
         {myCaptain && (
           <Box>
-            <Typography variant="overline" color="primary" component="div">
-              Actions
-            </Typography>
             <ButtonGroup variant="text" color="error" aria-label="contained primary button group" fullWidth>
               <Button
                 startIcon={<Logout />}

@@ -6,6 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Stack,
   Typography,
   useTheme,
@@ -55,6 +56,10 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
   const theyIsCaptain = !sessionUser?.captainId && crewHierarchy[sessionUser?.ownerId]
   const theyOnAnyCrew = !!sessionUser?.captainId
   const theyOnMyCrew = theyOnAnyCrew && theirCaptain?.ownerId === myCrewCaptain
+
+  const crewCount =
+    crewHierarchy[sessionUser?.ownerId] &&
+    crewHierarchy[sessionUser?.ownerId].activeIds.length + crewHierarchy[sessionUser?.ownerId].innactiveSCNames.length
 
   return (
     <Dialog
@@ -112,6 +117,11 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
           ) : (
             ''
           )}
+          {theyIsCaptain && (
+            <span>
+              captain with <strong>{crewCount}</strong> crew members
+            </span>
+          )}
         </Typography>
 
         <Box>
@@ -163,11 +173,8 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             </Button>
           </Box>
         )}
-
+        <Divider sx={{ my: 3 }} />
         <Box>
-          <Typography variant="overline" color="primary" component="div">
-            Actions
-          </Typography>
           <ButtonGroup fullWidth variant="text" aria-label="contained primary button group" orientation="vertical">
             {(meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain && (
               <Button

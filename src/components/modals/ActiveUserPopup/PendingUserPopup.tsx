@@ -8,6 +8,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Stack,
   Typography,
   useTheme,
@@ -42,11 +43,14 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
   const isMyFriend = myUserProfile?.friends?.includes(pendingUser.scName as string)
   const meIsPotentialCaptain = !mySessionUser?.captainId
   const meIsCaptain = !mySessionUser?.captainId && crewHierarchy[mySessionUser?.ownerId]
+  const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
   const iAmOnCrew = !!mySessionUser?.captainId
   const myCrewCaptainId = mySessionUser?.captainId
 
   const theyOnAnyCrew = Boolean(pendingUser?.captainId)
-  const theyOnMyCrew = theyOnAnyCrew && pendingUser?.captainId === mySessionUser.ownerId
+  const theirCaptainId = pendingUser?.captainId
+  const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
+  const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
 
   return (
     <Dialog
@@ -92,9 +96,13 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
       </DialogTitle>
 
       <DialogContent>
-        {theirCaptain && (
+        {theirCaptain ? (
           <Typography variant="overline" color="primary" component="div">
             Status: member of <strong>{theirCaptain?.owner?.scName}'s</strong> crew
+          </Typography>
+        ) : (
+          <Typography variant="overline" color="primary" component="div">
+            Status: not on a crew
           </Typography>
         )}
 
@@ -111,17 +119,18 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
           </Box>
         )}
 
+        <Divider sx={{ my: 3 }} />
+
         <Box>
-          <Typography variant="overline" color="info.dark" component="div">
-            Actions
-          </Typography>
           <ButtonGroup fullWidth variant="text" color="info" orientation="vertical">
-            {meIsPotentialCaptain && !theyOnAnyCrew && (
+            {(meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && (
               <Button
                 startIcon={<RocketLaunch />}
                 onClick={() => {
-                  if (meIsPotentialCaptain) updatePendingUserCaptain(pendingUser.scName, mySessionUser.ownerId)
-                  else if (myCrewCaptainId) updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId)
+                  if (meIsPotentialCaptain)
+                    updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
+                  else if (myCrewCaptainId)
+                    updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
                 }}
               >
                 Add to my crew
@@ -135,7 +144,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                   updatePendingUserCaptain(pendingUser.scName, null)
                 }}
               >
-                Remove from my crew
+                Remove from {iAmTheirCaptain ? 'my' : theirCaptainScName} crew
               </Button>
             )}
             {isMyFriend ? (

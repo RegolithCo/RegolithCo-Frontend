@@ -51,6 +51,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
 
   const isMyFriend = myUserProfile?.friends?.includes(theirSCName as string)
   const theirCaptainId = sessionUser?.captainId || pendingUser?.captainId
+  const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
   const theyOnAnyCrew = Boolean(theirCaptainId)
   const theyIsCaptain = sessionUser && !sessionUser?.captainId && crewHierarchy[sessionUser?.ownerId]
   const theyIsMyCaptain = sessionUser && mySessionUser?.captainId === sessionUser?.ownerId
@@ -175,7 +176,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
               <RocketLaunch fontSize="small" color="error" />
             </ListItemIcon>
             <ListItemText>
-              <Typography color="error">Remove from my crew</Typography>
+              <Typography color="error">Remove from {iAmTheirCaptain ? 'my' : theirCaptainScName} crew</Typography>
             </ListItemText>
           </MenuItem>
         )}
