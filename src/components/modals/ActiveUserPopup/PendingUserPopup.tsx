@@ -18,7 +18,7 @@ import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { UserAvatar } from '../../UserAvatar'
-import { GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
+import { Cancel, CheckCircle, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 dayjs.extend(relativeTime)
 
@@ -30,7 +30,7 @@ export interface PendingUserPopupProps {
 
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
-  const { captains, mySessionUser, myUserProfile, addFriend, removeFriend, updatePendingUserCaptain } =
+  const { captains, mySessionUser, myUserProfile, addFriend, removeFriend, updatePendingUserCaptain, crewHierarchy } =
     React.useContext(SessionContext)
   const theirCaptain: SessionUser | null = pendingUser.captainId
     ? captains.find((c) => c.ownerId === pendingUser.captainId) || null
@@ -39,13 +39,14 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
   const vehicleCode = theirCaptain?.vehicleCode
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
 
-  const isMyFriend = myUserProfile?.friends?.includes(pendingUser?.scName as string)
-  const meIsCaptain = !mySessionUser?.captainId
+  const isMyFriend = myUserProfile?.friends?.includes(pendingUser.scName as string)
+  const meIsPotentialCaptain = !mySessionUser?.captainId
+  const meIsCaptain = !mySessionUser?.captainId && crewHierarchy[mySessionUser?.ownerId]
   const iAmOnCrew = !!mySessionUser?.captainId
-  const myCrewCaptain = meIsCaptain ? mySessionUser?.ownerId : mySessionUser?.captainId
-  const theyOnAnyCrew = !!pendingUser?.captainId
+  const myCrewCaptainId = mySessionUser?.captainId
 
-  const theyOnMyCrew = theyOnAnyCrew && pendingUser?.captainId === myCrewCaptain
+  const theyOnAnyCrew = Boolean(pendingUser?.captainId)
+  const theyOnMyCrew = theyOnAnyCrew && pendingUser?.captainId === mySessionUser.ownerId
 
   return (
     <Dialog
@@ -115,17 +116,18 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             Actions
           </Typography>
           <ButtonGroup fullWidth variant="text" color="info" orientation="vertical">
-            {(meIsCaptain || iAmOnCrew) && !theyOnAnyCrew && (
+            {meIsPotentialCaptain && !theyOnAnyCrew && (
               <Button
                 startIcon={<RocketLaunch />}
                 onClick={() => {
-                  if (myCrewCaptain) updatePendingUserCaptain(pendingUser.scName, myCrewCaptain)
+                  if (meIsPotentialCaptain) updatePendingUserCaptain(pendingUser.scName, mySessionUser.ownerId)
+                  else if (myCrewCaptainId) updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId)
                 }}
               >
                 Add to my crew
               </Button>
             )}
-            {(meIsCaptain || iAmOnCrew) && theyOnMyCrew && (
+            {theyOnMyCrew && (
               <Button
                 color="error"
                 startIcon={<Logout />}
@@ -165,18 +167,34 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             Pending users are users who have been added to the session or one of its work orders but have not yet logged
             in and joined.
           </Typography>
+          <Typography variant="caption" paragraph component="div">
+            They are added to the session automatically when you add them to a work order.
+          </Typography>
+          <Typography variant="caption" paragraph component="div">
+            You can set your session to only allow pending users to join and use this as a sort of "invite only" list to
+            prevent random people with the share URL from joining.
+          </Typography>
+          <Typography variant="subtitle1" paragraph>
+            <CheckCircle color="success" sx={{ mr: 1 }} />
+            Pending users CAN
+          </Typography>
           <Typography variant="caption" paragraph>
             <ul>
-              <li>They are added to the session automatically when you add them to a work order.</li>
-              <li>They can be added to your crew.</li>
-              <li>They can be added to your friend list.</li>
+              <li>Be on your crew.</li>
+              <li>Be mentioned in work orders.</li>
+              <li>Be on your friend list.</li>
               <li>
-                They become <strong>active users</strong> when they log in and join your session.
+                Become <strong>active users</strong> when they log in and join your session.
               </li>
-              <li>
-                You can set your session to only allow pending users to join and use this as a sort of "invite only"
-                list to prevent random people with the share URL from joining.
-              </li>
+            </ul>
+          </Typography>
+          <Typography variant="subtitle1" paragraph>
+            <Cancel color="error" sx={{ mr: 1 }} />
+            Pending users CANNOT
+          </Typography>
+          <Typography variant="caption" paragraph>
+            <ul>
+              <li>Be captains of a crew.</li>
             </ul>
           </Typography>
         </Alert>

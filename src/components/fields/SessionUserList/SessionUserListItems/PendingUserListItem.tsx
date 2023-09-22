@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react'
-import {
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, IconButton, Typography } from '@mui/material'
 import { PendingUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
 import { alpha, useTheme } from '@mui/system'

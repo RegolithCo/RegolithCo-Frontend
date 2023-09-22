@@ -94,7 +94,7 @@ export interface SessionContextType {
   // Sessionuser
   updateMySessionUser: (sessionUser: SessionUserInput) => void
   updateSessionUserCaptain: (userId: string, newCaptainId: string | null) => void
-  updatePendingUserCaptain: (userId: string, newCaptainId: string | null) => void
+  updatePendingUserCaptain: (scName: string, newCaptainId: string | null) => void
 
   // CrewShares
   markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void

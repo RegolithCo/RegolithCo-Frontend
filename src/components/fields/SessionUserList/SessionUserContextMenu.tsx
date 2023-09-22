@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { Divider, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Typography } from '@mui/material'
-import { GroupAdd, GroupRemove, Person, PersonAdd, PersonRemove, RocketLaunch } from '@mui/icons-material'
+import { Delete, GroupAdd, GroupRemove, Person, RocketLaunch } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 import { PendingUser, MiningLoadout, SessionUser } from '@regolithco/common'
 import { ModuleIcon } from '../../../icons'
+import { DisbandModal } from '../../modals/DisbandCrew'
 
 interface SessionUserContextMenuProps {
   open: boolean
@@ -23,7 +24,9 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   const {
     myUserProfile,
     addFriend,
+    crewHierarchy,
     mySessionUser,
+    captains,
     removeFriend,
     openActiveUserModal,
     openPendingUserModal,
@@ -33,14 +36,26 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     openLoadoutModal,
   } = React.useContext(SessionContext)
 
+  const [disbandPopupOpen, setDisbandPopupOpen] = React.useState(false)
   const isMe = sessionUser?.ownerId === myUserProfile.userId
   const isActiveUser = !!sessionUser
   const theirSCName = (sessionUser?.owner?.scName || pendingUser?.scName) as string
-  const theirCaptainId = sessionUser?.captainId || pendingUser?.captainId
+
+  const meIsPotentialCaptain = !mySessionUser?.captainId
+  const meIsCaptain = meIsPotentialCaptain && crewHierarchy[mySessionUser?.ownerId]
+  const iAmOnCrew = !!mySessionUser?.captainId
+  const myCrewCaptainId = mySessionUser?.captainId
+  const myCaptainScName = myCrewCaptainId
+    ? captains.find((c) => c.ownerId === myCrewCaptainId)?.owner?.scName
+    : undefined
 
   const isMyFriend = myUserProfile?.friends?.includes(theirSCName as string)
-  const meIsCaptain = !theirCaptainId
-  const theyOnMyCrew = !!theirCaptainId && theirCaptainId === sessionUser?.captainId
+  const theirCaptainId = sessionUser?.captainId || pendingUser?.captainId
+  const theyOnAnyCrew = Boolean(theirCaptainId)
+  const theyIsCaptain = sessionUser && !sessionUser?.captainId && crewHierarchy[sessionUser?.ownerId]
+  const theyIsMyCaptain = sessionUser && mySessionUser?.captainId === sessionUser?.ownerId
+  const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
+  const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
 
   return (
     <Menu
@@ -90,6 +105,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
             disabled={!sessionUser.loadout}
             onClick={() => {
               openLoadoutModal(sessionUser.loadout as MiningLoadout)
+              onClose()
             }}
           >
             <ListItemIcon>
@@ -100,6 +116,86 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
         )}
 
         <Divider />
+
+        {/* Add to my crew */}
+        {!isMe && (meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain && (
+          <MenuItem
+            onClick={() => {
+              if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, myCrewCaptainId || mySessionUser.ownerId)
+              else if (pendingUser)
+                updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
+              onClose()
+            }}
+          >
+            <ListItemIcon>
+              <RocketLaunch fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Add to my crew</ListItemText>
+          </MenuItem>
+        )}
+        {sessionUser && !isMe && !meIsCaptain && !iAmOnCrew && !theyOnAnyCrew && (
+          <MenuItem
+            onClick={() => {
+              updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
+              onClose()
+            }}
+          >
+            <ListItemIcon>
+              <RocketLaunch fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Join {sessionUser.owner?.scName}'s crew</ListItemText>
+          </MenuItem>
+        )}
+        {((isMe && iAmOnCrew) || (!isMe && theyIsMyCaptain)) && (
+          <MenuItem
+            onClick={() => {
+              updateSessionUserCaptain(mySessionUser.ownerId, null)
+              onClose()
+            }}
+          >
+            <ListItemIcon>
+              <GroupRemove fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography color="error">Leave {myCaptainScName}'s crew</Typography>
+            </ListItemText>
+          </MenuItem>
+        )}
+
+        {/* Remove from my crew */}
+        {!isMe && theyOnMyCrew && (
+          <MenuItem
+            onClick={() => {
+              if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, null)
+              else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, null)
+              onClose()
+            }}
+          >
+            <ListItemIcon>
+              <RocketLaunch fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography color="error">Remove from my crew</Typography>
+            </ListItemText>
+          </MenuItem>
+        )}
+
+        {isMe && meIsCaptain && (
+          <MenuItem
+            color="error"
+            onClick={() => {
+              setDisbandPopupOpen(true)
+              onClose()
+            }}
+          >
+            <ListItemIcon>
+              <Delete fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography color="error">Disband Crew</Typography>
+            </ListItemText>
+          </MenuItem>
+        )}
 
         {/* Add as friend */}
         {!isMe && !isMyFriend && (
@@ -133,56 +229,8 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
             </ListItemText>
           </MenuItem>
         )}
-
-        {/* Add to my crew */}
-        {!isMe && meIsCaptain && !theyOnMyCrew && (
-          <MenuItem
-            onClick={() => {
-              if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, mySessionUser.ownerId)
-              else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, mySessionUser.ownerId)
-              onClose()
-            }}
-          >
-            <ListItemIcon>
-              <RocketLaunch fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Add to my crew</ListItemText>
-          </MenuItem>
-        )}
-
-        {/* Remove from my crew */}
-        {meIsCaptain && theyOnMyCrew && (
-          <MenuItem
-            onClick={() => {
-              if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, null)
-              else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, null)
-            }}
-          >
-            <ListItemIcon>
-              <RocketLaunch fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography color="error">Remove from my crew</Typography>
-            </ListItemText>
-          </MenuItem>
-        )}
-        {isMe && !meIsCaptain && (
-          <MenuItem
-            onClick={() => {
-              updateMySessionUser({
-                captainId: null,
-              })
-            }}
-          >
-            <ListItemIcon>
-              <RocketLaunch fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography color="error">Leave This Crew</Typography>
-            </ListItemText>
-          </MenuItem>
-        )}
       </MenuList>
+      <DisbandModal open={disbandPopupOpen} onClose={() => setDisbandPopupOpen(false)} />
     </Menu>
   )
 }

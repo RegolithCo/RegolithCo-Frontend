@@ -36,6 +36,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
     openLoadoutModal,
     updateSessionUserCaptain,
     addFriend,
+    crewHierarchy,
     removeFriend,
   } = React.useContext(SessionContext)
   const theirCaptain: SessionUser | null = sessionUser.captainId
@@ -46,10 +47,12 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(sessionUser.owner?.scName as string)
-  const meIsCaptain = !mySessionUser?.captainId
+  const meIsPotentialCaptain = !mySessionUser?.captainId
+  const meIsCaptain = !mySessionUser?.captainId && crewHierarchy[mySessionUser?.ownerId]
   const iAmOnCrew = !!mySessionUser?.captainId
   const myCrewCaptain = meIsCaptain ? mySessionUser?.ownerId : mySessionUser?.captainId
 
+  const theyIsCaptain = !sessionUser?.captainId && crewHierarchy[sessionUser?.ownerId]
   const theyOnAnyCrew = !!sessionUser?.captainId
   const theyOnMyCrew = theyOnAnyCrew && theirCaptain?.ownerId === myCrewCaptain
 
@@ -166,7 +169,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             Actions
           </Typography>
           <ButtonGroup fullWidth variant="text" aria-label="contained primary button group" orientation="vertical">
-            {(meIsCaptain || iAmOnCrew) && !theyOnAnyCrew && (
+            {(meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain && (
               <Button
                 startIcon={<RocketLaunch />}
                 onClick={() => {
@@ -174,6 +177,27 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
                 }}
               >
                 Add to my crew
+              </Button>
+            )}
+            {myCrewCaptain === sessionUser.ownerId && (
+              <Button
+                color="error"
+                startIcon={<RocketLaunch />}
+                onClick={() => {
+                  updateSessionUserCaptain(mySessionUser.ownerId, null)
+                }}
+              >
+                Leave {sessionUser.owner?.scName}'s crew
+              </Button>
+            )}
+            {!meIsCaptain && !iAmOnCrew && !theyOnAnyCrew && (
+              <Button
+                startIcon={<RocketLaunch />}
+                onClick={() => {
+                  updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
+                }}
+              >
+                Join {sessionUser.owner?.scName}'s crew
               </Button>
             )}
             {(meIsCaptain || iAmOnCrew) && theyOnMyCrew && (

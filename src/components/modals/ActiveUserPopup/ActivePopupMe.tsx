@@ -18,10 +18,11 @@ import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
-import { Cancel, Logout } from '@mui/icons-material'
+import { Cancel, Delete, Logout } from '@mui/icons-material'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { LoadoutSelect } from '../../fields/LoadoutSelect'
 import { SessionContext } from '../../../context/session.context'
+import { DisbandModal } from '../DisbandCrew'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
@@ -31,10 +32,13 @@ export interface ActivePopupMeProps {
 
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
-  const { mySessionUser, updateMySessionUser, myUserProfile, captains } = React.useContext(SessionContext)
+  const [disbandPopupOpen, setDisbandPopupOpen] = React.useState(false)
+  const { mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy } =
+    React.useContext(SessionContext)
   const myCaptain: SessionUser | null = mySessionUser.captainId
     ? captains.find((c) => c.ownerId === mySessionUser.captainId) || null
     : null
+  const iAmCaptain: boolean = !mySessionUser.captainId && Boolean(crewHierarchy[mySessionUser.ownerId])
 
   const vehicleCode = myCaptain?.vehicleCode || mySessionUser.vehicleCode
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
@@ -185,7 +189,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             <Typography variant="overline" color="primary" component="div">
               Actions
             </Typography>
-            <ButtonGroup variant="contained" color="error" aria-label="contained primary button group" fullWidth>
+            <ButtonGroup variant="text" color="error" aria-label="contained primary button group" fullWidth>
               <Button
                 startIcon={<Logout />}
                 onClick={() => {
@@ -205,6 +209,19 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             </ButtonGroup>
           </Box>
         )}
+        {iAmCaptain && (
+          <Button
+            startIcon={<Delete />}
+            color="error"
+            fullWidth
+            variant="outlined"
+            onClick={() => {
+              setDisbandPopupOpen(true)
+            }}
+          >
+            Disband Crew
+          </Button>
+        )}
       </DialogContent>
       <DialogActions>
         <div style={{ flexGrow: 1 }} />
@@ -212,6 +229,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           Dismiss
         </Button>
       </DialogActions>
+      <DisbandModal open={disbandPopupOpen} onClose={() => setDisbandPopupOpen(false)} />
     </Dialog>
   )
 }

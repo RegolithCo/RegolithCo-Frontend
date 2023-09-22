@@ -12,16 +12,14 @@ export interface SessionUserListProps {
 type SortedUserList = [scName: string, uType: 'Active' | 'Innactive', userObj: PendingUser | SessionUser][]
 
 export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMenu }) => {
-  const { singleActives, session, myUserProfile } = React.useContext(SessionContext)
+  const { singleActives, singleInnactives, session, myUserProfile } = React.useContext(SessionContext)
   const meId = myUserProfile.userId
 
   // Create a mapping of scName to Active and Innactive users so we can sort them by scName
   const scNameList: SortedUserList = React.useMemo(() => {
     const retVal: SortedUserList = [
       ...singleActives.map((su) => [su.owner?.scName, 'Active', su] as [string, 'Active', SessionUser]),
-      ...(session?.mentionedUsers || []).map(
-        (iu) => [iu.scName, 'Innactive', iu] as [string, 'Innactive', PendingUser]
-      ),
+      ...singleInnactives.map((iu) => [iu.scName, 'Innactive', iu] as [string, 'Innactive', PendingUser]),
     ]
     // Sorting the user list so that important stuff is at the top
     retVal.sort((a, b) => {
@@ -49,23 +47,23 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
     >
       {scNameList.map(([, uType, uBj], idx) =>
         uType === 'Innactive' ? (
-          <>
+          <React.Fragment key={`user-${idx}`}>
             <PendingUserListItem
               key={`user-${idx}`}
               pendingUser={uBj as PendingUser}
               openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
             />
             <Divider />
-          </>
+          </React.Fragment>
         ) : (
-          <>
+          <React.Fragment key={`user-${idx}`}>
             <ActiveUserListItem
               key={`user-${idx}`}
               sessionUser={uBj as SessionUser}
               openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
             />
             <Divider />
-          </>
+          </React.Fragment>
         )
       )}
       <div style={{ flexGrow: 1 }} />

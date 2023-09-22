@@ -1,20 +1,8 @@
 import * as React from 'react'
 import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
-import {
-  alpha,
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  SxProps,
-  Theme,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { alpha, Box, Button, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
-import { ExpandMore, GroupAdd, HelpOutline } from '@mui/icons-material'
+import { ExpandMore, GroupAdd } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { CrewUserList } from '../../fields/SessionUserList/CrewUserList'
 import { SessionUserList } from '../../fields/SessionUserList/SessionUserList'
@@ -77,7 +65,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 export const TabUsers: React.FC<TabUsersProps> = () => {
   const theme = useTheme()
-  const { session, captains, singleActives } = React.useContext(SessionContext)
+  const { session, captains, singleActives, singleInnactives } = React.useContext(SessionContext)
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
 
@@ -156,7 +144,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
       {captains.length > 0 && (
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
-            <Typography>{singleActives.length} Solo Players</Typography>
+            <Typography>{singleActives.length + singleInnactives.length} Solo Players</Typography>
             <Box sx={{ flexGrow: 1 }} />
             {/* <CircleNumber
               number={singleActives.length}

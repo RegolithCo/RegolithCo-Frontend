@@ -88,6 +88,7 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContext
           // background: stateColorBg && alpha(stateColorBg, 0.05)
         }}
       >
+        {/* THIS IS THE CAPTAIN */}
         <ActiveUserListItem
           sessionUser={captain}
           isCrewDisplay
@@ -115,25 +116,25 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContext
           {/* <ActiveUserListItem sessionUser={captain} isCrewDisplay openContextMenu={openContextMenu} /> */}
           {scNameList.map(([, uType, uBj], idx) =>
             uType === 'Pending' ? (
-              <>
-                <Divider />
+              <React.Fragment key={`frag-${idx}`}>
+                <Divider key={`divider-${idx}`} />
                 <PendingUserListItem
                   key={`user-${idx}`}
                   isCrewDisplay
                   pendingUser={uBj as PendingUser}
                   openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
                 />
-              </>
+              </React.Fragment>
             ) : (
-              <>
-                <Divider />
+              <React.Fragment key={`frag-${idx}`}>
+                <Divider key={`divider-${idx}`} />
                 <ActiveUserListItem
                   key={`user-${idx}`}
                   isCrewDisplay
                   sessionUser={uBj as SessionUser}
                   openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
                 />
-              </>
+              </React.Fragment>
             )
           )}
         </List>
