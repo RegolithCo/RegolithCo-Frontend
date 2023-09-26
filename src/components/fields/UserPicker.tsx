@@ -6,7 +6,7 @@ import { UserListItem } from './UserListItem'
 
 export interface UserPickerProps {
   label?: string
-  toolTip?: React.ReactNode
+  toolTip?: React.ReactNode | null
   onChange: (scName: string) => void
   disableList?: string[]
   includeMentioned?: boolean
@@ -40,8 +40,10 @@ export const UserPicker: React.FC<UserPickerProps> = ({
   const theme = useTheme()
   const styles = stylesThunk(theme)
 
+  const finalTooltip = toolTip !== undefined ? toolTip : 'Enter a user name to add to the list'
+
   return (
-    <Tooltip title={toolTip || 'Enter a user name to add to the list'}>
+    <Tooltip title={finalTooltip}>
       <Autocomplete
         id="adduser"
         color="primary"

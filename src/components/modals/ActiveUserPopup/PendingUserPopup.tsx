@@ -19,7 +19,7 @@ import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { UserAvatar } from '../../UserAvatar'
-import { Cancel, CheckCircle, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
+import { Cancel, CheckCircle, DeleteForever, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 dayjs.extend(relativeTime)
 
@@ -31,12 +31,23 @@ export interface PendingUserPopupProps {
 
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
-  const { captains, mySessionUser, myUserProfile, addFriend, removeFriend, updatePendingUserCaptain, crewHierarchy } =
-    React.useContext(SessionContext)
+  const {
+    captains,
+    session,
+    mySessionUser,
+    myUserProfile,
+    addFriend,
+    removeFriend,
+    updatePendingUserCaptain,
+    crewHierarchy,
+  } = React.useContext(SessionContext)
   const theirCaptain: SessionUser | null = pendingUser.captainId
     ? captains.find((c) => c.ownerId === pendingUser.captainId) || null
     : null
 
+  const iOwnSession = session?.ownerId === myUserProfile.userId
+
+  const theirCaptainId = pendingUser?.captainId
   const vehicleCode = theirCaptain?.vehicleCode
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
 
@@ -48,7 +59,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
   const myCrewCaptainId = mySessionUser?.captainId
 
   const theyOnAnyCrew = Boolean(pendingUser?.captainId)
-  const theirCaptainId = pendingUser?.captainId
+
   const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
   const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
 
@@ -165,6 +176,16 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                 }}
               >
                 Add to my friend List
+              </Button>
+            )}
+            {iOwnSession && (
+              <Button
+                startIcon={<DeleteForever />}
+                onClick={() => {
+                  addFriend(pendingUser.scName as string)
+                }}
+              >
+                Delete {iAmTheirCaptain ? 'my' : theirCaptainScName} from session
               </Button>
             )}
           </ButtonGroup>

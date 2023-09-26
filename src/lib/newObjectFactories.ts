@@ -154,6 +154,7 @@ export function newWorkOrderMaker(
     const crew = crewHierarchy[myCaptain ? myCaptain.ownerId : mySessionUser.ownerId]
     session.activeMembers?.items.forEach((su) => {
       if (
+        crew &&
         crew.activeIds.includes(su.ownerId) && // Active member of my crew
         su.ownerId !== mySessionUser.ownerId && // Not me (I get added later)
         !defaultCrewScNames.includes(su.owner?.scName as string) // not already added as a default share
@@ -164,6 +165,7 @@ export function newWorkOrderMaker(
     // All the inactive members of the crew get a crew share
     session.mentionedUsers.forEach((mu) => {
       if (
+        crew &&
         crew.innactiveSCNames.includes(mu.scName) &&
         !defaultCrewScNames.includes(mu.scName) // not already added as a default share
       ) {

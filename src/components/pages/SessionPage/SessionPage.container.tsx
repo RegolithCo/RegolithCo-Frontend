@@ -45,6 +45,7 @@ import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectF
 import { ActivePopupMe } from '../../modals/ActiveUserPopup/ActivePopupMe'
 import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
 import { PendingUserPopup } from '../../modals/ActiveUserPopup/PendingUserPopup'
+import { AddPendingUsersModal } from '../../modals/AddPendingUsersModal'
 
 export const SessionPageContainer2: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -494,6 +495,8 @@ export const SessionPageContainer2: React.FC = () => {
             )
           }}
         />
+
+        <AddPendingUsersModal open={activeModal === DialogEnum.ADD_FRIEND} onClose={() => setActiveModal(null)} />
 
         {/* Active User Popup Modal: ME */}
         {sessionUserModalSessionUser && sessionUserModalSessionUser.ownerId === mySessionUser.ownerId && (

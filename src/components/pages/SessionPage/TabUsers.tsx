@@ -6,7 +6,7 @@ import { ExpandMore, GroupAdd } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { CrewUserList } from '../../fields/SessionUserList/CrewUserList'
 import { SessionUserList } from '../../fields/SessionUserList/SessionUserList'
-import { SessionContext } from '../../../context/session.context'
+import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { SessionUserContextMenu } from '../../fields/SessionUserList/SessionUserContextMenu'
 
 export interface TabUsersProps {
@@ -65,7 +65,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 export const TabUsers: React.FC<TabUsersProps> = () => {
   const theme = useTheme()
-  const { session, captains, singleActives, singleInnactives } = React.useContext(SessionContext)
+  const { session, captains, singleActives, singleInnactives, setActiveModal } = React.useContext(SessionContext)
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
 
@@ -101,17 +101,14 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
             {(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length} Session Members
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          {/* <CircleNumber
-            number={(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length}
-            color={theme.palette.primary.main}
-            tooltip="Total Session Members"
-          /> */}
           <Tooltip title="Add a pending user to this session" placement="right" arrow>
             <Button
               size="small"
               variant="outlined"
+              disabled={!isSessionActive}
               endIcon={<GroupAdd />}
               color="inherit"
+              onClick={() => setActiveModal(DialogEnum.ADD_FRIEND)}
               sx={{
                 background: theme.palette.secondary.main,
               }}
@@ -126,11 +123,6 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
             <Typography>{captains.length} Crews</Typography>
             <Box sx={{ flexGrow: 1 }} />
-            {/* <CircleNumber
-              number={captains.length}
-              color={theme.palette.secondary.dark}
-              tooltip="Total crews in this session"
-            /> */}
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <CrewUserList
@@ -146,11 +138,6 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
             <Typography>{singleActives.length + singleInnactives.length} Solo Players</Typography>
             <Box sx={{ flexGrow: 1 }} />
-            {/* <CircleNumber
-              number={singleActives.length}
-              color={theme.palette.secondary.dark}
-              tooltip="Total solor players in this session"
-            /> */}
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
             <SessionUserList
@@ -180,34 +167,5 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
         />
       )}
     </Box>
-  )
-}
-
-const CircleNumber: React.FC<{ number: number; color?: string; tooltip?: string }> = ({ number, color, tooltip }) => {
-  const theme = useTheme()
-  const colorFg = color || theme.palette.primary.main
-  const contrastColor = alpha(theme.palette.getContrastText(color || theme.palette.primary.main), 0.5)
-  return (
-    <Tooltip title={tooltip || ''} arrow>
-      <Box
-        sx={{
-          width: 30,
-          height: 30,
-          p: 0.2,
-          borderRadius: '50%',
-          border: `2px solid ${contrastColor}`,
-          fontWeight: 'bold',
-          fontFamily: fontFamilies.robotoMono,
-          backgroundColor: colorFg,
-          color: contrastColor,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '0.8rem',
-        }}
-      >
-        {number}
-      </Box>
-    </Tooltip>
   )
 }

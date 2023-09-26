@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { Divider, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Typography } from '@mui/material'
-import { Delete, GroupAdd, GroupRemove, Person, RocketLaunch } from '@mui/icons-material'
+import { Delete, DeleteForever, GroupAdd, GroupRemove, Person, RocketLaunch } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 import { PendingUser, MiningLoadout, SessionUser } from '@regolithco/common'
 import { ModuleIcon } from '../../../icons'
 import { DisbandModal } from '../../modals/DisbandCrew'
+import { DeleteModal } from '../../modals/DeleteModal'
 
 interface SessionUserContextMenuProps {
   open: boolean
@@ -27,19 +28,25 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     crewHierarchy,
     mySessionUser,
     captains,
+    session,
     removeFriend,
+    removeSessionMentions,
+    removeSessionCrew,
     openActiveUserModal,
     openPendingUserModal,
     updateSessionUserCaptain,
     updatePendingUserCaptain,
-    updateMySessionUser,
     openLoadoutModal,
   } = React.useContext(SessionContext)
 
   const [disbandPopupOpen, setDisbandPopupOpen] = React.useState(false)
+  const [deletePendingUserOpen, setDeletePendingUserOpen] = React.useState(false)
+  const [deleteActiveUserOpen, setDeleteActiveUserOpen] = React.useState(false)
   const isMe = sessionUser?.ownerId === myUserProfile.userId
   const isActiveUser = !!sessionUser
   const theirSCName = (sessionUser?.owner?.scName || pendingUser?.scName) as string
+
+  const iOwnSession = session?.ownerId === myUserProfile.userId
 
   const meIsPotentialCaptain = !mySessionUser?.captainId
   const meIsCaptain = meIsPotentialCaptain && crewHierarchy[mySessionUser?.ownerId]
@@ -57,6 +64,8 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   const theyIsMyCaptain = sessionUser && mySessionUser?.captainId === sessionUser?.ownerId
   const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
   const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
+
+  console.log('marzipan', { sessionUser, pendingUser })
 
   return (
     <Menu
@@ -230,8 +239,76 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
             </ListItemText>
           </MenuItem>
         )}
+
+        {/* Remove from my crew */}
+        {iOwnSession && pendingUser && (
+          <MenuItem
+            onClick={() => {
+              setDeletePendingUserOpen(true)
+            }}
+          >
+            <ListItemIcon>
+              <DeleteForever fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography color="error">Delete {pendingUser.scName} from session</Typography>
+            </ListItemText>
+          </MenuItem>
+        )}
+        {/* Remove from my crew */}
+        {iOwnSession && sessionUser && (
+          <MenuItem
+            onClick={() => {
+              setDeleteActiveUserOpen(true)
+            }}
+          >
+            <ListItemIcon>
+              <DeleteForever fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography color="error">Delete {sessionUser.owner?.scName} from session</Typography>
+            </ListItemText>
+          </MenuItem>
+        )}
       </MenuList>
-      <DisbandModal open={disbandPopupOpen} onClose={() => setDisbandPopupOpen(false)} />
+      <DisbandModal open={deletePendingUserOpen} onClose={() => setDisbandPopupOpen(false)} />
+      <DeleteModal
+        open={deletePendingUserOpen}
+        title={`Delete ${pendingUser?.scName} from session?`}
+        message={`Are you sure you want to delete ${pendingUser?.scName} from the session? This will also remove any of their work order shares.`}
+        onClose={() => setDeletePendingUserOpen(false)}
+        onConfirm={() => {
+          removeSessionMentions([pendingUser?.scName as string])
+          setDeletePendingUserOpen(false)
+          onClose()
+        }}
+      />
+      <DeleteModal
+        open={deleteActiveUserOpen}
+        title={`Delete ${sessionUser?.owner?.scName} from session?`}
+        message={
+          <>
+            <Typography>
+              Are you sure you want to delete <strong>{sessionUser?.owner?.scName}</strong> from the session? This will:
+              <ul>
+                <li>Remove all of their work orders.</li>
+                <li>Remove their work order shares in any work order.</li>
+                <li>Reassigned all their scouting shares to the session owner (you).</li>
+              </ul>
+            </Typography>
+            <Typography color="error">
+              You should know that if they still have the link for this session and you have not set "Require users to
+              be added first." in the sesison settings they can still rejoin the session.
+            </Typography>
+          </>
+        }
+        onClose={() => setDeleteActiveUserOpen(false)}
+        onConfirm={() => {
+          removeSessionCrew(sessionUser?.ownerId as string)
+          setDeleteActiveUserOpen(false)
+          onClose()
+        }}
+      />
     </Menu>
   )
 }
