@@ -74,7 +74,7 @@ export const SessionPageContainer2: React.FC = () => {
   const amISessionOwner = session?.ownerId === myUserProfile.userId
   const shareUrl = `${window.location.origin}${process.env.PUBLIC_URL}/session/${session?.sessionId}`
 
-  const returnToSession = () => navigate(makeSessionUrls({ tab }))
+  const returnToSession = () => navigate(makeSessionUrls({ sessionId, tab }))
   const openWorkOrderModal = (orderId: string) => navigate(makeSessionUrls({ sessionId, orderId, tab }))
   const openScoutingModal = (scoutingFindId: string) => navigate(makeSessionUrls({ sessionId, scoutingFindId, tab }))
 

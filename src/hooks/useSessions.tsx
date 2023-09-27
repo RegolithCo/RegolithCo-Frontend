@@ -410,6 +410,35 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           sessionId: sessionId as string,
           scNames,
         },
+        // We need to filter out the users because it may be another 10 seconds before the query updates its poll
+        // Also we can save ourselves a query by just updating the cache
+        update: (cache) => {
+          // 1. Pull all crew shares for this session from the cache
+          const sessionQry = cache.readQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+          })
+          if (!sessionQry || !sessionQry.session || !sessionQry.session.workOrders) return
+          const newSessionQry: GetSessionQuery = {
+            ...sessionQry,
+            session: {
+              ...sessionQry.session,
+              workOrders: {
+                ...sessionQry.session?.workOrders,
+                items: (sessionQry.session?.workOrders?.items as WorkOrder[]).map((wo) => ({
+                  ...wo,
+                  crewShares: (wo.crewShares as CrewShare[]).filter((cs) => !scNames.includes(cs.scName)),
+                })),
+              },
+            },
+          }
+          // 2. Write the modified session back to the cache
+          cache.writeQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+            data: newSessionQry,
+          })
+        },
         optimisticResponse: () => ({
           removeSessionMentions: {
             ...(sessionQry.data?.session as Session),
@@ -426,6 +455,56 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         variables: {
           sessionId: sessionId as string,
           scNames: [scName],
+        },
+        // We need to filter out the users because it may be another 10 seconds before the query updates its poll
+        // Also we can save ourselves a query by just updating the cache
+        update: (cache) => {
+          // 1. Pull all crew shares for this session from the cache
+          const sessionQry = cache.readQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+          })
+          if (!sessionQry || !sessionQry.session) return
+          const activeUser = sessionQry.session?.activeMembers?.items?.find((m) => m.owner?.scName === scName)
+          const newSessionQry: GetSessionQuery = {
+            ...sessionQry,
+            session: {
+              ...sessionQry.session,
+              activeMembers: sessionQry.session?.activeMembers
+                ? {
+                    ...sessionQry.session?.activeMembers,
+                    items: (sessionQry.session?.activeMembers?.items as SessionUser[]).filter(({ ownerId }) =>
+                      activeUser ? ownerId !== activeUser.ownerId : true
+                    ),
+                  }
+                : undefined,
+              workOrders: sessionQry.session?.workOrders
+                ? {
+                    ...sessionQry.session?.workOrders,
+                    items: (sessionQry.session?.workOrders?.items as WorkOrder[])
+                      .filter(({ ownerId }) => (activeUser ? ownerId !== activeUser.ownerId : true))
+                      .map((wo) => ({
+                        ...wo,
+                        crewShares: (wo.crewShares as CrewShare[]).filter((cs) => cs.scName !== scName),
+                      })),
+                  }
+                : undefined,
+              scouting: sessionQry.session?.scouting
+                ? {
+                    ...sessionQry.session?.scouting,
+                    items: (sessionQry.session?.scouting?.items as ScoutingFind[]).filter(({ ownerId }) =>
+                      activeUser ? ownerId !== activeUser.ownerId : true
+                    ),
+                  }
+                : undefined,
+            },
+          }
+          // 2. Write the modified session back to the cache
+          cache.writeQuery<GetSessionQuery>({
+            query: GetSessionDocument,
+            variables: { sessionId: sessionId as string },
+            data: newSessionQry,
+          })
         },
         optimisticResponse: () => ({
           removeSessionCrew: {

@@ -65,8 +65,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
   const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
   const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
 
-  console.log('marzipan', { sessionUser, pendingUser })
-
   return (
     <Menu
       id="menu-appbar"
@@ -304,7 +302,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
         }
         onClose={() => setDeleteActiveUserOpen(false)}
         onConfirm={() => {
-          removeSessionCrew(sessionUser?.ownerId as string)
+          removeSessionCrew(sessionUser?.owner?.scName as string)
           setDeleteActiveUserOpen(false)
           onClose()
         }}
