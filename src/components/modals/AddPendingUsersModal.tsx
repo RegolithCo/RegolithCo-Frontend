@@ -5,7 +5,7 @@ import { Stack } from '@mui/system'
 import { Cancel, Check } from '@mui/icons-material'
 import { SessionContext } from '../../context/session.context'
 import { UserPicker } from '../fields/UserPicker'
-import { UserSuggest, validateSCName } from '@regolithco/common'
+import { validateSCName } from '@regolithco/common'
 
 export interface AddInnactiveUsersModalProps {
   open: boolean
@@ -14,7 +14,7 @@ export interface AddInnactiveUsersModalProps {
 
 export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ open, onClose }) => {
   const theme = useTheme()
-  const { addSessionMentions, session, myUserProfile } = React.useContext(SessionContext)
+  const { addSessionMentions, session, myUserProfile, userSuggest } = React.useContext(SessionContext)
   const [[addNameFinal, error], setAddName] = React.useState<[string, string | null]>(['', null])
 
   const activeNames: string[] = React.useMemo(
@@ -26,23 +26,6 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
     [session?.activeMembers]
   )
   const allNames = [...activeNames, ...pendingNames]
-
-  const userSuggest: UserSuggest = React.useMemo(
-    () =>
-      myUserProfile.friends.reduce(
-        (acc, friendName) => ({
-          ...acc,
-          [friendName]: {
-            friend: true,
-            session: false,
-            named: false,
-            crew: false,
-          },
-        }),
-        {} as UserSuggest
-      ),
-    [myUserProfile.friends]
-  )
 
   return (
     <Dialog

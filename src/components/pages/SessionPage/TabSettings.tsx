@@ -52,8 +52,6 @@ import { DialogEnum } from '../../../context/session.context'
 export interface SessionSettingsTabProps {
   // Use this for the session version
   session?: Session
-  title?: string
-  description?: string
   scroll?: boolean
   // For the profile version we only have the sessionSettings
   sessionSettings?: SessionSettings
@@ -125,8 +123,6 @@ function makeNewSettings(session?: Session, sessionSettings?: SessionSettings) {
 export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   session,
   sessionSettings,
-  title,
-  description,
   userSuggest,
   scroll,
   onChangeSession,

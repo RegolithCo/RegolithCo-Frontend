@@ -14,6 +14,7 @@ import {
   UserProfile,
   VerifiedUserLookup,
   WorkOrder,
+  UserSuggest,
 } from '@regolithco/common'
 import { createContext } from 'react'
 
@@ -60,6 +61,7 @@ export interface SessionContextType {
   verifiedMentionedUsers: VerifiedUserLookup
   addFriend: (username: string) => void
   removeFriend: (username: string) => void
+  userSuggest: UserSuggest
 
   crewHierarchy: CrewHierarchy
   singleActives: SessionUser[]
@@ -128,6 +130,7 @@ export const sessionContextDefault: SessionContextType = {
 
   loading: false,
   mutating: false,
+  userSuggest: {},
 
   activeTab: SessionTabs.DASHBOARD,
   setActiveTab: notAvailable('setActiveTab'),

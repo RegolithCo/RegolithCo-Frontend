@@ -250,6 +250,7 @@ export const SessionPageContainer2: React.FC = () => {
           mySessionUser,
           addFriend: userQry.addFriend,
           removeFriend: userQry.removeFriend,
+          userSuggest,
 
           crewHierarchy,
           singleActives,

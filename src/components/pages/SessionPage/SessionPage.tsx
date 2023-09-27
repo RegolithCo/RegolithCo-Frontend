@@ -7,8 +7,8 @@ import { ArrowBack, Dashboard, Group, Logout, Settings, Summarize, TableView, Tr
 import { SessionHeader } from './SessionHeader'
 import { fontFamilies } from '../../../theme'
 import { TabDashboard } from './TabDashboard'
-import { TabWorkOrders } from './TabWorkOrders'
-import { TabScouting } from './TabScouting'
+// import { TabWorkOrders } from './TabWorkOrders'
+// import { TabScouting } from './TabScouting'
 import { SessionSettingsTab } from './TabSettings'
 import { TabUsers } from './TabUsers'
 import { TabSummary } from './TabSummary'
@@ -39,7 +39,18 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 const DRAWER_WIDTH = 300
 
 export const SessionPage: React.FC<SessionPageProps> = () => {
-  const { navigate, activeTab, setActiveTab, setActiveModal, session, myUserProfile } = React.useContext(SessionContext)
+  const {
+    navigate,
+    activeTab,
+    setActiveTab,
+    setActiveModal,
+    onUpdateSession,
+    session,
+    myUserProfile,
+    resetDefaultSystemSettings,
+    resetDefaultUserSettings,
+    userSuggest,
+  } = React.useContext(SessionContext)
   const theme = useTheme()
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const isActive = session?.state === SessionStateEnum.Active
@@ -125,11 +136,11 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               sx={styles.sessionTabs}
               aria-label="basic tabs example"
             >
-              <Tab label="Dashboard" value={SessionTabs.DASHBOARD} />
-              <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} />
-              <Tab label="Scouting" value={SessionTabs.SCOUTING} />
-              <Tab label="Summary" value={SessionTabs.SUMMARY} />
-              {isSessionOwner && <Tab label="Settings" value={SessionTabs.SETTINGS} />}
+              <Tab label="Dashboard" icon={<Dashboard />} value={SessionTabs.DASHBOARD} />
+              {/* <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} /> */}
+              {/* <Tab label="Scouting" value={SessionTabs.SCOUTING} /> */}
+              <Tab label="Summary" icon={<Summarize />} value={SessionTabs.SUMMARY} />
+              {isSessionOwner && <Tab icon={<Settings />} label="Settings" value={SessionTabs.SETTINGS} />}
             </Tabs>
           )}
         </Box>
@@ -141,10 +152,23 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
         >
           {activeTab === SessionTabs.USERS && <TabUsers />}
           {activeTab === SessionTabs.DASHBOARD && <TabDashboard />}
-          {activeTab === SessionTabs.WORK_ORDERS && <TabWorkOrders />}
-          {activeTab === SessionTabs.SCOUTING && <TabScouting />}
+          {/* {activeTab === SessionTabs.WORK_ORDERS && <TabWorkOrders />} */}
+          {/* {activeTab === SessionTabs.SCOUTING && <TabScouting />} */}
           {activeTab === SessionTabs.SUMMARY && <TabSummary />}
-          {activeTab === SessionTabs.SETTINGS && <SessionSettingsTab />}
+          {activeTab === SessionTabs.SETTINGS && (
+            <SessionSettingsTab
+              session={session}
+              userSuggest={userSuggest}
+              scroll
+              resetDefaultSystemSettings={resetDefaultSystemSettings}
+              resetDefaultUserSettings={resetDefaultUserSettings}
+              setActiveModal={setActiveModal}
+              onChangeSession={(newSession, newSettings) => {
+                onUpdateSession(newSession, newSettings)
+                setActiveModal(null)
+              }}
+            />
+          )}
         </Box>
         {/* Mobile-only menu */}
         {!mediumUp && (
