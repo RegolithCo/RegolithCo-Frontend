@@ -16,27 +16,21 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({ openContextMenu }) =
   const meId = mySessionUser.owner?.userId
 
   sortedCaptains.sort((a, b) => {
+    const aIsOwner = a.owner?.userId === session?.ownerId
+    const bIsOwner = b.owner?.userId === session?.ownerId
+    const aIsMe = a.ownerId === meId
+    const bIsMe = b.ownerId === meId
+    const aName = a.owner?.scName || 'ZZZZ'
+    const bName = b.owner?.scName || 'ZZZZ'
+
     // session owner gets the top spot
-    if (a.owner?.userId === session?.ownerId) {
-      return -1
-    }
-    if (b.owner?.userId === session?.ownerId) {
-      return 1
-    }
-    // I get the second top spot
-    if (a.owner?.userId === meId) {
-      return -1
-    }
-    if (b.owner?.userId === meId) {
-      return 1
-    }
-    // then go alphabetically prioritizing crew/ship name (if the user enter's one) then the captain's name
-    if (a.owner?.scName && b.owner?.scName) {
-      const compareA = a.shipName || a.owner.scName
-      const compareB = b.shipName || b.owner.scName
-      return compareA.localeCompare(compareB)
-    }
-    return 0
+    if (aIsOwner) return -1
+    else if (bIsOwner) return 1
+    // I get the second spot
+    else if (aIsMe) return -1
+    else if (bIsMe) return 1
+    // then go alphabetically
+    else return aName.toLowerCase().localeCompare(bName.toLowerCase())
   })
 
   return (

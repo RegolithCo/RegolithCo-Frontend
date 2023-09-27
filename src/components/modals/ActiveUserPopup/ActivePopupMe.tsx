@@ -22,8 +22,7 @@ import dayjs from 'dayjs'
 import { Cancel, Delete, Logout } from '@mui/icons-material'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { LoadoutSelect } from '../../fields/LoadoutSelect'
-import { SessionContext } from '../../../context/session.context'
-import { DisbandModal } from '../DisbandCrew'
+import { DialogEnum, SessionContext } from '../../../context/session.context'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
@@ -33,8 +32,7 @@ export interface ActivePopupMeProps {
 
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
-  const [disbandPopupOpen, setDisbandPopupOpen] = React.useState(false)
-  const { mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy } =
+  const { mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
     React.useContext(SessionContext)
   const myCaptain: SessionUser | null = mySessionUser.captainId
     ? captains.find((c) => c.ownerId === mySessionUser.captainId) || null
@@ -202,7 +200,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
               </Button>
 
               {mySessionUser.ownerId !== mySessionUser.ownerId && (
-                <Button color="error" startIcon={<Cancel />}>
+                <Button color="error" startIcon={<Cancel />} onClick={() => setActiveModal(DialogEnum.LEAVE_SESSION)}>
                   Leave Session
                 </Button>
               )}
@@ -216,7 +214,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             fullWidth
             variant="outlined"
             onClick={() => {
-              setDisbandPopupOpen(true)
+              setActiveModal(DialogEnum.DISBAND_CREW)
             }}
           >
             Disband Crew
@@ -229,7 +227,6 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           Dismiss
         </Button>
       </DialogActions>
-      <DisbandModal open={disbandPopupOpen} onClose={() => setDisbandPopupOpen(false)} />
     </Dialog>
   )
 }

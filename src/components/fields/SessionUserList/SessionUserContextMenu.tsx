@@ -1,10 +1,9 @@
 import * as React from 'react'
 import { Divider, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Typography } from '@mui/material'
 import { Delete, DeleteForever, GroupAdd, GroupRemove, Person, RocketLaunch } from '@mui/icons-material'
-import { SessionContext } from '../../../context/session.context'
+import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { PendingUser, MiningLoadout, SessionUser } from '@regolithco/common'
 import { ModuleIcon } from '../../../icons'
-import { DisbandModal } from '../../modals/DisbandCrew'
 import { DeleteModal } from '../../modals/DeleteModal'
 
 interface SessionUserContextMenuProps {
@@ -29,6 +28,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     mySessionUser,
     captains,
     session,
+    setActiveModal,
     removeFriend,
     removeSessionMentions,
     removeSessionCrew,
@@ -39,7 +39,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     openLoadoutModal,
   } = React.useContext(SessionContext)
 
-  const [disbandPopupOpen, setDisbandPopupOpen] = React.useState(false)
   const [deletePendingUserOpen, setDeletePendingUserOpen] = React.useState(false)
   const [deleteActiveUserOpen, setDeleteActiveUserOpen] = React.useState(false)
   const isMe = sessionUser?.ownerId === myUserProfile.userId
@@ -192,7 +191,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
           <MenuItem
             color="error"
             onClick={() => {
-              setDisbandPopupOpen(true)
+              setActiveModal(DialogEnum.DISBAND_CREW)
               onClose()
             }}
           >
@@ -269,7 +268,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
           </MenuItem>
         )}
       </MenuList>
-      <DisbandModal open={deletePendingUserOpen} onClose={() => setDisbandPopupOpen(false)} />
       <DeleteModal
         open={deletePendingUserOpen}
         title={`Delete ${pendingUser?.scName} from session?`}

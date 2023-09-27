@@ -31,6 +31,7 @@ export const DialogEnum = {
   SESSION_PREFERENCES: 'SESSION_PREFERENCES',
   ADD_FRIEND: 'ADD_FRIEND',
   USER_STATUS: 'USER_STATUS',
+  DISBAND_CREW: 'DISBAND_CREW',
 } as const
 export type DialogEnum = ObjectValues<typeof DialogEnum>
 

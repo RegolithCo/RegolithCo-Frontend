@@ -23,14 +23,21 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
     ]
     // Sorting the user list so that important stuff is at the top
     retVal.sort((a, b) => {
-      if (a[1] === 'Active') {
-        // session owner gets the top spot
-        if ((a[2] as SessionUser).owner?.userId === session?.ownerId) return -1
-        // I get the second spot
-        else if ((a[2] as SessionUser).owner?.userId === meId) return -1
-      }
+      const aUser = a[2] as SessionUser
+      const bUser = b[2] as SessionUser
+      const aIsOwner = aUser.owner?.userId === session?.ownerId
+      const bIsOwner = bUser.owner?.userId === session?.ownerId
+      const aIsMe = aUser.ownerId === meId
+      const bIsMe = bUser.ownerId === meId
+
+      // session owner gets the top spot
+      if (aIsOwner) return -1
+      else if (bIsOwner) return 1
+      // I get the second spot
+      else if (aIsMe) return -1
+      else if (bIsMe) return 1
       // then go alphabetically
-      return a[0].localeCompare(b[0])
+      else return a[0].toLowerCase().localeCompare(b[0].toLowerCase())
     })
     return retVal
   }, [singleActives, session, meId])

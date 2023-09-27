@@ -304,7 +304,8 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         id: cache.identify(userProfile as UserProfile),
         fields: {
           joinedSessions(existingSessionsRefs, { readField }) {
-            return existingSessionsRefs.filter((sessionRef: any) => {
+            console.log('here', existingSessionsRefs)
+            return existingSessionsRefs.items.filter((sessionRef: any) => {
               return sessionId !== readField('sessionId', sessionRef)
             })
           },
