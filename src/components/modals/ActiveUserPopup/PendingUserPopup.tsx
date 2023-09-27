@@ -109,7 +109,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
       <DialogContent>
         {theirCaptain ? (
           <Typography variant="overline" color="primary" component="div">
-            Status: member of <strong>{theirCaptain?.owner?.scName}'s</strong> crew
+            <strong>Status</strong>: member of <strong>{theirCaptain?.owner?.scName}'s</strong> crew
           </Typography>
         ) : (
           <Typography variant="overline" color="primary" component="div">
@@ -124,7 +124,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             </Typography>
 
             <Typography variant="caption" color="text.secondary">
-              1<strong>{theirCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
+              <strong>{theirCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
               {vehicle?.miningHold || vehicle?.cargo} SCU)
             </Typography>
           </Box>
@@ -194,11 +194,12 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
         <Alert severity="info" variant="outlined" sx={{ mt: 3 }}>
           <AlertTitle>About Pending Users</AlertTitle>
           <Typography variant="caption" paragraph component="div">
-            Pending users are users who have been added to the session or one of its work orders but have not yet logged
-            in and joined.
+            Pending users have been added to the session or one of its work orders but have not yet logged in and
+            joined.
           </Typography>
           <Typography variant="caption" paragraph component="div">
-            They are added to the session automatically when you add them to a work order.
+            They are added to the session automatically when you add them to a work order or manually using the ADD
+            button at the top of the members list.
           </Typography>
           <Typography variant="caption" paragraph component="div">
             You can set your session to only allow pending users to join and use this as a sort of "invite only" list to
@@ -208,7 +209,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             <CheckCircle color="success" sx={{ mr: 1 }} />
             Pending users CAN
           </Typography>
-          <Typography variant="caption" paragraph>
+          <Typography variant="caption" paragraph component="div">
             <ul>
               <li>Be on your crew.</li>
               <li>Be mentioned in work orders.</li>
@@ -222,9 +223,10 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             <Cancel color="error" sx={{ mr: 1 }} />
             Pending users CANNOT
           </Typography>
-          <Typography variant="caption" paragraph>
+          <Typography variant="caption" paragraph component="div">
             <ul>
               <li>Be captains of a crew.</li>
+              <li>Create work orders or scouting finds.</li>
             </ul>
           </Typography>
         </Alert>

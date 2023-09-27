@@ -75,6 +75,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
     pendingUser?: PendingUser
   } | null>(null)
 
+  const totalSessionMembers = (session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length
   return (
     <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
       <Toolbar
@@ -98,30 +99,34 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
               fontWeight: 'bold',
             }}
           >
-            {(session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length} Session Members
+            {totalSessionMembers} Session Member{totalSessionMembers === 1 ? '' : 's'}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title="Add a pending user to this session" placement="right" arrow>
-            <Button
-              size="small"
-              variant="outlined"
-              disabled={!isSessionActive}
-              endIcon={<GroupAdd />}
-              color="inherit"
-              onClick={() => setActiveModal(DialogEnum.ADD_FRIEND)}
-              sx={{
-                background: theme.palette.secondary.main,
-              }}
-            >
-              Add
-            </Button>
+            <>
+              <Button
+                size="small"
+                variant="outlined"
+                disabled={!isSessionActive}
+                endIcon={<GroupAdd />}
+                color="inherit"
+                onClick={() => setActiveModal(DialogEnum.ADD_FRIEND)}
+                sx={{
+                  background: theme.palette.secondary.main,
+                }}
+              >
+                Add
+              </Button>
+            </>
           </Tooltip>
         </Stack>
       </Toolbar>
       {captains.length > 0 && (
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
-            <Typography>{captains.length} Crews</Typography>
+            <Typography>
+              {captains.length} Crew{captains.length === 1 ? '' : 's'}
+            </Typography>
             <Box sx={{ flexGrow: 1 }} />
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>
@@ -136,7 +141,10 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
       {captains.length > 0 && (
         <Accordion defaultExpanded={true} disableGutters>
           <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
-            <Typography>{singleActives.length + singleInnactives.length} Solo Players</Typography>
+            <Typography>
+              {singleActives.length + singleInnactives.length} Solo Player
+              {singleActives.length + singleInnactives.length === 1 ? '' : 's'}
+            </Typography>
             <Box sx={{ flexGrow: 1 }} />
           </AccordionSummary>
           <AccordionDetails sx={styles.drawerAccordionDetails}>

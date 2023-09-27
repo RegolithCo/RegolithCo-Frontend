@@ -125,7 +125,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             </ToggleButton> */}
           </ToggleButtonGroup>
           <Typography variant="caption" color="text.secondary">
-            The 'en-route' and 'on site' status is set by opening a scouting find.
+            The 'en-route' and 'on site' statuses are set by interacting with a scouting find.
           </Typography>
         </Box>
 
@@ -178,7 +178,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           )}
           <Typography variant="caption" color="text.secondary">
             {!myCaptain
-              ? 'You can create a save named loadouts in the loadout calculator tool.'
+              ? 'You can create named loadouts in the loadout calculator tool.'
               : 'Not available to crew members.'}
           </Typography>
         </Box>

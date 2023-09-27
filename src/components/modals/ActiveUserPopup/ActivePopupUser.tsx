@@ -97,10 +97,6 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
         </Box>
         <Stack direction="row" spacing={2} alignItems="center">
           <Typography variant="h4">{sessionUser.owner?.scName}</Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          <Typography variant="overline" color="secondary.contrastText">
-            ({sessionUser?.owner?.state === UserStateEnum.Verified ? 'Verified User' : 'Unverified User'})
-          </Typography>
         </Stack>
         <Stack direction="row" spacing={2}>
           <Typography>last session activity: {dayjs(sessionUser.updatedAt).fromNow()}</Typography>

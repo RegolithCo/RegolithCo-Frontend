@@ -1,39 +1,34 @@
-### 09/??/2023
-## Fall update
-
-**TODO**
-
-- Error sweep through UI
-- Crew user UI design
-- Session list rework
-- Login verify redirect bug
-
-**DONE**
+### 09/30/2023
+## Fall 2023 update (3.20)
 
 - **MultiCrew** is here! Now you can join someone's ship as a crewmate.
     - New work orders will automatically add all crew members.
     - Crew members that create work orders will assign the order to the Captain automatically.
-    - Captains can add or remove crew members to their ship
-    - Crew members can join or leave the a ship.
+    - Captains can add or remove crew members to their crew.
+    - Crew members can join or leave a crew.
 - **Mnetioned users are now "Pending Users"** There used to be two lists, one for "Mentioned Users" and one for "Active Users" this was really confusing to people so I changed it to be one big, integrated list.
-- **New Tool: Market Price Calculator**. This tool will help you figure out what the best price is for your ore and where to sell it.
 - **User list Rework** The user list should be simpler to work with now and a lot more feature-rich
     - Context menus avaialble on right-click.
     - Click on the user to get a popup with their status.
     - Click on yourself to get a popup where you can change your status.
+- **New Tool: [Market Price Calculator](https://regolith.rocks/marketPrice)**. This tool will help you figure out what the best price is for your ore and where to sell it.
 - **Session users can now have loadouts** Advertise to the session what tools you're bringing to the party.
-- **User status tool** 
+- **User status** 
     - Click a user in the user list to see a card showing their status, crew, ship, loadout etc.
     - Click on your own name to see a card where you can set your status, ship, loadout etc.
-- **New frontpage graphs!!** Who loves data?!? ME!! I love data.
+- **New frontpage graphs!!** Who loves data?!? ME!! I DO! I LOVE DATA!!!
 - **Custom expenses** (Finally!!) One of the most requested features. You can now add your refuelling, repair and other expenses to your session. These will be deducted from the final payout before the split.
 - Changelists are now in the app! You can see them on the "about" page.
 
-**Under the hood**
+- **Changes for 3.20**
+    - Price updates from UEX (including new prices from Seraphim station)
+    - Loadout Charge window now has a note about maxing out at 50%.
+
+### Under the hood
 
 - Added automation to make updating prices from UEX easier.
 - Profile deletion has been completely reworked so it's more secure and less error prone.
-- More activities cause the session update timestamp to be set (causing the session to stay open longer).
+- More activities cause the session update timestamp to be set (causing the session to stay open).
 - Improved logging on the dev server
 - Lots of little bug fixes
 
