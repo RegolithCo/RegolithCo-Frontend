@@ -1,6 +1,13 @@
 import * as React from 'react'
 
-import { ActivityEnum, makeHumanIds, ShipMiningOrder, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
+import {
+  ActivityEnum,
+  makeHumanIds,
+  SessionStateEnum,
+  ShipMiningOrder,
+  WorkOrder,
+  WorkOrderStateEnum,
+} from '@regolithco/common'
 import { getActivityName, calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   Badge,
@@ -30,6 +37,8 @@ import {
   SvgIconComponent,
 } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
+import { SessionContext } from '../../../context/session.context'
+import { grey } from '@mui/material/colors'
 
 export interface WorkOrderTableProps {
   isDashboard?: boolean
@@ -37,7 +46,7 @@ export interface WorkOrderTableProps {
   openWorkOrderModal: (orderId: string) => void
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   table: {
     '& .MuiTableCell-root': {
       whiteSpace: 'nowrap',
@@ -50,7 +59,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   tableHead: {
     '& .MuiTableCell-root': {
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor: isActive ? theme.palette.primary.light : grey[400],
       color: theme.palette.primary.contrastText,
       borderBottom: '2px solid',
     },
@@ -58,7 +67,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   footer: {
     '& .MuiTableCell-root': {
       fontSize: '0.8rem',
-      color: theme.palette.secondary.main,
+      color: isActive ? theme.palette.secondary.main : grey[400],
       backgroundColor: '#160800d8',
       borderTop: '2px solid',
       whiteSpace: 'nowrap',
@@ -69,7 +78,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, openWorkOrderModal, isDashboard }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const { session } = React.useContext(SessionContext)
+  const isActive = session?.state === SessionStateEnum.Active
+  const styles = stylesThunk(theme, isActive)
 
   // NOTE: Order is REALLY important here
   const { summaries, volSCU, shareAmount, sortedWorkOrders } = React.useMemo(() => {

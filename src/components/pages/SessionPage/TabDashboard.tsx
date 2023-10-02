@@ -22,12 +22,13 @@ import { WorkOrderTable } from './WorkOrderTable'
 import { ClusterCard } from '../../cards/ClusterCard'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
+import { grey } from '@mui/material/colors'
 
 export interface TabDashboardProps {
   propA?: string
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   container: {
     '& .MuiAccordion-root': {
       position: 'relative',
@@ -66,7 +67,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontFamily: fontFamilies.robotoMono,
     fontWeight: 'bold',
     background: '#121115aa',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: isActive ? theme.palette.primary.main : grey[600],
     color: theme.palette.primary.contrastText,
   },
   sectionBody: {
@@ -79,10 +80,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
   const { session, openWorkOrderModal, openScoutingModal, createNewWorkOrder, createNewScoutingFind } =
     React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
+  const styles = stylesThunk(theme, isActive)
   // Filtering for the accordions
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)

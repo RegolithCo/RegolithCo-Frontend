@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { User, SessionUserStateEnum, lookups, SessionUser } from '@regolithco/common'
+import { User, SessionUserStateEnum, lookups, SessionUser, SessionStateEnum } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -32,8 +32,9 @@ export interface ActivePopupMeProps {
 
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
-  const { mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
+  const { session, mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
     React.useContext(SessionContext)
+  const sessionActive = session?.state === SessionStateEnum.Active
   const myCaptain: SessionUser | null = mySessionUser.captainId
     ? captains.find((c) => c.ownerId === mySessionUser.captainId) || null
     : null
@@ -98,9 +99,10 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             value={mySessionUser.state}
             fullWidth
             exclusive
+            disabled={!sessionActive}
             size="small"
             onChange={(e, state) => {
-              if (!state) return
+              if (!state || !sessionActive) return
               updateMySessionUser({
                 isPilot: mySessionUser.isPilot,
                 state: state as SessionUserStateEnum,
@@ -137,6 +139,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
           {!myCaptain ? (
             <VehicleChooser
               vehicle={vehicle?.code}
+              disabled={Boolean(!sessionActive)}
               onChange={(vehicle) => {
                 updateMySessionUser({
                   isPilot: true,
@@ -168,7 +171,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             <LoadoutSelect
               loadouts={myUserProfile.loadouts}
               sessionUser={mySessionUser}
-              disabled={Boolean(!vehicle || !vehicle.miningHold || vehicle.miningHold < 20)}
+              disabled={!sessionActive || Boolean(!vehicle || !vehicle.miningHold || vehicle.miningHold < 20)}
               onChange={(loadoutId) => {
                 updateMySessionUser({
                   loadoutId,

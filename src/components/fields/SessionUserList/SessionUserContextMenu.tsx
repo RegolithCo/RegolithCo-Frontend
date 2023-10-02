@@ -237,8 +237,8 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
           </MenuItem>
         )}
 
-        {/* Remove from my crew */}
-        {iOwnSession && pendingUser && (
+        {/* Remove active user from my crew */}
+        {!isMe && iOwnSession && pendingUser && (
           <MenuItem
             onClick={() => {
               setDeletePendingUserOpen(true)
@@ -252,8 +252,8 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
             </ListItemText>
           </MenuItem>
         )}
-        {/* Remove from my crew */}
-        {iOwnSession && sessionUser && (
+        {/* Remove pending user from my crew */}
+        {!isMe && iOwnSession && sessionUser && (
           <MenuItem
             onClick={() => {
               setDeleteActiveUserOpen(true)

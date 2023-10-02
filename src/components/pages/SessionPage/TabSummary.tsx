@@ -6,6 +6,7 @@ import {
   Session,
   SessionBreakdown,
   sessionReduce,
+  SessionStateEnum,
   SessionUser,
   ShareAmtArr,
   ShareTypeEnum,
@@ -51,6 +52,7 @@ import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import numeral from 'numeral'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { SessionContext } from '../../../context/session.context'
+import { grey } from '@mui/material/colors'
 
 export interface TabSummaryProps {
   propA?: string
@@ -62,7 +64,7 @@ const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
   [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: '1em' }} />,
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   gridContainer: {
     [theme.breakpoints.up('md')]: {},
   },
@@ -90,7 +92,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     px: 2,
     py: 0.65,
     background: '#121115aa',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: isActive ? theme.palette.primary.main : grey[600],
     color: theme.palette.primary.contrastText,
     fontSize: '1.2rem',
     lineHeight: 2,
@@ -120,8 +122,9 @@ type ConfirmModalState = {
 
 export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
   const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
+  const isSessionActive = session?.state === SessionStateEnum.Active
+  const styles = stylesThunk(theme, isSessionActive)
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
   const sessionSummary: SessionBreakdown = React.useMemo(
     () => sessionReduce(session?.workOrders?.items || []),
@@ -272,7 +275,7 @@ const OwingList: React.FC<OwingListProps> = ({
   openWorkOrderModal,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const styles = stylesThunk(theme, session?.state === SessionStateEnum.Active)
   const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
   const rowObj = isPaid ? sessionSummary.paid : sessionSummary.owed
   const rowArr: [string, string, number][] = Object.entries(rowObj).reduce<[string, string, number][]>(

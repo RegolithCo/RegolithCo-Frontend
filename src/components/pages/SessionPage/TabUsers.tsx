@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
-import { alpha, Box, Button, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, Button, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { ExpandMore, GroupAdd } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
@@ -8,6 +8,7 @@ import { CrewUserList } from '../../fields/SessionUserList/CrewUserList'
 import { SessionUserList } from '../../fields/SessionUserList/SessionUserList'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { SessionUserContextMenu } from '../../fields/SessionUserList/SessionUserContextMenu'
+import { grey } from '@mui/material/colors'
 
 export interface TabUsersProps {
   propa?: string
@@ -29,7 +30,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       fontWeight: 'bold',
     },
     color: theme.palette.secondary.contrastText,
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: isActive ? theme.palette.secondary.dark : grey[400],
     '& .MuiAccordionSummary-expandIconWrapper': {
       color: theme.palette.secondary.contrastText,
     },
@@ -40,7 +41,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       fontWeight: 'bold',
     },
     color: theme.palette.secondary.contrastText,
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: isActive ? theme.palette.secondary.main : grey[300],
     '& .MuiAccordionSummary-expandIconWrapper': {
       color: theme.palette.secondary.contrastText,
     },
@@ -51,7 +52,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
       fontWeight: 'bold',
     },
     color: theme.palette.secondary.contrastText,
-    backgroundColor: theme.palette.secondary.light,
+    backgroundColor: isActive ? theme.palette.secondary.light : grey[200],
     '& .MuiAccordionSummary-expandIconWrapper': {
       color: theme.palette.secondary.contrastText,
     },
@@ -81,7 +82,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
       <Toolbar
         disableGutters
         sx={{
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: isSessionActive ? theme.palette.primary.main : grey[500],
           color: theme.palette.secondary.contrastText,
           '&.MuiToolbar-root': {
             minHeight: 50,
@@ -112,7 +113,8 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
                 color="inherit"
                 onClick={() => setActiveModal(DialogEnum.ADD_FRIEND)}
                 sx={{
-                  background: theme.palette.secondary.main,
+                  opacity: isSessionActive ? 1 : 0.5,
+                  background: isSessionActive ? theme.palette.secondary.main : grey[600],
                 }}
               >
                 Add

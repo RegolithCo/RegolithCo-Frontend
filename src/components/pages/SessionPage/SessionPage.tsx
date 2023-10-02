@@ -89,7 +89,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               <Button
                 startIcon={<ArrowBack />}
                 onClick={() => navigate('/session')}
-                color="secondary"
+                color={'secondary'}
                 variant="text"
                 fullWidth
               >
