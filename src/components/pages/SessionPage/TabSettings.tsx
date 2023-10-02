@@ -57,6 +57,8 @@ export interface SessionSettingsTabProps {
   sessionSettings?: SessionSettings
   onChangeSession?: (session: SessionInput, newSettings: DestructuredSettings) => void
   onChangeSettings?: (newSettings: DestructuredSettings) => void
+  endSession?: () => void
+  deleteSession?: () => void
   resetDefaultUserSettings?: () => void
   resetDefaultSystemSettings?: () => void
   setActiveModal?: (modal: DialogEnum) => void
@@ -127,6 +129,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   scroll,
   onChangeSession,
   onChangeSettings,
+  endSession,
+  deleteSession,
   setActiveModal,
   resetDefaultSystemSettings,
   resetDefaultUserSettings,
@@ -280,8 +284,10 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       <Button
                         variant="contained"
                         fullWidth
+                        disabled={!endSession}
                         startIcon={<StopCircle />}
                         onClick={() => {
+                          endSession && endSession()
                           setActiveModal && setActiveModal(DialogEnum.CLOSE_SESSION)
                         }}
                         color="secondary"
@@ -293,8 +299,10 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       <Button
                         variant="contained"
                         fullWidth
+                        disabled={!deleteSession}
                         startIcon={<Delete />}
                         onClick={() => {
+                          deleteSession && deleteSession()
                           setActiveModal && setActiveModal(DialogEnum.DELETE_SESSION)
                         }}
                         color="error"

@@ -36,7 +36,7 @@ import { LoadoutCalc } from '../../calculators/LoadoutCalc/LoadoutCalc'
 import { WorkOrderModal } from '../../modals/WorkOrderModal'
 import { workOrderStateThemes } from '../../../theme'
 import { DeleteModal } from '../../modals/DeleteModal'
-import { DialogContentText } from '@mui/material'
+import { DialogContentText, Typography } from '@mui/material'
 import { ShareModal } from '../../modals/ShareModal'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { DownloadModal } from '../../modals/DownloadModal'
@@ -413,7 +413,10 @@ export const SessionPageContainer2: React.FC = () => {
               scoutingFind: modalScoutingFind,
               joinScoutingFind: scoutingFindQry.joinScoutingFind,
               leaveScoutingFind: scoutingFindQry.leaveScoutingFind,
-              onDelete: () => setActiveModal(null),
+              onDelete: () => {
+                scoutingFindQry.deleteScoutingFind(modalScoutingFind.scoutingFindId)
+                setActiveModal(null)
+              },
               onChange: (newScouting) => {
                 scoutingFindQry.updateScoutingFind(newScouting)
                 setNewScoutingFind(null)
@@ -437,24 +440,34 @@ export const SessionPageContainer2: React.FC = () => {
           }
           open={activeModal === DialogEnum.DELETE_SESSION}
           onClose={() => setActiveModal(null)}
-          onConfirm={() => setActiveModal(null)}
+          onConfirm={() => {
+            sessionQueries.deleteSession()
+            setActiveModal(null)
+          }}
         />
 
-        {/* Close Session Modal */}
+        {/* End Session Modal */}
         <DeleteModal
           title={'Permanently end this session?'}
-          confirmBtnText={'Yes, End Session!'}
-          cancelBtnText="No, keep session"
+          confirmBtnText={'YES! End my session!'}
+          cancelBtnText="Cancel"
           message={
-            <DialogContentText id="alert-dialog-description">
-              Closing a session will lock it permanently. Crew shares can still be marked paid but no new jobs or
-              scouting finds can be added and no new users can join. THIS IS A PERMANENT ACTION. Are you sure you want
-              to close this session?
+            <DialogContentText id="alert-dialog-description" component={'div'}>
+              <Typography paragraph>
+                Closing a session will lock it permanently. Crew shares can still be marked paid but new jobs or
+                scouting finds CANNOT be added and no new users can join.
+              </Typography>
+              <Typography paragraph>
+                <strong>THIS IS A PERMANENT ACTION</strong>. Are you sure you want to close this session?
+              </Typography>
             </DialogContentText>
           }
           open={activeModal === DialogEnum.CLOSE_SESSION}
           onClose={() => setActiveModal(null)}
-          onConfirm={() => setActiveModal(null)}
+          onConfirm={() => {
+            sessionQueries.closeSession()
+            setActiveModal(null)
+          }}
         />
 
         {/* Share Session Modal */}

@@ -162,6 +162,8 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               scroll
               resetDefaultSystemSettings={resetDefaultSystemSettings}
               resetDefaultUserSettings={resetDefaultUserSettings}
+              endSession={() => setActiveModal(DialogEnum.CLOSE_SESSION)}
+              deleteSession={() => setActiveModal(DialogEnum.DELETE_SESSION)}
               setActiveModal={setActiveModal}
               onChangeSession={(newSession, newSettings) => {
                 onUpdateSession(newSession, newSettings)
