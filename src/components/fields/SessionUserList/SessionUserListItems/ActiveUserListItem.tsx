@@ -272,7 +272,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         }
       />
       <ListItemSecondaryAction>
-        {sessionUser.loadout && !isCrewDisplay && (
+        {sessionUser.loadout && isCaptain && (
           <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
             <IconButton
               color="primary"

@@ -13,6 +13,7 @@ import { SessionSettingsTab } from './TabSettings'
 import { TabUsers } from './TabUsers'
 import { TabSummary } from './TabSummary'
 import { DialogEnum, SessionContext, SessionTabs } from '../../../context/session.context'
+import { grey } from '@mui/material/colors'
 
 export interface SessionPageProps {
   noProps?: string
@@ -178,13 +179,13 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
             variant="scrollable"
             sx={{
               borderTop: '2px solid',
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor: isActive ? theme.palette.primary.main : grey[500],
               color: theme.palette.primary.contrastText,
               '& .MuiTab-root': {
                 color: theme.palette.primary.contrastText,
               },
               '& .Mui-selected': {
-                backgroundColor: theme.palette.secondary.main,
+                backgroundColor: isActive ? theme.palette.secondary.main : grey[200],
                 // color: theme.palette.primary.light,
                 // textShadow: '0 0 2px #FFF',
               },
@@ -198,8 +199,8 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           >
             <Tab label="Users" value={SessionTabs.USERS} icon={<Group />} />
             <Tab label="Dash" value={SessionTabs.DASHBOARD} icon={<Dashboard />} />
-            <Tab label="Orders" value={SessionTabs.WORK_ORDERS} icon={<TableView />} />
-            <Tab label="Scout" value={SessionTabs.SCOUTING} icon={<TravelExplore />} />
+            {/* <Tab label="Orders" value={SessionTabs.WORK_ORDERS} icon={<TableView />} />
+            <Tab label="Scout" value={SessionTabs.SCOUTING} icon={<TravelExplore />} /> */}
             <Tab label="Summary" value={SessionTabs.SUMMARY} icon={<Summarize />} />
             {isSessionOwner && <Tab label="Settings" value={SessionTabs.SETTINGS} icon={<Settings />} />}
           </Tabs>
