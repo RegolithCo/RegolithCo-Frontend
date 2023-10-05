@@ -148,7 +148,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
       <Divider sx={{ my: 2 }} />
       <Paper sx={{ p: 2, my: 3 }} elevation={1}>
         <Typography variant="h5" sx={{ mb: 2 }} gutterBottom>
-          Stats
+          Regolith Usage Stats
         </Typography>
         <SiteStats stats={stats} statsLoading={statsLoading} />
       </Paper>
