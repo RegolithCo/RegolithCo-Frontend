@@ -1,3 +1,9 @@
+### 10/0/2023
+## Login Hotfix
+
+Multiple users were reporting the innability to log into the system. This was due to a bug in the login system that was introduced in the last patch. A combination of a library operating a little differently in a newer version and a bug in my code caused the login to fail. This has been fixed and the system is back online. 
+
+
 ### 09/30/2023
 ## Fall 2023 update (3.20)
 
@@ -6,9 +12,9 @@
     - Crew members that create work orders will assign the order to the Captain automatically.
     - Captains can add or remove crew members to their crew.
     - Crew members can join or leave a crew.
-- **Mnetioned users are now "Pending Users"** There used to be two lists, one for "Mentioned Users" and one for "Active Users" this was really confusing to people so I changed it to be one big, integrated list.
+- **Mentioned users are now "Pending Users"** There used to be two lists, one for "Mentioned Users" and one for "Active Users" this was really confusing to people so I changed it to be one big, integrated list.
 - **User list Rework** The user list should be simpler to work with now and a lot more feature-rich
-    - Context menus avaialble on right-click.
+    - Context menus available on right-click.
     - Click on the user to get a popup with their status.
     - Click on yourself to get a popup where you can change your status.
 - **New Tool: [Market Price Calculator](https://regolith.rocks/marketPrice)**. This tool will help you figure out what the best price is for your ore and where to sell it.
