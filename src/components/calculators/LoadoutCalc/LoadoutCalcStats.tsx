@@ -52,11 +52,11 @@ export const statsOrder: {
     ),
   },
   { key: 'shatterDamage', label: 'Shatter', percent: true, tooltip: 'Shatter Damage Modifier' },
-  { key: 'extrPower', label: 'Ext Pwr', isMod: true, tooltip: 'Total extraction power (All Active lasers combined)' },
+  { key: 'extrPower', label: 'Ext Pwr', tooltip: 'Total extraction power (All Active lasers combined)' },
 
   // minPowerPct: { label: 'Min Power %', percent: true },
   // extrPowerMod: { label: 'Extraction Power Mod', percent: true },
-  { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', isMod: true, percent: true },
+  // { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', isMod: true, percent: true },
 ]
 
 export const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
@@ -82,7 +82,7 @@ export const LoadoutCalcStats: React.FC<LoadoutCalcStatsProps> = ({ stats }) => 
       <Grid container>
         {statsOrder
           // PowerMod is a special case and it gets folded into other stats
-          .filter(({ key }) => key !== 'powerMod')
+          // .filter(({ key }) => key !== 'powerMod')
           .map(({ key, label, percent, unit, tooltip }, idx) => {
             const modPercent = MODMAP[key as keyof AllStats]
               ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]

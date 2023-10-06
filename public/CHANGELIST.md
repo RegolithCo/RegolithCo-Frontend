@@ -1,7 +1,8 @@
-### 10/0/2023
-## Login Hotfix
+### 10/06/2023
+## HOTFIXES
 
-Multiple users were reporting the innability to log into the system. This was due to a bug in the login system that was introduced in the last patch. A combination of a library operating a little differently in a newer version and a bug in my code caused the login to fail. This has been fixed and the system is back online. 
+- **Login Bug**: Multiple users were reporting the innability to log into the system. This was due to a bug in the login system that was introduced in the last patch. A combination of a library operating a little differently in a newer version and a bug in my code caused the login to fail. This has been fixed and the system is back online. 
+- **Extractor Power Loadout**: The extractor power loadout was not being calculated correctly. This has been fixed and the correct values are now being used.
 
 
 ### 09/30/2023
