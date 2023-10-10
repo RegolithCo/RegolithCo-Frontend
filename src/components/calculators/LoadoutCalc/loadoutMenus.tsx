@@ -12,7 +12,7 @@ import {
 } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LoadoutStat } from './LoadoutStat'
-import { statsOrder } from './LoadoutCalcStats'
+import { toolMenuStatsOrder } from './LoadoutCalcStats'
 import { ModuleIcon } from '../../../icons/Module'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
@@ -281,7 +281,7 @@ export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
         <Box sx={{ width: 50, textAlign: 'right', fontFamily: fontFamilies.robotoMono }}>
           {MValueFormatter(laser.price, MValueFormat.currency_sm)}
         </Box>
-        {statsOrder
+        {toolMenuStatsOrder
           .filter(({ key }) => !LASER_NO_MENU_STAT.includes(key as keyof LaserLoadoutStats))
           .map(({ key, label, percent, unit, tooltip }, idx) => (
             <LoadoutStat
@@ -336,7 +336,7 @@ export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) =>
         <Box sx={{ width: 60, fontFamily: fontFamilies.robotoMono, textAlign: 'right' }}>
           {MValueFormatter(module.price, MValueFormat.currency_sm)}
         </Box>
-        {statsOrder
+        {toolMenuStatsOrder
           .filter(
             ({ key }) =>
               !MODULE_NO_MENU_STAT.includes(key as keyof ModuleLoadoutStats) &&

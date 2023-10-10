@@ -364,8 +364,8 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           reversed={BackwardStats.includes('shatterDamage')}
                         />
                         <StatsCell
-                          value={lm.stats.powerMod}
-                          maxMin={maxMin['powerMod']}
+                          value={lm.stats.extrPowerMod}
+                          maxMin={maxMin['extrPowerMod']}
                           sx={Object.assign({}, styles.sectionDivider, topBorder)}
                           reversed={BackwardStats.includes('powerMod')}
                         />

@@ -8,14 +8,16 @@ export interface LoadoutCalcStatsProps {
   stats: AllStats
 }
 
-export const statsOrder: {
+export type LoadoutStatsOrder = {
   key: keyof AllStats
   label: string
   tooltip: string | React.ReactNode
   percent?: boolean
   isMod?: boolean
   unit?: string
-}[] = [
+}
+
+export const statsOrder: LoadoutStatsOrder[] = [
   { key: 'minPower', label: 'Min Pwr', tooltip: 'Minimum Laser Power (All Active lasers combined)' },
   { key: 'maxPower', label: 'Max Pwr', tooltip: 'Maximum Laser Power (All active lasers combined)' },
   {
@@ -55,8 +57,21 @@ export const statsOrder: {
   { key: 'extrPower', label: 'Ext Pwr', tooltip: 'Total extraction power (All Active lasers combined)' },
 
   // minPowerPct: { label: 'Min Power %', percent: true },
-  // extrPowerMod: { label: 'Extraction Power Mod', percent: true },
-  // { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', isMod: true, percent: true },
+]
+
+/**
+ * The dropdown menus need two different orders for the stats
+ */
+export const toolMenuStatsOrder: LoadoutStatsOrder[] = [
+  ...statsOrder,
+  {
+    key: 'extrPowerMod',
+    label: 'Extraction Power Mod',
+    tooltip: 'Extractor Power Modifier',
+    isMod: true,
+    percent: true,
+  },
+  { key: 'powerMod', label: 'Power Mod', tooltip: 'Power Modifier', isMod: true, percent: true },
 ]
 
 export const MODMAP: Partial<Record<keyof AllStats, keyof AllStats>> = {
