@@ -1,6 +1,6 @@
 {
   "name": "@regolithco/react-app",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.8.4",
@@ -15,7 +15,7 @@
     "@nivo/line": "^0.83.0",
     "@nivo/pie": "^0.83.0",
     "@react-oauth/google": "^0.6.0",
-    "@regolithco/common": "^1.0.18",
+    "@regolithco/common": "^1.0.19",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.9",
     "@types/react": "^18.0.26",
