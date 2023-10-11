@@ -228,6 +228,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                 </TableCell>
                 {filteredValues.length > 0 && columnGroups.includes(ColumnGroupEnum.Buffs) && (
                   <>
+                    <LongCellHeader>Laser Power Mod</LongCellHeader>
                     <LongCellHeader>Resistance</LongCellHeader>
                     <LongCellHeader>Instability</LongCellHeader>
                     <LongCellHeader>Optimal Charge Rate</LongCellHeader>
@@ -315,6 +316,12 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
 
                     {columnGroups.includes(ColumnGroupEnum.Buffs) && (
                       <>
+                        <StatsCell
+                          value={lm.stats.powerMod}
+                          maxMin={maxMin['powerMod']}
+                          sx={Object.assign({}, topBorder)}
+                          reversed={BackwardStats.includes('powerMod')}
+                        />
                         <StatsCell
                           value={lm.stats.resistance}
                           maxMin={maxMin['resistance']}
