@@ -1,8 +1,5 @@
 import React, { useCallback } from 'react'
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Card,
@@ -27,7 +24,7 @@ import {
 import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { Close, Delete, Edit, ExpandMore, Help, Refresh, Save } from '@mui/icons-material'
+import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
@@ -193,6 +190,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     },
     [onClose, open]
   )
+
   return (
     <Wrapper>
       <Card
@@ -417,6 +415,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
             </Tooltip>
           </Stack>
         )}
+        {/* This component is the edit component */}
         <LoadoutCreateModal
           open={editingName}
           edit
@@ -429,6 +428,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
             })
           }}
         />
+        {/* This component is the create component */}
         <LoadoutCreateModal
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}

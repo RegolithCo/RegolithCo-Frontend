@@ -226,6 +226,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
         <LoadoutCalc
           isModal
           loading={loading}
+          open
           miningLoadout={activeLoadoutObj}
           onClose={onCloseDialog}
           onDelete={() => {
