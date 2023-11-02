@@ -50,13 +50,13 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
   const [editingRow, setEditingRow] = React.useState<number | null>(null)
   const customExpenses = workOrder.expenses || []
   const expenses: ExpenseRow[] = []
-  if ((workOrder as ShipMiningOrder).isRefined && summary?.refiningCost) {
-    expenses.push({
-      name: 'Refining Cost',
-      amount: summary?.refiningCost as number,
-      idx: -2,
-    })
-  }
+  // if ((workOrder as ShipMiningOrder).isRefined && summary?.refiningCost) {
+  //   expenses.push({
+  //     name: 'Refining Cost',
+  //     amount: summary?.refiningCost as number,
+  //     idx: -2,
+  //   })
+  // }
   if (workOrder.includeTransferFee && summary.transferFees > 0) {
     expenses.push({
       name: 'moTRADER',

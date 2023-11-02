@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertTitle,
   Button,
   Card,
   CardActions,
@@ -18,7 +20,8 @@ import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
 import { StatsObjectSummary } from '@regolithco/common'
-import { Alert319 } from '../modals/Alert319'
+import { Alert319 } from '../modals/announcements/Alert319'
+import { AlertPyro } from '../modals/announcements/AlertPyro'
 
 interface HomePageProps {
   userCtx: LoginContextObj
@@ -54,6 +57,13 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
         TL;DR: Expect weirdness and <strong>thank you</strong> for your patience while we all learn the new meta.
         <Link onClick={() => setAlertModalOpen(true)}>Read More</Link>
       </Alert> */}
+      {
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          <AlertTitle>A note about 3.21, 3.21.1, 3.22 and the road to Pyro</AlertTitle>
+          Expect weirdness and <strong>thank you again</strong> for your patience while all our tools catch up.
+          <Link onClick={() => setAlertModalOpen(true)}>(Read More)</Link>
+        </Alert>
+      }
       <Divider sx={{ my: 2 }} />
       {/* OUR MAIN CHOICE */}
       <Grid container spacing={4}>
@@ -142,7 +152,8 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           </Card>
         </Grid>
       </Grid>
-      <Alert319 open={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
+      {/* <Alert319 open={alertModalOpen} onClose={() => setAlertModalOpen(false)} /> */}
+      <AlertPyro open={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
 
       {/* STATS */}
       <Divider sx={{ my: 2 }} />

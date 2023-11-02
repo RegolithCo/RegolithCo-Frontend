@@ -17,6 +17,7 @@ import {
   ListItem,
   ListItemText,
   Button,
+  Link,
 } from '@mui/material'
 import Numeral from 'numeral'
 import {
@@ -267,9 +268,24 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             }}
           />
 
-          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
+          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component="div">
             Expenses:
           </Typography>
+          {workOrder.orderType === ActivityEnum.ShipMining && (
+            <Typography
+              variant="caption"
+              sx={{ fontSize: 10, textAlign: 'center' }}
+              color="error"
+              component="div"
+              paragraph
+            >
+              NOTE: Refinery fees must be entered manually until{' '}
+              <Link href="http://regolith.rocks/about/release-notes" target="_blank" sx={{ color: 'red' }}>
+                further notice
+              </Link>
+              .
+            </Typography>
+          )}
           <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} onChange={onChange} />
 
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>

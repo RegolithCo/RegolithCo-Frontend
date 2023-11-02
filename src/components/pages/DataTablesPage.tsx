@@ -96,6 +96,18 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
         </Link>
         .
       </Alert>
+      <Alert severity="error">
+        <AlertTitle>WARNING: Refinery values are still 3.19</AlertTitle>
+        <Typography paragraph variant="body2">
+          When 3.21 dropped we lost the ability to calculate refinery bonuses from the game XML files. We're currently
+          investigating a new way to get these but given the amount of flux in the PU right now and the impending Pyro
+          launch with server meshing we're going to focus on that for now. Hopefully we can bring you up-to-date values
+          again soon.
+        </Typography>
+        <Typography paragraph variant="body2">
+          In the meantime we're leaving the 3.19 values up because they're still helpful as a rough guide.
+        </Typography>
+      </Alert>
 
       {tab === 'ore' && (
         <Box>

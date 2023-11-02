@@ -34,7 +34,9 @@ import {
   WorkOrderStateEnum,
   lookups,
   CrewHierarchy,
+  WorkOrderExpense,
 } from '@regolithco/common'
+import { ExpenseRow } from '../components/fields/ExpenseTable'
 const LASERS = lookups.loadout.lasers
 
 export function profile2User(profile: UserProfile): User {
@@ -214,6 +216,17 @@ export function newWorkOrderMaker(
 
     state: WorkOrderStateEnum.Unknown,
   }
+
+  // TODO: When we get refinery costs back we need to remove this:
+  const expenses: WorkOrderExpense[] = []
+  if (activityType === ActivityEnum.ShipMining) {
+    expenses.push({
+      amount: 0,
+      name: 'Refinery Fee',
+      __typename: 'WorkOrderExpense',
+    })
+  }
+
   const isRefined = booleanDefault([defaults?.isRefined, true])
   switch (activityType) {
     case ActivityEnum.ShipMining:
@@ -225,6 +238,7 @@ export function newWorkOrderMaker(
             amt: 0,
             __typename: 'RefineryRow',
           })) || [],
+        expenses,
         refinery: defaults.refinery || RefineryEnum.Arcl1,
         method: defaults.method || RefineryMethodEnum.DinyxSolventation,
         isRefined,

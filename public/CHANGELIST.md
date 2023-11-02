@@ -1,3 +1,16 @@
+### 11/02/2023
+## 3.21 and beyond
+
+This is one of those weird cases where I'm taking away features in a patch. In the latest version of the PU CIG has removed all the refinery paramters we depend on for calculating things like refinery costs. 
+
+- **Refinery expenses on work orders will need to be entered manually until futher notice.**
+
+I'm sure we'll be able to get back to a place where we can bring back these calculations but since we're in a period of heavy flux until Pyro launches with server meshing I'm going to focus all my efforts on 2 things:
+
+1. Getting ready for Pyro, server meshing and anything else they are throwing our way in Q1 of 2024
+2. Keeping the app usable in the meantime for the highest number of people.
+
+
 ### 10/06/2023
 ## HOTFIXES
 

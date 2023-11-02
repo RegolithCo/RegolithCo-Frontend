@@ -5,7 +5,7 @@ import {
   RefineryMethodEnum,
   getRefineryMethodName,
   ShipOreEnum,
-  getRefiningCost,
+  // getRefiningCost,
   getRefiningTime,
   getShipOreName,
   findPrice,
@@ -83,7 +83,8 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
         refMode === RefineryPivotEnum.oreType ? method : (rowKey as RefineryMethodEnum)
       ) as RefineryMethodEnum
       const oreYield = yieldCalc(finalAmt, finalOre, finalRefinery, finalMethod)
-      const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
+      // const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
+      const refCost = 0
       const marketPrice = findPrice(finalOre as ShipOreEnum, undefined, true) / 100
       switch (refMetric) {
         case RefineryMetricEnum.netProfit:

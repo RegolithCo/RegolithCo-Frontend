@@ -70,13 +70,13 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
         subText="Rocks Scouted"
         loading={statsLoading.total}
       />
-      {matches && !statsLoading.daily && !statsLoading.monthly && stats.daily && stats.monthly && (
-        <Grid xs={12}>
+      {!statsLoading.daily && !statsLoading.monthly && stats.daily && stats.monthly && (
+        <Grid xs={12} sm={6} md={6}>
           <DailyMonthlyChart stats={stats} statsLoading={statsLoading} />
         </Grid>
       )}
-      {matches && !statsLoading.total && (
-        <Grid xs={6}>
+      {!statsLoading.total && (
+        <Grid xs={12} sm={6} md={6}>
           <PieChart
             title="Activity Types"
             activityTypes={stats?.total?.workOrderTypes || {}}
@@ -84,18 +84,18 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
           />
         </Grid>
       )}
-      {matches && !statsLoading.total && (
-        <Grid xs={6}>
+      {!statsLoading.total && (
+        <Grid xs={12} sm={6} md={6}>
           <PieChart title="Ship Ores" ores={stats?.total?.shipOres || {}} loading={statsLoading.total} />
         </Grid>
       )}
-      {matches && !statsLoading.total && (
-        <Grid xs={6}>
+      {!statsLoading.total && (
+        <Grid xs={12} sm={6} md={6}>
           <PieChart title="Vehicle Ores" ores={stats?.total?.vehicleOres || {}} loading={statsLoading.total} />
         </Grid>
       )}
-      {matches && !statsLoading.total && (
-        <Grid xs={6}>
+      {!statsLoading.total && (
+        <Grid xs={12} sm={6} md={6}>
           <PieChart title="Salvage Ores" ores={stats?.total?.salvageOres || {}} loading={statsLoading.total} />
         </Grid>
       )}
