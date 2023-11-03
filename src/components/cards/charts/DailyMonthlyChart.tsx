@@ -3,6 +3,7 @@ import { useTheme, Typography, Box, RadioGroup, FormControlLabel, Radio } from '
 import { ObjectValues, StatsObject, StatsObjectSummary } from '@regolithco/common'
 import { ResponsiveLine, Serie } from '@nivo/line'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
+import { fontFamilies } from '../../../theme'
 
 export interface DailyMonthlyChartProps {
   stats: Partial<StatsObjectSummary>
@@ -47,7 +48,16 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          color: theme.palette.secondary.dark,
+          fontWeight: 'bold',
+          mb: 1,
+          fontFamily: fontFamilies.robotoMono,
+          borderBottom: `1px solid ${theme.palette.secondary.dark}`,
+        }}
+      >
         {chartType === ChartTypesEnum.DAY && 'Daily'}
         {chartType === ChartTypesEnum.MONTH && 'Monthly'}
         {/* {chartType === ChartTypesEnum.YEAR && 'Yearly'} */} Breakdown

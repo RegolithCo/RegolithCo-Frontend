@@ -1,27 +1,26 @@
 import {
   Alert,
   AlertTitle,
-  Button,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
   Divider,
   Link,
   Paper,
-  SxProps,
   Typography,
+  useTheme,
 } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { Theme } from '@mui/system'
+import { alpha } from '@mui/system'
 import * as React from 'react'
 
 import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
 import { StatsObjectSummary } from '@regolithco/common'
-import { Alert319 } from '../modals/announcements/Alert319'
+// import { Alert319 } from '../modals/announcements/Alert319'
 import { AlertPyro } from '../modals/announcements/AlertPyro'
+import { fontFamilies, theme } from '../../theme'
 
 interface HomePageProps {
   userCtx: LoginContextObj
@@ -31,13 +30,64 @@ interface HomePageProps {
   statsLoading: Record<keyof StatsObjectSummary, boolean>
 }
 
-const cardCSS: SxProps<Theme> = {
-  cursor: 'pointer',
-  // height: '100%',
-  display: 'flex',
-  flexGrow: 1,
-  flexDirection: 'column',
-  justifyContent: 'space-between',
+const HomeCard: React.FC<{
+  title: string
+  focus?: boolean
+  description: React.ReactNode | string
+  imgageUrl: string
+  actions?: React.ReactNode | React.ReactNode[] | string
+  onClick: () => void
+}> = ({ title, focus, description, imgageUrl, onClick, actions }) => {
+  const theme = useTheme()
+  return (
+    <Grid
+      xs={12}
+      sm={6}
+      md={4}
+      sx={{
+        cursor: 'pointer',
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Card
+        elevation={focus ? 10 : 1}
+        sx={{
+          border: focus ? `1px solid ${theme.palette.primary.main}` : undefined,
+          height: '100%',
+          '& .MuiCardMedia-root': {
+            opacity: focus ? 0.8 : 0.5,
+          },
+          '&:hover': {
+            '& .MuiCardMedia-root': {
+              opacity: 1,
+            },
+            backgroundColor: alpha(theme.palette.secondary.main, 0.2),
+          },
+        }}
+        onClick={onClick}
+      >
+        <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/${imgageUrl}`} title={title} />
+        <CardContent sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              color: theme.palette.primary.main,
+              fontFamily: fontFamilies.robotoMono,
+            }}
+          >
+            {title}
+          </Typography>
+          <Typography variant="body2">{description}</Typography>
+        </CardContent>
+        {/* <CardActions>{actions}</CardActions> */}
+      </Card>
+    </Grid>
+  )
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, statsLoading }) => {
@@ -50,8 +100,18 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           m: 2,
         }}
       >
-        This is a tool for organizing miners in <Link href="https://robertsspaceindustries.com/">Star Citizen</Link>.
+        Regolith Co. is a fansite dedicated to helping{' '}
+        <Link href="https://robertsspaceindustries.com/">Star Citizen</Link> Miners organize, share, and scout together.
       </Typography>
+      <Divider sx={{ my: 2 }} />
+      {/* OUR MAIN CHOICE */}
+      {/* <Typography
+        variant="h5"
+        sx={{ mb: 2, fontFamily: fontFamilies.robotoMono, color: theme.palette.secondary.dark }}
+        gutterBottom
+      >
+        Tools
+      </Typography> */}
       {/* <Alert severity="info" sx={{ mb: 2 }}>
         <AlertTitle>A note about 3.19</AlertTitle>
         TL;DR: Expect weirdness and <strong>thank you</strong> for your patience while we all learn the new meta.
@@ -61,96 +121,53 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
         <Alert severity="warning" sx={{ mb: 2 }}>
           <AlertTitle>A note about 3.21, 3.21.1, 3.22 and the road to Pyro</AlertTitle>
           Expect weirdness and <strong>thank you again</strong> for your patience while all our tools catch up.
-          <Link onClick={() => setAlertModalOpen(true)}>(Read More)</Link>
+          <em>
+            <Link onClick={() => setAlertModalOpen(true)}>(Read More)</Link>
+          </em>
         </Alert>
       }
-      <Divider sx={{ my: 2 }} />
-      {/* OUR MAIN CHOICE */}
-      <Grid container spacing={4}>
-        <Grid sm={4} sx={cardCSS}>
-          <Card
-            elevation={10}
-            sx={cardCSS}
-            onClick={() => {
-              if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')
-              else if (!userCtx.isInitialized) navigate && navigate('/verify')
-              else navigate && navigate('/session')
-            }}
-          >
-            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/mining.jpg`} title="mining" />
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
-                Mining Sessions {userCtx.isInitialized ? '' : '(Login)'}
-              </Typography>
-              <Typography variant="body2">
-                Organize your multi-crew mining with multiple ships, crew sharing, coordinated scouting etc.
-              </Typography>
-            </CardContent>
-            <CardActions>
-              {userCtx.isInitialized ? <Button>My Sessions</Button> : <Button>Mining Sessions (Login)</Button>}
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid sm={4} sx={cardCSS}>
-          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/loadouts')}>
-            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/workshop.jpg`} title="mining" />
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
-                Mining Loadouts
-              </Typography>
-              <Typography variant="body2">
-                Plan and tweak your mining ship loadouts using the right components for the right kind of ores.
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button>Mining Loadouts</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid sm={4} sx={cardCSS}>
-          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/workorder')}>
-            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/refinery.jpg`} title="mining" />
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
-                Work Order Calculator
-              </Typography>
-              <Typography variant="body2">Standalone calculator for refinery calculation and aUEC Shares</Typography>
-            </CardContent>
-            <CardActions>
-              <Button onClick={() => navigate && navigate('/workorder')}>Work Orders</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid sm={4} sx={cardCSS}>
-          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/cluster')}>
-            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/cluster.jpg`} title="mining" />
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
-                Cluster Calculator
-              </Typography>
-              <Typography variant="body2">
-                Standalone calculator figuring out the value of a rock or cluster.
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button onClick={() => navigate && navigate('/cluster')}>Cluster Calculator</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid sm={4} sx={cardCSS}>
-          <Card elevation={8} sx={cardCSS} onClick={() => navigate && navigate('/tables/ore')}>
-            <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/images/sm/market.jpg`} title="mining" />
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }}>
-                Market & Refinery Data
-              </Typography>
-              <Typography variant="body2">Data tables to compare refineries.</Typography>
-            </CardContent>
-            <CardActions>
-              <Button>Prices & Data Tables</Button>
-            </CardActions>
-          </Card>
-        </Grid>
+      <Grid container spacing={4} mb={4}>
+        <HomeCard
+          title={`Mining Sessions ${userCtx.isInitialized ? '' : '(Login)'}`}
+          focus
+          description="Organize your multi-crew, multi-ship mining adventure! Supports hand, vehicle and ship mining as well as scouting and salvaging."
+          imgageUrl="images/sm/mining.jpg"
+          onClick={() => {
+            if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')
+            else if (!userCtx.isInitialized) navigate && navigate('/verify')
+            else navigate && navigate('/session')
+          }}
+        />
+        <HomeCard
+          title="Mining Loadouts"
+          description="Plan and tweak your mining ship loadouts using the right components for the right kind of ores."
+          imgageUrl="images/sm/workshop.jpg"
+          onClick={() => navigate && navigate('/loadouts')}
+        />
+        <HomeCard
+          title="Work Order Calculator"
+          description="Standalone calculator for refinery calculation and aUEC Sharing."
+          imgageUrl="images/sm/refinery.jpg"
+          onClick={() => navigate && navigate('/workorder')}
+        />
+        <HomeCard
+          title="Cluster Calculator"
+          description="Standalone calculator for figuring out the value of a rock or cluster."
+          imgageUrl="images/sm/cluster.jpg"
+          onClick={() => navigate && navigate('/cluster')}
+        />
+        <HomeCard
+          title="Market Finder"
+          description="Find the best place to sell your hard-mined ore."
+          imgageUrl="images/sm/market1.jpg"
+          onClick={() => navigate && navigate('/marketPrice')}
+        />
+        <HomeCard
+          title="Refinery Data"
+          description="Data tables to compare refineries."
+          imgageUrl="images/sm/market.jpg"
+          onClick={() => navigate && navigate('/tables/ore')}
+        />
       </Grid>
       {/* <Alert319 open={alertModalOpen} onClose={() => setAlertModalOpen(false)} /> */}
       <AlertPyro open={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
@@ -158,7 +175,16 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
       {/* STATS */}
       <Divider sx={{ my: 2 }} />
       <Paper sx={{ p: 2, my: 3 }} elevation={1}>
-        <Typography variant="h5" sx={{ mb: 2 }} gutterBottom>
+        <Typography
+          variant="h6"
+          sx={{
+            color: theme.palette.secondary.dark,
+            fontWeight: 'bold',
+            mb: 2,
+            fontFamily: fontFamilies.robotoMono,
+            borderBottom: `1px solid ${theme.palette.secondary.dark}`,
+          }}
+        >
           Regolith Usage Stats
         </Typography>
         <SiteStats stats={stats} statsLoading={statsLoading} />

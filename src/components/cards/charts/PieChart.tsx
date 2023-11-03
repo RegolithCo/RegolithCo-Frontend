@@ -3,6 +3,7 @@ import { useTheme, Box, Typography, alpha } from '@mui/material'
 import { ActivityEnum, getActivityName, jsRound, StatsObject } from '@regolithco/common'
 import { MayHaveLabel, ResponsivePie } from '@nivo/pie'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
+import { fontFamilies } from '../../../theme'
 
 export interface PieChartProps {
   title: string
@@ -50,7 +51,18 @@ export const PieChart: React.FC<PieChartProps> = ({ title, ores, activityTypes, 
 
   return (
     <Box>
-      <Typography variant="h6">{title}</Typography>
+      <Typography
+        variant="h6"
+        sx={{
+          color: theme.palette.secondary.dark,
+          fontWeight: 'bold',
+          mb: 1,
+          fontFamily: fontFamilies.robotoMono,
+          borderBottom: `1px solid ${theme.palette.secondary.dark}`,
+        }}
+      >
+        {title}
+      </Typography>
       <Box sx={{ height: 300 }}>
         <ResponsivePie
           data={normalizedData}

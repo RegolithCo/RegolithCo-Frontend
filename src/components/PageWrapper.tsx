@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Breakpoint, Container, Paper, SxProps, Typography } from '@mui/material'
 import { PageLoader } from './pages/PageLoader'
 import { Theme, useTheme } from '@mui/system'
+import { fontFamilies } from '../theme'
 
 export interface PageWrapperProps {
   title?: string
@@ -44,6 +45,7 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
             <Typography
               variant="h4"
               component="h1"
+              fontFamily={fontFamilies.robotoMono}
               gutterBottom
               sx={{
                 fontSize: {
