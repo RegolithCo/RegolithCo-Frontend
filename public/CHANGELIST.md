@@ -1,4 +1,4 @@
-### 11/02/2023
+### Novemebr 2, 2023
 ## 3.21 and beyond
 
 This is one of those weird cases where I'm taking away features in a patch. In the latest version of the PU CIG has removed all the refinery paramters we depend on for calculating things like refinery costs. 
@@ -10,8 +10,9 @@ I'm sure we'll be able to get back to a place where we can bring back these calc
 1. Getting ready for Pyro, server meshing and anything else they are throwing our way in Q1 of 2024
 2. Keeping the app usable in the meantime for the highest number of people.
 
+-----
 
-### 10/06/2023
+### October 6, 2023
 ## HOTFIXES
 
 - **Login Bug**: Multiple users were reporting the innability to log into the system. This was due to a bug in the login system that was introduced in the last patch. A combination of a library operating a little differently in a newer version and a bug in my code caused the login to fail. This has been fixed and the system is back online. 
@@ -19,8 +20,9 @@ I'm sure we'll be able to get back to a place where we can bring back these calc
 - **Missing columns in loadout module table**: The loadout module table was missing a few columns. This has been fixed.
 - **Loadout Bug Fix**: Saved loadouts should now be editable again.
 
+-----
 
-### 09/30/2023
+### September 30, 2023
 ## Fall 2023 update (3.20)
 
 - **MultiCrew** is here! Now you can join someone's ship as a crewmate.
@@ -56,7 +58,7 @@ I'm sure we'll be able to get back to a place where we can bring back these calc
 
 -----
 
-### 07/16/2023
+### July 16, 2023
 ## The engine patch: v1.0.20
 
 This patch is designed to unblock a bunch of new features I've been wanting to work on but couldn't until the foundation was laid. Also a couple of little fixes.
@@ -71,7 +73,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 
 ----
 
-### 06/26/2023
+### June 26, 2023
 ## v1.0.18 & 1.0.19 Brush your teeth!
 
 * Mostly code hygiene and a few misc. tests
@@ -82,7 +84,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 
 -----
 
-### 06/13/2023
+### June 13, 2023
 ## v1.0.17 Visual Tweaks
 
 * New main menu with submenus
@@ -91,7 +93,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 
 -----
 
-### 06/11/2023
+### June 11, 2023
 ## v1.0.17 Loadout Manager!
 
 * The single biggest feature request is now in Regolith!
@@ -101,7 +103,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 
 -----
 
-### 06/05/2023
+### June 05, 2023
 ## v1.0.16 Quality of life improvements
 
 * You can now edit and delete work orders and add crew shares on closed sessions. This includes updating the final sell price.
@@ -111,7 +113,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
   
 -----
 
-### 06/04/2023
+### June 04, 2023
 ## v1.0.15 More bug fixes
 
 * Fixing a bug on the summary page where the work orders weren't showing up.
@@ -121,7 +123,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 
 -----
 
-### 06/02/2023
+### June 02, 2023
 ## v1.0.14 Bug fixes and price updates
 
 * Ongoing price updates.
@@ -132,7 +134,7 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 
 -----
 
-### 05/26/2023
+### 05 26, 2023
 ## v1.0.13 Bug Fixes and Performance Tweaks
 
 - ADDED: Performance tweaks for server cost mostly. Less logging in production, making less API calls for older sessions etc.
@@ -146,14 +148,14 @@ This patch is designed to unblock a bunch of new features I've been wanting to w
 -----
 
 
-### 05/25/2023
+### May 25, 2023
 ## v1.0.12 Manual Timers
 
 - Could not figure out the refinery timer so I invented a control for manual entry. Sorry it's not more automatic but this is the best we can do until someone figures it out. Still, I'm pretty happy with how the control turned out! Thanks @xaliance  for the suggestion.
 
 -----
 
-### 05/24/2023
+### May 24, 2023
 ## v 1.0.11: Star Citizen 3.19 Support Finally Here!!!
 
 Star Citizen 3.19 is here and with it a complete rework of the mining meta. In general this is all great news, very welcome and long overdue but it comes with a few downsides and caveats for us ~~Regolithians~~ *(~~Regolithitites~~? ~~Regal Rock Hoppers~~?.... TBD)*.
@@ -174,7 +176,7 @@ There are lots of things planned beyond this simple functionality and we will le
 
 -----
 
-###  05/22/2023
+###  May 22, 2023
 ## 3.19 Update #2: Test build!!
 
 Oof. This has been a real journey. I'm definitely not done but there is a test build now available at https://staging.regolith.rocks . All the visual stuff is done and in place but there are still some math-y issues I'm working through. Seems like both UEXCorp and all the others are having similar issues too so.... we're in good company.
@@ -194,7 +196,7 @@ Oof. This has been a real journey. I'm definitely not done but there is a test b
 
 -----
 
-### 05/07/2023
+### May 07, 2023
 ## 3.19 Update #1
 
 3.19 is changing a lot of things and that means a lot of math is going to need to be re-thought, mandatory fields need to be re-evaluated etc. In preparation for this I've started making some of the changes to make Regolith work with 3.19.
@@ -208,7 +210,7 @@ Lots of work left to go and 3.19 can still change so stay tuned for price update
 
 ---
 
-### 05/01/2023 
+### May 01, 2023 
 ## v 1.0.8: Minor bug fixes
 
 - Minor but critical rounding errors were causing validation fail. Hopefully the work order creation is unblocked again
@@ -217,7 +219,7 @@ Lots of work left to go and 3.19 can still change so stay tuned for price update
 
 -----
 
-###  04/28/2023
+###  04 28, 2023
 ## v 1.0.7: Bug fixes (mostly)
 
 **FIXED**: 
@@ -236,7 +238,7 @@ Also I've opened up a new code branch for 3.19 in order to keep bug fixing in 3.
 
 -----
 
-###  03/24/2023 1:59 PM
+### March 24, 2023 1:59 PM
 ## v 1.0.2: Prices Update
 - Updated salvage RMC prices
 - package security fixes
@@ -245,7 +247,7 @@ Also I've opened up a new code branch for 3.19 in order to keep bug fixing in 3.
 
 -----
 
-### 02/25/2023
+### February 25, 2023
 ## v 1.0.0: LAUNCH!
 
 - Cleaned up a bunch of visual stuff
@@ -258,7 +260,7 @@ Also I've opened up a new code branch for 3.19 in order to keep bug fixing in 3.
 
 -----
 
-###  02/18/2023
+###  February 18, 2023
 ## v 0.1.24: Failure is now an option!
 
 - Work orders can be marked as "failed" with a reason (for instance: "Pirates got me on the way to market"
@@ -269,7 +271,7 @@ Also I've opened up a new code branch for 3.19 in order to keep bug fixing in 3.
   
 -----
 
-###  02/10/2023
+###  February 10, 2023
 ## v 0.1.23: New layouts!
 
 - After lots of (mostly positive) feedback I've redone the session views and profile pages
@@ -285,7 +287,7 @@ Also I've opened up a new code branch for 3.19 in order to keep bug fixing in 3.
 
 -----
 
-###  02/02/2023
+###  February 02, 2023
 ## v0.1.22: Lots of little changes this week:
 
 - CSV and JSON download from sessions
