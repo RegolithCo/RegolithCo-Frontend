@@ -15,12 +15,28 @@ export interface PageWrapperProps {
 
 const styles = {
   container: {
+    border: {
+      // sm: '1px solid red',
+      // md: '1px solid green',
+    },
+    pr: {
+      sm: 0,
+      md: 3,
+    },
+    pl: {
+      sm: 0,
+      md: 3,
+    },
+  },
+  paper: {
     py: {
+      xs: 0,
       sm: 2,
       md: 3,
       lg: 4,
     },
     px: {
+      xs: 2,
       sm: 2,
       md: 2,
       lg: 4,
@@ -39,8 +55,8 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
   const theme = useTheme()
   return (
     <>
-      <Container maxWidth={maxWidth || 'sm'} sx={sx}>
-        <Paper elevation={4} sx={styles.container}>
+      <Container maxWidth={maxWidth || 'sm'} sx={{ ...styles.container, ...sx }}>
+        <Paper elevation={4} sx={styles.paper}>
           {title && (
             <Typography
               variant="h4"
@@ -55,6 +71,10 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
                   lg: '2.5rem',
                 },
                 textAlign: 'center',
+                py: {
+                  xs: 3,
+                  sm: 0,
+                },
                 color: theme.palette.primary.light,
                 textShadow: `1px 1px 5px ${theme.palette.primary.contrastText}`,
                 textTransform: 'capitalize',

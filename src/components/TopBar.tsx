@@ -182,6 +182,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
           >
             <MenuIcon />
           </IconButton>
+          {/* THis is the mobile menu */}
           <Menu
             id="menu-appbar"
             anchorEl={openMenu && openMenu.el}
@@ -209,23 +210,26 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
               else
                 return [
                   ...acc,
-                  <TopBarMenuItem handleAction={handleNavigate} key={`menuItem-${idx}`} item={item} />,
-                  item.children && (
-                    <Divider
-                      key={`divider-${idx}`}
-                      sx={{
-                        borderColor: alpha(theme.palette.secondary.contrastText, 0.2),
-                      }}
-                    />
-                  ),
-                  (item.children || []).map((child, idy) => (
-                    <TopBarMenuItem
-                      indent={3}
-                      handleAction={handleNavigate}
-                      key={`menuItem-${idx}-${idy}`}
-                      item={child}
-                    />
-                  )),
+                  <TopBarMenuItem isMobile handleAction={handleNavigate} key={`menuItem-${idx}`} item={item} />,
+                  // item.children && (
+                  //   <Divider
+                  //     key={`divider-${idx}`}
+                  //     sx={{
+                  //       borderColor: alpha(theme.palette.secondary.contrastText, 0.2),
+                  //     }}
+                  //   />
+                  // ),
+                  (item.children || [])
+                    .filter(({ isDivider }) => !isDivider)
+                    .map((child, idy) => (
+                      <TopBarMenuItem
+                        isMobile
+                        isSubMenu
+                        handleAction={handleNavigate}
+                        key={`menuItem-${idx}-${idy}`}
+                        item={child}
+                      />
+                    )),
                 ]
             }, [] as React.ReactNode[])}
           </Menu>
@@ -237,25 +241,27 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         </Typography>
         {/* This is the login Menu for non-mobile */}
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-          {topBarMenu.map(
-            ({ path, name, icon, isDivider, disabled, show, children }, idx) =>
-              !isDivider &&
-              show !== false && (
-                <Button
-                  key={`menuItem-${idx}`}
-                  startIcon={icon}
-                  disabled={disabled}
-                  onMouseOver={children && handleOpenMenu(name as string)}
-                  onClick={() => path && handleNavigate(path)}
-                  sx={{
-                    background: openMenu && openMenu.name === name ? theme.palette.secondary.contrastText : undefined,
-                    color: openMenu && openMenu.name === name ? theme.palette.secondary.light : 'inherit',
-                  }}
-                >
-                  {name}
-                </Button>
-              )
-          )}
+          {topBarMenu
+            // .filter(({ isDivider }) => !isDivider)
+            .map(
+              ({ path, name, icon, isDivider, disabled, show, children }, idx) =>
+                !isDivider &&
+                show !== false && (
+                  <Button
+                    key={`menuItem-${idx}`}
+                    startIcon={icon}
+                    disabled={disabled}
+                    onMouseOver={children && handleOpenMenu(name as string)}
+                    onClick={() => path && handleNavigate(path)}
+                    sx={{
+                      background: openMenu && openMenu.name === name ? theme.palette.secondary.contrastText : undefined,
+                      color: openMenu && openMenu.name === name ? theme.palette.secondary.light : 'inherit',
+                    }}
+                  >
+                    {name}
+                  </Button>
+                )
+            )}
           {topBarMenu
             .filter(({ disabled, show, children, isDivider }) => !disabled && show !== false && children && !isDivider)
             .map(({ name, children }, idx) => {

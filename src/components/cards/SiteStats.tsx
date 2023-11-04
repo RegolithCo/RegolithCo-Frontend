@@ -9,15 +9,14 @@ import {
   Tooltip,
   useMediaQuery,
   CircularProgress,
-  Divider,
 } from '@mui/material'
-import { StatsObjectSummary } from '@regolithco/common'
+import { formatCardNumber, StatsObjectSummary } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Textfit } from 'react-textfit'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { DailyMonthlyChart } from './charts/DailyMonthlyChart'
 import { PieChart } from './charts/PieChart'
-import { Box } from '@mui/system'
+import { fontFamilies } from '../../theme'
 
 export interface SiteStatsProps {
   stats: Partial<StatsObjectSummary>
@@ -33,23 +32,33 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
 
+  const usersFormatted = formatCardNumber(stats?.total?.users || 0)
+  const aUECFormatted = formatCardNumber(stats?.total?.aUEC || 0)
+  const rawOreSCUFormatted = formatCardNumber(stats?.total?.rawOreSCU || 0)
+  const totalSessionsFormatted = formatCardNumber(stats?.total?.sessions || 0)
+  const workOrdersFormatted = formatCardNumber(stats?.total?.workOrders || 0)
+  const rocksScoutedFormatted = formatCardNumber(stats?.total?.scoutingRocks || 0)
+
   return (
     <>
-      <Grid spacing={3} container sx={{ width: '100%' }}>
+      <Grid spacing={2} my={3} container sx={{ width: '100%' }}>
         <SiteStatsCard
-          value={stats?.total?.users}
+          value={usersFormatted[0]}
+          scale={usersFormatted[1]}
           subText="Total Users"
           tooltip="Registered Users on the site"
           loading={statsLoading.total}
         />
         <SiteStatsCard
-          value={MValueFormatter(stats?.total?.aUEC || 0, MValueFormat.number_sm)}
+          value={aUECFormatted[0]}
+          scale={aUECFormatted[1]}
           subText="aUEC Earned"
           tooltip={`${MValueFormatter(stats?.total?.aUEC || 0, MValueFormat.number)} aUEC Earned by users`}
           loading={statsLoading.total}
         />
         <SiteStatsCard
-          value={MValueFormatter(stats?.total?.rawOreSCU || 0, MValueFormat.number_sm)}
+          value={rawOreSCUFormatted[0]}
+          scale={rawOreSCUFormatted[1]}
           subText="SCU of Raw Ore"
           tooltip={`${MValueFormatter(
             stats?.total?.rawOreSCU || 0,
@@ -58,18 +67,21 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
           loading={statsLoading.total}
         />
         <SiteStatsCard
-          value={MValueFormatter(stats?.total?.sessions, MValueFormat.number_sm)}
+          value={totalSessionsFormatted[0]}
+          scale={totalSessionsFormatted[1]}
           subText="Mining Sessions"
           tooltip="User sessions"
           loading={statsLoading.total}
         />
         <SiteStatsCard
-          value={MValueFormatter(stats?.total?.workOrders, MValueFormat.number_sm)}
+          value={workOrdersFormatted[0]}
+          scale={workOrdersFormatted[1]}
           subText="Work Orders"
           loading={statsLoading.total}
         />
         <SiteStatsCard
-          value={MValueFormatter(stats?.total?.scoutingRocks, MValueFormat.number_sm)}
+          value={rocksScoutedFormatted[0]}
+          scale={rocksScoutedFormatted[1]}
           subText="Rocks Scouted"
           loading={statsLoading.total}
         />
@@ -112,6 +124,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
 interface SiteStatsCardProps {
   value: number | string | React.ReactNode
   subText: string
+  scale?: string
   tooltip?: React.ReactNode
   loading?: boolean
 }
@@ -120,31 +133,56 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   card: {
     height: 100,
     display: 'flex',
+    borderRadius: 5,
+    border: `3px solid ${theme.palette.primary.main}`,
     flexDirection: 'column',
   },
 })
 
-export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, tooltip, loading }) => {
+export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, scale, tooltip, loading }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   return (
     <Grid xs={4} sm={3} md={2}>
       <Tooltip title={tooltip || ''} placement="top">
-        <Card sx={styles.card} elevation={7}>
-          <div style={{ flexGrow: 1 }} />
+        <Card sx={styles.card} elevation={5}>
+          <Typography
+            sx={{ my: 0.5, textAlign: 'center', color: theme.palette.primary.main, fontWeight: 'bold' }}
+            variant="caption"
+            component="div"
+          >
+            {subText}
+          </Typography>
           <CardMedia sx={{ textAlign: 'center', minHeight: 30, mx: 2 }}>
             {loading ? (
               <CircularProgress size={20} />
             ) : (
-              <Textfit mode="single" max={30}>
+              <Textfit
+                mode="single"
+                max={30}
+                style={{ fontFamily: fontFamilies.robotoMono, color: theme.palette.primary.light }}
+              >
                 {value}
               </Textfit>
             )}
           </CardMedia>
           <div style={{ flexGrow: 1 }} />
-          <Typography sx={{ mb: 1, textAlign: 'center' }} color="text.secondary" variant="caption" component="div">
-            {subText}
-          </Typography>
+          {scale && (
+            <Typography
+              sx={{
+                // Capitalize
+                textTransform: 'capitalize',
+                color: theme.palette.primary.main,
+                fontFamily: fontFamilies.robotoMono,
+                mb: 1,
+                textAlign: 'center',
+              }}
+              variant="caption"
+              component="div"
+            >
+              {scale}
+            </Typography>
+          )}
         </Card>
       </Tooltip>
     </Grid>
