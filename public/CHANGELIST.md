@@ -1,3 +1,20 @@
+### Novemebr 4, 2023
+## 1.0.28 - Theme tweaks and composite adding
+
+#### Composite Adding tool
+
+Right now when you sell from your ship inventory you need to sell ores one at a time and then add them up. There is now a composite adding tool to help you add up prices as you go.
+
+**Other fixes:**
+
+- Fixing the homepage and stat theming 
+- Tweaking and fixing the tabs and menus that were breaking on a lot of mobile devices.
+- Misc theme cleanup
+
+-----
+
+
+
 ### Novemebr 2, 2023
 ## 3.21 and beyond
 
