@@ -40,6 +40,7 @@ import {
   PieChart,
   RestartAlt,
   Store,
+  TableView,
   Toll,
 } from '@mui/icons-material'
 import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
@@ -48,6 +49,7 @@ import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
 import { Stack } from '@mui/system'
+import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -69,6 +71,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 }) => {
   const theme = useTheme()
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
+  const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
 
   const shipOrder = workOrder as ShipMiningOrder
@@ -198,14 +201,28 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             }}
             InputProps={{
               endAdornment: (
-                <Box
+                <Stack
+                  direction={'row'}
+                  alignItems={'center'}
                   sx={{
-                    fontSize: 12,
                     px: 0.5,
                   }}
                 >
-                  aUEC
-                </Box>
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                    }}
+                  >
+                    aUEC
+                  </Typography>
+                  {isEditing && (
+                    <Tooltip title="Composite add">
+                      <IconButton size="small" onClick={() => setCompositeAddOpen(true)}>
+                        <TableView color="primary" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Stack>
               ),
               startAdornment:
                 !shareAmountIsSet && myStoreChoice ? (
@@ -267,7 +284,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               p: 0,
             }}
           />
-
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component="div">
             Expenses:
           </Typography>
@@ -473,6 +489,21 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           </Accordion>
         </CardContent>
       </Card>
+      {compositeAddOpen && (
+        <CompositeAddModal
+          open
+          startAmt={shareAmountInputVal}
+          onConfirm={(newVal: number) => {
+            setShareAmountInputVal(newVal)
+            onChange({
+              ...workOrder,
+              shareAmount: newVal,
+            })
+            setCompositeAddOpen(false)
+          }}
+          onClose={() => setCompositeAddOpen(false)}
+        />
+      )}
       <StoreChooserModal
         open={storeChooserOpen}
         onClose={() => setStoreChooserOpen(false)}

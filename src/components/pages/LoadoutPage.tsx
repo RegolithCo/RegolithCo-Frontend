@@ -59,6 +59,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
     <PageWrapper title="Mining Loadout" maxWidth="xl">
       <Tabs
         value={finalTab}
+        variant="scrollable"
         sx={{ mb: 3 }}
         onChange={(event, newValue) => {
           navigate && navigate(`/loadouts/${newValue}`)

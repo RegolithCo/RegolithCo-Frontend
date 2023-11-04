@@ -20,10 +20,12 @@ const styles = {
       // md: '1px solid green',
     },
     pr: {
+      xs: 0,
       sm: 0,
       md: 3,
     },
     pl: {
+      xs: 0,
       sm: 0,
       md: 3,
     },

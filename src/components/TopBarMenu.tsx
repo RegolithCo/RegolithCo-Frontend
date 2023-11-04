@@ -4,7 +4,6 @@ import MenuItem from '@mui/material/MenuItem'
 import { Box, Divider, alpha, useTheme } from '@mui/material'
 import { MenuItemType } from './TopBar'
 import { yellow } from '@mui/material/colors'
-import { fontSize } from '@mui/system'
 
 export interface TopBarMenuProps {
   open?: boolean
@@ -34,7 +33,6 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({ open, name, anchorEl, ha
           borderTop: `none`,
         },
       }}
-      disablePortal
       MenuListProps={{
         onMouseLeave: onClose,
         style: { pointerEvents: 'auto' },

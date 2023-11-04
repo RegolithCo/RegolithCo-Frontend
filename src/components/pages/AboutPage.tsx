@@ -5,6 +5,9 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
   CircularProgress,
   Divider,
   Link,
@@ -135,6 +138,51 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             </Link>{' '}
             Organization.
           </Typography>
+          <Card elevation={20} sx={{ p: 3, m: 4 }}>
+            <CardHeader title="Regolith Co. Mission Statement" />
+            <CardContent>
+              <Typography paragraph fontStyle={'italic'}>
+                "Regolith Co. is dedicated to advancing the frontiers of space exploration by fostering collaboration,
+                innovation, and resource sharing within the space mining industry. Our mission is to unite and empower
+                space miners, enabling them to explore and utilize celestial bodies, while promoting sustainable
+                practices and responsible stewardship of extraterrestrial resources. Together, we aim to unlock the vast
+                potential of the cosmos for the betterment of humanity and the preservation of our precious bodily
+                fluids."
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card elevation={20} sx={{ p: 3, m: 4 }}>
+            <CardHeader title="Disclaimer" />
+            <CardContent>
+              <Typography paragraph>
+                Space mining is an inherently dangerous activity. Regolith Co. cannot be held responsible for any
+                injuries, deaths, or other unfortunate incidents, (hilarious or otherwise) that may occur while using
+                our services. These include, but are not limited to:
+              </Typography>
+              <Typography paragraph fontStyle={'italic'}>
+                <ol>
+                  <li>
+                    <strong>Death / Regeneriation Fees:</strong>
+                    Regolith shall not be held responsible for any death or regeneration fees incurred while using our
+                    services.
+                  </li>
+                  <li>
+                    <strong>Alien Abductions</strong>: We can't be held accountable for extraterrestrial beings
+                    mistaking you a snack or science experiment. Travel expenses, mind-reading compensation, and any
+                    intergalactic souvenirs will be at your own expense.
+                  </li>
+                  <li>
+                    <strong>Jumpgate Misdirection</strong>: Any loss of wages/life due to misfiring jumpgates is the
+                    sole domain and responsibility of the spacers guild. Furthermore any arbitration around spice
+                    tithing must be handled by the guild.
+                  </li>
+                  <li>
+                    <strong>Gravity-related accidents:</strong> Gravity is a harsh mistress. Plan appropriately.
+                  </li>
+                </ol>
+              </Typography>
+            </CardContent>
+          </Card>
         </Box>
       )}
       {/* FAQ TAB =================================== */}
