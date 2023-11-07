@@ -18,6 +18,7 @@ import { LoginContext, useOAuth2 } from './useOAuth2'
 import { LoginChoice } from '../components/modals/LoginChoice'
 import useLocalStorage from './useLocalStorage'
 import { LoginRefresh } from '../components/modals/LoginRefresh'
+import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
 
 /**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
@@ -32,13 +33,14 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
 
   const client = useMemo(() => {
     const authLink = setContext(async (_, { headers }) => {
-      return {
-        headers: {
-          ...headers,
-          authType: authType,
-          authorization: token ? `Bearer ${token}` : '',
-        },
+      const finalHeaders: Record<string, string> = {
+        ...headers,
+        authType: authType,
+        authorization: token ? `Bearer ${token}` : '',
+        ...DEV_HEADERS,
       }
+      devQueries(finalHeaders)
+      return { headers: finalHeaders }
     })
 
     return new ApolloClient({
