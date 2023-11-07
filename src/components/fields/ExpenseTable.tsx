@@ -143,33 +143,37 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                     }}
                   />
                 </TableCell>
-                {idx >= 0 ? (
-                  <TableCell padding="none">
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        const newExpenses = [...(workOrder.expenses || [])]
-                        newExpenses.splice(idx, 1)
-                        onChange({
-                          ...workOrder,
-                          expenses: newExpenses,
-                        })
-                      }}
-                    >
-                      <Cancel />
-                    </IconButton>
-                  </TableCell>
-                ) : (
-                  <Tooltip title="Automatic. Remove using the settings radio buttons">
-                    <TableCell padding="none">
-                      <IconButton size="small" color="error" disabled>
-                        <Cancel />
-                      </IconButton>
-                    </TableCell>
-                  </Tooltip>
+                {isEditing && (
+                  <>
+                    {idx >= 0 ? (
+                      <TableCell padding="none">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            e.preventDefault()
+                            const newExpenses = [...(workOrder.expenses || [])]
+                            newExpenses.splice(idx, 1)
+                            onChange({
+                              ...workOrder,
+                              expenses: newExpenses,
+                            })
+                          }}
+                        >
+                          <Cancel />
+                        </IconButton>
+                      </TableCell>
+                    ) : (
+                      <Tooltip title="Automatic. Remove using the settings radio buttons">
+                        <TableCell padding="none">
+                          <IconButton size="small" color="error" disabled>
+                            <Cancel />
+                          </IconButton>
+                        </TableCell>
+                      </Tooltip>
+                    )}
+                  </>
                 )}
               </TableRow>
             </Tooltip>
