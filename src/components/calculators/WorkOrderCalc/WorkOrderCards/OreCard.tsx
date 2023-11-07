@@ -307,6 +307,10 @@ export const OreCard: React.FC<OreCardProps> = ({
                         }
                         onBlur={() => setEditCell(undefined)}
                         onKeyDown={(event) => {
+                          // This should stop exponents and scientific notation
+                          if (event.key === 'e') {
+                            event.preventDefault()
+                          }
                           if (event.key === 'Enter') {
                             // Set next cell down to edit mode
                             event.preventDefault()
@@ -363,6 +367,10 @@ export const OreCard: React.FC<OreCardProps> = ({
                           }}
                           onBlur={() => setEditCell(undefined)}
                           onKeyDown={(event) => {
+                            // This should stop exponents and scientific notation
+                            if (event.key === 'e') {
+                              event.preventDefault()
+                            }
                             if (event.key === 'Enter') {
                               // Set next cell down to edit mode
                               event.preventDefault()
