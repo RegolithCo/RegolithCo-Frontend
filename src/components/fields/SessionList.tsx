@@ -315,6 +315,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
               <Stack
                 direction="row"
                 spacing={1}
+                alignItems="baseline"
                 sx={{
                   textShadow: '2px 2px 4px #000000',
                   justifyContent: 'center',

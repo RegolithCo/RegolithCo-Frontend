@@ -1,11 +1,12 @@
 import * as React from 'react'
 
 import { UserProfile, Session, SessionStateEnum } from '@regolithco/common'
-import { Alert, AlertTitle, Box, Button, FormControlLabel, Paper, Switch, Typography } from '@mui/material'
+import { Alert, AlertTitle, Box, Button, FormControlLabel, Paper, Switch, Typography, useTheme } from '@mui/material'
 import { SessionList } from '../fields/SessionList'
 import { AddCircle } from '@mui/icons-material'
 import { Container, Stack } from '@mui/system'
 import { PageLoader } from './PageLoader'
+import { fontFamilies } from '../../theme'
 
 export interface SessionChooserPageProps {
   userProfile: UserProfile
@@ -24,6 +25,7 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
   navigate,
   onCreateNewSession,
 }) => {
+  const theme = useTheme()
   const [activeOnly, setActiveOnly] = React.useState(false)
 
   // Make our buckets: bucket 1: [year-month] bucket 2: day
@@ -58,8 +60,21 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
   return (
     <Container maxWidth="md">
       <Paper elevation={4} sx={styles.container}>
-        <Stack spacing={2} sx={{ my: 2, borderBottom: '2px solid' }} direction={{ xs: 'column', sm: 'row' }}>
-          <Typography variant="h4" component="h2" gutterBottom>
+        <Stack
+          spacing={2}
+          sx={{ my: 2, borderBottom: `2px solid ${theme.palette.secondary.dark}` }}
+          direction={{ xs: 'column', sm: 'row' }}
+        >
+          <Typography
+            variant="h4"
+            component="h2"
+            gutterBottom
+            sx={{
+              color: 'secondary.dark',
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+            }}
+          >
             My Sessions
           </Typography>
           <div style={{ flex: 1 }} />
@@ -101,7 +116,8 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
           onClickSession={(sessionId) => navigate?.(`/session/${sessionId}`)}
         />
       </Paper>
-      <PageLoader title="Loading..." loading={loading} />
+      <PageLoader title="Loading..." loading={loading} small />
+      {/* <PageLoader title="Loading session data" loading small /> */}
     </Container>
   )
 }

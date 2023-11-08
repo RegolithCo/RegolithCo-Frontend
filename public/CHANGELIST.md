@@ -1,4 +1,15 @@
-### Novemebr 4, 2023
+### November 7, 2023
+## 1.0.29 - Misc bug fixes
+
+- Sexier page loaders! Our #1 most requested feature! 😝
+- Fixed an issue allowing scientific notation in number fields.
+- Fixed an issue where expense row delete buttons were showing outside of edit mode.
+- Server refactor and dev mode tools added to make my life easier.
+
+-----
+
+
+### November 4, 2023
 ## 1.0.28 - Theme tweaks and composite adding
 
 #### Composite Adding tool
