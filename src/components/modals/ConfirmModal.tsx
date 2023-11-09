@@ -12,6 +12,8 @@ export interface ConfirmModalProps {
   onConfirm: () => void
   confirmBtnText?: string
   cancelBtnText?: string
+  confirmIcon?: React.ReactNode
+  cancelIcon?: React.ReactNode
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -22,6 +24,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onConfirm,
   confirmBtnText,
   cancelBtnText,
+  confirmIcon,
+  cancelIcon,
 }) => {
   const theme = useTheme()
   return (
@@ -48,15 +52,20 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
-          <Button color="secondary" onClick={onClose} variant="contained" startIcon={<Cancel />}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={onClose}
+            startIcon={cancelIcon || <Cancel />}
+            sx={{ background: theme.palette.background.paper }}
+          >
             {cancelBtnText || 'Cancel'}
           </Button>
           <div style={{ flexGrow: 1 }} />
           <Button
-            color="primary"
-            startIcon={<Check />}
-            sx={{ background: theme.palette.background.paper }}
-            variant="outlined"
+            color="secondary"
+            variant="contained"
+            startIcon={confirmIcon || <Check />}
             onClick={() => {
               onConfirm()
               onClose()

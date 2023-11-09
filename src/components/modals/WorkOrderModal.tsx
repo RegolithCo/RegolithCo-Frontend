@@ -14,12 +14,13 @@ import {
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { ActivityEnum, CrewShare, makeHumanIds, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
-import { Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
+import { BackHand, Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
 import { DeleteModal } from './DeleteModal'
 import { WorkOrderContext } from '../../context/workOrder.context'
+import { ConfirmModal } from './ConfirmModal'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -117,6 +118,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>(workOrder)
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
+  const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
   const styles = styleThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
@@ -133,6 +135,14 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
     animation: doPulse ? `${pulse} 2s infinite ease` : '',
     color: 'transparent',
   })
+
+  const handleConfirmClose = () => {
+    if (isEditing || isNew) {
+      setConfirmCloseModal(true)
+    } else {
+      onClose()
+    }
+  }
 
   let WorkIcon: SvgIconComponent
   let title = ''
@@ -176,7 +186,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleConfirmClose}
       maxWidth="lg"
       fullWidth
       disableEscapeKeyDown={isEditing}
@@ -283,7 +293,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
               startIcon={<Cancel />}
               onClick={() => {
                 if (isEditing && !isNew) setIsEditing(false)
-                onClose()
+                handleConfirmClose()
               }}
             >
               {isNew ? 'Cancel' : 'Close'}
@@ -312,7 +322,6 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
                 onClick={() => {
                   onUpdate(newWorkOrder)
                   isEditing && setIsEditing(false)
-                  // isEditing && onClose()
                 }}
               >
                 {isNew ? 'Create' : 'Save'}
@@ -363,6 +372,20 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
         title="Permanently DELETE Work Order?"
         cancelBtnText="Oops.NO!"
         confirmBtnText="Yes, Delete"
+      />
+      <ConfirmModal
+        open={confirmCloseModal}
+        onClose={() => setConfirmCloseModal(false)}
+        message="Are you sure you want to close this window? Any unsaved changes will be lost."
+        title="Discard Changes?"
+        onConfirm={() => {
+          setConfirmCloseModal(false)
+          onClose()
+        }}
+        cancelBtnText="Keep editing"
+        confirmBtnText="Discard"
+        cancelIcon={<BackHand />}
+        confirmIcon={<Delete />}
       />
     </Dialog>
   )

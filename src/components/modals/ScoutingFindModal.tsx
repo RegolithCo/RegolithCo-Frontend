@@ -4,9 +4,10 @@ import { Box, Button, Dialog, DialogActions, SxProps, Theme, ThemeProvider } fro
 import { ScoutingFind, ScoutingFindStateEnum } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
-import { Cancel, Create, Delete, Save } from '@mui/icons-material'
+import { BackHand, Cancel, Create, Delete, Save } from '@mui/icons-material'
 import { DeleteModal } from './DeleteModal'
 import { ScoutingFindContext } from '../../context/scoutingFind.context'
+import { ConfirmModal } from './ConfirmModal'
 
 export interface ScoutingFindModalProps {
   open: boolean
@@ -35,6 +36,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onCl
   // This is just used int he live case. In every other case we just edit it live
   const { scoutingFind, isNew, onChange, onDelete, joinScoutingFind, leaveScoutingFind, meUser, allowWork, allowEdit } =
     React.useContext(ScoutingFindContext)
+  const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const [theme, setTheme] = React.useState<Theme>(
@@ -48,12 +50,20 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onCl
     setTheme(scoutingFindStateThemes[newScoutingFind.state || ScoutingFindStateEnum.Discovered])
   }, [newScoutingFind])
 
+  const handleConfirmClose = () => {
+    if (isNew) {
+      setConfirmCloseModal(true)
+    } else {
+      onClose()
+    }
+  }
+
   if (!scoutingFind) return null
 
   const styles = stylesThunk(theme)
   return (
     <ThemeProvider theme={theme}>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" disableEscapeKeyDown sx={styles.dialog}>
+      <Dialog open={open} onClose={handleConfirmClose} fullWidth maxWidth="md" disableEscapeKeyDown sx={styles.dialog}>
         <Box sx={styles.boxContainer}>
           <ScoutingFindCalc
             scoutingFind={isNew ? newScoutingFind : scoutingFind}
@@ -79,7 +89,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onCl
             borderTop: `2px solid ${theme.palette.primary.main}`,
           }}
         >
-          <Button color="error" variant="text" size="small" startIcon={<Cancel />} onClick={() => onClose()}>
+          <Button color="error" variant="text" size="small" startIcon={<Cancel />} onClick={handleConfirmClose}>
             {isNew ? 'Cancel' : 'Close'}
           </Button>
           <div style={{ flexGrow: 1 }} />
@@ -123,6 +133,20 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onCl
           }}
           cancelBtnText="Oops.NO!"
           confirmBtnText="Yes, Delete"
+        />
+        <ConfirmModal
+          open={confirmCloseModal}
+          onClose={() => setConfirmCloseModal(false)}
+          message="Are you sure you want to close this window? Any unsaved changes will be lost."
+          title="Discard Changes?"
+          onConfirm={() => {
+            setConfirmCloseModal(false)
+            onClose()
+          }}
+          cancelBtnText="Keep editing"
+          confirmBtnText="Discard"
+          cancelIcon={<BackHand />}
+          confirmIcon={<Delete />}
         />
       </Dialog>
     </ThemeProvider>
