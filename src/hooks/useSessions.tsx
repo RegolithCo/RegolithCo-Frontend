@@ -62,6 +62,7 @@ import { useGQLErrors } from './useGQLErrors'
 import { makeSessionUrls } from '../lib/routingUrls'
 import { useLogin } from './useOAuth2'
 import log from 'loglevel'
+import { usePageVisibility } from './usePageVisibility'
 
 type useSessionsReturn = {
   session?: Session
@@ -93,6 +94,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const [sessionError, setSessionError] = React.useState<ErrorCode>()
+  const isPageVisible = usePageVisibility()
 
   const sessionUserQry = useGetSessionUserQuery({
     variables: {
@@ -125,7 +127,8 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
 
   // TODO: This is our sloppy poll function we need to update to lower data costs
   React.useEffect(() => {
-    if (sessionQry.data?.session) {
+    // If we have a real session, poll every 10 seconds
+    if (isPageVisible && sessionQry.data?.session) {
       // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
       const oneDayMs = 86400000 // 24 hours in milliseconds
       const pollTime =
@@ -140,7 +143,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     }
 
     // Only poll the stub if we don't have a real session
-    if (!sessionQry.data?.session && sessionStubQry.data?.session) {
+    if (isPageVisible && !sessionQry.data?.session && sessionStubQry.data?.session) {
       // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
       const oneDayMs = 86400000 // 24 hours in milliseconds
       const pollTime =
@@ -153,7 +156,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     } else {
       sessionStubQry.stopPolling()
     }
-  }, [sessionStubQry.data, sessionQry.data])
+  }, [sessionStubQry.data, sessionQry.data, isPageVisible])
 
   React.useEffect(() => {
     if (sessionQry.error) {

@@ -19,6 +19,7 @@ import { LoginChoice } from '../components/modals/LoginChoice'
 import useLocalStorage from './useLocalStorage'
 import { LoginRefresh } from '../components/modals/LoginRefresh'
 import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
+import { usePageVisibility } from './usePageVisibility'
 
 /**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
@@ -186,6 +187,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   const { logOut, login, token, error, loginInProgress, authType, setAuthType, refreshPopupOpen, setRefreshPopupOpen } =
     useOAuth2()
   const [openPopup, setOpenPopup] = useState(false)
+  const isPageVisible = usePageVisibility()
 
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
   const isAuthenticated = Boolean(token && token.length > 0)
@@ -195,7 +197,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
 
   // If the profile fails to fetch then try again in 5 seconds
   React.useEffect(() => {
-    if (userProfileQry.loading || userProfileQry.data?.profile || !userProfileQry.error) {
+    if (!isPageVisible || userProfileQry.loading || userProfileQry.data?.profile || !userProfileQry.error) {
       userProfileQry.stopPolling()
     }
     if (!userProfileQry.data?.profile && userProfileQry.error) {
