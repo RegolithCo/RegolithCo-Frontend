@@ -37,7 +37,7 @@ import { WorkOrderModal } from '../../modals/WorkOrderModal'
 import { workOrderStateThemes } from '../../../theme'
 import { DeleteModal } from '../../modals/DeleteModal'
 import { DialogContentText, Typography } from '@mui/material'
-import { ShareModal } from '../../modals/ShareModal'
+import { CollaborateModal } from '../../modals/CollaborateModal'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { DownloadModal } from '../../modals/DownloadModal'
 import { downloadFile } from '../../../lib/utils'
@@ -47,6 +47,7 @@ import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
 import { PendingUserPopup } from '../../modals/ActiveUserPopup/PendingUserPopup'
 import { AddPendingUsersModal } from '../../modals/AddPendingUsersModal'
 import { DisbandModal } from '../../modals/DisbandCrew'
+import { ShareModal } from '../../modals/ShareModal'
 
 export const SessionPageContainer2: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -470,13 +471,16 @@ export const SessionPageContainer2: React.FC = () => {
           }}
         />
 
-        {/* Share Session Modal */}
-        <ShareModal
-          open={activeModal === DialogEnum.SHARE_SESSION}
+        {/* Collaborate Session Modal */}
+        <CollaborateModal
+          open={activeModal === DialogEnum.COLLABORATE}
           warn={!session?.sessionSettings.specifyUsers}
           url={shareUrl}
           onClose={() => setActiveModal(null)}
         />
+
+        {/* Share Session Modal */}
+        <ShareModal open={activeModal === DialogEnum.SHARE_SESSION} onClose={() => setActiveModal(null)} />
 
         {/* Leave Session Modal */}
         <ConfirmModal

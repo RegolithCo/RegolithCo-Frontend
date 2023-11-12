@@ -14,7 +14,7 @@ import {
   Button,
   Tooltip,
 } from '@mui/material'
-import { jsRound, ShipMiningOrder, WorkOrder, WorkOrderExpense, WorkOrderSummary } from '@regolithco/common'
+import { jsRound, WorkOrder, WorkOrderExpense, WorkOrderSummary } from '@regolithco/common'
 import { AddCircle, Cancel } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import Numeral from 'numeral'
@@ -27,6 +27,7 @@ export interface ExpenseTableProps {
   workOrder: WorkOrder
   onChange: (workOrder: WorkOrder) => void
   isEditing?: boolean
+  isShare?: boolean
   summary: WorkOrderSummary
 }
 
@@ -44,7 +45,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export type ExpenseRow = Omit<WorkOrderExpense, '__typename'> & { idx: number }
 
-export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, onChange, isEditing }) => {
+export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, onChange, isEditing, isShare }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const [editingRow, setEditingRow] = React.useState<number | null>(null)

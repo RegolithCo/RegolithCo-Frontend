@@ -42,12 +42,14 @@ import { RefineryMethodControl } from '../../../fields/RefiningMethodControl'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { ShipOreChooser } from '../../../fields/ShipOreChooser'
 import { VehicleOreChooser } from '../../../fields/VehicleOreChooser'
+import dayjs from 'dayjs'
 
 import log from 'loglevel'
 import { fontFamilies } from '../../../../theme'
-import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+// import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers'
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
+import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -88,6 +90,7 @@ export const OreCard: React.FC<OreCardProps> = ({
   workOrder,
   summary,
   onChange,
+  isShare,
   allowEdit,
   templateJob,
   isEditing,
@@ -408,7 +411,13 @@ export const OreCard: React.FC<OreCardProps> = ({
           </TableBody>
         </Table>
         <Box sx={{ flexGrow: 1 }} />
-        {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
+        {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && isShare && (
+          <RefineryProgressShare
+            startTime={shipOrder.processStartTime as number}
+            totalTimeS={shipOrder.processDurationS || 0}
+          />
+        )}
+        {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && !isShare && (
           <RefineryProgress
             startTime={shipOrder.processStartTime as number}
             totalTimeS={shipOrder.processDurationS || 0}

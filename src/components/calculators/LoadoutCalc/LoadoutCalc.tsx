@@ -24,7 +24,7 @@ import {
 import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
+import { Close, Delete, Edit, Refresh, Save, Share } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
@@ -33,12 +33,14 @@ import { LoadoutLaserTool } from './LoadoutLaserTool'
 import { LoadoutInventory } from './LoadoutInventory'
 import { LoadoutCreateModal } from '../../modals/LoadoutCreateModal'
 import { WarningModal } from '../../modals/WarningModal'
+import { LoadoutShareModal } from '../../modals/LoadoutShareModal'
 
 export interface LoadoutCalcProps {
   miningLoadout?: MiningLoadout
   userProfile?: UserProfile
   loading?: boolean
   isModal?: boolean
+  isShare?: boolean
   open?: boolean
   readonly?: boolean
   loadoutCount?: number
@@ -52,18 +54,23 @@ const DEFAULT_SHIP = LoadoutShipEnum.Mole
 
 interface ToolGridProps {
   ship: LoadoutShipEnum
+  isShare?: boolean
   children: React.ReactNode | React.ReactNode[]
 }
 
-const ToolGrid: React.FC<ToolGridProps> = ({ ship, children }) => {
+const ToolGrid: React.FC<ToolGridProps> = ({ ship, children, isShare }) => {
   const gridProps: Grid2Props =
     ship === LoadoutShipEnum.Mole
-      ? {
-          xs: 12,
-          sm: 6,
-          md: 6,
-          lg: 4,
-        }
+      ? isShare
+        ? { xs: 3 }
+        : {
+            xs: 12,
+            sm: 6,
+            md: 6,
+            lg: 4,
+          }
+      : isShare
+      ? { xs: 3 }
       : {
           xs: 12,
           sm: 6,
@@ -79,6 +86,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   loading,
   open,
   isModal,
+  isShare,
   readonly,
   loadoutCount,
   onClose,
@@ -93,6 +101,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const [createModalOpen, setCreateModalOpen] = React.useState(false)
   const [countWarningModalOpen, setCountWarningModalOpen] = React.useState(false)
   const [editingName, setEditingName] = React.useState(false)
+  const [shareModalOpen, setShareModalOpen] = React.useState(false)
   const [newLoadout, _setNewLoadout] = React.useState<MiningLoadout>(
     sanitizeLoadout(miningLoadout || newMiningLoadout(DEFAULT_SHIP, owner))
   )
@@ -149,13 +158,15 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   maxHeight: '100%',
                   width: '100%',
                 },
-                [theme.breakpoints.up('md')]: {
-                  m: 0,
-                  p: 2,
-                  borderRadius: 10,
-                  boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-                  border: `10px solid ${theme.palette.primary.main}`,
-                },
+                [theme.breakpoints.up('md')]: isShare
+                  ? {}
+                  : {
+                      m: 0,
+                      p: 2,
+                      borderRadius: 10,
+                      boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+                      border: `10px solid ${theme.palette.primary.main}`,
+                    },
                 background: theme.palette.background.default,
                 backgroundImage: bgImage,
               },
@@ -171,15 +182,17 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
               [theme.breakpoints.down('sm')]: {
                 borderRadius: 0,
               },
-              [theme.breakpoints.up('md')]: {
-                mx: 3,
-                my: 6,
-                px: 2,
-                py: 2,
-                borderRadius: 10,
-                boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-                border: `10px solid ${theme.palette.primary.main}`,
-              },
+              [theme.breakpoints.up('md')]: isShare
+                ? {}
+                : {
+                    mx: 3,
+                    my: 6,
+                    px: 2,
+                    py: 2,
+                    borderRadius: 10,
+                    boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+                    border: `10px solid ${theme.palette.primary.main}`,
+                  },
               background: theme.palette.background.default,
               backgroundImage: bgImage,
             }}
@@ -240,6 +253,11 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   <Close />
                 </IconButton>
               )}
+              {!isShare && (
+                <IconButton color="primary" onClick={() => setShareModalOpen(true)} size="small" sx={{ ml: 1 }}>
+                  <Share />
+                </IconButton>
+              )}
             </Stack>
           }
         ></CardHeader>
@@ -250,13 +268,13 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         >
           <Grid container spacing={3}>
             {/* This grid has the lasers and the stats */}
-
-            <Grid xs={12} md={8}>
+            <Grid xs={12} md={isShare ? 12 : 8}>
               <Grid container spacing={3} rowSpacing={3}>
-                <ToolGrid ship={newLoadout.ship}>
+                <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                   <LoadoutLaserTool
                     activeLaser={activeLasers[0]}
                     readonly={readonly}
+                    isShare={isShare}
                     laserSize={laserSize}
                     label={laserSize < 2 ? 'Laser' : 'Front Turret'}
                     onChange={(currAl, isHover) => {
@@ -275,10 +293,11 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   />
                 </ToolGrid>
                 {newLoadout.ship === LoadoutShipEnum.Mole && (
-                  <ToolGrid ship={newLoadout.ship}>
+                  <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                     <LoadoutLaserTool
                       activeLaser={activeLasers[1]}
                       laserSize={laserSize}
+                      isShare={isShare}
                       readonly={readonly}
                       label="Port Turret"
                       onChange={(currAl, isHover) => {
@@ -298,10 +317,11 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   </ToolGrid>
                 )}
                 {newLoadout.ship === LoadoutShipEnum.Mole && (
-                  <ToolGrid ship={newLoadout.ship}>
+                  <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                     <LoadoutLaserTool
                       activeLaser={activeLasers[2]}
                       laserSize={laserSize}
+                      isShare={isShare}
                       readonly={readonly}
                       label="Starboard Turret"
                       onChange={(currAl, isHover) => {
@@ -320,50 +340,60 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                     />
                   </ToolGrid>
                 )}
-                <ToolGrid ship={newLoadout.ship}>
+                <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                   <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} readonly={readonly} />
                 </ToolGrid>
               </Grid>
             </Grid>
-            <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column' }}>
-              {stats && <LoadoutCalcStats stats={stats} />}
+            <Grid
+              container
+              xs={12}
+              md={isShare ? 12 : 4}
+              sx={{ display: 'flex', flexDirection: isShare ? 'row' : 'column' }}
+              spacing={2}
+            >
+              <Grid xs={isShare ? 8 : 12}>{stats && <LoadoutCalcStats stats={stats} />}</Grid>
               {stats && (
-                <Box
-                  sx={{
-                    py: 2,
-                    px: 4,
-                    borderRadius: 4,
-                    flex: '1 1',
-                    textAlign: 'center',
-                    backgroundColor: theme.palette.background.paper,
-                    border: `4px solid ${theme.palette.background.default}`,
-                  }}
-                >
-                  <Typography variant="overline" sx={{ textAlign: 'center' }} component="div">
-                    Total Loadout Price
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontFamily: fontFamilies.robotoMono, textAlign: 'center' }}>
-                    {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency)}
-                  </Typography>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        size="small"
-                        color="secondary"
-                        checked={includeStockPrices}
-                        onChange={(e) => setIncludeStockPrices(e.target.checked)}
-                      />
-                    }
+                <Grid xs={isShare ? 4 : 12}>
+                  <Box
                     sx={{
-                      pt: 2,
-                      '& .MuiTypography-root': {
-                        fontSize: '0.7rem',
-                        color: theme.palette.text.secondary,
-                      },
+                      py: 2,
+                      px: 4,
+                      borderRadius: 4,
+                      flex: '1 1',
+                      textAlign: 'center',
+                      backgroundColor: theme.palette.background.paper,
+                      border: `4px solid ${theme.palette.background.default}`,
                     }}
-                    label="Incl. Stock lasers"
-                  />
-                </Box>
+                  >
+                    <Typography variant="overline" sx={{ textAlign: 'center' }} component="div">
+                      Loadout Price
+                    </Typography>
+                    <Typography variant="h4" sx={{ fontFamily: fontFamilies.robotoMono, textAlign: 'center' }}>
+                      {MValueFormatter(includeStockPrices ? stats.price : stats.priceNoStock, MValueFormat.currency)}
+                    </Typography>
+                    {!isShare && (
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            size="small"
+                            color="secondary"
+                            checked={includeStockPrices}
+                            onChange={(e) => setIncludeStockPrices(e.target.checked)}
+                          />
+                        }
+                        sx={{
+                          pt: 2,
+                          '& .MuiTypography-root': {
+                            fontSize: '0.7rem',
+                            color: theme.palette.text.secondary,
+                          },
+                        }}
+                        label="Incl. Stock lasers"
+                      />
+                    )}
+                  </Box>
+                </Grid>
               )}
             </Grid>
           </Grid>
@@ -467,6 +497,9 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
           onClose={() => setDeleteModalOpen(false)}
         />
       </Card>
+      {!isShare && (
+        <LoadoutShareModal open={shareModalOpen} onClose={() => setShareModalOpen(false)} loadout={newLoadout} />
+      )}
     </Wrapper>
   )
 }

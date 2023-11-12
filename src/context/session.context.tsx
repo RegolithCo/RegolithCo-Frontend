@@ -21,6 +21,7 @@ import { createContext } from 'react'
 type ObjectValues<T> = T[keyof T]
 export const DialogEnum = {
   SHARE_SESSION: 'SHARE_SESSION',
+  COLLABORATE: 'COLLABORATE',
   ADD_WORKORDER: 'ADD_WORKORDER',
   LEAVE_SESSION: 'LEAVE_SESSION',
   DELETE_SESSION: 'DELETE_SESSION',

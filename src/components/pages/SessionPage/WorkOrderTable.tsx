@@ -8,6 +8,7 @@ import {
   WorkOrder,
   WorkOrderStateEnum,
 } from '@regolithco/common'
+import dayjs from 'dayjs'
 import { getActivityName, calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   Badge,
@@ -21,6 +22,7 @@ import {
   TableRow,
   Theme,
   Tooltip,
+  Typography,
   useTheme,
 } from '@mui/material'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -43,7 +45,8 @@ import { grey } from '@mui/material/colors'
 export interface WorkOrderTableProps {
   isDashboard?: boolean
   workOrders: WorkOrder[]
-  openWorkOrderModal: (orderId: string) => void
+  isShare?: boolean
+  openWorkOrderModal?: (orderId: string) => void
 }
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
@@ -76,11 +79,16 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   },
 })
 
-export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, openWorkOrderModal, isDashboard }) => {
+export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
+  workOrders,
+  openWorkOrderModal,
+  isShare,
+  isDashboard,
+}) => {
   const theme = useTheme()
   const { session } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
-  const styles = stylesThunk(theme, isActive)
+  const styles = stylesThunk(theme, Boolean(isActive || isShare))
 
   // NOTE: Order is REALLY important here
   const { summaries, volSCU, shareAmount, sortedWorkOrders } = React.useMemo(() => {
@@ -107,14 +115,18 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
 
   return (
     <TableContainer
-      sx={{ ...styles.table, maxHeight: isDashboard ? 400 : undefined, minHeight: isDashboard ? 300 : undefined }}
+      sx={{
+        ...styles.table,
+        maxHeight: isDashboard ? 400 : undefined,
+        minHeight: isDashboard ? 300 : undefined,
+      }}
     >
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow sx={styles.tableHead}>
             <TableCell align="center">Type</TableCell>
             <TableCell>Order Id</TableCell>
-            <TableCell align="center">State</TableCell>
+            {!isShare && <TableCell align="center">State</TableCell>}
             <TableCell>Ores</TableCell>
             <TableCell align="center">
               <Tooltip title="Crew Shares">
@@ -135,6 +147,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
             <WorkOrderTableRow
               key={`wo-${workOrder.orderId}`}
               workOrder={workOrder}
+              isShare={isShare}
               openWorkOrderModal={openWorkOrderModal}
               summary={summaries[workOrder.orderId]}
             />
@@ -142,7 +155,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
         </TableBody>
         <TableFooter sx={styles.footer}>
           <TableRow>
-            <TableCell colSpan={5}>Totals</TableCell>
+            <TableCell colSpan={isShare ? 4 : 5}>Totals</TableCell>
             <TableCell align="right">
               <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
             </TableCell>
@@ -161,11 +174,17 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, open
 
 export interface WorkOrderTableRowProps {
   workOrder: WorkOrder
-  openWorkOrderModal: (orderId: string) => void
+  isShare?: boolean
+  openWorkOrderModal?: (orderId: string) => void
   summary: WorkOrderSummary
 }
 
-export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, openWorkOrderModal, summary }) => {
+export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
+  workOrder,
+  openWorkOrderModal,
+  isShare,
+  summary,
+}) => {
   const theme = useTheme()
   const { owner, createdAt, state, orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
@@ -233,7 +252,11 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   }
 
   return (
-    <TableRow key={workOrder.orderId} onClick={() => openWorkOrderModal(workOrder.orderId)} sx={{ cursor: 'pointer' }}>
+    <TableRow
+      key={workOrder.orderId}
+      onClick={() => openWorkOrderModal && openWorkOrderModal(workOrder.orderId)}
+      sx={{ cursor: 'pointer' }}
+    >
       <TableCell align="center">
         <Tooltip title={getActivityName(workOrder.orderType)}>
           <OrderIcon />
@@ -246,9 +269,11 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
         />
       </TableCell>
       {/* State */}
-      <TableCell align="center">
-        <Tooltip title={workOrder.state}>{stateIcon}</Tooltip>
-      </TableCell>
+      {!isShare && (
+        <TableCell align="center">
+          <Tooltip title={workOrder.state}>{stateIcon}</Tooltip>
+        </TableCell>
+      )}
       <TableCell
         sx={{
           whiteSpace: 'nowrap',
@@ -280,22 +305,44 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
           <MValue value={workOrder.shareAmount || summary.shareAmount || 0} format={MValueFormat.currency_sm} />
         </TableCell>
       </Tooltip>
-      <TableCell align="right">
-        {summary.completionTime && summary.completionTime > Date.now() ? (
-          <CountdownTimer
-            startTime={shipOrder.processStartTime as number}
-            totalTime={(shipOrder.processDurationS || 0) * 1000}
-            useMValue
-            typoProps={{
-              sx: {
+      {isShare ? (
+        <TableCell align="right">
+          {summary.completionTime && (
+            <Typography
+              variant="caption"
+              sx={{
                 color: theme.palette.primary.light,
-              },
-            }}
-          />
-        ) : (
-          <MValue value={workOrder.createdAt} format={MValueFormat.dateTime} />
-        )}
-      </TableCell>
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+              }}
+            >
+              {dayjs(
+                shipOrder.processStartTime
+                  ? shipOrder.processStartTime + (shipOrder.processDurationS || 0) * 1000
+                  : undefined
+              ).format('MMM D, h:mm a')}{' '}
+              ({new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' }).split(' ')[2]})
+            </Typography>
+          )}
+        </TableCell>
+      ) : (
+        <TableCell align="right">
+          {summary.completionTime && summary.completionTime > Date.now() ? (
+            <CountdownTimer
+              startTime={shipOrder.processStartTime as number}
+              totalTime={(shipOrder.processDurationS || 0) * 1000}
+              useMValue
+              typoProps={{
+                sx: {
+                  color: theme.palette.primary.light,
+                },
+              }}
+            />
+          ) : (
+            <MValue value={workOrder.createdAt} format={MValueFormat.dateTime} />
+          )}
+        </TableCell>
+      )}
     </TableRow>
   )
 }

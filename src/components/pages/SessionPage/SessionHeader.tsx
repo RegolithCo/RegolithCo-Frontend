@@ -12,7 +12,7 @@ import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/mate
 import { SxProps } from '@mui/system'
 import dayjs from 'dayjs'
 import { fontFamilies } from '../../../theme'
-import { CloudDownload, Share } from '@mui/icons-material'
+import { CloudDownload, Diversity3, Share } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
@@ -152,9 +152,14 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                   <CloudDownload />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Share session">
-                <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="secondary">
+              <Tooltip title="Share session on social media or discord.">
+                <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="primary">
                   <Share />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Invite others to join.">
+                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="secondary">
+                  <Diversity3 />
                 </IconButton>
               </Tooltip>
             </Box>

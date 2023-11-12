@@ -47,6 +47,7 @@ export interface ModuleChooserMenuProps {
   value: MiningModuleEnum | null
   isOn?: boolean
   locked?: boolean
+  isShare?: boolean
   readonly?: boolean
   onChange: (value: MiningModuleEnum | '', isActive: boolean, isHover: boolean) => void
   label: string
@@ -57,6 +58,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
   value,
   isOn,
   locked,
+  isShare,
   label,
   readonly,
 }) => {
@@ -75,95 +77,97 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
           onDelete={() => onChange('', true, false)}
         />
       )}
-      <Select
-        {...baseProps}
-        disabled={readonly}
-        disableUnderline
-        value={value || ''}
-        sx={{
-          minWidth: value ? 0 : undefined,
-          width: value ? 20 : undefined,
-        }}
-        MenuProps={{
-          MenuListProps: {
-            dense: true,
-          },
-          PaperProps: {
-            elevation: 6,
-            sx: {
-              maxHeight: 500,
+      {!isShare && (
+        <Select
+          {...baseProps}
+          disabled={readonly}
+          disableUnderline
+          value={value || ''}
+          sx={{
+            minWidth: value ? 0 : undefined,
+            width: value ? 20 : undefined,
+          }}
+          MenuProps={{
+            MenuListProps: {
+              dense: true,
             },
-          },
-        }}
-        onChange={(e) => onChange(e.target.value as MiningModuleEnum, true, false)}
-        renderValue={(value) => {
-          if (!value) {
-            return (
-              <Typography
-                component="div"
-                variant="overline"
-                sx={{
-                  textAlign: 'center',
-                  fontStyle: 'italic',
-                  color: theme.palette.text.disabled,
-                }}
-              >
-                {readonly ? 'No Module Mounted' : `CHOOSE ${label}`}
-              </Typography>
-            )
-          }
-          return <div />
-        }}
-      >
-        <MenuItem
-          value=""
-          sx={{
-            fontFamily: fontFamilies.robotoMono,
-            fontSize: '1rem',
-            border: `4px solid ${theme.palette.divider}`,
+            PaperProps: {
+              elevation: 6,
+              sx: {
+                maxHeight: 500,
+              },
+            },
+          }}
+          onChange={(e) => onChange(e.target.value as MiningModuleEnum, true, false)}
+          renderValue={(value) => {
+            if (!value) {
+              return (
+                <Typography
+                  component="div"
+                  variant="overline"
+                  sx={{
+                    textAlign: 'center',
+                    fontStyle: 'italic',
+                    color: theme.palette.text.disabled,
+                  }}
+                >
+                  {readonly ? 'No Module Mounted' : `CHOOSE ${label}`}
+                </Typography>
+              )
+            }
+            return <div />
           }}
         >
-          <em>Select None</em>
-        </MenuItem>
-        <ListSubheader
-          sx={{
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-          }}
-        >
-          Active Modules
-        </ListSubheader>
-        {moduleKeys.reduce((acc, key, idx) => {
-          const module = MODULES[key as MiningModuleEnum]
-          const lastModule = idx > 0 ? MODULES[moduleKeys[idx - 1]] : null
-          return [
-            ...acc,
-            !module.active && lastModule && lastModule.active ? (
-              <ListSubheader
-                key="passive-subheader"
+          <MenuItem
+            value=""
+            sx={{
+              fontFamily: fontFamilies.robotoMono,
+              fontSize: '1rem',
+              border: `4px solid ${theme.palette.divider}`,
+            }}
+          >
+            <em>Select None</em>
+          </MenuItem>
+          <ListSubheader
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+            }}
+          >
+            Active Modules
+          </ListSubheader>
+          {moduleKeys.reduce((acc, key, idx) => {
+            const module = MODULES[key as MiningModuleEnum]
+            const lastModule = idx > 0 ? MODULES[moduleKeys[idx - 1]] : null
+            return [
+              ...acc,
+              !module.active && lastModule && lastModule.active ? (
+                <ListSubheader
+                  key="passive-subheader"
+                  sx={{
+                    backgroundColor: theme.palette.secondary.main,
+                    color: theme.palette.secondary.contrastText,
+                  }}
+                >
+                  Passive Modules
+                </ListSubheader>
+              ) : null,
+              <MenuItem
+                key={key}
                 sx={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: theme.palette.secondary.contrastText,
+                  backgroundColor:
+                    idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
                 }}
+                value={module.code}
+                onMouseOut={() => onChange('', true, true)}
+                onMouseOver={() => onChange(module.code as MiningModuleEnum, true, true)}
               >
-                Passive Modules
-              </ListSubheader>
-            ) : null,
-            <MenuItem
-              key={key}
-              sx={{
-                backgroundColor:
-                  idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
-              }}
-              value={module.code}
-              onMouseOut={() => onChange('', true, true)}
-              onMouseOver={() => onChange(module.code as MiningModuleEnum, true, true)}
-            >
-              <ModuleMenuItem moduleCode={key} />
-            </MenuItem>,
-          ]
-        }, [] as React.ReactNode[])}
-      </Select>
+                <ModuleMenuItem moduleCode={key} />
+              </MenuItem>,
+            ]
+          }, [] as React.ReactNode[])}
+        </Select>
+      )}
     </Stack>
   )
 }
@@ -171,6 +175,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
 export interface LaserChooserMenuProps {
   value: MiningLaserEnum | null
   isOn?: boolean
+  isShare?: boolean
   onChange: (value: MiningLaserEnum | '', isActive: boolean, isHover: boolean) => void
   readonly?: boolean
   laserSize: number
@@ -178,7 +183,14 @@ export interface LaserChooserMenuProps {
 
 const LASER_NO_MENU_STAT: (keyof AllStats)[] = ['shatterDamage', 'overchargeRate', 'clusterMod', 'extrPower']
 
-export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, value, laserSize, isOn, readonly }) => {
+export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
+  onChange,
+  value,
+  laserSize,
+  isOn,
+  isShare,
+  readonly,
+}) => {
   const theme = useTheme()
   const laserChoices: MiningLaserEnum[] = Object.keys(LASERS)
     .filter((key) => LASERS[key as MiningLaserEnum].size === laserSize)
@@ -196,59 +208,61 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({ onChange, va
           onDelete={() => onChange('', true, false)}
         />
       )}
-      <Select
-        {...baseProps}
-        disabled={readonly}
-        disableUnderline
-        value={value || ''}
-        sx={{
-          minWidth: value ? 0 : undefined,
-          width: value ? 20 : undefined,
-        }}
-        onChange={(e) => onChange(e.target.value as MiningLaserEnum, true, false)}
-        renderValue={(laserCode) => {
-          if (!laserCode) {
-            return (
-              <Typography
-                component="div"
-                variant="overline"
-                sx={{
-                  textAlign: 'center',
-                  fontStyle: 'italic',
-                }}
-              >
-                {readonly ? 'No Laser Mounted' : 'Choose a laser'}
-              </Typography>
-            )
-          }
-          return <div />
-        }}
-      >
-        <MenuItem
-          value=""
+      {!isShare && (
+        <Select
+          {...baseProps}
+          disabled={readonly}
+          disableUnderline
+          value={value || ''}
           sx={{
-            fontFamily: fontFamilies.robotoMono,
-            fontSize: '1rem',
-            border: `4px solid ${theme.palette.divider}`,
+            minWidth: value ? 0 : undefined,
+            width: value ? 20 : undefined,
+          }}
+          onChange={(e) => onChange(e.target.value as MiningLaserEnum, true, false)}
+          renderValue={(laserCode) => {
+            if (!laserCode) {
+              return (
+                <Typography
+                  component="div"
+                  variant="overline"
+                  sx={{
+                    textAlign: 'center',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {readonly ? 'No Laser Mounted' : 'Choose a laser'}
+                </Typography>
+              )
+            }
+            return <div />
           }}
         >
-          <em>Select None</em>
-        </MenuItem>
-        {laserChoices.map((key, idx) => (
           <MenuItem
-            key={`menu${key}-${idx}`}
-            value={key}
-            onMouseOut={() => onChange('', true, true)}
-            onMouseOver={() => onChange(key, true, true)}
+            value=""
             sx={{
-              backgroundColor:
-                idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
+              fontFamily: fontFamilies.robotoMono,
+              fontSize: '1rem',
+              border: `4px solid ${theme.palette.divider}`,
             }}
           >
-            <LaserMenuItem laserCode={key} />
+            <em>Select None</em>
           </MenuItem>
-        ))}
-      </Select>
+          {laserChoices.map((key, idx) => (
+            <MenuItem
+              key={`menu${key}-${idx}`}
+              value={key}
+              onMouseOut={() => onChange('', true, true)}
+              onMouseOver={() => onChange(key, true, true)}
+              sx={{
+                backgroundColor:
+                  idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
+              }}
+            >
+              <LaserMenuItem laserCode={key} />
+            </MenuItem>
+          ))}
+        </Select>
+      )}
     </Stack>
   )
 }

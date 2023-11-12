@@ -29,6 +29,7 @@ export type CrewShareTableRowProps = {
   allowPay?: boolean
   isSessionRow?: boolean
   isMe?: boolean
+  isShare?: boolean
   isSeller?: boolean
   allowEdit?: boolean
   isEditing?: boolean
@@ -46,6 +47,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   isSeller,
   remainder,
   allowEdit,
+  isShare,
   isEditing,
   allowPay,
   isMandatory,
@@ -86,46 +88,50 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
 
           {isSeller ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
 
-          <Tooltip
-            placement="right-end"
-            title={
-              isMe
-                ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
-                : isSeller
-                ? `The seller. The seller is always paid`
-                : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
-            }
-          >
-            <TableCell align="center" padding="none" width={30}>
-              <Checkbox
-                checked={paid}
-                disabled={isSeller || !allowPay}
-                onChange={(e) => {
-                  markCrewSharePaid && markCrewSharePaid(crewShare, e.target.checked)
-                }}
-              />
-            </TableCell>
-          </Tooltip>
+          {!isShare && (
+            <Tooltip
+              placement="right-end"
+              title={
+                isMe
+                  ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
+                  : isSeller
+                  ? `The seller. The seller is always paid`
+                  : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
+              }
+            >
+              <TableCell align="center" padding="none" width={30}>
+                <Checkbox
+                  checked={paid}
+                  disabled={isSeller || !allowPay}
+                  onChange={(e) => {
+                    markCrewSharePaid && markCrewSharePaid(crewShare, e.target.checked)
+                  }}
+                />
+              </TableCell>
+            </Tooltip>
+          )}
 
-          <TableCell align="center" padding="none" width={30}>
-            {(!isEditing || isMandatory) && hasNote && (
-              <Tooltip title={`NOTE: ${crewShare.note}`} placement="right-end">
-                <div>
-                  <Description color="primary" />
-                </div>
-              </Tooltip>
-            )}
-            {isEditing && !isMandatory && (
-              <Tooltip title="Add a note">
-                <Box sx={{}}>
-                  <NoteAdd
-                    sx={{ color: hasNote ? theme.palette.primary.main : 'inherit' }}
-                    onClick={() => setOpenNoteDialog(true)}
-                  />
-                </Box>
-              </Tooltip>
-            )}
-          </TableCell>
+          {!isShare && (
+            <TableCell align="center" padding="none" width={30}>
+              {(!isEditing || isMandatory) && hasNote && (
+                <Tooltip title={`NOTE: ${crewShare.note}`} placement="right-end">
+                  <div>
+                    <Description color="primary" />
+                  </div>
+                </Tooltip>
+              )}
+              {isEditing && !isMandatory && (
+                <Tooltip title="Add a note">
+                  <Box sx={{}}>
+                    <NoteAdd
+                      sx={{ color: hasNote ? theme.palette.primary.main : 'inherit' }}
+                      onClick={() => setOpenNoteDialog(true)}
+                    />
+                  </Box>
+                </Tooltip>
+              )}
+            </TableCell>
+          )}
 
           {isEditing && (
             <Tooltip title={`Delete ${crewShare.scName}`}>

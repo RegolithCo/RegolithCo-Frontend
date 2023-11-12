@@ -19,9 +19,7 @@ import {
   Divider,
   Link,
   List,
-  ListItem,
   ListItemButton,
-  ListItemSecondaryAction,
   ListItemText,
   Stack,
   SxProps,
@@ -48,11 +46,11 @@ import {
 } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { UserAvatar } from '../../UserAvatar'
-import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import numeral from 'numeral'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
+import { TabSummaryStats } from './TabSummaryStats'
 
 export interface TabSummaryProps {
   propA?: string
@@ -134,60 +132,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', overflow: 'auto', height: '100%', ...styles.container }}>
       <Typography sx={styles.sectionTitle}>Session Stats</Typography>
-      <List
-        sx={{
-          // Make every other row a different color
-          '& .MuiListItem-container:nth-of-type(odd)': {
-            background: '#00000044',
-          },
-        }}
-      >
-        <ListItem>
-          <ListItemText primary="Gross earnings" />
-          <ListItemSecondaryAction>
-            <MValue
-              value={sessionSummary.shareAmount}
-              format={MValueFormat.currency}
-              typoProps={{
-                px: 2,
-                fontSize: '1.1rem',
-                lineHeight: '2rem',
-              }}
-            />
-          </ListItemSecondaryAction>
-        </ListItem>
-        <ListItem>
-          <ListItemText primary="Raw ore collected" />
-          <ListItemSecondaryAction>
-            <MValue
-              value={sessionSummary.rawOreCollected / 100}
-              format={MValueFormat.volSCU}
-              decimals={1}
-              typoProps={{
-                px: 2,
-                fontSize: '1.1rem',
-                lineHeight: '2rem',
-              }}
-            />
-          </ListItemSecondaryAction>
-        </ListItem>
-        {sessionSummary.lastFinishedOrder && sessionSummary.lastFinishedOrder > Date.now() && (
-          <ListItem>
-            <ListItemText primary="Last work order complete" />
-            <ListItemSecondaryAction>
-              <CountdownTimer
-                endTime={sessionSummary.lastFinishedOrder}
-                useMValue
-                typoProps={{
-                  sx: {
-                    color: theme.palette.primary.light,
-                  },
-                }}
-              />
-            </ListItemSecondaryAction>
-          </ListItem>
-        )}
-      </List>
+      <TabSummaryStats session={session as Session} />
       <Box sx={{ mb: 2 }} />
       {/* Unpaid Crew Shares */}
       <Typography sx={styles.sectionTitle}>Unpaid Crew Shares</Typography>
@@ -255,29 +200,38 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   )
 }
 
-interface OwingListProps {
+export interface OwingListProps {
   session?: Session
-  sessionUser: SessionUser
+  sessionUser?: SessionUser
   sessionSummary: SessionBreakdown
-  mutating: boolean
-  isPaid: boolean
+  mutating?: boolean
+  isPaid?: boolean
+  isShare?: boolean
   setPayConfirm?: (state: ConfirmModalState) => void
-  openWorkOrderModal: (workOrderId: string) => void
+  openWorkOrderModal?: (workOrderId: string) => void
 }
 
-const OwingList: React.FC<OwingListProps> = ({
+export const OwingList: React.FC<OwingListProps> = ({
   session,
   sessionUser,
   mutating,
   sessionSummary,
   isPaid,
+  isShare,
   setPayConfirm,
   openWorkOrderModal,
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme, session?.state === SessionStateEnum.Active)
   const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
-  const rowObj = isPaid ? sessionSummary.paid : sessionSummary.owed
+  const rowObj = isShare
+    ? {
+        ...sessionSummary.paid,
+        ...sessionSummary.owed,
+      }
+    : isPaid
+    ? sessionSummary.paid
+    : sessionSummary.owed
   const rowArr: [string, string, number][] = Object.entries(rowObj).reduce<[string, string, number][]>(
     (acc, [payerSCName, payeeObj]) => {
       Object.entries(payeeObj).forEach(([payeeSCName, amt]) => {
@@ -289,13 +243,13 @@ const OwingList: React.FC<OwingListProps> = ({
   )
   // sort rowArr by pushing sessionUser.owner.sCN to the front and then alphabetically
   rowArr.sort((a, b) => {
-    if (a[0] === sessionUser.owner?.scName) return -1
-    if (b[0] === sessionUser.owner?.scName) return 1
+    if (sessionUser && a[0] === sessionUser.owner?.scName) return -1
+    if (sessionUser && b[0] === sessionUser.owner?.scName) return 1
     // Else do alphabetical locale
     return a[0].localeCompare(b[0])
   })
 
-  if (rowArr.length === 0) {
+  if (!isShare && rowArr.length === 0) {
     return (
       <Typography variant="body1" component="div" sx={{ px: 2, py: 1 }}>
         No {isPaid ? 'paid' : 'unpaid'} crew shares
@@ -311,7 +265,7 @@ const OwingList: React.FC<OwingListProps> = ({
           backgroundColor: '#00000033',
         },
         '& .MuiListItemButton-root:hover': {
-          backgroundColor: '#FFFFFF55',
+          backgroundColor: !isShare ? '#FFFFFF55' : undefined,
         },
       }}
     >
@@ -338,16 +292,21 @@ const OwingList: React.FC<OwingListProps> = ({
           <>
             <ListItemButton
               key={rowKey}
-              onClick={() => {
-                setExpandedRows({
-                  ...expandedRows,
-                  [rowKey]: !isExpanded,
-                })
-              }}
+              onClick={
+                isShare
+                  ? undefined
+                  : () => {
+                      setExpandedRows({
+                        ...expandedRows,
+                        [rowKey]: !isExpanded,
+                      })
+                    }
+              }
             >
               <ListItemText>
                 <Stack direction="row" spacing={1}>
-                  {isExpanded ? <ExpandMore /> : <ChevronRight />}
+                  {isExpanded && !isShare && <ExpandMore />}
+                  {!isExpanded && !isShare && <ChevronRight />}
                   <UserAvatar user={payerUser?.owner as User} size="small" />
                   <Typography sx={styles.username}>{payerSCName}</Typography>
                   <Divider orientation="vertical" flexItem />
@@ -365,7 +324,7 @@ const OwingList: React.FC<OwingListProps> = ({
                       lineHeight: '2rem',
                     }}
                   />
-                  {!isPaid && (
+                  {!isPaid && !isShare && (
                     <Button
                       size="small"
                       onClick={(e) => {
@@ -381,8 +340,8 @@ const OwingList: React.FC<OwingListProps> = ({
                             crewShares,
                           })
                       }}
-                      sx={{ opacity: payerSCName !== sessionUser.owner?.scName ? 0.1 : 1 }}
-                      disabled={payerSCName !== sessionUser.owner?.scName}
+                      sx={{ opacity: payerSCName !== sessionUser?.owner?.scName ? 0.1 : 1 }}
+                      disabled={payerSCName !== sessionUser?.owner?.scName}
                       startIcon={<PriceCheck />}
                       variant="contained"
                       color={mutating ? 'secondary' : 'success'}
@@ -409,7 +368,7 @@ const OwingList: React.FC<OwingListProps> = ({
                     <TableBody>
                       {crewShares.map((cs, idx) => {
                         const hasNote = cs.note && cs.note.length > 0
-                        const isMe = cs.scName === sessionUser.owner?.scName
+                        const isMe = cs.scName === sessionUser?.owner?.scName
                         let shareVal: React.ReactElement
                         switch (cs.shareType) {
                           case ShareTypeEnum.Amount:
@@ -437,7 +396,7 @@ const OwingList: React.FC<OwingListProps> = ({
                         return (
                           <TableRow
                             key={`wo-${idx}`}
-                            onClick={() => openWorkOrderModal(cs.orderId)}
+                            onClick={() => openWorkOrderModal && openWorkOrderModal(cs.orderId)}
                             sx={{
                               cursor: 'pointer',
                               '&:hover': {

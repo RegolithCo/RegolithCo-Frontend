@@ -24,6 +24,7 @@ export interface WorkOrderCalcProps {
   allowEdit?: boolean
   allowPay?: boolean
   isNew?: boolean
+  isShare?: boolean // is this an exportable share?
   isCalculator?: boolean
   isEditing?: boolean
   templateJob?: WorkOrderDefaults
@@ -31,7 +32,7 @@ export interface WorkOrderCalcProps {
   sx?: SxProps<Theme>
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
     [theme.breakpoints.up('md')]: {
       flex: '1 1',
@@ -66,7 +67,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const styles = workOrderStylesThunk(theme)
   const summary = useMemo(() => calculateWorkOrder(props.workOrder), [props.workOrder])
   const { workOrder } = props
   return (

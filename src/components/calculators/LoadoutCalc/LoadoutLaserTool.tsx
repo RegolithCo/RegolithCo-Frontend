@@ -11,6 +11,7 @@ export interface LoadoutLaserRowProps {
   activeLaser: Maybe<ActiveMiningLaserLoadout | null>
   laserSize: number
   label: string
+  isShare?: boolean
   readonly?: boolean
   onChange: (laser: ActiveMiningLaserLoadout | null, hover: boolean) => void
 }
@@ -19,6 +20,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   activeLaser,
   laserSize,
   label,
+  isShare,
   onChange,
   readonly,
 }) => {
@@ -113,6 +115,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
         <LaserChooserMenu
           laserSize={laserSize}
           readonly={readonly}
+          isShare={isShare}
           value={laserCode || null}
           onChange={onLaserChange}
           isOn={laserIsActive}
@@ -122,6 +125,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
             value={(activeModuleSelectValues[0] as MiningModuleEnum) || null}
             readonly={readonly}
             isOn={laserIsActive && activeLaser?.modulesActive[0]}
+            isShare={isShare}
             locked={!laserIsActive}
             label="Module 1"
             onChange={onModuleChange(0)}
@@ -134,6 +138,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
             value={(activeModuleSelectValues[1] as MiningModuleEnum) || null}
             readonly={readonly}
             isOn={laserIsActive && activeLaser?.modulesActive[1]}
+            isShare={isShare}
             locked={!laserIsActive}
             label="Module 2"
             onChange={onModuleChange(1)}
@@ -146,6 +151,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
             value={(activeModuleSelectValues[2] as MiningModuleEnum) || null}
             readonly={readonly}
             isOn={laserIsActive && activeLaser?.modulesActive[2]}
+            isShare={isShare}
             locked={!laserIsActive}
             label="Module 3"
             onChange={onModuleChange(2)}

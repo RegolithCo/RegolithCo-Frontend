@@ -21,6 +21,7 @@ export interface CrewShareTableProps {
   allowPay?: boolean
   allowEdit?: boolean
   isEditing?: boolean
+  isShare?: boolean // is this an exportable share?
   templateJob?: WorkOrderDefaults
   userSuggest?: UserSuggest
   summary: WorkOrderSummary
@@ -44,6 +45,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   summary,
   allowEdit,
   isEditing,
+  isShare,
   onChange,
   markCrewSharePaid,
   onDeleteCrewShare,
@@ -94,9 +96,11 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               </TableCell>
             </Tooltip>
             {/* The delete button only shows if we are editing */}
-            <TableCell align="left" colSpan={isEditing ? 2 : 1}>
-              Paid
-            </TableCell>
+            {!isShare && (
+              <TableCell align="left" colSpan={isEditing ? 2 : 1}>
+                Paid
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -105,6 +109,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               key={`crewShare-${idx}`}
               crewShare={crewShare}
               isMe={crewShare.scName === workOrder.owner?.scName}
+              isShare={isShare}
               isSeller={
                 workOrder.sellerscName
                   ? crewShare.scName === workOrder.sellerscName

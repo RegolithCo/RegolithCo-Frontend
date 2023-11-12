@@ -12,6 +12,7 @@ export interface LoadoutLaserChipProps {
   laserCode: MiningLaserEnum
   isOn?: boolean
   canBeOn?: boolean
+  isShare?: boolean
   onToggle?: (isOn: boolean) => void
   readonly?: boolean
   onDelete?: () => void

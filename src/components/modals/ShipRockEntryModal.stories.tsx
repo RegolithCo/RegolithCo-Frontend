@@ -14,8 +14,8 @@ export default {
 
 const Template: StoryFn<typeof ShipRockEntryModalC> = (args) => <ShipRockEntryModalC {...args} />
 
-export const ShareModal = Template.bind({})
-ShareModal.args = {
+export const ShipRockEntryModal = Template.bind({})
+ShipRockEntryModal.args = {
   onClose: () => {
     console.log('Closed')
   },

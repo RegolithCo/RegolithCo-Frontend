@@ -15,8 +15,8 @@ export default {
 
 const Template: StoryFn<typeof ScoutingClusterCountModalC> = (args) => <ScoutingClusterCountModalC {...args} />
 
-export const ShareModal = Template.bind({})
-ShareModal.args = {
+export const ScoutingClusterCountModal = Template.bind({})
+ScoutingClusterCountModal.args = {
   onClose: () => {
     console.log('Closed')
   },

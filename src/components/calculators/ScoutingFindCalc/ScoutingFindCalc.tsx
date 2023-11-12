@@ -61,14 +61,15 @@ dayjs.extend(relativeTime)
 
 export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
-  me: SessionUser
+  me?: SessionUser
   allowEdit?: boolean
   allowWork?: boolean
   standalone?: boolean
   isNew?: boolean
+  isShare?: boolean
   joinScoutingFind?: (findId: string, enRoute: boolean) => void
   leaveScoutingFind?: (findId: string) => void
-  onChange: (scoutingFind: ScoutingFind) => void
+  onChange?: (scoutingFind: ScoutingFind) => void
   onDelete?: () => void
 }
 
@@ -262,6 +263,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       overflow: 'scroll',
     },
   },
+  scansGridShare: {
+    //
+  },
 })
 
 /**
@@ -273,6 +277,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   scoutingFind,
   me,
   isNew,
+  isShare,
   allowEdit,
   standalone,
   joinScoutingFind,
@@ -335,9 +340,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   // else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
 
   let myAttendanceState = AttendanceStateEnum.NotJoined
-  if (scoutingFind.attendanceIds?.includes(me.owner?.userId as string)) {
-    myAttendanceState =
-      me.state === SessionUserStateEnum.Travelling ? AttendanceStateEnum.EnRoute : AttendanceStateEnum.Joined
+  if (scoutingFind.attendanceIds?.includes(me?.owner?.userId as string)) {
+    myAttendanceState = me
+      ? me.state === SessionUserStateEnum.Travelling
+        ? AttendanceStateEnum.EnRoute
+        : AttendanceStateEnum.Joined
+      : AttendanceStateEnum.NotJoined
   }
 
   // Just a handy array to map over
@@ -370,7 +378,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 sx={styles.stateSelect}
                 variant="standard"
                 onChange={(e) => {
-                  onChange({ ...scoutingFind, state: e.target.value as ScoutingFindStateEnum })
+                  onChange && onChange({ ...scoutingFind, state: e.target.value as ScoutingFindStateEnum })
                 }}
                 renderValue={(value) => getScoutingFindStateName(value as ScoutingFindStateEnum)}
                 value={(scoutingFind.state as string) || (ScoutingFindStateEnum.Discovered as string)}
@@ -443,16 +451,18 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 <Typography variant="overline" component="div">
                   Found {dayjs(scoutingFind.createdAt).from(dayjs(Date.now()))} By:
                 </Typography>
-                <ScoutingFindUserList
-                  users={[scoutingFind.owner as User]}
-                  meId={me.owner?.userId as string}
-                  ownerId={scoutingFind.ownerId}
-                />
+                {me && (
+                  <ScoutingFindUserList
+                    users={[scoutingFind.owner as User]}
+                    meId={me.owner?.userId as string}
+                    ownerId={scoutingFind.ownerId}
+                  />
+                )}
               </>
             )}
           </Grid>
           {/* Cluster stats */}
-          <Grid xs={12} sm={standalone ? 9 : 4.5} sx={styles.topRowGrid}>
+          <Grid xs={12} sm={standalone || isShare ? 9 : 4.5} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
@@ -561,17 +571,25 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             {!standalone && (
               <Tooltip title="Add a note">
                 <Box onClick={() => setOpenNoteDialog(true)}>
-                  <Typography variant="overline" component="div">
-                    <NoteAdd sx={{ color: hasNote ? yellow[500] : 'inherit', fontSize: 14, lineHeight: 10, mx: 0.2 }} />
-                    {hasNote ? 'Note' : 'Add a note'}
-                  </Typography>
-                  <Typography variant="caption">{scoutingFind.note}</Typography>
+                  {isShare ? (
+                    <Typography variant="caption">{scoutingFind.note}</Typography>
+                  ) : (
+                    <>
+                      <Typography variant="overline" component="div">
+                        <NoteAdd
+                          sx={{ color: hasNote ? yellow[500] : 'inherit', fontSize: 14, lineHeight: 10, mx: 0.2 }}
+                        />
+                        {hasNote ? 'Note' : 'Add a note'}
+                      </Typography>
+                      <Typography variant="caption">{scoutingFind.note}</Typography>
+                    </>
+                  )}
                 </Box>
               </Tooltip>
             )}
           </Grid>
           {/* Actions and attendance */}
-          {!standalone && (
+          {!standalone && !isShare && (
             <Grid xs={12} sm={4.5} sx={styles.topRowGrid}>
               {!standalone && joinScoutingFind && leaveScoutingFind && (
                 <Box sx={styles.stateBtnGrp}>
@@ -634,22 +652,26 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   <Typography variant="overline" component="div">
                     En-Route:
                   </Typography>
-                  <ScoutingFindUserList
-                    meId={me.owner?.userId as string}
-                    users={enRouteUsers}
-                    ownerId={scoutingFind.ownerId}
-                  />
+                  {me && (
+                    <ScoutingFindUserList
+                      meId={me.owner?.userId as string}
+                      users={enRouteUsers}
+                      ownerId={scoutingFind.ownerId}
+                    />
+                  )}
                 </>
               )}
 
               <Typography variant="overline" component="div">
                 On-Site:
               </Typography>
-              <ScoutingFindUserList
-                meId={me.owner?.userId as string}
-                users={onSiteUsers}
-                ownerId={scoutingFind.ownerId}
-              />
+              {me && (
+                <ScoutingFindUserList
+                  meId={me.owner?.userId as string}
+                  users={onSiteUsers}
+                  ownerId={scoutingFind.ownerId}
+                />
+              )}
             </Grid>
           )}
         </Grid>
@@ -676,17 +698,23 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       //   mass: 3000,
                       //   ores: [],
                       // })
-                      onChange({
-                        ...shipFind,
-                        clusterCount: (shipFind.clusterCount || 0) + 1,
-                      })
+                      onChange &&
+                        onChange({
+                          ...shipFind,
+                          clusterCount: (shipFind.clusterCount || 0) + 1,
+                        })
                     }}
                   >
                     Add Rock
                   </Button>
                 )}
               </Box>
-              <Grid container sx={styles.scansGrid} margin={{ xs: 0, sm: 1 }} spacing={{ xs: 1, sm: 2 }}>
+              <Grid
+                container
+                sx={isShare ? styles.scansGridShare : styles.scansGrid}
+                margin={{ xs: 0, sm: 1 }}
+                spacing={{ xs: 1, sm: 2 }}
+              >
                 {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
                   (shipFind.shipRocks || []).map((rock, idx) => {
                     const newOres = [...(rock.ores || [])]
@@ -699,13 +727,14 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           allowWork={allowWork}
                           rockValue={summary.byRock ? summary.byRock[idx].value : undefined}
                           onChangeState={(newState) => {
-                            onChange({
-                              ...shipFind,
-                              shipRocks: (shipFind.shipRocks || []).map((r, idxx) => ({
-                                ...r,
-                                state: idxx === idx ? newState : r.state,
-                              })),
-                            })
+                            onChange &&
+                              onChange({
+                                ...shipFind,
+                                shipRocks: (shipFind.shipRocks || []).map((r, idxx) => ({
+                                  ...r,
+                                  state: idxx === idx ? newState : r.state,
+                                })),
+                              })
                           }}
                           onEditClick={() => {
                             setAddScanModalOpen(false)
@@ -723,10 +752,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                         onDelete={() => {
                           if (!shipFind.shipRocks || !shipFind.clusterCount) return
                           if (shipFind.clusterCount <= shipFind.shipRocks.length) return
-                          onChange({
-                            ...shipFind,
-                            clusterCount: shipFind.clusterCount - 1,
-                          })
+                          onChange &&
+                            onChange({
+                              ...shipFind,
+                              clusterCount: shipFind.clusterCount - 1,
+                            })
                         }}
                         onClick={() => {
                           setEditScanModalOpen([-1, false])
@@ -758,26 +788,29 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             addScanModalOpen !== false && setAddScanModalOpen(false)
             // Actually remove the rock from the list
             if (editScanModalOpen[1] !== false) {
-              onChange({
-                ...(shipFind || {}),
-                shipRocks: (shipFind?.shipRocks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
-              })
+              onChange &&
+                onChange({
+                  ...(shipFind || {}),
+                  shipRocks: (shipFind?.shipRocks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
+                })
               setEditScanModalOpen([-1, false])
             }
           }}
           onSubmit={(rock) => {
             if (addScanModalOpen !== false) {
-              onChange({
-                ...(shipFind || {}),
-                clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
-                shipRocks: [...(shipFind?.shipRocks || []), rock],
-              })
+              onChange &&
+                onChange({
+                  ...(shipFind || {}),
+                  clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
+                  shipRocks: [...(shipFind?.shipRocks || []), rock],
+                })
               setAddScanModalOpen(false)
             } else if (editScanModalOpen[1] !== false) {
-              onChange({
-                ...(shipFind || {}),
-                shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
-              })
+              onChange &&
+                onChange({
+                  ...(shipFind || {}),
+                  shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
+                })
               setEditScanModalOpen([-1, false])
             }
           }}
@@ -795,7 +828,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         onSave={(newCount, gemType, gemSize) => {
           setEditCountModalOpen(false)
           if (shipFind?.clusterType === ScoutingFindTypeEnum.Ship) {
-            onChange({ ...shipFind, clusterCount: newCount })
+            onChange && onChange({ ...shipFind, clusterCount: newCount })
           } else if (shipFind?.clusterType === ScoutingFindTypeEnum.Vehicle) {
             const vehicleRocks: VehicleRock[] = Array.from({ length: newCount }, (_, idx) => ({
               __typename: 'VehicleRock',
@@ -808,9 +841,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 },
               ],
             }))
-            onChange({ ...vehicleFind, clusterCount: newCount, vehicleRocks })
+            onChange && onChange({ ...vehicleFind, clusterCount: newCount, vehicleRocks })
           } else {
-            onChange({ ...shipFind, clusterCount: newCount })
+            onChange && onChange({ ...shipFind, clusterCount: newCount })
           }
         }}
         isNew={isNew}
@@ -822,7 +855,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         onClose={() => setOpenNoteDialog(false)}
         note={scoutingFind.note as string}
         onChange={(note) => {
-          onChange({ ...scoutingFind, note })
+          onChange && onChange({ ...scoutingFind, note })
         }}
       />
 
