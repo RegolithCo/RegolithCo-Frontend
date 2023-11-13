@@ -62,7 +62,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
 
   const sortedWorkOrders = React.useMemo(() => {
     if (!session?.workOrders?.items?.length) return []
-    return session?.workOrders?.items.sort((a, b) => {
+    return [...(session?.workOrders?.items || [])].sort((a, b) => {
       if (!a || !b) return 0
       return b.createdAt - a.createdAt
     })
@@ -79,7 +79,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
 
   const sortedScoutingFinds = React.useMemo(() => {
     if (!session?.scouting?.items?.length) return []
-    return session?.scouting?.items.sort((a, b) => {
+    return [...(session?.scouting?.items || [])].sort((a, b) => {
       if (!a || !b) return 0
       return b.createdAt - a.createdAt
     })
