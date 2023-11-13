@@ -77,8 +77,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 
   const shipOrder = workOrder as ShipMiningOrder
 
-  const expenses: { name: string; value: number }[] = []
-
   const storeChoices = useMemo(
     () => findAllStoreChoices(summary.oreSummary, Boolean(shipOrder.isRefined)),
     [summary.oreSummary]
@@ -88,12 +86,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
     [storeChoices]
   )
 
-  if (workOrder.includeTransferFee) {
-    expenses.push({
-      name: 'moTRADER',
-      value: (summary?.transferFees as number) > -1 ? -1 * ((summary.transferFees as number) || 0) : 0,
-    })
-  }
   const shareAmountIsSet = typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null
   // Update the share amount but only if the user has not already edited it
   useEffect(() => {

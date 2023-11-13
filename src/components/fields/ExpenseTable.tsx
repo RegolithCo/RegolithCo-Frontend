@@ -19,7 +19,7 @@ import { AddCircle, Cancel } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import Numeral from 'numeral'
 import { MValue, MValueFormat } from './MValue'
-// import log from 'loglevel'
+import log from 'loglevel'
 
 const MAXIMUM_EXPENSES = 10
 
@@ -58,7 +58,9 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
   //     idx: -2,
   //   })
   // }
+  let hasTransferFee = false
   if (workOrder.includeTransferFee && summary.transferFees > 0) {
+    hasTransferFee = true
     expenses.push({
       name: 'moTRADER',
       amount: (summary?.transferFees as number) > -1 ? (summary.transferFees as number) || 0 : 0,
@@ -96,89 +98,91 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
               </TableCell>
             </TableRow>
           )}
-          {expenses.map(({ name, amount, idx }) => (
-            <Tooltip
-              enterDelay={700}
-              key={`expensesRows-${idx}`}
-              title={idx < 0 ? 'Automatic Row (turn off using settings)' : 'Custom Row. Click to edit.'}
-              placement="top-start"
-            >
-              <TableRow
+          {expenses.map(({ name, amount, idx }) => {
+            const isMoTraderRow = hasTransferFee && idx === 0
+            return (
+              <Tooltip
+                enterDelay={700}
                 key={`expensesRows-${idx}`}
-                sx={{
-                  background: idx < 0 ? '#44444477' : 'transparent',
-                }}
-                onClick={() => {
-                  if (isEditing && idx >= 0) {
-                    setEditingRow(idx)
-                  }
-                }}
+                title={isMoTraderRow ? 'Automatic Row (turn off using settings)' : 'Custom Row. Click to edit.'}
+                placement="top-start"
               >
-                <TableCell scope="row">
-                  <ExpenseRowName
-                    name={name}
-                    isEditing={Boolean(isEditing && idx >= 0 && editingRow === idx)}
-                    onCancel={() => setEditingRow(null)}
-                    onChange={(val) => {
-                      const newExpenses = [...(workOrder.expenses || [])]
-                      newExpenses[idx].name = val
-                      onChange({
-                        ...workOrder,
-                        expenses: newExpenses,
-                      })
-                    }}
-                  />
-                </TableCell>
-                <TableCell scope="row" sx={{ textAlign: 'right' }}>
-                  <ExpenseRowAmount
-                    amount={amount}
-                    isEditing={Boolean(isEditing && idx >= 0 && editingRow === idx)}
-                    onCancel={() => setEditingRow(null)}
-                    onChange={(val) => {
-                      const newExpenses = [...(workOrder.expenses || [])]
-                      newExpenses[idx].amount = val
-                      onChange({
-                        ...workOrder,
-                        expenses: newExpenses,
-                      })
-                    }}
-                  />
-                </TableCell>
-                {isEditing && (
-                  <>
-                    {idx >= 0 ? (
-                      <TableCell padding="none">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            e.preventDefault()
-                            const newExpenses = [...(workOrder.expenses || [])]
-                            newExpenses.splice(idx, 1)
-                            onChange({
-                              ...workOrder,
-                              expenses: newExpenses,
-                            })
-                          }}
-                        >
-                          <Cancel />
-                        </IconButton>
-                      </TableCell>
-                    ) : (
-                      <Tooltip title="Automatic. Remove using the settings radio buttons">
+                <TableRow
+                  key={`expensesRows-${idx}`}
+                  sx={{
+                    background: isMoTraderRow ? '#44444477' : 'transparent',
+                  }}
+                  onClick={() => {
+                    if (!isEditing || isMoTraderRow) return
+                    setEditingRow(idx)
+                  }}
+                >
+                  <TableCell scope="row">
+                    <ExpenseRowName
+                      name={name}
+                      isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
+                      onCancel={() => setEditingRow(null)}
+                      onChange={(val) => {
+                        const newExpenses = [...(workOrder.expenses || [])]
+                        newExpenses[idx].name = val
+                        onChange({
+                          ...workOrder,
+                          expenses: newExpenses,
+                        })
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell scope="row" sx={{ textAlign: 'right' }}>
+                    <ExpenseRowAmount
+                      amount={amount}
+                      isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
+                      onCancel={() => setEditingRow(null)}
+                      onChange={(val) => {
+                        const newExpenses = [...(workOrder.expenses || [])]
+                        newExpenses[idx].amount = val
+                        onChange({
+                          ...workOrder,
+                          expenses: newExpenses,
+                        })
+                      }}
+                    />
+                  </TableCell>
+                  {isEditing && (
+                    <>
+                      {!isMoTraderRow ? (
                         <TableCell padding="none">
-                          <IconButton size="small" color="error" disabled>
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              e.preventDefault()
+                              const newExpenses = [...(workOrder.expenses || [])]
+                              newExpenses.splice(idx, 1)
+                              onChange({
+                                ...workOrder,
+                                expenses: newExpenses,
+                              })
+                            }}
+                          >
                             <Cancel />
                           </IconButton>
                         </TableCell>
-                      </Tooltip>
-                    )}
-                  </>
-                )}
-              </TableRow>
-            </Tooltip>
-          ))}
+                      ) : (
+                        <Tooltip title="Automatic. Remove using the settings radio buttons">
+                          <TableCell padding="none">
+                            <IconButton size="small" color="error" disabled>
+                              <Cancel />
+                            </IconButton>
+                          </TableCell>
+                        </Tooltip>
+                      )}
+                    </>
+                  )}
+                </TableRow>
+              </Tooltip>
+            )
+          })}
           {isEditing && (
             <TableRow>
               <Tooltip
@@ -271,7 +275,9 @@ const ExpenseRowName: React.FC<{
           }}
           onChange={(e) => {
             // Strip out leading whitespace and limit to 20 alphanumeric characters
+            log.info('CHANGE1_before', e.target.value)
             const val = e.target.value.replace(/^\s+/, '').slice(0, 20)
+            log.info('CHANGE1_after', val)
             onChange(val)
           }}
           inputProps={{
@@ -324,14 +330,17 @@ const ExpenseRowAmount: React.FC<{
       }}
       onChange={(e) => {
         try {
+          log.info('CHANGE2_before', e.target.value)
           let value = jsRound(parseInt(e.target.value.replace(/[^\d]/g, '').replace(/^0+/, ''), 10), 0)
           if (value < 0) value = value * -1
           if (value > 999999999) value = 9999999
           if (value >= 0) {
+            log.info('CHANGE2_after', value)
             onChange(value)
           } else onChange(0)
         } catch (e) {
           //
+          log.error('Expense input error', e)
         }
       }}
       InputProps={{
