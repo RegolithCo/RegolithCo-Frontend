@@ -1,4 +1,4 @@
-### November 7, 2023
+### November 12, 2023
 ## 1.0.30 - Proper sharing (Finally!)
 
 I was noticing folks wanting to share their sessions without exposing a join link. This is now possible. The way it works is that you save a snapshot of your session to a png file and then upload that to Reddit, discord, twitter etc.
@@ -23,8 +23,8 @@ The benefits of this is that my server doesn't have to host the image and there'
 **Bugs Fixed:**
 
 - Bad session urls were causing crashes. Then the errors were causing more errors. Then those errors were causing crashes.
-- The auto polling has been disabled when the window isn't active. This should save us potentially millions of unecessary API calls when people leave tabs open by accident (or on purpose).
-- Work orders that are delegated should now allow the delegate owner to edit adn delete them properly. 
+- The auto polling has been disabled when the window isn't active. This should save us potentially millions of unnecessary API calls when people leave tabs open by accident (or on purpose).
+- Work orders that are delegated should now allow the delegate owner to edit and delete them properly. 
 - Delegated work orders should allow the delegate owner to mark crew shares as paid.
 - There were a bunch of permission issues and mutation errors when users who didn't create the scouting find were trying to modify it.
 
