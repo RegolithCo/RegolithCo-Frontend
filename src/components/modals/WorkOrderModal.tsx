@@ -4,6 +4,7 @@ import {
   Button,
   Dialog,
   DialogActions,
+  IconButton,
   SxProps,
   Toolbar,
   Tooltip,
@@ -14,7 +15,17 @@ import {
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { ActivityEnum, CrewShare, makeHumanIds, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
-import { BackHand, Cancel, Create, Delete, Edit, QuestionMark, Save, SvgIconComponent } from '@mui/icons-material'
+import {
+  BackHand,
+  Cancel,
+  Create,
+  Delete,
+  Edit,
+  QuestionMark,
+  Save,
+  Share,
+  SvgIconComponent,
+} from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
@@ -24,6 +35,7 @@ import { ConfirmModal } from './ConfirmModal'
 
 export interface WorkOrderModalProps {
   open: boolean
+  setWorkOrderShareId?: (id: string) => void
   onClose: () => void
 }
 
@@ -99,7 +111,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose }) => {
+export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrderShareId, onClose }) => {
   const theme = useTheme()
   const {
     isNew,
@@ -241,8 +253,13 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, onClose })
           >
             {isEditing ? 'Editing...' : ' '}
           </Typography>
-
-          {/* <Chip label={workOrder?.state} color="secondary" /> */}
+          {!isEditing && !isNew && setWorkOrderShareId && (
+            <Tooltip title="Share this work order" placement="top">
+              <IconButton color="inherit" onClick={() => setWorkOrderShareId(workOrder.orderId)}>
+                <Share />
+              </IconButton>
+            </Tooltip>
+          )}
         </Toolbar>
         <Box sx={styles.workOrderBox}>
           {workOrder ? (

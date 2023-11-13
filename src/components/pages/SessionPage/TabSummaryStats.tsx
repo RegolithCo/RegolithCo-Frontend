@@ -77,7 +77,7 @@ export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isSha
           </ListItemSecondaryAction>
         </ListItem>
         <ListItem>
-          <ListItemText primary="Scouted" />
+          <ListItemText primary="Scouting Finds" />
           <ListItemSecondaryAction>
             <Typography
               sx={{

@@ -37,7 +37,7 @@ export const ShareWrapper = ({ children }: { children: React.ReactNode }): JSX.E
             fontSize: 14,
           }}
         >
-          {window.location.protocol}
+          Made Using Regolith: {window.location.protocol}
           {'//'}
           {window.location.hostname}
         </Typography>

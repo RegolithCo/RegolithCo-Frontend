@@ -158,7 +158,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                 </IconButton>
               </Tooltip>
               <Tooltip title="Invite others to join.">
-                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="secondary">
+                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="info" sx={{}}>
                   <Diversity3 />
                 </IconButton>
               </Tooltip>

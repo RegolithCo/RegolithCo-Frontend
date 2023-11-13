@@ -1,21 +1,25 @@
 import * as React from 'react'
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
   MenuItem,
   Select,
-  Tab,
-  Tabs,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   useTheme,
 } from '@mui/material'
-import { Share, QuestionMark, SvgIconComponent } from '@mui/icons-material'
+import { Share, QuestionMark, SvgIconComponent, Diversity3 } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
-import { Stack } from '@mui/system'
+import { Box, Stack } from '@mui/system'
 import { SessionContext } from '../../context/session.context'
+import dayjs from 'dayjs'
 import {
   ActivityEnum,
   defaultSessionName,
@@ -34,32 +38,55 @@ import { ClusterShare } from '../sharing/ClusterShare'
 
 export interface ShareModalProps {
   open: boolean
+  initScoutingFindId: string | null
+  initWorkOrderId: string | null
   onClose: () => void
 }
 
 export const ShareTypeEnum = {
   SESSION: 'Session',
   WORK_ORDER: 'Work Order',
-  CLUSTER: 'Cluster',
+  CLUSTER: 'Scouting Find',
 } as const
 export type DataTabsEnum = ObjectValues<typeof ShareTypeEnum>
 
-export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose }) => {
+export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScoutingFindId, initWorkOrderId }) => {
   const theme = useTheme()
   const { session } = React.useContext(SessionContext)
-  const [activeTab, setActiveTab] = React.useState<DataTabsEnum>(ShareTypeEnum.SESSION)
+  const [activeTab, setActiveTab] = React.useState<DataTabsEnum>(() => {
+    if (initScoutingFindId) return ShareTypeEnum.CLUSTER
+    if (initWorkOrderId) return ShareTypeEnum.WORK_ORDER
+    return ShareTypeEnum.SESSION
+  })
   const [obfuscate, setObfuscate] = React.useState<boolean>(false)
+
+  const sortedWorkOrders = React.useMemo(() => {
+    if (!session?.workOrders?.items?.length) return []
+    return session?.workOrders?.items.sort((a, b) => {
+      if (!a || !b) return 0
+      return b.createdAt - a.createdAt
+    })
+  }, [session?.workOrders?.items])
   const [activeWorkOrderId, setActiveWorkOrderId] = React.useState<string | null>(() => {
-    if (!session?.workOrders?.items?.length) return null
-    const firstWorkOrder = session?.workOrders?.items[0]
+    if (initWorkOrderId) return initWorkOrderId
+    if (!sortedWorkOrders.length) return null
+    const firstWorkOrder = sortedWorkOrders[0]
     return firstWorkOrder?.orderId
   })
   const activeWorkOrder: WorkOrder | null =
     session?.workOrders?.items.find((wo) => wo.orderId === activeWorkOrderId) || null
 
+  const sortedScoutingFinds = React.useMemo(() => {
+    if (!session?.scouting?.items?.length) return []
+    return session?.scouting?.items.sort((a, b) => {
+      if (!a || !b) return 0
+      return b.createdAt - a.createdAt
+    })
+  }, [session?.scouting?.items])
   const [activeScoutingFindId, setActiveScoutingFindId] = React.useState<string | null>(() => {
-    if (!session?.scouting?.items?.length) return null
-    const firstFind = session?.scouting?.items[0]
+    if (initScoutingFindId) return initScoutingFindId
+    if (!sortedScoutingFinds.length) return null
+    const firstFind = sortedScoutingFinds[0]
     return firstFind?.scoutingFindId
   })
   const activeScoutingFind: ScoutingFind | null =
@@ -105,92 +132,119 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose }) => {
               // top: 15,
             }}
           />
-          <Typography variant="h4">Share</Typography>
+          <Typography variant="h4">Share {activeTab}</Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>
         {/* Tabs to choose: Session, work order or scouting */}
-        <Tabs
+        <ToggleButtonGroup
           value={activeTab}
+          color="primary"
+          exclusive
           onChange={(e, activity) => {
             setActiveTab(activity)
           }}
-          sx={{
-            mb: 3,
-          }}
         >
-          <Tab label="Session" value={ShareTypeEnum.SESSION} />
-          <Tab label="Work Order" value={ShareTypeEnum.WORK_ORDER} />
-          <Tab label="Scouting Find" value={ShareTypeEnum.CLUSTER} />
-        </Tabs>
+          <ToggleButton value={ShareTypeEnum.SESSION} aria-label="left aligned">
+            Session
+          </ToggleButton>
+          <ToggleButton value={ShareTypeEnum.WORK_ORDER} aria-label="centered">
+            Work Order
+          </ToggleButton>
+          <ToggleButton value={ShareTypeEnum.CLUSTER} aria-label="right aligned">
+            Scouting Find
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <Typography variant="body1" paragraph>
+            You can download an image snapshot of all or part of this session to share on social media, Discord etc. If
+            you want to collaborate and invite people to your session use the invite icon (<Diversity3 />) instead.
+          </Typography>
+        </Alert>
 
         {activeTab === ShareTypeEnum.SESSION && (
           <Stack spacing={2} alignItems="left" justifyContent="center">
-            <ImageDownloadComponent
-              fileName={`Regolith-Session-${urlFriendlySessionName}`}
-              leftContent={
-                <Typography variant="body1">
-                  You can download a snapshot of this session and share it on social media or in discord.
-                </Typography>
-              }
-            >
+            <ImageDownloadComponent fileName={`Regolith-Session-${urlFriendlySessionName}`} widthPx={800}>
               <SessionShare session={session as Session} />
             </ImageDownloadComponent>
           </Stack>
         )}
         {activeTab === ShareTypeEnum.WORK_ORDER && (
           <Stack spacing={2} alignItems="center" justifyContent="center">
-            <Select
-              placeholder="Select a work order"
-              value={activeWorkOrderId || ''}
-              onChange={(e) => {
-                setActiveWorkOrderId(e.target.value as string)
-              }}
-            >
-              {session?.workOrders?.items.map((workOrder, idx) => {
-                let title = ''
-                let WorkIcon: SvgIconComponent
-                if (!workOrder) return null
-                switch (workOrder.orderType) {
-                  case ActivityEnum.Salvage:
-                    title = 'Salvage Work Order'
-                    WorkIcon = ClawIcon
-                    break
-                  case ActivityEnum.ShipMining:
-                    title = 'Ship Mining Work Order'
-                    WorkIcon = RockIcon
-                    break
-                  case ActivityEnum.VehicleMining:
-                    title = 'Vehicle Mining Work Order'
-                    WorkIcon = GemIcon
-                    break
-                  case ActivityEnum.Other:
-                    title = 'Arbitrary aUEC Work Order'
-                    WorkIcon = QuestionMark
-                    break
-                  default:
-                    return <>DisplayError</>
-                }
-                return (
-                  <MenuItem key={`${workOrder.orderId}-${idx}`} value={workOrder.orderId}>
-                    <Stack direction="row" alignItems="space" justifyContent="space-between">
-                      <WorkIcon color="inherit" fontSize="large" sx={{ mr: 2 }} />
-                      <Typography variant="h6">
-                        ({makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)}) {title}
-                      </Typography>
-                    </Stack>
-                  </MenuItem>
-                )
-              })}
-            </Select>
             {!activeWorkOrder && <Typography>Select a work order to share</Typography>}
             {activeWorkOrder && (
               <ImageDownloadComponent
                 fileName={`Regolith-${activeWorkOrder.orderType}-${activeWorkOrder.orderId}`}
+                widthPx={1000}
                 leftContent={
-                  <Typography variant="body1">
-                    You can download a snapshot of this session and share it on social media or in discord.
-                  </Typography>
+                  <Box sx={{ flex: 1, pt: 2 }}>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">Select a Work Order</InputLabel>
+                      <Select
+                        label={'Select a Work Order'}
+                        placeholder="Select a Work Order"
+                        value={activeWorkOrderId || ''}
+                        onChange={(e) => {
+                          setActiveWorkOrderId(e.target.value as string)
+                        }}
+                      >
+                        {sortedWorkOrders.map((workOrder, idx) => {
+                          let title = ''
+                          let WorkIcon: SvgIconComponent
+                          if (!workOrder) return null
+                          switch (workOrder.orderType) {
+                            case ActivityEnum.Salvage:
+                              title = 'Salvage Work Order'
+                              WorkIcon = ClawIcon
+                              break
+                            case ActivityEnum.ShipMining:
+                              title = 'Ship Mining Work Order'
+                              WorkIcon = RockIcon
+                              break
+                            case ActivityEnum.VehicleMining:
+                              title = 'Vehicle Mining Work Order'
+                              WorkIcon = GemIcon
+                              break
+                            case ActivityEnum.Other:
+                              title = 'Arbitrary aUEC Work Order'
+                              WorkIcon = QuestionMark
+                              break
+                            default:
+                              return <>DisplayError</>
+                          }
+                          return (
+                            <MenuItem key={`${workOrder.orderId}-${idx}`} value={workOrder.orderId}>
+                              <Stack
+                                direction="row"
+                                alignItems="space"
+                                padding={0}
+                                justifyContent="space-between"
+                                sx={{
+                                  width: '100%',
+                                }}
+                              >
+                                <WorkIcon color="inherit" fontSize="large" sx={{ mr: 2, flex: '1 1 5%' }} />
+                                <Typography
+                                  variant="overline"
+                                  color={'info'}
+                                  flex={'1 1 10%'}
+                                  sx={{ color: theme.palette.info.main }}
+                                >
+                                  {dayjs(workOrder.createdAt).format('h:mm a')}
+                                </Typography>
+                                <Typography variant="subtitle1" flex={'1 1 20%'}>
+                                  {title}
+                                </Typography>
+                                <Typography variant="subtitle1" flex={'1 1 30%'}>
+                                  ({makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)})
+                                </Typography>
+                              </Stack>
+                            </MenuItem>
+                          )
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 }
               >
                 <WorkOrderShare workOrder={activeWorkOrder} />
@@ -201,52 +255,82 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose }) => {
 
         {activeTab === ShareTypeEnum.CLUSTER && (
           <Stack spacing={2} alignItems="center" justifyContent="center">
-            <Select
-              value={activeScoutingFindId || ''}
-              onChange={(e) => {
-                setActiveScoutingFindId(e.target.value as string)
-              }}
-            >
-              {session?.scouting?.items.map((scoutingFind, idx) => {
-                let title = ''
-                let WorkIcon: SvgIconComponent
-                if (!scoutingFind) return null
-                switch (scoutingFind.clusterType) {
-                  case ScoutingFindTypeEnum.Salvage:
-                    title = 'Salvage Cluster'
-                    WorkIcon = ClawIcon
-                    break
-                  case ScoutingFindTypeEnum.Vehicle:
-                    title = 'ROC Gem Cluster'
-                    WorkIcon = RockIcon
-                    break
-                  case ScoutingFindTypeEnum.Ship:
-                    title = 'Ship Cluster'
-                    WorkIcon = GemIcon
-                    break
-                  default:
-                    return <>DisplayError</>
-                }
-                return (
-                  <MenuItem key={`${scoutingFind.scoutingFindId}-${idx}`} value={scoutingFind.scoutingFindId}>
-                    <Stack direction="row" alignItems="space" justifyContent="space-between">
-                      <WorkIcon color="inherit" fontSize="large" sx={{ mr: 2 }} />
-                      <Typography variant="h6">
-                        ({makeHumanIds(scoutingFind.scoutingFindId)}) {title}
-                      </Typography>
-                    </Stack>
-                  </MenuItem>
-                )
-              })}
-            </Select>
             {!activeScoutingFind && <Typography>Select a scouting find to share</Typography>}
             {activeScoutingFind && (
               <ImageDownloadComponent
-                fileName={`Regolith-${activeScoutingFind.clusterType}-${activeScoutingFind.scoutingFindId}`}
+                fileName={`Regolith-${activeScoutingFind.clusterType}-${
+                  makeHumanIds(activeScoutingFind.scoutingFindId).split('-')[0]
+                }`}
+                widthPx={800}
                 leftContent={
-                  <Typography variant="body1">
-                    You can download a snapshot of this scouting find and share it on social media or in discord.
-                  </Typography>
+                  <Box sx={{ flex: 1, pt: 2 }}>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">Select a Scouting Find</InputLabel>
+                      <Select
+                        fullWidth
+                        color="secondary"
+                        label={'Select a Scouting Find'}
+                        value={activeScoutingFindId || ''}
+                        onChange={(e) => {
+                          setActiveScoutingFindId(e.target.value as string)
+                        }}
+                      >
+                        {sortedScoutingFinds.map((scoutingFind, idx) => {
+                          let title = ''
+                          let ScoutIcon: SvgIconComponent
+                          if (!scoutingFind) return null
+                          switch (scoutingFind.clusterType) {
+                            case ScoutingFindTypeEnum.Salvage:
+                              title = 'Salvage Cluster'
+                              ScoutIcon = ClawIcon
+                              break
+                            case ScoutingFindTypeEnum.Vehicle:
+                              title = 'ROC Gem Cluster'
+                              ScoutIcon = GemIcon
+                              break
+                            case ScoutingFindTypeEnum.Ship:
+                              title = 'Ship Cluster'
+                              ScoutIcon = RockIcon
+                              break
+                            default:
+                              return <>DisplayError</>
+                          }
+                          return (
+                            <MenuItem
+                              key={`${scoutingFind.scoutingFindId}-${idx}`}
+                              value={scoutingFind.scoutingFindId}
+                              sx={{
+                                width: '100%',
+                              }}
+                            >
+                              <Stack
+                                direction="row"
+                                alignItems="space"
+                                justifyContent="space-between"
+                                sx={{
+                                  width: '100%',
+                                }}
+                              >
+                                <ScoutIcon color="inherit" fontSize="large" sx={{ mr: 2, flex: '0 0 10%' }} />
+                                <Typography variant="overline" flex={'0 1 10%'} sx={{ color: theme.palette.info.main }}>
+                                  {dayjs(scoutingFind.createdAt).format('h:mm a')}
+                                </Typography>
+                                <Typography variant="subtitle1" flex={'1 1 30%'}>
+                                  {title} ({makeHumanIds(scoutingFind.scoutingFindId).split('-')[0]})
+                                </Typography>
+                                <Typography variant="subtitle1" flex={'0 1 20%'} textAlign="left">
+                                  {scoutingFind.clusterCount} Rock{(scoutingFind?.clusterCount || 0) > 1 && 's'}
+                                </Typography>
+                                <Typography variant="subtitle1" flex={'0 1 20%'} color="text.secondary">
+                                  {scoutingFind.state}
+                                </Typography>
+                              </Stack>
+                            </MenuItem>
+                          )
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 }
               >
                 <ClusterShare scoutingFind={activeScoutingFind} />

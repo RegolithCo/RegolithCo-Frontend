@@ -61,6 +61,7 @@ export const LoadoutShareModal: React.FC<LoadoutShareModalProps> = ({ open, load
         <Stack spacing={2} alignItems="left" justifyContent="center">
           <ImageDownloadComponent
             fileName={`Regolith-loadout-${loadout.ship}-${loadout.name || 'MyLoadout'}`}
+            widthPx={1000}
             leftContent={
               <Typography variant="body1">
                 You can download a snapshot of this mining loadout and share it on social media or in discord.

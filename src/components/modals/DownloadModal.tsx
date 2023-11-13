@@ -79,7 +79,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             size="large"
             fullWidth
           >
-            JSON
+            Download JSON
           </Button>
         )}
       </Box>

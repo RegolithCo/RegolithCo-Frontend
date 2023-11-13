@@ -62,6 +62,9 @@ export const SessionPageContainer2: React.FC = () => {
   const [activeUserModalId, setActiveUserModalId] = React.useState<string | null>(null)
   const [pendingUserModalScName, setPendingUserModalScName] = React.useState<string | null>(null)
 
+  const [shareWorkOrderId, setShareWorkOrderId] = React.useState<string | null>(null)
+  const [shareScoutingFindId, setShareScoutingFindId] = React.useState<string | null>(null)
+
   const sessionQueries = useSessions(sessionId as string)
   const workOrderQry = useWorkOrders(sessionId as string, modalOrderId as string)
   const scoutingFindQry = useScoutingFind(
@@ -292,11 +295,19 @@ export const SessionPageContainer2: React.FC = () => {
           createWorkOrder,
           updateWorkOrder,
           deleteWorkOrder: workOrderQry.deleteWorkOrder,
+          setWorkOrderShareId: (shareId) => {
+            setShareWorkOrderId(shareId)
+            setActiveModal(DialogEnum.SHARE_SESSION)
+          },
           createScoutingFind: sessionQueries.createScoutingFind,
           // Scouting finds
           updateScoutingFind: scoutingFindQry.updateScoutingFind,
           deleteScoutingFind: scoutingFindQry.deleteScoutingFind,
           joinScoutingFind: scoutingFindQry.joinScoutingFind,
+          setScoutingFindShareId: (shareId) => {
+            setShareScoutingFindId(shareId)
+            setActiveModal(DialogEnum.SHARE_SESSION)
+          },
           leaveScoutingFind: scoutingFindQry.leaveScoutingFind,
           verifiedMentionedUsers: {},
         }}
@@ -328,6 +339,10 @@ export const SessionPageContainer2: React.FC = () => {
             >
               <WorkOrderModal
                 open={Boolean(modalWorkOrder)}
+                setWorkOrderShareId={(shareId) => {
+                  setShareWorkOrderId(shareId)
+                  setActiveModal(DialogEnum.SHARE_SESSION)
+                }}
                 onClose={() => {
                   setActiveModal(null)
                   returnToSession()
@@ -424,7 +439,14 @@ export const SessionPageContainer2: React.FC = () => {
               },
             }}
           >
-            <ScoutingFindModal open={Boolean(modalScoutingFind)} onClose={() => returnToSession()} />
+            <ScoutingFindModal
+              open={Boolean(modalScoutingFind)}
+              onClose={() => returnToSession()}
+              setShareScoutingFindId={(shareId) => {
+                setShareScoutingFindId(shareId)
+                setActiveModal(DialogEnum.SHARE_SESSION)
+              }}
+            />
           </ScoutingFindContext.Provider>
         )}
 
@@ -480,7 +502,18 @@ export const SessionPageContainer2: React.FC = () => {
         />
 
         {/* Share Session Modal */}
-        <ShareModal open={activeModal === DialogEnum.SHARE_SESSION} onClose={() => setActiveModal(null)} />
+        {activeModal === DialogEnum.SHARE_SESSION && (
+          <ShareModal
+            open
+            initScoutingFindId={shareScoutingFindId}
+            initWorkOrderId={shareWorkOrderId}
+            onClose={() => {
+              setShareWorkOrderId(null)
+              setShareScoutingFindId(null)
+              setActiveModal(null)
+            }}
+          />
+        )}
 
         {/* Leave Session Modal */}
         <ConfirmModal
@@ -498,12 +531,13 @@ export const SessionPageContainer2: React.FC = () => {
           open={activeModal === DialogEnum.DOWNLOAD_SESSION}
           onClose={() => setActiveModal(null)}
           title="Download Session"
-          description="Download the session data as a CSV or JSON file."
-          downloadCSV={() => {
-            if (!session) return
-            const csvObj = session2csv(session)
-            downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
-          }}
+          // description="Download the session data as a CSV or JSON file."
+          description="Download the session data as a JSON file."
+          // downloadCSV={() => {
+          //   if (!session) return
+          //   const csvObj = session2csv(session)
+          //   downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
+          // }}
           downloadJSON={() => {
             if (!session) return
             const jsonObj = JSON.stringify(session2Json(session), null, 2)

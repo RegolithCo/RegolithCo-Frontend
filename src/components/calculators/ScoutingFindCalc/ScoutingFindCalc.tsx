@@ -371,6 +371,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
         {!standalone && !isNew && <Typography sx={styles.scoutingFindId}>{scoutId}</Typography>}
+
+        {/* THE STATE (WITH DROPDOWN) */}
         {!standalone && (
           <Box sx={styles.stateBox}>
             {allowEdit ? (
@@ -429,7 +431,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               vehicleFind.vehicleRocks[0].ores[0] && (
                 <Typography sx={styles.gemName}>{vehicleFind.vehicleRocks[0].ores[0].ore}</Typography>
               )}
-            {!standalone && (
+            {!standalone && !isShare && (
               <Box>
                 <Typography
                   variant="body1"
@@ -449,15 +451,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             {!standalone && (
               <>
                 <Typography variant="overline" component="div">
-                  Found {dayjs(scoutingFind.createdAt).from(dayjs(Date.now()))} By:
+                  {isShare ? (
+                    <>Found {dayjs(scoutingFind.createdAt).format('MMM D, h:mm a')} By:</>
+                  ) : (
+                    <>Found {dayjs(scoutingFind.createdAt).from(dayjs(Date.now()))} By:</>
+                  )}
                 </Typography>
-                {me && (
-                  <ScoutingFindUserList
-                    users={[scoutingFind.owner as User]}
-                    meId={me.owner?.userId as string}
-                    ownerId={scoutingFind.ownerId}
-                  />
-                )}
+                <ScoutingFindUserList
+                  users={[scoutingFind.owner as User]}
+                  meId={me?.owner?.userId as string}
+                  ownerId={scoutingFind.ownerId}
+                />
               </>
             )}
           </Grid>

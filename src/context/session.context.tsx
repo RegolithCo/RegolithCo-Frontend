@@ -107,6 +107,7 @@ export interface SessionContextType {
   createWorkOrder: (workOrder: WorkOrder) => void
   deleteWorkOrder: (workOrderId: string) => void
   updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  setWorkOrderShareId: (workOrderId: string) => void
   failWorkOrder: (reason?: string) => void
 
   // scouting
@@ -114,6 +115,7 @@ export interface SessionContextType {
   updateScoutingFind: (scoutingFind: ScoutingFind) => void
   deleteScoutingFind: (scoutingFindId: string) => void
   joinScoutingFind: (findId: string, enRoute: boolean) => void
+  setScoutingFindShareId: (findId: string) => void
   leaveScoutingFind: (findId: string) => void
 }
 
@@ -175,11 +177,13 @@ export const sessionContextDefault: SessionContextType = {
   createWorkOrder: notAvailable('createWorkOrder'),
   deleteWorkOrder: notAvailable('deleteWorkOrder'),
   updateWorkOrder: notAvailable('updateWorkOrder'),
+  setWorkOrderShareId: notAvailable('setWorkOrderShareId'),
   failWorkOrder: notAvailable('failWorkOrder'),
 
   createScoutingFind: notAvailable('createScoutingFind'),
   updateScoutingFind: notAvailable('updateScoutingFind'),
   deleteScoutingFind: notAvailable('deleteScoutingFind'),
+  setScoutingFindShareId: notAvailable('setScoutingFindShareId'),
   joinScoutingFind: notAvailable('joinScoutingFind'),
   leaveScoutingFind: notAvailable('leaveScoutingFind'),
 

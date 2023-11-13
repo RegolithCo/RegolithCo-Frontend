@@ -1,16 +1,17 @@
 import * as React from 'react'
-import { Box, Button, Dialog, DialogActions, SxProps, Theme, ThemeProvider } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, IconButton, SxProps, Theme, ThemeProvider, Tooltip } from '@mui/material'
 
 import { ScoutingFind, ScoutingFindStateEnum } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
-import { BackHand, Cancel, Create, Delete, Save } from '@mui/icons-material'
+import { BackHand, Cancel, Create, Delete, Save, Share } from '@mui/icons-material'
 import { DeleteModal } from './DeleteModal'
 import { ScoutingFindContext } from '../../context/scoutingFind.context'
 import { ConfirmModal } from './ConfirmModal'
 
 export interface ScoutingFindModalProps {
   open: boolean
+  setShareScoutingFindId?: (id: string) => void
   onClose: () => void
 }
 
@@ -32,7 +33,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onClose }) => {
+export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setShareScoutingFindId, onClose }) => {
   // This is just used int he live case. In every other case we just edit it live
   const { scoutingFind, isNew, onChange, onDelete, joinScoutingFind, leaveScoutingFind, meUser, allowWork, allowEdit } =
     React.useContext(ScoutingFindContext)
@@ -65,6 +66,22 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, onCl
     <ThemeProvider theme={theme}>
       <Dialog open={open} onClose={handleConfirmClose} fullWidth maxWidth="md" disableEscapeKeyDown sx={styles.dialog}>
         <Box sx={styles.boxContainer}>
+          {/* SHARE BUTTON */}
+          {!isNew && setShareScoutingFindId && (
+            <Box
+              sx={{
+                position: 'absolute',
+                right: '2rem',
+              }}
+            >
+              <Tooltip title="Share this scouting find" placement="top">
+                <IconButton color="primary" onClick={() => setShareScoutingFindId(scoutingFind?.scoutingFindId)}>
+                  <Share />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+
           <ScoutingFindCalc
             scoutingFind={isNew ? newScoutingFind : scoutingFind}
             isNew={isNew}

@@ -12,7 +12,7 @@ export default {
   parameters: {},
   decorators: [
     (Story) => (
-      <ImageDownloadComponent fileName={'TESTDOWNLOAD'}>
+      <ImageDownloadComponent fileName={'TESTDOWNLOAD'} widthPx={800}>
         <ShareWrapper>
           {/* 👇 Decorators in Storybook also accept a function. Replace <Story/> with Story() to enable it  */}
           <Story />

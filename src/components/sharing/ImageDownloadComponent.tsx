@@ -2,21 +2,30 @@ import React from 'react'
 import html2canvas from 'html2canvas'
 import { Box, Button, useTheme } from '@mui/material'
 import { DownloadForOffline } from '@mui/icons-material'
-import { alpha, keyframes, Stack } from '@mui/system'
+import { alpha, fontWeight, keyframes, Stack } from '@mui/system'
 import { ShareWrapper } from './ShareWrapper'
+import { fontFamilies } from '../../theme'
 
 export interface ImageDownloadComponentProps {
   leftContent?: React.ReactNode
+  widthPx: number
   fileName: string
   children: React.ReactNode
 }
 
-export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({ children, fileName, leftContent }) => {
+export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
+  children,
+  widthPx,
+  fileName,
+  leftContent,
+}) => {
   const theme = useTheme()
   const captureComponent = () => {
     const element = document.getElementById('componentToCapture')
     if (!element) return console.error('No element with id "componentToCapture"')
-    html2canvas(element).then((canvas) => {
+    html2canvas(element, {
+      width: widthPx,
+    }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png')
 
       // Create a temporary link and trigger the download
@@ -43,7 +52,7 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({ 
     `
 
   return (
-    <Box>
+    <Box sx={{ width: '100%', overflowX: 'hidden' }}>
       <Stack
         direction="row"
         alignItems="center"
@@ -68,26 +77,56 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({ 
         </Button>
       </Stack>
       <Box
-        id="componentToCapture"
         sx={{
-          border: '3px solid transparent',
-          background: `repeating-linear-gradient(
-      -45deg,
-      yellow 0px,
-      yellow 10px,
-      black 10px,
-      black 20px
-    )`,
+          position: 'relative',
+          mt: 9,
         }}
       >
         <Box
-          id="componentToCapture"
           sx={{
-            border: '1px solid transparent',
-            background: theme.palette.background.paper,
+            color: theme.palette.info.contrastText,
+            backgroundColor: theme.palette.error.light,
+            position: 'absolute',
+            py: 0.5,
+            px: 1,
+            fontWeight: 'bold',
+            fontFamily: fontFamilies.robotoMono,
+            top: 0,
+            borderTopLeftRadius: 5,
+            borderTopRightRadius: 5,
+            transform: 'translateY(-100%)',
           }}
         >
-          <ShareWrapper>{children}</ShareWrapper>
+          Preview
+        </Box>
+        <Box
+          id="componentToCapture"
+          sx={{
+            border: '3px solid transparent',
+            overflowX: 'scroll',
+            width: `${widthPx}px`,
+            maxWidth: `100%`,
+            // Deny all interaction
+            background: `repeating-linear-gradient(
+      -45deg,
+      ${theme.palette.error.light} 0px,
+      ${theme.palette.error.light} 10px,
+      ${theme.palette.background.default} 10px,
+      ${theme.palette.background.default} 20px
+    )`,
+          }}
+        >
+          <Box
+            id="componentToCapture"
+            sx={{
+              pointerEvents: 'none',
+              width: `${widthPx}px`,
+              border: '1px solid transparent',
+              background: theme.palette.background.paper,
+            }}
+          >
+            <ShareWrapper>{children}</ShareWrapper>
+          </Box>
         </Box>
       </Box>
     </Box>
