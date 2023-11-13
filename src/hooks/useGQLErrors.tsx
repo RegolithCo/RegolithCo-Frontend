@@ -13,6 +13,7 @@ import { ErrorCode } from '@regolithco/common'
  */
 // Some errors we handle in other ways
 const ExceptList: ErrorCode[] = [
+  ErrorCode.NOT_FOUND,
   ErrorCode.SESSION_NOT_FOUND,
   ErrorCode.SESSIONJOIN_NOT_VERIFIED,
   ErrorCode.SESSIONJOIN_NOT_ON_LIST,
@@ -23,16 +24,19 @@ export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: Mutati
   const { enqueueSnackbar } = useSnackbar()
   React.useEffect(() => {
     queries.forEach(({ error }) => {
-      if (error) {
-        if (error.graphQLErrors) {
-          error.graphQLErrors.forEach((gqlErr) => {
-            if (ExceptList.includes(gqlErr.extensions.code as ErrorCode)) return
-            console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
-            enqueueSnackbar('Query Error:' + error.name, { variant: 'error' })
-          })
+      try {
+        if (error) {
+          if (error.graphQLErrors) {
+            error.graphQLErrors.forEach((gqlErr) => {
+              if (gqlErr.extensions && ExceptList.includes(gqlErr.extensions.code as ErrorCode)) return
+              console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
+              enqueueSnackbar('Query Error:' + error.name, { variant: 'error' })
+            })
+          }
+          log.debug(error)
         }
-        // if (error) console.error('upsert', error.graphQLErrors)
-        log.debug(error)
+      } catch (e) {
+        console.error('Your error has errors', e)
       }
     })
     mutations.forEach(([_, { error }]) => {

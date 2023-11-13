@@ -23,7 +23,7 @@ import {
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
-// import log from 'loglevel'
+import log from 'loglevel'
 
 type useSessionsReturn = {
   workOrder?: WorkOrder
@@ -46,6 +46,11 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
       orderId,
     },
     skip: !sessionId || !orderId,
+    onError: (error) => {
+      log.error(error)
+      enqueueSnackbar(error.message, { variant: 'error' })
+      navigate(`/session/${sessionId}`)
+    },
   })
 
   const updateWorkOrderMutation = useUpdateWorkOrderMutation()

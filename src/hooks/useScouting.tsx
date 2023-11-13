@@ -7,6 +7,7 @@ import {
   useLeaveScoutingFindMutation,
   useUpdateScoutingFindMutation,
 } from '../schema'
+import log from 'loglevel'
 
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
@@ -38,6 +39,11 @@ export const useScoutingFind = (
       scoutingFindId,
     },
     skip: !sessionId || !scoutingFindId,
+    onError: (error) => {
+      log.error(error)
+      enqueueSnackbar(error.message, { variant: 'error' })
+      navigate(`/session/${sessionId}`)
+    },
   })
 
   const updateScoutingFindMutation = useUpdateScoutingFindMutation()
