@@ -10,9 +10,8 @@ import {
   useTheme,
   SxProps,
   Theme,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material'
 import { ShipOreEnum, ShipRock, getShipOreName, RockStateEnum } from '@regolithco/common'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
@@ -22,7 +21,7 @@ import { RockIcon } from '../../icons'
 export interface ShipRockCardProps {
   rock: ShipRock
   rockValue?: number
-  allowWork?: boolean
+  allowEdit?: boolean
   onChangeState?: (state: RockStateEnum) => void
   onEditClick?: () => void
 }
@@ -34,6 +33,10 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
     case RockStateEnum.Ready:
       accentColor = theme.palette.primary.main
       contrastColor = theme.palette.primary.contrastText
+      break
+    case RockStateEnum.Ignore:
+      accentColor = theme.palette.grey[500]
+      contrastColor = theme.palette.grey[900]
       break
     case RockStateEnum.Depleted:
       accentColor = theme.palette.grey[500]
@@ -47,7 +50,7 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       minHeight: '140px',
       position: 'relative',
       overflow: 'hidden',
-      opacity: rockState === RockStateEnum.Depleted ? 0.5 : 1,
+      opacity: rockState !== RockStateEnum.Ready ? 0.5 : 1,
       border: `1px solid ${accentColor}`,
       '& .MuiListItem-root': {
         flexGrow: 1,
@@ -125,7 +128,7 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       fontSize: 30,
       transform: 'translate(-50%, -50%) rotate(-38deg)',
       zIndex: 1000,
-      opacity: 0.6,
+      opacity: 0.4,
       border: `2px solid ${accentColor}`,
       borderRadius: 2,
       color: accentColor,
@@ -165,16 +168,17 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({
   rockValue,
   onChangeState,
   onEditClick,
-  allowWork,
+  allowEdit,
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme, rock.state)
-  const onClickAction = allowWork ? onEditClick : undefined
+  const onClickAction = allowEdit ? onEditClick : undefined
   const cursor = onClickAction ? 'pointer' : 'default'
 
   return (
     <Card sx={{ ...styles.card, '& *': { cursor } }}>
-      {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>Complete</Box>}
+      {rock.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>DONE</Box>}
+      {rock.state === RockStateEnum.Ignore && <Box sx={styles.depletedMark}>IGNORE</Box>}
       <CardContent sx={styles.cardContent}>
         <RockIcon
           onClick={onClickAction}
@@ -218,21 +222,30 @@ export const ShipRockCard: React.FC<ShipRockCardProps> = ({
               ))}
         </List>
         <Box sx={{ flexGrow: 1 }} />
-        {allowWork && (
-          <FormGroup sx={styles.stateCheckbox}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  checked={rock.state === RockStateEnum.Depleted}
-                  onChange={(e) =>
-                    onChangeState && onChangeState(e.target.checked ? RockStateEnum.Depleted : RockStateEnum.Ready)
-                  }
-                />
-              }
-              label="Complete"
-            />
-          </FormGroup>
+        {allowEdit && (
+          <ToggleButtonGroup
+            size="small"
+            value={rock.state}
+            exclusive
+            onChange={(e, newRockState: RockStateEnum) => {
+              if (!onChangeState) return
+              if (!newRockState && rock.state !== RockStateEnum.Ready) return onChangeState(RockStateEnum.Ready)
+              else if (rock.state !== newRockState) return onChangeState(newRockState)
+            }}
+          >
+            <ToggleButton
+              value={RockStateEnum.Depleted}
+              color={rock.state === RockStateEnum.Ignore ? 'primary' : undefined}
+            >
+              Done
+            </ToggleButton>
+            <ToggleButton
+              value={RockStateEnum.Ignore}
+              color={rock.state === RockStateEnum.Ignore ? 'primary' : undefined}
+            >
+              Ignore
+            </ToggleButton>
+          </ToggleButtonGroup>
         )}
       </CardContent>
     </Card>

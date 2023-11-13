@@ -47,7 +47,6 @@ import { AddCircle, EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconCompon
 import { MValueFormat, MValueFormatter, findDecimals } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
-import { DeleteModal } from '../../modals/DeleteModal'
 import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModal'
 import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
@@ -63,14 +62,13 @@ export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
   me?: SessionUser
   allowEdit?: boolean
-  allowWork?: boolean
+  allowDelete?: boolean
   standalone?: boolean
   isNew?: boolean
   isShare?: boolean
   joinScoutingFind?: (findId: string, enRoute: boolean) => void
   leaveScoutingFind?: (findId: string) => void
   onChange?: (scoutingFind: ScoutingFind) => void
-  onDelete?: () => void
 }
 
 const AttendanceStateEnum = {
@@ -282,14 +280,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   standalone,
   joinScoutingFind,
   leaveScoutingFind,
-  allowWork,
   onChange,
-  onDelete,
 }) => {
   const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
   const styles = stylesThunk(theme)
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(Boolean(isNew))
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
   const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
@@ -645,7 +640,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       sx={{ flexGrow: 1 }}
                     >
                       <ExitToApp />
-                      Leaving
+                      Departed
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </Box>
@@ -689,7 +684,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   {shipFind.clusterCount || 0}
                 </Typography>
                 <div style={{ flexGrow: 1 }} />
-                {allowWork && (
+                {allowEdit && (
                   <Button
                     startIcon={<AddCircle />}
                     size="small"
@@ -728,8 +723,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       <Grid key={idx} xs={6} sm={4} md={3}>
                         <ShipRockCard
                           rock={newRock}
-                          allowWork={allowWork}
                           rockValue={summary.byRock ? summary.byRock[idx].value : undefined}
+                          allowEdit={allowEdit}
                           onChangeState={(newState) => {
                             onChange &&
                               onChange({
@@ -860,19 +855,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         note={scoutingFind.note as string}
         onChange={(note) => {
           onChange && onChange({ ...scoutingFind, note })
-        }}
-      />
-
-      <DeleteModal
-        open={deleteModalOpen}
-        message="Are you sure you want to delete this find?"
-        title="Delete Scouting Find"
-        onClose={() => {
-          setDeleteModalOpen(false)
-        }}
-        onConfirm={() => {
-          setDeleteModalOpen(false)
-          onDelete && onDelete()
         }}
       />
     </>

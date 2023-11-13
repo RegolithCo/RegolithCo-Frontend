@@ -38,6 +38,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
   isCalculator,
   failWorkOrder,
   isEditing,
+  isMine,
   isNew,
   templateJob,
   userSuggest,
@@ -232,7 +233,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
               control={
                 <Switch
                   checked={Boolean(workOrder.sellerscName && workOrder.sellerscName.length > 0)}
-                  disabled={!isEditing || isIncludeTransferFeeLocked}
+                  disabled={!isEditing || !isMine}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     if (event.target.checked) {
                       setIsSellerNameModalOpen(true)

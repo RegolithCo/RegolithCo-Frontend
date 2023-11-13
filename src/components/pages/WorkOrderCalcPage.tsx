@@ -90,6 +90,7 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
           isEditing
           allowPay
           isCalculator
+          isMine
           workOrder={activeWorkOrder as WorkOrder}
           userSuggest={userSuggest}
           // We don't do templates or locking ont he standalone calculator

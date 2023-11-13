@@ -35,8 +35,17 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setShareScoutingFindId, onClose }) => {
   // This is just used int he live case. In every other case we just edit it live
-  const { scoutingFind, isNew, onChange, onDelete, joinScoutingFind, leaveScoutingFind, meUser, allowWork, allowEdit } =
-    React.useContext(ScoutingFindContext)
+  const {
+    scoutingFind,
+    isNew,
+    onChange,
+    allowDelete,
+    onDelete,
+    joinScoutingFind,
+    leaveScoutingFind,
+    meUser,
+    allowEdit,
+  } = React.useContext(ScoutingFindContext)
   const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
@@ -86,7 +95,6 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             scoutingFind={isNew ? newScoutingFind : scoutingFind}
             isNew={isNew}
             allowEdit={allowEdit}
-            allowWork={allowWork}
             joinScoutingFind={joinScoutingFind}
             leaveScoutingFind={leaveScoutingFind}
             me={meUser}
@@ -94,7 +102,6 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
               if (isNew) setNewScoutingFind(newFind)
               else onChange(newFind)
             }}
-            onDelete={onDelete}
           />
         </Box>
         <DialogActions
@@ -110,7 +117,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             {isNew ? 'Cancel' : 'Close'}
           </Button>
           <div style={{ flexGrow: 1 }} />
-          {allowEdit && onDelete && (
+          {allowDelete && onDelete && (
             <Button
               variant="outlined"
               size="small"
@@ -144,6 +151,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
           onClose={() => setDeleteConfirmModal(false)}
           open={deleteConfirmModal}
           onConfirm={() => {
+            if (!allowDelete) return
             onDelete && onDelete()
             setDeleteConfirmModal(false)
             onClose()

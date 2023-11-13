@@ -9,7 +9,7 @@ export interface ScoutingFindContextType {
   joinScoutingFind?: (findId: string, enRoute: boolean) => void
   leaveScoutingFind?: (findId: string) => void
   allowEdit?: boolean
-  allowWork?: boolean
+  allowDelete?: boolean
   isNew?: boolean
 }
 
@@ -25,7 +25,7 @@ export const scoutingFindContextDefault: ScoutingFindContextType = {
   joinScoutingFind: notAvailable('joinScoutingFind'),
   leaveScoutingFind: notAvailable('leaveScoutingFind'),
   allowEdit: false,
-  allowWork: false,
+  allowDelete: false,
   isNew: false,
 }
 

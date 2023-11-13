@@ -136,7 +136,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         sessionQry.data?.session.state !== SessionStateEnum.Active
           ? 60000
           : 10000
-
       sessionQry.startPolling(pollTime)
     } else {
       sessionQry.stopPolling()

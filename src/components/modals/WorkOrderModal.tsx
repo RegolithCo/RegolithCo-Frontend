@@ -122,6 +122,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     allowEdit,
     allowPay,
     isSessionActive,
+    isMine,
     templateJob,
     failWorkOrder,
     forceTemplate,
@@ -267,6 +268,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               onChange={setNewWorkOrder}
               failWorkOrder={failWorkOrder}
               isNew={isNew}
+              isMine={isMine}
               markCrewSharePaid={(crewShare: CrewShare, paid: boolean) => {
                 // IMPORTANT: if we're editing an existing work order we can set this thing as paid
                 // directly because it already exists int he database

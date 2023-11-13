@@ -25,6 +25,7 @@ export interface WorkOrderCalcProps {
   allowPay?: boolean
   isNew?: boolean
   isShare?: boolean // is this an exportable share?
+  isMine?: boolean
   isCalculator?: boolean
   isEditing?: boolean
   templateJob?: WorkOrderDefaults

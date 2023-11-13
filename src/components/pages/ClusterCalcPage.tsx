@@ -80,7 +80,6 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
               me={sessionUser}
               scoutingFind={activeScoutingFind}
               allowEdit
-              allowWork
               standalone
               onChange={(newScoutingFind) => {
                 setClusters({

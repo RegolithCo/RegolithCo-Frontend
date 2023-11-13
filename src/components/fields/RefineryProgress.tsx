@@ -80,6 +80,9 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
     50% { color: ${theme.palette.secondary.main}; }
     100% { color: ${theme.palette.secondary.contrastText}; }
   `
+
+  if (!editable && !isFinished && !isStarted) return null
+
   return (
     <Box
       sx={{

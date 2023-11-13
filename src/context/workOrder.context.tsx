@@ -9,6 +9,7 @@ export interface WorkOrderContextType {
   failWorkOrder?: (reason?: string) => void
   allowEdit?: boolean
   allowPay?: boolean
+  isMine?: boolean
   isSessionActive?: boolean
   templateJob?: WorkOrderDefaults
   forceTemplate?: boolean
@@ -28,6 +29,7 @@ export const workOrderContextDefaults: WorkOrderContextType = {
   failWorkOrder: notAvailable('failWorkOrder'),
   allowEdit: false,
   allowPay: false,
+  isMine: true,
   isSessionActive: false,
   templateJob: {} as WorkOrderDefaults,
   forceTemplate: false,

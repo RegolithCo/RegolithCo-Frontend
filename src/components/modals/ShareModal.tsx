@@ -67,6 +67,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
       return b.createdAt - a.createdAt
     })
   }, [session?.workOrders?.items])
+
   const [activeWorkOrderId, setActiveWorkOrderId] = React.useState<string | null>(() => {
     if (initWorkOrderId) return initWorkOrderId
     if (!sortedWorkOrders.length) return null
@@ -83,6 +84,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
       return b.createdAt - a.createdAt
     })
   }, [session?.scouting?.items])
+
   const [activeScoutingFindId, setActiveScoutingFindId] = React.useState<string | null>(() => {
     if (initScoutingFindId) return initScoutingFindId
     if (!sortedScoutingFinds.length) return null
@@ -142,17 +144,22 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
           color="primary"
           exclusive
           onChange={(e, activity) => {
+            if (!activity) return
             setActiveTab(activity)
           }}
         >
           <ToggleButton value={ShareTypeEnum.SESSION} aria-label="left aligned">
-            Session
+            Entire Session
           </ToggleButton>
-          <ToggleButton value={ShareTypeEnum.WORK_ORDER} aria-label="centered">
-            Work Order
+          <ToggleButton value={ShareTypeEnum.WORK_ORDER} aria-label="centered" disabled={sortedWorkOrders.length === 0}>
+            Single Work Order
           </ToggleButton>
-          <ToggleButton value={ShareTypeEnum.CLUSTER} aria-label="right aligned">
-            Scouting Find
+          <ToggleButton
+            value={ShareTypeEnum.CLUSTER}
+            aria-label="right aligned"
+            disabled={sortedScoutingFinds.length === 0}
+          >
+            Single Scouting Find
           </ToggleButton>
         </ToggleButtonGroup>
         <Alert severity="info" sx={{ mb: 2 }}>
@@ -174,7 +181,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
             {!activeWorkOrder && <Typography>Select a work order to share</Typography>}
             {activeWorkOrder && (
               <ImageDownloadComponent
-                fileName={`Regolith-${activeWorkOrder.orderType}-${activeWorkOrder.orderId}`}
+                fileName={`Regolith-${activeWorkOrder.orderType}-${makeHumanIds(
+                  activeWorkOrder.owner?.scName,
+                  activeWorkOrder.orderId
+                )}`}
                 widthPx={1000}
                 leftContent={
                   <Box sx={{ flex: 1, pt: 2 }}>
@@ -255,7 +265,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
 
         {activeTab === ShareTypeEnum.CLUSTER && (
           <Stack spacing={2} alignItems="center" justifyContent="center">
-            {!activeScoutingFind && <Typography>Select a scouting find to share</Typography>}
+            {!activeScoutingFind && (
+              <Typography variant={'overline'} color="text.secondary">
+                No scouting finds to share
+              </Typography>
+            )}
             {activeScoutingFind && (
               <ImageDownloadComponent
                 fileName={`Regolith-${activeScoutingFind.clusterType}-${

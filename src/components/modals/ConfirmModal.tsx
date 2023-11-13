@@ -53,16 +53,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       <DialogActions>
         <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
           <Button
-            color="primary"
-            variant="outlined"
-            onClick={onClose}
-            startIcon={cancelIcon || <Cancel />}
-            sx={{ background: theme.palette.background.paper }}
-          >
-            {cancelBtnText || 'Cancel'}
-          </Button>
-          <div style={{ flexGrow: 1 }} />
-          <Button
             color="secondary"
             variant="contained"
             startIcon={confirmIcon || <Check />}
@@ -72,6 +62,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             }}
           >
             {confirmBtnText || 'Confirm'}
+          </Button>
+          <div style={{ flexGrow: 1 }} />
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={onClose}
+            startIcon={cancelIcon || <Cancel />}
+            sx={{ background: theme.palette.background.paper }}
+          >
+            {cancelBtnText || 'Cancel'}
           </Button>
         </Stack>
       </DialogActions>

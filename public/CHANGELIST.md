@@ -1,4 +1,35 @@
 ### November 7, 2023
+## 1.0.30 - Proper sharing (Finally!)
+
+I was noticing folks wanting to share their sessions without exposing a join link. This is now possible. The way it works is that you save a snapshot of your session to a png file and then upload that to Reddit, discord, twitter etc.
+
+The benefits of this is that my server doesn't have to host the image and there's no SSR or Edge lambdas necessary to generate the image, save, host or cache it.
+
+**Sharing!!!**
+
+- The old share modal is now called "Invite users to join"
+- The new share modal allows you to choose:
+    - The whole **session** as a summary
+    - A single **work order**
+    - A single **scouting find** (yes, now you can offer to sell your scouting finds to other people without giving them access to your whole session)
+- The share button has been added to the session, the work order modal, the scouting find modal AND the loadout calculator to make it easier to share your stuff.
+- Sharing of **mining loadouts** is now in as well.
+
+**Misc other additions**
+
+- Rocks can now be marked "Done" and "Ignore" to signal to the scout that we don't want to break them.
+- the `00:00:00:00` indicator doesn't flash if you don't put in a refinery time. (That was really annoying me).
+
+**Bugs Fixed:**
+
+- The auto polling has been disabled when the window isn't active. This should save us potentially millions of unecessary API calls when people leave tabs open by accident (or on purpose).
+- Work orders that are delegated should now allow the delegate owner to edit adn delete them properly. 
+- Delegated work orders should allow the delegate owner to mark crew shares as paid.
+- There were a bunch of permission issues and mutation errors when users who didn't create the scouting find were trying to modify it.
+
+-----
+
+### November 7, 2023
 ## 1.0.29 - Misc bug fixes
 
 - Sexier page loaders! Our #1 most requested feature! 😝

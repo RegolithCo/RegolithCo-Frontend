@@ -327,7 +327,11 @@ export const SessionPageContainer2: React.FC = () => {
                 workOrder: modalWorkOrder as WorkOrder,
                 templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
                 userSuggest,
-                allowPay: amISessionOwner || modalWorkOrder.ownerId === myUserProfile?.userId,
+                isMine: modalWorkOrder.ownerId === myUserProfile?.userId,
+                allowPay:
+                  amISessionOwner ||
+                  modalWorkOrder.ownerId === myUserProfile?.userId ||
+                  (Boolean(modalWorkOrder.sellerscName) && modalWorkOrder.sellerscName === myUserProfile?.scName),
                 deleteWorkOrder: () => workOrderQry.deleteWorkOrder(),
                 failWorkOrder: workOrderQry.failWorkOrder,
                 isSessionActive: isActive,
@@ -362,6 +366,7 @@ export const SessionPageContainer2: React.FC = () => {
                 createWorkOrder(newOrder)
                 setNewWorkOrder(null)
               },
+              isMine: true,
               allowEdit: isActive,
               allowPay: true,
               isSessionActive: isActive,
@@ -394,7 +399,7 @@ export const SessionPageContainer2: React.FC = () => {
             value={{
               meUser: mySessionUser,
               allowEdit: isActive,
-              allowWork: isActive,
+              allowDelete: true,
               scoutingFind: newScoutingFind as ScoutingFind,
               isNew: true,
               onChange: (newScouting) => {
@@ -418,14 +423,8 @@ export const SessionPageContainer2: React.FC = () => {
           <ScoutingFindContext.Provider
             value={{
               meUser: mySessionUser,
-              allowEdit:
-                amISessionOwner ||
-                modalScoutingFind.ownerId === myUserProfile?.userId ||
-                modalScoutingFind.attendanceIds.includes(myUserProfile?.userId as string),
-              allowWork:
-                amISessionOwner ||
-                modalScoutingFind.ownerId === myUserProfile?.userId ||
-                modalScoutingFind.attendanceIds.includes(myUserProfile?.userId as string),
+              allowEdit: true, // anyone in the sessionc an edit this
+              allowDelete: amISessionOwner || modalScoutingFind.ownerId === myUserProfile?.userId,
               scoutingFind: modalScoutingFind,
               joinScoutingFind: scoutingFindQry.joinScoutingFind,
               leaveScoutingFind: scoutingFindQry.leaveScoutingFind,

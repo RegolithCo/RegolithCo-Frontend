@@ -111,9 +111,21 @@ export const SessionShare: React.FC<SessionShareProps> = ({ session, settings })
       </Toolbar>
       <TabSummaryStats session={session} isShare />
       <Typography sx={styles.sectionTitle}>Work Orders:</Typography>
-      <WorkOrderTable workOrders={session.workOrders?.items || []} isShare />
+      {(session.workOrders?.items || []).length > 0 ? (
+        <WorkOrderTable workOrders={session.workOrders?.items || []} isShare />
+      ) : (
+        <Typography sx={{ m: 2, textAlign: 'center' }} color="text.secondary" variant="overline" component="div">
+          No Work Orders (yet)
+        </Typography>
+      )}
       <Typography sx={styles.sectionTitle}>Payment Summary:</Typography>
-      <OwingList session={session} sessionSummary={sessionSummary} isShare />
+      {Object.keys(sessionSummary.owed).length > 0 || Object.keys(sessionSummary.paid).length > 0 ? (
+        <OwingList session={session} sessionSummary={sessionSummary} isShare />
+      ) : (
+        <Typography sx={{ m: 2, textAlign: 'center' }} color="text.secondary" variant="overline" component="div">
+          No profits to share (yet)
+        </Typography>
+      )}
     </Paper>
   )
 }

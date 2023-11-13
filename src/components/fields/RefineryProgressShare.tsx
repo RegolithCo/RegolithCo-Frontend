@@ -8,54 +8,10 @@ interface RefineryProgressShareProps {
   totalTimeS?: number
 }
 
-type InputValueType = [string, string[], number]
-
-function reverseFormat(invalue?: number): string {
-  if (!invalue) return '0:0:0:0'
-  const days = Math.floor(invalue / (24 * 60 * 60))
-  const hours = Math.floor((invalue % (24 * 60 * 60)) / (60 * 60))
-  const minutes = Math.floor((invalue % (60 * 60)) / 60)
-  const seconds = Math.floor(invalue % 60)
-
-  return `${days}:${hours}:${minutes}:${seconds}`
-}
-
-function formatValue(inputValue: string): InputValueType {
-  // Remove any non-digit characters from the input and remove any leading zeros
-  const cleanedValue = inputValue.replace(/[^\d]/g, '').replace(/^0+/, '')
-
-  // Split the cleanedValue into segments
-  const parsedSegments = (
-    cleanedValue
-      .split('')
-      .reverse()
-      .join('')
-      .match(/.{1,2}/g) || []
-  ).map((segment) => segment.split('').reverse().join(''))
-  const formattedValue = [...parsedSegments].reverse().join(':')
-
-  // the segments take the form
-  let durationS = 0
-  if (parsedSegments.length > 0) {
-    durationS += parseInt(parsedSegments[0])
-  }
-  if (parsedSegments.length > 1) {
-    durationS += parseInt(parsedSegments[1]) * 60
-  }
-  if (parsedSegments.length > 2) {
-    durationS += parseInt(parsedSegments[2]) * 60 * 60
-  }
-  if (parsedSegments.length > 3) {
-    durationS += parseInt(parsedSegments[3]) * 24 * 60 * 60
-  }
-
-  return [formattedValue, parsedSegments, durationS]
-}
-
 export const RefineryProgressShare: React.FC<RefineryProgressShareProps> = ({ startTime, totalTimeS }) => {
   const theme = useTheme()
+  if (!startTime || !totalTimeS) return null
   const finishTime = startTime ? startTime + (totalTimeS || 0) * 1000 : undefined
-
   return (
     <Box
       sx={{
