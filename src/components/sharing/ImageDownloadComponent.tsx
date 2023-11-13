@@ -107,7 +107,6 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
             Preview
           </Box>
           <Box
-            id="componentToCapture"
             sx={{
               border: '3px solid transparent',
               // Deny all interaction
