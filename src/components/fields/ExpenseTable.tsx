@@ -275,9 +275,7 @@ const ExpenseRowName: React.FC<{
           }}
           onChange={(e) => {
             // Strip out leading whitespace and limit to 20 alphanumeric characters
-            log.info('CHANGE1_before', e.target.value)
             const val = e.target.value.replace(/^\s+/, '').slice(0, 20)
-            log.info('CHANGE1_after', val)
             onChange(val)
           }}
           inputProps={{
@@ -330,12 +328,10 @@ const ExpenseRowAmount: React.FC<{
       }}
       onChange={(e) => {
         try {
-          log.info('CHANGE2_before', e.target.value)
           let value = jsRound(parseInt(e.target.value.replace(/[^\d]/g, '').replace(/^0+/, ''), 10), 0)
           if (value < 0) value = value * -1
           if (value > 999999999) value = 9999999
           if (value >= 0) {
-            log.info('CHANGE2_after', value)
             onChange(value)
           } else onChange(0)
         } catch (e) {

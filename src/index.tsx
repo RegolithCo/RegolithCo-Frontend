@@ -13,7 +13,8 @@ import LogRocket from 'logrocket'
 
 if (process.env.NODE_ENV !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
-  log.setLevel('debug')
+  log.enableAll()
+  log.debug('Logging is set to enable all')
   LogRocket.init('xiwxu9/regolith')
 }
 
