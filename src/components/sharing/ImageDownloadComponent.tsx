@@ -24,7 +24,7 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
     const element = document.getElementById('componentToCapture')
     if (!element) return console.error('No element with id "componentToCapture"')
     html2canvas(element, {
-      width: widthPx,
+      // width: widthPx,
     }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png')
 
@@ -52,7 +52,7 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
     `
 
   return (
-    <Box sx={{ width: '100%', overflowX: 'hidden' }}>
+    <>
       <Stack
         direction="row"
         alignItems="center"
@@ -77,58 +77,62 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
         </Button>
       </Stack>
       <Box
+        //
         sx={{
+          width: `${widthPx}px`,
           position: 'relative',
-          mt: 9,
         }}
       >
         <Box
           sx={{
-            color: theme.palette.info.contrastText,
-            backgroundColor: theme.palette.error.light,
-            position: 'absolute',
-            py: 0.5,
-            px: 1,
-            fontWeight: 'bold',
-            fontFamily: fontFamilies.robotoMono,
-            top: 0,
-            borderTopLeftRadius: 5,
-            borderTopRightRadius: 5,
-            transform: 'translateY(-100%)',
+            position: 'relative',
+            mt: 9,
           }}
         >
-          Preview
-        </Box>
-        <Box
-          id="componentToCapture"
-          sx={{
-            border: '3px solid transparent',
-            overflowX: 'scroll',
-            width: `${widthPx}px`,
-            maxWidth: `100%`,
-            // Deny all interaction
-            background: `repeating-linear-gradient(
+          <Box
+            sx={{
+              color: theme.palette.info.contrastText,
+              backgroundColor: theme.palette.error.light,
+              position: 'absolute',
+              py: 0.5,
+              px: 1,
+              fontWeight: 'bold',
+              fontFamily: fontFamilies.robotoMono,
+              top: 0,
+              borderTopLeftRadius: 5,
+              borderTopRightRadius: 5,
+              transform: 'translateY(-100%)',
+            }}
+          >
+            Preview
+          </Box>
+          <Box
+            id="componentToCapture"
+            sx={{
+              border: '3px solid transparent',
+              // Deny all interaction
+              background: `repeating-linear-gradient(
       -45deg,
       ${theme.palette.error.light} 0px,
       ${theme.palette.error.light} 10px,
       ${theme.palette.background.default} 10px,
       ${theme.palette.background.default} 20px
     )`,
-          }}
-        >
-          <Box
-            id="componentToCapture"
-            sx={{
-              pointerEvents: 'none',
-              width: `${widthPx}px`,
-              border: '1px solid transparent',
-              background: theme.palette.background.paper,
             }}
           >
-            <ShareWrapper>{children}</ShareWrapper>
+            <Box
+              id="componentToCapture"
+              sx={{
+                pointerEvents: 'none',
+                width: `${widthPx}px`,
+                background: theme.palette.background.paper,
+              }}
+            >
+              <ShareWrapper>{children}</ShareWrapper>
+            </Box>
           </Box>
         </Box>
       </Box>
-    </Box>
+    </>
   )
 }
