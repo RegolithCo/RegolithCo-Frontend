@@ -11,6 +11,10 @@ import {
   CircularProgress,
   Divider,
   Link,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
   Paper,
   Stack,
   SxProps,
@@ -260,15 +264,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
-              "3.19 is going to change mining. Can Regolith adapt?"
+              "Star citizen X.XX is going to change mining. Can Regolith adapt?"
             </Typography>
             <Typography gutterBottom>
-              3.19 is here and we're adapting! Lots of changes for sure and some of them (like no more prices in the
-              client files) have been a bit painful.
+              CIG is moving fast and Regolith will always try to keep up! There is currently no direct communication
+              between CIG and third-party developers though so we might lag the official patches a bit while we try to
+              catch up to the new meta.
             </Typography>
-            <Typography gutterBottom>
-              Also I've found a good migration scheme so folks shouldn't lose their old 3.18 sessions and work orders.
-            </Typography>
+            <Typography paragraph>(BTW, if you're reading this CIG then we'd love to hear from you!)</Typography>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
@@ -304,8 +307,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               a problem for you then be sure to regularly download your sessions to either a CSV or JSON files.
             </Typography>
             <Typography paragraph>
-              Why? It's just easier than migrating all the numbers in the database to their new values. Or trying to
-              support multiple versions of Star Citizen's mercurial alpha nature.
+              Why do we do this? It's just easier than migrating all the numbers in the database to their new values. Or
+              trying to support multiple versions of Star Citizen's mercurial alpha nature.
             </Typography>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
@@ -424,15 +427,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.Thanks && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
-              Acknowledgements
-            </Typography>
-            <Typography paragraph variant="subtitle1">
+            <Typography paragraph variant="body2">
               Regolith is a community-driven app and would not exist without a lot of support and hard work from people.
+              We shold mention a few by name:
             </Typography>
           </Paper>
-          <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5">
+          <Paper elevation={10} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph>
               <Link href="https://uexcorp.space/" target="_blank">
                 UEXCorp
               </Link>
@@ -448,20 +449,52 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             </Typography>
           </Paper>
 
-          <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5">
+          <Paper elevation={10} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph>
               <Link href="https://redmonstergaming.com/" target="_blank">
                 RedMonsterSC
               </Link>
             </Typography>
             <Typography variant="body2" paragraph>
-              RedMonsterSC is a Star Citizen content creator on YouTube. His excellent spreadsheets, cheat sheets and
-              videos have been a huge help to me and many others.
+              RedMonsterSC is a Star Citizen content creator on{' '}
+              <Link href="https://www.youtube.com/@RedMonsterSC" target="_blank">
+                YouTube
+              </Link>
+              . His excellent spreadsheets, cheat sheets and videos have been a huge help to many, including us here at
+              Regolith. In particular his spreadsheet for the loadout meta for 3.20 and beyond was instrumental in the
+              development of Regolith's own loadout tool.
             </Typography>
+            <Typography variant="body2" paragraph>
+              RedMonsterSC also runs the Red Legion Org. for Star Citizen miners who are interested in the industrial
+              profession.
+            </Typography>
+
+            <List>
+              <ListItemButton href="https://redmonstergaming.com/" target={'_blank'}>
+                <ListItemAvatar sx={{ mr: 2 }}>
+                  <Avatar
+                    src={`https://yt3.googleusercontent.com/xzMVBRlRcIDim80H9SfWAVEngKt77TudSeHqPAvnzNEddHrM8IqF7yqNqULywd4PR1KACAmz=s176-c-k-c0x00ffffff-no-rj`}
+                    sx={{ width: 56, height: 56 }}
+                  />
+                </ListItemAvatar>
+                <ListItemText primary="Red Monster Gaming" secondary="Cheat sheets, spreadsheets, videos etc." />
+              </ListItemButton>
+              <ListItemButton href="https://discord.com/invite/RedLegion" target={'_blank'}>
+                <ListItemAvatar sx={{ mr: 2 }}>
+                  <Avatar
+                    src={`https://robertsspaceindustries.com/media/vthzvi2wp0i0xr/logo/REDLEGN-Logo.png`}
+                    sx={{ width: 56, height: 56 }}
+                  />
+                </ListItemAvatar>
+                <ListItemText primary="Red Legion Org." secondary="Star Citizen Mining org on Discord" />
+              </ListItemButton>
+            </List>
           </Paper>
 
-          <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5">UEMC Miners, Board and Foremen</Typography>
+          <Paper elevation={10} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph>
+              UEMC Miners, Board and Foremen
+            </Typography>
             <Typography variant="body2" paragraph>
               A big thanks to the{' '}
               <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
@@ -472,10 +505,26 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               <strong style={{ color: theme.palette.secondary.dark }}>Synack</strong> for their help, support,
               encouragement and collective determination to crack the new meta for 3.19.
             </Typography>
+            <List>
+              <ListItemButton href="https://discord.gg/nfVVk3N" target={'_blank'}>
+                <ListItemAvatar sx={{ mr: 2 }}>
+                  <Avatar
+                    src={`https://robertsspaceindustries.com/media/qkzikaxpxbqvbr/logo/UEMC-Logo.png`}
+                    sx={{ width: 56, height: 56 }}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary="United Earth Mining Corporation (UEMC)"
+                  secondary="Star Citizen Mining org on Discord"
+                />
+              </ListItemButton>
+            </List>
           </Paper>
 
-          <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5">Regolith Discord Community</Typography>
+          <Paper elevation={10} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph>
+              Regolith Discord Community
+            </Typography>
             <Typography variant="body2" paragraph>
               Our discord community is pretty new but it is growing. I am so grateful for the support and feedback from
               the community. Thank you!
