@@ -155,6 +155,12 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     } else {
       sessionStubQry.stopPolling()
     }
+
+    // Also stop all polling when when this component is unmounted
+    return () => {
+      sessionQry.stopPolling()
+      sessionStubQry.stopPolling()
+    }
   }, [sessionStubQry.data, sessionQry.data, isPageVisible])
 
   React.useEffect(() => {

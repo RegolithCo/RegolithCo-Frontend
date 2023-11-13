@@ -203,6 +203,10 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
     if (!userProfileQry.data?.profile && userProfileQry.error) {
       userProfileQry.startPolling(5000)
     }
+    // Also stop polling when this component is unmounted
+    return () => {
+      userProfileQry.stopPolling()
+    }
   }, [userProfileQry.data, userProfileQry.loading, userProfileQry.error])
 
   useEffect(() => {
