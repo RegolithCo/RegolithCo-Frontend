@@ -124,7 +124,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                       onCancel={() => setEditingRow(null)}
                       onChange={(val) => {
                         const newExpenses = [...(workOrder.expenses || [])]
-                        newExpenses[idx].name = val
+                        newExpenses[idx] = { ...newExpenses[idx], name: val } // Create a new object
                         onChange({
                           ...workOrder,
                           expenses: newExpenses,
@@ -139,7 +139,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                       onCancel={() => setEditingRow(null)}
                       onChange={(val) => {
                         const newExpenses = [...(workOrder.expenses || [])]
-                        newExpenses[idx].amount = val
+                        newExpenses[idx] = { ...newExpenses[idx], amount: val } // Create a new object
                         onChange({
                           ...workOrder,
                           expenses: newExpenses,
