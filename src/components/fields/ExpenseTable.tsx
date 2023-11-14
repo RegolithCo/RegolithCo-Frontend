@@ -99,7 +99,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
             </TableRow>
           )}
           {expenses.map(({ name, amount, idx }) => {
-            const isMoTraderRow = hasTransferFee && idx === 0
+            const isMoTraderRow = hasTransferFee && idx === -1
             return (
               <Tooltip
                 enterDelay={700}

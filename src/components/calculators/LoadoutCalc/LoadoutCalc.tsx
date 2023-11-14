@@ -150,6 +150,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
             onClose={onClose}
             maxWidth="lg"
             fullWidth
+            fullScreen={isSmall}
             sx={{
               '& .MuiDialog-paper': {
                 [theme.breakpoints.down('md')]: {
@@ -240,6 +241,9 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 {isSmall && isModal && (
                   <>
                     <div style={{ flexGrow: 1 }} />
+                    <IconButton color="primary" onClick={() => setShareModalOpen(true)} size="small" sx={{ ml: 1 }}>
+                      <Share />
+                    </IconButton>
                     <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
                       <Close />
                     </IconButton>
@@ -248,19 +252,19 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
               </Box>
               <div style={{ flexGrow: 1 }} />
               <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} readonly={readonly} />
+              {!isSmall && !isShare && (
+                <IconButton color="primary" onClick={() => setShareModalOpen(true)} size="small" sx={{ ml: 1 }}>
+                  <Share />
+                </IconButton>
+              )}
               {!isSmall && isModal && (
                 <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
                   <Close />
                 </IconButton>
               )}
-              {!isShare && (
-                <IconButton color="primary" onClick={() => setShareModalOpen(true)} size="small" sx={{ ml: 1 }}>
-                  <Share />
-                </IconButton>
-              )}
             </Stack>
           }
-        ></CardHeader>
+        />
         <CardContent
           sx={{
             overflowY: 'scroll',
@@ -268,7 +272,17 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         >
           <Grid container spacing={3}>
             {/* This grid has the lasers and the stats */}
-            <Grid xs={12} md={isShare ? 12 : 8}>
+            <Grid
+              xs={12}
+              sm={12}
+              md={isShare ? 12 : 8}
+              sx={{
+                border: {
+                  // xs: '1px solid blue',
+                  // md: '1px solid red',
+                },
+              }}
+            >
               <Grid container spacing={3} rowSpacing={3}>
                 <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                   <LoadoutLaserTool
@@ -348,6 +362,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
             <Grid
               container
               xs={12}
+              sm={12}
               md={isShare ? 12 : 4}
               sx={{ display: 'flex', flexDirection: isShare ? 'row' : 'column' }}
               spacing={2}

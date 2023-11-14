@@ -9,6 +9,7 @@ import {
   MiningModuleEnum,
   ModuleLoadoutStats,
   lookups,
+  MiningModule,
 } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LoadoutStat } from './LoadoutStat'
@@ -77,7 +78,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
           onDelete={() => onChange('', true, false)}
         />
       )}
-      {!isShare && (
+      {!isShare && !readonly && (
         <Select
           {...baseProps}
           disabled={readonly}
@@ -137,7 +138,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
             Active Modules
           </ListSubheader>
           {moduleKeys.reduce((acc, key, idx) => {
-            const module = MODULES[key as MiningModuleEnum]
+            const module = MODULES[key as MiningModuleEnum] as MiningModule
             const lastModule = idx > 0 ? MODULES[moduleKeys[idx - 1]] : null
             return [
               ...acc,
@@ -208,7 +209,7 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
           onDelete={() => onChange('', true, false)}
         />
       )}
-      {!isShare && (
+      {!isShare && !readonly && (
         <Select
           {...baseProps}
           disabled={readonly}

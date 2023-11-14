@@ -229,10 +229,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               "How do I report a bug or ask for a feature?"
             </Typography>
             <Typography gutterBottom>
-              If you're a discord user that's probably the best place. It really helps me if you can take a screenshot
-              of the problem and also{' '}
+              If you're a discord user that's probably the best place. It really helps if you can take a screenshot of
+              the problem and also{' '}
               <strong>
-                <em>send me your user id</em>
+                <em>send us your user id</em>
               </strong>{' '}
               (you can find it on the bottom of the user profile page)
             </Typography>
@@ -258,7 +258,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <Typography gutterBottom paragraph>
               If you're not a discord user, you can also{' '}
               <Link href="https://twitter.com/RegolithCo" target="_blank">
-                hit me up on twitter
+                hit us up on twitter
               </Link>
             </Typography>
           </Paper>
@@ -345,10 +345,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               Support the site
             </Typography>
             <Typography paragraph>
-              Everyone can use this site for free, hopefully forever. That said, server costs are a real thing. If you
-              use it and are looking for a way to help keep the lights on, your support would be amazing!
+              Everyone can use this site for free, hopefully forever. However,{' '}
+              <strong style={{ color: theme.palette.secondary.dark }}>server costs are real</strong>. If you use
+              Regolith and are seeking a way to help keep the lights on and satiate the unquenchable hunger of Bezos'
+              infinite AWS maw, your support would be amazing! forever.
             </Typography>
-            <Typography paragraph>Any amount at all is a big help!</Typography>
+            <Typography paragraph variant="subtitle1">
+              Any amount at all is a big help!
+            </Typography>
             <Stack
               direction="row"
               divider={<Divider orientation="vertical" flexItem />}
@@ -357,26 +361,42 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             >
               <Button
                 variant="contained"
+                size="large"
                 href="https://ko-fi.com/regolithco"
                 target="_blank"
                 fullWidth
                 sx={{ fontSize: '1rem', p: 1 }}
-                startIcon={<Avatar src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`} />}
+                startIcon={
+                  <Avatar
+                    sx={{ height: 100, width: 100 }}
+                    src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`}
+                  />
+                }
               >
                 Ko-Fi
               </Button>
               <Button
                 variant="contained"
+                size="large"
                 href="https://patreon.com/user?u=64746907"
                 target="_blank"
                 fullWidth
                 color="secondary"
                 sx={{ fontSize: '1rem', p: 1 }}
-                startIcon={<Coffee />}
+                startIcon={<Coffee sx={{ height: 64, width: 64 }} />}
               >
                 Patreon
               </Button>
             </Stack>
+            <Typography paragraph>
+              Furthermore, Regolith will never have ads because they feel gross, like polluting the brains of
+              unsuspecting, unconsenting people. Ads will likely contribute to the fall of civilization, the
+              idiocracizing of our minds and the corruption of our precious bodily fluids.
+            </Typography>
+            <Typography paragraph>
+              It's <em>definitely</em> all of those reasons and probably nothing to do with nobody offering us a brand
+              deal yet.
+            </Typography>
           </Paper>
         </Box>
       )}

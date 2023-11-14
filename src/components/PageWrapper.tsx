@@ -78,7 +78,7 @@ export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWi
                   sm: 0,
                 },
                 color: theme.palette.primary.light,
-                textShadow: `1px 1px 5px ${theme.palette.primary.contrastText}`,
+                textShadow: `2px 2px 3px ${theme.palette.primary.contrastText}`,
                 textTransform: 'capitalize',
                 borderBottom: `2px solid ${theme.palette.primary.contrastText}`,
                 ...(titleSx || {}),
