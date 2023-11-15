@@ -25,7 +25,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
-import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer, Twitter } from '@mui/icons-material'
+import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer, Share, Twitter } from '@mui/icons-material'
 import { DiscordIcon } from '../../icons/Discord'
 import { AppVersion } from '../fields/AppVersion'
 import { SCVersion } from '../fields/SCVersion'
@@ -121,10 +121,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
         }}
       >
         <Tab label="General" icon={<Info />} value={TabIndex.General} />
+        <Tab label="Thanks" icon={<Celebration />} value={TabIndex.Thanks} />
         <Tab label="FAQ" icon={<QuestionAnswer />} value={TabIndex.FAQ} />
         <Tab label="Get Help" icon={<HelpCenter />} value={TabIndex.GetHelp} />
         <Tab label="Support Us" icon={<Coffee />} value={TabIndex.HelpUs} />
-        <Tab label="Thanks" icon={<Celebration />} value={TabIndex.Thanks} />
         <Tab label="Release Notes" icon={<NewReleases />} value={TabIndex.ReleaseNotes} />
       </Tabs>
       {finalTab === TabIndex.General && (
@@ -145,7 +145,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           <Card elevation={20} sx={{ p: 3, m: 4 }}>
             <CardHeader title="Regolith Co. Mission Statement" />
             <CardContent>
-              <Typography paragraph fontStyle={'italic'}>
+              <Typography paragraph variant={'body2'} color={'text.secondary'}>
                 "Regolith Co. is dedicated to advancing the frontiers of space exploration by fostering collaboration,
                 innovation, and resource sharing within the space mining industry. Our mission is to unite and empower
                 space miners, enabling them to explore and utilize celestial bodies, while promoting sustainable
@@ -163,25 +163,40 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 injuries, deaths, or other unfortunate incidents, (hilarious or otherwise) that may occur while using
                 our services. These include, but are not limited to:
               </Typography>
-              <Typography paragraph fontStyle={'italic'}>
+              <Typography
+                paragraph
+                fontStyle={'italic'}
+                sx={{
+                  '& li': {
+                    mb: 2,
+                  },
+                }}
+              >
                 <ol>
                   <li>
-                    <strong>Death / Regeneriation Fees:</strong>
+                    <strong style={{ color: theme.palette.secondary.dark }}>Death / Regeneriation Fees:</strong>{' '}
                     Regolith shall not be held responsible for any death or regeneration fees incurred while using our
                     services.
                   </li>
                   <li>
-                    <strong>Alien Abductions</strong>: We can't be held accountable for extraterrestrial beings
-                    mistaking you a snack or science experiment. Travel expenses, mind-reading compensation, and any
-                    intergalactic souvenirs will be at your own expense.
+                    <strong style={{ color: theme.palette.secondary.dark }}>Ship malfunctions or pilot error:</strong>{' '}
+                    The pilot of every ship is responsible for their own actions. Regolith cannot be held responsible
+                    for any loss of life or property due to ship malfunctions or pilot error.
                   </li>
                   <li>
-                    <strong>Jumpgate Misdirection</strong>: Any loss of wages/life due to misfiring jumpgates is the
-                    sole domain and responsibility of the spacers guild. Furthermore any arbitration around spice
-                    tithing must be handled by the guild.
+                    <strong style={{ color: theme.palette.secondary.dark }}>Alien Abductions</strong> Regolith cannot be
+                    held accountable or responsible for extraterrestrial beings mistaking you a snack or science
+                    experiment. Travel expenses, mind-flay restoration, and any intergalactic souvenirs will be at your
+                    own expense.
                   </li>
                   <li>
-                    <strong>Gravity-related accidents:</strong> Gravity is a harsh mistress. Plan appropriately.
+                    <strong style={{ color: theme.palette.secondary.dark }}>Jumpgate Misdirection</strong>: Any loss of
+                    wages/life due to misfiring jumpgates is the sole domain and responsibility of the spacers guild.
+                    Furthermore any arbitration around spice tithing must be handled by the guild.
+                  </li>
+                  <li>
+                    <strong style={{ color: theme.palette.secondary.dark }}>Gravity-related accidents:</strong> Gravity
+                    is a harsh mistress. Plan appropriately.
                   </li>
                 </ol>
               </Typography>
@@ -348,7 +363,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               Everyone can use this site for free, hopefully forever. However,{' '}
               <strong style={{ color: theme.palette.secondary.dark }}>server costs are real</strong>. If you use
               Regolith and are seeking a way to help keep the lights on and satiate the unquenchable hunger of Bezos'
-              infinite AWS maw, your support would be amazing! forever.
+              infinite AWS maw, your support would be amazing!
             </Typography>
             <Typography paragraph variant="subtitle1">
               Any amount at all is a big help!
@@ -365,7 +380,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 href="https://ko-fi.com/regolithco"
                 target="_blank"
                 fullWidth
-                sx={{ fontSize: '1rem', p: 1 }}
+                sx={{ fontSize: '2rem', p: 1 }}
                 startIcon={
                   <Avatar
                     sx={{ height: 100, width: 100 }}
@@ -382,21 +397,56 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 target="_blank"
                 fullWidth
                 color="secondary"
-                sx={{ fontSize: '1rem', p: 1 }}
+                sx={{ fontSize: '2rem', p: 1 }}
                 startIcon={<Coffee sx={{ height: 64, width: 64 }} />}
               >
                 Patreon
               </Button>
             </Stack>
-            <Typography paragraph>
-              Furthermore, Regolith will never have ads because they feel gross, like polluting the brains of
-              unsuspecting, unconsenting people. Ads will likely contribute to the fall of civilization, the
-              idiocracizing of our minds and the corruption of our precious bodily fluids.
+            <Divider sx={{ mb: 3 }} />
+            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+              Spread the word
             </Typography>
             <Typography paragraph>
-              It's <em>definitely</em> all of those reasons and probably nothing to do with nobody offering us a brand
-              deal yet.
+              Regolith is a community-driven app and we don't do a lot of outreach. If you like the site, tell your
+              friends or share your mining sessions on social media. Regolith has share buttons (<Share />) that let you
+              export parts of the site to images you can paste into your favourite platforms.
             </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+              Star Citizen Referral Code
+            </Typography>
+            <Typography paragraph>
+              If you're looking for a way to support the site and you don't already have a Star Citizen account, you can
+              use our referral code when you create your account. You'll get 5000 aUEC (spacebucks) and we'll get a
+              referral point.
+            </Typography>
+            <Box
+              id="referral-code"
+              sx={{
+                border: `5px solid ${theme.palette.text.secondary}`,
+                backgroundColor: '#222',
+                padding: 1,
+                fontSize: '2rem',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontFamily: fontFamilies.robotoMono,
+              }}
+              // copy the value to the clipboard when the user clicks
+              onClick={() => {
+                // Select the contents of the box
+                const range = document.createRange()
+                range.selectNodeContents(document.getElementById('referral-code') as Node)
+                const selection = window.getSelection()
+                selection?.removeAllRanges()
+                selection?.addRange(range)
+
+                // Copy the contents to the clipboard
+                navigator.clipboard.writeText('STAR-DM37-GVY5')
+              }}
+            >
+              STAR-DM37-GVY5
+            </Box>
           </Paper>
         </Box>
       )}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTheme, Theme, SxProps, Autocomplete, TextField, createFilterOptions, Tooltip } from '@mui/material'
+import { Autocomplete, TextField, createFilterOptions, Tooltip } from '@mui/material'
 import { UserSuggest } from '@regolithco/common'
 import { UserListItem } from './UserListItem'
 // import log from 'loglevel'
@@ -14,7 +14,7 @@ export interface UserPickerProps {
   userSuggest?: UserSuggest
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
 
 const filter = createFilterOptions<
   [
@@ -37,8 +37,8 @@ export const UserPicker: React.FC<UserPickerProps> = ({
   includeMentioned,
   includeFriends,
 }) => {
-  const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const theme = useTheme()
+  // const styles = stylesThunk(theme)
 
   const finalTooltip = toolTip !== undefined ? toolTip : 'Enter a user name to add to the list'
 

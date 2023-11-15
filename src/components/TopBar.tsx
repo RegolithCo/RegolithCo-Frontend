@@ -8,7 +8,7 @@ import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
 import { yellow } from '@mui/material/colors'
-import { CircularProgress, Divider, SxProps, Theme, alpha, useTheme } from '@mui/material'
+import { CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import {
   Calculate,
@@ -143,10 +143,10 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
       children: [
         { path: '/about/general', name: 'About Regolith Co.', icon: <Info /> },
         { isDivider: true },
-        { path: '/about/faq', name: 'FAQ', icon: <QuestionAnswer /> },
-        { path: '/about/support-us', name: 'Help / Support Us', icon: <Coffee /> },
-        { path: '/about/get-help', name: 'Get Help', icon: <HelpCenter /> },
         { path: '/about/acknowledgements', name: 'Acknowledgements', icon: <Celebration /> },
+        { path: '/about/faq', name: 'FAQ', icon: <QuestionAnswer /> },
+        { path: '/about/support-us', name: 'Support Us', icon: <Coffee /> },
+        { path: '/about/get-help', name: 'Get Help', icon: <HelpCenter /> },
         { path: '/about/release-notes', name: 'Release Notes', icon: <NewReleases /> },
       ],
     },
