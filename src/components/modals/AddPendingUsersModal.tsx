@@ -27,6 +27,11 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
   )
   const allNames = [...activeNames, ...pendingNames]
 
+  const handleSubmit = () => {
+    addSessionMentions && addSessionMentions([addNameFinal])
+    onClose()
+  }
+
   return (
     <Dialog
       open={open}
@@ -96,10 +101,7 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
             disabled={!addNameFinal || addNameFinal.trim().length === 0 || error !== null}
             sx={{ background: theme.palette.background.paper }}
             variant="outlined"
-            onClick={() => {
-              addSessionMentions && addSessionMentions([addNameFinal])
-              onClose()
-            }}
+            onClick={handleSubmit}
           >
             Add
           </Button>
