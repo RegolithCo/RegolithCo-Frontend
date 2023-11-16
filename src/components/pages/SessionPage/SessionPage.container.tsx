@@ -48,6 +48,7 @@ import { PendingUserPopup } from '../../modals/ActiveUserPopup/PendingUserPopup'
 import { AddPendingUsersModal } from '../../modals/AddPendingUsersModal'
 import { DisbandModal } from '../../modals/DisbandCrew'
 import { ShareModal } from '../../modals/ShareModal'
+import config from '../../../config'
 
 export const SessionPageContainer2: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -77,7 +78,7 @@ export const SessionPageContainer2: React.FC = () => {
   const mySessionUser = sessionQueries.sessionUser as SessionUser
   const isActive = session?.state === SessionStateEnum.Active
   const amISessionOwner = session?.ownerId === myUserProfile.userId
-  const shareUrl = `${window.location.origin}${process.env.PUBLIC_URL}/session/${session?.sessionId}`
+  const shareUrl = `${config.shareUrl}?sessionId=${session?.sessionId}`
 
   const returnToSession = () => navigate(makeSessionUrls({ sessionId, tab }))
   const openWorkOrderModal = (orderId: string) => navigate(makeSessionUrls({ sessionId, orderId, tab }))
