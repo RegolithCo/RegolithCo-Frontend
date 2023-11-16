@@ -367,6 +367,20 @@ ${SessionSettingFragmentFragmentDoc}
 ${SessionUserFragmentFragmentDoc}
 ${ScoutingFindFragmentFragmentDoc}
 ${WorkOrderFragmentFragmentDoc}`;
+export const SessionShareFragmentFragmentDoc = gql`
+    fragment SessionShareFragment on SessionShare {
+  sessionId
+  name
+  createdAt
+  updatedAt
+  finishedAt
+  state
+  note
+  activity
+  specifyUsers
+  allowUnverifiedUsers
+}
+    `;
 export const SessionActiveMembersFragmentFragmentDoc = gql`
     fragment SessionActiveMembersFragment on Session {
   sessionId
@@ -1917,6 +1931,41 @@ export function useGetSessionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetSessionQueryHookResult = ReturnType<typeof useGetSessionQuery>;
 export type GetSessionLazyQueryHookResult = ReturnType<typeof useGetSessionLazyQuery>;
 export type GetSessionQueryResult = Apollo.QueryResult<types.GetSessionQuery, types.GetSessionQueryVariables>;
+export const GetSessionShareDocument = gql`
+    query getSessionShare($sessionId: ID!) {
+  sessionShare(sessionId: $sessionId) {
+    ...SessionShareFragment
+  }
+}
+    ${SessionShareFragmentFragmentDoc}`;
+
+/**
+ * __useGetSessionShareQuery__
+ *
+ * To run a query within a React component, call `useGetSessionShareQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSessionShareQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSessionShareQuery({
+ *   variables: {
+ *      sessionId: // value for 'sessionId'
+ *   },
+ * });
+ */
+export function useGetSessionShareQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
+      }
+export function useGetSessionShareLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
+        }
+export type GetSessionShareQueryHookResult = ReturnType<typeof useGetSessionShareQuery>;
+export type GetSessionShareLazyQueryHookResult = ReturnType<typeof useGetSessionShareLazyQuery>;
+export type GetSessionShareQueryResult = Apollo.QueryResult<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>;
 export const GetSessionStubDocument = gql`
     query getSessionStub($sessionId: ID!) {
   session(sessionId: $sessionId) {

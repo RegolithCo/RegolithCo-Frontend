@@ -156,13 +156,14 @@ export type PendingUserFieldPolicy = {
 	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
 	lookups?: FieldPolicy<any> | FieldReadFunction<any>,
 	profile?: FieldPolicy<any> | FieldReadFunction<any>,
 	scoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	session?: FieldPolicy<any> | FieldReadFunction<any>,
+	sessionShare?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrder?: FieldPolicy<any> | FieldReadFunction<any>
@@ -271,6 +272,20 @@ export type SessionSettingsFieldPolicy = {
 	lockedFields?: FieldPolicy<any> | FieldReadFunction<any>,
 	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderDefaults?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SessionShareKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'createdAt' | 'finishedAt' | 'name' | 'note' | 'sessionId' | 'specifyUsers' | 'state' | 'updatedAt' | 'version' | SessionShareKeySpecifier)[];
+export type SessionShareFieldPolicy = {
+	activity?: FieldPolicy<any> | FieldReadFunction<any>,
+	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
+	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	finishedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	note?: FieldPolicy<any> | FieldReadFunction<any>,
+	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
+	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
+	state?: FieldPolicy<any> | FieldReadFunction<any>,
+	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SessionSummaryKeySpecifier = ('aUEC' | 'activeMembers' | 'allPaid' | 'lastJobDone' | 'oreSCU' | 'refineries' | 'scoutingFinds' | 'totalMembers' | 'workOrders' | SessionSummaryKeySpecifier)[];
 export type SessionSummaryFieldPolicy = {
@@ -619,6 +634,10 @@ export type StrictTypedTypePolicies = {
 	SessionSettings?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SessionSettingsKeySpecifier | (() => undefined | SessionSettingsKeySpecifier),
 		fields?: SessionSettingsFieldPolicy,
+	},
+	SessionShare?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SessionShareKeySpecifier | (() => undefined | SessionShareKeySpecifier),
+		fields?: SessionShareFieldPolicy,
 	},
 	SessionSummary?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SessionSummaryKeySpecifier | (() => undefined | SessionSummaryKeySpecifier),
