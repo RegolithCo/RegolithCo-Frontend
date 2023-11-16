@@ -236,12 +236,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Link>
               , but quickly grew beyond its container. I had always had a clear idea of what I wanted it to be, but I
               was hesitant to take on the additional responsibility of maintaining a website. However, I eventually made
-              the decision to go ahead and build it. I hope you find it helpful.
+              the decision to go ahead and build it. Now here we are. I hope you find it helpful.
             </Typography>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" gutterBottom>
-              "How do I report a bug or ask for a feature?"
+              "How do I report a bug or ask for a new feature?"
             </Typography>
             <Typography gutterBottom>
               If you're a discord user that's probably the best place. It really helps if you can take a screenshot of
@@ -269,12 +269,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 Discord Server
               </Button>
             </Box>
-
             <Typography gutterBottom paragraph>
               If you're not a discord user, you can also{' '}
               <Link href="https://twitter.com/RegolithCo" target="_blank">
                 hit us up on twitter
-              </Link>
+              </Link>{' '}
+              but we might respond more slowly because well... twitter.
             </Typography>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
@@ -284,7 +284,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <Typography gutterBottom>
               CIG is moving fast and Regolith will always try to keep up! There is currently no direct communication
               between CIG and third-party developers though so we might lag the official patches a bit while we try to
-              catch up to the new meta.
+              get our data and equations working with the new meta.
             </Typography>
             <Typography paragraph>(BTW, if you're reading this CIG then we'd love to hear from you!)</Typography>
           </Paper>
@@ -293,24 +293,23 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               "Will this tool always be free?"
             </Typography>
             <Typography paragraph>
-              First off, this is not about profit. It is a passion project that I created for myself, my friends and my
-              ORG (
+              First off, this is not about profit other than getting miners paid in aUEC. It is a passion project that I
+              created for myself, my friends and my Org (
               <Link href="https://robertsspaceindustries.com/orgs/UEMC" target="_blank">
-                Check out the UEMC if you haven't already
+                UEMC
               </Link>
               ) to enjoy mining together.{' '}
               <strong>
-                While it is designed to be low maintenance and require minimal resources, that may change if it becomes
-                popular.
+                While it is designed to be low maintenance and require minimal resources, that may change if usage
+                spikes and maintenance and server costs rise.
               </strong>{' '}
               Sort of a nice problem to have, but I'll cross that bridge when/if we get there.
             </Typography>
             <Typography paragraph>
               Feel free to use the site as much as you'd like totally free. If you'd like to contribute towards server
               costs or buy me a coffee on <Link href="https://ko-fi.com/regolithco">ko-fi</Link> or{' '}
-              <Link href="https://patreon.com/user?u=64746907">Patreon</Link> as a gesture of appreciation and to help
-              cover server costs, that would be greatly appreciated. Beyond that, I have no plans to monetize the site
-              through advertising or any other methods.
+              <Link href="https://patreon.com/user?u=64746907">Patreon</Link> that would be greatly appreciated. Beyond
+              that, I have no plans to monetize the site through advertising or any other methods.
             </Typography>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
@@ -335,8 +334,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               google id to enable login. Any other information in the site is only what you choose to add.
             </Typography>
             <Typography paragraph>
-              The data you enter into this tool will be used to calculate stats and interesting metrics but we will
-              never single-out or expose individual data about any user without their express consent.
+              <strong>The passwords</strong> you used (Google or Discord) to log in are not stored in any way by
+              Regolith.
+            </Typography>
+            <Typography paragraph>
+              <strong>The data</strong> you enter into this tool will be used to calculate stats and interesting metrics
+              but we will never single-out or expose individual data about any user without their express consent.
             </Typography>
             <Typography paragraph>
               Currently we don't use Google analytics or any other tracking tools but that might change at some point to
@@ -409,8 +412,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             </Typography>
             <Typography paragraph>
               Regolith is a community-driven app and we don't do a lot of outreach. If you like the site, tell your
-              friends or share your mining sessions on social media. Regolith has share buttons (<Share />) that let you
-              export parts of the site to images you can paste into your favourite platforms.
+              friends, tell your family. Hell, tell your cat Fluffles!
+            </Typography>
+            <Typography paragraph>
+              If you feel really inspired, share and brag about your mining sessions on social media. Regolith has share
+              buttons (<Share />) that let you export parts of the site to images you can paste into your favourite
+              platforms. The shred images all have the our site URL at the bottom.
             </Typography>
             <Divider sx={{ mb: 3 }} />
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
