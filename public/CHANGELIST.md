@@ -1,3 +1,25 @@
+### November 16, 2023
+## 1.0.31 - SC 3.21.1
+
+This one is a minor patch for now. 
+
+- Prices and UEX data has been updated
+- A few small fixes
+- sharing links have better previews when pasting in discord
+
+-----
+
+### November 7, 2023
+## 1.0.29 - Misc bug fixes
+
+- Sexier page loaders! Our #1 most requested feature! 😝
+- Fixed an issue allowing scientific notation in number fields.
+- Fixed an issue where expense row delete buttons were showing outside of edit mode.
+- Server refactor and dev mode tools added to make my life easier.
+
+-----
+
+
 ### November 12, 2023
 ## 1.0.30 - Proper sharing (Finally!)
 
