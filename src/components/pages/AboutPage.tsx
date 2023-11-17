@@ -504,9 +504,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.Thanks && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography paragraph variant="body2">
+            <Typography variant="body2">
               Regolith is a community-driven app and would not exist without a lot of support and hard work from people.
-              We shold mention a few by name:
+              We should mention a few by name:
             </Typography>
           </Paper>
           <Paper elevation={10} sx={styles.innerPaper}>
