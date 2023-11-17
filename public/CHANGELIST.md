@@ -7,15 +7,6 @@ This one is a minor patch for now.
 - A few small fixes
 - sharing links have better previews when pasting in discord
 
------
-
-### November 7, 2023
-## 1.0.29 - Misc bug fixes
-
-- Sexier page loaders! Our #1 most requested feature! 😝
-- Fixed an issue allowing scientific notation in number fields.
-- Fixed an issue where expense row delete buttons were showing outside of edit mode.
-- Server refactor and dev mode tools added to make my life easier.
 
 -----
 
@@ -49,6 +40,19 @@ The benefits of this is that my server doesn't have to host the image and there'
 - Work orders that are delegated should now allow the delegate owner to edit and delete them properly. 
 - Delegated work orders should allow the delegate owner to mark crew shares as paid.
 - There were a bunch of permission issues and mutation errors when users who didn't create the scouting find were trying to modify it.
+
+Sometimes the fixes need fixes:
+
+HOTFIX: Immutability error: First row in expense table was not editable sometimes.
+HOTFIX: stop polling on component unmount.
+HOTFIX: removing the little border surrounding the share export
+Spelling mistakes!
+HOTFIX: sharing image crop fix (2023-11-12)
+HOTFIX: Immuniability fix for scouting rocks
+HOTFIX: Couldn't change user ship when "Require users to be added first." enabled
+HOTFIX: Case-sensitive user names were causing duplication when pending users convert to active ones
+HOTFIX: Deliberately ending a session shouldn't wipe out your session preferences
+
 
 -----
 
