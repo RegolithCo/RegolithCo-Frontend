@@ -18,6 +18,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  Stack,
   SxProps,
   Tab,
   Tabs,
@@ -34,9 +35,9 @@ import { yellow } from '@mui/material/colors'
 import { MentionedUserList } from '../fields/MentionedUserList'
 import { pick } from 'lodash'
 import { fontFamilies } from '../../theme'
-import { Theme } from '@mui/system'
 import { SessionSettingsTab } from './SessionPage/TabSettings'
 import { VehicleChooser } from '../fields/VehicleChooser'
+import { Theme } from '@mui/system'
 
 type ObjectValues<T> = T[keyof T]
 export const ProfileModals = {
@@ -366,47 +367,50 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* Sessions Tab */}
         {activeTab === ProfileTabsEnum.SESSION_DEFAULTS && (
           <>
-            <Box sx={styles.section}>
-              <Typography component="div" sx={styles.sectionTitle}>
-                Preferred Mining Session Vehicle
-              </Typography>
-              <Box sx={styles.sectionBody}>
-                <VehicleChooser
-                  label="Mining Vehicle"
-                  vehicle={userProfile.sessionShipCode as string | undefined}
-                  onChange={(newVehicle) => {
-                    const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.code }
-                    setNewUserProfile(updatedNewUserProfile)
-                    updateUserProfile && updateUserProfile(updatedNewUserProfile)
-                  }}
-                />
-                <Typography variant="caption" sx={{ mt: 1 }}>
-                  This ship will be your default when you start or join a session. This can be changed during a session.
+            <Stack direction={mediumUp ? 'row' : 'column'} spacing={2}>
+              <Box sx={styles.section}>
+                <Typography component="div" sx={styles.sectionTitle}>
+                  Preferred Mining Session Vehicle
                 </Typography>
+                <Box sx={styles.sectionBody}>
+                  <VehicleChooser
+                    label="Mining Vehicle"
+                    vehicle={userProfile.sessionShipCode as string | undefined}
+                    onChange={(newVehicle) => {
+                      const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.code }
+                      setNewUserProfile(updatedNewUserProfile)
+                      updateUserProfile && updateUserProfile(updatedNewUserProfile)
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ mt: 1 }}>
+                    This ship will be your default when you start or join a session. This can be changed during a
+                    session.
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
 
-            <Box sx={styles.section}>
-              <Typography component="div" sx={styles.sectionTitle}>
-                Preferred Delivery Vehicle
-              </Typography>
-              <Box sx={styles.sectionBody}>
-                <VehicleChooser
-                  label="Delivery Vehicle"
-                  vehicle={userProfile.deliveryShipCode as string | undefined}
-                  onlyCargo
-                  onChange={(newVehicle) => {
-                    const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newVehicle?.code }
-                    setNewUserProfile(updatedNewUserProfile)
-                    updateUserProfile && updateUserProfile(updatedNewUserProfile)
-                  }}
-                />
-                <Typography variant="caption" sx={{ mt: 1 }}>
-                  (This is not used yet but later we will be able to calculate the number of trips you need to make to
-                  market from refineries)
+              <Box sx={styles.section}>
+                <Typography component="div" sx={styles.sectionTitle}>
+                  Preferred Delivery Vehicle
                 </Typography>
+                <Box sx={styles.sectionBody}>
+                  <VehicleChooser
+                    label="Delivery Vehicle"
+                    vehicle={userProfile.deliveryShipCode as string | undefined}
+                    onlyCargo
+                    onChange={(newVehicle) => {
+                      const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newVehicle?.code }
+                      setNewUserProfile(updatedNewUserProfile)
+                      updateUserProfile && updateUserProfile(updatedNewUserProfile)
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ mt: 1 }}>
+                    (This is not used yet but later we will be able to calculate the number of trips you need to make to
+                    market from refineries)
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
+            </Stack>
 
             <Box sx={styles.section}>
               <Typography component="div" sx={styles.sectionTitle}>

@@ -184,13 +184,53 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         <Grid container sx={styles.gridContainer} spacing={3}>
           <Grid xs={12} md={6}>
             <Box sx={styles.section}>
-              <Typography component="div" sx={styles.sectionTitle}>
-                General Settings
-              </Typography>
-              <Box sx={styles.sectionBody}>
-                {/* NAME FIELD */}
-                {session && (
-                  <>
+              {session && (
+                <Box sx={styles.section}>
+                  <Typography component="div" sx={styles.sectionTitle}>
+                    Nuclear Options:
+                  </Typography>
+                  <Box sx={styles.sectionBody}>
+                    <Stack direction={mediumUp ? 'row' : 'column'} spacing={2}>
+                      {session?.state === SessionStateEnum.Active && (
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          disabled={!endSession}
+                          startIcon={<StopCircle />}
+                          onClick={() => {
+                            endSession && endSession()
+                            setActiveModal && setActiveModal(DialogEnum.CLOSE_SESSION)
+                          }}
+                          color="secondary"
+                        >
+                          End Session
+                        </Button>
+                      )}
+                      {session && (
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          disabled={!deleteSession}
+                          startIcon={<Delete />}
+                          onClick={() => {
+                            deleteSession && deleteSession()
+                            setActiveModal && setActiveModal(DialogEnum.DELETE_SESSION)
+                          }}
+                          color="error"
+                        >
+                          Delete Session
+                        </Button>
+                      )}
+                    </Stack>
+                  </Box>
+                </Box>
+              )}
+              {session && (
+                <Box sx={styles.section}>
+                  <Typography component="div" sx={styles.sectionTitle}>
+                    General Settings
+                  </Typography>
+                  <Box sx={styles.sectionBody}>
                     <TextField
                       value={displayValue.name || ''}
                       fullWidth
@@ -222,96 +262,73 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       maxRows={4}
                       value={displayValue.note || ''}
                     />
-                  </>
-                )}
-                <Typography variant="caption" paragraph component="div">
-                  (Optional) You can indicate where the mining is going to happen. These settings are not enforced in
-                  any way.
+                    <Typography variant="caption" paragraph component="div" color="secondary.dark">
+                      NOTE: <strong>name</strong> and <strong>note</strong> appear in the share meta link so don't put
+                      any secrets or identifying info if you're worried about pirates seeing it.
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+              <Box sx={styles.section}>
+                <Typography component="div" sx={styles.sectionTitle}>
+                  Session Location
                 </Typography>
-
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={planetOptions}
-                  fullWidth
-                  autoHighlight
-                  sx={{ mb: 3 }}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  value={gravWell ? { label: getPlanetName(gravWell), id: gravWell } : null}
-                  onChange={(event, newValue) => {
-                    setNewSettings({
-                      ...newSettings,
-                      sessionSettings: {
-                        ...newSettings.sessionSettings,
-                        gravityWell: newValue ? newValue.id : null,
-                      },
-                    })
-                  }}
-                  renderInput={(params) => <TextField {...params} label="Gravity Well" />}
-                />
-
-                <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                  <InputLabel id="gwell">Location Type</InputLabel>
-                  <Select
-                    value={(newSettings.sessionSettings?.location as string) || ''}
-                    fullWidth
-                    variant="outlined"
-                    label="Location Type"
-                    // size="small"
-                    renderValue={(value: string) => (value === '' ? null : getLocationName(value as LocationEnum))}
-                    onChange={(e) => {
-                      const newLocation = e.target.value === '' ? null : (e.target.value as LocationEnum)
-                      setNewSettings({
-                        ...newSettings,
-                        sessionSettings: {
-                          ...newSettings.sessionSettings,
-                          location: newLocation,
-                        },
-                      })
-                    }}
-                  >
-                    <MenuItem value={''}>-- All / Any --</MenuItem>
-                    {Object.values(LocationEnum).map((key) => (
-                      <MenuItem key={key} value={key}>
-                        {getLocationName(key)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {session && (
+                <Box sx={styles.sectionBody}>
                   <Stack direction={mediumUp ? 'row' : 'column'} spacing={2} sx={{ mb: 2 }}>
-                    {session?.state === SessionStateEnum.Active && (
-                      <Button
-                        variant="contained"
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={planetOptions}
+                      fullWidth
+                      autoHighlight
+                      sx={{ mb: 3 }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      value={gravWell ? { label: getPlanetName(gravWell), id: gravWell } : null}
+                      onChange={(event, newValue) => {
+                        setNewSettings({
+                          ...newSettings,
+                          sessionSettings: {
+                            ...newSettings.sessionSettings,
+                            gravityWell: newValue ? newValue.id : null,
+                          },
+                        })
+                      }}
+                      renderInput={(params) => <TextField {...params} label="Gravity Well" />}
+                    />
+
+                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                      <InputLabel id="gwell">Location Type</InputLabel>
+                      <Select
+                        value={(newSettings.sessionSettings?.location as string) || ''}
                         fullWidth
-                        disabled={!endSession}
-                        startIcon={<StopCircle />}
-                        onClick={() => {
-                          endSession && endSession()
-                          setActiveModal && setActiveModal(DialogEnum.CLOSE_SESSION)
+                        variant="outlined"
+                        label="Location Type"
+                        // size="small"
+                        renderValue={(value: string) => (value === '' ? null : getLocationName(value as LocationEnum))}
+                        onChange={(e) => {
+                          const newLocation = e.target.value === '' ? null : (e.target.value as LocationEnum)
+                          setNewSettings({
+                            ...newSettings,
+                            sessionSettings: {
+                              ...newSettings.sessionSettings,
+                              location: newLocation,
+                            },
+                          })
                         }}
-                        color="secondary"
                       >
-                        End Session
-                      </Button>
-                    )}
-                    {session && (
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        disabled={!deleteSession}
-                        startIcon={<Delete />}
-                        onClick={() => {
-                          deleteSession && deleteSession()
-                          setActiveModal && setActiveModal(DialogEnum.DELETE_SESSION)
-                        }}
-                        color="error"
-                      >
-                        Delete Session
-                      </Button>
-                    )}
+                        <MenuItem value={''}>-- All / Any --</MenuItem>
+                        {Object.values(LocationEnum).map((key) => (
+                          <MenuItem key={key} value={key}>
+                            {getLocationName(key)}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Stack>
-                )}
+                  <Typography variant="caption" paragraph component="div">
+                    (Optional) You can indicate where the mining is going to happen. These settings are not enforced in
+                    any way and are only visible to active session members.
+                  </Typography>
+                </Box>
               </Box>
             </Box>
 
