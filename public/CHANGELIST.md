@@ -1,5 +1,5 @@
 ### November 20, 2023
-## 1.0.32
+## 1.0.32 - Misc feedback fixes
 
 A few quick, easy changes stemming from feedback after a successful live event over at Red Legion org.
 
