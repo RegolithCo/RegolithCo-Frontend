@@ -417,7 +417,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <Typography paragraph>
               If you feel really inspired, share and brag about your mining sessions on social media. Regolith has share
               buttons (<Share />) that let you export parts of the site to images you can paste into your favourite
-              platforms. The shred images all have the our site URL at the bottom.
+              platforms. The shared images all have the our site URL at the bottom.
             </Typography>
             <Divider sx={{ mb: 3 }} />
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
