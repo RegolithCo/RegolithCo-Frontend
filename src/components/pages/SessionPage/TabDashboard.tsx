@@ -30,6 +30,7 @@ export interface TabDashboardProps {
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   container: {
+    flex: '1 1',
     '& .MuiAccordion-root': {
       position: 'relative',
     },
@@ -177,7 +178,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           sx={{
             position: 'relative',
             overflowY: 'hidden',
-            maxHeight: 500,
+            maxHeight: 400,
             minHeight: 300,
             display: 'flex',
             flexDirection: 'column',

@@ -123,11 +123,16 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           maxWidth: 1100,
           flexDirection: 'column',
           height: '100%',
-          // border: '1px solid yellow',
+          pb: 2, // Leave a little space for the copyright marker
         }}
       >
         <SessionHeader />
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
           {mediumUp && (
             <Tabs
               value={activeTab}
@@ -149,6 +154,8 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           sx={{
             flex: '1 1',
             overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {activeTab === SessionTabs.USERS && <TabUsers />}
