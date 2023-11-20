@@ -62,7 +62,7 @@ export type MiningLoadoutFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'setLookupData' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'upsertUserProfile' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -79,6 +79,7 @@ export type MutationFieldPolicy = {
 	deleteWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	failWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	joinScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
+	joinSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	leaveScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	leaveSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	markCrewSharePaid?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -88,6 +89,7 @@ export type MutationFieldPolicy = {
 	removeSessionCrew?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeSessionMentions?: FieldPolicy<any> | FieldReadFunction<any>,
 	requestVerifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
+	rotateShareId?: FieldPolicy<any> | FieldReadFunction<any>,
 	setLookupData?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatePendingUserCaptain?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -242,12 +244,13 @@ export type SellStoresFieldPolicy = {
 	oreRefined?: FieldPolicy<any> | FieldReadFunction<any>,
 	salvage?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionKeySpecifier = ('activeMemberIds' | 'activeMembers' | 'createdAt' | 'finishedAt' | 'mentionedUsers' | 'name' | 'note' | 'onTheList' | 'owner' | 'ownerId' | 'scouting' | 'sessionId' | 'sessionSettings' | 'state' | 'summary' | 'updatedAt' | 'version' | 'workOrders' | SessionKeySpecifier)[];
+export type SessionKeySpecifier = ('activeMemberIds' | 'activeMembers' | 'createdAt' | 'finishedAt' | 'joinId' | 'mentionedUsers' | 'name' | 'note' | 'onTheList' | 'owner' | 'ownerId' | 'scouting' | 'sessionId' | 'sessionSettings' | 'state' | 'summary' | 'updatedAt' | 'version' | 'workOrders' | SessionKeySpecifier)[];
 export type SessionFieldPolicy = {
 	activeMemberIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	activeMembers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	finishedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	joinId?: FieldPolicy<any> | FieldReadFunction<any>,
 	mentionedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -263,7 +266,7 @@ export type SessionFieldPolicy = {
 	version?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'gravityWell' | 'location' | 'lockedFields' | 'specifyUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
+export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'gravityWell' | 'location' | 'lockedFields' | 'specifyUsers' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
 export type SessionSettingsFieldPolicy = {
 	activity?: FieldPolicy<any> | FieldReadFunction<any>,
 	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -271,6 +274,8 @@ export type SessionSettingsFieldPolicy = {
 	location?: FieldPolicy<any> | FieldReadFunction<any>,
 	lockedFields?: FieldPolicy<any> | FieldReadFunction<any>,
 	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
+	usersCanAddUsers?: FieldPolicy<any> | FieldReadFunction<any>,
+	usersCanInviteUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderDefaults?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SessionShareKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'createdAt' | 'finishedAt' | 'name' | 'note' | 'sessionId' | 'specifyUsers' | 'state' | 'updatedAt' | 'version' | SessionShareKeySpecifier)[];

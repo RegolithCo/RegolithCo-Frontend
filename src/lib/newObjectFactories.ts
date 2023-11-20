@@ -47,6 +47,7 @@ export function profile2User(profile: UserProfile): User {
 export function dummySession(owner: UserProfile): Session {
   return {
     sessionId: 'NEWSESSION', // This is a placeholder. it will never be committed
+    joinId: 'NEWJOINID',
     ownerId: owner.userId,
     owner: profile2User(owner),
     createdAt: Date.now(),

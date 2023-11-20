@@ -80,6 +80,8 @@ export const SessionSettingFragmentFragmentDoc = gql`
     fragment SessionSettingFragment on SessionSettings {
   activity
   allowUnverifiedUsers
+  usersCanAddUsers
+  usersCanInviteUsers
   gravityWell
   location
   lockedFields
@@ -324,6 +326,7 @@ ${CrewShareFragmentFragmentDoc}`;
 export const SessionFragmentFragmentDoc = gql`
     fragment SessionFragment on Session {
   sessionId
+  joinId
   name
   onTheList
   ownerId
@@ -1229,6 +1232,39 @@ export function useUpdatePendingUserCaptainMutation(baseOptions?: Apollo.Mutatio
 export type UpdatePendingUserCaptainMutationHookResult = ReturnType<typeof useUpdatePendingUserCaptainMutation>;
 export type UpdatePendingUserCaptainMutationResult = Apollo.MutationResult<types.UpdatePendingUserCaptainMutation>;
 export type UpdatePendingUserCaptainMutationOptions = Apollo.BaseMutationOptions<types.UpdatePendingUserCaptainMutation, types.UpdatePendingUserCaptainMutationVariables>;
+export const JoinSessionDocument = gql`
+    mutation joinSession($joinId: ID!) {
+  joinSession(joinId: $joinId) {
+    ...SessionUserFragment
+  }
+}
+    ${SessionUserFragmentFragmentDoc}`;
+export type JoinSessionMutationFn = Apollo.MutationFunction<types.JoinSessionMutation, types.JoinSessionMutationVariables>;
+
+/**
+ * __useJoinSessionMutation__
+ *
+ * To run a mutation, you first call `useJoinSessionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinSessionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinSessionMutation, { data, loading, error }] = useJoinSessionMutation({
+ *   variables: {
+ *      joinId: // value for 'joinId'
+ *   },
+ * });
+ */
+export function useJoinSessionMutation(baseOptions?: Apollo.MutationHookOptions<types.JoinSessionMutation, types.JoinSessionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.JoinSessionMutation, types.JoinSessionMutationVariables>(JoinSessionDocument, options);
+      }
+export type JoinSessionMutationHookResult = ReturnType<typeof useJoinSessionMutation>;
+export type JoinSessionMutationResult = Apollo.MutationResult<types.JoinSessionMutation>;
+export type JoinSessionMutationOptions = Apollo.BaseMutationOptions<types.JoinSessionMutation, types.JoinSessionMutationVariables>;
 export const LeaveSessionDocument = gql`
     mutation leaveSession($sessionId: ID!) {
   leaveSession(sessionId: $sessionId)
