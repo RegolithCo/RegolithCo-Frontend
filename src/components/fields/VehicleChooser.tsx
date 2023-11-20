@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { Autocomplete, MenuItem, TextField, Typography, useTheme } from '@mui/material'
 import { Vehicle, lookups, ObjectValues } from '@regolithco/common'
+import numeral from 'numeral'
 import { Theme } from '@mui/system'
 
 export const ShipTypeEnum = {
@@ -78,21 +79,24 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
       id="shipChooser"
       value={currVal}
       disabled={disabled}
-      renderOption={(props, ship) => (
-        <MenuItem
-          {...props}
-          value={ship.code}
-          sx={{
-            color: shipColorLookup(theme)[ship.role as ShipTypeEnum] || 'inherit',
-          }}
-        >
-          {ship.name}
-          <div style={{ flexGrow: 1 }} />
-          <Typography variant="caption">
-            {ship.role} {ship.code !== 'NONE' && `(${ship.miningHold || ship.cargo || '0'} SCU)`}
-          </Typography>
-        </MenuItem>
-      )}
+      renderOption={(props, ship) => {
+        const shipSCUVAl = ship.miningHold || ship.cargo || 0
+        return (
+          <MenuItem
+            {...props}
+            value={ship.code}
+            sx={{
+              color: shipColorLookup(theme)[ship.role as ShipTypeEnum] || 'inherit',
+            }}
+          >
+            {ship.name}
+            <div style={{ flexGrow: 1 }} />
+            <Typography variant="caption">
+              {ship.role} {ship.code !== 'NONE' && shipSCUVAl > 0 && `(${numeral(shipSCUVAl).format('0,0')} SCU)`}
+            </Typography>
+          </MenuItem>
+        )
+      }}
       clearOnBlur
       blurOnSelect
       fullWidth
@@ -100,7 +104,8 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
         if (option === null) return ''
         if (typeof option === 'string') return option
         else {
-          const scuAmt = option.code !== 'NONE' ? ` (${option.miningHold || option.cargo || '0'} SCU)` : ''
+          const shipSCUVAl = option.miningHold || option.cargo || 0
+          const scuAmt = option.code !== 'NONE' && shipSCUVAl > 0 ? ` (${numeral(shipSCUVAl).format('0,0')} SCU)` : ''
           return option.name + scuAmt
         }
       }}
