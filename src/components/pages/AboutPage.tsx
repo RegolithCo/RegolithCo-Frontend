@@ -365,8 +365,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <Typography paragraph>
               Everyone can use this site for free, hopefully forever. However,{' '}
               <strong style={{ color: theme.palette.secondary.dark }}>server costs are real</strong>. If you use
-              Regolith and are seeking a way to help keep the lights on and satiate the unquenchable hunger of Bezos'
-              infinite AWS maw, your support would be amazing!
+              Regolith and are seeking a way to help keep the lights on and feed the hungry AWS beast, your support
+              would be amazing!
             </Typography>
             <Typography paragraph variant="subtitle1">
               Any amount at all is a big help!

@@ -1,3 +1,16 @@
+### November 20, 2023
+## 1.0.32
+
+A few quick, easy changes stemming from feedback after a successful live event over at Red Legion org.
+
+- Added all ships to the picker, not just ones with cargo grids or mining holds.
+- Better scrolling on the dashboard when there are lots of scouting finds. This component needs rewriting someday but this will keep us going for now.
+- FIXED: When you mark the scoutinf find `Abandoned` or `Depleted` it no longer reverts ownership back to the session owner.
+- MISC: Typos and wording changes.
+
+-----
+
+
 ### November 16, 2023
 ## 1.0.31 - SC 3.21.1
 
