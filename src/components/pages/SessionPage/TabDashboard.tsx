@@ -38,7 +38,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
     },
     '& .MuiAccordionDetails-root': {
       p: 0,
-      pb: 8,
+      // pb: 8,
       position: 'relative',
       backgroundColor: '#0e0c1baa',
     },
@@ -133,15 +133,17 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           </FormGroup>
         </AccordionSummary>
         <AccordionDetails>
-          <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
-          <WorkOrderAddFAB
-            onClick={createNewWorkOrder}
-            sessionSettings={session?.sessionSettings}
-            fabProps={{
-              disabled: !isActive,
-            }}
-          />
+          <Box sx={{ pb: 8 }}>
+            <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
+          </Box>
         </AccordionDetails>
+        <WorkOrderAddFAB
+          onClick={createNewWorkOrder}
+          sessionSettings={session?.sessionSettings}
+          fabProps={{
+            disabled: !isActive,
+          }}
+        />
       </Accordion>
       <Accordion defaultExpanded={true} disableGutters>
         <AccordionSummary
@@ -173,11 +175,15 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         </AccordionSummary>
         <AccordionDetails
           sx={{
-            maxHeight: 400,
+            position: 'relative',
+            overflowY: 'hidden',
+            maxHeight: 500,
             minHeight: 300,
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          <Grid container spacing={3} margin={0} sx={{ mt: 3 }}>
+          <Grid container spacing={3} margin={0} sx={{ pt: 3, pb: 8, flex: '1 1', overflowY: 'scroll' }}>
             {filteredScouts.map((scouting, idx) => {
               return (
                 <Grid
