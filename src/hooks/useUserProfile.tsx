@@ -282,7 +282,7 @@ export const useUserProfile = (): useSessionsReturn => {
         },
         optimisticResponse: {
           __typename: 'Mutation',
-          upsertUserProfile: {
+          updateUserProfile: {
             ...(userProfileQry.data?.profile as UserProfile),
             sessionSettings: reversed,
             __typename: 'UserProfile',
@@ -326,7 +326,7 @@ export const useUserProfile = (): useSessionsReturn => {
           ...newSessionSettingsForInputs,
         },
         optimisticResponse: {
-          upsertUserProfile: {
+          updateUserProfile: {
             ...optimisticResponse,
           },
           __typename: 'Mutation',

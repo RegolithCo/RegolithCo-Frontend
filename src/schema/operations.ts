@@ -463,7 +463,7 @@ export const UserProfileLoadoutFragmentFragmentDoc = gql`
     ${MiningLoadoutFragmentFragmentDoc}`;
 export const UpsertUserDocument = gql`
     mutation upsertUser($userProfile: UserProfileInput!, $sessionSettings: SessionSettingsInput, $workOrderDefaults: WorkOrderDefaultsInput, $crewSharesDefaults: [CrewShareTemplateInput!], $shipOreDefaults: [ShipOreEnum!], $vehicleOreDefaults: [VehicleOreEnum!], $salvageOreDefaults: [SalvageOreEnum!]) {
-  upsertUserProfile(
+  updateUserProfile(
     userProfile: $userProfile
     sessionSettings: $sessionSettings
     workOrderDefaults: $workOrderDefaults
