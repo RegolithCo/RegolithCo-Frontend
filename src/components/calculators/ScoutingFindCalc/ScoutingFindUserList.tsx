@@ -2,6 +2,7 @@ import * as React from 'react'
 import { SxProps, Theme, ListItemText, ListItem, List, useTheme, ListItemAvatar, Avatar } from '@mui/material'
 import { makeAvatar, User } from '@regolithco/common'
 import { Person } from '@mui/icons-material'
+import { AppContext } from '../../../context/app.context'
 
 export interface ScoutingFindUserListProps {
   users: User[]
@@ -32,6 +33,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const ScoutingFindUserList: React.FC<ScoutingFindUserListProps> = ({ users, meId, ownerId }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { getSafeName } = React.useContext(AppContext)
 
   return (
     <List dense disablePadding sx={styles.attendanceList}>
@@ -56,7 +58,7 @@ export const ScoutingFindUserList: React.FC<ScoutingFindUserListProps> = ({ user
                 <Person color="inherit" />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={user.scName} />
+            <ListItemText primary={getSafeName(user.scName)} />
           </ListItem>
         )
       })}

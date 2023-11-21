@@ -15,6 +15,7 @@ import {
   VerifiedUserLookup,
   WorkOrder,
   UserSuggest,
+  UserPrivacyMaps,
 } from '@regolithco/common'
 import { createContext } from 'react'
 
@@ -59,6 +60,7 @@ export interface SessionContextType {
 
   loading: boolean
   mutating: boolean
+
   // The
   verifiedMentionedUsers: VerifiedUserLookup
   addFriend: (username: string) => void
@@ -134,6 +136,7 @@ export const sessionContextDefault: SessionContextType = {
 
   loading: false,
   mutating: false,
+
   userSuggest: {},
 
   activeTab: SessionTabs.DASHBOARD,

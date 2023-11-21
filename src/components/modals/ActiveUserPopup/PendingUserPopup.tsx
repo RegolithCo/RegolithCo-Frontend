@@ -21,6 +21,7 @@ import dayjs from 'dayjs'
 import { UserAvatar } from '../../UserAvatar'
 import { Cancel, CheckCircle, DeleteForever, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
+import { AppContext } from '../../../context/app.context'
 dayjs.extend(relativeTime)
 
 export interface PendingUserPopupProps {
@@ -31,6 +32,7 @@ export interface PendingUserPopupProps {
 
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
+  const { getSafeName, hideNames } = React.useContext(AppContext)
   const {
     captains,
     session,
@@ -98,7 +100,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
           <UserAvatar size="xlarge" pendingUser={pendingUser} />
         </Box>
         <Stack direction="row" spacing={2} alignItems="center">
-          <Typography variant="h4">{pendingUser.scName}</Typography>
+          <Typography variant="h4">{getSafeName(pendingUser.scName)}</Typography>
           <Box sx={{ flexGrow: 1 }} />
         </Stack>
         <Stack direction="row" spacing={2}>
@@ -109,7 +111,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
       <DialogContent>
         {theirCaptain ? (
           <Typography variant="overline" color="primary" component="div">
-            <strong>Status</strong>: member of <strong>{theirCaptain?.owner?.scName}'s</strong> crew
+            <strong>Status</strong>: member of <strong>{getSafeName(theirCaptain?.owner?.scName)}'s</strong> crew
           </Typography>
         ) : (
           <Typography variant="overline" color="primary" component="div">
@@ -124,7 +126,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             </Typography>
 
             <Typography variant="caption" color="text.secondary">
-              <strong>{theirCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
+              <strong>{getSafeName(theirCaptain.owner?.scName)}'s</strong> crew is using a {vehicle?.name} (
               {vehicle?.miningHold || vehicle?.cargo} SCU)
             </Typography>
           </Box>
@@ -155,7 +157,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                   updatePendingUserCaptain(pendingUser.scName, null)
                 }}
               >
-                Remove from {iAmTheirCaptain ? 'my' : theirCaptainScName} crew
+                Remove from {iAmTheirCaptain ? 'my' : getSafeName(theirCaptainScName) + "'s"} crew
               </Button>
             )}
             {isMyFriend ? (
@@ -185,7 +187,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                   addFriend(pendingUser.scName as string)
                 }}
               >
-                Delete {iAmTheirCaptain ? 'my' : theirCaptainScName} from session
+                Delete {iAmTheirCaptain ? 'my' : getSafeName(pendingUser.scName)} from session
               </Button>
             )}
           </ButtonGroup>

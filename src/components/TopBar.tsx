@@ -8,9 +8,10 @@ import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
 import { yellow } from '@mui/material/colors'
-import { CircularProgress, SxProps, Theme, useTheme } from '@mui/material'
+import { CircularProgress, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import {
+  AccountCircle,
   Calculate,
   CalendarMonth,
   Celebration,
@@ -21,6 +22,7 @@ import {
   Login,
   Logout,
   NewReleases,
+  NoAccounts,
   Person,
   QuestionAnswer,
   Store,
@@ -34,6 +36,7 @@ import { UserAvatar } from './UserAvatar'
 import { ModuleIcon } from '../icons/Module'
 import { TopBarMenu, TopBarMenuItem } from './TopBarMenu'
 import { LaserIcon } from '../icons/Laser'
+import { AppContext } from '../context/app.context'
 
 export type MenuItemType = {
   path?: string
@@ -92,6 +95,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement }>(null)
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { hideNames, setHideNames } = React.useContext(AppContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
   const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {
@@ -155,6 +159,12 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   const profileMenu: MenuItemType[] = [
     { path: '/profile', name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
     { path: '/verify', name: 'Verify Account', icon: <Verified />, show: userCtx.isInitialized && !userCtx.isVerified },
+    {
+      name: `Streaming Mode: ${hideNames ? 'ON' : 'OFF'}`,
+      action: () => setHideNames(!hideNames),
+      icon: hideNames ? <NoAccounts /> : <AccountCircle />,
+      disabled: !userCtx.userProfile,
+    },
     {
       path: '/',
       name: 'Logout',
@@ -283,6 +293,19 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         <div style={{ flexGrow: 1 }} />
         {IS_STAGING && '[TEST SERVER]'}
         <Box sx={{ flexGrow: 0 }}>
+          {userCtx.isAuthenticated && hideNames && (
+            <Tooltip title={`names disabled for streaming`}>
+              <IconButton
+                color="inherit"
+                sx={{ color: 'red', cursor: 'default' }}
+                disableFocusRipple
+                disableRipple
+                disableTouchRipple
+              >
+                <NoAccounts />
+              </IconButton>
+            </Tooltip>
+          )}
           {userCtx.isAuthenticated && (
             <>
               {userCtx.loading ? (
@@ -296,9 +319,16 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                     fontWeight: 'bold',
                     color: theme.palette.primary.contrastText,
                   }}
-                  endIcon={<UserAvatar size="medium" error={Boolean(userCtx.error)} user={userCtx.userProfile} />}
+                  endIcon={
+                    <UserAvatar
+                      size="medium"
+                      error={Boolean(userCtx.error)}
+                      user={userCtx.userProfile}
+                      privacy={hideNames}
+                    />
+                  }
                 >
-                  {userCtx.userProfile?.scName}
+                  {hideNames ? 'YOU' : userCtx.userProfile?.scName}
                 </Button>
               )}
               <TopBarMenu

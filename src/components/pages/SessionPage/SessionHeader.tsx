@@ -16,18 +16,20 @@ import { CloudDownload, Diversity3, Share } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
+import { AppContext } from '../../../context/app.context'
 
 export interface SesionHeaderProps {
   propA?: string
 }
 
-export const sessionSubtitleArr = (session: Session): string[] => {
+export const sessionSubtitleArr = (session: Session, protect: boolean): string[] => {
   const subtitleArr = []
   const sessionSettings: Partial<SessionSettings> = session.sessionSettings || {}
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
-  if (sessionSettings.gravityWell) subtitleArr.push(getPlanetName(sessionSettings.gravityWell))
-  if (sessionSettings.location) subtitleArr.push(getLocationName(sessionSettings.location))
+  if (sessionSettings.gravityWell)
+    subtitleArr.push(protect ? 'UNDISCLOSED' : getPlanetName(sessionSettings.gravityWell))
+  if (sessionSettings.location) subtitleArr.push(protect ? 'UNDISCLOSED' : getLocationName(sessionSettings.location))
   return subtitleArr
 }
 
@@ -75,9 +77,10 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const SessionHeader: React.FC<SesionHeaderProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const { session, myUserProfile, setActiveModal } = React.useContext(SessionContext)
+  const { hideNames } = React.useContext(AppContext)
+  const { session, setActiveModal } = React.useContext(SessionContext)
   if (!session) return null
-  const subtitleArr = sessionSubtitleArr(session)
+  const subtitleArr = sessionSubtitleArr(session, hideNames)
 
   return (
     <Box sx={styles.container}>

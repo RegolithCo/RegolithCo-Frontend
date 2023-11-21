@@ -30,6 +30,7 @@ import { UserAvatar } from '../UserAvatar'
 import { SessionListSummary } from './SessionListSummary'
 import { MValueFormat, MValueFormatter } from './MValue'
 import { fontFamilies } from '../../theme'
+import { AppContext } from '../../context/app.context'
 
 export interface SessionListProps {
   sessions: Session[]
@@ -53,6 +54,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, activeOnly, onClickSession }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { hideNames } = React.useContext(AppContext)
 
   const pulse = keyframes`
   0% { background-color: transparent; }
@@ -181,7 +183,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                           {dayArr.map((session, idx) => {
                             const { sessionId, name, owner, state, summary } = session
                             const sessionActive = state === SessionStateEnum.Active
-                            const subtitleArr = sessionSubtitleArr(session)
+                            const subtitleArr = sessionSubtitleArr(session, hideNames)
                             return (
                               <ListItem
                                 divider

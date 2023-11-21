@@ -6,6 +6,7 @@ import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
+import { AppContext } from '../../../../context/app.context'
 
 export interface PendingUserListItemProps {
   pendingUser: PendingUser
@@ -20,6 +21,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
   openContextMenu,
 }) => {
   const theme = useTheme()
+  const { getSafeName } = React.useContext(AppContext)
   const { openPendingUserModal, myUserProfile } = React.useContext(SessionContext)
   useEffect(() => {
     // define a custom handler function
@@ -78,7 +80,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
           },
           //
         }}
-        primary={pendingUser.scName}
+        primary={getSafeName(pendingUser.scName)}
         secondaryTypographyProps={{
           component: 'div',
         }}

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Avatar from '@mui/material/Avatar'
 import { Badge, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
-import { Engineering, Error, Image, PeopleAlt, Person, Verified } from '@mui/icons-material'
+import { Engineering, Error, PeopleAlt, Verified } from '@mui/icons-material'
 import { PendingUser, makeAvatar, User, UserProfile, UserStateEnum } from '@regolithco/common'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -74,6 +74,7 @@ export interface UserAvatarProps {
   pendingUser?: PendingUser
   isFriend?: boolean
   error?: boolean
+  privacy?: boolean
   sessionOwner?: boolean
   hideTooltip?: boolean
   size: 'tiny' | 'small' | 'medium' | 'large' | 'xlarge'
@@ -83,6 +84,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   size,
   user,
   pendingUser,
+  privacy,
   error,
   sessionOwner,
   isFriend,
@@ -104,7 +106,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     ...(styles[`${size}Avatar`] || {}),
   }
 
-  const scName = user?.scName || pendingUser?.scName || 'USER'
+  const scName = privacy ? 'USER' : user?.scName || pendingUser?.scName || 'USER'
   const tooltipText: string[] = [scName]
   if (user) tooltipText.push(user?.state === UserStateEnum.Verified ? 'Verified User' : 'Unverified User')
   else tooltipText.push('Pending User')
@@ -142,7 +144,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           <Tooltip title={hideTooltip ? '' : tooltipText.join(' - ')} placement="bottom" arrow>
             <Avatar
               alt={scName}
-              src={myAvatar}
+              src={!privacy ? myAvatar : undefined}
               imgProps={{ referrerPolicy: 'no-referrer' }}
               color="secondary"
               sx={{

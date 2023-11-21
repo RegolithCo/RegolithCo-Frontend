@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { lookups, MiningLoadout, SessionUser, User, UserStateEnum } from '@regolithco/common'
+import { lookups, MiningLoadout, SessionUser, User } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -20,6 +20,7 @@ import dayjs from 'dayjs'
 import { SessionContext } from '../../../context/session.context'
 import { ModuleIcon } from '../../../icons'
 import { GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
+import { AppContext } from '../../../context/app.context'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupUserProps {
@@ -30,6 +31,8 @@ export interface ActivePopupUserProps {
 
 export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose, sessionUser }) => {
   const theme = useTheme()
+  const { getSafeName, hideNames } = React.useContext(AppContext)
+
   const {
     captains,
     mySessionUser,
@@ -93,10 +96,10 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
         }}
       >
         <Box sx={{ position: 'absolute', top: 0, left: 0 }}>
-          <UserAvatar size="xlarge" user={sessionUser?.owner as User} />
+          <UserAvatar size="xlarge" user={sessionUser?.owner as User} privacy={hideNames} />
         </Box>
         <Stack direction="row" spacing={2} alignItems="center">
-          <Typography variant="h4">{sessionUser.owner?.scName}</Typography>
+          <Typography variant="h4">{getSafeName(sessionUser.owner?.scName)}</Typography>
         </Stack>
         <Stack direction="row" spacing={2}>
           <Typography>last session activity: {dayjs(sessionUser.updatedAt).fromNow()}</Typography>
@@ -108,7 +111,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
           Status: <strong>{sessionUser.state}</strong>{' '}
           {theirCaptain ? (
             <span>
-              on <strong>{theirCaptain?.owner?.scName}'s</strong> crew
+              on <strong>{getSafeName(theirCaptain?.owner?.scName)}'s</strong> crew
             </span>
           ) : (
             ''
@@ -133,7 +136,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
                 </>
               ) : (
                 <>
-                  <strong>{sessionUser.owner?.scName}'s</strong> does not have a vehicle selected.
+                  <strong>{getSafeName(sessionUser.owner?.scName)}'s</strong> does not have a vehicle selected.
                 </>
               )}
             </Typography>
@@ -141,12 +144,12 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             <Typography variant="caption" color="text.secondary">
               {vehicle ? (
                 <>
-                  <strong>{theirCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
+                  <strong>{getSafeName(theirCaptain.owner?.scName)}'s</strong> crew is using a {vehicle?.name} (
                   {vehicle?.miningHold || vehicle?.cargo} SCU)
                 </>
               ) : (
                 <>
-                  <strong>{theirCaptain.owner?.scName}'s</strong> does not have a vehicle selected.
+                  <strong>{getSafeName(theirCaptain.owner?.scName)}'s</strong> does not have a vehicle selected.
                 </>
               )}
             </Typography>
@@ -190,7 +193,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
                   updateSessionUserCaptain(mySessionUser.ownerId, null)
                 }}
               >
-                Leave {sessionUser.owner?.scName}'s crew
+                Leave {getSafeName(sessionUser.owner?.scName)}'s crew
               </Button>
             )}
             {!meIsCaptain && !iAmOnCrew && !theyOnAnyCrew && (
@@ -200,7 +203,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
                   updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
                 }}
               >
-                Join {sessionUser.owner?.scName}'s crew
+                Join {getSafeName(sessionUser.owner?.scName)}'s crew
               </Button>
             )}
             {(meIsCaptain || iAmOnCrew) && theyOnMyCrew && (

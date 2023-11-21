@@ -13,6 +13,7 @@ import {
   ShipClusterFind,
   VehicleClusterFind,
   SessionUserStateEnum,
+  makeHumanIds,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies, scoutingFindStateThemes } from '../../theme'
@@ -20,6 +21,7 @@ import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { yellow } from '@mui/material/colors'
+import { AppContext } from '../../context/app.context'
 dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
@@ -31,6 +33,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   const summary = clusterCalc(scoutingFind)
   const ores = summary.oreSort || []
   const findType = scoutingFind.clusterType
+  const { getSafeName } = React.useContext(AppContext)
   const attendanceCount = (scoutingFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
 
   // Conveneince variables
@@ -120,7 +123,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
             fontSize: 16,
           }}
         >
-          {scoutingFind.owner?.scName.slice(0, 3).toUpperCase()}-{scoutingFind.scoutingFindId.split('_')[0]}
+          {makeHumanIds(getSafeName(scoutingFind.owner?.scName), scoutingFind.scoutingFindId)}
         </Box>
 
         {/* The icon with the number (Absolute) */}
@@ -216,7 +219,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
 
           {/* WHo was the scout */}
           {scoutingFind.owner?.scName && (
-            <Tooltip title={`${scoutingFind.owner?.scName} found this cluster`}>
+            <Tooltip title={`${getSafeName(scoutingFind.owner?.scName)} found this cluster`}>
               <Typography
                 component="div"
                 sx={{
@@ -233,7 +236,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
                   fontSize: '0.875rem',
                 }}
               >
-                <PersonSearch sx={{ fontSize: '0.875rem', mb: -0.2 }} /> {scoutingFind.owner?.scName}
+                <PersonSearch sx={{ fontSize: '0.875rem', mb: -0.2 }} /> {getSafeName(scoutingFind.owner?.scName)}
               </Typography>
             </Tooltip>
           )}

@@ -56,6 +56,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { NoteAddDialog } from '../../modals/NoteAddDialog'
 import { yellow } from '@mui/material/colors'
+import { AppContext } from '../../../context/app.context'
 dayjs.extend(relativeTime)
 
 export interface ScoutingFindCalcProps {
@@ -288,6 +289,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
   const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
+  const { getSafeName } = React.useContext(AppContext)
 
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
@@ -355,7 +357,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       ?.filter((a) => a.state === SessionUserStateEnum.Travelling)
       .map(({ owner }) => owner as User) || []
 
-  const scoutId = makeHumanIds(scoutingFind.owner?.scName, scoutingFind.scoutingFindId)
+  const scoutId = makeHumanIds(getSafeName(scoutingFind.owner?.scName), scoutingFind.scoutingFindId)
 
   const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
 

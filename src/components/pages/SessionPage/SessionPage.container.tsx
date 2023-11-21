@@ -13,7 +13,6 @@ import {
   MiningLoadout,
   ScoutingFind,
   ScoutingFindTypeEnum,
-  session2csv,
   session2Json,
   SessionStateEnum,
   SessionUser,
@@ -21,6 +20,8 @@ import {
   UserSuggest,
   WorkOrder,
   WorkOrderDefaults,
+  UserPrivacyMaps,
+  obfuscateUserId,
 } from '@regolithco/common'
 import { SessionJoinContainer } from '../SessionJoin.container'
 import { useUserProfile } from '../../../hooks/useUserProfile'
@@ -83,8 +84,6 @@ export const SessionPageContainer2: React.FC = () => {
   const returnToSession = () => navigate(makeSessionUrls({ sessionId, tab }))
   const openWorkOrderModal = (orderId: string) => navigate(makeSessionUrls({ sessionId, orderId, tab }))
   const openScoutingModal = (scoutingFindId: string) => navigate(makeSessionUrls({ sessionId, scoutingFindId, tab }))
-
-  // Only one major modal at a time please.
 
   const sessionUserModalSessionUser: SessionUser | undefined = session?.activeMembers?.items?.find(
     ({ owner }) => owner?.userId === activeUserModalId

@@ -32,6 +32,7 @@ import { keyframes, Theme } from '@mui/system'
 import { DeleteModal } from './DeleteModal'
 import { WorkOrderContext } from '../../context/workOrder.context'
 import { ConfirmModal } from './ConfirmModal'
+import { AppContext } from '../../context/app.context'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -113,6 +114,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrderShareId, onClose }) => {
   const theme = useTheme()
+  const { getSafeName } = React.useContext(AppContext)
   const {
     isNew,
     workOrder,
@@ -236,10 +238,12 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
             </Typography>
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
               <Box sx={styles.headerMeta}>
-                ID: {makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)}
+                ID: {makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
               </Box>
-              <Box sx={styles.headerMeta}> Created By: {workOrder.owner?.scName || 'NEW'}</Box>
-              {workOrder.sellerscName && <Box sx={styles.headerMeta}> Seller: {workOrder.sellerscName}</Box>}
+              <Box sx={styles.headerMeta}> Created By: {getSafeName(workOrder.owner?.scName) || 'NEW'}</Box>
+              {workOrder.sellerscName && (
+                <Box sx={styles.headerMeta}> Seller: {getSafeName(workOrder.sellerscName)}</Box>
+              )}
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />

@@ -51,6 +51,7 @@ import { ConfirmModal } from '../../modals/ConfirmModal'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
+import { AppContext } from '../../../context/app.context'
 
 export interface TabSummaryProps {
   propA?: string
@@ -120,6 +121,7 @@ type ConfirmModalState = {
 
 export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
+  const { hideNames, getSafeName } = React.useContext(AppContext)
   const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
@@ -164,13 +166,13 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
           <>
             <Typography variant="body1" component="div" paragraph>
               Are you sure you want to mark all {payConfirm?.crewShares.length} shares to{' '}
-              <strong>{payConfirm?.payeeUserSCName}</strong> as paid?
+              <strong>{getSafeName(payConfirm?.payeeUserSCName)}</strong> as paid?
             </Typography>
             <Stack spacing={1} direction="row" alignItems="center">
               <Box sx={{ display: 'flex' }}>
                 <UserAvatar user={payConfirm?.payeeUser as User} size="small" />
                 <Typography sx={{ ...styles.username, px: 1, pt: 0.5, fontSize: '1.1rem' }}>
-                  {payConfirm?.payeeUserSCName}
+                  {getSafeName(payConfirm?.payeeUserSCName)}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex' }} />
@@ -223,6 +225,7 @@ export const OwingList: React.FC<OwingListProps> = ({
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme, session?.state === SessionStateEnum.Active)
+  const { hideNames, getSafeName } = React.useContext(AppContext)
   const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
   const rowObj = isShare
     ? {
@@ -308,12 +311,12 @@ export const OwingList: React.FC<OwingListProps> = ({
                   {isExpanded && !isShare && <ExpandMore />}
                   {!isExpanded && !isShare && <ChevronRight />}
                   <UserAvatar user={payerUser?.owner as User} size="small" />
-                  <Typography sx={styles.username}>{payerSCName}</Typography>
+                  <Typography sx={styles.username}>{getSafeName(payerSCName)}</Typography>
                   <Divider orientation="vertical" flexItem />
                   <Typography variant="overline">owes</Typography>
                   <Divider orientation="vertical" flexItem />
                   <UserAvatar user={payeeUser?.owner as User} size="small" />
-                  <Typography sx={styles.username}>{payeeSCName}</Typography>
+                  <Typography sx={styles.username}>{getSafeName(payeeSCName)}</Typography>
                   <div style={{ flexGrow: 1 }} />
                   <MValue
                     value={amt}
@@ -406,7 +409,10 @@ export const OwingList: React.FC<OwingListProps> = ({
                           >
                             <TableCell>
                               <Link>
-                                {makeHumanIds(workOrder?.sellerscName || workOrder?.owner?.scName, cs.orderId)}
+                                {makeHumanIds(
+                                  getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName),
+                                  cs.orderId
+                                )}
                               </Link>
                             </TableCell>
                             <Tooltip title={`Share type: ${cs.shareType}`}>

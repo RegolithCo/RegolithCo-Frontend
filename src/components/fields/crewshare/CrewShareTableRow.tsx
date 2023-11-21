@@ -19,6 +19,7 @@ import numeral from 'numeral'
 import { fontFamilies } from '../../../theme'
 import log from 'loglevel'
 import { NoteAddDialog } from '../../modals/NoteAddDialog'
+import { AppContext } from '../../../context/app.context'
 
 export type CrewShareTableRowProps = {
   crewShare: CrewShare
@@ -59,6 +60,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   onDelete,
 }) => {
   const theme = useTheme()
+  const { getSafeName } = React.useContext(AppContext)
   const [editingShare, setEditingShare] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
 
@@ -80,8 +82,8 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     <>
       <Tooltip title={tooltip}>
         <TableRow sx={{ background: backgroundColor }}>
-          {isSeller && <TableCell>{crewShare.scName}</TableCell>}
-          {!isSeller && <TableCell>{crewShare.scName}</TableCell>}
+          {isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
+          {!isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
 
           {isEditing && !isMandatory ? formatCrewShareTypeEdit(crewShare, onChange) : formatCrewShareType(crewShare)}
           {formatCrewShare(crewShare, onChange, Boolean(isEditing && !isMandatory), editingShare, setEditingShare)}
@@ -134,7 +136,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           )}
 
           {isEditing && (
-            <Tooltip title={`Delete ${crewShare.scName}`}>
+            <Tooltip title={`Delete ${getSafeName(crewShare.scName)}`}>
               <TableCell align="center" padding="none" width={30}>
                 {!isSeller && !isMandatory && (
                   <IconButton size="small" color="error" onClick={onDelete}>
@@ -149,7 +151,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
 
       {/* NOTE DIALOG */}
       <NoteAddDialog
-        title={`Note for: ${crewShare.scName}`}
+        title={`Note for: ${getSafeName(crewShare.scName)}`}
         open={openNoteDialog}
         onClose={() => setOpenNoteDialog(false)}
         note={crewShare.note as string}

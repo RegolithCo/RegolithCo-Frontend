@@ -23,6 +23,7 @@ import { Cancel, Delete, Logout } from '@mui/icons-material'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { LoadoutSelect } from '../../fields/LoadoutSelect'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
+import { AppContext } from '../../../context/app.context'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
@@ -32,6 +33,7 @@ export interface ActivePopupMeProps {
 
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
+  const { getSafeName, hideNames } = React.useContext(AppContext)
   const { session, mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
     React.useContext(SessionContext)
   const sessionActive = session?.state === SessionStateEnum.Active
@@ -73,10 +75,10 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
         }}
       >
         <Box sx={{ position: 'absolute', top: 0, left: 0 }}>
-          <UserAvatar size="xlarge" user={mySessionUser?.owner as User} />
+          <UserAvatar size="xlarge" user={mySessionUser?.owner as User} privacy={hideNames} />
         </Box>
         <Stack direction="row" spacing={2} alignItems="baseline">
-          <Typography variant="h4">{mySessionUser.owner?.scName}</Typography>
+          <Typography variant="h4">{getSafeName(mySessionUser.owner?.scName)}</Typography>
           <Typography variant="caption">(You)</Typography>
         </Stack>
         <Stack direction="row" spacing={2}>
@@ -89,7 +91,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             Your Status: <strong>{mySessionUser.state}</strong>{' '}
             {mySessionUser.captainId ? (
               <span>
-                on <strong>{myCaptain?.owner?.scName}'s</strong> crew
+                on <strong>{getSafeName(myCaptain?.owner?.scName)}'s</strong> crew
               </span>
             ) : (
               ''
@@ -151,12 +153,12 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             <Typography variant="caption" color="text.secondary">
               {vehicle ? (
                 <>
-                  <strong>{myCaptain.owner?.scName}'s</strong> crew is using a {vehicle?.name} (
+                  <strong>{getSafeName(myCaptain.owner?.scName)}'s</strong> crew is using a {vehicle?.name} (
                   {vehicle?.miningHold || vehicle?.cargo} SCU)
                 </>
               ) : (
                 <>
-                  <strong>{myCaptain.owner?.scName}'s</strong> does not have a vehicle selected.
+                  <strong>{getSafeName(myCaptain.owner?.scName)}'s</strong> does not have a vehicle selected.
                 </>
               )}
             </Typography>
@@ -199,7 +201,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
                   })
                 }}
               >
-                Leave {myCaptain.owner?.scName}'s Crew
+                Leave {getSafeName(myCaptain.owner?.scName)}'s Crew
               </Button>
 
               {mySessionUser.ownerId !== mySessionUser.ownerId && (

@@ -25,6 +25,7 @@ import { ModuleIcon } from '../../../../icons'
 import { StateChip, stateColorsBGThunk } from './StateChip'
 import { fontFamilies } from '../../../../theme'
 import { shipColorLookup, ShipTypeEnum } from '../../VehicleChooser'
+import { AppContext } from '../../../../context/app.context'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
@@ -41,6 +42,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   expandButton,
 }) => {
   const theme = useTheme()
+  const { getSafeName, hideNames } = React.useContext(AppContext)
   const {
     session,
     navigate,
@@ -107,7 +109,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
     }
 
     if (captain) {
-      if (!isCrewDisplay) secondaryText.push(`Crew of: ${captain.owner?.scName}`)
+      if (!isCrewDisplay) secondaryText.push(`Crew of: ${getSafeName(captain.owner?.scName)}`)
       else
         secondaryText.push(
           <Typography
@@ -227,6 +229,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
         <UserAvatar
           size={isCrewDisplay && !isCaptain ? 'tiny' : 'small'}
           user={user}
+          privacy={hideNames}
           sessionOwner={isOwner}
           isFriend={myUserProfile.friends?.includes(user?.scName as string)}
         />
@@ -242,7 +245,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
           },
           //
         }}
-        primary={user?.scName}
+        primary={getSafeName(user?.scName)}
         secondaryTypographyProps={{
           component: 'div',
         }}

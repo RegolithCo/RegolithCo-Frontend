@@ -10,6 +10,7 @@ import App from './App'
 import { SnackbarProvider } from 'notistack'
 import { MyAuthProvider } from './hooks/useOAuth2'
 import LogRocket from 'logrocket'
+import { AppContextWrapper } from './context/app.context'
 
 if (process.env.NODE_ENV !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -27,7 +28,9 @@ root.render(
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline enableColorScheme />
           <APIProvider>
-            <App />
+            <AppContextWrapper>
+              <App />
+            </AppContextWrapper>
           </APIProvider>
         </SnackbarProvider>
       </ThemeProvider>
