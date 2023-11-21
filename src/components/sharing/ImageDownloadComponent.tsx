@@ -2,7 +2,7 @@ import React from 'react'
 import html2canvas from 'html2canvas'
 import { Box, Button, useTheme } from '@mui/material'
 import { DownloadForOffline } from '@mui/icons-material'
-import { alpha, fontWeight, keyframes, Stack } from '@mui/system'
+import { alpha, keyframes, Stack } from '@mui/system'
 import { ShareWrapper } from './ShareWrapper'
 import { fontFamilies } from '../../theme'
 

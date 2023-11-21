@@ -439,7 +439,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       }}
                     />
                   }
-                  label="Allow unverified users to join"
+                  label="Allow unverified users to join."
                 />
 
                 <FormControlLabel
@@ -457,8 +457,44 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       }}
                     />
                   }
-                  label={`Require users to be added first.`}
+                  label={`Require users to be listed before they can join.`}
                 />
+
+                <FormControlLabel
+                  checked={Boolean(newSettings.sessionSettings?.specifyUsers)}
+                  control={
+                    <Switch
+                      onChange={(e) => {
+                        setNewSettings({
+                          ...newSettings,
+                          sessionSettings: {
+                            ...newSettings.sessionSettings,
+                            usersCanAddUsers: e.target.checked,
+                          },
+                        })
+                      }}
+                    />
+                  }
+                  label={`Users can add unlisted users to work orders.`}
+                />
+
+                {/* <FormControlLabel
+                  checked={Boolean(newSettings.sessionSettings?.specifyUsers)}
+                  control={
+                    <Switch
+                      onChange={(e) => {
+                        setNewSettings({
+                          ...newSettings,
+                          sessionSettings: {
+                            ...newSettings.sessionSettings,
+                            specifyUsers: e.target.checked,
+                          },
+                        })
+                      }}
+                    />
+                  }
+                  label={`Users can invite other users to the session.`}
+                /> */}
               </Box>
             </Box>
 

@@ -369,10 +369,12 @@ export type ShipMiningOrderFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ShipRockKeySpecifier = ('mass' | 'ores' | 'state' | ShipRockKeySpecifier)[];
+export type ShipRockKeySpecifier = ('inst' | 'mass' | 'ores' | 'res' | 'state' | ShipRockKeySpecifier)[];
 export type ShipRockFieldPolicy = {
+	inst?: FieldPolicy<any> | FieldReadFunction<any>,
 	mass?: FieldPolicy<any> | FieldReadFunction<any>,
 	ores?: FieldPolicy<any> | FieldReadFunction<any>,
+	res?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ShipRockOreKeySpecifier = ('ore' | 'percent' | ShipRockOreKeySpecifier)[];
@@ -485,10 +487,12 @@ export type VehicleMiningRowFieldPolicy = {
 	amt?: FieldPolicy<any> | FieldReadFunction<any>,
 	ore?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type VehicleRockKeySpecifier = ('mass' | 'ores' | VehicleRockKeySpecifier)[];
+export type VehicleRockKeySpecifier = ('inst' | 'mass' | 'ores' | 'res' | VehicleRockKeySpecifier)[];
 export type VehicleRockFieldPolicy = {
+	inst?: FieldPolicy<any> | FieldReadFunction<any>,
 	mass?: FieldPolicy<any> | FieldReadFunction<any>,
-	ores?: FieldPolicy<any> | FieldReadFunction<any>
+	ores?: FieldPolicy<any> | FieldReadFunction<any>,
+	res?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type VehicleRockOreKeySpecifier = ('ore' | 'percent' | VehicleRockOreKeySpecifier)[];
 export type VehicleRockOreFieldPolicy = {

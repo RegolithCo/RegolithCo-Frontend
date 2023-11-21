@@ -181,6 +181,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const theme = useTheme()
   const styles = styleThunk(theme)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
+  const [activeOrePercentText, setActiveOrePercentText] = React.useState<[number, string] | null>(null)
+  const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement>>>({})
+
   const [newShipRock, _setNewShipRock] = React.useState<ShipRock>(
     !isNew && shipRock ? shipRock : { state: RockStateEnum.Ready, mass: 0, ores: [], __typename: 'ShipRock' }
   )
@@ -382,76 +385,103 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             </Typography>
           ) : null}
           <Box sx={{ mb: 2 }}>
-            {ores.map((ore, idx) => (
-              <Grid2 container spacing={3} paddingX={1} paddingY={0} key={`ore-${idx}`}>
-                <Grid2 xs={2}>
-                  <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
-                    <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
-                  </Tooltip>
-                </Grid2>
-                <Grid2 xs={7}>
-                  <Slider
-                    sx={styles.compositionSlider}
-                    step={1}
-                    tabIndex={-1}
-                    disabled={ore.ore === ShipOreEnum.Inertmaterial}
-                    getAriaValueText={(value) => `${value}%`}
-                    valueLabelFormat={(value) => `${value.toFixed(0)}%`}
-                    value={(ore.percent as number) * 100}
-                    onChange={(event: Event, newValue: number | number[]) => {
-                      if (typeof newValue === 'number') {
-                        let retVal = Math.round(newValue + Number.EPSILON) / 100
-                        if (retVal < 0) retVal = 0
-                        if (retVal > 1) retVal = 1
+            {ores.map((ore, idx) => {
+              if (!inputRefs[ore.ore]) {
+                inputRefs[ore.ore] = React.createRef()
+                setInputRefs({ ...inputRefs })
+              }
+              return (
+                <Grid2 container spacing={3} paddingX={1} paddingY={0} key={`ore-${idx}`}>
+                  <Grid2 xs={2}>
+                    <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
+                      <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
+                    </Tooltip>
+                  </Grid2>
+                  <Grid2 xs={7}>
+                    <Slider
+                      sx={styles.compositionSlider}
+                      step={1}
+                      tabIndex={-1}
+                      disabled={ore.ore === ShipOreEnum.Inertmaterial}
+                      getAriaValueText={(value) => `${value}%`}
+                      valueLabelFormat={(value) => `${value.toFixed(0)}%`}
+                      value={(ore.percent as number) * 100}
+                      onChange={(event: Event, newValue: number | number[]) => {
+                        if (typeof newValue === 'number') {
+                          let retVal = Math.round(newValue * 100 + Number.EPSILON) / 10000
+                          if (retVal < 0) retVal = 0
+                          if (retVal > 1) retVal = 1
+                          const newOres = newShipRock.ores?.map((o) => {
+                            if (o.ore === ore.ore) {
+                              return { ...o, percent: retVal }
+                            } else {
+                              return o
+                            }
+                          })
+                          setNewShipRock({ ...newShipRock, ores: newOres })
+                        }
+                      }}
+                      marks={[
+                        { value: 0, label: '0%' },
+                        { value: 25, label: '25%' },
+                        { value: 50, label: '50%' },
+                        { value: 75, label: '75%' },
+                        { value: 100, label: '100%' },
+                      ]}
+                      min={0}
+                      max={100}
+                      valueLabelDisplay="auto"
+                    />
+                  </Grid2>
+                  <Grid2 xs={3}>
+                    <TextField
+                      inputRef={inputRefs[ore.ore]}
+                      value={
+                        activeOrePercentText && activeOrePercentText[0] === idx
+                          ? activeOrePercentText[1]
+                          : ((ore.percent as number) * 100).toFixed(2)
+                      }
+                      sx={styles.numfields}
+                      disabled={ore.ore === ShipOreEnum.Inertmaterial}
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                      }}
+                      onBlur={() => {
+                        setActiveOrePercentText(null)
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === 'Tab') {
+                          const newIdx = event.shiftKey ? idx - 1 : idx + 1
+                          if (newIdx >= 0 && newIdx < ores.length) {
+                            event.preventDefault()
+                            const inputRef = inputRefs[ores[newIdx].ore]?.current
+                            console.log('inputRef', inputRef)
+                            setActiveOrePercentText(null)
+                            inputRef?.focus()
+                            inputRef?.select()
+                          }
+                        }
+                      }}
+                      onChange={(event) => {
                         const newOres = newShipRock.ores?.map((o) => {
+                          let retVal = Math.round(Number(event.target.value) * 100 + Number.EPSILON) / 10000
+                          if (retVal < 0) retVal = 0
+                          if (retVal > 1) retVal = 1
                           if (o.ore === ore.ore) {
                             return { ...o, percent: retVal }
-                          } else {
-                            return o
                           }
+                          return o
                         })
                         setNewShipRock({ ...newShipRock, ores: newOres })
-                      }
-                    }}
-                    marks={[
-                      { value: 0, label: '0%' },
-                      { value: 25, label: '25%' },
-                      { value: 50, label: '50%' },
-                      { value: 75, label: '75%' },
-                      { value: 100, label: '100%' },
-                    ]}
-                    min={0}
-                    max={100}
-                    valueLabelDisplay="auto"
-                  />
+                        setActiveOrePercentText([idx, event.target.value])
+                      }}
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Grid2>
                 </Grid2>
-                <Grid2 xs={3}>
-                  <TextField
-                    value={((ore.percent as number) * 100).toFixed(0)}
-                    sx={styles.numfields}
-                    disabled={ore.ore === ShipOreEnum.Inertmaterial}
-                    InputProps={{
-                      endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                    }}
-                    onChange={(event) => {
-                      const newOres = newShipRock.ores?.map((o) => {
-                        let retVal = Math.round(Number(event.target.value) + Number.EPSILON) / 100
-                        if (retVal < 0) retVal = 0
-                        if (retVal > 1) retVal = 1
-                        if (o.ore === ore.ore) {
-                          return { ...o, percent: retVal }
-                        }
-                        return o
-                      })
-                      setNewShipRock({ ...newShipRock, ores: newOres })
-                    }}
-                    variant="outlined"
-                    type="number"
-                    size="small"
-                  />
-                </Grid2>
-              </Grid2>
-            ))}
+              )
+            })}
           </Box>
         </DialogContent>
         <DialogActions sx={{ background: theme.palette.primary.main }}>

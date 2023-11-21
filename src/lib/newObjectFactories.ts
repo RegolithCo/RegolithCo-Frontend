@@ -61,6 +61,8 @@ export function dummySession(owner: UserProfile): Session {
       // activity,
       allowUnverifiedUsers: true,
       specifyUsers: false,
+      usersCanAddUsers: true,
+      usersCanInviteUsers: true,
       // gravityWell
       // location
       lockedFields: [],

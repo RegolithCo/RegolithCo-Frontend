@@ -234,6 +234,8 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   ... on ShipClusterFind {
     shipRocks {
       mass
+      inst
+      res
       state
       ores {
         ore
