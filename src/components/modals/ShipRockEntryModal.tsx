@@ -187,6 +187,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const [newShipRock, _setNewShipRock] = React.useState<ShipRock>(
     !isNew && shipRock ? shipRock : { state: RockStateEnum.Ready, mass: 0, ores: [], __typename: 'ShipRock' }
   )
+  const [instTextValue, setInstTextValue] = React.useState<string>(newShipRock?.inst?.toFixed(2) || '')
 
   const setNewShipRock = React.useCallback(
     (newRock: ShipRock) => {
@@ -334,11 +335,11 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
           <Alert severity="warning">
             <Typography variant="caption">Enter all minerals for maximum SCU and value accuracy.</Typography>
           </Alert>
-          <Typography variant="overline" sx={styles.headTitles} component="div">
-            Rock Mass
-          </Typography>
-          <Grid2 container spacing={3} paddingX={1} sx={styles.compositionGrid}>
-            <Grid2 xs={12}>
+          <Grid2 container spacing={2} paddingX={0} sx={styles.compositionGrid}>
+            <Grid2 xs={6}>
+              <Typography variant="overline" sx={styles.headTitles} component="div">
+                Mass
+              </Typography>
               <TextField
                 sx={styles.massField}
                 fullWidth
@@ -346,12 +347,58 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                   endAdornment: <Typography sx={{ mr: 1 }}>t</Typography>,
                 }}
                 error={massError}
-                helperText={disabled ? massErrorReason : 'Enter the rock mass'}
+                helperText={disabled ? massErrorReason : 'Required'}
                 value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
                 onChange={(event) => {
-                  const rawValue = event.target.value.replace(/[^\d]/g, '').replace(/^0+/, '')
+                  const rawValue = event.target.value.replace(/[^\d.]/g, '').replace(/^0+/, '')
                   const value = jsRound(parseInt(rawValue, 10), 0)
                   setNewShipRock({ ...newShipRock, mass: value })
+                }}
+                variant="outlined"
+                type="text"
+              />
+            </Grid2>
+            <Grid2 xs={3}>
+              <Typography variant="overline" sx={styles.headTitles} component="div">
+                Resistance
+              </Typography>
+              <TextField
+                sx={styles.massField}
+                fullWidth
+                InputProps={{
+                  endAdornment: <Typography sx={{ mr: 1 }}>%</Typography>,
+                }}
+                helperText={'Optional'}
+                value={Numeral(jsRound(((newShipRock.res || 0) * 100) as number, 0)).format(`0`)}
+                onChange={(event) => {
+                  try {
+                    const value = jsRound(parseFloat(event.target.value), 0)
+                    setNewShipRock({ ...newShipRock, res: value / 100 })
+                  } catch (e) {
+                    log.error(e)
+                  }
+                }}
+                variant="outlined"
+                type="text"
+              />
+            </Grid2>
+            <Grid2 xs={3}>
+              <Typography variant="overline" sx={styles.headTitles} component="div">
+                Instability
+              </Typography>
+              <TextField
+                sx={styles.massField}
+                fullWidth
+                helperText={'Optional'}
+                value={instTextValue && instTextValue.length > 0 ? instTextValue : newShipRock.inst || ''}
+                onChange={(event) => {
+                  setInstTextValue(event.target.value)
+                  try {
+                    const value = jsRound(parseFloat(event.target.value), 2)
+                    setNewShipRock({ ...newShipRock, inst: value })
+                  } catch (e) {
+                    log.error(e)
+                  }
                 }}
                 variant="outlined"
                 type="text"
@@ -448,6 +495,10 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       }}
                       onBlur={() => {
                         setActiveOrePercentText(null)
+                      }}
+                      onFocus={(event) => {
+                        setActiveOrePercentText([idx, event.target.value])
+                        inputRefs[ore.ore]?.current?.select()
                       }}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === 'Tab') {

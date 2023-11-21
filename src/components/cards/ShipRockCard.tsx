@@ -123,6 +123,7 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
     },
     depletedMark: {
       position: 'absolute',
+      pointerEvents: 'none',
       top: '50%',
       left: '50%',
       fontSize: 30,
