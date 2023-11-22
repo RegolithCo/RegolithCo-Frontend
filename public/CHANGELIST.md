@@ -1,15 +1,19 @@
 ### November 21, 2023
 ## 1.0.33 - Streaming features
 
+### Query improvements
+
+- I've optimized a fewqueries in an attempt to get faster load time on session pages.
+
 ### Rock entry card
 
-- Now supports entering `instability` and `resistance` values.
+- You can now enter `instability` and `resistance` values on rocks.
 - Ore percentage values now support 2 decimal places.
 
 ### Streaming features
 
-- New session join workflow. This could still be better but I think it's a little smoother now.
 - **Session urls no longer let you join a session** so people won't be able to join the session just by capturing the url from your browser.
+- New **session join workflow**. This could still be better but I think it's a little smoother now.
 - `Streamer Mode`: in the profile menu. Toggle this on to anonymize all usernames and avatars if you want to share the session on screen without exposing any usernames.
 - When exporting `.png` shares you can now choose to anonymize the export to hide all usernames and user avatars (same mechanic as `Streamer Mode`).
 
