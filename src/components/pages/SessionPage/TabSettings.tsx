@@ -460,7 +460,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   label={`Require users to be listed before they can join.`}
                 />
 
-                <FormControlLabel
+                {/* <FormControlLabel
                   checked={Boolean(newSettings.sessionSettings?.specifyUsers)}
                   control={
                     <Switch
@@ -476,7 +476,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     />
                   }
                   label={`Users can add unlisted users to work orders.`}
-                />
+                /> */}
 
                 {/* <FormControlLabel
                   checked={Boolean(newSettings.sessionSettings?.specifyUsers)}

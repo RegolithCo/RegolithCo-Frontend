@@ -45,11 +45,6 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
             <strong>Ended:</strong> {dayjs(sessionShare.finishedAt).format('ddd, MMM D YYYY, h:mm a')}
           </Typography>
         )}
-        {sessionShare && sessionShare.note && (
-          <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
-            <strong>Note:</strong> {sessionShare.note}
-          </Typography>
-        )}
         <Box style={{ flex: '1 1' }}>
           {subtitleArr.length > 0 && (
             <Typography variant="h6" component="div">
