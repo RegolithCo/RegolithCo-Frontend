@@ -1,25 +1,30 @@
 import * as React from 'react'
 
-import { defaultSessionName, getLocationName, getPlanetName, Session, SessionSettings } from '@regolithco/common'
+import { defaultSessionName, getActivityName, SessionShare } from '@regolithco/common'
 import { PageWrapper } from '../PageWrapper'
 import { Alert, AlertTitle, Box, Button, Paper, Typography } from '@mui/material'
 import { SessionJoinError } from './SessionJoin.container'
 import dayjs from 'dayjs'
 import { fontFamilies } from '../../theme'
+import { ArrowBack } from '@mui/icons-material'
 
 export interface SessionJoinProps {
-  session?: Session
+  sessionShare?: SessionShare
   loading: boolean
   joinSession: () => void
+  navigate: (path: string) => void
   joinErrors: SessionJoinError[]
 }
 
-export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, joinSession, joinErrors }) => {
-  const settings = session?.sessionSettings || ({} as SessionSettings)
+export const SessionJoin: React.FC<SessionJoinProps> = ({
+  sessionShare,
+  loading,
+  joinSession,
+  navigate,
+  joinErrors,
+}) => {
   const subtitleArr = []
-  if (settings.activity) subtitleArr.push(settings.activity)
-  if (settings.gravityWell) subtitleArr.push(getPlanetName(settings.gravityWell))
-  if (settings.location) subtitleArr.push(getLocationName(settings.location))
+  if (sessionShare?.activity) subtitleArr.push(getActivityName(sessionShare?.activity))
 
   return (
     <PageWrapper title="Session Join" loading={loading} maxWidth="md">
@@ -28,35 +33,88 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, join
       </Typography>
       <Paper elevation={5} sx={{ p: 3, border: '1px solid white', borderRadius: 3 }}>
         <Typography variant="h4" component="h1">
-          {session?.name || defaultSessionName()}
+          {sessionShare?.name || defaultSessionName()}
         </Typography>
-        {session && (
+        {sessionShare && (
           <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
-            <strong>Started:</strong> {dayjs(session.createdAt).format('ddd, MMM D YYYY, h:mm a')}
+            <strong>Started:</strong> {dayjs(sessionShare.createdAt).format('ddd, MMM D YYYY, h:mm a')}
           </Typography>
         )}
-        {session && session.finishedAt && (
+        {sessionShare && sessionShare.finishedAt && (
           <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
-            <strong>Ended:</strong> {dayjs(session.finishedAt).format('ddd, MMM D YYYY, h:mm a')}
+            <strong>Ended:</strong> {dayjs(sessionShare.finishedAt).format('ddd, MMM D YYYY, h:mm a')}
           </Typography>
         )}
-        {session && session.note && (
+        {sessionShare && sessionShare.note && (
           <Typography sx={{ fontFamily: 'inherit' }} component="div" gutterBottom>
-            <strong>Note:</strong> {session.note}
+            <strong>Note:</strong> {sessionShare.note}
           </Typography>
         )}
-        <div style={{ flex: '1 1' }}>
+        <Box style={{ flex: '1 1' }}>
           {subtitleArr.length > 0 && (
             <Typography variant="h6" component="div">
               {subtitleArr.join(' - ')}
             </Typography>
           )}
-          {session && session.note && session.note.trim().length && (
+          {sessionShare && sessionShare.note && sessionShare.note.trim().length && (
             <Typography component="div" sx={{ mb: 2 }} gutterBottom>
-              {session.note}
+              {sessionShare.note}
             </Typography>
           )}
-        </div>
+        </Box>
+        {joinErrors.includes(SessionJoinError.NotOnList) && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            <AlertTitle>This session is by invite only and you are not on the list</AlertTitle>
+            <Typography paragraph>
+              If you are in contact with the session owner ask them to add you to the Inactive user list.
+            </Typography>
+            <Button
+              startIcon={<ArrowBack />}
+              onClick={() => {
+                navigate('/session')
+              }}
+              sx={{ ml: 2 }}
+              variant="contained"
+            >
+              Back to Sessions
+            </Button>
+          </Alert>
+        )}
+        {joinErrors.includes(SessionJoinError.UnverifiedNotAllowd) && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            <AlertTitle>Only verified users are allowed to join this session</AlertTitle>
+            <Typography paragraph>The user has requested that only verified users join this session</Typography>
+            <Button
+              startIcon={<ArrowBack />}
+              onClick={() => {
+                navigate('/session')
+              }}
+              sx={{ ml: 2 }}
+              variant="contained"
+            >
+              Back to Sessions
+            </Button>
+          </Alert>
+        )}
+        {joinErrors.includes(SessionJoinError.Closed) && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            <AlertTitle>Session Closed</AlertTitle>
+            <Typography paragraph>
+              This session has been closed either deliberately or due to inactivity and is no longer accepting new
+              users.
+            </Typography>
+            <Button
+              startIcon={<ArrowBack />}
+              onClick={() => {
+                navigate('/session')
+              }}
+              sx={{ ml: 2 }}
+              variant="contained"
+            >
+              Back to Sessions
+            </Button>
+          </Alert>
+        )}
       </Paper>
 
       {joinErrors.length === 0 && (
@@ -80,24 +138,6 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({ session, loading, join
             Join this session
           </Button>
         </Box>
-      )}
-      {joinErrors.includes(SessionJoinError.NotOnList) && (
-        <Alert severity="error">
-          <AlertTitle>This session is by invite only and you are not on the list</AlertTitle>
-          If you are in contact with the session owner ask them to add you to the Inactive user list.
-        </Alert>
-      )}
-      {joinErrors.includes(SessionJoinError.UnverifiedNotAllowd) && (
-        <Alert severity="error">
-          <AlertTitle>Only verified users are allowed to join this session</AlertTitle>
-          The user has requested that only verified users join this session
-        </Alert>
-      )}
-      {joinErrors.includes(SessionJoinError.Closed) && (
-        <Alert severity="error">
-          <AlertTitle>Session Closed</AlertTitle>
-          This session has been closed either deliberately or due to inactivity and is no longer accepting new users.
-        </Alert>
       )}
     </PageWrapper>
   )

@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { useSnackbar } from 'notistack'
 import {
-  GetJoinedUserSessionsDocument,
   GetSessionDocument,
-  GetSessionUserDocument,
   useAddScoutingFindMutation,
   useAddSessionMentionsMutation,
   useRemoveSessionMentionsMutation,
@@ -12,7 +10,6 @@ import {
   useGetSessionActiveMembersQuery,
   useGetSessionQuery,
   useGetSessionScoutingQuery,
-  useGetSessionStubQuery,
   useGetSessionUserQuery,
   useGetSessionWorkOrdersQuery,
   useLeaveSessionMutation,
@@ -33,7 +30,6 @@ import {
   PendingUser,
   mergeDestructured,
   PaginatedScoutingFinds,
-  PaginatedSessions,
   PaginatedSessionUsers,
   PaginatedWorkOrders,
   RefineryRowInput,
@@ -59,7 +55,6 @@ import {
 } from '@regolithco/common'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
-import { makeSessionUrls } from '../lib/routingUrls'
 import { useLogin } from './useOAuth2'
 import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
@@ -67,7 +62,6 @@ import { usePageVisibility } from './usePageVisibility'
 type useSessionsReturn = {
   session?: Session
   sessionError?: ErrorCode
-  sessionStub?: Session
   sessionUser?: SessionUser
   loading: boolean
   mutating: boolean
@@ -75,7 +69,6 @@ type useSessionsReturn = {
   removeSessionMentions: (scName: string[]) => void
   removeSessionCrew: (scName: string) => void
   closeSession: () => void
-  joinSession: () => void
   leaveSession: () => void
   onUpdateSession: (session: SessionInput, settings: DestructuredSettings) => void
   deleteSession: () => void
@@ -102,21 +95,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     skip: !sessionId,
   })
-  // Think of this like a fallback. We get the short one when we need to
-  const sessionStubQry = useGetSessionStubQuery({
-    variables: {
-      sessionId: sessionId as string,
-    },
-    skip: !sessionId || sessionUserQry.loading || Boolean(sessionUserQry.data?.sessionUser),
-    onCompleted: (data) => {
-      if (data.session && sessionError) {
-        setSessionError(undefined)
-      }
-    },
-    onError: (error) => {
-      setSessionError((error.graphQLErrors[0].extensions?.code as ErrorCode) || ErrorCode.SESSION_NOT_FOUND)
-    },
-  })
 
   const sessionQry = useGetSessionQuery({
     variables: {
@@ -140,28 +118,11 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     } else {
       sessionQry.stopPolling()
     }
-
-    // Only poll the stub if we don't have a real session
-    if (isPageVisible && !sessionQry.data?.session && sessionStubQry.data?.session) {
-      // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
-      const oneDayMs = 86400000 // 24 hours in milliseconds
-      const pollTime =
-        Date.now() - oneDayMs > sessionStubQry.data?.session.updatedAt ||
-        sessionStubQry.data?.session.state !== SessionStateEnum.Active
-          ? 120000
-          : 10000
-      // If the session is active, poll every 20 seconds, otherwise every 2 minutes
-      sessionStubQry.startPolling(pollTime)
-    } else {
-      sessionStubQry.stopPolling()
-    }
-
     // Also stop all polling when when this component is unmounted
     return () => {
       sessionQry.stopPolling()
-      sessionStubQry.stopPolling()
     }
-  }, [sessionStubQry.data, sessionQry.data, isPageVisible])
+  }, [sessionQry.data, isPageVisible])
 
   React.useEffect(() => {
     if (sessionQry.error) {
@@ -336,14 +297,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
   })
 
-  const queries = [
-    sessionQry,
-    sessionUserQry,
-    sessionStubQry,
-    sessionActiveMemberQry,
-    sessionWorkOrdersQry,
-    sessionScoutingQry,
-  ]
+  const queries = [sessionQry, sessionUserQry, sessionActiveMemberQry, sessionWorkOrdersQry, sessionScoutingQry]
   const mutations = [
     updateSessionMutation,
     addSessionMentionsMutation,
@@ -396,7 +350,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   return {
     session: sessionQry.data?.session as Session,
     sessionError,
-    sessionStub: sessionStubQry.data?.session as Session,
     sessionUser: sessionUserQry.data?.sessionUser as SessionUser,
     loading,
     mutating,
@@ -526,23 +479,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       })
     },
     deleteSession: deleteSessionMutation[0],
-    joinSession: () => {
-      upsertSessionUserMutation[0]({
-        variables: {
-          sessionId: sessionId as string,
-          workSessionUser: {
-            isPilot: true,
-            state: SessionUserStateEnum.Unknown,
-          },
-        },
-        // We need to wait for the ID here I think
-        refetchQueries: [GetJoinedUserSessionsDocument, GetSessionUserDocument, GetSessionDocument],
-        onCompleted: () => {
-          enqueueSnackbar('Joined session', { variant: 'success' })
-          navigate(makeSessionUrls({ sessionId }))
-        },
-      })
-    },
     updateMySessionUser: (sessionUser: SessionUserInput) => {
       upsertSessionUserMutation[0]({
         variables: {

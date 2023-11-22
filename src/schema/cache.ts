@@ -278,7 +278,7 @@ export type SessionSettingsFieldPolicy = {
 	usersCanInviteUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderDefaults?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionShareKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'createdAt' | 'finishedAt' | 'name' | 'note' | 'sessionId' | 'specifyUsers' | 'state' | 'updatedAt' | 'version' | SessionShareKeySpecifier)[];
+export type SessionShareKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'createdAt' | 'finishedAt' | 'name' | 'note' | 'onTheList' | 'sessionId' | 'specifyUsers' | 'state' | 'updatedAt' | 'version' | SessionShareKeySpecifier)[];
 export type SessionShareFieldPolicy = {
 	activity?: FieldPolicy<any> | FieldReadFunction<any>,
 	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -286,6 +286,7 @@ export type SessionShareFieldPolicy = {
 	finishedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
+	onTheList?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,

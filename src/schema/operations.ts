@@ -246,6 +246,8 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   ... on VehicleClusterFind {
     vehicleRocks {
       mass
+      inst
+      res
       ores {
         ore
         percent
@@ -381,6 +383,7 @@ export const SessionShareFragmentFragmentDoc = gql`
   finishedAt
   state
   note
+  onTheList
   activity
   specifyUsers
   allowUnverifiedUsers
@@ -1970,8 +1973,8 @@ export type GetSessionQueryHookResult = ReturnType<typeof useGetSessionQuery>;
 export type GetSessionLazyQueryHookResult = ReturnType<typeof useGetSessionLazyQuery>;
 export type GetSessionQueryResult = Apollo.QueryResult<types.GetSessionQuery, types.GetSessionQueryVariables>;
 export const GetSessionShareDocument = gql`
-    query getSessionShare($sessionId: ID!) {
-  sessionShare(sessionId: $sessionId) {
+    query getSessionShare($joinId: ID!) {
+  sessionShare(joinId: $joinId) {
     ...SessionShareFragment
   }
 }
@@ -1989,7 +1992,7 @@ export const GetSessionShareDocument = gql`
  * @example
  * const { data, loading, error } = useGetSessionShareQuery({
  *   variables: {
- *      sessionId: // value for 'sessionId'
+ *      joinId: // value for 'joinId'
  *   },
  * });
  */

@@ -20,10 +20,7 @@ import {
   UserSuggest,
   WorkOrder,
   WorkOrderDefaults,
-  UserPrivacyMaps,
-  obfuscateUserId,
 } from '@regolithco/common'
-import { SessionJoinContainer } from '../SessionJoin.container'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { makeSessionUrls } from '../../../lib/routingUrls'
 import { useWorkOrders } from '../../../hooks/useWorkOrder'
@@ -50,8 +47,9 @@ import { AddPendingUsersModal } from '../../modals/AddPendingUsersModal'
 import { DisbandModal } from '../../modals/DisbandCrew'
 import { ShareModal } from '../../modals/ShareModal'
 import config from '../../../config'
+import { SessionNotFound } from './SessionNotFound'
 
-export const SessionPageContainer2: React.FC = () => {
+export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
   const navigate = useNavigate()
   const userQry = useUserProfile()
@@ -79,7 +77,7 @@ export const SessionPageContainer2: React.FC = () => {
   const mySessionUser = sessionQueries.sessionUser as SessionUser
   const isActive = session?.state === SessionStateEnum.Active
   const amISessionOwner = session?.ownerId === myUserProfile.userId
-  const shareUrl = `${config.shareUrl}?sessionId=${session?.sessionId}`
+  const shareUrl: string | null = session?.joinId ? `${config.shareUrl}?joinId=${session?.joinId}` : null
 
   const returnToSession = () => navigate(makeSessionUrls({ sessionId, tab }))
   const openWorkOrderModal = (orderId: string) => navigate(makeSessionUrls({ sessionId, orderId, tab }))
@@ -228,19 +226,12 @@ export const SessionPageContainer2: React.FC = () => {
 
   // NO HOOKS BELOW HERE PLEASE
   // if (sessionId) return <PageLoader title="loading session..." loading />
-  if (sessionQueries.loading && !sessionQueries.session && !sessionQueries.sessionStub)
-    return <PageLoader title="loading session..." loading />
+  if (sessionQueries.loading && !sessionQueries.session) return <PageLoader title="loading session..." loading />
 
-  if (sessionQueries.sessionStub || sessionQueries.sessionError)
-    return (
-      <SessionJoinContainer
-        session={sessionQueries.sessionStub}
-        sessionError={sessionQueries.sessionError}
-        userProfile={userQry.userProfile as UserProfile}
-        joinSession={sessionQueries.joinSession}
-        loading={sessionQueries.loading || sessionQueries.mutating}
-      />
-    )
+  if (sessionQueries.sessionError || !sessionQueries.session) {
+    return <SessionNotFound action={() => navigate('/sessions')} />
+  }
+
   return (
     <>
       <SessionContext.Provider
@@ -494,9 +485,9 @@ export const SessionPageContainer2: React.FC = () => {
 
         {/* Collaborate Session Modal */}
         <CollaborateModal
-          open={activeModal === DialogEnum.COLLABORATE}
+          open={Boolean(shareUrl && activeModal === DialogEnum.COLLABORATE)}
           warn={!session?.sessionSettings.specifyUsers}
-          url={shareUrl}
+          url={shareUrl as string}
           onClose={() => setActiveModal(null)}
         />
 

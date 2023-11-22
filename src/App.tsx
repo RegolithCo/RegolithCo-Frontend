@@ -6,7 +6,7 @@ import Error from './Error'
 import { AboutPageContainer } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
-import { SessionPageContainer2 } from './components/pages/SessionPage/SessionPage.container'
+import { SessionPageContainer } from './components/pages/SessionPage/SessionPage.container'
 import { InitializeUserContainer } from './components/modals/InitializeUser/InitializeUser.container'
 import { DataTablesPageContainer } from './components/pages/DataTablesPage'
 import { AuthGate } from './components/pages/AuthGate'
@@ -17,6 +17,7 @@ import { useLogin } from './hooks/useOAuth2'
 import { StagingWarning } from './components/modals/StagingWarning'
 import { LoadoutPageContainer } from './components/pages/LoadoutPage.container'
 import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
+import { SessionJoinContainer } from './components/pages/SessionJoin.container'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -123,11 +124,12 @@ export const App: React.FC = () => {
             errorElement={<Error />}
           />
           <Route path="/session/:sessionId" element={<RedirectToTab />} />
+          <Route path="/join/:joinId" element={<SessionJoinContainer />} />
           <Route
             path="/session/:sessionId/:tab"
             element={
               <AuthGate>
-                <SessionPageContainer2 />
+                <SessionPageContainer />
               </AuthGate>
             }
             errorElement={<Error />}
@@ -136,7 +138,7 @@ export const App: React.FC = () => {
             path="/session/:sessionId/:tab/w/:orderId"
             element={
               <AuthGate>
-                <SessionPageContainer2 />
+                <SessionPageContainer />
               </AuthGate>
             }
             errorElement={<Error />}
@@ -145,7 +147,7 @@ export const App: React.FC = () => {
             path="/session/:sessionId/:tab/s/:scoutingFindId"
             element={
               <AuthGate>
-                <SessionPageContainer2 />
+                <SessionPageContainer />
               </AuthGate>
             }
             errorElement={<Error />}

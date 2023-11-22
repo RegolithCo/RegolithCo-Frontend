@@ -1,13 +1,13 @@
-import { ErrorCode, Session, SessionSettings, SessionStateEnum, UserProfile, UserStateEnum } from '@regolithco/common'
+import { ErrorCode, SessionStateEnum, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useJoinSession } from '../../hooks/useJoinSession'
+import { useLogin } from '../../hooks/useOAuth2'
 import { SessionJoin } from './SessionJoin'
 
 export interface SessionJoinContainerProps {
-  session?: Session
-  sessionError?: ErrorCode
-  loading: boolean
-  userProfile: UserProfile
-  joinSession: () => void
+  // joinId: string
+  a?: string
 }
 
 type ObjectValues<T> = T[keyof T]
@@ -18,30 +18,35 @@ export const SessionJoinError = {
 } as const
 export type SessionJoinError = ObjectValues<typeof SessionJoinError>
 
-export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = ({
-  session,
-  sessionError,
-  userProfile,
-  joinSession,
-  loading,
-}) => {
-  const settings: SessionSettings = session?.sessionSettings || { __typename: 'SessionSettings' }
-
+export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
+  const { joinId } = useParams()
+  const { userProfile } = useLogin()
+  const navigate = useNavigate()
   const joinErrors: SessionJoinError[] = []
+
+  const { joinSession, loading, mutating, sessionError, sessionShare } = useJoinSession(joinId)
   // If you're not verified and the session requires it then nope
   if (
     sessionError === ErrorCode.SESSIONJOIN_NOT_VERIFIED ||
-    (!settings.allowUnverifiedUsers && userProfile.state === UserStateEnum.Unverified)
+    (!sessionShare?.allowUnverifiedUsers && userProfile?.state === UserStateEnum.Unverified)
   ) {
     joinErrors.push(SessionJoinError.UnverifiedNotAllowd)
   }
   // if the session has a list and you're on it then yay!
-  if (sessionError === ErrorCode.SESSIONJOIN_NOT_ON_LIST || (settings.specifyUsers && !session?.onTheList)) {
+  if (sessionError === ErrorCode.SESSIONJOIN_NOT_ON_LIST || (sessionShare?.specifyUsers && !sessionShare?.onTheList)) {
     joinErrors.push(SessionJoinError.NotOnList)
   }
-  if (session && session.state === SessionStateEnum.Closed) {
+  if (sessionShare?.state === SessionStateEnum.Closed) {
     joinErrors.push(SessionJoinError.Closed)
   }
 
-  return <SessionJoin session={session} joinSession={joinSession} loading={loading} joinErrors={joinErrors} />
+  return (
+    <SessionJoin
+      sessionShare={sessionShare}
+      joinSession={joinSession}
+      navigate={navigate}
+      loading={loading || mutating}
+      joinErrors={joinErrors}
+    />
+  )
 }

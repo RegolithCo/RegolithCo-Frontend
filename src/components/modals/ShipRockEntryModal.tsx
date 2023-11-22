@@ -170,6 +170,18 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
+function parseNum(inputVal: string, numDecimals: number, numDigits: number) {
+  const parsedVal = inputVal
+    .replace(/[^0-9.]/g, '')
+    .replace(/^0+/, '')
+    .split('.')
+  log.debug('parsedVal', parsedVal)
+  // limit the number of digits after the decimal to 2 and the number of digits before the decimal to 3
+  if (parsedVal.length > 0) parsedVal[0] = parsedVal[0].slice(0, numDigits)
+  if (parsedVal.length > 1) parsedVal[1] = parsedVal[1].slice(0, numDecimals)
+  return parsedVal.join('.')
+}
+
 export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   open,
   isNew,
@@ -187,7 +199,26 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const [newShipRock, _setNewShipRock] = React.useState<ShipRock>(
     !isNew && shipRock ? shipRock : { state: RockStateEnum.Ready, mass: 0, ores: [], __typename: 'ShipRock' }
   )
-  const [instTextValue, setInstTextValue] = React.useState<string>(newShipRock?.inst?.toFixed(2) || '')
+  const [instTextValue, setInstTextValue] = React.useState<string>('')
+  const [resTextValue, setResTextValue] = React.useState<string>('')
+
+  const instabilityError = Boolean(
+    instTextValue &&
+      instTextValue.length > 0 &&
+      newShipRock.inst &&
+      newShipRock.inst > 0 &&
+      (parseFloat(instTextValue).toString() !== instTextValue || parseFloat(instTextValue) !== newShipRock.inst)
+  )
+  const resistanceF = parseFloat(resTextValue)
+  const resistanceError = Boolean(
+    resTextValue.length > 0 &&
+      (resistanceF < 0 ||
+        resistanceF >= 100 ||
+        resistanceF.toString() !== resTextValue ||
+        resistanceF / 100 !== newShipRock.res)
+  )
+  log.debug('inst', instTextValue, newShipRock.inst, instabilityError)
+  log.debug('res', resTextValue, newShipRock.res, resistanceError)
 
   const setNewShipRock = React.useCallback(
     (newRock: ShipRock) => {
@@ -239,6 +270,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   })
   const disabled =
     !newShipRock.mass ||
+    instabilityError ||
+    resistanceError ||
     !newShipRock.ores ||
     !newShipRock.ores.length ||
     newShipRock.mass <= SHIP_ROCK_BOUNDS[0] ||
@@ -336,7 +369,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             <Typography variant="caption">Enter all minerals for maximum SCU and value accuracy.</Typography>
           </Alert>
           <Grid2 container spacing={2} paddingX={0} sx={styles.compositionGrid}>
-            <Grid2 xs={6}>
+            <Grid2 xs={4}>
               <Typography variant="overline" sx={styles.headTitles} component="div">
                 Mass
               </Typography>
@@ -358,7 +391,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 type="text"
               />
             </Grid2>
-            <Grid2 xs={3}>
+            <Grid2 xs={4}>
               <Typography variant="overline" sx={styles.headTitles} component="div">
                 Resistance
               </Typography>
@@ -369,11 +402,19 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                   endAdornment: <Typography sx={{ mr: 1 }}>%</Typography>,
                 }}
                 helperText={'Optional'}
-                value={Numeral(jsRound(((newShipRock.res || 0) * 100) as number, 0)).format(`0`)}
+                error={resistanceError}
+                onBlur={() => setResTextValue('')}
+                value={
+                  resTextValue && resTextValue.length > 0
+                    ? resTextValue
+                    : ((newShipRock.res || 0) * 100).toFixed(0) || ''
+                }
                 onChange={(event) => {
+                  const parsedVal = event.target.value.replace(/[^\d]/g, '').replace(/^0+/, '').slice(0, 2) || '0'
+                  setResTextValue(parsedVal)
                   try {
-                    const value = jsRound(parseFloat(event.target.value), 0)
-                    setNewShipRock({ ...newShipRock, res: value / 100 })
+                    const value = parseInt(parsedVal, 10)
+                    if (value <= 100 && value >= 0) setNewShipRock({ ...newShipRock, res: value / 100 })
                   } catch (e) {
                     log.error(e)
                   }
@@ -382,7 +423,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 type="text"
               />
             </Grid2>
-            <Grid2 xs={3}>
+            <Grid2 xs={4}>
               <Typography variant="overline" sx={styles.headTitles} component="div">
                 Instability
               </Typography>
@@ -390,11 +431,14 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 sx={styles.massField}
                 fullWidth
                 helperText={'Optional'}
+                onBlur={() => setInstTextValue('')}
+                error={instabilityError}
                 value={instTextValue && instTextValue.length > 0 ? instTextValue : newShipRock.inst || ''}
                 onChange={(event) => {
-                  setInstTextValue(event.target.value)
+                  const parsedVal = parseNum(event.target.value, 2, 3)
+                  setInstTextValue(parsedVal)
                   try {
-                    const value = jsRound(parseFloat(event.target.value), 2)
+                    const value = jsRound(parseFloat(parsedVal), 2)
                     setNewShipRock({ ...newShipRock, inst: value })
                   } catch (e) {
                     log.error(e)
@@ -438,13 +482,19 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 setInputRefs({ ...inputRefs })
               }
               return (
-                <Grid2 container spacing={3} paddingX={1} paddingY={0} key={`ore-${idx}`}>
-                  <Grid2 xs={2}>
+                <Stack
+                  direction={'row'}
+                  spacing={3}
+                  key={`ore-${idx}`}
+                  sx={{ width: '100%', mb: 2 }}
+                  alignItems={'center'}
+                >
+                  <Box sx={{ flex: '1 0 10%' }}>
                     <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
                       <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
                     </Tooltip>
-                  </Grid2>
-                  <Grid2 xs={7}>
+                  </Box>
+                  <Box sx={{ flex: '1 1 65%' }}>
                     <Slider
                       sx={styles.compositionSlider}
                       step={1}
@@ -479,8 +529,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       max={100}
                       valueLabelDisplay="auto"
                     />
-                  </Grid2>
-                  <Grid2 xs={3}>
+                  </Box>
+                  <Box sx={{ flex: '1 0 25%' }}>
                     <TextField
                       inputRef={inputRefs[ore.ore]}
                       value={
@@ -496,8 +546,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       onBlur={() => {
                         setActiveOrePercentText(null)
                       }}
-                      onFocus={(event) => {
-                        setActiveOrePercentText([idx, event.target.value])
+                      onFocus={() => {
+                        setActiveOrePercentText([idx, parseNum(((ore.percent as number) * 100).toFixed(2), 2, 2)])
                         inputRefs[ore.ore]?.current?.select()
                       }}
                       onKeyDown={(event) => {
@@ -506,7 +556,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                           if (newIdx >= 0 && newIdx < ores.length) {
                             event.preventDefault()
                             const inputRef = inputRefs[ores[newIdx].ore]?.current
-                            console.log('inputRef', inputRef)
+
                             setActiveOrePercentText(null)
                             inputRef?.focus()
                             inputRef?.select()
@@ -514,8 +564,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                         }
                       }}
                       onChange={(event) => {
+                        const parsedVal = parseNum(event.target.value, 2, 2)
                         const newOres = newShipRock.ores?.map((o) => {
-                          let retVal = Math.round(Number(event.target.value) * 100 + Number.EPSILON) / 10000
+                          let retVal = Math.round(Number(parsedVal) * 100 + Number.EPSILON) / 10000
                           if (retVal < 0) retVal = 0
                           if (retVal > 1) retVal = 1
                           if (o.ore === ore.ore) {
@@ -523,14 +574,14 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                           }
                           return o
                         })
+                        setActiveOrePercentText([idx, parseNum(event.target.value, 2, 2)])
                         setNewShipRock({ ...newShipRock, ores: newOres })
-                        setActiveOrePercentText([idx, event.target.value])
                       }}
                       variant="outlined"
                       size="small"
                     />
-                  </Grid2>
-                </Grid2>
+                  </Box>
+                </Stack>
               )
             })}
           </Box>

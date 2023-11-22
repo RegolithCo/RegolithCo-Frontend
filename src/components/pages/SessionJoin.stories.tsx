@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionJoin as SessionJoinComponent } from './SessionJoin'
-import { fakeSession } from '@regolithco/common/dist/mock'
+import { fakeSessionShare } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Pages/SessionJoin',
@@ -17,5 +17,5 @@ const Template: StoryFn<typeof SessionJoinComponent> = (args) => <SessionJoinCom
 
 export const SessionJoin = Template.bind({})
 SessionJoin.args = {
-  session: fakeSession(),
+  sessionShare: fakeSessionShare(),
 }
