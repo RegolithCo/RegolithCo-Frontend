@@ -446,7 +446,7 @@ export const SessionPageContainer: React.FC = () => {
           cancelBtnText="No, keep session"
           message={
             <DialogContentText id="alert-dialog-description">
-              Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lots.
+              Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lost.
               THIS IS A PERMANENT ACTION. Are you sure you want to delete this session?
             </DialogContentText>
           }

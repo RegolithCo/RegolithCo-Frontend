@@ -16,28 +16,29 @@
     <meta name="commit" content="%COMMIT%" />
     <meta name="stage" content="%STAGE%" />    
     <meta name="theme-color" content="#000000" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>Regolith Co.</title>
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <title>Regolith Co. - Star Citizen Mining Tool</title>
     <meta name="description" content="Regolith Co. is a fansite dedicated to helping Star Citizen Miners organize, share, and scout together.">
     <meta name="keywords" content="Star Citizen, Scifi, gaming, refining, calculator, tool, mining, starcitizen, aUEC, refineries">
     <meta name="robots" content="index, follow">
+
     <meta property="og:title" content="Regolith Co. - Don't mine alone">
     <meta property="og:description" content="Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.">
     <meta property="og:image" content="%PUBLIC_URL%/images/socialicon.jpg">
     <meta property="og:url" content="https://regolith.rocks">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Regolith Co. - Don't mine alone">
+    <meta name="twitter:description" content="Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.">
+    <meta name="twitter:image"  content="%PUBLIC_URL%/images/socialicon.jpg">
+    <link rel="canonical" href="https://regolith.rocks" />
+
+    <meta itemprop="name" content="Regolith Co. - Don't mine alone">
+    <meta itemprop="description" content="Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.">
+    <meta itemprop="image" content="%PUBLIC_URL%/images/socialicon.jpg">
+
     <!-- Fonts to support Material Design -->
     <link
       rel="stylesheet"
@@ -49,16 +50,17 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
   <script src="%PUBLIC_URL%/config.js"></script>
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Organization",
+      "name": "Regolith Co.",
+      "description": "Dedicated to helping Star Citizen players organize, share, and scout together.",
+      "url": "https://regolith.rocks",
+      "logo": "%PUBLIC_URL%/images/socialicon.jpg"
+    }
+    </script>    
 </html>

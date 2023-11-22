@@ -1,6 +1,9 @@
 {
   "short_name": "Regolith Co.",
   "name": "Regolith Company",
+  "description": "Regolith Co. is a fansite dedicated to helping Star Citizen Miners organize, share, and scout together.",
+  "lang": "en",
+  "categories": ["gaming", "tools"],
   "icons": [
     {
         "src": "images/favicons/android-chrome-192x192.png",
