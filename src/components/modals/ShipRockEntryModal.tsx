@@ -175,7 +175,6 @@ function parseNum(inputVal: string, numDecimals: number, numDigits: number) {
     .replace(/[^0-9.]/g, '')
     .replace(/^0+/, '')
     .split('.')
-  log.debug('parsedVal', parsedVal)
   // limit the number of digits after the decimal to 2 and the number of digits before the decimal to 3
   if (parsedVal.length > 0) parsedVal[0] = parsedVal[0].slice(0, numDigits)
   if (parsedVal.length > 1) parsedVal[1] = parsedVal[1].slice(0, numDecimals)
@@ -217,8 +216,6 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         resistanceF.toString() !== resTextValue ||
         resistanceF / 100 !== newShipRock.res)
   )
-  log.debug('inst', instTextValue, newShipRock.inst, instabilityError)
-  log.debug('res', resTextValue, newShipRock.res, resistanceError)
 
   const setNewShipRock = React.useCallback(
     (newRock: ShipRock) => {

@@ -170,7 +170,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
             </Typography>
             <Stack spacing={1} direction="row" alignItems="center">
               <Box sx={{ display: 'flex' }}>
-                <UserAvatar user={payConfirm?.payeeUser as User} size="small" />
+                <UserAvatar user={payConfirm?.payeeUser as User} size="small" privacy={hideNames} />
                 <Typography sx={{ ...styles.username, px: 1, pt: 0.5, fontSize: '1.1rem' }}>
                   {getSafeName(payConfirm?.payeeUserSCName)}
                 </Typography>
@@ -310,12 +310,12 @@ export const OwingList: React.FC<OwingListProps> = ({
                 <Stack direction="row" spacing={1}>
                   {isExpanded && !isShare && <ExpandMore />}
                   {!isExpanded && !isShare && <ChevronRight />}
-                  <UserAvatar user={payerUser?.owner as User} size="small" />
+                  <UserAvatar user={payerUser?.owner as User} size="small" privacy={hideNames} />
                   <Typography sx={styles.username}>{getSafeName(payerSCName)}</Typography>
                   <Divider orientation="vertical" flexItem />
                   <Typography variant="overline">owes</Typography>
                   <Divider orientation="vertical" flexItem />
-                  <UserAvatar user={payeeUser?.owner as User} size="small" />
+                  <UserAvatar user={payeeUser?.owner as User} size="small" privacy={hideNames} />
                   <Typography sx={styles.username}>{getSafeName(payeeSCName)}</Typography>
                   <div style={{ flexGrow: 1 }} />
                   <MValue

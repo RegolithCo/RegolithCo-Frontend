@@ -41,6 +41,7 @@ import {
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
+import { AppContext } from '../../../context/app.context'
 
 export interface WorkOrderTableProps {
   isDashboard?: boolean
@@ -186,6 +187,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
   summary,
 }) => {
   const theme = useTheme()
+  const { getSafeName } = React.useContext(AppContext)
   const { owner, createdAt, state, orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
 
@@ -264,7 +266,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
       </TableCell>
       <TableCell>
         <MValue
-          value={makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)}
+          value={makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
           format={MValueFormat.string}
         />
       </TableCell>

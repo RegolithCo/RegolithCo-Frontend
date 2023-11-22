@@ -7,9 +7,11 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
@@ -35,6 +37,7 @@ import { WorkOrderShare } from '../sharing/WorkOrderShare'
 import { SessionShare } from '../sharing/SessionShare'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { ClusterShare } from '../sharing/ClusterShare'
+import { AppContext } from '../../context/app.context'
 
 export interface ShareModalProps {
   open: boolean
@@ -53,12 +56,25 @@ export type DataTabsEnum = ObjectValues<typeof ShareTypeEnum>
 export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScoutingFindId, initWorkOrderId }) => {
   const theme = useTheme()
   const { session } = React.useContext(SessionContext)
+  const { getSafeName } = React.useContext(AppContext)
   const [activeTab, setActiveTab] = React.useState<DataTabsEnum>(() => {
     if (initScoutingFindId) return ShareTypeEnum.CLUSTER
     if (initWorkOrderId) return ShareTypeEnum.WORK_ORDER
     return ShareTypeEnum.SESSION
   })
-  const [obfuscate, setObfuscate] = React.useState<boolean>(false)
+  const { hideNames, setHideNames } = React.useContext(AppContext)
+  const [initialHideNames, setInitialHideNames] = React.useState(hideNames)
+
+  const handleClose = () => {
+    if (initialHideNames !== hideNames) setHideNames(initialHideNames)
+    onClose()
+  }
+
+  React.useEffect(() => {
+    if (open) {
+      setInitialHideNames(hideNames)
+    }
+  }, [open])
 
   const sortedWorkOrders = React.useMemo(() => {
     if (!session?.workOrders?.items?.length) return []
@@ -99,7 +115,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="md"
       fullWidth
       sx={{
@@ -139,29 +155,40 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
       </DialogTitle>
       <DialogContent>
         {/* Tabs to choose: Session, work order or scouting */}
-        <ToggleButtonGroup
-          value={activeTab}
-          color="primary"
-          exclusive
-          onChange={(e, activity) => {
-            if (!activity) return
-            setActiveTab(activity)
-          }}
-        >
-          <ToggleButton value={ShareTypeEnum.SESSION} aria-label="left aligned">
-            Entire Session
-          </ToggleButton>
-          <ToggleButton value={ShareTypeEnum.WORK_ORDER} aria-label="centered" disabled={sortedWorkOrders.length === 0}>
-            Single Work Order
-          </ToggleButton>
-          <ToggleButton
-            value={ShareTypeEnum.CLUSTER}
-            aria-label="right aligned"
-            disabled={sortedScoutingFinds.length === 0}
+        <Stack spacing={2} alignItems="left" justifyContent="center">
+          <ToggleButtonGroup
+            value={activeTab}
+            color="primary"
+            exclusive
+            onChange={(e, activity) => {
+              if (!activity) return
+              setActiveTab(activity)
+            }}
           >
-            Single Scouting Find
-          </ToggleButton>
-        </ToggleButtonGroup>
+            <ToggleButton value={ShareTypeEnum.SESSION} aria-label="left aligned">
+              Entire Session
+            </ToggleButton>
+            <ToggleButton
+              value={ShareTypeEnum.WORK_ORDER}
+              aria-label="centered"
+              disabled={sortedWorkOrders.length === 0}
+            >
+              Single Work Order
+            </ToggleButton>
+            <ToggleButton
+              value={ShareTypeEnum.CLUSTER}
+              aria-label="right aligned"
+              disabled={sortedScoutingFinds.length === 0}
+            >
+              Single Scouting Find
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <FormControlLabel
+            checked={hideNames}
+            control={<Switch onChange={(e) => setHideNames(e.target.checked)} />}
+            label="Hide names and avatars."
+          />
+        </Stack>
         <Alert severity="info" sx={{ mb: 2 }}>
           <Typography variant="body1" paragraph>
             You can download an image snapshot of all or part of this session to share on social media, Discord etc. If
@@ -182,7 +209,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
             {activeWorkOrder && (
               <ImageDownloadComponent
                 fileName={`Regolith-${activeWorkOrder.orderType}-${makeHumanIds(
-                  activeWorkOrder.owner?.scName,
+                  getSafeName(activeWorkOrder.owner?.scName),
                   activeWorkOrder.orderId
                 )}`}
                 widthPx={1000}
@@ -246,7 +273,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
                                   {title}
                                 </Typography>
                                 <Typography variant="subtitle1" flex={'1 1 30%'}>
-                                  ({makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)})
+                                  (
+                                  {makeHumanIds(
+                                    getSafeName(workOrder.sellerscName || workOrder.owner?.scName),
+                                    workOrder.orderId
+                                  )}
+                                  )
                                 </Typography>
                               </Stack>
                             </MenuItem>
@@ -355,7 +387,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
       </DialogContent>
       <DialogActions>
         <div style={{ flexGrow: 1 }} />
-        <Button color="primary" onClick={onClose}>
+        <Button color="primary" onClick={handleClose}>
           Close
         </Button>
       </DialogActions>

@@ -10,6 +10,7 @@ import { fontFamilies } from '../../theme'
 import { TabSummaryStats } from '../pages/SessionPage/TabSummaryStats'
 import { OwingList } from '../pages/SessionPage/TabSummary'
 import { WorkOrderTable } from '../pages/SessionPage/WorkOrderTable'
+import { AppContext } from '../../context/app.context'
 
 export type SessionShareSettings = {
   hideNames?: boolean
@@ -59,6 +60,7 @@ const sessionShareStyleThunk = (theme: Theme): Record<string, SxProps<Theme>> =>
 export const SessionShare: React.FC<SessionShareProps> = ({ session, settings }) => {
   const theme = useTheme()
   const styles = sessionShareStyleThunk(theme)
+  const { getSafeName } = React.useContext(AppContext)
   const sessionSummary: SessionBreakdown = React.useMemo(
     () => sessionReduce(session?.workOrders?.items || []),
     [session]
@@ -95,7 +97,7 @@ export const SessionShare: React.FC<SessionShareProps> = ({ session, settings })
             {session.name || defaultSessionName()}
           </Typography>
           <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
-            Created By: {session.owner?.scName}
+            Created By: {getSafeName(session.owner?.scName)}
           </Typography>
         </Stack>
         <Stack>

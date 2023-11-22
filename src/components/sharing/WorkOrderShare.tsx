@@ -11,6 +11,7 @@ import { Stack, SxProps, Theme } from '@mui/system'
 import { QuestionMark, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
+import { AppContext } from '../../context/app.context'
 
 export type WorkOrderShareSettings = {
   hideNames?: boolean
@@ -52,6 +53,7 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, settings }) => {
   const theme = useTheme()
   const styles = workOrderStylesThunk(theme)
+  const { getSafeName } = React.useContext(AppContext)
   const summary = React.useMemo(() => calculateWorkOrder(workOrder), [workOrder])
 
   let WorkIcon: SvgIconComponent
@@ -109,13 +111,13 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
             {title}
           </Typography>
           <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
-            ID: {makeHumanIds(workOrder.sellerscName || workOrder.owner?.scName, workOrder.orderId)}
+            ID: {makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
           </Typography>
         </Stack>
 
         <Stack>
           <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
-            Created By: {workOrder.owner?.scName}
+            Created By: {getSafeName(workOrder.owner?.scName)}
           </Typography>
           {workOrder.sellerscName && (
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>

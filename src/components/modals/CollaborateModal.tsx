@@ -25,6 +25,7 @@ export interface CollaborateModalProps {
 
 export const CollaborateModal: React.FC<CollaborateModalProps> = ({ open, url, warn, onClose }) => {
   const theme = useTheme()
+
   return (
     <Dialog
       open={open}
