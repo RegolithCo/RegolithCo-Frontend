@@ -3,7 +3,9 @@ import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useJoinSession } from '../../hooks/useJoinSession'
 import { useLogin } from '../../hooks/useOAuth2'
+import { PageLoader } from './PageLoader'
 import { SessionJoin } from './SessionJoin'
+import { SessionNotFound } from './SessionPage/SessionNotFound'
 
 export interface SessionJoinContainerProps {
   // joinId: string
@@ -38,6 +40,13 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   }
   if (sessionShare?.state === SessionStateEnum.Closed) {
     joinErrors.push(SessionJoinError.Closed)
+  }
+
+  // NO HOOKS BELOW HERE PLEASE
+  if (loading) return <PageLoader title="loading invitation..." loading />
+
+  if (sessionError || !sessionShare) {
+    return <SessionNotFound action={() => navigate('/sessions')} />
   }
 
   return (

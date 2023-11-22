@@ -225,7 +225,6 @@ export const SessionPageContainer: React.FC = () => {
   }, [sessionQueries.session, modalScoutingFindId])
 
   // NO HOOKS BELOW HERE PLEASE
-  // if (sessionId) return <PageLoader title="loading session..." loading />
   if (sessionQueries.loading && !sessionQueries.session) return <PageLoader title="loading session..." loading />
 
   if (sessionQueries.sessionError || !sessionQueries.session) {
