@@ -248,7 +248,12 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                       >
                                         <ListItem>
                                           <ListItemAvatar>
-                                            <UserAvatar user={session.owner as User} size="small" hideTooltip />
+                                            <UserAvatar
+                                              user={session.owner as User}
+                                              size="small"
+                                              hideTooltip
+                                              privacy={hideNames}
+                                            />
                                           </ListItemAvatar>
                                           <ListItemText>
                                             <Typography variant="subtitle1">
@@ -265,6 +270,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                                   key={member.ownerId}
                                                   user={member.owner as User}
                                                   size="small"
+                                                  privacy={hideNames}
                                                   hideTooltip
                                                 />
                                               </ListItemAvatar>
@@ -288,7 +294,12 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                         },
                                       }}
                                     >
-                                      <UserAvatar user={session.owner as User} size="large" hideTooltip />
+                                      <UserAvatar
+                                        user={session.owner as User}
+                                        size="large"
+                                        hideTooltip
+                                        privacy={hideNames}
+                                      />
                                       {session.activeMembers?.items
                                         .filter((member) => member.ownerId !== session.ownerId)
                                         .map((member) => (
@@ -296,6 +307,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                             key={member.ownerId}
                                             user={member.owner as User}
                                             size="large"
+                                            privacy={hideNames}
                                             hideTooltip
                                           />
                                         ))}

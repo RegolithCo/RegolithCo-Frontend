@@ -5,6 +5,7 @@ import { AccessTime, Assignment, Factory, Groups, TravelExplore } from '@mui/ico
 import { MValue, MValueFormat, MValueFormatter } from './MValue'
 import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
 import { fontFamilies } from '../../theme'
+import { AppContext } from '../../context/app.context'
 
 export interface SessionListSummaryProps {
   session: Session
@@ -78,6 +79,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const { hideNames } = React.useContext(AppContext)
   const { aUEC, activeMembers, totalMembers, allPaid, lastJobDone, oreSCU, refineries, scoutingFinds, workOrders } =
     session.summary as SessionSummary
 

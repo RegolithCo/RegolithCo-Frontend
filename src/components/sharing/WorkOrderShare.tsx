@@ -8,7 +8,7 @@ import { noop } from 'lodash'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { OreCard } from '../calculators/WorkOrderCalc/WorkOrderCards/OreCard'
 import { Stack, SxProps, Theme } from '@mui/system'
-import { QuestionMark, SvgIconComponent } from '@mui/icons-material'
+import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { AppContext } from '../../context/app.context'
@@ -73,8 +73,8 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
       WorkIcon = GemIcon
       break
     case ActivityEnum.Other:
-      title = 'Arbitrary aUEC Work Order'
-      WorkIcon = QuestionMark
+      title = 'Share aUEC Work Order'
+      WorkIcon = AccountBalance
       break
     default:
       return <>DisplayError</>

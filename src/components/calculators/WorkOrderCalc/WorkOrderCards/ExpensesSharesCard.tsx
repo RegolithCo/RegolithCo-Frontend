@@ -32,6 +32,8 @@ import {
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import {
+  CheckBox,
+  CheckBoxOutlineBlank,
   ExpandMore,
   GroupAdd,
   GroupAddTwoTone,
@@ -50,6 +52,7 @@ import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
 import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
+import { ConfirmModal } from '../../../modals/ConfirmModal'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -63,6 +66,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   allowPay,
   isEditing,
   isShare,
+  isCalculator,
   onChange,
   markCrewSharePaid,
   onDeleteCrewShare,
@@ -73,6 +77,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const theme = useTheme()
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
+  const [confirmPriceReset, setConfirmPriceReset] = useState<boolean>(false)
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
 
   const shipOrder = workOrder as ShipMiningOrder
@@ -170,7 +175,16 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             autoFocus
             disabled={!allowEdit || !isEditing}
             value={Numeral(shareAmountInputVal).format(`0,0`)}
-            // onKeyDown={(event) => {}}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                e.stopPropagation()
+                onChange({
+                  ...workOrder,
+                  isSold: true,
+                })
+              }
+            }}
             onChange={(e) => {
               try {
                 const value = jsRound(parseInt(e.target.value.replace(/[^\d]/g, '').replace(/^0+/, ''), 10), 0)
@@ -217,44 +231,70 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   )}
                 </Stack>
               ),
-              startAdornment:
-                !shareAmountIsSet && myStoreChoice ? (
-                  <Tooltip
-                    title={
-                      <Box sx={{ px: 0.5 }}>
-                        <Typography paragraph>
-                          This price comes from the store estimate above: {myStoreChoice.name_short} =
-                          {MValueFormatter(myStoreChoice.price, MValueFormat.currency)}
-                        </Typography>
-                        <Typography paragraph>
-                          You can either keep this estimate or change it to the actual sell price when you make your
-                          delivery run.
-                        </Typography>
-                      </Box>
-                    }
-                  >
-                    <Store color="primary" />
-                  </Tooltip>
-                ) : (
-                  isEditing && (
-                    <Tooltip title="Reset to store estimate">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          onChange({
-                            ...workOrder,
-                            shareAmount: undefined,
-                          })
-                        }}
-                      >
-                        <RestartAlt fontSize="small" />
+              startAdornment: (
+                <>
+                  {!shareAmountIsSet && myStoreChoice ? (
+                    <Tooltip
+                      title={
+                        <Box sx={{ px: 0.5 }}>
+                          <Typography paragraph>
+                            This price comes from the store estimate above: {myStoreChoice.name_short} =
+                            {MValueFormatter(myStoreChoice.price, MValueFormat.currency)}
+                          </Typography>
+                          <Typography paragraph>
+                            You can either keep this estimate or change it to the actual sell price when you make your
+                            delivery run.
+                          </Typography>
+                        </Box>
+                      }
+                    >
+                      <IconButton size="small" color="primary" disableFocusRipple disableRipple disableTouchRipple>
+                        <Store fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                  )
-                ),
+                  ) : (
+                    isEditing && (
+                      <Tooltip title="Reset to store estimate">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setConfirmPriceReset(true)
+                          }}
+                        >
+                          <RestartAlt fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  )}
+                  {!isCalculator && (
+                    <Chip
+                      color={workOrder.isSold ? 'secondary' : 'error'}
+                      label={workOrder.isSold ? 'SOLD' : 'UNSOLD'}
+                      sx={{
+                        opacity: isEditing ? 1 : 0.5,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (!allowEdit) return
+                        onChange({
+                          ...workOrder,
+                          isSold: !workOrder.isSold,
+                        })
+                      }}
+                      icon={
+                        !isEditing ? undefined : workOrder.isSold ? (
+                          <CheckBox color="inherit" />
+                        ) : (
+                          <CheckBoxOutlineBlank color="inherit" />
+                        )
+                      }
+                      size="small"
+                    />
+                  )}
+                </>
+              ),
             }}
             inputProps={{
               sx: {
@@ -304,7 +344,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             <Box sx={{ flexGrow: 1 }} />
             {isEditing && (
               <>
-                {userSuggest && (
+                {!isCalculator && userSuggest && (
                   <Tooltip title="Add ALL session users">
                     <Button
                       size="small"
@@ -351,7 +391,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     </Button>
                   </Tooltip>
                 )}
-                {userSuggest && (
+                {!isCalculator && userSuggest && (
                   <Tooltip title="Add ALL Crew users">
                     <Button
                       size="small"
@@ -492,11 +532,33 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             setShareAmountInputVal(newVal)
             onChange({
               ...workOrder,
+              isSold: true,
               shareAmount: newVal,
             })
             setCompositeAddOpen(false)
           }}
           onClose={() => setCompositeAddOpen(false)}
+        />
+      )}
+      {confirmPriceReset && (
+        <ConfirmModal
+          open
+          title="Reset to store estimate?"
+          message={
+            <Typography>
+              Are you sure you want to reset your sell price to the store estimate? You will lose the manual price you
+              entered.
+            </Typography>
+          }
+          onClose={() => setConfirmPriceReset(false)}
+          onConfirm={() => {
+            setShareAmountInputVal(myStoreChoice.price)
+            onChange({
+              ...workOrder,
+              shareAmount: myStoreChoice.price,
+            })
+            setConfirmPriceReset(false)
+          }}
         />
       )}
       <StoreChooserModal

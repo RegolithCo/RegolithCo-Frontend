@@ -17,7 +17,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { Share, QuestionMark, SvgIconComponent, Diversity3 } from '@mui/icons-material'
+import { Share, SvgIconComponent, Diversity3, AccountBalance } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { Box, Stack } from '@mui/system'
 import { SessionContext } from '../../context/session.context'
@@ -243,8 +243,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
                               WorkIcon = GemIcon
                               break
                             case ActivityEnum.Other:
-                              title = 'Arbitrary aUEC Work Order'
-                              WorkIcon = QuestionMark
+                              title = 'Share aUEC Work Order'
+                              WorkIcon = AccountBalance
                               break
                             default:
                               return <>DisplayError</>

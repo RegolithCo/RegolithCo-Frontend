@@ -31,6 +31,7 @@ type useSessionsReturn = {
   querying: boolean
   mutating: boolean
   updateWorkOrder: (newWorkOrder: WorkOrder) => void
+  updateAnyWorkOrder: (newWorkOrder: WorkOrder, anyOrderId: string) => void
   failWorkOrder: (reason?: string) => void
   deleteWorkOrder: () => void
   deleteCrewShare: (scName: string) => void
@@ -113,70 +114,76 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
 
   useGQLErrors(queries, mutations)
 
+  const updateWorkOrderArbitrary = (newWorkOrder: WorkOrder, specificOrderId?: string) => {
+    const {
+      crewShares,
+      isRefined,
+      isSold,
+      method,
+      note,
+      sellerscName,
+      processStartTime,
+      processDurationS,
+      refinery,
+      expenses,
+      shareAmount,
+      sellStore,
+      includeTransferFee,
+      shareRefinedValue,
+      shipOres,
+    } = newWorkOrder as ShipMiningOrder
+    const { salvageOres } = newWorkOrder as SalvageOrder
+    const { vehicleOres } = newWorkOrder as VehicleMiningOrder
+    const filteredExpenses = (expenses || [])
+      .filter(({ name }) => name && name.trim().length > 0)
+      .map(({ name, amount }) => ({ name, amount }))
+
+    updateWorkOrderMutation[0]({
+      variables: {
+        sessionId,
+        orderId: specificOrderId || orderId,
+        shares: crewSharesToInput(crewShares || []),
+        workOrder: {
+          note,
+          isRefined,
+          isSold,
+          sellerscName,
+          includeTransferFee,
+          method,
+          expenses: filteredExpenses,
+          processStartTime,
+          processDurationS,
+          refinery,
+          shareRefinedValue,
+          shareAmount,
+          sellStore,
+        },
+        shipOres: removeKeyRecursive(shipOres, '__typename'),
+        vehicleOres: removeKeyRecursive(vehicleOres, '__typename'),
+        salvageOres: removeKeyRecursive(salvageOres, '__typename'),
+      },
+      optimisticResponse: () => {
+        const optimisticresponse: UpdateWorkOrderMutation = {
+          __typename: 'Mutation',
+          updateWorkOrder: {
+            ...workOrderQry.data?.workOrder,
+            ...newWorkOrder,
+            expenses: filteredExpenses.map(({ name, amount }) => ({ name, amount, __typename: 'WorkOrderExpense' })),
+          },
+        }
+        return optimisticresponse
+      },
+    })
+  }
+
   return {
     workOrder: workOrderQry.data?.workOrder as WorkOrder,
     querying,
     loading: querying || mutating,
     mutating,
-    updateWorkOrder: (newWorkOrder: WorkOrder) => {
-      const {
-        crewShares,
-        isRefined,
-        method,
-        note,
-        sellerscName,
-        processStartTime,
-        processDurationS,
-        refinery,
-        expenses,
-        shareAmount,
-        sellStore,
-        includeTransferFee,
-        shareRefinedValue,
-        shipOres,
-      } = newWorkOrder as ShipMiningOrder
-      const { salvageOres } = newWorkOrder as SalvageOrder
-      const { vehicleOres } = newWorkOrder as VehicleMiningOrder
-      const filteredExpenses = (expenses || [])
-        .filter(({ name }) => name && name.trim().length > 0)
-        .map(({ name, amount }) => ({ name, amount }))
-
-      updateWorkOrderMutation[0]({
-        variables: {
-          sessionId,
-          orderId,
-          shares: crewSharesToInput(newWorkOrder.crewShares || []),
-          workOrder: {
-            note,
-            isRefined,
-            sellerscName,
-            includeTransferFee,
-            method,
-            expenses: filteredExpenses,
-            processStartTime,
-            processDurationS,
-            refinery,
-            shareRefinedValue,
-            shareAmount,
-            sellStore,
-          },
-          shipOres: removeKeyRecursive(shipOres, '__typename'),
-          vehicleOres: removeKeyRecursive(vehicleOres, '__typename'),
-          salvageOres: removeKeyRecursive(salvageOres, '__typename'),
-        },
-        optimisticResponse: () => {
-          const optimisticresponse: UpdateWorkOrderMutation = {
-            __typename: 'Mutation',
-            updateWorkOrder: {
-              ...workOrderQry.data?.workOrder,
-              ...newWorkOrder,
-              expenses: filteredExpenses.map(({ name, amount }) => ({ name, amount, __typename: 'WorkOrderExpense' })),
-            },
-          }
-          return optimisticresponse
-        },
-      })
-    },
+    updateWorkOrder: (newWorkOrder: WorkOrder) => updateWorkOrderArbitrary(newWorkOrder, orderId),
+    updateAnyWorkOrder: (newWorkOrder: WorkOrder, anyOrderId: string) =>
+      updateWorkOrderArbitrary(newWorkOrder, anyOrderId),
     failWorkOrder: (reason?: string) => {
       const fail = reason && reason.trim().length > 0
       failWorkOrderMutation[0]({

@@ -15,7 +15,6 @@ import {
   VerifiedUserLookup,
   WorkOrder,
   UserSuggest,
-  UserPrivacyMaps,
 } from '@regolithco/common'
 import { createContext } from 'react'
 
@@ -108,7 +107,8 @@ export interface SessionContextType {
   // Work orders
   createWorkOrder: (workOrder: WorkOrder) => void
   deleteWorkOrder: (workOrderId: string) => void
-  updateWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  updateModalWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  updateAnyWorkOrder: (newWorkOrder: WorkOrder, newOrderId: string) => void
   setWorkOrderShareId: (workOrderId: string) => void
   failWorkOrder: (reason?: string) => void
 
@@ -179,7 +179,8 @@ export const sessionContextDefault: SessionContextType = {
 
   createWorkOrder: notAvailable('createWorkOrder'),
   deleteWorkOrder: notAvailable('deleteWorkOrder'),
-  updateWorkOrder: notAvailable('updateWorkOrder'),
+  updateModalWorkOrder: notAvailable('updateWorkOrder'),
+  updateAnyWorkOrder: notAvailable('updateAnyWorkOrder'),
   setWorkOrderShareId: notAvailable('setWorkOrderShareId'),
   failWorkOrder: notAvailable('failWorkOrder'),
 

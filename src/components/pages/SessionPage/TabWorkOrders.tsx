@@ -53,7 +53,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const TabWorkOrders: React.FC<TabWorkOrdersProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const { session, openWorkOrderModal, createNewWorkOrder, setActiveModal } = React.useContext(SessionContext)
+  const { session, createNewWorkOrder } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterPaidWorkOrders, setFilterPaidWorkOrders] = React.useState(false)
@@ -94,7 +94,7 @@ export const TabWorkOrders: React.FC<TabWorkOrdersProps> = () => {
         </Stack>
       </Box>
 
-      <WorkOrderTable workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
+      <WorkOrderTable workOrders={filteredWorkOrders || []} />
       <WorkOrderAddFAB
         onClick={createNewWorkOrder}
         sessionSettings={session?.sessionSettings}

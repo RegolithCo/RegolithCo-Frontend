@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, useTheme } from '@mui/material'
 import { ActivityEnum } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
-import { QuestionMark } from '@mui/icons-material'
+import { AccountBalance } from '@mui/icons-material'
 
 export interface WorkOrderTypeChooserProps {
   value?: ActivityEnum
@@ -46,8 +46,8 @@ export const WorkOrderTypeChooser: React.FC<WorkOrderTypeChooserProps> = ({
   ]
   if (!hideOther) {
     rows.push({
-      icon: <QuestionMark />,
-      title: 'Other',
+      icon: <AccountBalance />,
+      title: 'Share aUEC',
       description: 'Arbitrarily divide some funds between members',
       value: ActivityEnum.Other,
     })

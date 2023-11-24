@@ -3,8 +3,8 @@ import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
 import { ActivityEnum, getActivityName, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
-import { PostAdd, QuestionMark } from '@mui/icons-material'
-import { Badge, Fab, FabProps, keyframes, SxProps, Theme, useTheme } from '@mui/material'
+import { AccountBalance, PostAdd } from '@mui/icons-material'
+import { Badge, Fab, FabProps, keyframes, useTheme } from '@mui/material'
 
 const actions = [
   {
@@ -18,7 +18,7 @@ const actions = [
     name: `${getActivityName(ActivityEnum.VehicleMining)}`,
   },
   { activityId: ActivityEnum.Salvage, icon: <ClawIcon />, name: `${getActivityName(ActivityEnum.Salvage)}` },
-  { activityId: ActivityEnum.Other, icon: <QuestionMark />, name: `${getActivityName(ActivityEnum.Other)}` },
+  { activityId: ActivityEnum.Other, icon: <AccountBalance />, name: `${getActivityName(ActivityEnum.Other)}` },
 ]
 
 export interface WorkOrderAddFABProps {

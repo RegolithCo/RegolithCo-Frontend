@@ -16,12 +16,12 @@ import {
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { ActivityEnum, CrewShare, makeHumanIds, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
 import {
+  AccountBalance,
   BackHand,
   Cancel,
   Create,
   Delete,
   Edit,
-  QuestionMark,
   Save,
   Share,
   SvgIconComponent,
@@ -176,8 +176,8 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       WorkIcon = GemIcon
       break
     case ActivityEnum.Other:
-      title = 'Arbitrary aUEC Work Order'
-      WorkIcon = QuestionMark
+      title = 'Share aUEC Work Order'
+      WorkIcon = AccountBalance
       break
     default:
       return <>DisplayError</>

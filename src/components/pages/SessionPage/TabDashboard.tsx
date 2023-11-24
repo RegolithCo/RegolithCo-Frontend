@@ -81,8 +81,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
-  const { session, openWorkOrderModal, openScoutingModal, createNewWorkOrder, createNewScoutingFind } =
-    React.useContext(SessionContext)
+  const { session, openScoutingModal, createNewWorkOrder, createNewScoutingFind } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
   // Filtering for the accordions
@@ -135,7 +134,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ pb: 8 }}>
-            <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} openWorkOrderModal={openWorkOrderModal} />
+            <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} />
           </Box>
         </AccordionDetails>
         <WorkOrderAddFAB

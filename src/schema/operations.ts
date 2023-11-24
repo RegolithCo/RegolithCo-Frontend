@@ -297,6 +297,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
     amount
     name
   }
+  isSold
   crewShares {
     ...CrewShareFragment
   }

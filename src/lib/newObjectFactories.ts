@@ -36,7 +36,6 @@ import {
   CrewHierarchy,
   WorkOrderExpense,
 } from '@regolithco/common'
-import { ExpenseRow } from '../components/fields/ExpenseTable'
 const LASERS = lookups.loadout.lasers
 
 export function profile2User(profile: UserProfile): User {
@@ -200,6 +199,7 @@ export function newWorkOrderMaker(
     owner: profile2User(owner),
     // note: defaults.note,
     sellerscName,
+    isSold: false,
 
     shipOres: undefined,
     vehicleOres: undefined,

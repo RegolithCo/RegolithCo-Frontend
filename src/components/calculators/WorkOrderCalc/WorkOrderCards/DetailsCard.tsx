@@ -180,44 +180,45 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
         </FormGroup>
 
         <FormGroup>
-          <Tooltip
-            placement="right"
-            title={
-              <>
-                <Typography variant="body1" gutterBottom>
-                  Set this job as failed to indicate you won't be able to pay your crew.
-                </Typography>
-              </>
-            }
-          >
-            <>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={Boolean(workOrder.state === WorkOrderStateEnum.Failed)}
-                    disabled={!isEditing || isCalculator}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      if (event.target.checked) {
-                        setIsFailModalOpen(true)
-                      } else {
-                        // Un-fail please
-                        failWorkOrder && failWorkOrder()
-                      }
-                    }}
-                  />
-                }
-                label="Work order failed"
-              />
-              {workOrder.failReason && (
-                <Box>
-                  <Typography variant="overline" sx={{ mt: 1, color: theme.palette.error.main }}>
-                    Fail Reason:
+          {isEditing && !isCalculator && (
+            <Tooltip
+              placement="right"
+              title={
+                <>
+                  <Typography variant="body1" gutterBottom>
+                    Set this job as failed to indicate you won't be able to pay your crew.
                   </Typography>
-                  <Typography color="error">{workOrder.failReason}</Typography>
-                </Box>
-              )}
-            </>
-          </Tooltip>
+                </>
+              }
+            >
+              <>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={Boolean(workOrder.state === WorkOrderStateEnum.Failed)}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        if (event.target.checked) {
+                          setIsFailModalOpen(true)
+                        } else {
+                          // Un-fail please
+                          failWorkOrder && failWorkOrder()
+                        }
+                      }}
+                    />
+                  }
+                  label="Work order failed"
+                />
+                {workOrder.failReason && (
+                  <Box>
+                    <Typography variant="overline" sx={{ mt: 1, color: theme.palette.error.main }}>
+                      Fail Reason:
+                    </Typography>
+                    <Typography color="error">{workOrder.failReason}</Typography>
+                  </Box>
+                )}
+              </>
+            </Tooltip>
+          )}
 
           <Tooltip
             placement="right"

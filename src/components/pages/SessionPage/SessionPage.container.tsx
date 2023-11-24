@@ -66,8 +66,8 @@ export const SessionPageContainer: React.FC = () => {
   const [shareScoutingFindId, setShareScoutingFindId] = React.useState<string | null>(null)
 
   const sessionQueries = useSessions(sessionId as string)
-  const workOrderQry = useWorkOrders(sessionId as string, modalOrderId as string)
-  const scoutingFindQry = useScoutingFind(
+  const modalWorkOrderQry = useWorkOrders(sessionId as string, modalOrderId as string)
+  const modalScoutingFindQry = useScoutingFind(
     sessionId as string,
     modalScoutingFindId as string,
     sessionQueries.sessionUser
@@ -165,7 +165,7 @@ export const SessionPageContainer: React.FC = () => {
     return sessionQueries.createWorkOrder(workOrder)
   }
 
-  const updateWorkOrder = async (workOrder: WorkOrder) => {
+  const updateModalWorkOrder = async (workOrder: WorkOrder) => {
     const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
       ({ scName, share, shareType, state, note }) => ({
         scName,
@@ -176,7 +176,7 @@ export const SessionPageContainer: React.FC = () => {
       })
     )
     await createNewMentionedUsers(newShares)
-    return workOrderQry.updateWorkOrder(workOrder)
+    return modalWorkOrderQry.updateWorkOrder(workOrder)
   }
 
   // make a map of useIds to their scouting find attendance
@@ -281,24 +281,25 @@ export const SessionPageContainer: React.FC = () => {
           // Work orders
           activeTab: tab as SessionTabs,
           setActiveTab,
-          failWorkOrder: workOrderQry.failWorkOrder,
+          failWorkOrder: modalWorkOrderQry.failWorkOrder,
           createWorkOrder,
-          updateWorkOrder,
-          deleteWorkOrder: workOrderQry.deleteWorkOrder,
+          updateModalWorkOrder,
+          updateAnyWorkOrder: modalWorkOrderQry.updateAnyWorkOrder,
+          deleteWorkOrder: modalWorkOrderQry.deleteWorkOrder,
           setWorkOrderShareId: (shareId) => {
             setShareWorkOrderId(shareId)
             setActiveModal(DialogEnum.SHARE_SESSION)
           },
           createScoutingFind: sessionQueries.createScoutingFind,
           // Scouting finds
-          updateScoutingFind: scoutingFindQry.updateScoutingFind,
-          deleteScoutingFind: scoutingFindQry.deleteScoutingFind,
-          joinScoutingFind: scoutingFindQry.joinScoutingFind,
+          updateScoutingFind: modalScoutingFindQry.updateScoutingFind,
+          deleteScoutingFind: modalScoutingFindQry.deleteScoutingFind,
+          joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
           setScoutingFindShareId: (shareId) => {
             setShareScoutingFindId(shareId)
             setActiveModal(DialogEnum.SHARE_SESSION)
           },
-          leaveScoutingFind: scoutingFindQry.leaveScoutingFind,
+          leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
           verifiedMentionedUsers: {},
         }}
       >
@@ -311,7 +312,7 @@ export const SessionPageContainer: React.FC = () => {
               value={{
                 onUpdate: (newOrder) => {
                   setActiveModal(null)
-                  updateWorkOrder(newOrder)
+                  updateModalWorkOrder(newOrder)
                 },
                 markCrewSharePaid: sessionQueries.markCrewSharePaid,
                 workOrder: modalWorkOrder as WorkOrder,
@@ -322,8 +323,8 @@ export const SessionPageContainer: React.FC = () => {
                   amISessionOwner ||
                   modalWorkOrder.ownerId === myUserProfile?.userId ||
                   (Boolean(modalWorkOrder.sellerscName) && modalWorkOrder.sellerscName === myUserProfile?.scName),
-                deleteWorkOrder: () => workOrderQry.deleteWorkOrder(),
-                failWorkOrder: workOrderQry.failWorkOrder,
+                deleteWorkOrder: () => modalWorkOrderQry.deleteWorkOrder(),
+                failWorkOrder: modalWorkOrderQry.failWorkOrder,
                 isSessionActive: isActive,
                 allowEdit:
                   myUserProfile?.userId === modalWorkOrder?.ownerId ||
@@ -416,14 +417,14 @@ export const SessionPageContainer: React.FC = () => {
               allowEdit: true, // anyone in the sessionc an edit this
               allowDelete: amISessionOwner || modalScoutingFind.ownerId === myUserProfile?.userId,
               scoutingFind: modalScoutingFind,
-              joinScoutingFind: scoutingFindQry.joinScoutingFind,
-              leaveScoutingFind: scoutingFindQry.leaveScoutingFind,
+              joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
+              leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
               onDelete: () => {
-                scoutingFindQry.deleteScoutingFind(modalScoutingFind.scoutingFindId)
+                modalScoutingFindQry.deleteScoutingFind(modalScoutingFind.scoutingFindId)
                 setActiveModal(null)
               },
               onChange: (newScouting) => {
-                scoutingFindQry.updateScoutingFind(newScouting)
+                modalScoutingFindQry.updateScoutingFind(newScouting)
                 setNewScoutingFind(null)
               },
             }}
