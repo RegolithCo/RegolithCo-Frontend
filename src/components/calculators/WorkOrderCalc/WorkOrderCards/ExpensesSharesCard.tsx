@@ -270,14 +270,15 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   )}
                   {!isCalculator && (
                     <Chip
-                      color={workOrder.isSold ? 'secondary' : 'error'}
+                      color={workOrder.isSold ? 'success' : 'error'}
                       label={workOrder.isSold ? 'SOLD' : 'UNSOLD'}
                       sx={{
                         opacity: isEditing ? 1 : 0.5,
+                        cursor: isEditing ? 'pointer' : 'default',
                       }}
                       onClick={(e) => {
                         e.stopPropagation()
-                        if (!allowEdit) return
+                        if (!isEditing) return
                         onChange({
                           ...workOrder,
                           isSold: !workOrder.isSold,

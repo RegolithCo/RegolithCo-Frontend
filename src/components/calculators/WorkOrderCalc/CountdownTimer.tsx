@@ -1,4 +1,4 @@
-import { SxProps, Theme, Tooltip, TypographyProps } from '@mui/material'
+import { SxProps, Theme, Tooltip, Typography, TypographyProps } from '@mui/material'
 import React from 'react'
 import { useCountdown } from '../../../hooks/useCountdown'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -29,6 +29,6 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   if (hasTime && isFinished) finalVal = 'COMPLETED'
   else if (hasTime && isStarted) finalVal = MValueFormatter(remainingTime, MValueFormat.durationS)
 
-  if (!useMValue) return <>{finalVal}</>
+  if (!useMValue) return <Typography {...typoProps}>{finalVal}</Typography>
   else return <MValue value={finalVal} format={MValueFormat.string} typoProps={typoProps} />
 }

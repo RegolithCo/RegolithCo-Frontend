@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { TextField } from '@mui/material'
-import { yellow } from '@mui/material/colors'
 import { fontFamilies } from '../../theme'
 
 interface ShareUrlFieldProps {

@@ -1,23 +1,13 @@
 import * as React from 'react'
 
-import { ActivityEnum, makeHumanIds, ShipMiningOrder, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
+import { ActivityEnum, makeHumanIds, ShipMiningOrder, WorkOrder } from '@regolithco/common'
 import dayjs from 'dayjs'
 import { getActivityName, WorkOrderSummary } from '@regolithco/common'
-import { Badge, Checkbox, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
+import { Checkbox, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import {
-  AccountBalance,
-  Check,
-  CheckCircle,
-  Clear,
-  Dangerous,
-  Factory,
-  PriceCheck,
-  QuestionMark,
-  SvgIconComponent,
-} from '@mui/icons-material'
+import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
@@ -43,6 +33,8 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   )
 
   const isPaid = crewShares?.every(({ state }) => state === true)
+  const numPaid = crewShares?.filter(({ state }) => state === true).length || 0
+  const numCrewShares = (workOrder.crewShares || []).length
 
   let OrderIcon: SvgIconComponent
   switch (orderType) {
@@ -190,13 +182,26 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
               totalTime={(shipOrder.processDurationS || 0) * 1000}
               useMValue
               typoProps={{
+                variant: 'caption',
                 sx: {
                   color: theme.palette.primary.light,
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
                 },
               }}
             />
           ) : (
-            <MValue value={workOrder.createdAt} format={MValueFormat.dateTime} />
+            <MValue
+              value={workOrder.createdAt}
+              format={MValueFormat.dateTime}
+              typoProps={{
+                variant: 'caption',
+                sx: {
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                },
+              }}
+            />
           )}
         </TableCell>
       )}
@@ -214,7 +219,18 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       {!isShare && (
         <TableCell align="center" padding="checkbox" onClick={onRowClick}>
           <Tooltip title={`All crew shares ${isPaid ? 'are' : 'are NOT'} paid`}>
-            {isPaid ? <Check color="secondary" /> : <Clear color="error" />}
+            {numCrewShares > 1 ? (
+              <Typography
+                variant="caption"
+                sx={{ color: isPaid ? theme.palette.success.main : theme.palette.error.main }}
+              >
+                {numPaid}/{(workOrder.crewShares || []).length}
+              </Typography>
+            ) : (
+              <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
+                N/A
+              </Typography>
+            )}
           </Tooltip>
         </TableCell>
       )}

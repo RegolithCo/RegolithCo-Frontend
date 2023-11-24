@@ -136,6 +136,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
               position="right"
               sx={{
                 [theme.breakpoints.down('sm')]: {
+                  p: 0,
                   '&, & .MuiTimelineContent-root, & .MuiTimelineOppositeContent-root': {
                     // p: 0.2,
                     // m: 0.7,
@@ -158,13 +159,38 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                         fontSize: '0.75rem',
                         [theme.breakpoints.down('sm')]: {
                           fontSize: '0.65rem',
+                          // position: 'relative',
                           lineHeight: 2,
+
+                          // Rotate the date to be vertical and down 100%
+                          transform: 'rotate(-90deg) translateX(-100%) translateY(50%)',
+                          // Change the rotation center to the top left corner
+                          transformOrigin: 'bottom left',
+                          textAlign: 'right',
+                          // border: `1px solid ${theme.palette.primary.main}`,
+                          width: '200px',
+                          top: 0,
+                          left: 0,
+                          position: 'absolute',
+                          // height: '300px',
                         },
                       }}
                     >
-                      {currHeading}
+                      <Box
+                        sx={{
+                          [theme.breakpoints.down('sm')]: {},
+                        }}
+                      >
+                        {currHeading}
+                      </Box>
                     </TimelineOppositeContent>
-                    <TimelineSeparator>
+                    <TimelineSeparator
+                      sx={{
+                        [theme.breakpoints.down('sm')]: {
+                          display: 'none',
+                        },
+                      }}
+                    >
                       <TimelineDot color="secondary" />
                       <TimelineConnector />
                     </TimelineSeparator>
@@ -173,9 +199,9 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                         elevation={10}
                         sx={{
                           borderRadius: 5,
-                          border: `2px solid ${theme.palette.primary.dark}`,
+                          border: `2px solid ${theme.palette.grey[800]}`,
                           background: '#000000aa',
-                          mb: 5,
+                          mb: 2,
                           overflow: 'hidden',
                         }}
                       >
@@ -194,127 +220,159 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                 sx={{
                                   ...pulseCssThunk(sessionActive),
                                   cursor: 'pointer',
-                                  px: 0.5,
-                                  py: 1,
+                                  px: 1,
+                                  py: 2,
                                   // Leave a little space for the session summary
-                                  pb: 6,
+                                  pb: 0,
                                   '&:hover': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.23)',
+                                    backgroundColor: 'rgba(100, 100, 100, 0.23)',
+                                  },
+                                  // If this is not the last
+                                  '&.MuiListItem-divider:not(:last-child)': {
+                                    borderBottom: `2px solid ${theme.palette.primary.dark}`,
                                   },
                                 }}
                                 onClick={() => onClickSession?.(sessionId)}
                               >
-                                <ListItemText sx={{ pl: 1 }}>
-                                  <Typography
-                                    component="div"
-                                    variant="subtitle1"
-                                    sx={{
-                                      lineHeight: 1.2,
-                                      [theme.breakpoints.down('sm')]: {
-                                        mt: 2,
-                                        fontSize: '0.9rem',
-                                        lineHeight: 1.2,
-                                      },
-                                    }}
-                                  >
-                                    {name || defaultSessionName()}
-                                  </Typography>
-                                  {/* <Typography component="div" variant="caption">
-                                    Owner: {owner?.scName || 'Unknown'}
-                                  </Typography> */}
-                                  <Typography component="div" variant="caption">
-                                    {subtitleArr.join(' - ')}
-                                  </Typography>
-                                  <SessionListSummary session={session} />
-                                </ListItemText>
-                                <ListItemAvatar
+                                <Typography
+                                  component="div"
                                   sx={{
-                                    [theme.breakpoints.down('sm')]: {
-                                      display: 'none',
-                                    },
+                                    ...styles.state,
+                                    textTransform: 'uppercase',
+                                    // rotate 45 degrees and put it in the middle of the list item
+                                    transform: 'rotate(-45deg) translateX(50%) translateY(50%)',
+                                    top: '50%',
+                                    right: '20%',
+                                    position: 'absolute',
+                                    fontFamily: fontFamilies.robotoMono,
+                                    fontWeight: 'bold',
+                                    fontSize: '3rem',
+                                    // no interactive
+                                    pointerEvents: 'none',
+                                    opacity: 0.2,
+                                    color:
+                                      session.state === SessionStateEnum.Active
+                                        ? theme.palette.secondary.light
+                                        : theme.palette.grey[500],
                                   }}
                                 >
-                                  <Tooltip
-                                    placement="left"
-                                    arrow
-                                    sx={{ maxHeight: 200, overflow: 'hidden' }}
-                                    title={
-                                      <List
+                                  {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
+                                </Typography>
+                                <ListItemText sx={{ pl: 1 }}>
+                                  <Stack
+                                    direction={{ xs: 'column', sm: 'row' }}
+                                    spacing={1}
+                                    alignItems={{ xs: 'center', sm: 'flex-start' }}
+                                    justifyContent="space-between"
+                                  >
+                                    <Box textAlign={{ xs: 'center', sm: 'left' }}>
+                                      <Typography
+                                        component="div"
+                                        variant="subtitle1"
                                         sx={{
-                                          maxHeight: 200,
-                                          overflow: 'auto',
-                                          overflowY: 'scroll',
+                                          color: theme.palette.secondary.light,
+                                          lineHeight: 1.2,
+                                          [theme.breakpoints.down('sm')]: {
+                                            mt: 2,
+                                            fontSize: '0.9rem',
+                                            lineHeight: 1.2,
+                                          },
                                         }}
                                       >
-                                        <ListItem>
-                                          <ListItemAvatar>
-                                            <UserAvatar
-                                              user={session.owner as User}
-                                              size="small"
-                                              hideTooltip
-                                              privacy={hideNames}
-                                            />
-                                          </ListItemAvatar>
-                                          <ListItemText>
-                                            <Typography variant="subtitle1">
-                                              {session.owner?.scName} (Session Owner)
-                                            </Typography>
-                                          </ListItemText>
-                                        </ListItem>
+                                        {name || defaultSessionName()}
+                                      </Typography>
+                                      <Typography
+                                        component="div"
+                                        variant="overline"
+                                        color="text.secondary"
+                                        fontSize={'0.5rem'}
+                                        mb={1}
+                                      >
+                                        {subtitleArr.join(' - ')}
+                                      </Typography>
+                                    </Box>
+                                    <Tooltip
+                                      placement="left"
+                                      arrow
+                                      sx={{ maxHeight: 200, overflow: 'hidden' }}
+                                      title={
+                                        <List
+                                          sx={{
+                                            maxHeight: 200,
+                                            overflow: 'auto',
+                                            overflowY: 'scroll',
+                                          }}
+                                        >
+                                          <ListItem>
+                                            <ListItemAvatar>
+                                              <UserAvatar
+                                                user={session.owner as User}
+                                                size="small"
+                                                hideTooltip
+                                                privacy={hideNames}
+                                              />
+                                            </ListItemAvatar>
+                                            <ListItemText>
+                                              <Typography variant="subtitle1">
+                                                {session.owner?.scName} (Session Owner)
+                                              </Typography>
+                                            </ListItemText>
+                                          </ListItem>
+                                          {session.activeMembers?.items
+                                            .filter((member) => member.ownerId !== session.ownerId)
+                                            .map((member, idx) => (
+                                              <ListItem key={`${member.ownerId}-${idx}`}>
+                                                <ListItemAvatar>
+                                                  <UserAvatar
+                                                    key={member.ownerId}
+                                                    user={member.owner as User}
+                                                    size="small"
+                                                    privacy={hideNames}
+                                                    hideTooltip
+                                                  />
+                                                </ListItemAvatar>
+                                                <ListItemText>
+                                                  <Typography variant="subtitle1">{member.owner?.scName}</Typography>
+                                                </ListItemText>
+                                              </ListItem>
+                                            ))}
+                                        </List>
+                                      }
+                                    >
+                                      <AvatarGroup
+                                        max={4}
+                                        color="primary"
+                                        sx={{
+                                          '& .MuiAvatarGroup-avatar': {
+                                            border: `2px solid ${theme.palette.primary.main}`,
+                                            color: theme.palette.primary.main,
+                                            backgroundColor: alpha(theme.palette.primary.dark, 0.2),
+                                            fontSize: '0.75rem',
+                                          },
+                                        }}
+                                      >
+                                        <UserAvatar
+                                          user={session.owner as User}
+                                          size="large"
+                                          hideTooltip
+                                          privacy={hideNames}
+                                        />
                                         {session.activeMembers?.items
                                           .filter((member) => member.ownerId !== session.ownerId)
-                                          .map((member, idx) => (
-                                            <ListItem key={`${member.ownerId}-${idx}`}>
-                                              <ListItemAvatar>
-                                                <UserAvatar
-                                                  key={member.ownerId}
-                                                  user={member.owner as User}
-                                                  size="small"
-                                                  privacy={hideNames}
-                                                  hideTooltip
-                                                />
-                                              </ListItemAvatar>
-                                              <ListItemText>
-                                                <Typography variant="subtitle1">{member.owner?.scName}</Typography>
-                                              </ListItemText>
-                                            </ListItem>
+                                          .map((member) => (
+                                            <UserAvatar
+                                              key={member.ownerId}
+                                              user={member.owner as User}
+                                              size="large"
+                                              privacy={hideNames}
+                                              hideTooltip
+                                            />
                                           ))}
-                                      </List>
-                                    }
-                                  >
-                                    <AvatarGroup
-                                      max={4}
-                                      color="primary"
-                                      sx={{
-                                        '& .MuiAvatarGroup-avatar': {
-                                          border: `2px solid ${theme.palette.primary.main}`,
-                                          color: theme.palette.primary.main,
-                                          backgroundColor: alpha(theme.palette.primary.dark, 0.2),
-                                          fontSize: '0.75rem',
-                                        },
-                                      }}
-                                    >
-                                      <UserAvatar
-                                        user={session.owner as User}
-                                        size="large"
-                                        hideTooltip
-                                        privacy={hideNames}
-                                      />
-                                      {session.activeMembers?.items
-                                        .filter((member) => member.ownerId !== session.ownerId)
-                                        .map((member) => (
-                                          <UserAvatar
-                                            key={member.ownerId}
-                                            user={member.owner as User}
-                                            size="large"
-                                            privacy={hideNames}
-                                            hideTooltip
-                                          />
-                                        ))}
-                                    </AvatarGroup>
-                                  </Tooltip>
-                                  <div style={{ flexGrow: 1 }} />
-                                </ListItemAvatar>
+                                      </AvatarGroup>
+                                    </Tooltip>
+                                  </Stack>
+                                  <SessionListSummary session={session} />
+                                </ListItemText>
                               </ListItem>
                             )
                           })}

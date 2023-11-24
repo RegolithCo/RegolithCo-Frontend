@@ -12,6 +12,7 @@ export const WorkOrderListFragmentFragmentDoc = gql`
   sellerscName
   state
   failReason
+  isSold
   includeTransferFee
   orderType
   note
@@ -33,6 +34,7 @@ export const ScoutingIdFragmentFragmentDoc = gql`
 export const WorkOrderIdFragmentFragmentDoc = gql`
     fragment WorkOrderIdFragment on WorkOrderInterface {
   orderId
+  isSold
   sessionId
   updatedAt
   failReason
@@ -64,6 +66,13 @@ export const SessionUsersFragmentFragmentDoc = gql`
       }
     }
   }
+}
+    `;
+export const SessionWorkOrderStatusFragmentFragmentDoc = gql`
+    fragment SessionWorkOrderStatusFragment on WorkOrderInterface {
+  orderId
+  isSold
+  orderType
 }
     `;
 export const UserFragmentFragmentDoc = gql`
@@ -135,16 +144,22 @@ export const SessionSummaryFragmentFragmentDoc = gql`
     refineries
     activeMembers
     totalMembers
-    workOrders {
+    workOrdersByType {
       other
       salvage
       ship
       vehicle
     }
-    scoutingFinds {
+    scoutingFindsByType {
       salvage
       ship
       vehicle
+    }
+    workOrderSummaries {
+      orderType
+      isSold
+      unpaidShares
+      paidShares
     }
   }
 }
@@ -282,6 +297,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
   createdAt
   updatedAt
   ownerId
+  isSold
   sellerscName
   owner {
     ...UserFragment
