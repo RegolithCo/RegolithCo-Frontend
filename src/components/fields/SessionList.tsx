@@ -270,7 +270,9 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                                         component="div"
                                         variant="subtitle1"
                                         sx={{
-                                          color: theme.palette.secondary.light,
+                                          color: sessionActive
+                                            ? theme.palette.secondary.light
+                                            : theme.palette.text.secondary,
                                           lineHeight: 1.2,
                                           [theme.breakpoints.down('sm')]: {
                                             mt: 2,
