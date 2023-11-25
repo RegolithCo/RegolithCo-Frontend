@@ -224,8 +224,8 @@ export const OwingList: React.FC<OwingListProps> = ({
   openWorkOrderModal,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme, session?.state === SessionStateEnum.Active)
   const { hideNames, getSafeName } = React.useContext(AppContext)
+  const styles = stylesThunk(theme, session?.state === SessionStateEnum.Active)
   const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
   const rowObj = isShare
     ? {
