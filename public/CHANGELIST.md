@@ -1,3 +1,20 @@
+### November 25, 2023
+## 1.0.34 - Sold!
+
+You can now mark a work order as "Sold" and enter the final sell price. This will update the session stats and the crew shares. This was a little more work than I was hoping and involved a database migration but the results are definitely worth it. 
+
+### Work Orders
+
+- WorkOrders **"State"** was removed because it was confusing
+- **Sold** status is now on the work order line with an interactive checkbox
+- **Paid** status is now on the work order line.
+
+All work orders before today have been marked as "Sold" by default because nobody had this control before today. Apologies if this creates confusion.
+
+Also the session list card has been updated to better communicate the state of work orders in a session. You should be able to see at a glance what is sold/unsold vs. paid/unpaid. It also works a little better on mobile.... but only a little.
+
+-----
+
 ### November 21, 2023
 ## 1.0.33 - Streaming features
 
