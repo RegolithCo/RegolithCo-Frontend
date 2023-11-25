@@ -289,12 +289,12 @@ export const OwingList: React.FC<OwingListProps> = ({
           .filter((cs) => cs.state === isPaid)
 
         // if (!owedRow) return null
-        const rowKey = `owed-${idy}`
+        const rowKey = `owed-${payerSCName}-${payeeSCName}-${idy}`
         const isExpanded = Boolean(expandedRows[rowKey])
         return (
-          <>
+          <Box key={rowKey + '-wrapper'}>
             <ListItemButton
-              key={rowKey}
+              key={rowKey + '-button'}
               onClick={
                 isShare
                   ? undefined
@@ -355,7 +355,7 @@ export const OwingList: React.FC<OwingListProps> = ({
                 </Stack>
               </ListItemText>
             </ListItemButton>
-            <Collapse in={isExpanded} timeout="auto" unmountOnExit key={`woRows-${idy}`}>
+            <Collapse in={isExpanded} key={rowKey + '-collapse'} timeout="auto" unmountOnExit>
               <Box sx={{ p: 2 }}>
                 <TableContainer sx={{ border: '1px solid', borderRadius: 4 }}>
                   <Table size="small">
@@ -439,7 +439,7 @@ export const OwingList: React.FC<OwingListProps> = ({
                 </TableContainer>
               </Box>
             </Collapse>
-          </>
+          </Box>
         )
       })}
     </List>

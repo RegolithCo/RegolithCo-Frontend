@@ -165,6 +165,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Typography>
               <Typography
                 paragraph
+                component={'div'}
                 fontStyle={'italic'}
                 sx={{
                   '& li': {

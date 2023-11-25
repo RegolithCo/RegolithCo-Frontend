@@ -3,6 +3,7 @@ import { SxProps, Theme } from '@mui/system'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 import { Copyright } from './Copyright'
+import { AnnoyingCoffee } from './fields/AnnoyingCoffee'
 
 type ObjectValues<T> = T[keyof T]
 export const BGImagesEnum = {
@@ -45,7 +46,7 @@ const styles: Record<string, SxProps<Theme>> = {
 }
 
 export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { pathname } = useLocation()
+  const { pathname, hash, key } = useLocation()
 
   const pathnameRegex = pathname.match(/^(\/[^/]*)/)
   const allMatches = pathnameRegex && pathnameRegex.length > 0 ? pathnameRegex : ['/']
@@ -83,16 +84,24 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       bgImage = BGImagesEnum.DEFAULT
   }
 
-  return <AppWrapper bgImage={bgImage}>{children}</AppWrapper>
+  // match /session/20780cc1-28b8-4169-a004-b874687c79cd/dash but not /session
+  const hideCoffee = pathname.match(/^\/session\/[0-9a-f-]+/)
+  console.log('AppWrapperContainer', { pathname, hash, key })
+
+  return (
+    <AppWrapper bgImage={bgImage} showCoffee={!hideCoffee}>
+      {children}
+    </AppWrapper>
+  )
 }
 
-export const AppWrapper = ({
-  children,
-  bgImage,
-}: {
-  children: React.ReactNode
+interface AppWrapperProps {
   bgImage?: BGImagesEnum
-}): JSX.Element => {
+  showCoffee?: boolean
+  children: React.ReactNode
+}
+
+export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bgImage }) => {
   const theme = useTheme()
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const bgImageFinal = bgImage ? bgImage : BGImagesEnum.DEFAULT
@@ -108,11 +117,17 @@ export const AppWrapper = ({
       <Box sx={styles.overlay}>{children}</Box>
       {mediumUp && (
         <>
-          <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
+          <Box sx={{ position: 'absolute', bottom: 5, right: 5 }}>
             <Copyright />
           </Box>
         </>
       )}
+      <AnnoyingCoffee
+        show={showCoffee}
+        navigate={() => {
+          window.open('https://regolith.rocks/about/support-us', '_blank')
+        }}
+      />
     </Box>
   )
 }
