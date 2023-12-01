@@ -59,6 +59,15 @@ import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../../context/app.context'
 dayjs.extend(relativeTime)
 
+// Object.values(ScoutingFindStateEnum)
+const SCOUTING_FIND_STATE_NAMES: ScoutingFindStateEnum[] = [
+  ScoutingFindStateEnum.Discovered,
+  ScoutingFindStateEnum.ReadyForWorkers,
+  ScoutingFindStateEnum.Working,
+  ScoutingFindStateEnum.Depleted,
+  ScoutingFindStateEnum.Abandonned,
+]
+
 export interface ScoutingFindCalcProps {
   scoutingFind: ScoutingFind
   me?: SessionUser
@@ -382,7 +391,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 renderValue={(value) => getScoutingFindStateName(value as ScoutingFindStateEnum)}
                 value={(scoutingFind.state as string) || (ScoutingFindStateEnum.Discovered as string)}
               >
-                {Object.values(ScoutingFindStateEnum).map((state) => (
+                {SCOUTING_FIND_STATE_NAMES.map((state) => (
                   <MenuItem key={state} value={state}>
                     {getScoutingFindStateName(state)}
                   </MenuItem>

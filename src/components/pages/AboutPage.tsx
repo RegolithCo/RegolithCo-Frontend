@@ -129,19 +129,23 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       </Tabs>
       {finalTab === TabIndex.General && (
         <Box sx={{ mb: 3 }}>
-          <Typography>
-            Regolith Co. is a fansite dedicated to helping Star Citizen players mine, organize, share, and scout
-            together.
-          </Typography>
-          <Typography variant="h4" component="h1" gutterBottom></Typography>
-          <Typography paragraph>
-            It was developed by me. Hello! I am a software developer and a Star Citizen backer. I have been playing Star
-            Citizen since 2020. I am a member of the{' '}
-            <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
-              United Earth Mining Corporation (UEMC)
-            </Link>{' '}
-            Organization.
-          </Typography>
+          <Card elevation={20} sx={{ p: 3, pb: 0, m: 4 }}>
+            <CardHeader title="About" />
+            <CardContent>
+              <Typography paragraph>
+                Regolith Co. is a fansite dedicated to helping Star Citizen players mine, organize, share, and scout
+                together.
+              </Typography>
+              <Typography paragraph>
+                It was developed by myself. Hello! I'm Raychaser and I am a software developer and a Star Citizen
+                backer. I have been playing Star Citizen since 2020. I am a member of the{' '}
+                <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
+                  United Earth Mining Corporation (UEMC)
+                </Link>{' '}
+                Organization.
+              </Typography>
+            </CardContent>
+          </Card>
           <Card elevation={20} sx={{ p: 3, m: 4 }}>
             <CardHeader title="Regolith Co. Mission Statement" />
             <CardContent>
