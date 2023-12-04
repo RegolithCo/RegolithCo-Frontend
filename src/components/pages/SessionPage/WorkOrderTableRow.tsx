@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { ActivityEnum, makeHumanIds, ShipMiningOrder, WorkOrder } from '@regolithco/common'
+import { ActivityEnum, getTimezoneStr, makeHumanIds, ShipMiningOrder, WorkOrder } from '@regolithco/common'
 import dayjs from 'dayjs'
 import { getActivityName, WorkOrderSummary } from '@regolithco/common'
 import { Checkbox, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
@@ -170,7 +170,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
                   ? shipOrder.processStartTime + (shipOrder.processDurationS || 0) * 1000
                   : undefined
               ).format('MMM D, h:mm a')}{' '}
-              ({new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' }).split(' ')[2]})
+              ({getTimezoneStr()})
             </Typography>
           )}
         </TableCell>

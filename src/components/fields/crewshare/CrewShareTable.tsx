@@ -16,6 +16,7 @@ import { UserPicker } from '../UserPicker'
 export interface CrewShareTableProps {
   workOrder: WorkOrder
   onChange: (workOrder: WorkOrder) => void
+  scrollRef?: React.RefObject<HTMLDivElement>
   markCrewSharePaid?: (crewShare: CrewShare, paid: boolean) => void
   onDeleteCrewShare?: (scName: string) => void
   allowPay?: boolean
@@ -45,6 +46,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   summary,
   allowEdit,
   isEditing,
+  scrollRef,
   isShare,
   onChange,
   markCrewSharePaid,
@@ -90,7 +92,10 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             <TableCell align="left" colSpan={2} padding="none">
               Share
             </TableCell>
-            <Tooltip title="The payout is the amount of aUEC that the user will receive from the work order.">
+            <Tooltip
+              title="The payout is the amount of aUEC that the user will receive from the work order."
+              placement="top"
+            >
               <TableCell align="right" sx={{ color: theme.palette.primary.light }} padding="none">
                 aUEC
               </TableCell>
@@ -141,7 +146,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
       {isEditing && (
         <Box sx={{ px: 0.5 }}>
           <UserPicker
-            label="+ Add Crew Share Row"
+            label="Add Crew Share Row"
             toolTip="Add a user to the work order"
             onChange={(addName) => {
               if (
@@ -168,6 +173,13 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
                     },
                   ],
                 })
+                // Now scroll to the bottom of scrollRef after 200 ms
+                setTimeout(() => {
+                  scrollRef?.current?.scrollTo({
+                    top: scrollRef?.current?.scrollHeight,
+                    behavior: 'smooth',
+                  })
+                }, 200)
               }
             }}
             userSuggest={userSuggest}

@@ -80,7 +80,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     : payoutSummary
   return (
     <>
-      <Tooltip title={tooltip}>
+      <Tooltip title={tooltip} placement="left" enterDelay={1000}>
         <TableRow sx={{ background: backgroundColor }}>
           {isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
           {!isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
@@ -93,12 +93,14 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           {!isShare && (
             <Tooltip
               placement="right-end"
+              enterDelay={2000}
               title={
                 isMe
                   ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
                   : isSeller
                   ? `The seller. The seller is always paid`
-                  : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
+                  : ''
+                // : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
               }
             >
               <TableCell align="center" padding="none" width={30}>
@@ -123,7 +125,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
                 </Tooltip>
               )}
               {isEditing && !isMandatory && (
-                <Tooltip title="Add a note">
+                <Tooltip title="Add a note" placement="left" enterDelay={2000}>
                   <Box sx={{}}>
                     <NoteAdd
                       sx={{ color: hasNote ? theme.palette.primary.main : 'inherit' }}
@@ -136,7 +138,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           )}
 
           {isEditing && (
-            <Tooltip title={`Delete ${getSafeName(crewShare.scName)}`}>
+            <Tooltip title={`Delete ${getSafeName(crewShare.scName)}`} placement="left" enterDelay={2000}>
               <TableCell align="center" padding="none" width={30}>
                 {!isSeller && !isMandatory && (
                   <IconButton size="small" color="error" onClick={onDelete}>
@@ -319,7 +321,7 @@ const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactN
     tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout`
   }
   return (
-    <Tooltip title={tooltip}>
+    <Tooltip title={tooltip} enterDelay={2000} placement="left">
       <TableCell align="right" padding="none" sx={{ color: theme.palette.primary.light }}>
         <MValue
           value={shareArr[1]}

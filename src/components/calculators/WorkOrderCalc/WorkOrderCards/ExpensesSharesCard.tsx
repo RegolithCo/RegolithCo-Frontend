@@ -79,7 +79,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
   const [confirmPriceReset, setConfirmPriceReset] = useState<boolean>(false)
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
-
+  const useScrollerRef = React.useRef<HTMLDivElement>(null)
   const shipOrder = workOrder as ShipMiningOrder
 
   const storeChoices = useMemo(
@@ -129,7 +129,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           }
           subheaderTypographyProps={{ color: 'iherit' }}
         />
-        <CardContent sx={{ flex: '1 1', overflowX: { md: 'hidden', sm: 'scroll' }, overflow: { md: 'scroll' } }}>
+        <CardContent
+          id="workorder-expenses-shares-card"
+          ref={useScrollerRef}
+          sx={{ flex: '1 1', overflowX: { md: 'hidden', sm: 'scroll' }, overflow: { md: 'scroll' } }}
+        >
           {workOrder.orderType !== ActivityEnum.Other && (
             <>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
@@ -462,6 +466,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             allowEdit={allowEdit}
             isEditing={isEditing}
             isShare={isShare}
+            scrollRef={useScrollerRef}
             allowPay={allowPay}
             templateJob={templateJob}
             onChange={onChange}

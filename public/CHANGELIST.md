@@ -1,4 +1,13 @@
 ### November 25, 2023
+## 1.0.35 - Quality of life
+
+- Session expiry date now appears in the session header
+- Tooltips are dialed back a bit so they don't get in the way so much
+- The User Picker on the workorder has been retooled to be more friendly and useful. This is still a work in progress but after watching people struggle with it I'm making an attempt at helping to make it a little smoother.
+
+-----
+
+### November 25, 2023
 ## 1.0.34 - Sold!
 
 You can now mark a work order as "Sold" and enter the final sell price. This will update the session stats and the crew shares. This was a little more work than I was hoping and involved a database migration but the results are definitely worth it. 

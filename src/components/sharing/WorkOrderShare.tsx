@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useTheme, Typography, Paper, Toolbar } from '@mui/material'
-import { ActivityEnum, calculateWorkOrder, makeHumanIds, WorkOrder } from '@regolithco/common'
+import { ActivityEnum, calculateWorkOrder, getTimezoneStr, makeHumanIds, WorkOrder } from '@regolithco/common'
 import dayjs from 'dayjs'
 
 import { ExpensesSharesCard } from '../calculators/WorkOrderCalc/WorkOrderCards/ExpensesSharesCard'
@@ -130,8 +130,7 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
             variant="caption"
             sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
           >
-            {dayjs(workOrder.createdAt).format('MMM D YYYY, h:mm a')} (
-            {new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' }).split(' ')[2]})
+            {dayjs(workOrder.createdAt).format('MMM D YYYY, h:mm a')} ({getTimezoneStr()})
           </Typography>
         </Stack>
       </Toolbar>

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Box, Typography, useTheme } from '@mui/material'
 import { fontFamilies } from '../../theme'
 import dayjs from 'dayjs'
+import { getTimezoneStr } from '@regolithco/common'
 
 interface RefineryProgressShareProps {
   startTime?: number
@@ -46,8 +47,7 @@ export const RefineryProgressShare: React.FC<RefineryProgressShareProps> = ({ st
           fontFamily: fontFamilies.robotoMono,
         }}
       >
-        {dayjs(finishTime).format('MMM D YYYY, h:mm a')} (
-        {new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' }).split(' ')[2]})
+        {dayjs(finishTime).format('MMM D YYYY, h:mm a')} ({getTimezoneStr()})
       </Typography>
     </Box>
   )

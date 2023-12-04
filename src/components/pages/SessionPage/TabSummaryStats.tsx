@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Session, SessionBreakdown, sessionReduce } from '@regolithco/common'
+import { getTimezoneStr, Session, SessionBreakdown, sessionReduce } from '@regolithco/common'
 import { Box, List, ListItem, ListItemSecondaryAction, ListItemText, Typography, useTheme } from '@mui/material'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
@@ -105,8 +105,7 @@ export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isSha
                     fontFamily: fontFamilies.robotoMono,
                   }}
                 >
-                  {dayjs(sessionSummary.lastFinishedOrder).format('MMM D YYYY, h:mm a')} (
-                  {new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' }).split(' ')[2]})
+                  {dayjs(sessionSummary.lastFinishedOrder).format('MMM D YYYY, h:mm a')} ({getTimezoneStr()})
                 </Typography>
               ) : (
                 <CountdownTimer

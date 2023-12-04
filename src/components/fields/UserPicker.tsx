@@ -2,6 +2,7 @@ import React from 'react'
 import { Autocomplete, TextField, createFilterOptions, Tooltip } from '@mui/material'
 import { UserSuggest } from '@regolithco/common'
 import { UserListItem } from './UserListItem'
+import { PersonAdd } from '@mui/icons-material'
 // import log from 'loglevel'
 
 export interface UserPickerProps {
@@ -37,13 +38,16 @@ export const UserPicker: React.FC<UserPickerProps> = ({
   includeMentioned,
   includeFriends,
 }) => {
+  const [inputValue, setInputValue] = React.useState('')
+  const [value, setValue] = React.useState(null)
+  const textFieldRef = React.useRef<HTMLInputElement>(null)
   // const theme = useTheme()
   // const styles = stylesThunk(theme)
 
   const finalTooltip = toolTip !== undefined ? toolTip : 'Enter a user name to add to the list'
 
   return (
-    <Tooltip title={finalTooltip}>
+    <Tooltip title={finalTooltip} placement="left">
       <Autocomplete
         id="adduser"
         color="primary"
@@ -59,6 +63,11 @@ export const UserPicker: React.FC<UserPickerProps> = ({
             friend={friend}
           />
         )}
+        value={value}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue)
+        }}
         clearOnBlur
         blurOnSelect
         fullWidth
@@ -74,7 +83,21 @@ export const UserPicker: React.FC<UserPickerProps> = ({
         }
         options={Object.entries(userSuggest || {})}
         sx={{ my: 1 }}
-        renderInput={(params) => <TextField variant="standard" {...params} label={label || 'Add User'} />}
+        renderInput={(params) => (
+          <TextField
+            variant="standard"
+            color="primary"
+            {...params}
+            inputRef={textFieldRef}
+            placeholder="Type a session user or friend name..."
+            InputProps={{
+              ...params.InputProps,
+              color: 'primary',
+              startAdornment: <PersonAdd color="primary" sx={{ mr: 2 }} />,
+            }}
+            label={label || 'Add User'}
+          />
+        )}
         filterOptions={(options, params) => {
           const filtered = filter(options, params)
           if (params.inputValue !== '') {
@@ -88,6 +111,13 @@ export const UserPicker: React.FC<UserPickerProps> = ({
         onChange={(event, option) => {
           const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
           onChange && onChange(addName)
+          // Reset the Autocomplete control
+          setValue(null)
+          setInputValue('')
+          // Set focus on the TextField
+          setTimeout(() => {
+            textFieldRef?.current?.focus()
+          }, 100)
         }}
       />
     </Tooltip>

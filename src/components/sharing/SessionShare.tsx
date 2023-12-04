@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useTheme, Typography, Paper, Toolbar } from '@mui/material'
-import { defaultSessionName, Session, SessionBreakdown, sessionReduce } from '@regolithco/common'
+import { defaultSessionName, getTimezoneStr, Session, SessionBreakdown, sessionReduce } from '@regolithco/common'
 import dayjs from 'dayjs'
 
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -106,8 +106,7 @@ export const SessionShare: React.FC<SessionShareProps> = ({ session, settings })
             variant="caption"
             sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
           >
-            {dayjs(session.createdAt).format('MMM D YYYY, h:mm a')} (
-            {new Date().toLocaleTimeString('en-us', { timeZoneName: 'short' }).split(' ')[2]})
+            {dayjs(session.createdAt).format('MMM D YYYY, h:mm a')} ({getTimezoneStr()})
           </Typography>
         </Stack>
       </Toolbar>

@@ -7,6 +7,8 @@ import {
   getPlanetName,
   defaultSessionName,
   getActivityName,
+  smartDate,
+  SessionStateEnum,
 } from '@regolithco/common'
 import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { SxProps } from '@mui/system'
@@ -21,6 +23,8 @@ import { AppContext } from '../../../context/app.context'
 export interface SesionHeaderProps {
   propA?: string
 }
+
+const TwelveHoursMs = 12 * 60 * 60 * 1000
 
 export const sessionSubtitleArr = (session: Session, protect: boolean): string[] => {
   const subtitleArr = []
@@ -167,27 +171,38 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
               </Tooltip>
             </Box>
             <Typography
-              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2, fontSize: '0.6rem' }}
               component="div"
               gutterBottom
               variant="overline"
             >
-              Started: <strong>{dayjs(session.createdAt).format('MMM D YYYY, h:mm a')}</strong>
+              Started: <strong>{smartDate(session.createdAt)}</strong>
             </Typography>
-            {session.finishedAt && (
+            {session.state === SessionStateEnum.Active && (
               <Typography
-                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}
+                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2, fontSize: '0.6rem' }}
                 component="div"
                 gutterBottom
-                variant="caption"
+                variant="overline"
               >
-                Ended: <strong>{dayjs(session.finishedAt).format('ddd, MMM D YYYY, h:mm a')}</strong>
+                EXPIRES: <strong>{smartDate(session.createdAt + TwelveHoursMs)}</strong>
+              </Typography>
+            )}
+            {session.state === SessionStateEnum.Closed && session.finishedAt && (
+              <Typography
+                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2, fontSize: '0.6rem' }}
+                component="div"
+                gutterBottom
+                variant="overline"
+              >
+                Ended: <strong>{smartDate(session.finishedAt)}</strong>
               </Typography>
             )}
             <Typography
               sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}
               component="div"
               gutterBottom
+              color="text.secondary"
               variant="caption"
             >
               Unverified users can join: <strong>{session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
@@ -196,6 +211,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
               sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}
               component="div"
               gutterBottom
+              color="text.secondary"
               variant="caption"
             >
               Users must be mentioned to join: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
