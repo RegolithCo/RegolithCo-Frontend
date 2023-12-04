@@ -12,7 +12,6 @@ import {
 } from '@regolithco/common'
 import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { SxProps } from '@mui/system'
-import dayjs from 'dayjs'
 import { fontFamilies } from '../../../theme'
 import { CloudDownload, Diversity3, Share } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -185,7 +184,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                 gutterBottom
                 variant="overline"
               >
-                EXPIRES: <strong>{smartDate(session.createdAt + TwelveHoursMs)}</strong>
+                EXPIRES: <strong>{smartDate(session.updatedAt + TwelveHoursMs)}</strong>
               </Typography>
             )}
             {session.state === SessionStateEnum.Closed && session.finishedAt && (
