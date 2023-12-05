@@ -1,6 +1,6 @@
 {
   "name": "@regolithco/react-app",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.8.4",
