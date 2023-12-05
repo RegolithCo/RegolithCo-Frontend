@@ -151,8 +151,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             onChange={(addName) => {
               if (
                 validateSCName(addName) &&
-                !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase()) !==
-                  undefined
+                !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase())
               ) {
                 setKeyCounter(keyCounter + 1)
                 onChange({
