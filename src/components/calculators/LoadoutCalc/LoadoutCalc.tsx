@@ -418,7 +418,13 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
           <Stack direction="row" spacing={2} sx={{ mt: 3, p: 1, px: 2 }}>
             {onDelete && userProfile && (
               <Tooltip title="Permanently delete this loadout">
-                <Button variant="contained" color="error" onClick={onDelete} startIcon={<Delete />} disabled={loading}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => setDeleteModalOpen(true)}
+                  startIcon={<Delete />}
+                  disabled={loading}
+                >
                   Delete
                 </Button>
               </Tooltip>

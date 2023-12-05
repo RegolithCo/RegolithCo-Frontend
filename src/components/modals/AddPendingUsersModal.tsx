@@ -27,9 +27,18 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
   )
   const allNames = [...activeNames, ...pendingNames]
 
-  const handleSubmit = () => {
-    addSessionMentions && addSessionMentions([addNameFinal])
-    onClose()
+  const handleChange = (addName: string): string | null => {
+    const addNameLower = addName.toLowerCase()
+
+    let error = null
+    if (!addName || addName.trim().length === 0) error = 'Please enter a name'
+    else if (addNameLower === myUserProfile.scName.toLowerCase()) error = 'You cannot add yourself'
+    else if (activeNames.includes(addNameLower)) error = 'User has already joined'
+    else if (pendingNames.includes(addNameLower)) error = 'User is already added as "innactive"'
+    else if (!validateSCName(addNameLower)) error = 'Invalid name'
+
+    setAddName([addName, error])
+    return error
   }
 
   return (
@@ -71,17 +80,15 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
         <UserPicker
           label="Name"
           toolTip={null}
+          disableResetBox
+          onInputChange={handleChange}
           onChange={(addName) => {
-            const addNameLower = addName.toLowerCase()
-
-            let error = null
-            if (!addName || addName.trim().length === 0) error = 'Please enter a name'
-            else if (addNameLower === myUserProfile.scName.toLowerCase()) error = 'You cannot add yourself'
-            else if (activeNames.includes(addNameLower)) error = 'User has already joined'
-            else if (pendingNames.includes(addNameLower)) error = 'User is already added as "innactive"'
-            else if (!validateSCName(addNameLower)) error = 'Invalid name'
-
-            setAddName([addName, error])
+            const newError = handleChange(addName)
+            if (newError === null) {
+              addSessionMentions && addSessionMentions([addName])
+              // TODO: THis is a hack. modal won't close unless we wait a bit
+              setTimeout(onClose, 200)
+            }
           }}
           userSuggest={userSuggest}
           includeFriends
@@ -101,7 +108,10 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
             disabled={!addNameFinal || addNameFinal.trim().length === 0 || error !== null}
             sx={{ background: theme.palette.background.paper }}
             variant="outlined"
-            onClick={handleSubmit}
+            onClick={() => {
+              addSessionMentions && addSessionMentions([addNameFinal])
+              onClose()
+            }}
           >
             Add
           </Button>

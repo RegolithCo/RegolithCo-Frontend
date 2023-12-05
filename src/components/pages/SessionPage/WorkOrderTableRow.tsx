@@ -22,9 +22,11 @@ export interface WorkOrderTableRowProps {
 export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, isShare, summary }) => {
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
-  const { updateModalWorkOrder, openWorkOrderModal, updateAnyWorkOrder } = React.useContext(SessionContext)
+  const { updateModalWorkOrder, session, openWorkOrderModal, updateAnyWorkOrder, myUserProfile } =
+    React.useContext(SessionContext)
   const { owner, createdAt, state, orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
+  const amISessionOwner = session?.ownerId === myUserProfile.userId
 
   // let stateIcon: React.ReactNode
   const volumeVal = Object.entries(summary.oreSummary).reduce(
@@ -35,6 +37,9 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   const isPaid = crewShares?.every(({ state }) => state === true)
   const numPaid = crewShares?.filter(({ state }) => state === true).length || 0
   const numCrewShares = (workOrder.crewShares || []).length
+
+  const allowEdit =
+    myUserProfile?.userId === workOrder?.ownerId || amISessionOwner || workOrder.sellerscName === myUserProfile?.scName
 
   let OrderIcon: SvgIconComponent
   switch (orderType) {
@@ -210,10 +215,15 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
           align="center"
           padding="checkbox"
           onClick={() => {
+            if (!allowEdit) return
             updateAnyWorkOrder({ ...workOrder, isSold: !workOrder.isSold }, workOrder.orderId)
           }}
         >
-          <Checkbox color={workOrder.isSold ? 'secondary' : 'error'} checked={Boolean(workOrder.isSold)} />
+          <Checkbox
+            disabled={!allowEdit}
+            color={workOrder.isSold ? 'secondary' : 'error'}
+            checked={Boolean(workOrder.isSold)}
+          />
         </TableCell>
       )}
       {!isShare && (

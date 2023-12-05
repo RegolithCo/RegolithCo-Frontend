@@ -1,4 +1,16 @@
-### November 25, 2023
+### December 5, 2023
+## 1.0.36 - Quality of life
+
+- Loadouts now have modal to confirm deletion
+- Checkbox to sell workorders that aren't yours is now disabled
+- User add modal now reacts properly to typing
+- Loadouts can now use lasers of lower powers (i.e. you can use a Helix 1 on a Mole if you want). They have been sorted to the bottom and labeled clearly as this is totally valid but not very common.
+- Misc other behaviour tweaks
+
+-----
+
+
+### December 3, 2023
 ## 1.0.35 - Quality of life
 
 - Session expiry date now appears in the session header

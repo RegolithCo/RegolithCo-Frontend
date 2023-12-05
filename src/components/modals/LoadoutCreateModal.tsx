@@ -31,6 +31,12 @@ export const LoadoutCreateModal: React.FC<LoadoutCreateModalProps> = ({ open, ed
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && valid) {
+          onConfirm(loadoutName.trim())
+          setTimeout(onClose, 100)
+        }
+      }}
       sx={{
         '& .MuiDialog-paper': {
           borderRadius: 10,

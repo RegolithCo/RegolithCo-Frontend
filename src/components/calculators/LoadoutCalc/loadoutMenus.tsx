@@ -194,8 +194,19 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
 }) => {
   const theme = useTheme()
   const laserChoices: MiningLaserEnum[] = Object.keys(LASERS)
-    .filter((key) => LASERS[key as MiningLaserEnum].size === laserSize)
+    .filter((key) => laserSize >= LASERS[key as MiningLaserEnum].size)
+    // .filter((key) => laserSize === LASERS[key as MiningLaserEnum].size)
     .map((l) => l as MiningLaserEnum)
+  // Sort first by size then by name
+  laserChoices.sort((a, b) => {
+    const laserA = LASERS[a]
+    const laserB = LASERS[b]
+    if (laserA.size < laserB.size) return 1
+    if (laserA.size > laserB.size) return -1
+    if (laserA.name > laserB.name) return 1
+    if (laserA.name < laserB.name) return -1
+    return 0
+  })
 
   return (
     <Stack direction="row" spacing={1} paddingBottom={2}>
@@ -218,6 +229,17 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
           sx={{
             minWidth: value ? 0 : undefined,
             width: value ? 20 : undefined,
+          }}
+          MenuProps={{
+            MenuListProps: {
+              dense: true,
+            },
+            PaperProps: {
+              elevation: 6,
+              sx: {
+                maxHeight: 500,
+              },
+            },
           }}
           onChange={(e) => onChange(e.target.value as MiningLaserEnum, true, false)}
           renderValue={(laserCode) => {
@@ -248,20 +270,42 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
           >
             <em>Select None</em>
           </MenuItem>
-          {laserChoices.map((key, idx) => (
-            <MenuItem
-              key={`menu${key}-${idx}`}
-              value={key}
-              onMouseOut={() => onChange('', true, true)}
-              onMouseOver={() => onChange(key, true, true)}
-              sx={{
-                backgroundColor:
-                  idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
-              }}
-            >
-              <LaserMenuItem laserCode={key} />
-            </MenuItem>
-          ))}
+          {laserChoices.reduce((acc, key, idx) => {
+            const thisLaser = LASERS[key as MiningLaserEnum]
+            const lastLaserKey = idx > 0 ? (laserChoices[idx - 1] as MiningLaserEnum) : null
+
+            const showSubheader =
+              (laserSize > 1 && idx === 0) ||
+              (lastLaserKey && thisLaser.size !== LASERS[lastLaserKey as MiningLaserEnum].size)
+
+            if (showSubheader)
+              acc.push(
+                <ListSubheader
+                  key="passive-subheader"
+                  sx={{
+                    backgroundColor: theme.palette.secondary.main,
+                    color: theme.palette.secondary.contrastText,
+                  }}
+                >
+                  Size {LASERS[key as MiningLaserEnum].size} Mining Lasers
+                </ListSubheader>
+              )
+            acc.push(
+              <MenuItem
+                key={`menu${key}-${idx}`}
+                value={key}
+                onMouseOut={() => onChange('', true, true)}
+                onMouseOver={() => onChange(key, true, true)}
+                sx={{
+                  backgroundColor:
+                    idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
+                }}
+              >
+                <LaserMenuItem laserCode={key} />
+              </MenuItem>
+            )
+            return acc
+          }, [] as React.ReactNode[])}
         </Select>
       )}
     </Stack>
