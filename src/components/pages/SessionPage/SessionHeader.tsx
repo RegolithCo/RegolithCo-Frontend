@@ -154,17 +154,17 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
               <div style={{ flex: '1 1' }} />
               <SessionState sessionState={session.state} size="large" />
               <Tooltip title="Download Session" placement="top">
-                <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)} color="default">
+                <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)} color="secondary">
                   <DownloadJSONIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Export an image for social media or discord." placement="top">
-                <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="default">
+                <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="secondary">
                   <ExportImageIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Invite others to join." placement="top">
-                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="default" sx={{}}>
+                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="secondary">
                   <CollaborateLinkIcon />
                 </IconButton>
               </Tooltip>
