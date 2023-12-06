@@ -17,6 +17,7 @@ import {
   Celebration,
   Coffee,
   Engineering,
+  Group,
   HelpCenter,
   Info,
   Login,
@@ -25,6 +26,7 @@ import {
   NoAccounts,
   Person,
   QuestionAnswer,
+  Settings,
   Store,
   Storefront,
   TableChart,
@@ -37,6 +39,7 @@ import { ModuleIcon } from '../icons/Module'
 import { TopBarMenu, TopBarMenuItem } from './TopBarMenu'
 import { LaserIcon } from '../icons/Laser'
 import { AppContext } from '../context/app.context'
+import { ProfileTabsEnum } from './pages/ProfilePage'
 
 export type MenuItemType = {
   path?: string
@@ -157,14 +160,28 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
   ]
 
   const profileMenu: MenuItemType[] = [
-    { path: '/profile', name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
-    { path: '/verify', name: 'Verify Account', icon: <Verified />, show: userCtx.isInitialized && !userCtx.isVerified },
+    { path: `/${ProfileTabsEnum.PROFILE}`, name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
+    { path: `/${ProfileTabsEnum.FRIENDS}`, name: 'Manage Friends', icon: <Group />, disabled: !userCtx.userProfile },
+    {
+      path: `/${ProfileTabsEnum.SESSION_DEFAULTS}`,
+      name: 'Session Defaults',
+      icon: <Settings />,
+      disabled: !userCtx.userProfile,
+    },
+    {
+      path: '/verify',
+      name: 'Verify Account',
+      icon: <Verified color="error" />,
+      show: userCtx.isInitialized && !userCtx.isVerified,
+    },
+    { isDivider: true },
     {
       name: `Streaming Mode: ${hideNames ? 'ON' : 'OFF'}`,
       action: () => setHideNames(!hideNames),
       icon: hideNames ? <NoAccounts /> : <AccountCircle />,
       disabled: !userCtx.userProfile,
     },
+    { isDivider: true },
     {
       path: '/',
       name: 'Logout',

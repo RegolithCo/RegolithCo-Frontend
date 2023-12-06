@@ -421,27 +421,9 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
               </Typography>
               <Typography variant="caption" component="div" gutterBottom sx={{ mb: 2 }}>
                 These settings control who can join this session. You can insist that users must be verified to join or
-                you can limit the session to only users you have already added as "pending".
+                you can limit the session to only users that are already listed.
               </Typography>
               <Box sx={styles.sectionBody}>
-                <FormControlLabel
-                  checked={Boolean(newSettings.sessionSettings?.allowUnverifiedUsers)}
-                  control={
-                    <Switch
-                      onChange={(e) => {
-                        setNewSettings({
-                          ...newSettings,
-                          sessionSettings: {
-                            ...newSettings.sessionSettings,
-                            allowUnverifiedUsers: e.target.checked,
-                          },
-                        })
-                      }}
-                    />
-                  }
-                  label="Allow unverified users to join."
-                />
-
                 <FormControlLabel
                   checked={Boolean(newSettings.sessionSettings?.specifyUsers)}
                   control={
@@ -457,7 +439,24 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       }}
                     />
                   }
-                  label={`Require users to be listed before they can join.`}
+                  label={`Require user mention to join.`}
+                />
+                <FormControlLabel
+                  checked={!newSettings.sessionSettings?.allowUnverifiedUsers}
+                  control={
+                    <Switch
+                      onChange={(e) => {
+                        setNewSettings({
+                          ...newSettings,
+                          sessionSettings: {
+                            ...newSettings.sessionSettings,
+                            allowUnverifiedUsers: !e.target.checked,
+                          },
+                        })
+                      }}
+                    />
+                  }
+                  label="Require user verification to join."
                 />
 
                 {/* <FormControlLabel

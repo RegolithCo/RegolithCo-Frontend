@@ -39,6 +39,13 @@ import { SessionSettingsTab } from './SessionPage/TabSettings'
 import { VehicleChooser } from '../fields/VehicleChooser'
 import { Theme } from '@mui/system'
 
+export const ProfileTabsEnum = {
+  PROFILE: 'profile',
+  FRIENDS: 'profile/friends',
+  SESSION_DEFAULTS: 'profile/session-settings',
+} as const
+export type ProfileTabsEnum = ObjectValues<typeof ProfileTabsEnum>
+
 type ObjectValues<T> = T[keyof T]
 export const ProfileModals = {
   ChangeUsername: 'ChangeUsername',
@@ -51,6 +58,8 @@ export interface ProfilePageProps {
   userProfile: UserProfile
   verifiedFriends: VerifiedUserLookup
   loading?: boolean
+  activeTab: ProfileTabsEnum
+  setActiveTab: (tab: ProfileTabsEnum) => void
   navigate?: (path: string) => void
   addFriend?: (friendName: string) => void
   removeFriend?: (friendName: string) => void
@@ -92,16 +101,11 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const ProfileTabsEnum = {
-  PROFILE: 'profile',
-  FRIENDS: 'friends',
-  SESSION_DEFAULTS: 'sessionDefaults',
-} as const
-export type ProfileTabsEnum = ObjectValues<typeof ProfileTabsEnum>
-
 export const ProfilePage: React.FC<ProfilePageProps> = ({
   userProfile,
   loading,
+  activeTab,
+  setActiveTab,
   verifiedFriends,
   navigate,
   updateUserProfile,
@@ -118,7 +122,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>(
     pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings'])
   )
-  const [activeTab, setActiveTab] = React.useState<ProfileTabsEnum>(ProfileTabsEnum.PROFILE)
   const [friend2remove, setFriend2remove] = React.useState<string>()
 
   React.useEffect(() => {

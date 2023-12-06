@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
-import { Box, Button, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, Button, ButtonGroup, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { ExpandMore, GroupAdd } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
@@ -9,6 +9,7 @@ import { SessionUserList } from '../../fields/SessionUserList/SessionUserList'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { SessionUserContextMenu } from '../../fields/SessionUserList/SessionUserContextMenu'
 import { grey } from '@mui/material/colors'
+import { AddUserButton } from '../../fields/AddUserButton'
 
 export interface TabUsersProps {
   propa?: string
@@ -103,24 +104,11 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
             {totalSessionMembers} Session Member{totalSessionMembers === 1 ? '' : 's'}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Tooltip title="Add a pending user to this session" placement="right" arrow>
-            <>
-              <Button
-                size="small"
-                variant="outlined"
-                disabled={!isSessionActive}
-                endIcon={<GroupAdd />}
-                color="inherit"
-                onClick={() => setActiveModal(DialogEnum.ADD_FRIEND)}
-                sx={{
-                  opacity: isSessionActive ? 1 : 0.5,
-                  background: isSessionActive ? theme.palette.secondary.main : grey[600],
-                }}
-              >
-                Add
-              </Button>
-            </>
-          </Tooltip>
+          <AddUserButton
+            disabled={!isSessionActive}
+            onAdd={() => setActiveModal(DialogEnum.ADD_FRIEND)}
+            onInvite={() => setActiveModal(DialogEnum.COLLABORATE)}
+          />
         </Stack>
       </Toolbar>
       {captains.length > 0 && (

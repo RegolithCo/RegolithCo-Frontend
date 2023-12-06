@@ -18,6 +18,7 @@ import { StagingWarning } from './components/modals/StagingWarning'
 import { LoadoutPageContainer } from './components/pages/LoadoutPage.container'
 import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
 import { SessionJoinContainer } from './components/pages/SessionJoin.container'
+import { ProfileTabsEnum } from './components/pages/ProfilePage'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -105,7 +106,25 @@ export const App: React.FC = () => {
 
           {/* User's profile page */}
           <Route
-            path="/profile"
+            path={`/${ProfileTabsEnum.PROFILE}`}
+            element={
+              <AuthGate>
+                <ProfilePageContainer />
+              </AuthGate>
+            }
+            errorElement={<Error />}
+          />
+          <Route
+            path={`/${ProfileTabsEnum.FRIENDS}`}
+            element={
+              <AuthGate>
+                <ProfilePageContainer />
+              </AuthGate>
+            }
+            errorElement={<Error />}
+          />
+          <Route
+            path={`/${ProfileTabsEnum.SESSION_DEFAULTS}`}
             element={
               <AuthGate>
                 <ProfilePageContainer />

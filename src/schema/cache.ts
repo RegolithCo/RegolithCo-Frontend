@@ -62,7 +62,7 @@ export type MiningLoadoutFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'reanimateSession' | 'rebuildSessionSummary' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateUserProfile' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateUserProfile' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -84,7 +84,6 @@ export type MutationFieldPolicy = {
 	leaveSession?: FieldPolicy<any> | FieldReadFunction<any>,
 	markCrewSharePaid?: FieldPolicy<any> | FieldReadFunction<any>,
 	reanimateSession?: FieldPolicy<any> | FieldReadFunction<any>,
-	rebuildSessionSummary?: FieldPolicy<any> | FieldReadFunction<any>,
 	refreshAvatar?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	removeSessionCrew?: FieldPolicy<any> | FieldReadFunction<any>,

@@ -15,6 +15,7 @@ import { ShareUrlField } from '../fields/ShareUrlField'
 import { Diversity3, Share } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { Stack } from '@mui/system'
+import { CollaborateLinkIcon, ExportImageIcon } from '../../icons/badges'
 
 export interface CollaborateModalProps {
   open: boolean
@@ -55,7 +56,7 @@ export const CollaborateModal: React.FC<CollaborateModalProps> = ({ open, url, w
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="center">
-          <Diversity3
+          <CollaborateLinkIcon
             sx={{
               fontSize: 30,
               mr: 2,
@@ -69,30 +70,31 @@ export const CollaborateModal: React.FC<CollaborateModalProps> = ({ open, url, w
       </DialogTitle>
       <DialogContent>
         {warn ? (
-          <Alert severity="error">
-            <AlertTitle>Warning</AlertTitle>
+          <Alert severity="error" variant="filled">
             <Typography paragraph fontWeight={'bold'}>
-              Be careful who you share your sessions with!! Anyone with this URL can join your session.
-            </Typography>
-            <Typography>
-              If you just want to share your session on social media then use the Share icon (<Share />) instead.
+              Be careful who you share your sessions with!! Anyone with the URL below can join your session. If you just
+              want to share your session on social media then use the image export icon (<ExportImageIcon />) instead.
             </Typography>
           </Alert>
         ) : (
           <Typography>Send this link to anyone you want to join your session.</Typography>
         )}
-
-        <QRCodeSVG
-          value={url}
-          style={{
-            display: 'block',
-            border: '10px solid white',
-            margin: '1rem auto',
-            height: 200,
-            width: 200,
-          }}
-        />
-        <ShareUrlField code={url} />
+        <Stack sx={{ mt: 2 }}>
+          <Typography variant="caption" component="div">
+            Use this link in social apps like discord
+          </Typography>
+          <ShareUrlField code={url} />
+          <QRCodeSVG
+            value={url}
+            style={{
+              display: 'block',
+              border: '10px solid white',
+              margin: '1rem auto',
+              height: 200,
+              width: 200,
+            }}
+          />
+        </Stack>
       </DialogContent>
       <DialogActions>
         <div style={{ flexGrow: 1 }} />

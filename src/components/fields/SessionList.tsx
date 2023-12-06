@@ -404,7 +404,47 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
           </Box>
         )
       })}
-      {!loading && !activeOnly && (
+      {!loading && sessionsByDate.length === 0 && (
+        <Paper
+          elevation={5}
+          sx={{
+            m: 5,
+            p: 3,
+            '& strong': {
+              color: theme.palette.secondary.main,
+            },
+          }}
+        >
+          <Typography variant="h5" paragraph>
+            You have no sessions yet!
+          </Typography>
+          <Typography variant="body2" paragraph>
+            This is where your sessions will appear. You will see both the sessions you create and the sessions of
+            others that you have joined.
+          </Typography>
+          <Typography variant="body2" paragraph>
+            Think of sessions as a way to group together your mining or salvage gameplay. You can create a session for
+            yourself or invite others to join you. You can also join sessions created by others if they send you an
+            invitation to do so.
+          </Typography>
+          <Typography variant="body2" paragraph>
+            Sessions can contain both <strong>Work Orders</strong> and <strong>Scouting Finds</strong>.
+          </Typography>
+          <Typography variant="body2" paragraph>
+            <strong>Work orders</strong> represent either a single refinery job or a single sale at the TDD and have
+            built-in tools to help you divide and share the proceeds with your party or crew.
+          </Typography>
+          <Typography variant="body2" paragraph>
+            <strong>Scouting finds</strong> represent a cluster of resources (rocks, gems, salvage chunks) that can be
+            mined or salvaged to then create work orders.
+          </Typography>
+          <Typography variant="body2" paragraph>
+            Click the <strong>Create a new Session</strong> button above or click a join link from someone else to get
+            started!
+          </Typography>
+        </Paper>
+      )}
+      {!loading && !activeOnly && sessionsByDate.length > 0 && (
         <Typography variant="body2" sx={{ textAlign: 'center' }} component="div" color="text.secondary">
           <em>No more sessions</em>
         </Typography>

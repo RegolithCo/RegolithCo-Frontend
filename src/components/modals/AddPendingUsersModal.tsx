@@ -57,11 +57,11 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
         },
       }}
     >
-      <DialogTitle>Add/Invite User</DialogTitle>
+      <DialogTitle>Add usernames to session</DialogTitle>
       <DialogContent>
         <Typography variant="caption" component="div">
-          Add a user to the session. Added users start as "Pending". They become "active" once they log in and join the
-          session.
+          Add a user to the session. Added users start as "Pending" but they become "Active" once they log in and join
+          the session.
         </Typography>
 
         {error ? (

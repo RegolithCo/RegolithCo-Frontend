@@ -1,3 +1,16 @@
+### December 6, 2023
+## 1.0.37 - Icons and buttons
+
+A number of you have reached out to give some feedback so I've made a few changes to the UI to make it a little more intuitive based on what I've been hearing.
+
+- New explanation for new users whern there are no sessions yet. This will grow later when there are more help materials.
+- Changed the add user button to make it both more compact and ituitive. There is also a menu now that includes a way to get the sharing link
+- Consistency and improvements around icon choices and tooltip language.
+- New menu items in the profile menu for the friend manager and session defaults.
+- Profile area now has separate urls for friend list and session defaults.
+
+-----
+
 ### December 5, 2023
 ## 1.0.36 - Quality of life
 

@@ -43,9 +43,6 @@ export const ShareUrlField: React.FC<ShareUrlFieldProps> = ({ code }) => {
           backgroundColor: '#00000077',
         },
       }}
-      sx={{
-        my: 1,
-      }}
     />
   )
 }

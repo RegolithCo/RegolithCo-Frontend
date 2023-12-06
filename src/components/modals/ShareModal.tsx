@@ -38,6 +38,7 @@ import { SessionShare } from '../sharing/SessionShare'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { ClusterShare } from '../sharing/ClusterShare'
 import { AppContext } from '../../context/app.context'
+import { ExportImageIcon } from '../../icons/badges'
 
 export interface ShareModalProps {
   open: boolean
@@ -141,7 +142,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="center">
-          <Share
+          <ExportImageIcon
             sx={{
               fontSize: 30,
               mr: 2,
@@ -150,7 +151,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
               // top: 15,
             }}
           />
-          <Typography variant="h4">Share {activeTab}</Typography>
+          <Typography variant="h4">{activeTab} Image Export</Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>

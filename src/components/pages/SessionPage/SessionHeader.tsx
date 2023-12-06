@@ -13,11 +13,11 @@ import {
 import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { SxProps } from '@mui/system'
 import { fontFamilies } from '../../../theme'
-import { CloudDownload, Diversity3, Share } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
+import { CollaborateLinkIcon, DownloadJSONIcon, ExportImageIcon } from '../../../icons/badges'
 
 export interface SesionHeaderProps {
   propA?: string
@@ -66,7 +66,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       fontWeight: 'bold',
     },
     '& strong': {
-      color: theme.palette.primary.main,
+      color: 'white',
     },
   },
   sessionContext: {
@@ -153,24 +153,24 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
               {/* SHARE BUTTON */}
               <div style={{ flex: '1 1' }} />
               <SessionState sessionState={session.state} size="large" />
-              <Tooltip title="Download Session">
-                <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)}>
-                  <CloudDownload />
+              <Tooltip title="Download Session" placement="top">
+                <IconButton onClick={() => setActiveModal(DialogEnum.DOWNLOAD_SESSION)} color="default">
+                  <DownloadJSONIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Share session on social media or discord.">
-                <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="primary">
-                  <Share />
+              <Tooltip title="Export an image for social media or discord." placement="top">
+                <IconButton onClick={() => setActiveModal(DialogEnum.SHARE_SESSION)} color="default">
+                  <ExportImageIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Invite others to join.">
-                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="info" sx={{}}>
-                  <Diversity3 />
+              <Tooltip title="Invite others to join." placement="top">
+                <IconButton onClick={() => setActiveModal(DialogEnum.COLLABORATE)} color="default" sx={{}}>
+                  <CollaborateLinkIcon />
                 </IconButton>
               </Tooltip>
             </Box>
             <Typography
-              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2, fontSize: '0.6rem' }}
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
               component="div"
               gutterBottom
               variant="overline"
@@ -179,7 +179,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
             </Typography>
             {session.state === SessionStateEnum.Active && (
               <Typography
-                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2, fontSize: '0.6rem' }}
+                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
                 component="div"
                 gutterBottom
                 variant="overline"
@@ -189,7 +189,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
             )}
             {session.state === SessionStateEnum.Closed && session.finishedAt && (
               <Typography
-                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2, fontSize: '0.6rem' }}
+                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
                 component="div"
                 gutterBottom
                 variant="overline"
@@ -198,22 +198,22 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
               </Typography>
             )}
             <Typography
-              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
               component="div"
               gutterBottom
               color="text.secondary"
-              variant="caption"
+              variant="overline"
             >
-              Unverified users can join: <strong>{session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
+              Require Verification: <strong>{!session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
             </Typography>
             <Typography
-              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.2 }}
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
               component="div"
               gutterBottom
               color="text.secondary"
-              variant="caption"
+              variant="overline"
             >
-              Users must be mentioned to join: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
+              Require Mention: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
             </Typography>
           </Grid>
         </Grid>
