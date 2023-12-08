@@ -102,7 +102,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             </Tooltip>
             {/* The delete button only shows if we are editing */}
             {!isShare && (
-              <TableCell align="left" colSpan={isEditing ? 2 : 1}>
+              <TableCell align="left" colSpan={isEditing ? 3 : 2}>
                 Paid
               </TableCell>
             )}

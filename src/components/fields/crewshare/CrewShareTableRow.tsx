@@ -11,6 +11,7 @@ import {
   MenuItem,
   useTheme,
   Box,
+  alpha,
 } from '@mui/material'
 import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum, ShareTypeToolTip } from '@regolithco/common'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Cancel, Description, NoteAdd } from '@mui/icons-material'
@@ -72,6 +73,13 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     ? 'The session owner has suggested this row. You can change it if you want.'
     : ''
 
+  const paidToolTip = isMe
+    ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
+    : isSeller
+    ? `The seller. The seller is always paid`
+    : ''
+  // : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
+
   // const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
   const backgroundColor = isSeller ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
   const hasNote = crewShare.note && crewShare.note.length > 0
@@ -80,7 +88,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     : payoutSummary
   return (
     <>
-      <Tooltip title={tooltip} placement="left" enterDelay={1000}>
+      <Tooltip title={tooltip} arrow placement="left" enterDelay={1000}>
         <TableRow sx={{ background: backgroundColor }}>
           {isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
           {!isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
@@ -91,18 +99,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           {isSeller ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
 
           {!isShare && (
-            <Tooltip
-              placement="right-end"
-              enterDelay={2000}
-              title={
-                isMe
-                  ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
-                  : isSeller
-                  ? `The seller. The seller is always paid`
-                  : ''
-                // : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
-              }
-            >
+            <Tooltip placement="top" arrow enterDelay={2000} title={!isEditing ? paidToolTip : ''}>
               <TableCell align="center" padding="none" width={30}>
                 <Checkbox
                   checked={paid}
@@ -118,35 +115,38 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           {!isShare && (
             <TableCell align="center" padding="none" width={30}>
               {(!isEditing || isMandatory) && hasNote && (
-                <Tooltip title={`NOTE: ${crewShare.note}`} placement="right-end">
+                <Tooltip arrow title={`NOTE: ${crewShare.note}`} placement="top">
                   <div>
                     <Description color="primary" />
                   </div>
                 </Tooltip>
               )}
               {isEditing && !isMandatory && (
-                <Tooltip title="Add a note" placement="left" enterDelay={2000}>
-                  <Box sx={{}}>
-                    <NoteAdd
-                      sx={{ color: hasNote ? theme.palette.primary.main : 'inherit' }}
-                      onClick={() => setOpenNoteDialog(true)}
-                    />
-                  </Box>
+                <Tooltip title="Add a note" arrow placement="top" enterDelay={2000}>
+                  <IconButton
+                    size="small"
+                    sx={{
+                      cursor: 'pointer',
+                      color: hasNote ? theme.palette.primary.main : 'inherit',
+                      '& :hover': { color: theme.palette.primary.main },
+                    }}
+                    onClick={() => setOpenNoteDialog(true)}
+                  >
+                    <NoteAdd />
+                  </IconButton>
                 </Tooltip>
               )}
             </TableCell>
           )}
 
           {isEditing && (
-            <Tooltip title={`Delete ${getSafeName(crewShare.scName)}`} placement="left" enterDelay={2000}>
-              <TableCell align="center" padding="none" width={30}>
-                {!isSeller && !isMandatory && (
-                  <IconButton size="small" color="error" onClick={onDelete}>
-                    <Cancel />
-                  </IconButton>
-                )}
-              </TableCell>
-            </Tooltip>
+            <TableCell align="center" padding="none" width={30}>
+              {!isSeller && !isMandatory && (
+                <IconButton size="small" color="error" onClick={onDelete}>
+                  <Cancel />
+                </IconButton>
+              )}
+            </TableCell>
           )}
         </TableRow>
       </Tooltip>
@@ -213,7 +213,7 @@ const formatCrewShareTypeEdit = (
 const formatCrewShareType = (crewShare: CrewShare): React.ReactElement => {
   const shareIcon = crewShareTypeIcons[crewShare.shareType]
   return (
-    <Tooltip title={`Share type: ${ShareTypeToolTip[crewShare.shareType]}`} placement="left-start">
+    <Tooltip arrow title={`Share type: ${ShareTypeToolTip[crewShare.shareType]}`} placement="top">
       <TableCell align="right" valign="middle" padding="none">
         {shareIcon}
       </TableCell>
@@ -225,8 +225,8 @@ export const formatCrewShare = (
   crewShare: CrewShare,
   onChange: (newCrewShare: CrewShare) => void,
   allowEdit: boolean,
-  editing: boolean,
-  setEditing: (editing: boolean) => void
+  editingField: boolean,
+  setEditingField: (editing: boolean) => void
 ): React.ReactElement => {
   const theme = useTheme()
   let shareVal: React.ReactElement
@@ -250,13 +250,21 @@ export const formatCrewShare = (
       align="right"
       valign="middle"
       padding="none"
-      sx={{ color: theme.palette.text.secondary }}
+      sx={{
+        pl: 0.5,
+        color: theme.palette.text.secondary,
+        cursor: allowEdit && !editingField ? 'pointer' : 'inherit',
+        '&:hover': {
+          background: allowEdit && !editingField ? alpha(theme.palette.primary.dark, 0.2) : 'inherit',
+          color: allowEdit && !editingField ? theme.palette.primary.main : theme.palette.text.secondary,
+        },
+      }}
       onClick={() => {
-        if (allowEdit && !editing) setEditing(true)
+        if (allowEdit && !editingField) setEditingField(true)
       }}
     >
-      {!editing && shareVal}
-      {editing && (
+      {!editingField && shareVal}
+      {editingField && (
         <TextField
           autoFocus
           defaultValue={crewShare.shareType === ShareTypeEnum.Percent ? 100 * (crewShare.share || 0) : crewShare.share}
@@ -282,19 +290,19 @@ export const formatCrewShare = (
               log.error(e)
             }
           }}
-          onBlur={() => setEditing(false)}
+          onBlur={() => setEditingField(false)}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               // Set next cell down to edit mode
               event.preventDefault()
-              setEditing(false)
+              setEditingField(false)
             } else if (event.key === 'Tab') {
               event.preventDefault()
               // Set next cell down to edit mode
-              setEditing(false)
+              setEditingField(false)
             } else if (event.key === 'Escape') {
               event.preventDefault()
-              setEditing(false)
+              setEditingField(false)
             }
           }}
           inputProps={{
@@ -321,8 +329,15 @@ const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactN
     tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout`
   }
   return (
-    <Tooltip title={tooltip} enterDelay={2000} placement="left">
-      <TableCell align="right" padding="none" sx={{ color: theme.palette.primary.light }}>
+    <Tooltip title={tooltip} arrow enterDelay={2000} placement="top">
+      <TableCell
+        align="right"
+        padding="none"
+        sx={{
+          pl: 0.5,
+          color: theme.palette.primary.light,
+        }}
+      >
         <MValue
           value={shareArr[1]}
           format={MValueFormat.number}
