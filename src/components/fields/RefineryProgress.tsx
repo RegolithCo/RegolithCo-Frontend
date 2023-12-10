@@ -38,27 +38,24 @@ function formatValue(inputValue: string): InputValueType {
   const formattedValue = [...parsedSegments].reverse().join(':')
 
   // the segments take the form
-  let durationS = 0
+  let durationMin = 0
   if (parsedSegments.length > 0) {
-    durationS += parseInt(parsedSegments[0])
+    durationMin += parseInt(parsedSegments[0])
   }
   if (parsedSegments.length > 1) {
-    durationS += parseInt(parsedSegments[1]) * 60
+    durationMin += parseInt(parsedSegments[1]) * 60
   }
   if (parsedSegments.length > 2) {
-    durationS += parseInt(parsedSegments[2]) * 60 * 60
-  }
-  if (parsedSegments.length > 3) {
-    durationS += parseInt(parsedSegments[3]) * 24 * 60 * 60
+    durationMin += parseInt(parsedSegments[2]) * 24 * 60
   }
 
-  return [formattedValue, parsedSegments, durationS]
+  return [formattedValue, parsedSegments, durationMin * 60]
 }
 
 export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, editable, totalTimeS, onChange }) => {
   const [isEditing, setIsEditing] = React.useState(false)
   const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTime, (totalTimeS || 0) * 1000)
-  const [[stringValue, segments, numberValue], setValue] = React.useState<[string, string[], number]>(
+  const [[stringValue, segments, numValMs], setValue] = React.useState<[string, string[], number]>(
     formatValue(reverseFormat(totalTimeS))
   )
   const theme = useTheme()
@@ -68,7 +65,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
 
     const inputValue = event.target.value
     const formattedValue = formatValue(inputValue)
-    if (formattedValue[0].length > 11) {
+    if (formattedValue[0].length > 9) {
       return
     }
 
@@ -158,10 +155,9 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
                 color: theme.palette.secondary.main,
               }}
             >
-              {segments.length > 3 && `${segments[3]} day, `}
-              {segments.length > 2 && `${segments[2]} hr, `}
-              {segments.length > 1 && `${segments[1]} min, `}
-              {`${segments[0] || 0} s`}
+              {segments.length > 2 && `${segments[2]} day, `}
+              {segments.length > 1 && `${segments[1]} hr, `}
+              {`${segments[0] || 0} min`}
             </Typography>
           }
         >
@@ -186,7 +182,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
-                onChange(numberValue)
+                onChange(numValMs)
                 setIsEditing(false)
               } else if (e.key === 'Escape') {
                 e.preventDefault()
@@ -194,13 +190,13 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
               }
             }}
             onBlur={() => {
-              onChange(numberValue)
+              onChange(numValMs)
               setIsEditing(false)
             }}
             value={stringValue || ''}
             onChange={handleChange}
             sx={{}}
-            placeholder="DD:HH:MM:SS"
+            placeholder="DD:HH:MM"
           />
         </Tooltip>
       )}
