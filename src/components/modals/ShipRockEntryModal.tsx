@@ -376,6 +376,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 InputProps={{
                   endAdornment: <Typography sx={{ mr: 1 }}>t</Typography>,
                 }}
+                onFocus={(event) => {
+                  event.target.select()
+                }}
                 error={massError}
                 helperText={disabled ? massErrorReason : 'Required'}
                 value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
@@ -397,6 +400,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 fullWidth
                 InputProps={{
                   endAdornment: <Typography sx={{ mr: 1 }}>%</Typography>,
+                }}
+                onFocus={(event) => {
+                  event.target.select()
                 }}
                 helperText={'Optional'}
                 error={resistanceError}
@@ -428,6 +434,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 sx={styles.massField}
                 fullWidth
                 helperText={'Optional'}
+                onFocus={(event) => {
+                  event.target.select()
+                }}
                 onBlur={() => setInstTextValue('')}
                 error={instabilityError}
                 value={instTextValue && instTextValue.length > 0 ? instTextValue : newShipRock.inst || ''}
@@ -543,9 +552,10 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       onBlur={() => {
                         setActiveOrePercentText(null)
                       }}
-                      onFocus={() => {
+                      onFocus={(event) => {
                         setActiveOrePercentText([idx, parseNum(((ore.percent as number) * 100).toFixed(2), 2, 2)])
                         inputRefs[ore.ore]?.current?.select()
+                        event.target.select()
                       }}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === 'Tab') {
