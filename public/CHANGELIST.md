@@ -3,7 +3,7 @@
 
 - Seconds don't matter. we shouldn't have to enter them. Second timers are fun though so they can stay on the display.
 - Ore buttons in the ore chooser have better contrast when not selected
-- Mass and other input text should be selected by default when focused to make it easier to type over them.
+- Mass and other input text should be selected by default when focused to make it easier to type over them. Also pro users can use Tab and Shift-Tab to move forward and backward through the form to enter rocks faster.
 
 -----
 
