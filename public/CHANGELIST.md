@@ -1,3 +1,12 @@
+### December 10, 2023
+## 1.0.38 - Minor fixes
+
+- Seconds don't matter. we shouldn't have to enter them. Second timers are fun though so they can stay on the display.
+- Ore buttons in the ore chooser have better contrast when not selected
+- Mass and other input text should be selected by default when focused to make it easier to type over them.
+
+-----
+
 ### December 6, 2023
 ## 1.0.37 - Icons and buttons
 
