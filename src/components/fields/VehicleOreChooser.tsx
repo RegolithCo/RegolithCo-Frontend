@@ -1,5 +1,5 @@
 import React from 'react'
-import { ToggleButton, Tooltip } from '@mui/material'
+import { alpha, ToggleButton, Tooltip } from '@mui/material'
 import { VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { blue, green } from '@mui/material/colors'
@@ -64,7 +64,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 onChange && onChange(newValue)
               }}
               sx={{
-                backgroundColor: bgc,
+                backgroundColor: alpha(bgc, 0.4),
                 border: '2px solid transparent',
                 color: fgc,
                 fontSize: {
@@ -72,7 +72,6 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                   sm: 10,
                   md: 10,
                 },
-                opacity: 0.5,
                 p: 0,
                 '&:hover': {
                   color: 'white',
@@ -82,7 +81,6 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 '&.Mui-selected, &.Mui-selected:hover': {
                   color: fgc,
                   border: '2px solid white',
-                  opacity: 1,
                   backgroundColor: bgc,
                 },
               }}

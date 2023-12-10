@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ToggleButton, Tooltip, useTheme } from '@mui/material'
+import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -79,14 +79,13 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 onChange && onChange(newValue)
               }}
               sx={{
-                backgroundColor: bgc,
+                backgroundColor: alpha(bgc, 0.2),
                 border: '2px solid transparent',
-                color: fgc,
+                color: '#aaa',
                 fontSize: {
                   xs: 8,
                   sm: 10,
                 },
-                opacity: 0.3,
                 p: 0,
                 '&:hover': {
                   color: 'white',
@@ -96,7 +95,6 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 '&.Mui-selected': {
                   color: fgc,
                   border: '2px solid white',
-                  opacity: 1,
                   backgroundColor: bgc,
                 },
               }}
