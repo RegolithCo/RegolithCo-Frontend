@@ -542,7 +542,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                       value={
                         activeOrePercentText && activeOrePercentText[0] === idx
                           ? activeOrePercentText[1]
-                          : ((ore.percent as number) * 100).toFixed(2)
+                          : ore.percent > 0
+                          ? ((ore.percent as number) * 100).toFixed(2)
+                          : '0'
                       }
                       sx={styles.numfields}
                       disabled={ore.ore === ShipOreEnum.Inertmaterial}
@@ -553,8 +555,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                         setActiveOrePercentText(null)
                       }}
                       onFocus={(event) => {
-                        setActiveOrePercentText([idx, parseNum(((ore.percent as number) * 100).toFixed(2), 2, 2)])
-                        inputRefs[ore.ore]?.current?.select()
+                        if (ore.percent > 0)
+                          setActiveOrePercentText([idx, parseNum(((ore.percent as number) * 100).toFixed(2), 2, 2)])
+                        // inputRefs[ore.ore]?.current?.select()
                         event.target.select()
                       }}
                       onKeyDown={(event) => {
