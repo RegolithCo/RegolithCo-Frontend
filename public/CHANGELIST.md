@@ -5,6 +5,7 @@
 - Work order and Scouting find modals on the session now accomodate mobile and small screens better.
 - Dropdowns for gravity well, location type have been alphabetized.
 - Settings pane now scrolls properly on mobile.
+- Selecting `copper` or `iron` no longer breaks the Market Price finder.
 - Misc other theme and UI fixes.
 
 -----
@@ -227,7 +228,7 @@ I'm sure we'll be able to get back to a place where we can bring back these calc
     - Context menus available on right-click.
     - Click on the user to get a popup with their status.
     - Click on yourself to get a popup where you can change your status.
-- **New Tool: [Market Price Calculator](https://regolith.rocks/marketPrice)**. This tool will help you figure out what the best price is for your ore and where to sell it.
+- **New Tool: [Market Price Calculator](https://regolith.rocks/market-price)**. This tool will help you figure out what the best price is for your ore and where to sell it.
 - **Session users can now have loadouts** Advertise to the session what tools you're bringing to the party.
 - **User status** 
     - Click a user in the user list to see a card showing their status, crew, ship, loadout etc.

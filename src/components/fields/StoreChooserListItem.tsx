@@ -53,6 +53,11 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const theme = useTheme()
   const styles = styleThunk(theme)
 
+  const planetName = storeChoice.planet ? lookups.planetLookups['ST'][storeChoice.planet].name : ''
+  const satellite = storeChoice.satellite
+    ? lookups.planetLookups['ST'][storeChoice.planet].satellites[storeChoice.satellite]
+    : undefined
+
   const contents = (
     <>
       <ListItemText
@@ -65,9 +70,8 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
               {compact ? storeChoice.name_short : storeChoice.name}
             </Typography>
             <Typography variant="caption" sx={{ color: theme.palette.secondary.main }} component="div">
-              {lookups.planetLookups['ST'][storeChoice.planet].name}
-              {storeChoice.satellite &&
-                ` // ${lookups.planetLookups['ST'][storeChoice.planet].satellites[storeChoice.satellite]}`}
+              {planetName}
+              {satellite && ` // ${satellite}`}
             </Typography>
           </Box>
         }

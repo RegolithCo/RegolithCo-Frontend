@@ -71,7 +71,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
     case '/session':
       bgImage = BGImagesEnum.OPTION2
       break
-    case '/marketPrice':
+    case '/market-price':
       bgImage = BGImagesEnum.MARKET1
       break
     case '/cluster':
