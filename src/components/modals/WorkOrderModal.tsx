@@ -44,15 +44,12 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   paper: {
     '& .MuiDialog-paper': {
       borderRadius: 2,
-      [theme.breakpoints.down('sm')]: {
+      minHeight: 200,
+      overflow: 'visible',
+      [theme.breakpoints.down('md')]: {
         margin: 0,
         borderRadius: 0,
-        maxHeight: '100%',
-      },
-      [theme.breakpoints.up('md')]: {
-        minHeight: 600,
-        maxHeight: 900,
-        overflow: 'visible',
+        minHeight: '100vh',
       },
       backgroundColor: '#282828',
       backgroundImage: 'none',
@@ -204,6 +201,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       onClose={handleConfirmClose}
       maxWidth="lg"
       fullWidth
+      fullScreen={!mediumUp}
       disableEscapeKeyDown={isEditing}
       sx={{ ...styles.paper }}
     >

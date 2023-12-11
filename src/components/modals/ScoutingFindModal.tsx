@@ -1,5 +1,16 @@
 import * as React from 'react'
-import { Box, Button, Dialog, DialogActions, IconButton, SxProps, Theme, ThemeProvider, Tooltip } from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  IconButton,
+  SxProps,
+  Theme,
+  ThemeProvider,
+  Tooltip,
+  useMediaQuery,
+} from '@mui/material'
 
 import { ScoutingFind, ScoutingFindStateEnum } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
@@ -20,6 +31,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     '& .MuiDialog-paper': {
       borderRadius: 10,
       border: `8px solid ${theme.palette.primary.main}`,
+      [theme.breakpoints.down('md')]: {
+        borderRadius: 0,
+      },
     },
   },
   boxContainer: {
@@ -52,6 +66,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
   const [theme, setTheme] = React.useState<Theme>(
     scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
   )
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   React.useEffect(() => {
     setNewScoutingFind(scoutingFind)
   }, [scoutingFind])
@@ -73,7 +88,15 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
   const styles = stylesThunk(theme)
   return (
     <ThemeProvider theme={theme}>
-      <Dialog open={open} onClose={handleConfirmClose} fullWidth maxWidth="md" disableEscapeKeyDown sx={styles.dialog}>
+      <Dialog
+        open={open}
+        onClose={handleConfirmClose}
+        fullWidth
+        fullScreen={!mediumUp}
+        maxWidth="md"
+        disableEscapeKeyDown
+        sx={styles.dialog}
+      >
         <Box sx={styles.boxContainer}>
           {/* SHARE BUTTON */}
           {!isNew && setShareScoutingFindId && (
