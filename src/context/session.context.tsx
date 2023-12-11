@@ -17,6 +17,7 @@ import {
   UserSuggest,
 } from '@regolithco/common'
 import { createContext } from 'react'
+import log from 'loglevel'
 
 type ObjectValues<T> = T[keyof T]
 export const DialogEnum = {
@@ -125,7 +126,7 @@ const notAvailable =
   (name: string) =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any) => {
-    console.log(`${name} not available in session context`, args)
+    log.error(`${name} not available in session context`, args)
   }
 
 export const sessionContextDefault: SessionContextType = {

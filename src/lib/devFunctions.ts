@@ -66,7 +66,7 @@ export const devQueries = (headers: Record<string, string>) => {
       .then((resp) => {
         if (!resp || !resp.data || (resp.data.errors && resp.data.errors.length > 0))
           throw new Error('ERROR:' + JSON.stringify(resp.data.errors))
-        console.log('SUCCESSFULLY REANIMATED SESSION. DO a hard refresh')
+        log.info('SUCCESSFULLY REANIMATED SESSION. DO a hard refresh')
       })
       .catch((err) => {
         log.error('Error reanimating session', err)

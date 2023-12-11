@@ -1,5 +1,6 @@
 import { obfuscateUserId } from '@regolithco/common'
 import React, { createContext, PropsWithChildren } from 'react'
+import log from 'loglevel'
 
 export interface AppContextType {
   hideNames: boolean
@@ -11,7 +12,7 @@ const notAvailable =
   (name: string) =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any) => {
-    console.log(`${name} not available in app context`, args)
+    log.error(`${name} not available in app context`, args)
   }
 
 export const appContextDefault: AppContextType = {

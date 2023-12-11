@@ -86,7 +86,6 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
 
   // match /session/20780cc1-28b8-4169-a004-b874687c79cd/dash but not /session
   const hideCoffee = pathname.match(/^\/session\/[0-9a-f-]+/)
-  console.log('AppWrapperContainer', { pathname, hash, key })
 
   return (
     <AppWrapper bgImage={bgImage} showCoffee={!hideCoffee}>

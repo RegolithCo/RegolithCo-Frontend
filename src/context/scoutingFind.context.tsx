@@ -1,5 +1,6 @@
 import { ScoutingFind, SessionUser } from '@regolithco/common'
 import { createContext } from 'react'
+import log from 'loglevel'
 
 export interface ScoutingFindContextType {
   scoutingFind: ScoutingFind
@@ -14,7 +15,7 @@ export interface ScoutingFindContextType {
 }
 
 const notAvailable = (name: string) => () => {
-  console.log(`${name} not available in session context`)
+  log.error(`${name} not available in session context`)
 }
 
 export const scoutingFindContextDefault: ScoutingFindContextType = {

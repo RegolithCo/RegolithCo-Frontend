@@ -131,7 +131,9 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           <AlertTitle>A note about 3.21, 3.21.1, 3.22 and the road to Pyro</AlertTitle>
           Expect weirdness and <strong>thank you again</strong> for your patience while all our tools catch up.
           <em>
-            <Link onClick={() => setAlertModalOpen(true)}>(Read More)</Link>
+            <Link onClick={() => setAlertModalOpen(true)} sx={{ cursor: 'pointer' }}>
+              (Read More)
+            </Link>
           </em>
         </Alert>
       }

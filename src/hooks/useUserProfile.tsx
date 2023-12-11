@@ -179,7 +179,7 @@ export const useUserProfile = (): useSessionsReturn => {
           },
         },
       })
-      // console.log('cache updated')
+      // consle.log('cache updated')
     },
 
     onCompleted: (data) => {

@@ -1,5 +1,6 @@
 import { CrewShare, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
 import { createContext } from 'react'
+import log from 'loglevel'
 
 export interface WorkOrderContextType {
   workOrder: WorkOrder
@@ -18,7 +19,7 @@ export interface WorkOrderContextType {
 }
 
 const notAvailable = (name: string) => () => {
-  console.log(`${name} not available in session context`)
+  log.error(`${name} not available in session context`)
 }
 
 export const workOrderContextDefaults: WorkOrderContextType = {

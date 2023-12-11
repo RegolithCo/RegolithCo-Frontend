@@ -14,7 +14,6 @@ export const ProfilePageContainer: React.FC = () => {
     .filter((path) => path && path.length)
     .join('/') as ProfileTabsEnum
 
-  console.log('activeTab', activeTab)
   return (
     <ProfilePage
       activeTab={activeTab}

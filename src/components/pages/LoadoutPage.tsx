@@ -119,12 +119,17 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
       {finalTab === LoadoutTabIndex.Lasers && (
         <LaserTable
           onAddToLoadout={(laser) => {
-            // console.log('Add to loadout', laser)
+            // consle.log('Add to loadout', laser)
           }}
         />
       )}
       {finalTab === LoadoutTabIndex.Modules && (
-        <ModuleTable onAddToLoadout={(module) => console.log('Add to loadout', module)} />
+        <ModuleTable
+          onAddToLoadout={(module) => {
+            // TODO: Implement this
+            console.log('NOT IMPLEMENTED: Add to loadout', module)
+          }}
+        />
       )}
 
       <Typography variant="caption">
