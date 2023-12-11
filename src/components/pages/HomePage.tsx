@@ -21,6 +21,7 @@ import { StatsObjectSummary } from '@regolithco/common'
 // import { Alert319 } from '../modals/announcements/Alert319'
 import { AlertPyro } from '../modals/announcements/AlertPyro'
 import { fontFamilies, theme } from '../../theme'
+import { RouterLink } from '../fields/RouterLink'
 
 interface HomePageProps {
   userCtx: LoginContextObj
@@ -36,9 +37,15 @@ const HomeCard: React.FC<{
   description: React.ReactNode | string
   imgageUrl: string
   actions?: React.ReactNode | React.ReactNode[] | string
-  onClick: () => void
-}> = ({ title, focus, description, imgageUrl, onClick, actions }) => {
+  url?: string
+  onClick?: () => void
+}> = ({ title, focus, description, imgageUrl, url, onClick }) => {
   const theme = useTheme()
+
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    return url ? <RouterLink to={url}>{children}</RouterLink> : <>{children}</>
+  }
+
   return (
     <Grid
       xs={12}
@@ -69,22 +76,24 @@ const HomeCard: React.FC<{
         }}
         onClick={onClick}
       >
-        <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/${imgageUrl}`} title={title} />
-        <CardContent sx={{ flexGrow: 1 }}>
-          <Typography
-            variant="overline"
-            sx={{
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              color: theme.palette.primary.main,
-              fontFamily: fontFamilies.robotoMono,
-            }}
-          >
-            {title}
-          </Typography>
-          <Typography variant="body2">{description}</Typography>
-        </CardContent>
-        {/* <CardActions>{actions}</CardActions> */}
+        <Wrapper>
+          <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/${imgageUrl}`} title={title} />
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Typography
+              variant="overline"
+              sx={{
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                color: theme.palette.primary.main,
+                fontFamily: fontFamilies.robotoMono,
+              }}
+            >
+              {title}
+            </Typography>
+            <Typography variant="body2">{description}</Typography>
+          </CardContent>
+          {/* <CardActions>{actions}</CardActions> */}
+        </Wrapper>
       </Card>
     </Grid>
   )
@@ -132,41 +141,40 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           focus
           description="Organize your multi-crew, multi-ship mining adventure! Supports hand, vehicle and ship mining as well as scouting and salvaging."
           imgageUrl="images/sm/mining.jpg"
+          url={userCtx.isAuthenticated ? (userCtx.isInitialized ? '/session' : '/verify') : undefined}
           onClick={() => {
             if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')
-            else if (!userCtx.isInitialized) navigate && navigate('/verify')
-            else navigate && navigate('/session')
           }}
         />
         <HomeCard
           title="Mining Loadouts"
           description="Plan and tweak your mining ship loadouts using the right components for the right kind of ores."
           imgageUrl="images/sm/workshop.jpg"
-          onClick={() => navigate && navigate('/loadouts')}
+          url="/loadouts"
         />
         <HomeCard
           title="Work Order Calculator"
           description="Standalone calculator for refinery calculation and aUEC Sharing."
           imgageUrl="images/sm/refinery.jpg"
-          onClick={() => navigate && navigate('/workorder')}
+          url="/workorder"
         />
         <HomeCard
           title="Cluster Calculator"
           description="Standalone calculator for figuring out the value of a rock or cluster."
           imgageUrl="images/sm/cluster.jpg"
-          onClick={() => navigate && navigate('/cluster')}
+          url="/cluster"
         />
         <HomeCard
           title="Market Finder"
           description="Find the best place to sell your hard-mined ore."
           imgageUrl="images/sm/market1.jpg"
-          onClick={() => navigate && navigate('/marketPrice')}
+          url="/market-price"
         />
         <HomeCard
           title="Refinery Data"
           description="Data tables to compare refineries."
           imgageUrl="images/sm/market.jpg"
-          onClick={() => navigate && navigate('/tables/ore')}
+          url="/tables/ore"
         />
       </Grid>
       {/* <Alert319 open={alertModalOpen} onClose={() => setAlertModalOpen(false)} /> */}

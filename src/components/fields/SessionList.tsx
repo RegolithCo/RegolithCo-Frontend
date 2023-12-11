@@ -31,6 +31,8 @@ import { SessionListSummary } from './SessionListSummary'
 import { MValueFormat, MValueFormatter } from './MValue'
 import { fontFamilies } from '../../theme'
 import { AppContext } from '../../context/app.context'
+import { Link } from 'react-router-dom'
+import { RouterLink } from './RouterLink'
 
 export interface SessionListProps {
   sessions: Session[]
@@ -211,171 +213,173 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
                             const sessionActive = state === SessionStateEnum.Active
                             const subtitleArr = sessionSubtitleArr(session, hideNames)
                             return (
-                              <ListItem
-                                divider
-                                alignItems="flex-start"
-                                disableGutters
-                                disablePadding
-                                key={`${sessionId}-${idx}`}
-                                sx={{
-                                  ...pulseCssThunk(sessionActive),
-                                  cursor: 'pointer',
-                                  px: 1,
-                                  py: 2,
-                                  // Leave a little space for the session summary
-                                  pb: 0,
-                                  '&:hover': {
-                                    backgroundColor: 'rgba(100, 100, 100, 0.23)',
-                                  },
-                                  // If this is not the last
-                                  '&.MuiListItem-divider:not(:last-child)': {
-                                    borderBottom: `2px solid ${theme.palette.primary.dark}`,
-                                  },
-                                }}
-                                onClick={() => onClickSession?.(sessionId)}
-                              >
-                                <Typography
-                                  component="div"
+                              <RouterLink key={`${sessionId}-${idx}`} to={`/session/${sessionId}`}>
+                                <ListItem
+                                  divider
+                                  alignItems="flex-start"
+                                  disableGutters
+                                  disablePadding
+                                  key={`${sessionId}-${idx}`}
                                   sx={{
-                                    ...styles.state,
-                                    textTransform: 'uppercase',
-                                    // rotate 45 degrees and put it in the middle of the list item
-                                    transform: 'rotate(-45deg) translateX(50%) translateY(50%)',
-                                    top: '50%',
-                                    right: '20%',
-                                    position: 'absolute',
-                                    fontFamily: fontFamilies.robotoMono,
-                                    fontWeight: 'bold',
-                                    fontSize: '3rem',
-                                    // no interactive
-                                    pointerEvents: 'none',
-                                    opacity: 0.2,
-                                    color:
-                                      session.state === SessionStateEnum.Active
-                                        ? theme.palette.secondary.light
-                                        : theme.palette.grey[500],
+                                    ...pulseCssThunk(sessionActive),
+                                    cursor: 'pointer',
+                                    px: 1,
+                                    py: 2,
+                                    // Leave a little space for the session summary
+                                    pb: 0,
+                                    '&:hover': {
+                                      backgroundColor: 'rgba(100, 100, 100, 0.23)',
+                                    },
+                                    // If this is not the last
+                                    '&.MuiListItem-divider:not(:last-child)': {
+                                      borderBottom: `2px solid ${theme.palette.primary.dark}`,
+                                    },
                                   }}
+                                  // onClick={() => onClickSession?.(sessionId)}
                                 >
-                                  {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
-                                </Typography>
-                                <ListItemText sx={{ pl: 1 }}>
-                                  <Stack
-                                    direction={{ xs: 'column', sm: 'row' }}
-                                    spacing={1}
-                                    alignItems={{ xs: 'center', sm: 'flex-start' }}
-                                    justifyContent="space-between"
+                                  <Typography
+                                    component="div"
+                                    sx={{
+                                      ...styles.state,
+                                      textTransform: 'uppercase',
+                                      // rotate 45 degrees and put it in the middle of the list item
+                                      transform: 'rotate(-45deg) translateX(50%) translateY(50%)',
+                                      top: '50%',
+                                      right: '20%',
+                                      position: 'absolute',
+                                      fontFamily: fontFamilies.robotoMono,
+                                      fontWeight: 'bold',
+                                      fontSize: '3rem',
+                                      // no interactive
+                                      pointerEvents: 'none',
+                                      opacity: 0.2,
+                                      color:
+                                        session.state === SessionStateEnum.Active
+                                          ? theme.palette.secondary.light
+                                          : theme.palette.grey[500],
+                                    }}
                                   >
-                                    <Box textAlign={{ xs: 'center', sm: 'left' }}>
-                                      <Typography
-                                        component="div"
-                                        variant="subtitle1"
-                                        sx={{
-                                          color: sessionActive
-                                            ? theme.palette.secondary.light
-                                            : theme.palette.text.secondary,
-                                          lineHeight: 1.2,
-                                          [theme.breakpoints.down('sm')]: {
-                                            mt: 2,
-                                            fontSize: '0.9rem',
-                                            lineHeight: 1.2,
-                                          },
-                                        }}
-                                      >
-                                        {name || defaultSessionName()}
-                                      </Typography>
-                                      <Typography
-                                        component="div"
-                                        variant="overline"
-                                        color="text.secondary"
-                                        fontSize={'0.5rem'}
-                                        mb={1}
-                                      >
-                                        {subtitleArr.join(' - ')}
-                                      </Typography>
-                                    </Box>
-                                    <Tooltip
-                                      placement="left"
-                                      arrow
-                                      sx={{ maxHeight: 200, overflow: 'hidden' }}
-                                      title={
-                                        <List
+                                    {session.state === SessionStateEnum.Active ? 'Active' : 'Ended'}
+                                  </Typography>
+                                  <ListItemText sx={{ pl: 1 }}>
+                                    <Stack
+                                      direction={{ xs: 'column', sm: 'row' }}
+                                      spacing={1}
+                                      alignItems={{ xs: 'center', sm: 'flex-start' }}
+                                      justifyContent="space-between"
+                                    >
+                                      <Box textAlign={{ xs: 'center', sm: 'left' }}>
+                                        <Typography
+                                          component="div"
+                                          variant="subtitle1"
                                           sx={{
-                                            maxHeight: 200,
-                                            overflow: 'auto',
-                                            overflowY: 'scroll',
+                                            color: sessionActive
+                                              ? theme.palette.secondary.light
+                                              : theme.palette.text.secondary,
+                                            lineHeight: 1.2,
+                                            [theme.breakpoints.down('sm')]: {
+                                              mt: 2,
+                                              fontSize: '0.9rem',
+                                              lineHeight: 1.2,
+                                            },
                                           }}
                                         >
-                                          <ListItem>
-                                            <ListItemAvatar>
-                                              <UserAvatar
-                                                user={session.owner as User}
-                                                size="small"
-                                                hideTooltip
-                                                privacy={hideNames}
-                                              />
-                                            </ListItemAvatar>
-                                            <ListItemText>
-                                              <Typography variant="subtitle1">
-                                                {session.owner?.scName} (Session Owner)
-                                              </Typography>
-                                            </ListItemText>
-                                          </ListItem>
+                                          {name || defaultSessionName()}
+                                        </Typography>
+                                        <Typography
+                                          component="div"
+                                          variant="overline"
+                                          color="text.secondary"
+                                          fontSize={'0.5rem'}
+                                          mb={1}
+                                        >
+                                          {subtitleArr.join(' - ')}
+                                        </Typography>
+                                      </Box>
+                                      <Tooltip
+                                        placement="left"
+                                        arrow
+                                        sx={{ maxHeight: 200, overflow: 'hidden' }}
+                                        title={
+                                          <List
+                                            sx={{
+                                              maxHeight: 200,
+                                              overflow: 'auto',
+                                              overflowY: 'scroll',
+                                            }}
+                                          >
+                                            <ListItem>
+                                              <ListItemAvatar>
+                                                <UserAvatar
+                                                  user={session.owner as User}
+                                                  size="small"
+                                                  hideTooltip
+                                                  privacy={hideNames}
+                                                />
+                                              </ListItemAvatar>
+                                              <ListItemText>
+                                                <Typography variant="subtitle1">
+                                                  {session.owner?.scName} (Session Owner)
+                                                </Typography>
+                                              </ListItemText>
+                                            </ListItem>
+                                            {session.activeMembers?.items
+                                              .filter((member) => member.ownerId !== session.ownerId)
+                                              .map((member, idx) => (
+                                                <ListItem key={`${member.ownerId}-${idx}`}>
+                                                  <ListItemAvatar>
+                                                    <UserAvatar
+                                                      key={member.ownerId}
+                                                      user={member.owner as User}
+                                                      size="small"
+                                                      privacy={hideNames}
+                                                      hideTooltip
+                                                    />
+                                                  </ListItemAvatar>
+                                                  <ListItemText>
+                                                    <Typography variant="subtitle1">{member.owner?.scName}</Typography>
+                                                  </ListItemText>
+                                                </ListItem>
+                                              ))}
+                                          </List>
+                                        }
+                                      >
+                                        <AvatarGroup
+                                          max={4}
+                                          color="primary"
+                                          sx={{
+                                            '& .MuiAvatarGroup-avatar': {
+                                              border: `2px solid ${theme.palette.primary.main}`,
+                                              color: theme.palette.primary.main,
+                                              backgroundColor: alpha(theme.palette.primary.dark, 0.2),
+                                              fontSize: '0.75rem',
+                                            },
+                                          }}
+                                        >
+                                          <UserAvatar
+                                            user={session.owner as User}
+                                            size="large"
+                                            hideTooltip
+                                            privacy={hideNames}
+                                          />
                                           {session.activeMembers?.items
                                             .filter((member) => member.ownerId !== session.ownerId)
-                                            .map((member, idx) => (
-                                              <ListItem key={`${member.ownerId}-${idx}`}>
-                                                <ListItemAvatar>
-                                                  <UserAvatar
-                                                    key={member.ownerId}
-                                                    user={member.owner as User}
-                                                    size="small"
-                                                    privacy={hideNames}
-                                                    hideTooltip
-                                                  />
-                                                </ListItemAvatar>
-                                                <ListItemText>
-                                                  <Typography variant="subtitle1">{member.owner?.scName}</Typography>
-                                                </ListItemText>
-                                              </ListItem>
+                                            .map((member) => (
+                                              <UserAvatar
+                                                key={member.ownerId}
+                                                user={member.owner as User}
+                                                size="large"
+                                                privacy={hideNames}
+                                                hideTooltip
+                                              />
                                             ))}
-                                        </List>
-                                      }
-                                    >
-                                      <AvatarGroup
-                                        max={4}
-                                        color="primary"
-                                        sx={{
-                                          '& .MuiAvatarGroup-avatar': {
-                                            border: `2px solid ${theme.palette.primary.main}`,
-                                            color: theme.palette.primary.main,
-                                            backgroundColor: alpha(theme.palette.primary.dark, 0.2),
-                                            fontSize: '0.75rem',
-                                          },
-                                        }}
-                                      >
-                                        <UserAvatar
-                                          user={session.owner as User}
-                                          size="large"
-                                          hideTooltip
-                                          privacy={hideNames}
-                                        />
-                                        {session.activeMembers?.items
-                                          .filter((member) => member.ownerId !== session.ownerId)
-                                          .map((member) => (
-                                            <UserAvatar
-                                              key={member.ownerId}
-                                              user={member.owner as User}
-                                              size="large"
-                                              privacy={hideNames}
-                                              hideTooltip
-                                            />
-                                          ))}
-                                      </AvatarGroup>
-                                    </Tooltip>
-                                  </Stack>
-                                  <SessionListSummary session={session} />
-                                </ListItemText>
-                              </ListItem>
+                                        </AvatarGroup>
+                                      </Tooltip>
+                                    </Stack>
+                                    <SessionListSummary session={session} />
+                                  </ListItemText>
+                                </ListItem>
+                              </RouterLink>
                             )
                           })}
                         </List>

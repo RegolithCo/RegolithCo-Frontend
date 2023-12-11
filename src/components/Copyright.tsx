@@ -18,7 +18,7 @@ export function Copyright() {
       }}
     >
       {'Copyright © '}
-      <Link color="inherit" href="https://github.com" target="_blank">
+      <Link color="inherit" href="https://regolith.rocks/about/general" target="_blank">
         Regolith Co.
       </Link>{' '}
       {new Date().getFullYear() + 930}
