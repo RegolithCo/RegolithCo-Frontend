@@ -1,3 +1,13 @@
+### December ??, 2023
+## 1.0.39 - Theme fixes
+
+- More links now behave properly when clicked meaning you can hold Ctrl or Cmd to open them in a new tab.
+- Work order and Scouting find modals on the session now accomodate mobile and small screens better.
+- Settings pane now scrolls properly on mobile.
+- Misc other theme and UI fixes.
+
+-----
+
 ### December 10, 2023
 ## 1.0.38 - Minor fixes
 

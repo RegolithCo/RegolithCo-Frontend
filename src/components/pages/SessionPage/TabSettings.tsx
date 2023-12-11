@@ -69,7 +69,8 @@ const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<The
   tabContainerOuter: {
     background: '#121115aa',
     p: 2,
-    overflow: scroll ? 'hidden' : undefined,
+    overflowY: 'auto',
+    overflowX: 'hidden',
     [theme.breakpoints.up('md')]: {
       display: 'flex',
       flexDirection: 'column',

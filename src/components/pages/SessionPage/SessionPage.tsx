@@ -21,11 +21,10 @@ export interface SessionPageProps {
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   container: {
-    [theme.breakpoints.up('md')]: {
-      height: '100%',
-      overflow: 'hidden',
-      p: 2,
-    },
+    display: 'flex',
+    height: '100%',
+    backdropFilter: 'blur(7px)',
+    backgroundColor: '#0e0c1b77',
   },
   sessionTabs: {
     background: '#121115aa',
@@ -67,7 +66,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
   }, [mediumUp, activeTab, setActiveTab])
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', backdropFilter: 'blur(7px)', backgroundColor: '#0e0c1b77' }}>
+    <Box sx={styles.container}>
       {/* NAV Drawer   */}
       {mediumUp && (
         <Drawer
@@ -123,7 +122,11 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           maxWidth: 1100,
           flexDirection: 'column',
           height: '100%',
-          pb: 2, // Leave a little space for the copyright marker
+          pb: {
+            xs: 0,
+            sm: 0,
+            md: 2, // Leave a little space for the copyright marker
+          },
         }}
       >
         <SessionHeader />
