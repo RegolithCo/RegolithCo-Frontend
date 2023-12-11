@@ -3,6 +3,7 @@
 
 - More links now behave properly when clicked meaning you can hold Ctrl or Cmd to open them in a new tab.
 - Work order and Scouting find modals on the session now accomodate mobile and small screens better.
+- Dropdowns for gravity well, location type have been alphabetized.
 - Settings pane now scrolls properly on mobile.
 - Misc other theme and UI fixes.
 

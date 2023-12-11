@@ -116,6 +116,14 @@ const planetOptions: { label: string; id: PlanetEnum }[] = Object.values(PlanetE
   label: getPlanetName(value),
   id: value,
 }))
+planetOptions.sort((a, b) => a.label.localeCompare(b.label))
+
+const locationTypeValues: LocationEnum[] = [
+  LocationEnum.Space,
+  LocationEnum.Ring,
+  LocationEnum.Surface,
+  LocationEnum.Cave,
+]
 
 function makeNewSettings(session?: Session, sessionSettings?: SessionSettings) {
   return session
@@ -317,7 +325,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                         }}
                       >
                         <MenuItem value={''}>-- All / Any --</MenuItem>
-                        {Object.values(LocationEnum).map((key) => (
+                        {locationTypeValues.map((key) => (
                           <MenuItem key={key} value={key}>
                             {getLocationName(key)}
                           </MenuItem>
