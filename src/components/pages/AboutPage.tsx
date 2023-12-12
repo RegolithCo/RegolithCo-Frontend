@@ -40,6 +40,18 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     p: 3,
     mb: 4,
   },
+  card: {
+    p: {
+      xs: 1,
+      sm: 2,
+      md: 3,
+    },
+    m: {
+      xs: 0.5,
+      sm: 1,
+      md: 2,
+    },
+  },
 })
 
 export const AboutPageContainer: React.FC = () => {
@@ -109,11 +121,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       <Tabs
         value={finalTab}
         aria-label="basic tabs example"
+        variant="scrollable"
         sx={{
           mb: 3,
           // Center the flex items
           '& .MuiTabs-flexContainer': {
-            justifyContent: 'center',
+            // justifyContent: 'center',
           },
         }}
         onChange={(event, newValue) => {
@@ -129,7 +142,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       </Tabs>
       {finalTab === TabIndex.General && (
         <Box sx={{ mb: 3 }}>
-          <Card elevation={20} sx={{ p: 3, pb: 0, m: 4 }}>
+          <Card elevation={20} sx={styles.card}>
             <CardHeader title="About" />
             <CardContent>
               <Typography paragraph>
@@ -146,7 +159,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Typography>
             </CardContent>
           </Card>
-          <Card elevation={20} sx={{ p: 3, m: 4 }}>
+          <Card elevation={20} sx={styles.card}>
             <CardHeader title="Regolith Co. Mission Statement" />
             <CardContent>
               <Typography paragraph variant={'body2'} color={'text.secondary'}>
@@ -159,7 +172,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Typography>
             </CardContent>
           </Card>
-          <Card elevation={20} sx={{ p: 3, m: 4 }}>
+          <Card elevation={20} sx={styles.card}>
             <CardHeader title="Disclaimer" />
             <CardContent>
               <Typography paragraph>
@@ -172,6 +185,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 component={'div'}
                 fontStyle={'italic'}
                 sx={{
+                  '& ol': {
+                    pl: {
+                      xs: 1,
+                      sm: 2,
+                    },
+                  },
                   '& li': {
                     mb: 2,
                   },
@@ -377,7 +396,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               Any amount at all is a big help!
             </Typography>
             <Stack
-              direction="row"
+              direction={{ xs: 'column', sm: 'row' }}
               divider={<Divider orientation="vertical" flexItem />}
               spacing={2}
               sx={{ width: '100%', mb: 3 }}
@@ -475,7 +494,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               checked less often).
             </Typography>
             <Stack
-              direction="row"
+              direction={{ xs: 'column', sm: 'row' }}
               divider={<Divider orientation="vertical" flexItem />}
               spacing={2}
               sx={{ width: '100%', mb: 3 }}
