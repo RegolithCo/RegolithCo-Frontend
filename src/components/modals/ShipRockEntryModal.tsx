@@ -22,6 +22,7 @@ import {
   ThemeProvider,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import {
@@ -62,24 +63,27 @@ export interface ShipRockEntryModalProps {
 const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   paper: {
     '& .MuiDialog-paper': {
+      overflow: 'auto',
+      height: '100%',
       [theme.breakpoints.up('md')]: {
         minHeight: 550,
         maxHeight: 900,
-        overflow: 'visible',
+        borderRadius: 4,
+        outline: `10px solid ${theme.palette.primary.contrastText}`,
+        border: `10px solid ${theme.palette.primary.main}`,
       },
       backgroundColor: '#282828ee',
       backgroundImage: 'none',
-      borderRadius: 4,
       position: 'relative',
-      outline: `10px solid ${theme.palette.primary.contrastText}`,
-      border: `10px solid ${theme.palette.primary.main}`,
     },
   },
   dialogContent: {
     py: 1,
     px: 2,
-    borderRadius: 3,
-    outline: `10px solid ${theme.palette.primary.main}`,
+    [theme.breakpoints.up('md')]: {
+      borderRadius: 3,
+      outline: `10px solid ${theme.palette.primary.main}`,
+    },
   },
   headTitles: {
     // fontFamily: fontFamilies.robotoMono,
@@ -191,6 +195,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [activeOrePercentText, setActiveOrePercentText] = React.useState<[number, string] | null>(null)
   const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement>>>({})
@@ -286,7 +291,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const massError = Boolean(massErrorReason.length > 0)
   return (
     <>
-      <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs">
+      <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs" fullScreen={isSmall}>
         <RockIcon sx={styles.icon} />
         <Tooltip
           title={

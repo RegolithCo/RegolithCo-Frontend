@@ -15,9 +15,10 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { Share, SvgIconComponent, Diversity3, AccountBalance } from '@mui/icons-material'
+import { SvgIconComponent, Diversity3, AccountBalance } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { Box, Stack } from '@mui/system'
 import { SessionContext } from '../../context/session.context'
@@ -56,6 +57,7 @@ export type DataTabsEnum = ObjectValues<typeof ShareTypeEnum>
 
 export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScoutingFindId, initWorkOrderId }) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const { session } = React.useContext(SessionContext)
   const { getSafeName } = React.useContext(AppContext)
   const [activeTab, setActiveTab] = React.useState<DataTabsEnum>(() => {
@@ -119,12 +121,15 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
       onClose={handleClose}
       maxWidth="md"
       fullWidth
+      fullScreen={isSmall}
       sx={{
         '& .MuiDialog-paper': {
-          borderRadius: 10,
-          boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+          [theme.breakpoints.up('md')]: {
+            borderRadius: 10,
+            boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+            border: `10px solid ${theme.palette.primary.main}`,
+          },
           background: theme.palette.background.default,
-          border: `10px solid ${theme.palette.primary.main}`,
           // px: 4,
           // py: 2,
         },
@@ -144,14 +149,27 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
         <Stack direction="row" alignItems="center" justifyContent="center">
           <ExportImageIcon
             sx={{
-              fontSize: 30,
+              fontSize: {
+                xs: '1.5rem',
+                sm: '2rem',
+              },
               mr: 2,
               // position: 'absolute',
               // left: 20,
               // top: 15,
             }}
           />
-          <Typography variant="h4">{activeTab} Image Export</Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: {
+                xs: '1.5rem',
+                sm: '2rem',
+              },
+            }}
+          >
+            {activeTab} Image Export
+          </Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>

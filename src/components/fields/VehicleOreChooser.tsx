@@ -1,5 +1,5 @@
 import React from 'react'
-import { alpha, ToggleButton, Tooltip } from '@mui/material'
+import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { blue, green } from '@mui/material/colors'
@@ -20,7 +20,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
   requireValue,
 }) => {
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
-  // const theme = useTheme()
+  const theme = useTheme()
   const vehicleRowKeys = Object.values(VehicleOreEnum)
   const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
   const fgColors = ['#000000', '#ffffff', '#ffffff']
@@ -68,11 +68,11 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 border: '2px solid transparent',
                 color: fgc,
                 fontSize: {
-                  xs: 10,
-                  sm: 10,
-                  md: 10,
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
                 },
-                p: 0,
+                p: [0.5, 0.5],
                 '&:hover': {
                   color: 'white',
                   border: '2px solid white',
@@ -125,12 +125,14 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
               fullWidth
               tabIndex={-1}
               sx={{
+                border: `1px solid ${theme.palette.error.dark}}`,
+                color: theme.palette.error.main,
                 fontSize: {
-                  xs: 10,
-                  sm: 10,
-                  md: 10,
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
                 },
-                p: 0,
+                p: [0.5, 0.5],
               }}
               onChange={() => {
                 setSelected([])

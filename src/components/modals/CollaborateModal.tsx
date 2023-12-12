@@ -2,17 +2,16 @@ import * as React from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import {
   Alert,
-  AlertTitle,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { ShareUrlField } from '../fields/ShareUrlField'
-import { Diversity3, Share } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { Stack } from '@mui/system'
 import { CollaborateLinkIcon, ExportImageIcon } from '../../icons/badges'
@@ -26,6 +25,7 @@ export interface CollaborateModalProps {
 
 export const CollaborateModal: React.FC<CollaborateModalProps> = ({ open, url, warn, onClose }) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   return (
     <Dialog
@@ -33,12 +33,15 @@ export const CollaborateModal: React.FC<CollaborateModalProps> = ({ open, url, w
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={isSmall}
       sx={{
         '& .MuiDialog-paper': {
-          borderRadius: 10,
-          boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+          [theme.breakpoints.up('md')]: {
+            borderRadius: 10,
+            boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+            border: `10px solid ${theme.palette.primary.main}`,
+          },
           background: theme.palette.background.default,
-          border: `10px solid ${theme.palette.primary.main}`,
           // px: 4,
           // py: 2,
         },
@@ -58,14 +61,27 @@ export const CollaborateModal: React.FC<CollaborateModalProps> = ({ open, url, w
         <Stack direction="row" alignItems="center" justifyContent="center">
           <CollaborateLinkIcon
             sx={{
-              fontSize: 30,
+              fontSize: {
+                xs: '1.5rem',
+                sm: '2rem',
+              },
               mr: 2,
               // position: 'absolute',
               // left: 20,
               // top: 15,
             }}
           />
-          <Typography variant="h4">Invite Others</Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: {
+                xs: '1.5rem',
+                sm: '2rem',
+              },
+            }}
+          >
+            Invite Others
+          </Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>

@@ -83,10 +83,10 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 border: '2px solid transparent',
                 color: '#aaa',
                 fontSize: {
-                  xs: 8,
-                  sm: 10,
+                  xs: 12,
+                  sm: 12,
                 },
-                p: 0,
+                p: [0.5, 0.5],
                 '&:hover': {
                   color: 'white',
                   border: '2px solid white',
@@ -114,12 +114,14 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
               fullWidth
               tabIndex={-1}
               sx={{
+                border: `1px solid ${theme.palette.info.dark}}`,
+                color: theme.palette.info.main,
                 fontSize: {
-                  xs: 8,
-                  sm: 8,
-                  md: 8,
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
                 },
-                p: 0,
+                p: [0.5, 0.5],
               }}
               onChange={() => {
                 setSelected(shipRowKeys)
@@ -140,12 +142,14 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
               fullWidth
               tabIndex={-1}
               sx={{
+                border: `1px solid ${theme.palette.error.dark}}`,
+                color: theme.palette.error.main,
                 fontSize: {
-                  xs: 8,
-                  sm: 8,
-                  md: 8,
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
                 },
-                p: 0,
+                p: [0.5, 0.5],
               }}
               onChange={() => {
                 setSelected([])
