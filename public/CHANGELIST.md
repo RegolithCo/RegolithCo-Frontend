@@ -1,4 +1,4 @@
-### December ??, 2023
+### December 11, 2023
 ## 1.0.39 - Theme fixes
 
 - More links now behave properly when clicked meaning you can hold Ctrl or Cmd to open them in a new tab.
