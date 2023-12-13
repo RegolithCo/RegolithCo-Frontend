@@ -15,17 +15,7 @@ import {
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { ActivityEnum, CrewShare, makeHumanIds, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
-import {
-  AccountBalance,
-  BackHand,
-  Cancel,
-  Create,
-  Delete,
-  Edit,
-  Save,
-  Share,
-  SvgIconComponent,
-} from '@mui/icons-material'
+import { AccountBalance, BackHand, Cancel, Create, Delete, Edit, Save, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
@@ -33,6 +23,7 @@ import { DeleteModal } from './DeleteModal'
 import { WorkOrderContext } from '../../context/workOrder.context'
 import { ConfirmModal } from './ConfirmModal'
 import { AppContext } from '../../context/app.context'
+import { ExportImageIcon } from '../../icons/badges'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -259,7 +250,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           {!isEditing && !isNew && setWorkOrderShareId && (
             <Tooltip title="Share this work order" placement="top">
               <IconButton color="inherit" onClick={() => setWorkOrderShareId(workOrder.orderId)}>
-                <Share />
+                <ExportImageIcon />
               </IconButton>
             </Tooltip>
           )}

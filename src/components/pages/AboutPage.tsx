@@ -34,6 +34,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import axios from 'axios'
 import log from 'loglevel'
+import { ExportImageIcon } from '../../icons/badges'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -383,8 +384,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.HelpUs && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
-              Support the site
+            <Typography paragraph>There are a number of ways you can help support Regolith Co.</Typography>
+
+            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+              1. Help with server costs
             </Typography>
             <Typography paragraph>
               Everyone can use this site for free, hopefully forever. However,{' '}
@@ -401,38 +404,48 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               spacing={2}
               sx={{ width: '100%', mb: 3 }}
             >
-              <Button
-                variant="contained"
-                size="large"
-                href="https://ko-fi.com/regolithco"
-                target="_blank"
-                fullWidth
-                sx={{ fontSize: '2rem', p: 1 }}
-                startIcon={
-                  <Avatar
-                    sx={{ height: 100, width: 100 }}
-                    src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`}
-                  />
-                }
-              >
-                Ko-Fi
-              </Button>
-              <Button
-                variant="contained"
-                size="large"
-                href="https://patreon.com/user?u=64746907"
-                target="_blank"
-                fullWidth
-                color="secondary"
-                sx={{ fontSize: '2rem', p: 1 }}
-                startIcon={<Coffee sx={{ height: 64, width: 64 }} />}
-              >
-                Patreon
-              </Button>
+              <Box sx={{ flex: 1, height: '100%' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  href="https://ko-fi.com/regolithco"
+                  target="_blank"
+                  fullWidth
+                  sx={{ fontSize: '2rem', p: 1, flex: 1, height: 64 }}
+                  startIcon={
+                    <Avatar
+                      sx={{ height: 64, width: 64 }}
+                      src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`}
+                    />
+                  }
+                >
+                  Ko-Fi
+                </Button>
+                <Typography paragraph color="text.secondary" variant="caption" component="div" textAlign="center">
+                  One-time donation
+                </Typography>
+              </Box>
+              <Box sx={{ flex: 1, height: '100%' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  href="https://patreon.com/user?u=64746907"
+                  target="_blank"
+                  fullWidth
+                  color="secondary"
+                  sx={{ fontSize: '2rem', p: 1, flex: 1, height: 64 }}
+                  startIcon={<Coffee sx={{ height: 44, width: 44 }} />}
+                >
+                  Patreon
+                </Button>
+                <Typography paragraph color="text.secondary" variant="caption" component="div" textAlign="center">
+                  Monthly subscription
+                </Typography>
+              </Box>
             </Stack>
             <Divider sx={{ mb: 3 }} />
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
-              Spread the word
+            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+              2. Spread the word
             </Typography>
             <Typography paragraph>
               Regolith is a community-driven app and we don't do a lot of outreach. If you like the site, tell your
@@ -440,12 +453,51 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             </Typography>
             <Typography paragraph>
               If you feel really inspired, share and brag about your mining sessions on social media. Regolith has share
-              buttons (<Share />) that let you export parts of the site to images you can paste into your favourite
-              platforms. The shared images all have the our site URL at the bottom.
+              buttons ({' '}
+              <ExportImageIcon
+                sx={{
+                  fontSize: {
+                    xs: '1.5rem',
+                    sm: '2rem',
+                  },
+                  mr: 2,
+                  // position: 'absolute',
+                  // left: 20,
+                  // top: 15,
+                }}
+              />
+              ) that let you export parts of the site to images you can paste into your favourite platforms. The shared
+              images all have the our site URL at the bottom.
             </Typography>
             <Divider sx={{ mb: 3 }} />
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
-              Star Citizen Referral Code
+            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+              3. Join the Discord / Become a tester
+            </Typography>
+            <Typography paragraph>
+              Join the Discord server for help, support, bugs, feature requests etc. You can also use a self-assigned
+              role to become a tester and get early access to new features and help find bugs before they get out into
+              the world.
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                textAlign: 'center',
+              }}
+            >
+              <Button
+                startIcon={<DiscordIcon />}
+                variant="contained"
+                color="primary"
+                sx={{ fontSize: '1rem', p: 2 }}
+                href="https://discord.gg/6TKSYHNJha"
+                target="_blank"
+              >
+                Regolith Discord Server
+              </Button>
+            </Box>
+            <Divider sx={{ mb: 3 }} />
+            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+              4. Star Citizen Referral Code
             </Typography>
             <Typography paragraph>
               If you're looking for a way to support the site and you don't already have a Star Citizen account, you can

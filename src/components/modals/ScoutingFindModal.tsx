@@ -19,6 +19,7 @@ import { BackHand, Cancel, Create, Delete, Save, Share } from '@mui/icons-materi
 import { DeleteModal } from './DeleteModal'
 import { ScoutingFindContext } from '../../context/scoutingFind.context'
 import { ConfirmModal } from './ConfirmModal'
+import { ExportImageIcon } from '../../icons/badges'
 
 export interface ScoutingFindModalProps {
   open: boolean
@@ -108,7 +109,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             >
               <Tooltip title="Share this scouting find" placement="top">
                 <IconButton color="primary" onClick={() => setShareScoutingFindId(scoutingFind?.scoutingFindId)}>
-                  <Share />
+                  <ExportImageIcon />
                 </IconButton>
               </Tooltip>
             </Box>
