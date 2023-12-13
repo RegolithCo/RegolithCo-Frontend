@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
-import { Share } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { Stack } from '@mui/system'
 import { MiningLoadout } from '@regolithco/common'
