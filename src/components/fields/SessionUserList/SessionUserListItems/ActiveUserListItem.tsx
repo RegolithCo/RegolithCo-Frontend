@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   ListItem,
   ListItemAvatar,
@@ -42,6 +42,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   expandButton,
 }) => {
   const theme = useTheme()
+  const listItemRef = useRef<HTMLLIElement>(null)
   const { getSafeName, hideNames } = React.useContext(AppContext)
   const {
     session,
@@ -74,17 +75,18 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
     // for the contextmenu event
     const handleContextMenu = (event: MouseEvent) => {
       // prevent the right-click menu from appearing
-      event.preventDefault()
+      // event.preventDefault()
     }
+    const listItemElement = listItemRef.current
 
     // attach the event listener to
     // the document object
-    document.addEventListener('contextmenu', handleContextMenu)
+    listItemElement?.addEventListener('contextmenu', handleContextMenu)
 
     // clean up the event listener when
     // the component unmounts
     return () => {
-      document.removeEventListener('contextmenu', handleContextMenu)
+      listItemElement?.removeEventListener('contextmenu', handleContextMenu)
     }
   }, [])
 
@@ -186,6 +188,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
 
   return (
     <ListItem
+      ref={listItemRef}
       dense={isCrewDisplay && !isCaptain}
       disableGutters={isCrewDisplay && !isCaptain}
       onContextMenu={(e) => {

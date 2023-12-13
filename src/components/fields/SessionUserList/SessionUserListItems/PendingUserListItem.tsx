@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, IconButton, Typography } from '@mui/material'
 import { PendingUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
@@ -23,6 +23,8 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
   const { openPendingUserModal, myUserProfile } = React.useContext(SessionContext)
+  const listItemRef = useRef<HTMLLIElement>(null)
+
   useEffect(() => {
     // define a custom handler function
     // for the contextmenu event
@@ -30,20 +32,22 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
       // prevent the right-click menu from appearing
       event.preventDefault()
     }
+    const listItemElement = listItemRef.current
 
     // attach the event listener to
     // the document object
-    document.addEventListener('contextmenu', handleContextMenu)
+    listItemElement?.addEventListener('contextmenu', handleContextMenu)
 
     // clean up the event listener when
     // the component unmounts
     return () => {
-      document.removeEventListener('contextmenu', handleContextMenu)
+      listItemElement?.removeEventListener('contextmenu', handleContextMenu)
     }
   }, [])
 
   return (
     <ListItem
+      ref={listItemRef}
       dense={isCrewDisplay}
       disableGutters={isCrewDisplay}
       onContextMenu={(e) => {
