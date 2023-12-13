@@ -6,6 +6,7 @@ import { Stack } from '@mui/system'
 import { MiningLoadout } from '@regolithco/common'
 import { ImageDownloadComponent } from '../sharing/ImageDownloadComponent'
 import { LoadoutCalc } from '../../components/calculators/LoadoutCalc/LoadoutCalc'
+import { ExportImageIcon } from '../../icons/badges'
 
 export interface LoadoutShareModalProps {
   loadout: MiningLoadout
@@ -45,7 +46,7 @@ export const LoadoutShareModal: React.FC<LoadoutShareModalProps> = ({ open, load
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="center">
-          <Share
+          <ExportImageIcon
             sx={{
               fontSize: 30,
               mr: 2,

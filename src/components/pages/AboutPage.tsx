@@ -25,7 +25,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
-import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer, Share, Twitter } from '@mui/icons-material'
+import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer, Twitter } from '@mui/icons-material'
 import { DiscordIcon } from '../../icons/Discord'
 import { AppVersion } from '../fields/AppVersion'
 import { SCVersion } from '../fields/SCVersion'

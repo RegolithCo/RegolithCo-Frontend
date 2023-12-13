@@ -24,7 +24,7 @@ import {
 import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { Close, Delete, Edit, Refresh, Save, Share } from '@mui/icons-material'
+import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { dummyUserProfile, newMiningLoadout } from '../../../lib/newObjectFactories'
 import { DeleteModal } from '../../modals/DeleteModal'
@@ -34,6 +34,7 @@ import { LoadoutInventory } from './LoadoutInventory'
 import { LoadoutCreateModal } from '../../modals/LoadoutCreateModal'
 import { WarningModal } from '../../modals/WarningModal'
 import { LoadoutShareModal } from '../../modals/LoadoutShareModal'
+import { ExportImageIcon } from '../../../icons/badges'
 
 export interface LoadoutCalcProps {
   miningLoadout?: MiningLoadout
@@ -242,7 +243,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   <>
                     <div style={{ flexGrow: 1 }} />
                     <IconButton color="primary" onClick={() => setShareModalOpen(true)} size="small" sx={{ ml: 1 }}>
-                      <Share />
+                      <ExportImageIcon />
                     </IconButton>
                     <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
                       <Close />
@@ -254,7 +255,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
               <ShipChooser ship={newLoadout.ship} onChange={handleShipChange} readonly={readonly} />
               {!isSmall && !isShare && (
                 <IconButton color="primary" onClick={() => setShareModalOpen(true)} size="small" sx={{ ml: 1 }}>
-                  <Share />
+                  <ExportImageIcon />
                 </IconButton>
               )}
               {!isSmall && isModal && (
