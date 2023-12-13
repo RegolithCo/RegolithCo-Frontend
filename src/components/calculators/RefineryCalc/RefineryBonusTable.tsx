@@ -48,6 +48,7 @@ export const RefineryBonusTable: React.FC = () => {
   const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
     const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
       const opl = lookups.refineryBonusLookup[refinery] as OreProcessingLookup
+      if (!opl) return [NaN, NaN, NaN]
       const outArr = opl[ore] as RefineryModifiers
 
       const outArrNormed = outArr.map((val) => {
@@ -157,6 +158,7 @@ export const RefineryBonusTable: React.FC = () => {
                     </TableCell>
                     {row.map((col, colIdx) => {
                       const val = col[tableIdx]
+                      const valIsNan = isNaN(val)
                       const rowColorIdx = rowColColors[rowIdx][colIdx][tableIdx]
                       const val1IsMax = val !== null && val === gridStatsArr[tableIdx].max
                       const val1IsMin = val !== null && val === gridStatsArr[tableIdx].min
@@ -179,7 +181,7 @@ export const RefineryBonusTable: React.FC = () => {
                             color: fgcol,
                           }}
                         >
-                          {val !== 0 && (
+                          {val !== 0 && !valIsNan && (
                             <MValue
                               value={val}
                               format={MValueFormat.modifier}
@@ -187,6 +189,7 @@ export const RefineryBonusTable: React.FC = () => {
                               decimals={2}
                             />
                           )}
+                          {valIsNan && '??'}
                         </TableCell>
                       )
                     })}

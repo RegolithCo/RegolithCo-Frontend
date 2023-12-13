@@ -253,6 +253,8 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                   <MValue value={vAxis[rowIdx][1]} format={MValueFormat.string} />
                 </TableCell>
                 {row.map(([val1, val2], colIdx) => {
+                  const val1IsNan = val1 !== null && isNaN(val1)
+                  const val2IsNan = val2 !== null && isNaN(val2)
                   const val1IsMax = val1 !== null && val1 === gridStatsArr[0].max
                   const val1IsMin = val1 !== null && val1 === gridStatsArr[0].min
                   const val2IsMax = val2 !== null && val2 === gridStatsArr[1].max
@@ -269,15 +271,17 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                         color: fgColors[rowColColors[rowIdx][colIdx]] + transparency,
                       }}
                     >
-                      {
+                      {!val1IsNan ? (
                         <MValue
                           value={val1}
                           format={numberFormat1}
                           typoProps={{ component: 'div' }}
                           decimals={decimalVal1}
                         />
-                      }
-                      {val2 && (
+                      ) : (
+                        '??'
+                      )}
+                      {val2 && !val2IsNan && (
                         <MValue
                           value={val2}
                           format={numberFormat2}

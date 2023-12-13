@@ -42,7 +42,7 @@ import { RefineryMethodControl } from '../../../fields/RefiningMethodControl'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { ShipOreChooser } from '../../../fields/ShipOreChooser'
 import { VehicleOreChooser } from '../../../fields/VehicleOreChooser'
-import dayjs from 'dayjs'
+import { SalvageOreChooser } from '../../../fields/SalvageOreChooser'
 
 import log from 'loglevel'
 import { fontFamilies } from '../../../../theme'
@@ -104,6 +104,7 @@ export const OreCard: React.FC<OreCardProps> = ({
 
   const shipOrder = workOrder as ShipMiningOrder
   const vehicleOrder = workOrder as VehicleMiningOrder
+  const salvageOrder = workOrder as SalvageOrder
 
   const pulse = keyframes`
     0% { background-color: transparent; }
@@ -213,6 +214,21 @@ export const OreCard: React.FC<OreCardProps> = ({
                 __typename: 'VehicleMiningRow',
               }))
               onChange({ ...vehicleOrder, vehicleOres: newvehicleOres })
+            }}
+          />
+        )}
+        {isEditing && workOrder.orderType === ActivityEnum.Salvage && (
+          <SalvageOreChooser
+            multiple
+            values={(salvageOrder.salvageOres as SalvageRow[])?.map(({ ore }) => ore) || []}
+            onChange={(oreChoices) => {
+              const oldSalvageOres: SalvageRow[] = (salvageOrder.salvageOres as SalvageRow[]) || []
+              const newSalvageOres: SalvageRow[] = oreChoices.map((oreChoice) => ({
+                ore: oreChoice,
+                amt: oldSalvageOres.find(({ ore }) => ore === oreChoice)?.amt || 0,
+                __typename: 'SalvageRow',
+              }))
+              onChange({ ...salvageOrder, salvageOres: newSalvageOres })
             }}
           />
         )}

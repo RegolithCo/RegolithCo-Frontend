@@ -267,7 +267,10 @@ export function newWorkOrderMaker(
                 amt: 0,
                 __typename: 'SalvageRow',
               }))
-            : [{ amt: 0, ore: SalvageOreEnum.Rmc, __typename: 'SalvageRow' }],
+            : [
+                { amt: 0, ore: SalvageOreEnum.Rmc, __typename: 'SalvageRow' },
+                { amt: 0, ore: SalvageOreEnum.Const, __typename: 'SalvageRow' },
+              ],
       }
     case ActivityEnum.Other:
       return {

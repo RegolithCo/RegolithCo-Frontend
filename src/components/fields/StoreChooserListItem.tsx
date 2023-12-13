@@ -88,8 +88,8 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
                     key={`tt-${index}`}
                     title={
                       found
-                        ? `${getOreName(ore as AnyOreEnum)} can be sold here}`
-                        : `${getOreName(ore as AnyOreEnum)} cannot be sold here}`
+                        ? `${getOreName(ore as AnyOreEnum)} can be sold here`
+                        : `${getOreName(ore as AnyOreEnum)} cannot be sold here`
                     }
                   >
                     <Chip

@@ -33,7 +33,7 @@ import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipOreChooser } from '../../fields/ShipOreChooser'
 import { VehicleOreChooser } from '../../fields/VehicleOreChooser'
-import { SalvageOreChooser } from '../../fields/SalvageOrechooser'
+import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
 import { fontFamilies } from '../../../theme'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { Cancel } from '@mui/icons-material'
@@ -69,6 +69,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
     },
     [ActivityEnum.Salvage]: {
       [SalvageOreEnum.Rmc]: 100,
+      [SalvageOreEnum.Const]: 100,
     },
   })
   const [ship, setShip] = React.useState<Vehicle | null>(null)
@@ -505,8 +506,13 @@ const OreChooserList: React.FC<OreChooserListProps> = ({ ores, onChange, onDelet
               />
               <TextField
                 value={oreValue * (isVehicleOre ? 10 : 0.01)}
+                id={`ore-${idx}`}
                 sx={{ flex: '1 1 40%' }}
                 type="number"
+                onFocus={(e) => {
+                  e.target.select()
+                }}
+                tabIndex={idx + 1}
                 inputProps={{
                   sx: {
                     p: 0,
@@ -533,7 +539,20 @@ const OreChooserList: React.FC<OreChooserListProps> = ({ ores, onChange, onDelet
                     event.preventDefault()
                   } else if (event.key === 'Tab') {
                     event.preventDefault()
-                    // Set next cell down to edit mode
+                    // if shift is held
+                    if (event.shiftKey) {
+                      // Get the previous cell if there is one by id
+                      const prevCell = document.getElementById(`ore-${idx - 1}`)
+                      if (prevCell) {
+                        prevCell.focus()
+                      }
+                    } else {
+                      // Get the next cell if there is one by id
+                      const nextCell = document.getElementById(`ore-${idx + 1}`)
+                      if (nextCell) {
+                        nextCell.focus()
+                      }
+                    }
                   } else if (event.key === 'Escape') {
                     event.preventDefault()
                   } else if (event.key.match(/^[0-9]+$/)) {

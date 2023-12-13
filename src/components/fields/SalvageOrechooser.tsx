@@ -1,8 +1,7 @@
 import React from 'react'
-import { ToggleButton, Tooltip } from '@mui/material'
-import { getVehicleOreName, findPrice, SalvageOreEnum, getSalvageOreName } from '@regolithco/common'
+import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
+import { SalvageOreEnum, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { blue, green } from '@mui/material/colors'
 
 export interface SalvageOreChooserProps {
   multiple?: boolean
@@ -10,6 +9,11 @@ export interface SalvageOreChooserProps {
   showAllBtn?: boolean
   values?: SalvageOreEnum[]
   onChange?: (value: SalvageOreEnum[]) => void
+}
+
+const btnNames: Record<SalvageOreEnum, string> = {
+  [SalvageOreEnum.Rmc]: 'RMC',
+  [SalvageOreEnum.Const]: 'CONST',
 }
 
 export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
@@ -20,12 +24,12 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
   requireValue,
 }) => {
   const [selected, setSelected] = React.useState<SalvageOreEnum[]>(values || [])
-  // const theme = useTheme()
-  const vehicleRowKeys = Object.values(SalvageOreEnum)
-  const bgColors = ['#666666', '#aaaaaa']
-  const fgColors = ['#000000', '#000000']
+  const theme = useTheme()
+  const salvageRowKeys = Object.values(SalvageOreEnum)
+  const bgColors = ['#a1a1a1', '#4b4b4b']
+  const fgColors = ['#ffffff', '#ffffff']
   // Sort descendng value
-  vehicleRowKeys.sort((a, b) => {
+  salvageRowKeys.sort((a, b) => {
     const aPrice = findPrice(a as SalvageOreEnum)
     const bPrice = findPrice(b as SalvageOreEnum)
     return bPrice - aPrice
@@ -33,7 +37,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
 
   return (
     <Grid container spacing={0.5}>
-      {vehicleRowKeys.map((salvageOreKey, rowIdx) => {
+      {salvageRowKeys.map((salvageOreKey, rowIdx) => {
         const fgc = fgColors[rowIdx]
         const bgc = bgColors[rowIdx]
         const active = selected.includes(salvageOreKey)
@@ -64,16 +68,15 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
                 onChange && onChange(newValue)
               }}
               sx={{
-                backgroundColor: bgc,
+                backgroundColor: alpha(bgc, 0.4),
                 border: '2px solid transparent',
                 color: fgc,
                 fontSize: {
-                  xs: 10,
-                  sm: 10,
-                  md: 10,
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
                 },
-                opacity: 0.5,
-                p: 0,
+                p: [0.5, 0.5],
                 '&:hover': {
                   color: 'white',
                   border: '2px solid white',
@@ -82,12 +85,11 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
                 '&.Mui-selected, &.Mui-selected:hover': {
                   color: fgc,
                   border: '2px solid white',
-                  opacity: 1,
                   backgroundColor: bgc,
                 },
               }}
             >
-              {getSalvageOreName(salvageOreKey)}
+              {btnNames[salvageOreKey]}
             </ToggleButton>
           </Grid>
         )
@@ -109,8 +111,8 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
                 p: 0,
               }}
               onChange={() => {
-                setSelected(vehicleRowKeys)
-                onChange && onChange(vehicleRowKeys)
+                setSelected(salvageRowKeys)
+                onChange && onChange(salvageRowKeys)
               }}
             >
               All
@@ -127,12 +129,14 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
               fullWidth
               tabIndex={-1}
               sx={{
+                border: `1px solid ${theme.palette.error.dark}}`,
+                color: theme.palette.error.main,
                 fontSize: {
-                  xs: 10,
-                  sm: 10,
-                  md: 10,
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
                 },
-                p: 0,
+                p: [0.5, 0.5],
               }}
               onChange={() => {
                 setSelected([])
