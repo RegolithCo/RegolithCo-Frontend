@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { ListItemIcon, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material'
-import { ContentCut } from '@mui/icons-material'
 
 export type menuItemObj = {
   icon?: React.ReactNode
