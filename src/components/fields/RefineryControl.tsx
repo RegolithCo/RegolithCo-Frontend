@@ -11,6 +11,8 @@ export interface RefineryControlProps {
   allowNone?: boolean
 }
 
+const DISABLE_LIST: RefineryEnum[] = [RefineryEnum.Pyrog, RefineryEnum.Terrg, RefineryEnum.Magng]
+
 export const RefineryControl: React.FC<RefineryControlProps> = ({
   value,
   settingsScreen,
@@ -93,11 +95,13 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
           None
         </MenuItem>
       )}
-      {Object.values(RefineryEnum).map((refinery) => (
-        <MenuItem key={`refinery-${refinery}`} value={refinery}>
-          {getRefineryName(refinery)}
-        </MenuItem>
-      ))}
+      {Object.values(RefineryEnum)
+        .filter((refinery) => !DISABLE_LIST.includes(refinery))
+        .map((refinery) => (
+          <MenuItem key={`refinery-${refinery}`} value={refinery}>
+            {getRefineryName(refinery)}
+          </MenuItem>
+        ))}
     </Select>
   )
 }

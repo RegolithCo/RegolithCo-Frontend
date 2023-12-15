@@ -1,3 +1,21 @@
+### December 14, 2023
+## 1.0.40 - 3.22 Preliminary support
+
+### New features
+
+- `Construction Materials` and a salvage ore picker have been added.
+
+### Fixes
+
+- Some context menu handling errors have been solved
+- Icon and font adjustments
+
+## Known issues
+
+- Prices for construction materials are not in yet (Waiting on UEX)
+
+-----
+
 ### December 11, 2023
 ## 1.0.39 - Theme fixes
 
