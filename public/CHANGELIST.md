@@ -1,18 +1,17 @@
 ### December 14, 2023
 ## 1.0.40 - 3.22 Preliminary support
 
+This is just a quick patch to get `Construction Materials` into the game for the new salvaging workflow. 
+
 ### New features
 
-- `Construction Materials` and a salvage ore picker have been added.
+- `Construction Materials` and a salvage ore picker have been added. **Prices for construction materials are not in yet (Waiting on UEX)!!** so you will need to add them manually for a day or two.
 
 ### Fixes
 
-- Some context menu handling errors have been solved
+- Some context menu handling errors have been solved and right-clicking inside the session tools hould be allowed again.
 - Icon and font adjustments
 
-## Known issues
-
-- Prices for construction materials are not in yet (Waiting on UEX)
 
 -----
 
