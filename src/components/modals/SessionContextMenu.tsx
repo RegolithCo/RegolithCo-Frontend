@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { ListItemIcon, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material'
 
-export type menuItemObj = {
+export type MenuItemObj = {
   icon?: React.ReactNode
   label: string
   onClick?: () => void
@@ -14,23 +14,29 @@ export type menuItemObj = {
 
 export type UseContextMenuProps = {
   header?: React.ReactNode
-  menuItems?: menuItemObj[]
+  menuItems?: MenuItemObj[]
 }
 
-export type ContextMenuProps = UseContextMenuProps & {
+export type SessionContextMenuProps = UseContextMenuProps & {
   open: boolean
-  menuPos: [number, number] | null
+  menuPosXY?: [number, number]
   onClose: () => void
 }
 
-export const ContextMenu: React.FC<ContextMenuProps> = ({ header, menuItems, onClose, open, menuPos }) => {
+export const SessionContextMenu: React.FC<SessionContextMenuProps> = ({
+  header,
+  menuItems,
+  onClose,
+  open,
+  menuPosXY = [100, 100],
+}) => {
   const theme = useTheme()
   return (
     <Menu
       open={open}
       onClose={onClose}
       anchorReference="anchorPosition"
-      anchorPosition={open && menuPos !== null ? { top: menuPos[1], left: menuPos[0] } : undefined}
+      anchorPosition={open && menuPosXY !== null ? { top: menuPosXY[1], left: menuPosXY[0] } : undefined}
       // anchorPosition={{ top: 50, left: 50 }}
       sx={{
         '& .MuiPaper-root': {
@@ -78,20 +84,19 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ header, menuItems, onC
   )
 }
 
-export const useContextMenu = (menuProps: UseContextMenuProps) => {
-  const [contextMenu, setContextMenu] = React.useState<[number, number] | null>(null)
+export const useSessionContextMenu = (menuProps: UseContextMenuProps, anchorEl?: HTMLElement) => {
+  const [menuPosXY, setContextMenu] = React.useState<[number, number] | null>(null)
 
   const handleContextMenu = (event: React.MouseEvent) => {
     console.log('handleContextMenu')
     event.preventDefault()
-    setContextMenu(
-      contextMenu === null
-        ? [event.clientX + 2, event.clientY - 6]
-        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-          // Other native context menus might behave different.
-          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-          null
-    )
+    if (menuPosXY !== null) {
+      // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+      // Other native context menus might behave different.
+      // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+      return setContextMenu(null)
+    }
+    setContextMenu(menuPosXY === null ? [event.clientX + 2, event.clientY - 6] : null)
   }
   const handleClose = () => {
     setContextMenu(null)
@@ -100,7 +105,12 @@ export const useContextMenu = (menuProps: UseContextMenuProps) => {
     handleContextMenu,
     handleClose,
     contextMenuNode: (
-      <ContextMenu {...menuProps} menuPos={contextMenu} open={contextMenu !== null} onClose={handleClose} />
+      <SessionContextMenu
+        {...menuProps}
+        menuPosXY={menuPosXY || undefined}
+        open={menuPosXY !== null}
+        onClose={handleClose}
+      />
     ),
   }
 }

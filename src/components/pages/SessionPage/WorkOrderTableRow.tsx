@@ -11,6 +11,7 @@ import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
+import { useSessionContextMenu } from '../../modals/SessionContextMenu'
 
 export interface WorkOrderTableRowProps {
   workOrder: WorkOrder
@@ -24,6 +25,23 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   const { getSafeName } = React.useContext(AppContext)
   const { updateModalWorkOrder, session, openWorkOrderModal, updateAnyWorkOrder, myUserProfile } =
     React.useContext(SessionContext)
+  const { contextMenuNode, handleClose, handleContextMenu } = useSessionContextMenu({
+    header: `Work Order: ${makeHumanIds(
+      getSafeName(workOrder.sellerscName || workOrder.owner?.scName),
+      workOrder.orderId
+    )}`,
+    menuItems: [
+      {
+        label: 'Mark all shares paid',
+      },
+      {
+        label: 'Mark work order sold/unsold',
+      },
+      {
+        label: 'Delete work order',
+      },
+    ],
+  })
   const { owner, createdAt, state, orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
   const amISessionOwner = session?.ownerId === myUserProfile.userId
@@ -99,7 +117,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   const onRowClick = () => openWorkOrderModal && openWorkOrderModal(workOrder.orderId)
 
   return (
-    <TableRow key={workOrder.orderId} sx={{ cursor: 'pointer' }}>
+    <TableRow key={workOrder.orderId} sx={{ cursor: 'pointer' }} onContextMenu={handleContextMenu}>
       <TableCell align="center" onClick={onRowClick}>
         <Tooltip title={getActivityName(workOrder.orderType)}>
           <OrderIcon />

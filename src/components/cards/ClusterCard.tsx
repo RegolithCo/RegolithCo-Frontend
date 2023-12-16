@@ -22,6 +22,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../context/app.context'
+import { useSessionContextMenu } from '../modals/SessionContextMenu'
 dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
@@ -35,6 +36,27 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   const findType = scoutingFind.clusterType
   const { getSafeName } = React.useContext(AppContext)
   const attendanceCount = (scoutingFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
+  const { contextMenuNode, handleClose, handleContextMenu } = useSessionContextMenu({
+    header: `${findType} Cluster: ${makeHumanIds(
+      getSafeName(scoutingFind.owner?.scName),
+      scoutingFind.scoutingFindId
+    )}`,
+    menuItems: [
+      {
+        label: 'Abandonned',
+      },
+      {
+        label: 'Need Workers',
+      },
+      {
+        label: '',
+        divider: true,
+      },
+      {
+        label: 'Delete scouting find',
+      },
+    ],
+  })
 
   // Conveneince variables
   const shipFind = scoutingFind as ShipClusterFind
@@ -86,6 +108,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
     <ThemeProvider theme={theme}>
       <Card
         elevation={5}
+        onContextMenu={handleContextMenu}
         sx={{
           border: '1px solid',
           position: 'relative',
