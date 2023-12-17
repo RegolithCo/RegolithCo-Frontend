@@ -28,8 +28,6 @@ export const App: React.FC = () => {
   const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
-  throw new Error('test')
-
   if (needIntervention)
     return (
       <Router basename={process.env.PUBLIC_URL}>
