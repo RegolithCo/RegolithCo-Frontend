@@ -1,3 +1,19 @@
+### December 17, 2023
+## 1.0.41 - 3.22 Preliminary support
+
+### New features
+
+- New context menus in the session list. You can now right-click on a user, a work order or a session to get a menu with some quick options.
+- Refinery yield values for 3 new the Gateway station refineries are in
+- Testing a new Error page for catching site errors. Hopefully this will help me track down some of the more elusive bugs.
+- 
+
+### Fixes
+
+- The topbar menu is FINALLY fixed. Sorry y'all, that was a long time coming.
+
+-----
+
 ### December 14, 2023
 ## 1.0.40 - 3.22 Preliminary support
 
