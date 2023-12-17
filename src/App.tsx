@@ -2,7 +2,6 @@ import React from 'react'
 import { AppWrapperContainer } from './components/AppWrapper'
 import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { HomePageContainer } from './components/pages/HomePage.container'
-import Error from './Error'
 import { AboutPageContainer } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
@@ -19,6 +18,7 @@ import { LoadoutPageContainer } from './components/pages/LoadoutPage.container'
 import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
 import { SessionJoinContainer } from './components/pages/SessionJoin.container'
 import { ProfileTabsEnum } from './components/pages/ProfilePage'
+import { ErrorPage } from './Error'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
                   <InitializeUserContainer />
                 </AuthGate>
               }
-              errorElement={<Error />}
+              errorElement={<ErrorPage />}
             />
             <Route path="*" element={<Navigate to="/verify  " replace />} />
           </Routes>
@@ -68,19 +68,19 @@ export const App: React.FC = () => {
                   <InitializeUserContainer />
                 </AuthGate>
               }
-              errorElement={<Error />}
+              errorElement={<ErrorPage />}
             />
           )}
-          <Route path="/" element={<HomePageContainer />} errorElement={<Error />} />
+          <Route path="/" element={<HomePageContainer />} errorElement={<ErrorPage />} />
 
           {/* about uses urls for tabs */}
           <Route path="/about/" element={<Navigate to="/about/general" replace />} />
-          <Route path="/about/:tab" element={<AboutPageContainer />} errorElement={<Error />} />
+          <Route path="/about/:tab" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
 
-          <Route path="/terms" element={<AboutPageContainer />} errorElement={<Error />} />
-          <Route path="/privacy" element={<AboutPageContainer />} errorElement={<Error />} />
-          <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<Error />} />
-          <Route path="/market-price" element={<MarketPriceCalcPage />} errorElement={<Error />} />
+          <Route path="/terms" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
+          <Route path="/privacy" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
+          <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<ErrorPage />} />
+          <Route path="/market-price" element={<MarketPriceCalcPage />} errorElement={<ErrorPage />} />
           <Route
             path="/verify"
             element={
@@ -88,17 +88,17 @@ export const App: React.FC = () => {
                 <InitializeUserContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           {/* Standalone calc */}
-          <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<Error />} />
+          <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<ErrorPage />} />
           {/* Tables uses urls for tabs */}
           <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
-          <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<Error />} />
+          <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<ErrorPage />} />
 
           <Route path="/loadouts/" element={<Navigate to="/loadouts/calculator" replace />} />
-          <Route path="/loadouts/:tab" element={<LoadoutPageContainer />} errorElement={<Error />} />
-          <Route path="/loadouts/:tab/:activeLoadout" element={<LoadoutPageContainer />} errorElement={<Error />} />
+          <Route path="/loadouts/:tab" element={<LoadoutPageContainer />} errorElement={<ErrorPage />} />
+          <Route path="/loadouts/:tab/:activeLoadout" element={<LoadoutPageContainer />} errorElement={<ErrorPage />} />
 
           {/**
            * This is the authentication section. Everything below here needs the AuthGate
@@ -112,7 +112,7 @@ export const App: React.FC = () => {
                 <ProfilePageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           <Route
             path={`/${ProfileTabsEnum.FRIENDS}`}
@@ -121,7 +121,7 @@ export const App: React.FC = () => {
                 <ProfilePageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           <Route
             path={`/${ProfileTabsEnum.SESSION_DEFAULTS}`}
@@ -130,7 +130,7 @@ export const App: React.FC = () => {
                 <ProfilePageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           {/* Session page has 3 ways into it*/}
           <Route
@@ -140,7 +140,7 @@ export const App: React.FC = () => {
                 <SessionChooserPageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           <Route path="/session/:sessionId" element={<RedirectToTab />} />
           <Route path="/join/:joinId" element={<SessionJoinContainer />} />
@@ -151,7 +151,7 @@ export const App: React.FC = () => {
                 <SessionPageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           <Route
             path="/session/:sessionId/:tab/w/:orderId"
@@ -160,7 +160,7 @@ export const App: React.FC = () => {
                 <SessionPageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           <Route
             path="/session/:sessionId/:tab/s/:scoutingFindId"
@@ -169,7 +169,7 @@ export const App: React.FC = () => {
                 <SessionPageContainer />
               </AuthGate>
             }
-            errorElement={<Error />}
+            errorElement={<ErrorPage />}
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
