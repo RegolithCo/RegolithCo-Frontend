@@ -1,28 +1,96 @@
 import React from 'react'
 import { useRouteError } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 import log from 'loglevel'
 import { Typography, Container, Button } from '@mui/material'
-import { ThemeProvider } from '@mui/system'
-import { theme } from './theme'
+import { Box, Stack } from '@mui/system'
+import { PageWrapper } from './components/PageWrapper'
+import { AppWrapperContainer } from './components/AppWrapper'
+import { DiscordIcon } from './icons'
+import { Replay } from '@mui/icons-material'
+import { TopBarContainer } from './components/TopBar.container'
+import { useSnackbar } from 'notistack'
 
 export function ErrorPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const error: any = useRouteError()
   log.error(error)
 
+  return <GenericError error={error as Error} errorInfo={error?.info as React.ErrorInfo} />
+}
+
+export interface GenericErrorProps {
+  error: Error
+  errorInfo: React.ErrorInfo
+}
+
+export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) => {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const handleReload = () => {
+    window.location.reload()
+  }
+
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
-        <i>{error.statusText || error.message}</i>
-      </p>
-    </div>
+    <Router basename={process.env.PUBLIC_URL}>
+      <TopBarContainer />
+      <AppWrapperContainer>
+        <PageWrapper title="ERROR: Something went wrong" maxWidth="lg">
+          <Container>
+            <Typography variant="overline">Regolith Error</Typography>
+            <Typography paragraph>
+              Try reloading the page. It may fix the issue. If this error persists, please consider copying the error
+              and pasting it in our `report-bugs` channel on Discord.
+            </Typography>
+
+            <Typography variant="overline">Error Details (Click to copy)</Typography>
+            <Box
+              onClick={() => {
+                const text = error?.toString() + '\n' + errorInfo?.componentStack
+                navigator.clipboard.writeText(text)
+                // Now notify
+                enqueueSnackbar('Copied to clipboard', { variant: 'info' })
+              }}
+              sx={{
+                border: '1px solid red',
+                borderRadius: '5px',
+                padding: '1rem',
+                overflow: 'hidden',
+                backgroundColor: '#2e0000',
+                margin: '1rem 0',
+              }}
+            >
+              <pre>{error?.toString()}</pre>
+              <pre>{errorInfo?.componentStack}</pre>
+            </Box>
+
+            <Stack direction="row" spacing={2}>
+              <Button startIcon={<Replay />} color="info" variant="contained" size="large" onClick={handleReload}>
+                Try Reloading
+              </Button>
+              <Button
+                startIcon={<DiscordIcon />}
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ fontSize: '1rem', p: 2, maxWidth: 200 }}
+                href="https://discord.gg/6TKSYHNJha"
+                target="_blank"
+              >
+                Discord Server
+              </Button>
+            </Stack>
+          </Container>
+        </PageWrapper>
+      </AppWrapperContainer>
+    </Router>
   )
 }
 
 interface ErrorBoundaryState {
   hasError: boolean
+  error?: Error
+  errorInfo?: React.ErrorInfo
 }
 
 interface ErrorBoundaryProps {
@@ -30,41 +98,24 @@ interface ErrorBoundaryProps {
 }
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { hasError: false }
+  state: ErrorBoundaryState = { hasError: false, error: undefined }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true }
+    return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // You can also log the error to an error reporting service
-    console.error(error, errorInfo)
-  }
-
-  handleReload = () => {
-    window.location.reload()
+    this.setState({ error, errorInfo })
   }
 
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      return (
-        <ThemeProvider theme={theme}>
-          <Container>
-            <Typography variant="overline">Regolith Error</Typography>
-            <Typography variant="h1">Something went wrong.</Typography>
-            <Typography paragraph>Try reloading the page. It may fix the issue.</Typography>
-            <Button variant="contained" size="large" onClick={this.handleReload}>
-              Reload
-            </Button>
-          </Container>
-        </ThemeProvider>
-      )
+      return <GenericError error={this.state.error as Error} errorInfo={this.state.errorInfo as React.ErrorInfo} />
     }
 
     return this.props.children
   }
 }
-
-export default ErrorBoundary

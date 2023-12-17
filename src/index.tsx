@@ -11,7 +11,7 @@ import { SnackbarProvider } from 'notistack'
 import { MyAuthProvider } from './hooks/useOAuth2'
 import LogRocket from 'logrocket'
 import { AppContextWrapper } from './context/app.context'
-import ErrorBoundary from './Error'
+import { ErrorBoundary } from './Error'
 
 if (process.env.NODE_ENV !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -23,21 +23,21 @@ if (process.env.NODE_ENV !== 'production') {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <MyAuthProvider>
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-            <CssBaseline enableColorScheme />
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline enableColorScheme />
+        <ErrorBoundary>
+          <MyAuthProvider>
             <APIProvider>
               <AppContextWrapper>
                 <App />
               </AppContextWrapper>
             </APIProvider>
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MyAuthProvider>
-    </ErrorBoundary>
+          </MyAuthProvider>
+        </ErrorBoundary>
+      </SnackbarProvider>
+    </ThemeProvider>
   </React.StrictMode>
 )
 
