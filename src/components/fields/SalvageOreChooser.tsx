@@ -13,7 +13,7 @@ export interface SalvageOreChooserProps {
 
 const btnNames: Record<SalvageOreEnum, string> = {
   [SalvageOreEnum.Rmc]: 'RMC',
-  [SalvageOreEnum.Const]: 'CONST',
+  [SalvageOreEnum.Cmat]: 'CONST',
 }
 
 export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({

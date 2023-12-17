@@ -69,7 +69,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
     },
     [ActivityEnum.Salvage]: {
       [SalvageOreEnum.Rmc]: 100,
-      [SalvageOreEnum.Const]: 100,
+      [SalvageOreEnum.Cmat]: 100,
     },
   })
   const [ship, setShip] = React.useState<Vehicle | null>(null)
