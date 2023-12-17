@@ -75,7 +75,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const [ship, setShip] = React.useState<Vehicle | null>(null)
   const [activityTab, setActivityTab] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
 
-  const { oreSummary, storeChoices, oreTotal } = React.useMemo(() => {
+  const { oreSummary, storesGrouped, oreTotal } = React.useMemo(() => {
     const oreSummary: OreSummary = Object.entries(ores[activityTab as keyof OreStateType]).reduce(
       (acc, [oreName, oreValue]) => {
         return {
@@ -89,14 +89,14 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
       {} as OreSummary
     )
     const oreTotal = Object.values(ores[activityTab as keyof OreStateType]).reduce((acc, ore) => acc + ore, 0)
-
-    return { storeChoices: findAllStoreChoices(oreSummary, true), oreSummary, oreTotal }
+    const storesGrouped = findAllStoreChoices(oreSummary, true)
+    return { storesGrouped, oreSummary, oreTotal }
   }, [ores, activityTab])
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
     .setColorGradient(...quaColors)
-    .setMidpoint(storeChoices.length) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .setMidpoint(storesGrouped.length) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
 
   const cargoFilled = React.useMemo<number>(() => {
@@ -436,7 +436,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
                 No ores selected
               </Typography>
             )}
-            {oreTotal > 0 && storeChoices.length === 0 && (
+            {oreTotal > 0 && storesGrouped.length === 0 && (
               <Typography
                 variant="body2"
                 sx={{
@@ -449,11 +449,11 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
               </Typography>
             )}
             <List sx={{ overflowY: 'scroll', flexGrow: 1, px: 2 }}>
-              {storeChoices.map((choice, index) => (
+              {storesGrouped.map((cityStores, index) => (
                 <StoreChooserListItem
                   key={`store-${index}`}
                   ores={oreSummary}
-                  storeChoice={choice}
+                  cityStores={cityStores}
                   priceColor={bgColors[index]}
                   isMax={index === 0}
                   onClick={() => {

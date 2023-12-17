@@ -20,7 +20,7 @@ import { fontFamilies } from '../../theme'
 import { alpha } from '@mui/material'
 
 export interface StoreChooserListItemProps {
-  storeChoice: StoreChoice
+  cityStores: StoreChoice
   ores: OreSummary
   onClick: (storeChoice: StoreChoice) => void
   compact?: boolean
@@ -42,7 +42,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   ores,
-  storeChoice,
+  cityStores,
   priceColor,
   onClick,
   disabled,
@@ -53,10 +53,13 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const theme = useTheme()
   const styles = styleThunk(theme)
 
-  const planetName = storeChoice.planet ? lookups.planetLookups['ST'][storeChoice.planet].name : ''
-  const satellite = storeChoice.satellite
-    ? lookups.planetLookups['ST'][storeChoice.planet].satellites[storeChoice.satellite]
+  const planetName = cityStores.planet ? lookups.planetLookups['ST'][cityStores.planet].name : ''
+  const satellite = cityStores.satellite
+    ? lookups.planetLookups['ST'][cityStores.planet].satellites[cityStores.satellite]
     : undefined
+  const city = cityStores.city || ''
+  // Price is the sum of all the prices
+  const price = Object.values(cityStores.prices).reduce((a, b) => a + b, 0)
 
   const contents = (
     <>
@@ -67,11 +70,11 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
         primary={
           <Box>
             <Typography variant="body1" sx={{ color: theme.palette.primary.main }} component="div">
-              {compact ? storeChoice.name_short : storeChoice.name}
+              {compact ? cityStores.name_short : cityStores.name}
             </Typography>
             <Typography variant="caption" sx={{ color: theme.palette.secondary.main }} component="div">
               {planetName}
-              {satellite && ` // ${satellite}`}
+              {satellite && ` // ${satellite}${city ? ' // ' + city : ''}`}
             </Typography>
           </Box>
         }
@@ -82,7 +85,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
           !compact && (
             <Box>
               {Object.keys(ores).map((ore, index) => {
-                const found = !storeChoice.missingOres.find((missingOre) => missingOre === ore)
+                const found = !cityStores.missingOres.includes(ore as AnyOreEnum)
                 return (
                   <Tooltip
                     key={`tt-${index}`}
@@ -127,8 +130,8 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
           },
         }}
         primary={
-          <Tooltip title={MValueFormatter(storeChoice.price, MValueFormat.currency)}>
-            <span>{MValueFormatter(storeChoice.price, MValueFormat.currency_sm)}</span>
+          <Tooltip title={MValueFormatter(price, MValueFormat.currency)}>
+            <span>{MValueFormatter(price, MValueFormat.currency_sm)}</span>
           </Tooltip>
         }
         secondaryTypographyProps={{
@@ -176,7 +179,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   return disabled ? (
     <ListItem sx={itemSx}>{contents}</ListItem>
   ) : (
-    <ListItemButton sx={itemSx} onClick={() => onClick && onClick(storeChoice)}>
+    <ListItemButton sx={itemSx} onClick={() => onClick && onClick(cityStores)}>
       {contents}
     </ListItemButton>
   )

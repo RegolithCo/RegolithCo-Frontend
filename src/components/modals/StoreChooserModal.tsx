@@ -117,7 +117,7 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
                 key={`store-${index}`}
                 ores={ores}
                 isSelected={choice.code === initStore}
-                storeChoice={choice}
+                cityStores={choice}
                 priceColor={bgColors[index]}
                 isMax={index === 0}
                 onClick={() => {

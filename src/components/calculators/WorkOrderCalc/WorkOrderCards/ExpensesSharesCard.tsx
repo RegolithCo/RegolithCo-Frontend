@@ -147,7 +147,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     compact
                     disabled={!isEditing}
                     isSelected={isEditing}
-                    storeChoice={myStoreChoice}
+                    cityStores={myStoreChoice}
                     isMax={!workOrder.sellStore}
                     priceColor={theme.palette.success.main}
                   />
