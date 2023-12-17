@@ -48,6 +48,7 @@ import { CrewShareTemplateTable } from '../../fields/crewshare/CrewShareTemplate
 import { omit } from 'lodash'
 import { fontFamilies } from '../../../theme'
 import { DialogEnum } from '../../../context/session.context'
+import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -694,6 +695,24 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                             setNewSettings({
                               ...newSettings,
                               vehicleOreDefaults: newVals,
+                            })
+                          }}
+                        />
+                      </Box>
+                    </ListItem>
+                  )}
+                  {(!newSettings.sessionSettings?.activity ||
+                    newSettings.sessionSettings?.activity === ActivityEnum.Salvage) && (
+                    <ListItem>
+                      <Box sx={{ width: '100%' }}>
+                        <Typography variant="caption">Default Salvage Material Rows</Typography>
+                        <SalvageOreChooser
+                          values={newSettings.salvageOreDefaults || []}
+                          multiple
+                          onChange={(newVals) => {
+                            setNewSettings({
+                              ...newSettings,
+                              salvageOreDefaults: newVals,
                             })
                           }}
                         />
