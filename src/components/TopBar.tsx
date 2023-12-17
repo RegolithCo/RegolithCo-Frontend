@@ -20,6 +20,8 @@ import {
   Group,
   HelpCenter,
   Info,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
   Login,
   Logout,
   NewReleases,
@@ -95,14 +97,14 @@ export interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
-  const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement }>(null)
+  const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement; width: number }>(null)
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { hideNames, setHideNames } = React.useContext(AppContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
   const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {
-    setMenuOpen({ name: name, el: event.currentTarget })
+    setMenuOpen({ name: name, el: event.currentTarget, width: event.currentTarget.clientWidth })
   }
 
   const handleNavigate = (path?: string, action?: () => void) => {
@@ -119,7 +121,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
 
   const topBarMenu: MenuItemType[] = [
     //
-    { path: '/session', name: 'Mining Sessions', icon: <CalendarMonth /> },
+    { path: '/session', name: 'Sessions', icon: <CalendarMonth /> },
     {
       name: 'Calculators',
       icon: <Calculate />,
@@ -238,14 +240,6 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                 return [
                   ...acc,
                   <TopBarMenuItem isMobile handleAction={handleNavigate} key={`menuItem-${idx}`} item={item} />,
-                  // item.children && (
-                  //   <Divider
-                  //     key={`divider-${idx}`}
-                  //     sx={{
-                  //       borderColor: alpha(theme.palette.secondary.contrastText, 0.2),
-                  //     }}
-                  //   />
-                  // ),
                   (item.children || [])
                     .filter(({ isDivider }) => !isDivider)
                     .map((child, idy) => (
@@ -277,6 +271,15 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                   <Button
                     key={`menuItem-${idx}`}
                     startIcon={icon}
+                    endIcon={
+                      children ? (
+                        openMenu && openMenu.name === name ? (
+                          <KeyboardArrowDown />
+                        ) : (
+                          <KeyboardArrowUp />
+                        )
+                      ) : undefined
+                    }
                     disabled={disabled}
                     onMouseOver={children && handleOpenMenu(name as string)}
                     onClick={() => path && handleNavigate(path)}
@@ -296,6 +299,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                 <TopBarMenu
                   open={Boolean(openMenu && openMenu.name === name)}
                   name={name}
+                  anchorWidth={openMenu && openMenu.width}
                   onClose={handleCloseMenu}
                   key={`menu-${idx}`}
                   anchorEl={openMenu && openMenu.el}
@@ -352,6 +356,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                 open={Boolean(openMenu && openMenu.name === 'profile')}
                 onClose={handleCloseMenu}
                 anchorEl={openMenu && openMenu.el}
+                anchorWidth={openMenu && openMenu.width}
+                anchorAlign="right"
                 handleAction={handleNavigate}
                 menu={profileMenu}
               />

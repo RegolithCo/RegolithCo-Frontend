@@ -9,12 +9,23 @@ export interface TopBarMenuProps {
   open?: boolean
   name?: string
   anchorEl?: HTMLElement | null
+  anchorWidth?: number | null
+  anchorAlign?: 'left' | 'right'
   menu: MenuItemType[]
   handleAction: (path?: string, action?: () => void) => void
   onClose?: () => void
 }
 
-export const TopBarMenu: React.FC<TopBarMenuProps> = ({ open, name, anchorEl, handleAction, onClose, menu }) => {
+export const TopBarMenu: React.FC<TopBarMenuProps> = ({
+  open,
+  name,
+  anchorEl,
+  anchorWidth,
+  anchorAlign,
+  handleAction,
+  onClose,
+  menu,
+}) => {
   const theme = useTheme()
 
   return (
@@ -28,6 +39,7 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({ open, name, anchorEl, ha
         },
         '& .MuiPaper-root': {
           color: yellow[700],
+          overflow: 'visible',
           backgroundColor: alpha(theme.palette.secondary.contrastText, 1),
           border: `1px solid ${yellow[700]}`,
           borderTop: `none`,
@@ -51,6 +63,19 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({ open, name, anchorEl, ha
       open={Boolean(open)}
       onClose={onClose}
     >
+      <Box
+        sx={{
+          width: anchorWidth,
+          height: 60,
+          // border: `3px solid red`,
+          position: 'absolute',
+          // Put this exactly above the menu
+          top: -60,
+          // Move it to the left or right
+          left: !anchorAlign || anchorAlign === 'left' ? 0 : undefined,
+          right: anchorAlign === 'right' ? 0 : undefined,
+        }}
+      />
       {menu
         .filter(({ show }) => show !== false)
         .map((item, idx) =>
