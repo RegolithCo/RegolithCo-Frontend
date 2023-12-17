@@ -89,7 +89,7 @@ export const RefineryBonusTable: React.FC = () => {
     })
   )
 
-  const tables = ['Yield', 'Refining Time', 'Refining Cost']
+  const tables = ['Yield']
   const reversed = [false, true, true]
 
   return (

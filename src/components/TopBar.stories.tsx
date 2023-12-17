@@ -17,7 +17,6 @@ const Template: StoryFn<typeof TopBarComponent> = (args) => <TopBarComponent {..
 
 export const LoggedIn = Template.bind({})
 LoggedIn.args = {
-  navigate: (path: string) => console.log('navigate', path),
   userCtx: {
     login: () => {
       console.log('sign in')
@@ -48,7 +47,6 @@ LoggedIn.args = {
 
 export const LoggedOut = Template.bind({})
 LoggedOut.args = {
-  navigate: (path: string) => console.log('navigate', path),
   userCtx: {
     login: () => {
       console.log('sign in')

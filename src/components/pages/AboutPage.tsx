@@ -102,7 +102,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       finalTitle = 'Frequently Asked Questions'
       break
     case TabIndex.HelpUs:
-      finalTitle = 'Support Us'
+      finalTitle = 'Support Regolith'
       break
     case TabIndex.GetHelp:
       finalTitle = 'Get Help'

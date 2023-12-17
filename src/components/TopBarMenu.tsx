@@ -4,6 +4,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { Box, Divider, alpha, useTheme } from '@mui/material'
 import { MenuItemType } from './TopBar'
 import { yellow } from '@mui/material/colors'
+import { Link } from 'react-router-dom'
 
 export interface TopBarMenuProps {
   open?: boolean
@@ -12,7 +13,6 @@ export interface TopBarMenuProps {
   anchorWidth?: number | null
   anchorAlign?: 'left' | 'right'
   menu: MenuItemType[]
-  handleAction: (path?: string, action?: () => void) => void
   onClose?: () => void
 }
 
@@ -22,7 +22,6 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({
   anchorEl,
   anchorWidth,
   anchorAlign,
-  handleAction,
   onClose,
   menu,
 }) => {
@@ -32,8 +31,10 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({
     <Menu
       closeAfterTransition
       elevation={11}
+      onMouseMove={onClose}
+      onClick={onClose}
       sx={{
-        mt: 1.8,
+        // border: '10px solid red',
         '& .MuiList-root': {
           py: 0,
         },
@@ -47,10 +48,13 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({
       }}
       MenuListProps={{
         onMouseLeave: onClose,
+        onMouseMove: (e) => {
+          e.stopPropagation()
+        },
         style: { pointerEvents: 'auto' },
       }}
       id="menu-appbar"
-      anchorEl={anchorEl}
+      anchorEl={anchorEl || undefined}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'left',
@@ -66,11 +70,11 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({
       <Box
         sx={{
           width: anchorWidth,
-          height: 60,
+          height: 64,
           // border: `3px solid red`,
           position: 'absolute',
           // Put this exactly above the menu
-          top: -60,
+          top: -63,
           // Move it to the left or right
           left: !anchorAlign || anchorAlign === 'left' ? 0 : undefined,
           right: anchorAlign === 'right' ? 0 : undefined,
@@ -87,7 +91,7 @@ export const TopBarMenu: React.FC<TopBarMenuProps> = ({
               }}
             />
           ) : (
-            <TopBarMenuItem key={idx} item={item} handleAction={handleAction} />
+            <TopBarMenuItem key={idx} item={item} />
           )
         )}
     </Menu>
@@ -98,45 +102,76 @@ export interface TopBarMenuItemProps {
   item: MenuItemType
   isMobile?: boolean
   isSubMenu?: boolean
-  handleAction: (path?: string, action?: () => void) => void
 }
 
-export const TopBarMenuItem: React.FC<TopBarMenuItemProps> = ({ item, isMobile, isSubMenu, handleAction }) => {
+const LinkWrapper = ({ item, children }: TopBarMenuItemProps & React.PropsWithChildren) => {
+  if (!item.path) return <>{children}</>
+  return (
+    <Link
+      to={item.path}
+      style={{
+        // Center items vertically
+        width: '100%',
+        // border: '1px solid green',
+        color: 'inherit',
+        textDecoration: 'none',
+      }}
+    >
+      {children}
+    </Link>
+  )
+}
+
+export const TopBarMenuItem: React.FC<TopBarMenuItemProps> = ({ item, isMobile, isSubMenu }) => {
   const theme = useTheme()
   const isMobileSubMenu = isMobile && isSubMenu
   return (
     <MenuItem
       disabled={item.disabled}
-      onClick={() => handleAction(item.path, item.action)}
+      onClick={() => {
+        if (item.disabled || !item.action) return
+        item.action()
+      }}
       sx={{
-        pr: 3,
-        fontSize: isMobileSubMenu ? '0.8rem' : undefined,
-        pl: theme.spacing((isMobileSubMenu ? 3 : 0) + 1 || 1),
-        minHeight: isMobileSubMenu ? '1.5rem' : undefined,
+        p: 0,
+        m: 0,
         borderTop: isMobile && !isSubMenu ? `1px solid ${theme.palette.secondary.contrastText}` : undefined,
-        // color: indent ? theme.palette.secondary.light : undefined,
-        // background: indent ? theme.palette.secondary.contrastText : undefined,
-        // color: isMobileSubMenu ? theme.palette.primary.contrastText : undefined,
-        // background: isMobileSubMenu ? theme.palette.primary.light : undefined,
         '&:hover': {
           background: theme.palette.secondary.contrastText,
           color: theme.palette.secondary.light,
         },
       }}
     >
-      <Box
-        sx={{
-          display: 'inline',
-          mr: 1,
-          '& svg': {
-            color: isMobileSubMenu ? theme.palette.primary.contrastText : undefined,
+      <LinkWrapper item={item}>
+        <Box
+          sx={{
+            py: 1,
+            px: 1,
+            pr: 3,
             fontSize: isMobileSubMenu ? '0.8rem' : undefined,
-          },
-        }}
-      >
-        {item.icon}
-      </Box>
-      {item.name}
+            pl: theme.spacing((isMobileSubMenu ? 3 : 0) + 1 || 1),
+            minHeight: isMobileSubMenu ? '1.5rem' : undefined,
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'inline',
+              color: 'inherit',
+              mr: 1,
+              '& svg': {
+                color: isMobileSubMenu ? theme.palette.primary.contrastText : undefined,
+                fontSize: isMobileSubMenu ? '0.8rem' : undefined,
+              },
+            }}
+          >
+            {item.icon}
+          </Box>
+          {item.name}
+        </Box>
+      </LinkWrapper>
     </MenuItem>
   )
 }

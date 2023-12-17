@@ -42,6 +42,7 @@ import { TopBarMenu, TopBarMenuItem } from './TopBarMenu'
 import { LaserIcon } from '../icons/Laser'
 import { AppContext } from '../context/app.context'
 import { ProfileTabsEnum } from './pages/ProfilePage'
+import { Link } from 'react-router-dom'
 
 export type MenuItemType = {
   path?: string
@@ -93,10 +94,9 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export interface TopBarProps {
   userCtx: LoginContextObj
-  navigate?: (path: string) => void
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
+export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
   const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement; width: number }>(null)
   const theme = useTheme()
   const styles = stylesThunk(theme)
@@ -107,15 +107,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
     setMenuOpen({ name: name, el: event.currentTarget, width: event.currentTarget.clientWidth })
   }
 
-  const handleNavigate = (path?: string, action?: () => void) => {
-    setMenuOpen(null)
-    // take the action (if any)
-    if (action) action()
-    // navigate to the path (if any)
-    if (path && navigate) navigate(path)
-  }
-
   const handleCloseMenu = () => {
+    // Slight timeout then close
     setMenuOpen(null)
   }
 
@@ -125,6 +118,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
     {
       name: 'Calculators',
       icon: <Calculate />,
+      path: '/workorder',
       children: [
         { path: '/workorder', name: 'Work Order', icon: <Engineering /> },
         { path: '/cluster', name: 'Rock / Cluster Calculator', icon: <RockIcon /> },
@@ -154,7 +148,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         { isDivider: true },
         { path: '/about/acknowledgements', name: 'Acknowledgements', icon: <Celebration /> },
         { path: '/about/faq', name: 'FAQ', icon: <QuestionAnswer /> },
-        { path: '/about/support-us', name: 'Support Us', icon: <Coffee /> },
+        { path: '/about/support-us', name: 'Support Regolith', icon: <Coffee /> },
         { path: '/about/get-help', name: 'Get Help', icon: <HelpCenter /> },
         { path: '/about/release-notes', name: 'Release Notes', icon: <NewReleases /> },
       ],
@@ -214,7 +208,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
           {/* THis is the mobile menu */}
           <Menu
             id="menu-appbar"
-            anchorEl={openMenu && openMenu.el}
+            anchorEl={openMenu?.el ? openMenu.el : undefined}
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'left',
@@ -225,6 +219,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
               horizontal: 'left',
             }}
             open={Boolean(openMenu && openMenu.name === 'mobile')}
+            onClick={handleCloseMenu}
             onClose={handleCloseMenu}
             sx={{
               display: { xs: 'block', md: 'none' },
@@ -239,17 +234,11 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
               else
                 return [
                   ...acc,
-                  <TopBarMenuItem isMobile handleAction={handleNavigate} key={`menuItem-${idx}`} item={item} />,
+                  <TopBarMenuItem isMobile key={`menuItem-${idx}`} item={item} />,
                   (item.children || [])
                     .filter(({ isDivider }) => !isDivider)
                     .map((child, idy) => (
-                      <TopBarMenuItem
-                        isMobile
-                        isSubMenu
-                        handleAction={handleNavigate}
-                        key={`menuItem-${idx}-${idy}`}
-                        item={child}
-                      />
+                      <TopBarMenuItem isMobile isSubMenu key={`menuItem-${idx}-${idy}`} item={child} />
                     )),
                 ]
             }, [] as React.ReactNode[])}
@@ -257,7 +246,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
         </Box>
         {/* This is our mini menu for mobile */}
         <RockIcon sx={styles.siteIcon} />
-        <Typography variant="h5" noWrap component="a" onClick={() => handleNavigate('/')} sx={styles.siteName}>
+        <Typography variant="h5" noWrap component={Link} to="/" sx={styles.siteName}>
           Regolith Co.
         </Typography>
         {/* This is the login Menu for non-mobile */}
@@ -282,10 +271,13 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                     }
                     disabled={disabled}
                     onMouseOver={children && handleOpenMenu(name as string)}
-                    onClick={() => path && handleNavigate(path)}
+                    component={Link}
+                    to={path || '/'}
                     sx={{
                       background: openMenu && openMenu.name === name ? theme.palette.secondary.contrastText : undefined,
                       color: openMenu && openMenu.name === name ? theme.palette.secondary.light : 'inherit',
+                      borderBottomLeftRadius: 0,
+                      borderBottomRightRadius: 0,
                     }}
                   >
                     {name}
@@ -302,8 +294,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
                   anchorWidth={openMenu && openMenu.width}
                   onClose={handleCloseMenu}
                   key={`menu-${idx}`}
-                  anchorEl={openMenu && openMenu.el}
-                  handleAction={handleNavigate}
+                  anchorEl={openMenu?.el ? openMenu.el : undefined}
                   menu={children || []}
                 />
               )
@@ -334,7 +325,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
               ) : (
                 <Button
                   onMouseOver={handleOpenMenu('profile')}
-                  onClick={navigate ? () => navigate('/profile') : undefined}
+                  component={Link}
+                  to="/profile"
                   sx={{
                     fontFamily: fontFamilies.robotoMono,
                     fontWeight: 'bold',
@@ -355,10 +347,9 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx, navigate }) => {
               <TopBarMenu
                 open={Boolean(openMenu && openMenu.name === 'profile')}
                 onClose={handleCloseMenu}
-                anchorEl={openMenu && openMenu.el}
+                anchorEl={openMenu?.el ? openMenu.el : undefined}
                 anchorWidth={openMenu && openMenu.width}
                 anchorAlign="right"
-                handleAction={handleNavigate}
                 menu={profileMenu}
               />
             </>
