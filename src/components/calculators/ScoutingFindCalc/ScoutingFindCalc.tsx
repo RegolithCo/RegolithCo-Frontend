@@ -60,7 +60,7 @@ import { AppContext } from '../../../context/app.context'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
-const SCOUTING_FIND_STATE_NAMES: ScoutingFindStateEnum[] = [
+export const SCOUTING_FIND_STATE_NAMES: ScoutingFindStateEnum[] = [
   ScoutingFindStateEnum.Discovered,
   ScoutingFindStateEnum.ReadyForWorkers,
   ScoutingFindStateEnum.Working,
@@ -81,7 +81,7 @@ export interface ScoutingFindCalcProps {
   onChange?: (scoutingFind: ScoutingFind) => void
 }
 
-const AttendanceStateEnum = {
+export const AttendanceStateEnum = {
   NotJoined: 'NotJoined',
   Joined: 'Joined',
   EnRoute: 'EnRoute',
@@ -648,10 +648,10 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           leaveScoutingFind &&
                           leaveScoutingFind(scoutingFind.scoutingFindId)
                       }}
-                      sx={{ flexGrow: 1 }}
+                      sx={{ flexGrow: 1, color: theme.palette.error.main }}
                     >
-                      <ExitToApp />
-                      Departed
+                      <ExitToApp color={myAttendanceState === AttendanceStateEnum.NotJoined ? undefined : 'error'} />
+                      Depart
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </Box>

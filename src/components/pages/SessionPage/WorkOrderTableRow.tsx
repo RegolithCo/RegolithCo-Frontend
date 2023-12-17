@@ -7,11 +7,12 @@ import { Checkbox, TableCell, TableRow, Tooltip, Typography, useTheme } from '@m
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
+import { AccountBalance, DeleteForever, SvgIconComponent } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { useSessionContextMenu } from '../../modals/SessionContextMenu'
+import { DeleteWorkOrderModal } from '../../modals/DeleteWorkOrderModal'
 
 export interface WorkOrderTableRowProps {
   workOrder: WorkOrder
@@ -22,35 +23,17 @@ export interface WorkOrderTableRowProps {
 
 export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, isShare, summary }) => {
   const theme = useTheme()
+  const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const { getSafeName } = React.useContext(AppContext)
-  const { updateModalWorkOrder, session, openWorkOrderModal, updateAnyWorkOrder, myUserProfile } =
+  const { session, openWorkOrderModal, updateAnyWorkOrder, myUserProfile, deleteAnyWorkOrder } =
     React.useContext(SessionContext)
-  const { contextMenuNode, handleClose, handleContextMenu } = useSessionContextMenu({
-    header: `Work Order: ${makeHumanIds(
-      getSafeName(workOrder.sellerscName || workOrder.owner?.scName),
-      workOrder.orderId
-    )}`,
-    menuItems: [
-      {
-        label: 'Mark all shares paid',
-      },
-      {
-        label: 'Mark work order sold/unsold',
-      },
-      {
-        label: 'Delete work order',
-      },
-    ],
-  })
-  const { owner, createdAt, state, orderType, crewShares } = workOrder
+
+  const { orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
   const amISessionOwner = session?.ownerId === myUserProfile.userId
 
   // let stateIcon: React.ReactNode
-  const volumeVal = Object.entries(summary.oreSummary).reduce(
-    (acc, [oreKey, { collected }]) => acc + collected / 100,
-    0
-  )
+  const volumeVal = Object.entries(summary.oreSummary).reduce((acc, [, { collected }]) => acc + collected / 100, 0)
 
   const isPaid = crewShares?.every(({ state }) => state === true)
   const numPaid = crewShares?.filter(({ state }) => state === true).length || 0
@@ -114,10 +97,57 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   //     stateIcon = <ClawIcon />
   //     break
   // }
+
+  const { contextMenuNode, handleContextMenu } = useSessionContextMenu({
+    header: `Work Order: ${makeHumanIds(
+      getSafeName(workOrder.sellerscName || workOrder.owner?.scName),
+      workOrder.orderId
+    )}`,
+    headerAvatar: <OrderIcon />,
+    menuItems: [
+      {
+        label: 'View work order',
+        onClick: () => openWorkOrderModal && openWorkOrderModal(workOrder.orderId),
+      },
+      {
+        label: 'Mark all shares paid',
+        disabled: isPaid || !allowEdit,
+        onClick: () => {
+          updateAnyWorkOrder(
+            {
+              ...workOrder,
+              crewShares: (workOrder.crewShares || []).map((s) => ({ ...s, state: true })),
+            },
+            workOrder.orderId
+          )
+        },
+      },
+      {
+        label: `Mark work order ${workOrder.isSold ? 'unsold' : 'sold'}`,
+        disabled: !allowEdit,
+        onClick: () => {
+          updateAnyWorkOrder({ ...workOrder, isSold: !workOrder.isSold }, workOrder.orderId)
+        },
+      },
+      {
+        divider: true,
+        label: '',
+      },
+      {
+        label: 'Delete work order',
+        disabled: !allowEdit,
+        color: 'error',
+        icon: <DeleteForever fontSize="small" color="error" />,
+        onClick: () => setDeleteConfirmModal(true),
+      },
+    ],
+  })
+
   const onRowClick = () => openWorkOrderModal && openWorkOrderModal(workOrder.orderId)
 
   return (
-    <TableRow key={workOrder.orderId} sx={{ cursor: 'pointer' }} onContextMenu={handleContextMenu}>
+    <TableRow key={workOrder.orderId} sx={{ cursor: 'context-menu' }} onContextMenu={handleContextMenu}>
+      {contextMenuNode}
       <TableCell align="center" onClick={onRowClick}>
         <Tooltip title={getActivityName(workOrder.orderType)}>
           <OrderIcon />
@@ -261,6 +291,16 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
             )}
           </Tooltip>
         </TableCell>
+      )}
+      {deleteConfirmModal && (
+        <DeleteWorkOrderModal
+          onClose={() => setDeleteConfirmModal(false)}
+          open
+          onConfirm={() => {
+            deleteAnyWorkOrder && deleteAnyWorkOrder(workOrder.orderId, workOrder.__typename)
+            setDeleteConfirmModal(false)
+          }}
+        />
       )}
     </TableRow>
   )

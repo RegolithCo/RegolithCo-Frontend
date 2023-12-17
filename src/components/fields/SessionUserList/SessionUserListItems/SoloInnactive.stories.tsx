@@ -35,16 +35,8 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
     >
       <Typography variant="h6">OPendi Users</Typography>
       <List sx={{ maxWidth: 400, border: '1px solid blue' }}>
-        <SoloInnactiveC
-          pendingUser={{ scName: 'userA', __typename: 'PendingUser' }}
-          openContextMenu={(el: HTMLElement) => console.log('openContextMenu', el)}
-          {...componentProps}
-        />
-        <SoloInnactiveC
-          pendingUser={{ scName: 'userB_Friend', __typename: 'PendingUser' }}
-          openContextMenu={(el: HTMLElement) => console.log('openContextMenu', el)}
-          {...componentProps}
-        />
+        <SoloInnactiveC pendingUser={{ scName: 'userA', __typename: 'PendingUser' }} {...componentProps} />
+        <SoloInnactiveC pendingUser={{ scName: 'userB_Friend', __typename: 'PendingUser' }} {...componentProps} />
       </List>
     </SessionContext.Provider>
   )

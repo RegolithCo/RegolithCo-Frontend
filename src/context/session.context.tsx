@@ -108,6 +108,7 @@ export interface SessionContextType {
   // Work orders
   createWorkOrder: (workOrder: WorkOrder) => void
   deleteWorkOrder: (workOrderId: string) => void
+  deleteAnyWorkOrder: (workOrderId: string, __typename: string) => void
   updateModalWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
   updateAnyWorkOrder: (newWorkOrder: WorkOrder, newOrderId: string) => void
   setWorkOrderShareId: (workOrderId: string) => void
@@ -180,6 +181,7 @@ export const sessionContextDefault: SessionContextType = {
 
   createWorkOrder: notAvailable('createWorkOrder'),
   deleteWorkOrder: notAvailable('deleteWorkOrder'),
+  deleteAnyWorkOrder: notAvailable('deleteAnyWorkOrder'),
   updateModalWorkOrder: notAvailable('updateWorkOrder'),
   updateAnyWorkOrder: notAvailable('updateAnyWorkOrder'),
   setWorkOrderShareId: notAvailable('setWorkOrderShareId'),

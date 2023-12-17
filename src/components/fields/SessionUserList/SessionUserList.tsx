@@ -6,12 +6,12 @@ import { PendingUserListItem } from './SessionUserListItems/PendingUserListItem'
 import { ActiveUserListItem } from './SessionUserListItems/ActiveUserListItem'
 
 export interface SessionUserListProps {
-  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
+  propA?: string
 }
 
 type SortedUserList = [scName: string, uType: 'Active' | 'Innactive', userObj: PendingUser | SessionUser][]
 
-export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMenu }) => {
+export const SessionUserList: React.FC<SessionUserListProps> = () => {
   const { singleActives, singleInnactives, session, myUserProfile } = React.useContext(SessionContext)
   const meId = myUserProfile.userId
 
@@ -47,6 +47,7 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
       dense
       disablePadding
       sx={{
+        position: 'relative',
         height: '100%',
         overflowY: 'scroll',
         overflowX: 'hidden',
@@ -55,20 +56,12 @@ export const SessionUserList: React.FC<SessionUserListProps> = ({ openContextMen
       {scNameList.map(([, uType, uBj], idx) =>
         uType === 'Innactive' ? (
           <React.Fragment key={`user-${idx}`}>
-            <PendingUserListItem
-              key={`user-${idx}`}
-              pendingUser={uBj as PendingUser}
-              openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
-            />
+            <PendingUserListItem key={`user-${idx}`} pendingUser={uBj as PendingUser} />
             <Divider />
           </React.Fragment>
         ) : (
           <React.Fragment key={`user-${idx}`}>
-            <ActiveUserListItem
-              key={`user-${idx}`}
-              sessionUser={uBj as SessionUser}
-              openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
-            />
+            <ActiveUserListItem key={`user-${idx}`} sessionUser={uBj as SessionUser} />
             <Divider />
           </React.Fragment>
         )

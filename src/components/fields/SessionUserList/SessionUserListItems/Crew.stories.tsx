@@ -78,9 +78,6 @@ export const Crew = Template.bind({})
 Crew.args = {
   componentProps: {
     captain: mySessionUser,
-    openContextMenu: () => {
-      console.log('openContextMenu')
-    },
   },
   contextProps: {},
 }
@@ -88,9 +85,6 @@ export const CrewMeCaptain = Template.bind({})
 CrewMeCaptain.args = {
   componentProps: {
     captain: notMySessionUser,
-    openContextMenu: () => {
-      console.log('openContextMenu')
-    },
   },
   contextProps: {},
 }

@@ -10,6 +10,7 @@ import {
 } from '../schema'
 import {
   crewSharesToInput,
+  DeleteWorkOrderMutation,
   FailWorkOrderMutation,
   GetWorkOrderQuery,
   removeKeyRecursive,
@@ -34,6 +35,7 @@ type useSessionsReturn = {
   updateAnyWorkOrder: (newWorkOrder: WorkOrder, anyOrderId: string) => void
   failWorkOrder: (reason?: string) => void
   deleteWorkOrder: () => void
+  deleteAnyWorkOrder: (anyOrderId: string, __typename: string) => void
   deleteCrewShare: (scName: string) => void
 }
 
@@ -56,15 +58,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
 
   const updateWorkOrderMutation = useUpdateWorkOrderMutation()
   const failWorkOrderMutation = useFailWorkOrderMutation()
-  const deleteWorkOrderMutation = useDeleteWorkOrderMutation({
-    onCompleted: () => {
-      enqueueSnackbar('Work Order Deleted', { variant: 'success' })
-      navigate(`/session/${sessionId}`)
-    },
-    update: (cache) => {
-      cache.evict({ id: cache.identify(workOrderQry.data?.workOrder as WorkOrder) })
-    },
-  })
+  const deleteWorkOrderMutation = useDeleteWorkOrderMutation()
 
   const upsertCrewShareMutation = useUpsertCrewShareMutation({
     refetchQueries: [{ query: GetWorkOrderDocument, variables: { sessionId, orderId } }],
@@ -205,16 +199,37 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         },
       })
     },
-    deleteWorkOrder: () => {
+    deleteAnyWorkOrder: (anyOrderId: string, __typename: string) =>
+      deleteWorkOrderMutation[0]({
+        variables: {
+          sessionId,
+          orderId: anyOrderId,
+        },
+        onCompleted: () => {
+          enqueueSnackbar('Work Order Deleted', { variant: 'success' })
+          navigate(`/session/${sessionId}`)
+        },
+        update: (cache) => {
+          // need to identify this from anyOrderId NOT workOrderQry.data?.workOrder
+          cache.evict({ id: cache.identify({ sessionId, orderId: anyOrderId, __typename }) })
+        },
+      }),
+    deleteWorkOrder: () =>
       deleteWorkOrderMutation[0]({
         variables: {
           sessionId,
           orderId,
         },
-      })
-    },
+        onCompleted: () => {
+          enqueueSnackbar('Work Order Deleted', { variant: 'success' })
+          navigate(`/session/${sessionId}`)
+        },
+        update: (cache) => {
+          cache.evict({ id: cache.identify(workOrderQry.data?.workOrder as WorkOrder) })
+        },
+      }),
     deleteCrewShare: (scName: string) => {
-      deleteCrewShareMutation[0]({
+      return deleteCrewShareMutation[0]({
         variables: {
           sessionId,
           orderId,

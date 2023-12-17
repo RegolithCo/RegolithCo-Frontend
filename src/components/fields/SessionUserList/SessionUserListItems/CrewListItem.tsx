@@ -10,12 +10,11 @@ import { stateColorsBGThunk } from './StateChip'
 
 export interface CrewListItemProps {
   captain: SessionUser
-  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
 }
 
 type SortedUserList = [scName: string, uType: 'Active' | 'Pending', userObj: PendingUser | SessionUser][]
 
-export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContextMenu }) => {
+export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
   const theme = useTheme()
   const { session, crewHierarchy, myUserProfile } = React.useContext(SessionContext)
   const theCrew = crewHierarchy[captain.ownerId] || { activeIds: [], innactiveSCNames: [] }
@@ -92,7 +91,6 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContext
         <ActiveUserListItem
           sessionUser={captain}
           isCrewDisplay
-          openContextMenu={(el) => openContextMenu(el, captain as SessionUser, undefined)}
           expandButton={
             <IconButton
               size="small"
@@ -118,22 +116,12 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain, openContext
             uType === 'Pending' ? (
               <React.Fragment key={`frag-${idx}`}>
                 <Divider key={`divider-${idx}`} />
-                <PendingUserListItem
-                  key={`user-${idx}`}
-                  isCrewDisplay
-                  pendingUser={uBj as PendingUser}
-                  openContextMenu={(el: HTMLElement) => openContextMenu(el, undefined, uBj as PendingUser)}
-                />
+                <PendingUserListItem key={`user-${idx}`} isCrewDisplay pendingUser={uBj as PendingUser} />
               </React.Fragment>
             ) : (
               <React.Fragment key={`frag-${idx}`}>
                 <Divider key={`divider-${idx}`} />
-                <ActiveUserListItem
-                  key={`user-${idx}`}
-                  isCrewDisplay
-                  sessionUser={uBj as SessionUser}
-                  openContextMenu={(el: HTMLElement) => openContextMenu(el, uBj as SessionUser, undefined)}
-                />
+                <ActiveUserListItem key={`user-${idx}`} isCrewDisplay sessionUser={uBj as SessionUser} />
               </React.Fragment>
             )
           )}

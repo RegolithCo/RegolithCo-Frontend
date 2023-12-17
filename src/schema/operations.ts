@@ -862,10 +862,13 @@ export type FailWorkOrderMutationOptions = Apollo.BaseMutationOptions<types.Fail
 export const DeleteWorkOrderDocument = gql`
     mutation deleteWorkOrder($sessionId: ID!, $orderId: ID!) {
   deleteWorkOrder(sessionId: $sessionId, orderId: $orderId) {
-    ...WorkOrderIdFragment
+    ... on WorkOrderInterface {
+      sessionId
+      orderId
+    }
   }
 }
-    ${WorkOrderIdFragmentFragmentDoc}`;
+    `;
 export type DeleteWorkOrderMutationFn = Apollo.MutationFunction<types.DeleteWorkOrderMutation, types.DeleteWorkOrderMutationVariables>;
 
 /**

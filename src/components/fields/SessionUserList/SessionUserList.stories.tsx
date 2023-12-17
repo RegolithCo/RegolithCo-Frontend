@@ -43,7 +43,5 @@ const fakeSessionUsers = Array.from({ length: 20 }, (_, i) => fakeSessionUser())
 
 export const UserList = Template.bind({})
 UserList.args = {
-  componentProps: {
-    openContextMenu: (el: HTMLElement) => console.log('openContextMenu', el),
-  },
+  componentProps: {},
 }

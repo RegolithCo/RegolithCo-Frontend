@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import {
   ListItem,
   ListItemAvatar,
@@ -26,21 +26,16 @@ import { StateChip, stateColorsBGThunk } from './StateChip'
 import { fontFamilies } from '../../../../theme'
 import { shipColorLookup, ShipTypeEnum } from '../../VehicleChooser'
 import { AppContext } from '../../../../context/app.context'
+import { useSessionUserContextMenu } from '../SessionUserContextMenu'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
   // Crew gets a smaller row and less info
   isCrewDisplay?: boolean
   expandButton?: React.ReactNode
-  openContextMenu: (e: HTMLElement) => void
 }
 
-export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
-  sessionUser,
-  isCrewDisplay,
-  openContextMenu,
-  expandButton,
-}) => {
+export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionUser, isCrewDisplay, expandButton }) => {
   const theme = useTheme()
   const listItemRef = useRef<HTMLLIElement>(null)
   const { getSafeName, hideNames } = React.useContext(AppContext)
@@ -63,32 +58,13 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const isCaptain = !sessionUser.captainId
   const crew = crewHierarchy[sessionUser.ownerId] || { activeIds: [], innactiveSCNames: [] }
   const totalCrew = crew.activeIds.length + crew.innactiveSCNames.length
-  // const menuRef = useRef<HTMLLIElement>()
+
+  const { contextMenuNode, handleContextMenu } = useSessionUserContextMenu(sessionUser)
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
   const vehicle = sessionUser.vehicleCode ? lookups.shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
   const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.code : vehicle?.name
   const vehicleColor = vehicle ? shipColorLookup(theme)[vehicle.role as ShipTypeEnum] : 'inherit'
-
-  useEffect(() => {
-    // define a custom handler function
-    // for the contextmenu event
-    const handleContextMenu = (event: MouseEvent) => {
-      // prevent the right-click menu from appearing
-      // event.preventDefault()
-    }
-    const listItemElement = listItemRef.current
-
-    // attach the event listener to
-    // the document object
-    listItemElement?.addEventListener('contextmenu', handleContextMenu)
-
-    // clean up the event listener when
-    // the component unmounts
-    return () => {
-      listItemElement?.removeEventListener('contextmenu', handleContextMenu)
-    }
-  }, [])
 
   const user = sessionUser.owner as User
 
@@ -187,121 +163,114 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
   const stateColor = stateColorsBg[sessionUser.state] || undefined
 
   return (
-    <ListItem
-      ref={listItemRef}
-      dense={isCrewDisplay && !isCaptain}
-      disableGutters={isCrewDisplay && !isCaptain}
-      onContextMenu={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        openContextMenu(e.currentTarget)
-      }}
-      onDoubleClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        openActiveUserModal(sessionUser.ownerId)
-      }}
-      onClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        openActiveUserModal(sessionUser.ownerId)
-      }}
-      sx={{
-        // background: stateColor && alpha(stateColor, 0.1),
-        cursor: 'pointer',
-        overflow: 'hidden',
-        position: 'relative',
-        '&::after': isMe
-          ? {
-              content: '""',
-              display: 'block',
-              top: -10,
-              left: -10,
-              position: 'absolute',
-              width: 20,
-              height: 20,
-              transform: 'rotate(45deg)',
-              backgroundColor: theme.palette.error.dark,
-            }
-          : {},
-        '&.MuiListItem-root': {},
-      }}
-    >
-      <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
-      <ListItemAvatar>
-        <UserAvatar
-          size={isCrewDisplay && !isCaptain ? 'tiny' : 'small'}
-          user={user}
-          privacy={hideNames}
-          sessionOwner={isOwner}
-          isFriend={myUserProfile.friends?.includes(user?.scName as string)}
-        />
-      </ListItemAvatar>
+    <>
+      {contextMenuNode}
 
-      <ListItemText
+      <ListItem
+        ref={listItemRef}
+        dense={isCrewDisplay && !isCaptain}
+        disableGutters={isCrewDisplay && !isCaptain}
+        onContextMenu={handleContextMenu}
+        onDoubleClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          openActiveUserModal(sessionUser.ownerId)
+        }}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          openActiveUserModal(sessionUser.ownerId)
+        }}
         sx={{
-          '& .MuiListItemText-secondary': {
-            fontSize: '0.7rem',
-          },
-          '& .MuiListItemText-primary': {
-            fontSize: isCrewDisplay && !isCaptain ? '0.7rem' : undefined,
-          },
-          //
+          cursor: 'context-menu',
+          overflow: 'hidden',
+          position: 'relative',
+          '&::after': isMe
+            ? {
+                content: '""',
+                display: 'block',
+                top: -10,
+                left: -10,
+                position: 'absolute',
+                width: 20,
+                height: 20,
+                transform: 'rotate(45deg)',
+                backgroundColor: theme.palette.error.dark,
+              }
+            : {},
+          '&.MuiListItem-root': {},
         }}
-        primary={getSafeName(user?.scName)}
-        secondaryTypographyProps={{
-          component: 'div',
-        }}
-        secondary={
-          (!isCrewDisplay || isCaptain) && (
-            <Stack direction="row" spacing={1}>
-              {secondaryText.length > 0 ? (
-                secondaryText.map((it, idx) => (
-                  <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
-                    {it}
-                  </Typography>
-                ))
-              ) : (
-                <Typography
-                  sx={{
-                    fontFamily: fontFamilies.robotoMono,
-                    color: alpha(theme.palette.text.secondary, 0.3),
-                    fontWeight: 'bold',
-                    fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
-                  }}
-                >
-                  Session User
-                </Typography>
-              )}
-            </Stack>
-          )
-        }
-      />
-      <ListItemSecondaryAction>
-        {sessionUser.loadout && isCaptain && (
-          <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                openLoadoutModal(sessionUser.loadout as MiningLoadout)
-              }}
-            >
-              <ModuleIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+      >
+        <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
+        <ListItemAvatar>
+          <UserAvatar
+            size={isCrewDisplay && !isCaptain ? 'tiny' : 'small'}
+            user={user}
+            privacy={hideNames}
+            sessionOwner={isOwner}
+            isFriend={myUserProfile.friends?.includes(user?.scName as string)}
+          />
+        </ListItemAvatar>
 
-        <IconButton
-          color="default"
-          onClick={(e) => {
-            e.stopPropagation()
-            openContextMenu(e.currentTarget)
+        <ListItemText
+          sx={{
+            '& .MuiListItemText-secondary': {
+              fontSize: '0.7rem',
+            },
+            '& .MuiListItemText-primary': {
+              fontSize: isCrewDisplay && !isCaptain ? '0.7rem' : undefined,
+            },
+            //
           }}
-        >
-          <MoreVert />
-        </IconButton>
-        {expandButton}
-      </ListItemSecondaryAction>
-    </ListItem>
+          primary={getSafeName(user?.scName)}
+          secondaryTypographyProps={{
+            component: 'div',
+          }}
+          secondary={
+            (!isCrewDisplay || isCaptain) && (
+              <Stack direction="row" spacing={1}>
+                {secondaryText.length > 0 ? (
+                  secondaryText.map((it, idx) => (
+                    <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
+                      {it}
+                    </Typography>
+                  ))
+                ) : (
+                  <Typography
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      color: alpha(theme.palette.text.secondary, 0.3),
+                      fontWeight: 'bold',
+                      fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
+                    }}
+                  >
+                    Session User
+                  </Typography>
+                )}
+              </Stack>
+            )
+          }
+        />
+        <ListItemSecondaryAction>
+          {sessionUser.loadout && isCaptain && (
+            <Tooltip title={`Vehicle Loadout: ${sessionUser.loadout?.name || 'None'}`} arrow>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  openLoadoutModal(sessionUser.loadout as MiningLoadout)
+                }}
+              >
+                <ModuleIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <IconButton color="default" onClick={handleContextMenu}>
+            <MoreVert />
+          </IconButton>
+          {expandButton}
+        </ListItemSecondaryAction>
+      </ListItem>
+    </>
   )
 }

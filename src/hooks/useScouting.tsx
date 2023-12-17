@@ -49,7 +49,8 @@ export const useScoutingFind = (
   const updateScoutingFindMutation = useUpdateScoutingFindMutation()
   const deleteScoutingFindMutation = useDeleteScoutingFindMutation({
     update: (cache, { data }) => {
-      cache.evict({ id: cache.identify(scoutingFindQry.data?.scoutingFind as ScoutingFind) })
+      if (!data?.deleteScoutingFind) return
+      cache.evict({ id: cache.identify(data?.deleteScoutingFind as ScoutingFind) })
     },
     onCompleted: () => {
       enqueueSnackbar('You have deleted the scouting find', { variant: 'warning' })

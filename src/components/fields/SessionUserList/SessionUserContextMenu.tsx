@@ -1,27 +1,16 @@
 import * as React from 'react'
-import { Typography } from '@mui/material'
+import { Typography, useTheme } from '@mui/material'
 import { Delete, DeleteForever, GroupAdd, GroupRemove, Person, RocketLaunch } from '@mui/icons-material'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
-import { PendingUser, MiningLoadout, SessionUser } from '@regolithco/common'
+import { PendingUser, MiningLoadout, SessionUser, User } from '@regolithco/common'
 import { ModuleIcon } from '../../../icons'
 import { DeleteModal } from '../../modals/DeleteModal'
-import { MenuItemObj, SessionContextMenu } from '../../modals/SessionContextMenu'
+import { MenuItemObj, useSessionContextMenu } from '../../modals/SessionContextMenu'
+import { UserAvatar } from '../../UserAvatar'
+import { AppContext } from '../../../context/app.context'
 
-interface SessionUserContextMenuProps {
-  open: boolean
-  sessionUser?: SessionUser
-  pendingUser?: PendingUser
-  anchorEl?: HTMLElement
-  onClose: () => void
-}
-
-export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
-  open,
-  anchorEl,
-  onClose,
-  sessionUser,
-  pendingUser,
-}) => {
+export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser?: PendingUser) => {
+  const theme = useTheme()
   const {
     myUserProfile,
     addFriend,
@@ -29,6 +18,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     mySessionUser,
     captains,
     session,
+    leaveSession,
     setActiveModal,
     removeFriend,
     removeSessionMentions,
@@ -39,6 +29,7 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     updatePendingUserCaptain,
     openLoadoutModal,
   } = React.useContext(SessionContext)
+  const { hideNames, getSafeName } = React.useContext(AppContext)
 
   const [deletePendingUserOpen, setDeletePendingUserOpen] = React.useState(false)
   const [deleteActiveUserOpen, setDeleteActiveUserOpen] = React.useState(false)
@@ -72,63 +63,49 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
       onClick: () => {
         if (isActiveUser) openActiveUserModal(sessionUser?.owner?.userId as string)
         else openPendingUserModal(pendingUser?.scName as string)
-        onClose()
       },
     },
   ]
 
-  if (!isMe && sessionUser) {
+  if (sessionUser && sessionUser.loadout) {
     menuItems.push({
       label: `Loadout: ${sessionUser.loadout?.name}` || 'No Loadout Selected',
       disabled: !sessionUser.loadout,
       icon: <ModuleIcon fontSize="small" />,
       onClick: () => {
         openLoadoutModal(sessionUser.loadout as MiningLoadout)
-        onClose()
-      },
-    })
-    menuItems.push({
-      label: `Loadout: ${sessionUser.loadout?.name}` || 'No Loadout Selected',
-      disabled: !sessionUser.loadout,
-      icon: <ModuleIcon fontSize="small" />,
-      onClick: () => {
-        openLoadoutModal(sessionUser.loadout as MiningLoadout)
-        onClose()
       },
     })
   }
   menuItems.push({ divider: true, label: '' })
 
-  if (isMe && (meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain) {
+  if (!isMe && (meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain) {
     menuItems.push({
       label: `Add to my crew`,
-      disabled: !sessionUser.loadout,
       icon: <RocketLaunch fontSize="small" />,
       onClick: () => {
         if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, myCrewCaptainId || mySessionUser.ownerId)
         else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
-        onClose()
       },
-    }),
-      menuItems.push({
-        label: `Join ${sessionUser.owner?.scName}'s crew`,
-        disabled: !sessionUser.loadout,
-        icon: <RocketLaunch fontSize="small" />,
-        onClick: () => {
-          updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
-          onClose()
-        },
-      })
+    })
   }
+  if (!isMe && !iAmOnCrew && !theyOnMyCrew && sessionUser) {
+    menuItems.push({
+      label: `Join ${sessionUser.owner?.scName}'s crew`,
+      icon: <RocketLaunch fontSize="small" />,
+      onClick: () => {
+        updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
+      },
+    })
+  }
+
   if ((isMe && iAmOnCrew) || (!isMe && theyIsMyCaptain)) {
     menuItems.push({
       label: `Leave ${myCaptainScName}'s crew`,
-      disabled: !sessionUser.loadout,
       color: 'error',
       icon: <GroupRemove fontSize="small" color="error" />,
       onClick: () => {
         updateSessionUserCaptain(mySessionUser.ownerId, null)
-        onClose()
       },
     })
   }
@@ -141,7 +118,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
       onClick: () => {
         if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, null)
         else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, null)
-        onClose()
       },
     })
   }
@@ -153,7 +129,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
       icon: <Delete fontSize="small" color="error" />,
       onClick: () => {
         setActiveModal(DialogEnum.DISBAND_CREW)
-        onClose()
       },
     })
   }
@@ -164,7 +139,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
       icon: <GroupAdd fontSize="small" />,
       onClick: () => {
         addFriend(theirSCName)
-        onClose()
       },
     })
   }
@@ -176,7 +150,6 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
       icon: <GroupRemove fontSize="small" color="error" />,
       onClick: () => {
         removeFriend(theirSCName)
-        onClose()
       },
     })
   }
@@ -203,57 +176,79 @@ export const SessionUserContextMenu: React.FC<SessionUserContextMenuProps> = ({
     })
   }
 
-  return (
-    <>
-      <SessionContextMenu
-        onClose={onClose}
-        header={
-          <>
-            {theirSCName} {isMe && ' (You)'}
-            {!isActiveUser && ' (Pending)'}
-          </>
-        }
-        open={open}
-        menuPosXY={[anchorEl?.offsetLeft || 0, anchorEl?.offsetTop || 0]}
-        menuItems={menuItems}
+  if (isMe && !iOwnSession) {
+    menuItems.push({
+      label: `Leave Session`,
+      color: 'error',
+      icon: <DeleteForever fontSize="small" color="error" />,
+      onClick: () => setActiveModal(DialogEnum.LEAVE_SESSION),
+    })
+  }
+
+  const { contextMenuNode, handleContextMenu } = useSessionContextMenu({
+    header: (
+      <>
+        {getSafeName(theirSCName)} {isMe && ' (You)'}
+        {!isActiveUser && ' (Pending)'}
+      </>
+    ),
+    headerColor: isMe ? theme.palette.primary.main : isActiveUser ? theme.palette.info.main : theme.palette.info.main,
+    headerAvatar: (
+      <UserAvatar
+        size="medium"
+        hideTooltip
+        user={sessionUser?.owner as User}
+        pendingUser={pendingUser}
+        isFriend={isMyFriend}
+        privacy={hideNames}
+        sessionOwner={isMe}
       />
-      <DeleteModal
-        open={deletePendingUserOpen}
-        title={`Delete ${pendingUser?.scName} from session?`}
-        message={`Are you sure you want to delete ${pendingUser?.scName} from the session? This will also remove any of their work order shares.`}
-        onClose={() => setDeletePendingUserOpen(false)}
-        onConfirm={() => {
-          removeSessionMentions([pendingUser?.scName as string])
-          setDeletePendingUserOpen(false)
-          onClose()
-        }}
-      />
-      <DeleteModal
-        open={deleteActiveUserOpen}
-        title={`Delete ${sessionUser?.owner?.scName} from session?`}
-        message={
-          <>
-            <Typography>
-              Are you sure you want to delete <strong>{sessionUser?.owner?.scName}</strong> from the session? This will:
-              <ul>
-                <li>Remove all of their work orders.</li>
-                <li>Remove their work order shares in any work order.</li>
-                <li>Reassigned all their scouting shares to the session owner (you).</li>
-              </ul>
-            </Typography>
-            <Typography color="error">
-              You should know that if they still have the link for this session and you have not set "Require users to
-              be added first." in the sesison settings they can still rejoin the session.
-            </Typography>
-          </>
-        }
-        onClose={() => setDeleteActiveUserOpen(false)}
-        onConfirm={() => {
-          removeSessionCrew(sessionUser?.owner?.scName as string)
-          setDeleteActiveUserOpen(false)
-          onClose()
-        }}
-      />
-    </>
-  )
+    ),
+    menuItems,
+  })
+
+  return {
+    handleContextMenu,
+    contextMenuNode: (
+      <>
+        {contextMenuNode}
+        <DeleteModal
+          open={deletePendingUserOpen}
+          title={`Delete ${pendingUser?.scName} from session?`}
+          message={`Are you sure you want to delete ${pendingUser?.scName} from the session? This will also remove any of their work order shares.`}
+          onClose={() => setDeletePendingUserOpen(false)}
+          onConfirm={() => {
+            removeSessionMentions([pendingUser?.scName as string])
+            setDeletePendingUserOpen(false)
+          }}
+        />
+        <DeleteModal
+          open={deleteActiveUserOpen}
+          title={`Delete ${sessionUser?.owner?.scName} from session?`}
+          message={
+            <>
+              <Typography>
+                Are you sure you want to delete <strong>{sessionUser?.owner?.scName}</strong> from the session? This
+                will:
+                <ul>
+                  <li>Remove all of their work orders.</li>
+                  <li>Remove their work order shares in any work order.</li>
+                  <li>Reassigned all their scouting shares to the session owner (you).</li>
+                </ul>
+              </Typography>
+              <Typography color="error">
+                You should know that if they still have the link for this session and you have not set "Require users to
+                be added first." in the sesison settings they can still rejoin the session.
+              </Typography>
+            </>
+          }
+          onClose={() => setDeleteActiveUserOpen(false)}
+          onConfirm={() => {
+            removeSessionCrew(sessionUser?.owner?.scName as string)
+            setDeleteActiveUserOpen(false)
+          }}
+        />
+      </>
+    ),
+  }
 }

@@ -20,6 +20,7 @@ import { DeleteModal } from './DeleteModal'
 import { ScoutingFindContext } from '../../context/scoutingFind.context'
 import { ConfirmModal } from './ConfirmModal'
 import { ExportImageIcon } from '../../icons/badges'
+import { DeleteScoutingFindModal } from './DeleteScoutingFindModal'
 
 export interface ScoutingFindModalProps {
   open: boolean
@@ -169,9 +170,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
           )}
         </DialogActions>
 
-        <DeleteModal
-          title="Permanently DELETE this scouting find?"
-          message="This action cannot be undone. You can also mark a find as abandoned or depleted and then filter those out."
+        <DeleteScoutingFindModal
           onClose={() => setDeleteConfirmModal(false)}
           open={deleteConfirmModal}
           onConfirm={() => {
@@ -180,8 +179,6 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             setDeleteConfirmModal(false)
             onClose()
           }}
-          cancelBtnText="Oops.NO!"
-          confirmBtnText="Yes, Delete"
         />
         <ConfirmModal
           open={confirmCloseModal}

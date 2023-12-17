@@ -1,13 +1,12 @@
 import * as React from 'react'
-import { PendingUser, SessionStateEnum, SessionUser } from '@regolithco/common'
-import { Box, Button, ButtonGroup, Stack, SxProps, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material'
+import { SessionStateEnum } from '@regolithco/common'
+import { Box, Stack, SxProps, Theme, Toolbar, Typography, useTheme } from '@mui/material'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
-import { ExpandMore, GroupAdd } from '@mui/icons-material'
+import { ExpandMore } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { CrewUserList } from '../../fields/SessionUserList/CrewUserList'
 import { SessionUserList } from '../../fields/SessionUserList/SessionUserList'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
-import { SessionUserContextMenu } from '../../fields/SessionUserList/SessionUserContextMenu'
 import { grey } from '@mui/material/colors'
 import { AddUserButton } from '../../fields/AddUserButton'
 
@@ -71,99 +70,71 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
 
-  const [userContexMenu, setUserContextMenu] = React.useState<{
-    el: HTMLElement
-    sessionUser?: SessionUser
-    pendingUser?: PendingUser
-  } | null>(null)
-
   const totalSessionMembers = (session?.activeMembers?.items?.length || 0) + (session?.mentionedUsers || []).length
   return (
-    <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
-      <Toolbar
-        disableGutters
-        sx={{
-          backgroundColor: isSessionActive ? theme.palette.primary.main : grey[500],
-          color: theme.palette.secondary.contrastText,
-          '&.MuiToolbar-root': {
-            minHeight: 50,
-            pl: 2,
-            pr: 1,
-          },
-        }}
-      >
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ width: '100%' }}>
-          <Typography
-            sx={{
-              fontSize: `1rem`,
-              textTransform: 'uppercase',
-              fontFamily: fontFamilies.robotoMono,
-              fontWeight: 'bold',
-            }}
-          >
-            {totalSessionMembers} Session Member{totalSessionMembers === 1 ? '' : 's'}
-          </Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          <AddUserButton
-            disabled={!isSessionActive}
-            onAdd={() => setActiveModal(DialogEnum.ADD_FRIEND)}
-            onInvite={() => setActiveModal(DialogEnum.COLLABORATE)}
-          />
-        </Stack>
-      </Toolbar>
-      {captains.length > 0 && (
-        <Accordion defaultExpanded={true} disableGutters>
-          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
-            <Typography>
-              {captains.length} Crew{captains.length === 1 ? '' : 's'}
+    <>
+      <Box sx={{ flex: '1 1', overflowX: 'hidden', overflowY: 'auto' }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            backgroundColor: isSessionActive ? theme.palette.primary.main : grey[500],
+            color: theme.palette.secondary.contrastText,
+            '&.MuiToolbar-root': {
+              minHeight: 50,
+              pl: 2,
+              pr: 1,
+            },
+          }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ width: '100%' }}>
+            <Typography
+              sx={{
+                fontSize: `1rem`,
+                textTransform: 'uppercase',
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+              }}
+            >
+              {totalSessionMembers} Session Member{totalSessionMembers === 1 ? '' : 's'}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-          </AccordionSummary>
-          <AccordionDetails sx={styles.drawerAccordionDetails}>
-            <CrewUserList
-              openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
-                setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
-              }
+            <AddUserButton
+              disabled={!isSessionActive}
+              onAdd={() => setActiveModal(DialogEnum.ADD_FRIEND)}
+              onInvite={() => setActiveModal(DialogEnum.COLLABORATE)}
             />
-          </AccordionDetails>
-        </Accordion>
-      )}
-      {captains.length > 0 && (
-        <Accordion defaultExpanded={true} disableGutters>
-          <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
-            <Typography>
-              {singleActives.length + singleInnactives.length} Solo Player
-              {singleActives.length + singleInnactives.length === 1 ? '' : 's'}
-            </Typography>
-            <Box sx={{ flexGrow: 1 }} />
-          </AccordionSummary>
-          <AccordionDetails sx={styles.drawerAccordionDetails}>
-            <SessionUserList
-              openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
-                setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
-              }
-            />
-          </AccordionDetails>
-        </Accordion>
-      )}
+          </Stack>
+        </Toolbar>
+        {captains.length > 0 && (
+          <Accordion defaultExpanded={true} disableGutters>
+            <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryCrews}>
+              <Typography>
+                {captains.length} Crew{captains.length === 1 ? '' : 's'}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }} />
+            </AccordionSummary>
+            <AccordionDetails sx={styles.drawerAccordionDetails}>
+              <CrewUserList />
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {captains.length > 0 && (
+          <Accordion defaultExpanded={true} disableGutters>
+            <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
+              <Typography>
+                {singleActives.length + singleInnactives.length} Solo Player
+                {singleActives.length + singleInnactives.length === 1 ? '' : 's'}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }} />
+            </AccordionSummary>
+            <AccordionDetails sx={styles.drawerAccordionDetails}>
+              <SessionUserList />
+            </AccordionDetails>
+          </Accordion>
+        )}
 
-      {captains.length === 0 && (
-        <SessionUserList
-          openContextMenu={(el: HTMLElement, su?: SessionUser, iu?: PendingUser) =>
-            setUserContextMenu({ el, sessionUser: su, pendingUser: iu })
-          }
-        />
-      )}
-
-      {!!userContexMenu && (
-        <SessionUserContextMenu
-          open
-          anchorEl={userContexMenu?.el}
-          onClose={() => setUserContextMenu(null)}
-          sessionUser={userContexMenu?.sessionUser}
-          pendingUser={userContexMenu?.pendingUser}
-        />
-      )}
-    </Box>
+        {captains.length === 0 && <SessionUserList />}
+      </Box>
+    </>
   )
 }

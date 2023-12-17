@@ -97,6 +97,5 @@ export const ActiveUser = Template.bind({})
 ActiveUser.args = {
   componentProps: {
     sessionUser: otherUser,
-    openContextMenu: (el: HTMLElement) => console.log('openContextMenu', el),
   },
 }

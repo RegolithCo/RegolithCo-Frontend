@@ -1,19 +1,22 @@
 import * as React from 'react'
 
-import { ListItemIcon, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material'
+import { Avatar, Divider, ListItemIcon, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material'
 
 export type MenuItemObj = {
   icon?: React.ReactNode
-  label: string
+  isHeader?: boolean
+  label?: string
   onClick?: () => void
   color?: string
   disabled?: boolean
   divider?: boolean
-  hotKey?: string
+  hotKey?: React.ReactNode
 }
 
 export type UseContextMenuProps = {
   header?: React.ReactNode
+  headerColor?: string
+  headerAvatar?: React.ReactNode
   menuItems?: MenuItemObj[]
 }
 
@@ -26,11 +29,14 @@ export type SessionContextMenuProps = UseContextMenuProps & {
 export const SessionContextMenu: React.FC<SessionContextMenuProps> = ({
   header,
   menuItems,
+  headerColor,
+  headerAvatar,
   onClose,
   open,
   menuPosXY = [100, 100],
 }) => {
   const theme = useTheme()
+
   return (
     <Menu
       open={open}
@@ -42,6 +48,7 @@ export const SessionContextMenu: React.FC<SessionContextMenuProps> = ({
         '& .MuiPaper-root': {
           minWidth: 200,
           p: 0,
+          overflow: 'visible',
           background: theme.palette.background.default,
           boxShadow: theme.shadows[12],
           // border: `1px solid ${theme.palette.secondary.dark}`,
@@ -52,43 +59,84 @@ export const SessionContextMenu: React.FC<SessionContextMenuProps> = ({
         },
       }}
     >
+      {headerAvatar && (
+        <Avatar
+          sx={{
+            width: 48,
+            height: 48,
+            position: 'absolute',
+            top: -12,
+            left: -24,
+            background: headerColor || theme.palette.primary.main,
+          }}
+        >
+          {headerAvatar}
+        </Avatar>
+      )}
       {header && (
         <Typography
           variant="overline"
           component="div"
-          sx={{ px: 2, py: 0, background: theme.palette.secondary.dark, color: theme.palette.secondary.contrastText }}
+          sx={{
+            px: 2,
+            py: 0,
+            pl: headerAvatar ? 4 : 2,
+            fontWeight: 'bold',
+            background: headerColor || theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+          }}
         >
           {header}
         </Typography>
       )}
-      {menuItems?.map((item, index) => (
-        <MenuItem
-          key={index}
-          onClick={() => {
-            item.onClick && item.onClick()
-            onClose && onClose()
-          }}
-          disabled={item.disabled}
-          divider={item.divider}
-        >
-          {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
-          <ListItemText primaryTypographyProps={{ color: item.color }}>{item.label}</ListItemText>
-          {item.hotKey && (
-            <Typography variant="body2" color="text.secondary">
-              {item.hotKey}
+      {menuItems?.map((item, index) => {
+        if (item.divider && !item.label) return <Divider key={index} />
+        if (item.isHeader)
+          return (
+            <Typography
+              key={index}
+              variant="overline"
+              component="div"
+              sx={{
+                px: 2,
+                py: 0,
+                pl: 2,
+                fontWeight: 'bold',
+                background: headerColor || theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+              }}
+            >
+              {item.label}
             </Typography>
-          )}
-        </MenuItem>
-      ))}
+          )
+        return (
+          <MenuItem
+            key={index}
+            onClick={() => {
+              item.onClick && item.onClick()
+              onClose && onClose()
+            }}
+            disabled={item.disabled}
+            divider={item.divider}
+          >
+            {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
+            <ListItemText primaryTypographyProps={{ color: item.color }}>{item.label}</ListItemText>
+            {item.hotKey && (
+              <Typography variant="body2" color="text.secondary">
+                {item.hotKey}
+              </Typography>
+            )}
+          </MenuItem>
+        )
+      })}
     </Menu>
   )
 }
 
-export const useSessionContextMenu = (menuProps: UseContextMenuProps, anchorEl?: HTMLElement) => {
+export const useSessionContextMenu = (menuProps: UseContextMenuProps) => {
   const [menuPosXY, setContextMenu] = React.useState<[number, number] | null>(null)
 
   const handleContextMenu = (event: React.MouseEvent) => {
-    console.log('handleContextMenu')
     event.preventDefault()
     if (menuPosXY !== null) {
       // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu

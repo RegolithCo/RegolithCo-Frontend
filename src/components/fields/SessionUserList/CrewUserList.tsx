@@ -1,15 +1,13 @@
 import React from 'react'
 import { List } from '@mui/material'
-import { PendingUser, SessionUser } from '@regolithco/common'
-// import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../context/session.context'
 import { CrewListItem } from './SessionUserListItems/CrewListItem'
 
 export interface CrewUserListProps {
-  openContextMenu: (el: HTMLElement, sessionUser?: SessionUser, pendingUser?: PendingUser) => void
+  propA?: string
 }
 
-export const CrewUserList: React.FC<CrewUserListProps> = ({ openContextMenu }) => {
+export const CrewUserList: React.FC<CrewUserListProps> = () => {
   // const theme = useTheme()
   const { captains, session, mySessionUser } = React.useContext(SessionContext)
   const sortedCaptains = [...captains]
@@ -38,13 +36,14 @@ export const CrewUserList: React.FC<CrewUserListProps> = ({ openContextMenu }) =
       dense
       disablePadding
       sx={{
+        position: 'relative',
         height: '100%',
         overflowY: 'scroll',
         overflowX: 'hidden',
       }}
     >
       {sortedCaptains.map((captain, idx) => (
-        <CrewListItem key={`user-${idx}`} captain={captain} openContextMenu={openContextMenu} />
+        <CrewListItem key={`user-${idx}`} captain={captain} />
       ))}
       <div style={{ flexGrow: 1 }} />
     </List>

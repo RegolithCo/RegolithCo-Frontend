@@ -24,6 +24,7 @@ import { WorkOrderContext } from '../../context/workOrder.context'
 import { ConfirmModal } from './ConfirmModal'
 import { AppContext } from '../../context/app.context'
 import { ExportImageIcon } from '../../icons/badges'
+import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -360,20 +361,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           )}
         </DialogActions>
       </Box>
-      <DeleteModal
-        message={
-          <>
-            <Typography paragraph>
-              Deleting this work order will remove it from the system. This action cannot be undone.
-            </Typography>
-            {!isSessionActive && (
-              <Typography color="error" paragraph>
-                <strong>This session has ended!</strong> If you delete this work order you will not be able to re-add
-                it.
-              </Typography>
-            )}
-          </>
-        }
+      <DeleteWorkOrderModal
         onClose={() => setDeleteConfirmModal(false)}
         open={deleteConfirmModal}
         onConfirm={() => {
@@ -381,9 +369,6 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           setDeleteConfirmModal(false)
           onClose()
         }}
-        title="Permanently DELETE Work Order?"
-        cancelBtnText="Oops.NO!"
-        confirmBtnText="Yes, Delete"
       />
       <ConfirmModal
         open={confirmCloseModal}

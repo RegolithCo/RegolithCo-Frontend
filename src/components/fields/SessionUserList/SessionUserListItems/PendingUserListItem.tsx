@@ -7,113 +7,86 @@ import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
 import { AppContext } from '../../../../context/app.context'
+import { useSessionContextMenu } from '../../../modals/SessionContextMenu'
+import { useSessionUserContextMenu } from '../SessionUserContextMenu'
 
 export interface PendingUserListItemProps {
   pendingUser: PendingUser
   // Crew gets a smaller row and less info
   isCrewDisplay?: boolean
-  openContextMenu: (e: HTMLElement) => void
 }
 
-export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({
-  pendingUser,
-  isCrewDisplay,
-  openContextMenu,
-}) => {
+export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({ pendingUser, isCrewDisplay }) => {
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
   const { openPendingUserModal, myUserProfile } = React.useContext(SessionContext)
   const listItemRef = useRef<HTMLLIElement>(null)
 
-  useEffect(() => {
-    // define a custom handler function
-    // for the contextmenu event
-    const handleContextMenu = (event: MouseEvent) => {
-      // prevent the right-click menu from appearing
-      event.preventDefault()
-    }
-    const listItemElement = listItemRef.current
-
-    // attach the event listener to
-    // the document object
-    listItemElement?.addEventListener('contextmenu', handleContextMenu)
-
-    // clean up the event listener when
-    // the component unmounts
-    return () => {
-      listItemElement?.removeEventListener('contextmenu', handleContextMenu)
-    }
-  }, [])
+  const { contextMenuNode, handleContextMenu } = useSessionUserContextMenu(undefined, pendingUser)
 
   return (
-    <ListItem
-      ref={listItemRef}
-      dense={isCrewDisplay}
-      disableGutters={isCrewDisplay}
-      onContextMenu={(e) => {
-        e.preventDefault()
-        openContextMenu(e.currentTarget)
-      }}
-      onDoubleClick={(e) => {
-        e.preventDefault()
-        openPendingUserModal(pendingUser.scName)
-      }}
-      onClick={() => {
-        openPendingUserModal(pendingUser.scName)
-      }}
-      sx={{
-        // background: '#15163455',
-        cursor: 'pointer',
-      }}
-    >
-      <ListItemAvatar>
-        <UserAvatar
-          size={isCrewDisplay ? 'tiny' : 'small'}
-          pendingUser={pendingUser}
-          isFriend={myUserProfile.friends?.includes(pendingUser?.scName as string)}
-        />
-      </ListItemAvatar>
-
-      <ListItemText
+    <>
+      {contextMenuNode}
+      <ListItem
+        ref={listItemRef}
+        dense={isCrewDisplay}
+        disableGutters={isCrewDisplay}
+        onContextMenu={handleContextMenu}
+        onDoubleClick={(e) => {
+          e.preventDefault()
+          openPendingUserModal(pendingUser.scName)
+        }}
+        onClick={() => {
+          openPendingUserModal(pendingUser.scName)
+        }}
         sx={{
-          '& .MuiListItemText-secondary': {
-            fontSize: '0.7rem',
-          },
-          '& .MuiListItemText-primary': {
-            fontSize: isCrewDisplay ? '0.7rem' : undefined,
-          },
-          //
+          // background: '#15163455',
+          cursor: 'pointer',
         }}
-        primary={getSafeName(pendingUser.scName)}
-        secondaryTypographyProps={{
-          component: 'div',
-        }}
-        secondary={
-          !isCrewDisplay && (
-            <Typography
-              sx={{
-                fontFamily: fontFamilies.robotoMono,
-                color: alpha(theme.palette.text.secondary, 0.3),
-                fontWeight: 'bold',
-                fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
-              }}
-            >
-              Pending User
-            </Typography>
-          )
-        }
-      />
-      <ListItemSecondaryAction>
-        <IconButton
-          color="default"
-          onClick={(e) => {
-            e.stopPropagation()
-            openContextMenu(e.currentTarget)
+      >
+        <ListItemAvatar>
+          <UserAvatar
+            size={isCrewDisplay ? 'tiny' : 'small'}
+            pendingUser={pendingUser}
+            isFriend={myUserProfile.friends?.includes(pendingUser?.scName as string)}
+          />
+        </ListItemAvatar>
+
+        <ListItemText
+          sx={{
+            '& .MuiListItemText-secondary': {
+              fontSize: '0.7rem',
+            },
+            '& .MuiListItemText-primary': {
+              fontSize: isCrewDisplay ? '0.7rem' : undefined,
+            },
+            //
           }}
-        >
-          <MoreVert />
-        </IconButton>
-      </ListItemSecondaryAction>
-    </ListItem>
+          primary={getSafeName(pendingUser.scName)}
+          secondaryTypographyProps={{
+            component: 'div',
+          }}
+          secondary={
+            !isCrewDisplay && (
+              <Typography
+                sx={{
+                  fontFamily: fontFamilies.robotoMono,
+                  color: alpha(theme.palette.text.secondary, 0.3),
+                  fontWeight: 'bold',
+                  fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
+                }}
+              >
+                Pending User
+              </Typography>
+            )
+          }
+        />
+        <ListItemSecondaryAction>
+          <IconButton color="default" onClick={handleContextMenu}>
+            <MoreVert />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+    </>
   )
 }

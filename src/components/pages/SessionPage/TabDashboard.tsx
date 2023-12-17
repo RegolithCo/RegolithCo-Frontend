@@ -81,7 +81,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
-  const { session, openScoutingModal, createNewWorkOrder, createNewScoutingFind } = React.useContext(SessionContext)
+  const { session, createNewWorkOrder, createNewScoutingFind } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
   // Filtering for the accordions
@@ -186,17 +186,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           <Grid container spacing={3} margin={0} sx={{ pt: 3, pb: 8, flex: '1 1', overflowY: 'scroll' }}>
             {filteredScouts.map((scouting, idx) => {
               return (
-                <Grid
-                  key={`scoutingfind-${idx}`}
-                  sx={{
-                    '& *': {
-                      cursor: 'pointer',
-                    },
-                  }}
-                  onClick={() => {
-                    openScoutingModal(scouting.scoutingFindId)
-                  }}
-                >
+                <Grid key={`scoutingfind-${idx}`}>
                   <Zoom in style={{ transitionDelay: `${200 * idx}ms` }}>
                     <Box>
                       <ClusterCard key={idx} scoutingFind={scouting} />

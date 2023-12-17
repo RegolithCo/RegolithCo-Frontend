@@ -2,7 +2,17 @@ import * as React from 'react'
 import Card from '@mui/material/Card'
 import { keyframes } from '@mui/system'
 import { Avatar, Box, ThemeProvider, Tooltip, Typography } from '@mui/material'
-import { Article, PersonSearch, Rocket, SvgIconComponent } from '@mui/icons-material'
+import {
+  Article,
+  Check,
+  DeleteForever,
+  EmojiPeople,
+  ExitToApp,
+  PersonSearch,
+  Rocket,
+  RocketLaunch,
+  SvgIconComponent,
+} from '@mui/icons-material'
 import {
   clusterCalc,
   SalvageFind,
@@ -22,7 +32,10 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../context/app.context'
-import { useSessionContextMenu } from '../modals/SessionContextMenu'
+import { MenuItemObj, useSessionContextMenu } from '../modals/SessionContextMenu'
+import { SessionContext } from '../../context/session.context'
+import { AttendanceStateEnum, SCOUTING_FIND_STATE_NAMES } from '../calculators/ScoutingFindCalc'
+import { DeleteScoutingFindModal } from '../modals/DeleteScoutingFindModal'
 dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
@@ -30,38 +43,40 @@ export interface ClusterCardProps {
 }
 
 export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
+  const {
+    session,
+    myUserProfile,
+    mySessionUser,
+    joinScoutingFind,
+    leaveScoutingFind,
+    openScoutingModal,
+    updateScoutingFind,
+    deleteScoutingFind,
+    scoutingAttendanceMap,
+  } = React.useContext(SessionContext)
+  const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const theme = scoutingFindStateThemes[scoutingFind.state]
   const summary = clusterCalc(scoutingFind)
   const ores = summary.oreSort || []
   const findType = scoutingFind.clusterType
+  const amISessionOwner = session?.ownerId === myUserProfile.userId
+  const allowDelete = amISessionOwner || scoutingFind.ownerId === myUserProfile?.userId
   const { getSafeName } = React.useContext(AppContext)
   const attendanceCount = (scoutingFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
-  const { contextMenuNode, handleClose, handleContextMenu } = useSessionContextMenu({
-    header: `${findType} Cluster: ${makeHumanIds(
-      getSafeName(scoutingFind.owner?.scName),
-      scoutingFind.scoutingFindId
-    )}`,
-    menuItems: [
-      {
-        label: 'Abandonned',
-      },
-      {
-        label: 'Need Workers',
-      },
-      {
-        label: '',
-        divider: true,
-      },
-      {
-        label: 'Delete scouting find',
-      },
-    ],
-  })
 
   // Conveneince variables
   const shipFind = scoutingFind as ShipClusterFind
   const vehicleFind = scoutingFind as VehicleClusterFind
   const salvageFind = scoutingFind as SalvageFind
+
+  let myAttendanceState = AttendanceStateEnum.NotJoined
+  if (scoutingFind.attendanceIds?.includes(mySessionUser?.owner?.userId as string)) {
+    myAttendanceState = myUserProfile
+      ? mySessionUser.state === SessionUserStateEnum.Travelling
+        ? AttendanceStateEnum.EnRoute
+        : AttendanceStateEnum.Joined
+      : AttendanceStateEnum.NotJoined
+  }
 
   let Icon: SvgIconComponent = ClawIcon
   let clusterSize = 0
@@ -79,6 +94,97 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
       Icon = GemIcon
       break
   }
+
+  const myCluster = scoutingAttendanceMap.get(mySessionUser.ownerId)
+  const iAmHere = myCluster && myCluster.scoutingFindId === scoutingFind.scoutingFindId
+  const myStateItems: MenuItemObj[] = [
+    {
+      label: 'I am here',
+      icon: <EmojiPeople />,
+      hotKey: iAmHere && myAttendanceState === AttendanceStateEnum.Joined ? <Check /> : undefined,
+      onClick: () => {
+        if (myAttendanceState === AttendanceStateEnum.Joined) return
+        myAttendanceState !== AttendanceStateEnum.Joined &&
+          joinScoutingFind &&
+          joinScoutingFind(scoutingFind.scoutingFindId, false)
+      },
+    },
+    {
+      label: 'I am en-route',
+      icon: <RocketLaunch />,
+      hotKey: iAmHere && myAttendanceState === AttendanceStateEnum.EnRoute ? <Check /> : undefined,
+      onClick: () => {
+        if (myAttendanceState === AttendanceStateEnum.EnRoute) return
+        myAttendanceState !== AttendanceStateEnum.EnRoute &&
+          joinScoutingFind &&
+          joinScoutingFind(scoutingFind.scoutingFindId, true)
+      },
+    },
+  ]
+  if (iAmHere) {
+    myStateItems.push({
+      label: 'Depart Site',
+      icon: <ExitToApp color="error" />,
+      disabled: myAttendanceState === AttendanceStateEnum.NotJoined,
+      hotKey: iAmHere && myAttendanceState === AttendanceStateEnum.NotJoined ? <Check /> : undefined,
+      color: 'error',
+      onClick: () => {
+        myAttendanceState !== AttendanceStateEnum.NotJoined &&
+          leaveScoutingFind &&
+          leaveScoutingFind(scoutingFind.scoutingFindId)
+      },
+    })
+  }
+
+  const stateItems: MenuItemObj[] = SCOUTING_FIND_STATE_NAMES.map((stateKey) => ({
+    label: getScoutingFindStateName(stateKey),
+    color: scoutingFindStateThemes[stateKey].palette.primary.main,
+    hotKey: scoutingFind.state === stateKey ? <Check /> : undefined,
+    // Update the state to wahtever we choose here
+    onClick: () => {
+      if (scoutingFind.state === stateKey) return
+      updateScoutingFind({
+        ...scoutingFind,
+        state: stateKey,
+      })
+    },
+  }))
+
+  const { contextMenuNode, handleContextMenu } = useSessionContextMenu({
+    header: `${findType} Cluster: ${makeHumanIds(
+      getSafeName(scoutingFind.owner?.scName),
+      scoutingFind.scoutingFindId
+    )}`,
+    headerAvatar: <Icon sx={{ fontSize: 30 }} />,
+    headerColor: theme.palette.primary.main,
+    menuItems: [
+      {
+        label: 'My Actions',
+        isHeader: true,
+      },
+      ...myStateItems,
+      {
+        label: 'State',
+        isHeader: true,
+      },
+      {
+        label: '',
+        divider: true,
+      },
+      ...stateItems,
+      {
+        label: '',
+        divider: true,
+      },
+      {
+        label: 'Delete scouting find',
+        color: 'error',
+        disabled: !allowDelete,
+        icon: <DeleteForever />,
+        onClick: () => setDeleteConfirmModal(true),
+      },
+    ],
+  })
 
   const doPulse = scoutingFind.state === ScoutingFindStateEnum.ReadyForWorkers
   const pulseColor = theme.palette.primary.light
@@ -106,10 +212,15 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
 
   return (
     <ThemeProvider theme={theme}>
+      {contextMenuNode}
       <Card
         elevation={5}
         onContextMenu={handleContextMenu}
+        onClick={() => openScoutingModal(scoutingFind.scoutingFindId)}
         sx={{
+          '& *': {
+            cursor: 'context-menu',
+          },
           border: '1px solid',
           position: 'relative',
           color: theme.palette.primary.main,
@@ -346,6 +457,15 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
           </Box>
         </Box>
       </Card>
+      <DeleteScoutingFindModal
+        onClose={() => setDeleteConfirmModal(false)}
+        open={deleteConfirmModal}
+        onConfirm={() => {
+          if (!allowDelete) return
+          deleteScoutingFind && deleteScoutingFind(scoutingFind.scoutingFindId)
+          setDeleteConfirmModal(false)
+        }}
+      />
     </ThemeProvider>
   )
 }
