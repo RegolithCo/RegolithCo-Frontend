@@ -11,7 +11,7 @@ export interface RefineryControlProps {
   allowNone?: boolean
 }
 
-const DISABLE_LIST: RefineryEnum[] = [RefineryEnum.Pyrog, RefineryEnum.Terrg, RefineryEnum.Magng]
+const DISABLE_LIST: RefineryEnum[] = []
 
 export const RefineryControl: React.FC<RefineryControlProps> = ({
   value,

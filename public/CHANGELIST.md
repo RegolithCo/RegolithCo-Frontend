@@ -4,7 +4,7 @@
 ### New features
 
 - New context menus in the session list. You can now right-click on a user, a work order or a session to get a menu with some quick options.
-- Refinery yield values for 3 new the Gateway station refineries are in
+- Refinery yield values for 3 new the Gateway station refineries are in and you can start using them in work orders.
 - Testing a new Error page for catching site errors. Hopefully this will help me track down some of the more elusive bugs.
 - 
 
