@@ -235,7 +235,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   )}
                 </Stack>
               ),
-              startAdornment: (
+              startAdornment: !isShare && (
                 <>
                   {!shareAmountIsSet && myStoreChoice ? (
                     <Tooltip
@@ -305,7 +305,8 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               sx: {
                 m: 0,
                 p: 1,
-                textAlign: 'right',
+                textAlign: isShare ? 'left' : 'right',
+                pr: 4,
                 fontFamily: fontFamilies.robotoMono,
                 fontSize: 16,
               },

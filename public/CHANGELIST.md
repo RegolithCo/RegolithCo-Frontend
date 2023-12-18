@@ -3,10 +3,11 @@
 
 ### New features
 
-- New context menus in the session list. You can now right-click on a user, a work order or a session to get a menu with some quick options.
-- Refinery yield values for 3 new the Gateway station refineries are in and you can start using them in work orders.
-- Testing a new Error page for catching site errors. Hopefully this will help me track down some of the more elusive bugs.
-- 
+- **New context menus** in the session list. You can now right-click on a user, a work order or a session to get a menu with some quick options.
+- Refinery yield values for 3 new the **Gateway station refineries** are in and you can start using them in work orders.
+- **Testing a new Error page** for catching site errors. Hopefully this will help me track down some of the more elusive bugs.
+- **Construction Materials (CMAT)** are now in the game, complete with prices! Also the material code has been changed from CONST to CMAT to be more in line with UEX. You can now add them to your work orders and sell them at the market.
+- Since **Construction Materials and RMC are now sold in two different places** in the same city the market price finder card is now combined to show you everything you can sell at a single landing zone.
 
 ### Fixes
 
