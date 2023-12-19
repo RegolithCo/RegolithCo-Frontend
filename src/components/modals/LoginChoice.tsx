@@ -89,7 +89,13 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
         >
           Login with {authType === AuthTypeEnum.GOOGLE ? 'Google' : 'Discord'}
         </Button>
-
+        {authType === AuthTypeEnum.GOOGLE && (
+          <Alert severity="warning" variant="filled">
+            <strong>Note: (Dec 18, 2023)</strong> The google auth does work but it's having trouble remembering the
+            login after an hour or so and will make you re-login every time. This should be fixable but until then we
+            recommend using the Discord login if you can.
+          </Alert>
+        )}
         <Alert severity="info">
           <Typography variant="body2" paragraph>
             We use Discord and Google to authenticate you. We do not store any of your personal information.
