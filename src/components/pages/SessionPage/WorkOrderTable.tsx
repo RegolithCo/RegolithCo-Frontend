@@ -30,6 +30,9 @@ export interface WorkOrderTableProps {
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   table: {
+    height: '100%',
+    overflowX: 'auto',
+    overflowY: 'auto',
     '& .MuiTableCell-root': {
       whiteSpace: 'nowrap',
       fontFamily: fontFamilies.robotoMono,
@@ -48,6 +51,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   },
   footer: {
     '& .MuiTableCell-root': {
+      pb: 5,
       fontSize: '0.8rem',
       color: isActive ? theme.palette.secondary.main : grey[400],
       backgroundColor: '#160800d8',
@@ -88,13 +92,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   }, [workOrders])
 
   return (
-    <TableContainer
-      sx={{
-        ...styles.table,
-        maxHeight: isDashboard ? 400 : undefined,
-        minHeight: isDashboard ? 300 : undefined,
-      }}
-    >
+    <TableContainer sx={styles.table}>
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow sx={styles.tableHead}>
