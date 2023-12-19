@@ -119,7 +119,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           mx: mediumUp ? 3 : 0,
           display: 'flex',
           flex: '1 1',
-          maxWidth: 1100,
+          maxWidth: 1200,
           flexDirection: 'column',
           height: '100%',
           pb: {
@@ -145,11 +145,13 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               sx={styles.sessionTabs}
               aria-label="basic tabs example"
             >
-              <Tab label="Dashboard" icon={<Dashboard />} value={SessionTabs.DASHBOARD} />
+              <Tab label="Dashboard" icon={<Dashboard />} value={SessionTabs.DASHBOARD} iconPosition="start" />
               {/* <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} /> */}
               {/* <Tab label="Scouting" value={SessionTabs.SCOUTING} /> */}
-              <Tab label="Summary" icon={<Summarize />} value={SessionTabs.SUMMARY} />
-              {isSessionOwner && <Tab icon={<Settings />} label="Settings" value={SessionTabs.SETTINGS} />}
+              <Tab label="Summary" icon={<Summarize />} value={SessionTabs.SUMMARY} iconPosition="start" />
+              {isSessionOwner && (
+                <Tab icon={<Settings />} label="Settings" value={SessionTabs.SETTINGS} iconPosition="start" />
+              )}
             </Tabs>
           )}
         </Box>

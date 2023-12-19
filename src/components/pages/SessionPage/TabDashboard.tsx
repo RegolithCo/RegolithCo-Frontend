@@ -113,12 +113,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
 
   return (
     <Box sx={styles.container}>
-      <Stack
-        direction="row"
-        alignItems="center"
-        sx={styles.sectionTitle}
-        onClick={() => setExpanded([!topExpanded, bottomExpanded])}
-      >
+      <Stack direction="row" alignItems="center" sx={styles.sectionTitle}>
         <IconButton color="inherit">
           <ExpandMore
             sx={{

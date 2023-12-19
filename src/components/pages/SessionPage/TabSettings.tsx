@@ -247,9 +247,14 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       variant="outlined"
                       label="Session Name"
                       sx={{ mb: 1 }}
+                      helperText={`${(displayValue.name || '').length} / 150`}
                       onChange={(e) => {
-                        const newName = e.target.value
+                        let newName = e.target.value
                         const valid = newName.length > 0
+                        // Trim to 255 chars.
+                        if (newName.length > 150) {
+                          newName = newName.substring(0, 150)
+                        }
                         setNameValid(valid)
                         setNewSession({ ...newSession, name: newName })
                       }}
@@ -262,14 +267,19 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       fullWidth
                       variant="outlined"
                       onChange={(e) => {
-                        const newNote = e.target.value
+                        let newNote = e.target.value
                         const valid = newNote.length > 0
+                        // Trim to 255 chars.
+                        if (newNote.length > 255) {
+                          newNote = newNote.substring(0, 255)
+                        }
                         setNoteValid(valid)
                         setNewSession({ ...newSession, note: newNote })
                       }}
                       sx={{ mb: 2 }}
                       placeholder="Enter a note for this session..."
                       maxRows={4}
+                      helperText={`${(displayValue.note || '').length} / 255`}
                       value={displayValue.note || ''}
                     />
                     <Typography variant="caption" paragraph component="div" color="secondary.dark">
