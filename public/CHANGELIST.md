@@ -1,3 +1,17 @@
+### December 19, 2023
+## 1.0.42 - Session Dashboard rework
+
+Note: sell prices for some of the new settlements are in.
+
+### Fixes:
+
+- The session accordion has been reworked to behave better and scale better on different-sized screens. You can collapse the header now by clicking on it to get a little more screen real-estate. 
+- On the PNG export screen the final sell price was reduced to a single digit. 
+- Put a warning on Google log in until I can solve the problem with the refresh tokens.
+- Stats were double counting some workorders and we're now filtering out ludicrous (and obviously fake) amounts from the front page stats.
+
+-----
+
 ### December 17, 2023
 ## 1.0.41 - 3.22 Preliminary support
 
