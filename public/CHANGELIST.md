@@ -2,6 +2,8 @@
 ## 1.0.43 - Session Dashboard rework
 
 - FIX: Workorder and session add speed dials shouldn't be cut off by the work order and scouting containers anymore
+- FIX: Share prices are no longer zero when choosing a composite sell location (like TDD & Admin for microtech)
+- FIX: Shortened the names of RMC and CMAT to save space in the workorder editor
 
 -----
 
