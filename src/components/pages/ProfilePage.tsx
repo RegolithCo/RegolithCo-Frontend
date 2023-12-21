@@ -38,6 +38,8 @@ import { fontFamilies } from '../../theme'
 import { SessionSettingsTab } from './SessionPage/TabSettings'
 import { VehicleChooser } from '../fields/VehicleChooser'
 import { Theme } from '@mui/system'
+import { AppContext } from '../../context/app.context'
+import { UserAvatar } from '../UserAvatar'
 
 export const ProfileTabsEnum = {
   PROFILE: 'profile',
@@ -119,6 +121,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const styles = stylesThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const [modalOpen, setModalOpen] = React.useState<ProfileModals | null>(null)
+  const { hideNames, getSafeName } = React.useContext(AppContext)
   const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>(
     pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings'])
   )
@@ -187,7 +190,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   }}
                 >
                   <Typography variant="h4">
-                    {userProfile.scName}
+                    {getSafeName(userProfile.scName)}
                     {userProfile.state === UserStateEnum.Verified && (
                       <Tooltip title="You are verified!">
                         <Box
@@ -284,19 +287,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <List dense disablePadding>
                   <ListItem>
                     <ListItemAvatar>
-                      <Avatar
-                        alt={userProfile?.scName}
-                        src={myAvatar}
-                        imgProps={{ referrerPolicy: 'no-referrer' }}
-                        color="secondary"
-                        sx={{
-                          background: theme.palette.secondary.main,
-                          color: theme.palette.secondary.contrastText,
-                          border: '1px solid',
-                        }}
-                      >
-                        <Person color="inherit" />
-                      </Avatar>
+                      <UserAvatar user={userProfile} privacy={hideNames} size="large" />
                     </ListItemAvatar>
                     <Button onClick={() => refreshAvatar()}>Refresh Avatar</Button>
                     <Button onClick={() => refreshAvatar(true)}>Remove Avatar</Button>
@@ -316,7 +307,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 fontFamily: fontFamilies.robotoMono,
               }}
             >
-              USERID:{userProfile.userId}
+              USERID:{hideNames ? '[[REDACTED]]' : userProfile.userId}
             </Box>
 
             <div style={{ flexGrow: 1 }} />
@@ -336,34 +327,41 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* Friends Tab */}
         {activeTab === ProfileTabsEnum.FRIENDS && (
           <Box sx={{ px: 2 }}>
-            <Box sx={styles.section}>
-              <Typography component="div" sx={styles.sectionTitle}>
-                Friends ({userProfile.friends.length})
-              </Typography>
-              <Typography paragraph variant="body2" sx={{ p: 1, px: 2 }}>
-                Add your the names of people you mine with regularly so they are easy to add to your sessions.
-              </Typography>
-              <Box sx={styles.sectionBody}>
-                <MentionedUserList
-                  verifiedUsers={verifiedFriends}
-                  mentionedUsers={userProfile.friends.map((f) => ({ scName: f, __typename: 'PendingUser' }))}
-                  myFriends={userProfile.friends}
-                  addToList={addFriend}
-                  removeFriend={removeFriend}
-                />
-                <Typography paragraph variant="caption" sx={{ p: 1, pt: 3, px: 2 }} component="div">
-                  NOTES:
-                  <ul>
-                    <li>Friends are not notified and this is not linked to their account in any way.</li>
-                    <li>Friends do not have to be in this system to add them.</li>
-                    <li>
-                      This is simply here as a convenience to populate the dropdown menus for shares on Work orders (for
-                      now).
-                    </li>
-                  </ul>
+            {!hideNames && (
+              <Box sx={styles.section}>
+                <Typography component="div" sx={styles.sectionTitle}>
+                  Friends ({userProfile.friends.length})
                 </Typography>
+                <Typography paragraph variant="body2" sx={{ p: 1, px: 2 }}>
+                  Add your the names of people you mine with regularly so they are easy to add to your sessions.
+                </Typography>
+                <Box sx={styles.sectionBody}>
+                  <MentionedUserList
+                    verifiedUsers={verifiedFriends}
+                    mentionedUsers={userProfile.friends.map((f) => ({ scName: f, __typename: 'PendingUser' }))}
+                    myFriends={userProfile.friends}
+                    addToList={addFriend}
+                    removeFriend={removeFriend}
+                  />
+                  <Typography paragraph variant="caption" sx={{ p: 1, pt: 3, px: 2 }} component="div">
+                    NOTES:
+                    <ul>
+                      <li>Friends are not notified and this is not linked to their account in any way.</li>
+                      <li>Friends do not have to be in this system to add them.</li>
+                      <li>
+                        This is simply here as a convenience to populate the dropdown menus for shares on Work orders
+                        (for now).
+                      </li>
+                    </ul>
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
+            )}
+            {hideNames && (
+              <Typography paragraph variant="overline" sx={{ p: 1, px: 2, textAlign: 'center' }}>
+                You cannot see your friend list while streaming mode is on.
+              </Typography>
+            )}
           </Box>
         )}
 

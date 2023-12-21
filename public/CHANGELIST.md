@@ -1,9 +1,9 @@
 ### December 21, 2023
-## 1.0.43 - Session Dashboard rework
+## 1.0.43 - Small fixes
 
-- FIX: Workorder and session add speed dials shouldn't be cut off by the work order and scouting containers anymore
-- FIX: Share prices are no longer zero when choosing a composite sell location (like TDD & Admin for microtech)
-- FIX: Shortened the names of RMC and CMAT to save space in the workorder editor
+- FIX: In the session: Work order and scouting find speed dials shouldn't be cut off by their parent containers anymore. This was preventing some people from knowing that salvaging was even possible in the app so this was a small but 100% critical fix.
+- FIX: Share prices are no longer zero when choosing a composite sell location (like TDD & Admin for MT)
+- FIX: Shortened the names of RMC and CMAT to save space in the WorkOrder editor
 
 -----
 
