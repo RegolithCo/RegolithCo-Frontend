@@ -89,8 +89,19 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
   const { session, createNewWorkOrder, createNewScoutingFind } = React.useContext(SessionContext)
   const [[topExpanded, bottomExpanded], setExpanded] = React.useState([true, true])
+
+  // Handlers for the SpeedDials
   const workOrderAccordionRef = React.useRef<HTMLElement>(null)
   const scoutingAccordionRef = React.useRef<HTMLElement>(null)
+  const [workOrderFABAnchorEl, setWorkOrderAnchorEl] = React.useState<HTMLElement | null>(null)
+  const [scoutingFindFABAnchorEl, setScoutingFindAnchorEl] = React.useState<HTMLElement | null>(null)
+
+  React.useEffect(() => {
+    if (workOrderAccordionRef.current) setWorkOrderAnchorEl(workOrderAccordionRef.current)
+  }, [workOrderAccordionRef.current])
+  React.useEffect(() => {
+    if (scoutingAccordionRef.current) setScoutingFindAnchorEl(scoutingAccordionRef.current)
+  }, [scoutingAccordionRef.current])
 
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
@@ -162,8 +173,8 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         <Box sx={styles.sectionContent}>
           <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} />
         </Box>
-        {topExpanded && workOrderAccordionRef.current && (
-          <Popper open anchorEl={workOrderAccordionRef.current} placement="bottom-end">
+        {topExpanded && workOrderFABAnchorEl && (
+          <Popper open anchorEl={workOrderFABAnchorEl} placement="bottom-end">
             <WorkOrderAddFAB
               onClick={createNewWorkOrder}
               sessionSettings={session?.sessionSettings}
@@ -232,8 +243,8 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
             })}
           </Grid>
         </Box>
-        {bottomExpanded && scoutingAccordionRef.current && (
-          <Popper open anchorEl={scoutingAccordionRef.current} placement="bottom-end">
+        {bottomExpanded && scoutingFindFABAnchorEl && (
+          <Popper open anchorEl={scoutingFindFABAnchorEl} placement="bottom-end">
             <ScoutingAddFAB
               onClick={createNewScoutingFind}
               sessionSettings={session?.sessionSettings}
