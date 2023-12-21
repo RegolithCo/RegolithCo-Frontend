@@ -1,3 +1,10 @@
+### December 21, 2023
+## 1.0.43 - Session Dashboard rework
+
+- FIX: Workorder and session add speed dials shouldn't be cut off by the work order and scouting containers anymore
+
+-----
+
 ### December 19, 2023
 ## 1.0.42 - Session Dashboard rework
 
@@ -9,6 +16,7 @@ Note: sell prices for some of the new settlements are in.
 - On the PNG export screen the final sell price was reduced to a single digit. 
 - Put a warning on Google log in until I can solve the problem with the refresh tokens.
 - Stats were double counting some workorders and we're now filtering out ludicrous (and obviously fake) amounts from the front page stats.
+- Added character counts and limits to session title and notes
 
 -----
 

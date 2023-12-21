@@ -14,6 +14,7 @@ import {
   Typography,
   useTheme,
   Zoom,
+  Popper,
 } from '@mui/material'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
@@ -32,7 +33,6 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   container: {
     // border: '3px solid red',
     height: '100%',
-    background: theme.palette.background.default,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
@@ -64,6 +64,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   },
   sectionContent: {
     // border: '3px solid purple',
+    background: theme.palette.background.default,
     height: '100%',
     overflow: 'hidden',
     position: 'relative',
@@ -88,6 +89,8 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
   const { session, createNewWorkOrder, createNewScoutingFind } = React.useContext(SessionContext)
   const [[topExpanded, bottomExpanded], setExpanded] = React.useState([true, true])
+  const workOrderAccordionRef = React.useRef<HTMLElement>(null)
+  const scoutingAccordionRef = React.useRef<HTMLElement>(null)
 
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
@@ -152,17 +155,24 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           />
         </FormGroup>
       </Stack>
-      <Box sx={{ ...styles.collapse, flex: topExpanded ? '1 1 48%' : '0 0 0' }}>
+      <Box
+        ref={workOrderAccordionRef}
+        sx={{ ...styles.collapse, flex: topExpanded ? `1 1 ${bottomExpanded ? '48%' : '90%'}` : '0 0 0' }}
+      >
         <Box sx={styles.sectionContent}>
           <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} />
-          <WorkOrderAddFAB
-            onClick={createNewWorkOrder}
-            sessionSettings={session?.sessionSettings}
-            fabProps={{
-              disabled: !isActive,
-            }}
-          />
         </Box>
+        {topExpanded && workOrderAccordionRef.current && (
+          <Popper open anchorEl={workOrderAccordionRef.current} placement="bottom-end">
+            <WorkOrderAddFAB
+              onClick={createNewWorkOrder}
+              sessionSettings={session?.sessionSettings}
+              fabProps={{
+                disabled: !isActive,
+              }}
+            />
+          </Popper>
+        )}
       </Box>
 
       <Stack
@@ -203,7 +213,10 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           />
         </FormGroup>
       </Stack>
-      <Box sx={{ ...styles.collapse, flex: bottomExpanded ? '1 1 48%' : '0 0 0' }}>
+      <Box
+        ref={scoutingAccordionRef}
+        sx={{ ...styles.collapse, flex: bottomExpanded ? `1 1 ${topExpanded ? '48%' : '90%'}` : '0 0 0' }}
+      >
         <Box sx={styles.sectionContent}>
           <Grid container spacing={3} margin={0} sx={styles.cardGridContainer}>
             {filteredScouts.map((scouting, idx) => {
@@ -218,14 +231,18 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
               )
             })}
           </Grid>
-          <ScoutingAddFAB
-            onClick={createNewScoutingFind}
-            sessionSettings={session?.sessionSettings}
-            fabProps={{
-              disabled: !isActive,
-            }}
-          />
         </Box>
+        {bottomExpanded && scoutingAccordionRef.current && (
+          <Popper open anchorEl={scoutingAccordionRef.current} placement="bottom-end">
+            <ScoutingAddFAB
+              onClick={createNewScoutingFind}
+              sessionSettings={session?.sessionSettings}
+              fabProps={{
+                disabled: !isActive,
+              }}
+            />
+          </Popper>
+        )}
       </Box>
     </Box>
   )
