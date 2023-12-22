@@ -23,7 +23,7 @@
 
 Note: sell prices for some of the new settlements are in.
 
-### Fixes:
+#### Fixes:
 
 - The session accordion has been reworked to behave better and scale better on different-sized screens. You can collapse the header now by clicking on it to get a little more screen real-estate. 
 - On the PNG export screen the final sell price was reduced to a single digit. 
@@ -36,7 +36,7 @@ Note: sell prices for some of the new settlements are in.
 ### December 17, 2023
 ## 1.0.41 - 3.22 Preliminary support
 
-### New features
+#### New features
 
 - **New context menus** in the session list. You can now right-click on a user, a work order or a session to get a menu with some quick options.
 - Refinery yield values for 3 new the **Gateway station refineries** are in and you can start using them in work orders.
@@ -44,7 +44,7 @@ Note: sell prices for some of the new settlements are in.
 - **Construction Materials (CMAT)** are now in the game, complete with prices! Also the material code has been changed from CONST to CMAT to be more in line with UEX. You can now add them to your work orders and sell them at the market.
 - Since **Construction Materials and RMC are now sold in two different places** in the same city the market price finder card is now combined to show you everything you can sell at a single landing zone.
 
-### Fixes
+#### Fixes
 
 - The topbar menu is FINALLY fixed. Sorry y'all, that was a long time coming.
 
@@ -55,11 +55,11 @@ Note: sell prices for some of the new settlements are in.
 
 This is just a quick patch to get `Construction Materials` into the game for the new salvaging workflow. 
 
-### New features
+#### New features
 
 - `Construction Materials` and a salvage ore picker have been added. **Prices for construction materials are not in yet (Waiting on UEX)!!** so you will need to add them manually for a day or two.
 
-### Fixes
+#### Fixes
 
 - Some context menu handling errors have been solved and right-clicking inside the session tools hould be allowed again.
 - Icon and font adjustments
@@ -127,7 +127,7 @@ A number of you have reached out to give some feedback so I've made a few change
 
 You can now mark a work order as "Sold" and enter the final sell price. This will update the session stats and the crew shares. This was a little more work than I was hoping and involved a database migration but the results are definitely worth it. 
 
-### Work Orders
+#### Work Orders
 
 - WorkOrders **"State"** was removed because it was confusing
 - **Sold** status is now on the work order line with an interactive checkbox
@@ -142,16 +142,16 @@ Also the session list card has been updated to better communicate the state of w
 ### November 21, 2023
 ## 1.0.33 - Streaming features
 
-### Query improvements
+#### Query improvements
 
 - I've optimized a fewqueries in an attempt to get faster load time on session pages.
 
-### Rock entry card
+#### Rock entry card
 
 - You can now enter `instability` and `resistance` values on rocks.
 - Ore percentage values now support 2 decimal places.
 
-### Streaming features
+#### Streaming features
 
 - **Session urls no longer let you join a session** so people won't be able to join the session just by capturing the url from your browser.
 - New **session join workflow**. This could still be better but I think it's a little smoother now.

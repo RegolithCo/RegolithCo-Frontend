@@ -196,21 +196,21 @@ export const RefineryCalc: React.FC = () => {
                 control={<Radio />}
                 label={RefineryMetricEnum.oreYields}
               />
-              <FormControlLabel
+              {/* <FormControlLabel
                 value={RefineryMetricEnum.refiningCost}
                 control={<Radio />}
                 label={RefineryMetricEnum.refiningCost}
-              />
-              <FormControlLabel
+              /> */}
+              {/* <FormControlLabel
                 value={RefineryMetricEnum.refiningTime}
                 control={<Radio />}
                 label={RefineryMetricEnum.refiningTime}
-              />
-              <FormControlLabel
+              /> */}
+              {/* <FormControlLabel
                 value={RefineryMetricEnum.timeVProfit}
                 control={<Radio />}
                 label={RefineryMetricEnum.timeVProfit}
-              />
+              /> */}
             </RadioGroup>
           </FormControl>
         </Grid>
