@@ -35,6 +35,7 @@ import ReactMarkdown from 'react-markdown'
 import axios from 'axios'
 import log from 'loglevel'
 import { ExportImageIcon } from '../../icons/badges'
+import { YoutubeEmbed } from '../fields/YoutubeEmbed'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -574,6 +575,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 @RegolithCo
               </Button>
             </Stack>
+          </Paper>
+          <Paper elevation={5} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+              Tutorial Video by RedMonsterSC
+            </Typography>
+            <Typography paragraph>
+              Thanks to{' '}
+              <Link href="https://redmonstergaming.com/" target="_blank">
+                RedMonsterSC
+              </Link>{' '}
+              we now have a youtube video explaining the basics of Regolith Co. Check it out!
+            </Typography>
+            <YoutubeEmbed embedId="ZnjenWj_ZQ8" />
           </Paper>
         </Box>
       )}

@@ -54,7 +54,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     (pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : undefined)
   const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
   const theyOnAnyCrew = Boolean(theirCaptainId)
-  const theyIsCaptain = Boolean(sessionUser && (!sessionUser?.captainId || !crewHierarchy[sessionUser?.ownerId]))
+  const theyIsCaptain = Boolean(sessionUser && (!sessionUser?.captainId || !crewHierarchy[sessionUser?.captainId]))
   const theyIsMyCaptain = Boolean(
     sessionUser &&
       mySessionUser?.captainId &&
