@@ -576,7 +576,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Button>
             </Stack>
           </Paper>
-          <Paper elevation={5} sx={styles.innerPaper}>
+          {/* <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
               Tutorial Video by RedMonsterSC
             </Typography>
@@ -588,7 +588,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               we now have a youtube video explaining the basics of Regolith Co. Check it out!
             </Typography>
             <YoutubeEmbed embedId="ZnjenWj_ZQ8" />
-          </Paper>
+          </Paper> */}
         </Box>
       )}
       {finalTab === TabIndex.Thanks && (
