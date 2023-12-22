@@ -1,20 +1,20 @@
 ### December 22, 2023
-## 1.0.44 - Small fixes
+## 1.0.44 - BUGS bugs bugs!!
 
-- FIX: Users can disappear (including the session owner) whent the captain ship leaves the session
-- FIX: Can't have more than one active module of a single type per laser in the "on" state. (eg. you can't have two surge modules active on a single laser)
-- FIX: WHen you remove all the ores from a work order the price is now set to zero instead of freezing at the last number.
-- FIX: No more decimals allowed on crew-share inputs
+- **FIX**: Users in a ship crew can disappear (including the session owner) completely from the user list when the ship captain leaves the session.
+- **FIX**: Can't have more than one active module of a single type per laser in the "on" state. (eg. you can't have two surge modules active on a single laser)
+- **FIX**: WHen you remove all the ores from a work order the price is now set to zero instead of freezing at the last number.
+- **FIX**: No more decimals allowed on crew-share inputs
 
 -----
 
 ### December 21, 2023
 ## 1.0.43 - Small fixes
 
-- FIX: In the session: Work order and scouting find speed dials shouldn't be cut off by their parent containers anymore. This was preventing some people from knowing that salvaging was even possible in the app so this was a small but 100% critical fix.
-- FIX: Share prices are no longer zero when choosing a composite sell location (like TDD & Admin for MT)
-- FIX: Shortened the names of RMC and CMAT to save space in the WorkOrder editor
-- FIX: Streaming mode should redact the user profile information.
+- **FIX**: In the session: Work order and scouting find speed dials shouldn't be cut off by their parent containers anymore. This was preventing some people from knowing that salvaging was even possible in the app so this was a small but 100% critical fix.
+- **FIX**: Share prices are no longer zero when choosing a composite sell location (like TDD & Admin for MT)
+- **FIX**: Shortened the names of RMC and CMAT to save space in the WorkOrder editor
+- **FIX**: Streaming mode should redact the user profile information.
 
 -----
 
