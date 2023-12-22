@@ -8,12 +8,10 @@ import {
   Stack,
   TextField,
   Typography,
-  lighten,
   useTheme,
 } from '@mui/material'
 import { MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum, lookups } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
-import { noop } from 'lodash'
 import { LaserMenuItem, ModuleMenuItem } from './loadoutMenus'
 
 const LASERS = lookups.loadout.lasers

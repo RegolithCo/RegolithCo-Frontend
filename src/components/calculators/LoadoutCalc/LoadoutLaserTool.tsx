@@ -61,10 +61,17 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
     const thisModule = module ? MODULES[module] : null
     const newModulesActive = Array.from({ length: slots }).map((_, idx) => {
       const mapModule = activeLaser?.modules[idx] || null
-      if (idx !== slotIdx) {
-        const value = Boolean(newModules[idx] && activeLaser?.modulesActive[idx])
-        // Only one active module can be on at a time
-        if (value === true && thisModule?.active && mapModule && MODULES[mapModule].active) return false
+      if (mapModule && idx !== slotIdx) {
+        const arrModule = MODULES[mapModule as MiningModuleEnum]
+        const value = Boolean(arrModule && activeLaser?.modulesActive[idx])
+        if (
+          // Only one active module can be on at a time on a laser
+          value === true &&
+          thisModule?.active &&
+          arrModule.active &&
+          thisModule?.code === arrModule.code
+        )
+          return false
         return value
       }
 

@@ -2,6 +2,7 @@
 ## 1.0.44 - Small fixes
 
 - FIX: Users can disappear (including the session owner) whent the captain ship leaves the session
+- FIX: Can't have more than one active module of a single type per laser in the "on" state. (eg. you can't have two surge modules active on a single laser)
 
 -----
 
