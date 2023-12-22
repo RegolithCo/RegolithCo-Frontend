@@ -43,27 +43,28 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
     updatePendingUserCaptain,
     crewHierarchy,
   } = React.useContext(SessionContext)
-  const theirCaptain: SessionUser | null = pendingUser.captainId
-    ? captains.find((c) => c.ownerId === pendingUser.captainId) || null
-    : null
+  const theirCaptain: SessionUser | null =
+    pendingUser.captainId && crewHierarchy[pendingUser.captainId]
+      ? captains.find((c) => c.ownerId === pendingUser.captainId) || null
+      : null
 
   const iOwnSession = session?.ownerId === myUserProfile.userId
 
-  const theirCaptainId = pendingUser?.captainId
+  const theirCaptainId = pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : null
   const vehicleCode = theirCaptain?.vehicleCode
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(pendingUser.scName as string)
-  const meIsPotentialCaptain = !mySessionUser?.captainId
-  const meIsCaptain = !mySessionUser?.captainId && crewHierarchy[mySessionUser?.ownerId]
-  const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
-  const iAmOnCrew = !!mySessionUser?.captainId
-  const myCrewCaptainId = mySessionUser?.captainId
+  const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]
 
-  const theyOnAnyCrew = Boolean(pendingUser?.captainId)
+  const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
+  const iAmOnCrew = !!mySessionUser?.captainId && !!crewHierarchy[mySessionUser?.captainId]
+  const myCrewCaptainId = iAmOnCrew ? mySessionUser?.captainId : undefined
+
+  const theyOnAnyCrew = Boolean(pendingUser?.captainId && crewHierarchy[pendingUser?.captainId])
 
   const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
-  const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
+  const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === myCrewCaptainId)
 
   return (
     <Dialog

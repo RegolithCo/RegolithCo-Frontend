@@ -102,7 +102,7 @@ export const SessionPageContainer: React.FC = () => {
         const suUserId = su.owner?.userId as string
         const crew = crewHierarchy[suUserId as string]
         // If I'm not a captain or I don't have a captain, I'm a single active
-        if (!su.captainId && !crew) {
+        if (!(su.captainId && crewHierarchy[su.captainId]) && !crew) {
           acc.singleActives.push(su)
           return acc
         }

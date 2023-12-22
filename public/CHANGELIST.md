@@ -1,9 +1,17 @@
+### December 22, 2023
+## 1.0.44 - Small fixes
+
+- FIX: Users can disappear (including the session owner) whent the captain ship leaves the session
+
+-----
+
 ### December 21, 2023
 ## 1.0.43 - Small fixes
 
 - FIX: In the session: Work order and scouting find speed dials shouldn't be cut off by their parent containers anymore. This was preventing some people from knowing that salvaging was even possible in the app so this was a small but 100% critical fix.
 - FIX: Share prices are no longer zero when choosing a composite sell location (like TDD & Admin for MT)
 - FIX: Shortened the names of RMC and CMAT to save space in the WorkOrder editor
+- FIX: Streaming mode should redact the user profile information.
 
 -----
 

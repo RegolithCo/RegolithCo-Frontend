@@ -43,21 +43,22 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
     crewHierarchy,
     removeFriend,
   } = React.useContext(SessionContext)
-  const theirCaptain: SessionUser | null = sessionUser.captainId
-    ? captains.find((c) => c.ownerId === sessionUser.captainId) || null
-    : null
+  const theirCaptain: SessionUser | null =
+    sessionUser.captainId && crewHierarchy[sessionUser.captainId]
+      ? captains.find((c) => c.ownerId === sessionUser.captainId) || null
+      : null
 
   const vehicleCode = theirCaptain?.vehicleCode || sessionUser.vehicleCode
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(sessionUser.owner?.scName as string)
-  const meIsPotentialCaptain = !mySessionUser?.captainId
-  const meIsCaptain = !mySessionUser?.captainId && crewHierarchy[mySessionUser?.ownerId]
-  const iAmOnCrew = !!mySessionUser?.captainId
+  const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]
+  const meIsCaptain = !!crewHierarchy[mySessionUser?.ownerId]
+  const iAmOnCrew = !!mySessionUser?.captainId && !!crewHierarchy[mySessionUser?.captainId]
   const myCrewCaptain = meIsCaptain ? mySessionUser?.ownerId : mySessionUser?.captainId
 
-  const theyIsCaptain = !sessionUser?.captainId && crewHierarchy[sessionUser?.ownerId]
-  const theyOnAnyCrew = !!sessionUser?.captainId
+  const theyIsCaptain = !sessionUser?.captainId || !crewHierarchy[sessionUser?.ownerId]
+  const theyOnAnyCrew = Boolean(sessionUser?.captainId && crewHierarchy[sessionUser?.captainId])
   const theyOnMyCrew = theyOnAnyCrew && theirCaptain?.ownerId === myCrewCaptain
 
   const crewCount =

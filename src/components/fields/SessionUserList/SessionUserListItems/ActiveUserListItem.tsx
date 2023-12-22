@@ -54,8 +54,11 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
   const secondaryText = []
   const stateObjects = []
   const isOwner = sessionUser.ownerId === session?.ownerId
-  const captain = sessionUser.captainId ? captains.find((su) => su.ownerId === sessionUser.captainId) : undefined
-  const isCaptain = !sessionUser.captainId
+  const captain =
+    sessionUser.captainId && crewHierarchy[sessionUser.captainId]
+      ? captains.find((su) => su.ownerId === sessionUser.captainId)
+      : undefined
+  const isCaptain = !sessionUser.captainId || !crewHierarchy[sessionUser.captainId]
   const crew = crewHierarchy[sessionUser.ownerId] || { activeIds: [], innactiveSCNames: [] }
   const totalCrew = crew.activeIds.length + crew.innactiveSCNames.length
 

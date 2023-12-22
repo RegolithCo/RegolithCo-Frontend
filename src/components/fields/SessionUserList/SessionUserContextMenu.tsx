@@ -39,22 +39,32 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
 
   const iOwnSession = session?.ownerId === myUserProfile.userId
 
-  const meIsPotentialCaptain = !mySessionUser?.captainId
+  const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]
   const meIsCaptain = meIsPotentialCaptain && crewHierarchy[mySessionUser?.ownerId]
-  const iAmOnCrew = !!mySessionUser?.captainId
-  const myCrewCaptainId = mySessionUser?.captainId
+  const iAmOnCrew = !!mySessionUser?.captainId && crewHierarchy[mySessionUser?.captainId]
+  const myCrewCaptainId =
+    mySessionUser?.captainId && crewHierarchy[mySessionUser?.captainId] ? mySessionUser?.captainId : undefined
   const myCaptainScName = myCrewCaptainId
     ? captains.find((c) => c.ownerId === myCrewCaptainId)?.owner?.scName
     : undefined
 
   const isMyFriend = myUserProfile?.friends?.includes(theirSCName as string)
-  const theirCaptainId = sessionUser?.captainId || pendingUser?.captainId
+  const theirCaptainId =
+    (sessionUser?.captainId && crewHierarchy[sessionUser?.captainId] ? sessionUser?.captainId : undefined) ||
+    (pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : undefined)
   const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
   const theyOnAnyCrew = Boolean(theirCaptainId)
-  const theyIsCaptain = sessionUser && !sessionUser?.captainId && crewHierarchy[sessionUser?.ownerId]
-  const theyIsMyCaptain = sessionUser && mySessionUser?.captainId === sessionUser?.ownerId
-  const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
-  const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === mySessionUser?.captainId)
+  const theyIsCaptain = Boolean(sessionUser && (!sessionUser?.captainId || !crewHierarchy[sessionUser?.ownerId]))
+  const theyIsMyCaptain = Boolean(
+    sessionUser &&
+      mySessionUser?.captainId &&
+      crewHierarchy[sessionUser?.ownerId] &&
+      mySessionUser?.captainId === sessionUser?.ownerId
+  )
+  const iAmTheirCaptain = Boolean(theirCaptainId && theirCaptainId === mySessionUser?.ownerId)
+  const theyOnMyCrew = Boolean(
+    theyOnAnyCrew && (iAmTheirCaptain || (myCrewCaptainId && theirCaptainId === mySessionUser?.captainId))
+  )
 
   const menuItems: MenuItemObj[] = [
     {
@@ -101,7 +111,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
 
   if ((isMe && iAmOnCrew) || (!isMe && theyIsMyCaptain)) {
     menuItems.push({
-      label: `Leave ${myCaptainScName}'s crew`,
+      label: `Leave ${myCaptainScName || "UNKNOWN USER's"}'s crew`,
       color: 'error',
       icon: <GroupRemove fontSize="small" color="error" />,
       onClick: () => {

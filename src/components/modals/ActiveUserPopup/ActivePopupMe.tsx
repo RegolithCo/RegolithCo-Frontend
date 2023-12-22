@@ -37,10 +37,13 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
   const { session, mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
     React.useContext(SessionContext)
   const sessionActive = session?.state === SessionStateEnum.Active
-  const myCaptain: SessionUser | null = mySessionUser.captainId
-    ? captains.find((c) => c.ownerId === mySessionUser.captainId) || null
-    : null
-  const iAmCaptain: boolean = !mySessionUser.captainId && Boolean(crewHierarchy[mySessionUser.ownerId])
+  const myCaptain: SessionUser | null =
+    mySessionUser.captainId && crewHierarchy[mySessionUser.captainId]
+      ? captains.find((c) => c.ownerId === mySessionUser.captainId) || null
+      : null
+  const iAmCaptain: boolean =
+    (!mySessionUser.captainId || !crewHierarchy[mySessionUser.captainId]) &&
+    Boolean(crewHierarchy[mySessionUser.ownerId])
 
   const vehicleCode = myCaptain?.vehicleCode || mySessionUser.vehicleCode
   const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
@@ -89,7 +92,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
         <Box>
           <Typography variant="overline" color="primary" component="div">
             Your Status: <strong>{mySessionUser.state}</strong>{' '}
-            {mySessionUser.captainId ? (
+            {mySessionUser.captainId && crewHierarchy[mySessionUser.captainId] ? (
               <span>
                 on <strong>{getSafeName(myCaptain?.owner?.scName)}'s</strong> crew
               </span>
