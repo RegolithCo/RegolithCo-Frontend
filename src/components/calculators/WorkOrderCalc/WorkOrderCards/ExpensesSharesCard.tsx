@@ -92,9 +92,15 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   )
 
   const shareAmountIsSet = typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null
+
   // Update the share amount but only if the user has not already edited it
   useEffect(() => {
-    if (!myStoreChoice) return
+    if (!myStoreChoice) {
+      if (!workOrder.shareAmount && shareAmountInputVal !== 0) {
+        setShareAmountInputVal(0)
+      }
+      return
+    }
     if (typeof workOrder.shareAmount === 'undefined' || workOrder.shareAmount === null) {
       setShareAmountInputVal(myStoreChoice.price)
     }
@@ -559,10 +565,10 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           }
           onClose={() => setConfirmPriceReset(false)}
           onConfirm={() => {
-            setShareAmountInputVal(myStoreChoice.price)
+            setShareAmountInputVal(myStoreChoice?.price)
             onChange({
               ...workOrder,
-              shareAmount: myStoreChoice.price,
+              shareAmount: null,
             })
             setConfirmPriceReset(false)
           }}

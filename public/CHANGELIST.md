@@ -3,6 +3,7 @@
 
 - FIX: Users can disappear (including the session owner) whent the captain ship leaves the session
 - FIX: Can't have more than one active module of a single type per laser in the "on" state. (eg. you can't have two surge modules active on a single laser)
+- FIX: WHen you remove all the ores from a work order the price is now set to zero instead of freezing at the last number.
 
 -----
 
