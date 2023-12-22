@@ -304,6 +304,10 @@ export const formatCrewShare = (
               event.preventDefault()
               setEditingField(false)
             }
+            // handle any punctuation keys like *().,;'"" but allow escape keys like enter
+            else if (event.key.length === 1 && !event.key.match(/[0-9]/)) {
+              event.preventDefault()
+            }
           }}
           inputProps={{
             sx: {
