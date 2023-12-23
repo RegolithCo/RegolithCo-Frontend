@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Numeral from 'numeral'
 import {
+  Box,
   Button,
   Chip,
   Dialog,
@@ -14,7 +15,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { Stack } from '@mui/system'
-import { Cancel, Check, Delete } from '@mui/icons-material'
+import { Add, Cancel, Check, Delete } from '@mui/icons-material'
 import { jsRound } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
@@ -64,6 +65,18 @@ export const CompositeAddModal: React.FC<CompositeAddModal> = ({ open, startAmt,
     >
       <DialogTitle>Composite Sell Price</DialogTitle>
       <DialogContent>
+        <Box textAlign={'right'}>
+          <Button
+            startIcon={<Add />}
+            onClick={() => {
+              const newRows = [...rows]
+              newRows.push(0)
+              setRows(newRows)
+            }}
+          >
+            Add Row
+          </Button>
+        </Box>
         <Stack>
           {rows.map((row, i) => (
             <TextField
@@ -158,21 +171,17 @@ export const CompositeAddModal: React.FC<CompositeAddModal> = ({ open, startAmt,
                     >
                       aUEC
                     </Typography>
-                    <Tooltip
-                      title="Delete this row"
-                      placement="top"
+                    <IconButton
+                      disabled={i === 0}
+                      color={'error'}
                       onClick={() => {
                         const newRows = [...rows]
                         newRows.splice(i, 1)
                         setRows(newRows)
                       }}
                     >
-                      <span>
-                        <IconButton disabled={i === 0} color={'error'}>
-                          <Delete />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
+                      <Cancel />
+                    </IconButton>
                   </Stack>
                 ),
               }}

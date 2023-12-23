@@ -1,3 +1,11 @@
+### December 2?, 2023
+## 1.0.45 - TITLE HERE
+
+- Added an "Add Row" button to the composite add tool to make it work better on mobile.
+- 
+
+-----
+
 ### December 22, 2023
 ## 1.0.44 - BUGS bugs bugs!!
 
