@@ -16,10 +16,15 @@ export interface AuthGateProps {
 
 export const AuthGate: React.FC<AuthGateProps> = ({ allowNoInit, children, fallback }) => {
   const { isAuthenticated, loading, isInitialized, APIWorking, maintenanceMode } = useLogin()
+
   if (!APIWorking) {
     if (maintenanceMode) return <MaintenancePage msg={maintenanceMode} />
+    // Store the current URL so we can redirect back after the site comes back online
+    localStorage.setItem('redirect_url', window.location.href)
     return <ServiceDownPage />
-  } else if (!isAuthenticated && !loading) {
+  }
+  // If the use is not authenticated AND we are not loading, show an error and the login button
+  if (!isAuthenticated && !loading) {
     if (fallback) return fallback as React.ReactElement
     return (
       <PageWrapper title="Please login">
@@ -27,13 +32,23 @@ export const AuthGate: React.FC<AuthGateProps> = ({ allowNoInit, children, fallb
         <LoginButton />
       </PageWrapper>
     )
-  } else if (loading) {
+  }
+  // If this is a loading state, show a loading screen
+  if (loading) {
     return (
       <PageWrapper title="Logging in...">
         <PageLoader loading title="Loading..." subtitle="Finding your credentials" />
       </PageWrapper>
     )
-  } else if (!isInitialized && !allowNoInit) {
+  }
+  // Detect if localStorage has a redirect_url set and then redirect to it
+  const redirect_url = localStorage.getItem('redirect_url')
+  if (redirect_url) {
+    localStorage.removeItem('redirect_url')
+    return <Navigate to={redirect_url} />
+  }
+
+  if (!isInitialized && !allowNoInit) {
     return <Navigate to="/verify" />
   }
 

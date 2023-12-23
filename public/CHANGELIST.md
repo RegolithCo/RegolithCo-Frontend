@@ -3,7 +3,7 @@
 
 - Added an "Add Row" button to the composite add tool to make it work better on mobile.
 - Added Cachebusting strategies to make the stats update more regularly
-- 
+- Slight improvement to the "Service Down" screen. We need a more robust solution for this but this will do for now. 
 
 -----
 
