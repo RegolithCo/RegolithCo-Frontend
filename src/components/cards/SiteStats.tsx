@@ -59,7 +59,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
         <SiteStatsCard
           value={rawOreSCUFormatted[0]}
           scale={rawOreSCUFormatted[1]}
-          subText="SCU of Raw Ore"
+          subText="Raw Ore (SCU)"
           tooltip={`${MValueFormatter(
             stats?.total?.rawOreSCU || 0,
             MValueFormat.number
@@ -69,7 +69,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
         <SiteStatsCard
           value={totalSessionsFormatted[0]}
           scale={totalSessionsFormatted[1]}
-          subText="Mining Sessions"
+          subText="Sessions"
           tooltip="User sessions"
           loading={statsLoading.total}
         />
@@ -143,11 +143,20 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
   const theme = useTheme()
   const styles = stylesThunk(theme)
   return (
-    <Grid xs={4} sm={3} md={2}>
+    <Grid
+      xs={4}
+      sm={3}
+      md={2}
+      sx={{
+        '& *': {
+          whiteSpace: 'nowrap',
+        },
+      }}
+    >
       <Tooltip title={tooltip || ''} placement="top">
         <Card sx={styles.card} elevation={5}>
           <Typography
-            sx={{ my: 0.5, textAlign: 'center', color: theme.palette.primary.main, fontWeight: 'bold' }}
+            sx={{ mt: 0.5, mb: 0, textAlign: 'center', color: theme.palette.primary.main, fontWeight: 'bold' }}
             variant="caption"
             component="div"
           >
