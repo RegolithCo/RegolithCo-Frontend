@@ -5,6 +5,7 @@ import axios from 'axios'
 
 import { useLogin } from '../../hooks/useOAuth2'
 import { HomePage } from './HomePage'
+import dayjs from 'dayjs'
 import log from 'loglevel'
 
 export const HomePageContainer: React.FC = () => {
@@ -20,9 +21,12 @@ export const HomePageContainer: React.FC = () => {
 
   React.useEffect(() => {
     // Loop over all the possible keys of StatsObjectSummary and fetch them
+    // Suffix the URL with query params of ?cachebust=YYYY-MM-DD-HH
+    const dateSuffix = dayjs().format('YYYY-MM-DD-HH')
+
     for (const key of ['daily', 'monthly', 'yearly', 'total']) {
       axios
-        .get(`/stats/${key}.json`)
+        .get(`/stats/${key}.json?cachebust=${dateSuffix}`)
         .then((response) => {
           //Set the data to the state
           setStats((stats) => ({ ...(stats || {}), [key as keyof StatsObjectSummary]: response.data }))

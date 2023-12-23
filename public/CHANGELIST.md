@@ -2,6 +2,7 @@
 ## 1.0.45 - TITLE HERE
 
 - Added an "Add Row" button to the composite add tool to make it work better on mobile.
+- Added Cachebusting strategies to make the stats update more regularly
 - 
 
 -----
