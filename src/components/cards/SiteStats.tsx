@@ -17,6 +17,7 @@ import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { DailyMonthlyChart } from './charts/DailyMonthlyChart'
 import { PieChart } from './charts/PieChart'
 import { fontFamilies } from '../../theme'
+import { Stack } from '@mui/system'
 
 export interface SiteStatsProps {
   stats: Partial<StatsObjectSummary>
@@ -155,28 +156,28 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
     >
       <Tooltip title={tooltip || ''} placement="top">
         <Card sx={styles.card} elevation={5}>
-          <Typography
-            sx={{ mt: 0.5, mb: 0, textAlign: 'center', color: theme.palette.primary.main, fontWeight: 'bold' }}
-            variant="caption"
-            component="div"
-          >
-            {subText}
-          </Typography>
-          <CardMedia sx={{ textAlign: 'center', minHeight: 30, mx: 2 }}>
-            {loading ? (
-              <CircularProgress size={20} />
-            ) : (
-              <Textfit
-                mode="single"
-                max={30}
-                style={{ fontFamily: fontFamilies.robotoMono, color: theme.palette.primary.light }}
-              >
-                {value}
-              </Textfit>
-            )}
-          </CardMedia>
-          <div style={{ flexGrow: 1 }} />
-          {scale && (
+          {/* put as much space between the items as possible */}
+          <Stack sx={{ flexGrow: 1, justifyContent: 'space-between' }}>
+            <Typography
+              sx={{ mt: 0.5, mb: 0, textAlign: 'center', color: theme.palette.primary.main, fontWeight: 'bold' }}
+              variant="caption"
+              component="div"
+            >
+              {subText}
+            </Typography>
+            <CardMedia sx={{ textAlign: 'center', minHeight: 30, mx: 2 }}>
+              {loading ? (
+                <CircularProgress size={20} />
+              ) : (
+                <Textfit
+                  mode="single"
+                  max={30}
+                  style={{ fontFamily: fontFamilies.robotoMono, color: theme.palette.primary.light }}
+                >
+                  {value}
+                </Textfit>
+              )}
+            </CardMedia>
             <Typography
               sx={{
                 // Capitalize
@@ -189,9 +190,9 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
               variant="caption"
               component="div"
             >
-              {scale}
+              {scale || <>&nbsp;</>}
             </Typography>
-          )}
+          </Stack>
         </Card>
       </Tooltip>
     </Grid>
