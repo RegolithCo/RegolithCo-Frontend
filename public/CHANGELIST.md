@@ -5,6 +5,7 @@
 - Added Cachebusting strategies to make the stats update more regularly
 - Slight improvement to the "Service Down" screen. We need a more robust solution for this but this will do for now. 
 - Decreased load time on profile view by decoupling two queries that should not have been coupled in the first place.
+- Switched to lazy loading for session list view. This should improve load times for users with lots of sessions and also take some query stress off the DB since very few people will ever load more than a page or two in the past.
 
 -----
 

@@ -31,12 +31,13 @@ import { SessionListSummary } from './SessionListSummary'
 import { MValueFormat, MValueFormatter } from './MValue'
 import { fontFamilies } from '../../theme'
 import { AppContext } from '../../context/app.context'
-import { Link } from 'react-router-dom'
 import { RouterLink } from './RouterLink'
 
 export interface SessionListProps {
   sessions: Session[]
   loading?: boolean
+  allLoaded?: boolean
+  fetchMoreSessions: () => void
   activeOnly?: boolean
   onClickSession?: (sessionId: string) => void
 }
@@ -53,20 +54,61 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
-export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, activeOnly, onClickSession }) => {
+export const SessionList: React.FC<SessionListProps> = ({
+  sessions,
+  loading,
+  allLoaded,
+  activeOnly,
+  fetchMoreSessions,
+  onClickSession,
+}) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { hideNames } = React.useContext(AppContext)
+  const fetchMoreSessionsRef = React.useRef<HTMLDivElement | null>(null)
+
+  React.useEffect(() => {
+    if (loading) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchMoreSessions()
+        }
+      },
+      { threshold: 1 } // Adjust this value if you want the fetch to happen sooner or later
+    )
+
+    if (fetchMoreSessionsRef.current) {
+      observer.observe(fetchMoreSessionsRef.current)
+    }
+
+    return () => {
+      if (fetchMoreSessionsRef.current) {
+        observer.unobserve(fetchMoreSessionsRef.current)
+      }
+    }
+  }, [loading, fetchMoreSessions])
 
   const pulse = keyframes`
   0% { background-color: transparent; }
   70% { background-color:  ${theme.palette.warning.light}22; }
   100% { background-color: transparent; }
   `
+  const textPulse = keyframes`
+  0% { color: transparent; }
+  70% { color:  ${theme.palette.secondary.dark}; }
+  100% { color: transparent; }
+  `
   const pulseCssThunk = (doPulse: boolean): SxProps<Theme> => ({
     animation: doPulse ? `${pulse} 4s infinite ease` : '',
     backgroundColor: 'transparent',
   })
+
+  const loadingPulse: SxProps<Theme> = {
+    animation: `${textPulse} 1s infinite ease`,
+    color: 'transparent',
+  }
 
   // Group sessions by YEAR[MONTH[DAY[]]]
   const sessionsByDate: Session[][][] = React.useMemo(() => {
@@ -408,7 +450,7 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
           </Box>
         )
       })}
-      {!loading && sessionsByDate.length === 0 && (
+      {!loading && sessions.length === 0 && (
         <Paper
           elevation={5}
           sx={{
@@ -448,11 +490,19 @@ export const SessionList: React.FC<SessionListProps> = ({ sessions, loading, act
           </Typography>
         </Paper>
       )}
-      {!loading && !activeOnly && sessionsByDate.length > 0 && (
-        <Typography variant="body2" sx={{ textAlign: 'center' }} component="div" color="text.secondary">
-          <em>No more sessions</em>
-        </Typography>
-      )}
+      {/* Now have an element where viewing it triggers a fetch of the next page */}
+      <Box ref={fetchMoreSessionsRef}>
+        {loading && (
+          <Typography variant="h5" sx={{ textAlign: 'center', ...loadingPulse }} component="div" color="secondary.dark">
+            <em>Loading More Sessions...</em>
+          </Typography>
+        )}
+        {!loading && allLoaded && (
+          <Typography variant="h5" sx={{ textAlign: 'center' }} component="div" color="text.secondary">
+            <em>No more sessions</em>
+          </Typography>
+        )}
+      </Box>
     </Box>
   )
 }

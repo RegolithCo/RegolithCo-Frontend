@@ -22,11 +22,12 @@ import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 
 import { useSnackbar } from 'notistack'
-import { useEffect } from 'react'
 
 type useSessionsReturn = {
   mySessions?: UserProfile['mySessions']
   joinedSessions?: UserProfile['joinedSessions']
+  fetchMoreSessions: () => void
+  allLoaded: boolean
   loading: boolean
   mutating: boolean
   createSession: () => void
@@ -45,33 +46,6 @@ export const useSessionList = (): useSessionsReturn => {
     skip: !userProfileQry.data?.profile,
   })
 
-  useEffect(() => {
-    if (mySessionsQry.data?.profile?.mySessions?.nextToken) {
-      mySessionsQry.fetchMore({
-        variables: {
-          nextToken: mySessionsQry.data?.profile?.mySessions?.nextToken,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev
-          const oldList = (prev.profile?.mySessions as PaginatedSessions) || {}
-          const newList = (fetchMoreResult.profile?.mySessions as PaginatedSessions) || {}
-          const oldListFiltered = (oldList.items || []).filter((s) => s?.sessionId !== newList.items?.[0]?.sessionId)
-          return {
-            ...prev,
-            profile: {
-              ...(prev.profile as UserProfile),
-              mySessions: {
-                ...oldList,
-                items: [...oldListFiltered, ...(newList?.items || [])],
-                nextToken: newList?.nextToken,
-              },
-            },
-          }
-        },
-      })
-    }
-  }, [mySessionsQry.data?.profile?.mySessions?.nextToken])
-
   const joinedSessionsQry = useGetJoinedUserSessionsQuery({
     variables: {
       nextToken: null,
@@ -79,32 +53,6 @@ export const useSessionList = (): useSessionsReturn => {
     notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
   })
-
-  useEffect(() => {
-    if (joinedSessionsQry.data?.profile?.joinedSessions?.nextToken) {
-      joinedSessionsQry.fetchMore({
-        variables: {
-          nextToken: joinedSessionsQry.data?.profile?.joinedSessions?.nextToken,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev
-          const oldList = (prev.profile?.joinedSessions as PaginatedSessions) || {}
-          const newList = (fetchMoreResult.profile?.joinedSessions as PaginatedSessions) || {}
-          return {
-            ...prev,
-            profile: {
-              ...(prev.profile as UserProfile),
-              joinedSessions: {
-                ...oldList,
-                items: [...(oldList?.items || []), ...(newList?.items || [])],
-                nextToken: newList?.nextToken,
-              },
-            },
-          }
-        },
-      })
-    }
-  }, [joinedSessionsQry.data?.profile?.joinedSessions?.nextToken])
 
   const createSessionMutation = useCreateSessionMutation({
     update: (cache, { data }) => {
@@ -143,6 +91,56 @@ export const useSessionList = (): useSessionsReturn => {
     },
   })
 
+  const fetchMoreSessions = () => {
+    if (mySessionsQry.data?.profile?.mySessions?.nextToken) {
+      mySessionsQry.fetchMore({
+        variables: {
+          nextToken: mySessionsQry.data?.profile?.mySessions?.nextToken,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev
+          const oldList = (prev.profile?.mySessions as PaginatedSessions) || {}
+          const newList = (fetchMoreResult.profile?.mySessions as PaginatedSessions) || {}
+          const oldListFiltered = (oldList.items || []).filter((s) => s?.sessionId !== newList.items?.[0]?.sessionId)
+          return {
+            ...prev,
+            profile: {
+              ...(prev.profile as UserProfile),
+              mySessions: {
+                ...oldList,
+                items: [...oldListFiltered, ...(newList?.items || [])],
+                nextToken: newList?.nextToken,
+              },
+            },
+          }
+        },
+      })
+    }
+    if (joinedSessionsQry.data?.profile?.joinedSessions?.nextToken) {
+      joinedSessionsQry.fetchMore({
+        variables: {
+          nextToken: joinedSessionsQry.data?.profile?.joinedSessions?.nextToken,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev
+          const oldList = (prev.profile?.joinedSessions as PaginatedSessions) || {}
+          const newList = (fetchMoreResult.profile?.joinedSessions as PaginatedSessions) || {}
+          return {
+            ...prev,
+            profile: {
+              ...(prev.profile as UserProfile),
+              joinedSessions: {
+                ...oldList,
+                items: [...(oldList?.items || []), ...(newList?.items || [])],
+                nextToken: newList?.nextToken,
+              },
+            },
+          }
+        },
+      })
+    }
+  }
+
   const queries = [userProfileQry, mySessionsQry, joinedSessionsQry]
   const mutations = [createSessionMutation]
 
@@ -154,6 +152,10 @@ export const useSessionList = (): useSessionsReturn => {
   return {
     mySessions: mySessionsQry.data?.profile?.mySessions as UserProfile['mySessions'],
     joinedSessions: joinedSessionsQry.data?.profile?.joinedSessions as UserProfile['joinedSessions'],
+    fetchMoreSessions,
+    allLoaded:
+      mySessionsQry.data?.profile?.mySessions?.nextToken === null &&
+      joinedSessionsQry.data?.profile?.joinedSessions?.nextToken === null,
     loading,
     mutating,
     createSession: () => {

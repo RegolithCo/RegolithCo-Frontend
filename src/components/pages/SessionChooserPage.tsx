@@ -12,7 +12,9 @@ export interface SessionChooserPageProps {
   userProfile: UserProfile
   mySessions: Session[]
   joinedSessions: Session[]
+  fetchMoreSessions: () => void
   loading?: boolean
+  allLoaded?: boolean
   navigate?: (path: string) => void
   onCreateNewSession?: () => void
 }
@@ -20,7 +22,9 @@ export interface SessionChooserPageProps {
 export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
   userProfile,
   mySessions,
+  fetchMoreSessions,
   joinedSessions,
+  allLoaded,
   loading,
   navigate,
   onCreateNewSession,
@@ -112,6 +116,8 @@ export const SessionChooserPage: React.FC<SessionChooserPageProps> = ({
         <SessionList
           sessions={allSessionsSorted}
           loading={loading}
+          allLoaded={allLoaded}
+          fetchMoreSessions={fetchMoreSessions}
           activeOnly={activeOnly}
           onClickSession={(sessionId) => navigate?.(`/session/${sessionId}`)}
         />

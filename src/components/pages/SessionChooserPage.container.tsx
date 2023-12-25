@@ -15,7 +15,9 @@ export const SessionChooserPageContainer: React.FC = () => {
       userProfile={userQueries.userProfile as UserProfile}
       joinedSessions={(useSessionListQueries.joinedSessions?.items || []) as Session[]}
       mySessions={(useSessionListQueries.mySessions?.items || []) as Session[]}
+      fetchMoreSessions={useSessionListQueries.fetchMoreSessions}
       loading={userQueries.loading || useSessionListQueries.loading || userQueries.mutating}
+      allLoaded={useSessionListQueries.allLoaded}
       navigate={navigate}
       onCreateNewSession={useSessionListQueries.createSession}
     />
