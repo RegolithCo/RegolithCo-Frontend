@@ -1,11 +1,7 @@
 import {
-  GetMyUserSessionsDocument,
   GetUserProfileDocument,
   useAddFriendsMutation,
-  useCreateSessionMutation,
   useDeleteUserProfileMutation,
-  useGetJoinedUserSessionsQuery,
-  useGetMyUserSessionsQuery,
   useGetUserProfileQuery,
   useRefreshAvatarMutation,
   useRemoveFriendsMutation,
@@ -14,41 +10,27 @@ import {
   useVerifyUserMutation,
 } from '../schema'
 import {
-  defaultSessionName,
   DestructuredSettings,
   destructureSettings,
-  GetMyUserSessionsQuery,
   mergeDestructuredSessionSettings,
-  mergeSessionSettings,
-  PaginatedSessions,
-  RefineryEnum,
-  RefineryMethodEnum,
   reverseDestructured,
-  SalvageOreEnum,
-  SessionSettings,
   SessionSystemDefaults,
-  ShipOreEnum,
   UserProfile,
   UserProfileInput,
-  VehicleOreEnum,
 } from '@regolithco/common'
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 
 import { ApolloError } from '@apollo/client'
-import { useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 import { useLogin } from './useOAuth2'
 import LogRocket from 'logrocket'
 
 type useSessionsReturn = {
   userProfile?: UserProfile
-  mySessions?: UserProfile['mySessions']
   verifyError?: ApolloError
-  joinedSessions?: UserProfile['joinedSessions']
   loading: boolean
   mutating: boolean
-  createSession: () => void
   initializeUser: (scName: string) => void
   requestVerify: () => void
   verifyUser: () => void
@@ -65,15 +47,6 @@ export const useUserProfile = (): useSessionsReturn => {
   const ctx = useLogin()
   const navigate = useNavigate()
   const userProfileQry = useGetUserProfileQuery()
-  const { enqueueSnackbar } = useSnackbar()
-
-  const mySessionsQry = useGetMyUserSessionsQuery({
-    variables: {
-      nextToken: null,
-    },
-    notifyOnNetworkStatusChange: true,
-    skip: !userProfileQry.data?.profile,
-  })
 
   useEffect(() => {
     // Logrocket only runs when not in production since we only get the free plan
@@ -90,103 +63,6 @@ export const useUserProfile = (): useSessionsReturn => {
     }
   }, [userProfileQry.data])
 
-  useEffect(() => {
-    if (mySessionsQry.data?.profile?.mySessions?.nextToken) {
-      mySessionsQry.fetchMore({
-        variables: {
-          nextToken: mySessionsQry.data?.profile?.mySessions?.nextToken,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev
-          const oldList = (prev.profile?.mySessions as PaginatedSessions) || {}
-          const newList = (fetchMoreResult.profile?.mySessions as PaginatedSessions) || {}
-          const oldListFiltered = (oldList.items || []).filter((s) => s?.sessionId !== newList.items?.[0]?.sessionId)
-          return {
-            ...prev,
-            profile: {
-              ...(prev.profile as UserProfile),
-              mySessions: {
-                ...oldList,
-                items: [...oldListFiltered, ...(newList?.items || [])],
-                nextToken: newList?.nextToken,
-              },
-            },
-          }
-        },
-      })
-    }
-  }, [mySessionsQry.data?.profile?.mySessions?.nextToken])
-
-  const joinedSessionsQry = useGetJoinedUserSessionsQuery({
-    variables: {
-      nextToken: null,
-    },
-    notifyOnNetworkStatusChange: true,
-    skip: !userProfileQry.data?.profile,
-  })
-
-  useEffect(() => {
-    if (joinedSessionsQry.data?.profile?.joinedSessions?.nextToken) {
-      joinedSessionsQry.fetchMore({
-        variables: {
-          nextToken: joinedSessionsQry.data?.profile?.joinedSessions?.nextToken,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev
-          const oldList = (prev.profile?.joinedSessions as PaginatedSessions) || {}
-          const newList = (fetchMoreResult.profile?.joinedSessions as PaginatedSessions) || {}
-          return {
-            ...prev,
-            profile: {
-              ...(prev.profile as UserProfile),
-              joinedSessions: {
-                ...oldList,
-                items: [...(oldList?.items || []), ...(newList?.items || [])],
-                nextToken: newList?.nextToken,
-              },
-            },
-          }
-        },
-      })
-    }
-  }, [joinedSessionsQry.data?.profile?.joinedSessions?.nextToken])
-
-  const createSessionMutation = useCreateSessionMutation({
-    update: (cache, { data }) => {
-      // Add this session to the mySessionsQry list
-      const mySessions = cache.readQuery({
-        query: GetMyUserSessionsDocument,
-        variables: {
-          nextToken: null,
-        },
-      })
-      if (!mySessions) return
-      const newMySessions = mySessions as GetMyUserSessionsQuery
-
-      cache.writeQuery({
-        query: GetMyUserSessionsDocument,
-        variables: {
-          nextToken: null,
-        },
-        data: {
-          ...mySessions,
-          profile: {
-            ...newMySessions.profile,
-            mySessions: {
-              ...(newMySessions.profile?.mySessions || {}),
-              items: [...(newMySessions.profile?.mySessions?.items || []), data?.createSession],
-            },
-          },
-        },
-      })
-      // consle.log('cache updated')
-    },
-
-    onCompleted: (data) => {
-      enqueueSnackbar('Session created', { variant: 'success' })
-      navigate(`/session/${data.createSession?.sessionId}`)
-    },
-  })
   const upsertUserMutation = useUpsertUserMutation()
   const deleteUserProfileMutation = useDeleteUserProfileMutation()
   const requestAccountVerifyMutation = useRequestAccountVerifyMutation()
@@ -196,9 +72,8 @@ export const useUserProfile = (): useSessionsReturn => {
 
   const refreshAvatarMutation = useRefreshAvatarMutation()
 
-  const queries = [userProfileQry, mySessionsQry, joinedSessionsQry]
+  const queries = [userProfileQry]
   const mutations = [
-    createSessionMutation,
     upsertUserMutation,
     deleteUserProfileMutation,
     requestAccountVerifyMutation,
@@ -215,53 +90,9 @@ export const useUserProfile = (): useSessionsReturn => {
 
   return {
     userProfile: userProfileQry.data?.profile as UserProfile,
-    mySessions: mySessionsQry.data?.profile?.mySessions as UserProfile['mySessions'],
-    joinedSessions: joinedSessionsQry.data?.profile?.joinedSessions as UserProfile['joinedSessions'],
     loading,
     mutating,
     verifyError: verifyUserMutation[1].error,
-    createSession: () => {
-      const userSessionDefaults: SessionSettings = userProfileQry.data?.profile?.sessionSettings || {
-        __typename: 'SessionSettings',
-      }
-      // Here are some sensible defaults for a new session
-      const initialSessionSettings = mergeSessionSettings(
-        {
-          allowUnverifiedUsers: true,
-          specifyUsers: false,
-          // activity,
-          // gravityWell,
-          // location,
-          lockedFields: [],
-          workOrderDefaults: {
-            includeTransferFee: true,
-            shareRefinedValue: true,
-            lockedFields: [],
-            isRefined: true,
-            refinery: RefineryEnum.Arcl1,
-            method: RefineryMethodEnum.DinyxSolventation,
-            salvageOres: [SalvageOreEnum.Rmc],
-            shipOres: [ShipOreEnum.Quantanium],
-            vehicleOres: [VehicleOreEnum.Hadanite],
-            crewShares: [],
-            __typename: 'WorkOrderDefaults',
-          },
-          __typename: 'SessionSettings',
-        },
-        userSessionDefaults
-      )
-
-      createSessionMutation[0]({
-        variables: {
-          session: {
-            mentionedUsers: [],
-            name: defaultSessionName(),
-          },
-          ...initialSessionSettings,
-        },
-        refetchQueries: [GetMyUserSessionsDocument],
-      })
-    },
     initializeUser: (scName: string) => {
       upsertUserMutation[0]({
         variables: {
