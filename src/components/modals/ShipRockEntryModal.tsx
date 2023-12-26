@@ -247,12 +247,12 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     if (shipRock && !isEqual(shipRock, newShipRock)) setNewShipRock(shipRock)
   }, [shipRock])
 
-  const [volume, value, percentTotal, byOre] = React.useMemo(() => {
+  const [volume, value, percentTotal, byOre] = React.useMemo(async () => {
     try {
       const {
         rock: { volume, value },
         byOre,
-      } = shipRockCalc(newShipRock)
+      } = await shipRockCalc(newShipRock)
       const percentTotal = (newShipRock.ores || [])
         .filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)
         .reduce((acc, { percent }) => acc + percent, 0)
