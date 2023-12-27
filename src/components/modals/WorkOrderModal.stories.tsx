@@ -30,66 +30,66 @@ export default {
   },
 } as Meta<typeof WorkOrderModalC>
 
-const Template: StoryFn<typeof WorkOrderModalC> = ({ ...args }) => {
-  let workOrder: WorkOrder
-  const { activity } = args as any
-  switch (activity) {
-    case ActivityEnum.ShipMining:
-      workOrder = fakeShipMiningOrder()
-      break
-    case ActivityEnum.VehicleMining:
-      workOrder = fakeVehicleMiningOrder()
-      break
-    case ActivityEnum.Salvage:
-      workOrder = fakeSalvageOrder()
-      break
-    case ActivityEnum.Other:
-      workOrder = fakeOtherOrder()
-      break
-    default:
-      return <div>Activity is required</div>
-  }
-  return (
-    <WorkOrderContext.Provider
-      value={{
-        ...workOrderContextDefaults,
-        workOrder,
-      }}
-    >
-      <WorkOrderModalC {...args} />
-    </WorkOrderContext.Provider>
-  )
-}
+// const Template: StoryFn<typeof WorkOrderModalC> = ({ ...args }) => {
+//   let workOrder: WorkOrder
+//   const { activity } = args as any
+//   switch (activity) {
+//     case ActivityEnum.ShipMining:
+//       workOrder = fakeShipMiningOrder()
+//       break
+//     case ActivityEnum.VehicleMining:
+//       workOrder = fakeVehicleMiningOrder()
+//       break
+//     case ActivityEnum.Salvage:
+//       workOrder = fakeSalvageOrder()
+//       break
+//     case ActivityEnum.Other:
+//       workOrder = fakeOtherOrder()
+//       break
+//     default:
+//       return <div>Activity is required</div>
+//   }
+//   return (
+//     <WorkOrderContext.Provider
+//       value={{
+//         ...workOrderContextDefaults,
+//         workOrder,
+//       }}
+//     >
+//       <WorkOrderModalC {...args} />
+//     </WorkOrderContext.Provider>
+//   )
+// }
 
-export const Create = Template.bind({})
-Create.args = {
-  open: true,
-  // isNew: true,
-  // allowEdit: true,
-  onClose: () => {
-    console.log('Closed')
-  },
-}
+// export const Create = Template.bind({})
+// Create.args = {
+//   open: true,
+//   // isNew: true,
+//   // allowEdit: true,
+//   onClose: () => {
+//     console.log('Closed')
+//   },
+// }
 
-export const Edit = Template.bind({})
-Edit.args = {
-  open: true,
-  // isNew: false,
-  // allowEdit: true,
-  onClose: () => {
-    console.log('Closed')
-  },
-}
+// export const Edit = Template.bind({})
+// Edit.args = {
+//   open: true,
+//   // isNew: false,
+//   // allowEdit: true,
+//   onClose: () => {
+//     console.log('Closed')
+//   },
+// }
 
-export const View = Template.bind({})
-View.args = {
-  open: true,
-  // isNew: false,
-  // allowEdit: false,
-  // onUpdate: (order) => {
-  //   log.debug('ShipMiningOrderUpdate', order)
-  // },
-  onClose: () => {
-    console.log('Closed')
-  },
-}
+// export const View = Template.bind({})
+// View.args = {
+//   open: true,
+//   // isNew: false,
+//   // allowEdit: false,
+//   // onUpdate: (order) => {
+//   //   log.debug('ShipMiningOrderUpdate', order)
+//   // },
+//   onClose: () => {
+//     console.log('Closed')
+//   },
+// }

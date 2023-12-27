@@ -15,12 +15,12 @@ export type ActiveMiningLaserLoadoutFieldPolicy = {
 	modules?: FieldPolicy<any> | FieldReadFunction<any>,
 	modulesActive?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type CIGLookupsKeySpecifier = ('mineralDensities' | 'refiningBaseParams' | 'refiningBonuses' | 'refiningMethods' | CIGLookupsKeySpecifier)[];
+export type CIGLookupsKeySpecifier = ('densitiesLookups' | 'methodsBonusLookup' | 'refineryBonusLookup' | 'oreProcessingLookup' | CIGLookupsKeySpecifier)[];
 export type CIGLookupsFieldPolicy = {
-	mineralDensities?: FieldPolicy<any> | FieldReadFunction<any>,
-	refiningBaseParams?: FieldPolicy<any> | FieldReadFunction<any>,
-	refiningBonuses?: FieldPolicy<any> | FieldReadFunction<any>,
-	refiningMethods?: FieldPolicy<any> | FieldReadFunction<any>
+	densitiesLookups?: FieldPolicy<any> | FieldReadFunction<any>,
+	methodsBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>,
+	refineryBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>,
+	oreProcessingLookup?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type CrewShareKeySpecifier = ('createdAt' | 'note' | 'orderId' | 'scName' | 'session' | 'sessionId' | 'share' | 'shareType' | 'state' | 'updatedAt' | 'workOrder' | CrewShareKeySpecifier)[];
 export type CrewShareFieldPolicy = {
@@ -43,9 +43,10 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LookupDataKeySpecifier = ('CIG' | 'UEX' | LookupDataKeySpecifier)[];
+export type LookupDataKeySpecifier = ('CIG' | 'Loadout' | 'UEX' | LookupDataKeySpecifier)[];
 export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
+	Loadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	UEX?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type MiningLoadoutKeySpecifier = ('activeGadgetIndex' | 'activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryLasers' | 'inventoryModules' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];

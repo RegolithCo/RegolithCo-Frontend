@@ -13,11 +13,12 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { OreSummary, findAllStoreChoices } from '@regolithco/common'
+import { OreSummary, findAllStoreChoices, StoreChoice } from '@regolithco/common'
 import { Stack } from '@mui/system'
 import Gradient from 'javascript-color-gradient'
 import { Cancel, ResetTv } from '@mui/icons-material'
 import { StoreChooserListItem } from '../fields/StoreChooserListItem'
+import { useLookups } from '../../hooks/useLookups'
 
 export interface StoreChooserModalProps {
   open?: boolean
@@ -75,8 +76,18 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
+  const store = useLookups()
 
-  const storeChoices = findAllStoreChoices(ores, isRefined)
+  const [storeChoices, setStoreChoices] = React.useState<StoreChoice[]>([])
+
+  React.useEffect(() => {
+    const fetchStoreChoices = async () => {
+      const results = await findAllStoreChoices(store, ores, isRefined)
+      setStoreChoices(results)
+    }
+    fetchStoreChoices()
+  }, [store, ores, isRefined])
+
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
     .setColorGradient(...quaColors)

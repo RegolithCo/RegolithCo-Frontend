@@ -3,35 +3,48 @@ import { getShipOreName, ShipOreEnum, findPrice } from '@regolithco/common'
 import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../fields/MValue'
+import { useLookups } from '../../hooks/useLookups'
 
 export const ShipOreTable: React.FC = () => {
   const theme = useTheme()
+  const dataStore = useLookups()
   const shipRowKeys = Object.values(ShipOreEnum)
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#a46800', '#246f9a', '#246f9a', '#246f9a', '#229f63')
     .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
-  const priceLookups = shipRowKeys.reduce((acc, shipOreKey) => {
-    acc[shipOreKey] = [
-      findPrice(shipOreKey as ShipOreEnum, undefined, true),
-      findPrice(shipOreKey as ShipOreEnum, undefined, false),
-    ]
-    return acc
-  }, {} as { [key in ShipOreEnum]: [number, number] })
+
+  const [priceLookups, setPriceLookups] = React.useState<Partial<{ [key in ShipOreEnum]: [number, number] }>>({})
+
+  React.useEffect(() => {
+    const calculatePriceLookups = async () => {
+      const lookups: Partial<{ [key in ShipOreEnum]: [number, number] }> = {}
+      for (const shipOreKey of shipRowKeys) {
+        const [price1, price2] = await Promise.all([
+          findPrice(dataStore, shipOreKey as ShipOreEnum, undefined, true),
+          findPrice(dataStore, shipOreKey as ShipOreEnum, undefined, false),
+        ])
+        lookups[shipOreKey] = [price1, price2]
+      }
+      setPriceLookups(lookups)
+    }
+    calculatePriceLookups()
+  }, [shipRowKeys])
 
   // Sort descendng value
   shipRowKeys.sort((a, b) => {
-    const aPrice = priceLookups[a as ShipOreEnum]
-    const bPrice = priceLookups[b as ShipOreEnum]
+    const aPrice = priceLookups[a as ShipOreEnum] as [number, number]
+    const bPrice = priceLookups[b as ShipOreEnum] as [number, number]
     return bPrice[0] - aPrice[0]
   })
 
   const rowStats: { max: number; min: number }[] = []
 
   const finalTable: [number, number, number, number, number, number][] = shipRowKeys.map((shipOreKey, rowIdx) => {
-    const orePriceRefined = priceLookups[shipOreKey][0]
-    const orePriceUnrefined = priceLookups[shipOreKey][1]
+    const orePrices = priceLookups[shipOreKey]
+    const orePriceRefined = orePrices ? orePrices[0] : 0
+    const orePriceUnrefined = orePrices ? orePrices[1] : 0
     const retVals = [
       orePriceUnrefined,
       orePriceRefined,

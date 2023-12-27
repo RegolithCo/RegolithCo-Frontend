@@ -26,7 +26,7 @@ const Template: StoryFn<typeof WorkOrderShare> = (props) => {
   return <WorkOrderShare {...props} />
 }
 
-export const New = Template.bind({})
-New.args = {
-  workOrder: fakeShipMiningOrder(),
-}
+// export const New = Template.bind({})
+// New.args = {
+//   workOrder: fakeShipMiningOrder(),
+// }

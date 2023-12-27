@@ -77,8 +77,8 @@ export const makeLogLink = (logFn: (...args: any[]) => void): ApolloLink =>
   })
 
 export type ErrorLinkThunk = (args: {
-  setMaintenanceMode: (msg: string) => void
-  setAPIWorking: (working: boolean) => void
+  setMaintenanceMode?: (msg: string) => void
+  setAPIWorking?: (working: boolean) => void
 }) => ApolloLink
 
 export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorking }) =>
@@ -95,14 +95,14 @@ export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorki
         const result = (networkError as ServerError).result
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((result as Record<string, any>).extensions.code === ErrorCode.MAINENANCE_MODE) {
-          setMaintenanceMode((result as Record<string, string>).message)
+          setMaintenanceMode && setMaintenanceMode((result as Record<string, string>).message)
         }
       } catch {
         console.error('Error parsing network error', networkError)
       }
 
       console.error(`❌🔌 [Network error]: ${networkError}`)
-      if (!(networkError as ServerError).statusCode) setAPIWorking(false)
+      if (!(networkError as ServerError).statusCode && setAPIWorking) setAPIWorking(false)
     }
     forward(operation)
   })

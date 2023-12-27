@@ -1,6 +1,13 @@
 import * as React from 'react'
 import { useTheme, Typography, Paper, Toolbar } from '@mui/material'
-import { ActivityEnum, calculateWorkOrder, getTimezoneStr, makeHumanIds, WorkOrder } from '@regolithco/common'
+import {
+  ActivityEnum,
+  calculateWorkOrder,
+  getTimezoneStr,
+  makeHumanIds,
+  WorkOrder,
+  WorkOrderSummary,
+} from '@regolithco/common'
 import dayjs from 'dayjs'
 
 import { ExpensesSharesCard } from '../calculators/WorkOrderCalc/WorkOrderCards/ExpensesSharesCard'
@@ -12,6 +19,7 @@ import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { AppContext } from '../../context/app.context'
+import { useLookups } from '../../hooks/useLookups'
 
 export type WorkOrderShareSettings = {
   hideNames?: boolean
@@ -52,9 +60,18 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 
 export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, settings }) => {
   const theme = useTheme()
+  const store = useLookups()
   const styles = workOrderStylesThunk(theme)
   const { getSafeName } = React.useContext(AppContext)
-  const summary = React.useMemo(() => calculateWorkOrder(workOrder), [workOrder])
+  const [summary, setSummary] = React.useState<WorkOrderSummary | null>(null) // Adjust the initial state based on your needs
+
+  React.useEffect(() => {
+    const fetchSummary = async () => {
+      const result = await calculateWorkOrder(store, workOrder)
+      setSummary(result)
+    }
+    fetchSummary()
+  }, [store, workOrder])
 
   let WorkIcon: SvgIconComponent
   let title = ''
@@ -79,7 +96,7 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
     default:
       return <>DisplayError</>
   }
-
+  if (!summary) return null
   return (
     <Paper elevation={11} sx={{ p: 2 }}>
       <Toolbar

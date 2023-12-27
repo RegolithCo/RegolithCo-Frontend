@@ -1,5 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, NormalizedCacheObject } from '@apollo/client'
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  from,
+  NormalizedCacheObject,
+  split,
+} from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
 import log from 'loglevel'
@@ -20,6 +28,30 @@ import useLocalStorage from './useLocalStorage'
 import { LoginRefresh } from '../components/modals/LoginRefresh'
 import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
 import { usePageVisibility } from './usePageVisibility'
+import { getMainDefinition } from '@apollo/client/utilities'
+
+// Create HttpLinks for each endpoint
+const privateLink = new HttpLink({
+  uri: config.apiUrl, // change this to your private API url
+})
+
+const publicLink = new HttpLink({
+  uri: config.apiUrlPub, // change this to your public API url
+})
+
+// Use the split function to direct requests to different endpoints
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return Boolean(
+      definition.kind === 'OperationDefinition' &&
+        definition.operation === 'query' &&
+        definition.name?.value.startsWith('Public') // change this condition based on your needs
+    )
+  },
+  publicLink,
+  privateLink
+)
 
 /**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
@@ -50,9 +82,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         retryLink,
         makeLogLink(log.debug),
         authLink,
-        new HttpLink({
-          uri: config.apiUrl,
-        }),
+        splitLink,
       ]),
       connectToDevTools: process.env.NODE_ENV === 'development',
       cache: new InMemoryCache({

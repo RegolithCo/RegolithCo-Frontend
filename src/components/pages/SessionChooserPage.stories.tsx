@@ -21,15 +21,15 @@ export const SessionChooserPage = Template.bind({})
 const userProfile = fakeUserProfile()
 const { userId, scName, createdAt, updatedAt, state } = userProfile
 const user: User = { userId, scName, createdAt, updatedAt, state, __typename: 'User' }
-SessionChooserPage.args = {
-  userProfile,
-  mySessions: Array.from({ length: 20 }, () => fakeSession({ owner: user })),
-  joinedSessions: Array.from({ length: 20 }, () => fakeSession()),
-  loading: false,
-  navigate: (path: string) => {
-    log.debug('navigate', path)
-  },
-  onCreateNewSession: () => {
-    log.debug('onCreateNewSession')
-  },
-}
+// SessionChooserPage.args = {
+//   userProfile,
+//   mySessions: Array.from({ length: 20 }, () => fakeSession({ owner: user })),
+//   joinedSessions: Array.from({ length: 20 }, () => fakeSession()),
+//   loading: false,
+//   navigate: (path: string) => {
+//     log.debug('navigate', path)
+//   },
+//   onCreateNewSession: () => {
+//     log.debug('onCreateNewSession')
+//   },
+// }

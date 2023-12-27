@@ -3,7 +3,6 @@ import { useTheme, Typography, Paper, Toolbar } from '@mui/material'
 import { defaultSessionName, getTimezoneStr, Session, SessionBreakdown, sessionReduce } from '@regolithco/common'
 import dayjs from 'dayjs'
 
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Stack, SxProps, Theme } from '@mui/system'
 import { RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
@@ -11,6 +10,7 @@ import { TabSummaryStats } from '../pages/SessionPage/TabSummaryStats'
 import { OwingList } from '../pages/SessionPage/TabSummary'
 import { WorkOrderTable } from '../pages/SessionPage/WorkOrderTable'
 import { AppContext } from '../../context/app.context'
+import { useLookups } from '../../hooks/useLookups'
 
 export type SessionShareSettings = {
   hideNames?: boolean
@@ -60,12 +60,19 @@ const sessionShareStyleThunk = (theme: Theme): Record<string, SxProps<Theme>> =>
 export const SessionShare: React.FC<SessionShareProps> = ({ session, settings }) => {
   const theme = useTheme()
   const styles = sessionShareStyleThunk(theme)
+  const store = useLookups()
   const { getSafeName } = React.useContext(AppContext)
-  const sessionSummary: SessionBreakdown = React.useMemo(
-    () => sessionReduce(session?.workOrders?.items || []),
-    [session]
-  )
+  const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown | null>(null)
 
+  React.useEffect(() => {
+    const fetchSessionSummary = async () => {
+      const result = await sessionReduce(store, session?.workOrders?.items || [])
+      setSessionSummary(result)
+    }
+    fetchSessionSummary()
+  }, [store, session])
+
+  if (!sessionSummary) return null
   return (
     <Paper elevation={11} sx={{ p: 2 }}>
       <Toolbar

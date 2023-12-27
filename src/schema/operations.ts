@@ -2282,3 +2282,49 @@ export function useGetCrewSharesLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetCrewSharesQueryHookResult = ReturnType<typeof useGetCrewSharesQuery>;
 export type GetCrewSharesLazyQueryHookResult = ReturnType<typeof useGetCrewSharesLazyQuery>;
 export type GetCrewSharesQueryResult = Apollo.QueryResult<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>;
+export const GetPublicLookupsDocument = gql`
+    query getPublicLookups {
+  lookups {
+    CIG {
+      densitiesLookups
+      oreProcessingLookup
+      refineryBonusLookup
+      methodsBonusLookup
+    }
+    UEX {
+      bodies
+      maxPrices
+      ships
+      tradeports
+    }
+    Loadout
+  }
+}
+    `;
+
+/**
+ * __useGetPublicLookupsQuery__
+ *
+ * To run a query within a React component, call `useGetPublicLookupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPublicLookupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPublicLookupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPublicLookupsQuery(baseOptions?: Apollo.QueryHookOptions<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>(GetPublicLookupsDocument, options);
+      }
+export function useGetPublicLookupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>(GetPublicLookupsDocument, options);
+        }
+export type GetPublicLookupsQueryHookResult = ReturnType<typeof useGetPublicLookupsQuery>;
+export type GetPublicLookupsLazyQueryHookResult = ReturnType<typeof useGetPublicLookupsLazyQuery>;
+export type GetPublicLookupsQueryResult = Apollo.QueryResult<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>;

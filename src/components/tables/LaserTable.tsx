@@ -29,13 +29,14 @@ import {
   MiningStoreEnum,
   ObjectValues,
   getMiningStoreName,
-  lookups,
+  LoadoutLookup,
 } from '@regolithco/common'
 import { BarChart, Bolt, Check, ClearAll, Store } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { useLookups } from '../../hooks/useLookups'
 
 export interface LaserTableProps {
   onAddToLoadout: (module: MiningLaserEnum) => void
@@ -50,11 +51,21 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 
 export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
+  const store = useLookups()
   const styles = tableStylesThunk(theme)
   const [selected, setSelected] = React.useState<MiningLaserEnum[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
+  const [loadoutLookup, setLoadoutLookup] = React.useState<LoadoutLookup | null>(null)
   const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
+
+  React.useEffect(() => {
+    const getLoadout = async () => {
+      const loadoutResult = await store.getLookup('loadout')
+      setLoadoutLookup(loadoutResult)
+    }
+    getLoadout()
+  }, [store])
 
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#229f63')
@@ -63,21 +74,20 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     .map((c) => alpha(c, 0.3))
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const filteredVals = React.useMemo(
-    () =>
-      Object.values(lookups.loadout.lasers)
-        .filter((laser) => {
-          if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
-          if (shipFilter === LoadoutShipEnum.Prospector) return laser.size === 1
-          return true
-        })
-        .filter((laser) => {
-          if (!filterSelected) return true
-          if (selected.length === 0) return true
-          return selected.includes(laser.code as MiningLaserEnum)
-        }),
-    [filterSelected, selected, shipFilter]
-  )
+  const filteredVals = React.useMemo(() => {
+    if (!loadoutLookup) return []
+    return Object.values(loadoutLookup.lasers)
+      .filter((laser) => {
+        if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
+        if (shipFilter === LoadoutShipEnum.Prospector) return laser.size === 1
+        return true
+      })
+      .filter((laser) => {
+        if (!filterSelected) return true
+        if (selected.length === 0) return true
+        return selected.includes(laser.code as MiningLaserEnum)
+      })
+  }, [filterSelected, selected, shipFilter, loadoutLookup])
 
   const [maxMin, statsRank] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:

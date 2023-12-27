@@ -52,6 +52,7 @@ import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
 import { AppContext } from '../../../context/app.context'
+import { useLookups } from '../../../hooks/useLookups'
 
 export interface TabSummaryProps {
   propA?: string
@@ -121,16 +122,23 @@ type ConfirmModalState = {
 
 export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
+  const store = useLookups()
   const { hideNames, getSafeName } = React.useContext(AppContext)
   const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
-  const sessionSummary: SessionBreakdown = React.useMemo(
-    () => sessionReduce(session?.workOrders?.items || []),
-    [session]
-  )
+  const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown | null>(null)
 
+  React.useEffect(() => {
+    const fetchSessionSummary = async () => {
+      const result = await sessionReduce(store, session?.workOrders?.items || [])
+      setSessionSummary(result)
+    }
+    fetchSessionSummary()
+  }, [session])
+
+  if (!sessionSummary) return null
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', overflow: 'auto', height: '100%', ...styles.container }}>
       <Typography sx={styles.sectionTitle}>Session Stats</Typography>

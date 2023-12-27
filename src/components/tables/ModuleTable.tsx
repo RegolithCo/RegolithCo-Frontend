@@ -28,13 +28,13 @@ import {
   MiningStoreEnum,
   ObjectValues,
   getMiningStoreName,
-  lookups,
+  LoadoutLookup,
 } from '@regolithco/common'
 import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
-import { ModuleIcon } from '../../icons/Module'
+import { useLookups } from '../../hooks/useLookups'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
@@ -48,28 +48,37 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 
 export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
+  const store = useLookups()
   const styles = tableStylesThunk(theme)
+  const [loadoutLookup, setLoadoutLookup] = React.useState<LoadoutLookup | null>(null)
   const [categoryFilter, setCategoryFilter] = React.useState<string[]>(['A', 'P', 'G'])
+
+  React.useEffect(() => {
+    const getLoadout = async () => {
+      const loadoutResult = await store.getLookup('loadout')
+      setLoadoutLookup(loadoutResult)
+    }
+    getLoadout()
+  }, [store])
 
   const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
 
-  const filteredValues = React.useMemo(
-    () =>
-      [...Object.values(lookups.loadout.modules), ...Object.values(lookups.loadout.gadgets)]
-        .filter((mod) => {
-          if (filterSelected && !selected.includes(mod.code as MiningGadgetEnum | MiningModuleEnum)) return false
-          return true
-        })
-        .filter((mod) => {
-          if (categoryFilter === null) return true
-          if (categoryFilter.includes('A') && mod.category === 'A') return true
-          if (categoryFilter.includes('P') && mod.category === 'P') return true
-          if (categoryFilter.includes('G') && mod.category === 'G') return true
-        }),
-    [categoryFilter, filterSelected]
-  )
+  const filteredValues = React.useMemo(() => {
+    if (!loadoutLookup) return []
+    return [...Object.values(loadoutLookup.modules), ...Object.values(loadoutLookup.gadgets)]
+      .filter((mod) => {
+        if (filterSelected && !selected.includes(mod.code as MiningGadgetEnum | MiningModuleEnum)) return false
+        return true
+      })
+      .filter((mod) => {
+        if (categoryFilter === null) return true
+        if (categoryFilter.includes('A') && mod.category === 'A') return true
+        if (categoryFilter.includes('P') && mod.category === 'P') return true
+        if (categoryFilter.includes('G') && mod.category === 'G') return true
+      })
+  }, [categoryFilter, filterSelected, loadoutLookup])
 
   const [maxMin] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
