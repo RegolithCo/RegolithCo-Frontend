@@ -10,7 +10,8 @@ import {
   fakeWorkOrders,
 } from '@regolithco/common/dist/mock'
 import log from 'loglevel'
-import { WorkOrder, RefineryMethodEnum, RefineryEnum, CrewShare } from '@regolithco/common'
+import { WorkOrder, RefineryMethodEnum, RefineryEnum, CrewShare, ActivityEnum } from '@regolithco/common'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export default {
   title: 'Calculators/WorkOrder',
@@ -54,15 +55,31 @@ export default {
   },
 } as Meta<typeof WorkOrderCalc>
 
-const Template: StoryFn<typeof WorkOrderCalc> = (args) => {
-  const { onChange, workOrder, ...other } = args
-  if (workOrder) {
-    const otherWorkOrder = other as Partial<WorkOrder>
-    const newWorkOrder: WorkOrder = { ...workOrder, ...otherWorkOrder } as WorkOrder
-    const crewShares = newWorkOrder.crewShares as CrewShare[]
-    return <WorkOrderCalc onChange={onChange} workOrder={newWorkOrder} />
+const Template: StoryFn<{
+  orderType: ActivityEnum
+}> = (args) => {
+  const { orderType, ...other } = args
+  const workOrder = useAsyncLookupData<WorkOrder>((ds) => {
+    switch (orderType) {
+      case ActivityEnum.ShipMining:
+        return fakeShipMiningOrder(ds)
+      case ActivityEnum.VehicleMining:
+        return fakeVehicleMiningOrder()
+      case ActivityEnum.Salvage:
+        return fakeSalvageOrder()
+      case ActivityEnum.Other:
+        return fakeOtherOrder()
+    }
+  })
+  const onChange = (order: WorkOrder) => {
+    log.debug(`WorkOrderUpdate: ${orderType}`, order)
   }
-  return <WorkOrderCalc workOrder={args.workOrder} onChange={args.onChange} />
+  if (!workOrder) return <div>loading fake workorder...</div>
+
+  const otherWorkOrder = other as Partial<WorkOrder>
+  const newWorkOrder: WorkOrder = { ...workOrder, ...otherWorkOrder } as WorkOrder
+  const crewShares = newWorkOrder.crewShares as CrewShare[]
+  return <WorkOrderCalc onChange={onChange} workOrder={newWorkOrder} />
 }
 
 export const Empty = Template.bind({})
@@ -70,39 +87,23 @@ Empty.args = {}
 
 export const ShipMiningOrder = Template.bind({})
 ShipMiningOrder.args = {
-  workOrder: fakeShipMiningOrder(),
-  onChange: (order) => {
-    log.debug('ShipMiningOrderUpdate', order)
-  },
+  orderType: ActivityEnum.ShipMining,
 }
 export const VehicleMiningOrder = Template.bind({})
 VehicleMiningOrder.args = {
-  workOrder: fakeVehicleMiningOrder(),
-  onChange: (order) => {
-    log.debug('VehicleMiningOrderUpdate', order)
-  },
+  orderType: ActivityEnum.VehicleMining,
 }
 export const SalvageOrder = Template.bind({})
 SalvageOrder.args = {
-  workOrder: fakeSalvageOrder(),
-  onChange: (order) => {
-    log.debug('SalvageOrderUpdate', order)
-  },
+  orderType: ActivityEnum.Salvage,
 }
 
 export const OtherOrder = Template.bind({})
 OtherOrder.args = {
-  workOrder: fakeOtherOrder(),
-  onChange: (order) => {
-    log.debug('OtherOrderUpdate', order)
-  },
+  orderType: ActivityEnum.Other,
 }
 
 export const ShipOrderWithTemplate = Template.bind({})
 ShipOrderWithTemplate.args = {
-  workOrder: fakeShipMiningOrder(),
-  // templateJob: fakeWorkOrders().
-  onChange: (order) => {
-    log.debug('WorkOrderUpdate', order)
-  },
+  orderType: ActivityEnum.ShipMining,
 }

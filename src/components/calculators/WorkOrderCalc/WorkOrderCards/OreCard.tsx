@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   Card,
   CardContent,
@@ -11,7 +11,6 @@ import {
   Typography,
   TextField,
   Box,
-  Button,
   useTheme,
   keyframes,
   SxProps,
@@ -50,6 +49,7 @@ import { fontFamilies } from '../../../../theme'
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
 import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
+import { useAsyncLookupData } from '../../../../hooks/useLookups'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -120,18 +120,31 @@ export const OreCard: React.FC<OreCardProps> = ({
   const isRefineryMethodLocked = (templateJob?.lockedFields || [])?.includes('method')
 
   // Creating and sorting the ore table rows shouldn't happen on every render. It's expensive.
-  const oreTableRows = useMemo(() => {
-    const oreTableRows = Object.entries(summary?.oreSummary || [])
-    oreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
-      const aPrice = findPrice(a as ShipOreEnum, undefined, true)
-      const bPrice = findPrice(b as ShipOreEnum, undefined, true)
-      // Sort the ore by price. The refinery sorts by value of the ore, but that would create chaos while the user
-      // is editing the ore amounts. So we sort by the price of the ore.
-      if (isEditing) return aPrice - bPrice
-      else return rb * bPrice - ra * aPrice
-    })
-    return oreTableRows
-  }, [summary.oreSummary, isEditing])
+  const oreTableRows =
+    useAsyncLookupData(
+      async (ds) => {
+        const oreTableRows = Object.entries(summary?.oreSummary || [])
+        const prices = await Promise.all(oreTableRows.map(([oreKey]) => findPrice(ds, oreKey as ShipOreEnum)))
+        oreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
+          const aPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === a)]
+          const bPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === b)]
+          // Sort the ore by price. The refinery sorts by value of the ore, but that would create chaos while the user
+          // is editing the ore amounts. So we sort by the price of the ore.
+          if (isEditing) return aPrice - bPrice
+          else return rb * bPrice - ra * aPrice
+        })
+        return oreTableRows
+      },
+      [summary.oreSummary, isEditing]
+    ) || []
+
+  const oreAmtCalcThunk = useAsyncLookupData<
+    (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) => Promise<number>
+  >(
+    async (ds) => async (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) =>
+      oreAmtCalc(ds, amt, ore, refinery, method),
+    []
+  )
 
   let unit = 'SCU'
   switch (workOrder.orderType) {
@@ -146,6 +159,7 @@ export const OreCard: React.FC<OreCardProps> = ({
       break
   }
 
+  if (!oreAmtCalcThunk) return null
   return (
     <Card sx={sx}>
       <CardHeader
@@ -321,7 +335,8 @@ export const OreCard: React.FC<OreCardProps> = ({
                             onChange,
                             e.target.value,
                             false,
-                            workOrder.orderType
+                            workOrder.orderType,
+                            oreAmtCalcThunk
                           )
                         }
                         onBlur={() => setEditCell(undefined)}
@@ -378,7 +393,8 @@ export const OreCard: React.FC<OreCardProps> = ({
                               onChange,
                               e.target.value,
                               true,
-                              workOrder.orderType
+                              workOrder.orderType,
+                              oreAmtCalcThunk
                             )
                           }
                           onFocus={(event) => {
@@ -446,14 +462,20 @@ export const OreCard: React.FC<OreCardProps> = ({
   )
 }
 
-const tableChange = (
+const tableChange = async (
   oreKey: string,
   order: WorkOrder,
   onChange: (workOrder: WorkOrder) => void,
   targetVal: string,
   isYield: boolean,
-  orderType: ActivityEnum
-): void => {
+  orderType: ActivityEnum,
+  oreAmtCalcWrapped: (
+    amt: number,
+    ore: ShipOreEnum,
+    refinery: RefineryEnum,
+    method: RefineryMethodEnum
+  ) => Promise<number>
+): Promise<void> => {
   let newTargetVal = targetVal
   if (targetVal.trim() === '') {
     newTargetVal = '0'
@@ -468,7 +490,12 @@ const tableChange = (
         const shipOrder = order as ShipMiningOrder
         const existingOres: RefineryRow[] = [...((shipOrder.shipOres as RefineryRow[]) || [])]
         const amt = isYield
-          ? oreAmtCalc(tValParsed, shipOre, shipOrder.refinery as RefineryEnum, shipOrder.method as RefineryMethodEnum)
+          ? await oreAmtCalcWrapped(
+              tValParsed,
+              shipOre,
+              shipOrder.refinery as RefineryEnum,
+              shipOrder.method as RefineryMethodEnum
+            )
           : tValParsed
         const existingRowIdx = existingOres.findIndex((row) => row?.ore === oreKey)
 

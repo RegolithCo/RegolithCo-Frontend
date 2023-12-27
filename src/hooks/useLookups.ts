@@ -54,7 +54,33 @@ class ClientDataStore implements DataStore {
   }
 }
 
+/**
+ * When we just need the store we can use this hook
+ * @returns
+ */
 export const useLookups = (): DataStore => {
   const [store, _setStore] = React.useState<DataStore>(new ClientDataStore())
   return store
+}
+
+/**
+ * When we have more complex needs we can use this hook
+ * @param asyncFunction
+ * @param args
+ * @returns
+ */
+export const useAsyncLookupData = <T>(
+  asyncFunction: (ds: DataStore, ...innerArgs: any[]) => Promise<T>,
+  args?: any[]
+): T | null => {
+  const [store] = React.useState<DataStore>(new ClientDataStore())
+  const [result, setResult] = React.useState<T | null>(null)
+
+  useEffect(() => {
+    asyncFunction(store, ...(args || []))
+      .then((result) => setResult(result))
+      .catch((err) => console.error(err))
+  }, [...(args || [])])
+
+  return result
 }

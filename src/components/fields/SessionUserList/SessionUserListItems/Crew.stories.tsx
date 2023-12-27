@@ -1,11 +1,12 @@
 import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
-import { CrewListItem as CrewC, CrewListItemProps } from './CrewListItem'
+import { CrewListItem as CrewC } from './CrewListItem'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
-import { crewHierarchyCalc, Session, SessionUser, User } from '@regolithco/common'
+import { crewHierarchyCalc, Session, SessionUser, User, UserProfile } from '@regolithco/common'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
 import { List, Typography } from '@mui/material'
+import { useStorybookAsyncLookupData } from '../../../../hooks/useLookupStorybook'
 
 export default {
   title: 'UserList/Crew',
@@ -17,58 +18,75 @@ export default {
 } as Meta<typeof CrewC>
 
 interface TemplateProps {
-  componentProps: CrewListItemProps
+  componentProps: { iIsCaptain: boolean }
   contextProps: Partial<SessionContextType>
 }
-const session = fakeSession()
-const sessionMembers: SessionUser[] = session.activeMembers?.items || []
-const mySessionUser = sessionMembers[Math.floor(Math.random() * sessionMembers.length)]
-const notMySessionUser = sessionMembers.filter((m) => m.ownerId !== mySessionUser.ownerId)[
-  Math.floor(Math.random() * sessionMembers.length)
-]
-const meUser = fakeUserProfile(mySessionUser.owner as User)
-const notMeUser = fakeUserProfile(notMySessionUser.owner as User)
-// Random session member chosen from sessionMembers
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const captain = { ...componentProps.captain, vehicleCode: 'ARMOLE' }
-  const newSession: Session = {
-    ...session,
-    mentionedUsers: (session.mentionedUsers || []).map((u) => ({
-      ...u,
-      captainId: captain.ownerId,
-    })),
-    // Now make sure all the active members get the right captain
-    activeMembers: {
-      ...session.activeMembers,
-      items: (session.activeMembers?.items || []).map((u) =>
-        u.ownerId === captain.ownerId
-          ? { ...u, vehicleCode: 'ARMOLE' }
-          : {
-              ...u,
-              captainId: captain.ownerId,
-              vehicleCode: 'ARMOLE',
-            }
-      ),
-      __typename: 'PaginatedSessionUsers',
-    },
-  }
+  const [myUserProfile, setMyUserProfile] = React.useState<UserProfile | null>(null)
+  const [captain, setCaptain] = React.useState<SessionUser | null>(null)
 
+  const [mySessionUser, setMySessionUser] = React.useState<SessionUser | null>(null)
+
+  const fakeSessionObj = useStorybookAsyncLookupData<Session>(async (ds) => {
+    const fSession = await fakeSession(ds)
+    const sessionMembers: SessionUser[] = fSession.activeMembers?.items || []
+    const mySessionUser = sessionMembers[Math.floor(Math.random() * sessionMembers.length)]
+    setMySessionUser(mySessionUser)
+    const notMySessionUser = sessionMembers.filter((m) => m.ownerId !== mySessionUser.ownerId)[
+      Math.floor(Math.random() * sessionMembers.length)
+    ]
+    const meUser = fakeUserProfile(mySessionUser.owner as User)
+    setMyUserProfile(meUser)
+
+    const captain = componentProps.iIsCaptain ? mySessionUser : notMySessionUser
+    setCaptain(captain)
+
+    // Random session member chosen from sessionMembers
+
+    const fakeSessionObj: Session = {
+      ...fSession,
+      mentionedUsers: (fSession.mentionedUsers || []).map((u) => ({
+        ...u,
+        captainId: captain.ownerId,
+      })),
+      // Now make sure all the active members get the right captain
+      activeMembers: {
+        ...fSession.activeMembers,
+        items: (fSession.activeMembers?.items || []).map((u) =>
+          u.ownerId === captain.ownerId
+            ? { ...u, vehicleCode: 'ARMOLE' }
+            : {
+                ...u,
+                captainId: captain.ownerId,
+                vehicleCode: 'ARMOLE',
+              }
+        ),
+        __typename: 'PaginatedSessionUsers',
+      },
+    }
+    return fakeSessionObj
+  })
+
+  if (!fakeSessionObj || !captain || !mySessionUser || !myUserProfile) return <div>Loading Fake session...</div>
   return (
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session: newSession,
+        session: fakeSessionObj,
         captains: [captain],
-        myUserProfile: meUser,
+        myUserProfile,
         mySessionUser: mySessionUser,
-        crewHierarchy: crewHierarchyCalc(newSession.activeMembers?.items || [], newSession.mentionedUsers || []),
+        crewHierarchy: crewHierarchyCalc(
+          fakeSessionObj.activeMembers?.items || [],
+          fakeSessionObj.mentionedUsers || []
+        ),
         ...contextProps,
       }}
     >
       <List sx={{ maxWidth: 400, border: '1px solid blue' }}>
         <Typography variant="h6">Me Captain</Typography>
-        <CrewC {...componentProps} />
+        <CrewC captain={captain} />
       </List>
     </SessionContext.Provider>
   )
@@ -77,14 +95,14 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
 export const Crew = Template.bind({})
 Crew.args = {
   componentProps: {
-    captain: mySessionUser,
+    iIsCaptain: true,
   },
   contextProps: {},
 }
 export const CrewMeCaptain = Template.bind({})
 CrewMeCaptain.args = {
   componentProps: {
-    captain: notMySessionUser,
+    iIsCaptain: false,
   },
   contextProps: {},
 }

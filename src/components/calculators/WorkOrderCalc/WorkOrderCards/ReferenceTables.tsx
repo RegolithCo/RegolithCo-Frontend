@@ -1,14 +1,15 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { ActivityEnum, lookups, Vehicle } from '@regolithco/common'
+import { ActivityEnum, Vehicle } from '@regolithco/common'
 import { fontFamilies } from '../../../../theme'
+import { useAsyncLookupData } from '../../../../hooks/useLookups'
 
 export interface ReferenceTablesProps {
   activity: ActivityEnum
 }
 
 export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) => {
-  const lups = lookups.shipLookups
+  const lups = useAsyncLookupData((ds) => ds.getLookup('shipLookups')) || []
   const rows: [Vehicle, number, string, string][] = []
   let show = true
   switch (activity) {

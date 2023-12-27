@@ -5,6 +5,7 @@ import { ActivePopupMe as ActivePopupMeC, ActivePopupMeProps } from './ActivePop
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/mock'
 import { SessionUser, User } from '@regolithco/common'
+import { useStorybookAsyncLookupData } from '../../../hooks/useLookupStorybook'
 
 export default {
   title: 'Modals/ActivePopupMe',
@@ -22,7 +23,9 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ isCrew, componentProps, contextProps }: TemplateProps) => {
-  const session = fakeSession()
+  const session = useStorybookAsyncLookupData(fakeSession)
+  if (!session) return <div>Loading Fake session...</div>
+
   const sessionMembers: SessionUser[] = session.activeMembers?.items || []
   // Random session member chosen from sessionMembers
   const meUser = fakeUserProfile(sessionMembers[Math.floor(Math.random() * sessionMembers.length)].owner as User)

@@ -52,7 +52,7 @@ import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
 import { AppContext } from '../../../context/app.context'
-import { useLookups } from '../../../hooks/useLookups'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export interface TabSummaryProps {
   propA?: string
@@ -122,21 +122,14 @@ type ConfirmModalState = {
 
 export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
-  const store = useLookups()
+
   const { hideNames, getSafeName } = React.useContext(AppContext)
   const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
-  const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown | null>(null)
 
-  React.useEffect(() => {
-    const fetchSessionSummary = async () => {
-      const result = await sessionReduce(store, session?.workOrders?.items || [])
-      setSessionSummary(result)
-    }
-    fetchSessionSummary()
-  }, [session])
+  const sessionSummary = useAsyncLookupData<SessionBreakdown>(sessionReduce, [session?.workOrders?.items || []])
 
   if (!sessionSummary) return null
   return (

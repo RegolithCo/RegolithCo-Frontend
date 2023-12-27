@@ -5,6 +5,8 @@ import { ShareWrapper } from './ShareWrapper'
 import { ImageDownloadComponent } from './ImageDownloadComponent'
 import { fakeShipMiningOrder } from '@regolithco/common/dist/mock'
 import { WorkOrderShare } from './WorkOrderShare'
+import { useStorybookAsyncLookupData } from '../../hooks/useLookupStorybook'
+import { ShipMiningOrder } from '@regolithco/common'
 
 export default {
   title: 'Sharing/WorkOrderShare',
@@ -14,7 +16,6 @@ export default {
     (Story) => (
       <ImageDownloadComponent fileName={'TESTDOWNLOAD'} widthPx={800}>
         <ShareWrapper>
-          {/* 👇 Decorators in Storybook also accept a function. Replace <Story/> with Story() to enable it  */}
           <Story />
         </ShareWrapper>
       </ImageDownloadComponent>
@@ -26,7 +27,5 @@ const Template: StoryFn<typeof WorkOrderShare> = (props) => {
   return <WorkOrderShare {...props} />
 }
 
-// export const New = Template.bind({})
-// New.args = {
-//   workOrder: fakeShipMiningOrder(),
-// }
+export const New = Template.bind({})
+New.args = {}

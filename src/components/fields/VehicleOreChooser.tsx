@@ -3,6 +3,7 @@ import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { blue, green } from '@mui/material/colors'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export interface VehicleOreChooserProps {
   multiple?: boolean
@@ -25,15 +26,20 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
   const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
   const fgColors = ['#000000', '#ffffff', '#ffffff']
   // Sort descendng value
-  vehicleRowKeys.sort((a, b) => {
-    const aPrice = findPrice(a as VehicleOreEnum)
-    const bPrice = findPrice(b as VehicleOreEnum)
-    return bPrice - aPrice
+
+  const sortedVehicleRowKeys = useAsyncLookupData(async (ds) => {
+    const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(ds, vehicleOreKey)))
+    return vehicleRowKeys.sort((a, b) => {
+      const aPrice = prices[vehicleRowKeys.indexOf(a)]
+      const bPrice = prices[vehicleRowKeys.indexOf(b)]
+      return bPrice - aPrice
+    })
   })
+  if (!sortedVehicleRowKeys) return null
 
   return (
     <Grid container spacing={0.5}>
-      {vehicleRowKeys.map((vehicleOreKey, rowIdx) => {
+      {sortedVehicleRowKeys.map((vehicleOreKey, rowIdx) => {
         const fgc = fgColors[rowIdx]
         const bgc = bgColors[rowIdx]
         const active = selected.includes(vehicleOreKey)

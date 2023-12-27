@@ -4,6 +4,8 @@ import { StoryFn, Meta } from '@storybook/react'
 import { ActivePopupUser as ActivePopupUserC, ActivePopupUserProps } from './ActivePopupUser'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { Session } from '@regolithco/common'
+import { useStorybookAsyncLookupData } from '../../../hooks/useLookupStorybook'
 
 export default {
   title: 'Modals/ActivePopupUser',
@@ -20,7 +22,8 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const session = fakeSession()
+  const fakeSessionObj = useStorybookAsyncLookupData<Session>(fakeSession)
+  if (!fakeSessionObj) return <div>Loading Fake session...</div>
   const meUser = fakeUserProfile({ friends: ['userB_Friend'], avatarUrl: '/images/avatars/dummyAvatar.png' })
   const sessionUser = fakeSessionUser(undefined, meUser)
 
@@ -28,7 +31,7 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session,
+        session: fakeSessionObj,
         myUserProfile: meUser,
         mySessionUser: sessionUser,
         ...contextProps,

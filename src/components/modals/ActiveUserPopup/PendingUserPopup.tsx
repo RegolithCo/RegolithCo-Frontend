@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { PendingUser, lookups, SessionUser } from '@regolithco/common'
+import { PendingUser, SessionUser } from '@regolithco/common'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
@@ -22,6 +22,7 @@ import { UserAvatar } from '../../UserAvatar'
 import { Cancel, CheckCircle, DeleteForever, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 dayjs.extend(relativeTime)
 
 export interface PendingUserPopupProps {
@@ -33,6 +34,7 @@ export interface PendingUserPopupProps {
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
+  const shipLookups = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
   const {
     captains,
     session,
@@ -48,11 +50,15 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
       ? captains.find((c) => c.ownerId === pendingUser.captainId) || null
       : null
 
+  if (!shipLookups) return null
+
+  // NO HOOKS BELOW HERe
+
   const iOwnSession = session?.ownerId === myUserProfile.userId
 
   const theirCaptainId = pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : null
   const vehicleCode = theirCaptain?.vehicleCode
-  const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
+  const vehicle = vehicleCode ? shipLookups.find((s) => s.code === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(pendingUser.scName as string)
   const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]

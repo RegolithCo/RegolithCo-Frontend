@@ -13,11 +13,12 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { AnyOreEnum, OreSummary, StoreChoice, getOreName, lookups } from '@regolithco/common'
+import { AnyOreEnum, OreSummary, StoreChoice, getOreName } from '@regolithco/common'
 import { MValueFormat } from '../fields/MValue'
 import { MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { alpha } from '@mui/material'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export interface StoreChooserListItemProps {
   cityStores: StoreChoice
@@ -52,10 +53,14 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
+  const planetLookups = useAsyncLookupData((ds) => ds.getLookup('planetLookups'))
 
-  const planetName = cityStores.planet ? lookups.planetLookups['ST'][cityStores.planet].name : ''
+  if (!planetLookups) return null
+  // NO HOOKS BELOW HERE
+
+  const planetName = cityStores.planet ? planetLookups['ST'][cityStores.planet].name : ''
   const satellite = cityStores.satellite
-    ? lookups.planetLookups['ST'][cityStores.planet].satellites[cityStores.satellite]
+    ? planetLookups['ST'][cityStores.planet].satellites[cityStores.satellite]
     : undefined
   const city = cityStores.city || ''
   // Price is the sum of all the prices

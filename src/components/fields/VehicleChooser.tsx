@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react'
 import { Autocomplete, MenuItem, TextField, Typography, useTheme } from '@mui/material'
-import { Vehicle, lookups, ObjectValues } from '@regolithco/common'
+import { Vehicle, ObjectValues } from '@regolithco/common'
 import numeral from 'numeral'
 import { Theme } from '@mui/system'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export const ShipTypeEnum = {
   Mining: 'Mining',
@@ -56,21 +57,23 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
 
   if (hide && show) throw new Error('Cannot use both hide and show')
 
-  const sortedShips: Vehicle[] = useMemo(() => {
-    const newShips = [...lookups.shipLookups].filter((ship) => {
-      if (hide) return !hide.includes(ship.role as ShipTypeEnum)
-      if (show) return show.includes(ship.role as ShipTypeEnum)
-      if (onlyCargo) return ship.role !== ShipTypeEnum.Mining && ship.cargo && ship.cargo > 0
-      return true
-    })
-    newShips.sort((a, b) => {
-      if (a.miningHold || b.miningHold) {
-        return (b.miningHold || 0) - (a.miningHold || 0)
-      }
-      return (b.cargo || 0) - (a.cargo || 0)
-    })
-    return newShips
-  }, [])
+  const sortedShips: Vehicle[] =
+    useAsyncLookupData<Vehicle[]>(async (ds) => {
+      const shipLookups = await ds.getLookup('shipLookups')
+      const newShips = [...shipLookups].filter((ship) => {
+        if (hide) return !hide.includes(ship.role as ShipTypeEnum)
+        if (show) return show.includes(ship.role as ShipTypeEnum)
+        if (onlyCargo) return ship.role !== ShipTypeEnum.Mining && ship.cargo && ship.cargo > 0
+        return true
+      })
+      newShips.sort((a, b) => {
+        if (a.miningHold || b.miningHold) {
+          return (b.miningHold || 0) - (a.miningHold || 0)
+        }
+        return (b.cargo || 0) - (a.cargo || 0)
+      })
+      return newShips
+    }, []) || []
 
   const currVal: Vehicle = sortedShips ? sortedShips.find((ship) => ship.code === vehicle) || NONEOPTION : NONEOPTION
 

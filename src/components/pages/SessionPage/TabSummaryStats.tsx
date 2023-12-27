@@ -6,7 +6,7 @@ import { MValue, MValueFormat } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { fontFamilies } from '../../../theme'
 import dayjs from 'dayjs'
-import { useLookups } from '../../../hooks/useLookups'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export interface TabSummaryStatsProps {
   session: Session
@@ -15,16 +15,7 @@ export interface TabSummaryStatsProps {
 
 export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isShare }) => {
   const theme = useTheme()
-  const store = useLookups()
-  const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown | null>(null)
-
-  React.useEffect(() => {
-    const fetchSessionSummary = async () => {
-      const result = await sessionReduce(store, session?.workOrders?.items || [])
-      setSessionSummary(result)
-    }
-    fetchSessionSummary()
-  }, [store, session])
+  const sessionSummary = useAsyncLookupData<SessionBreakdown>(sessionReduce, [session?.workOrders?.items || []])
 
   const clusterCount = session.scouting?.items.length
   const rockCount = session.scouting?.items.reduce((acc, cur) => acc + (cur.clusterCount || 0), 0)

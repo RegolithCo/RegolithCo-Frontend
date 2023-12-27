@@ -38,6 +38,7 @@ import { fontFamilies } from '../../../theme'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { Cancel } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export interface MarketPriceCalc {
   propA?: string
@@ -75,7 +76,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const [ship, setShip] = React.useState<Vehicle | null>(null)
   const [activityTab, setActivityTab] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
 
-  const { oreSummary, storesGrouped, oreTotal } = React.useMemo(() => {
+  const { oreSummary, storesGrouped, oreTotal } = useAsyncLookupData(async (ds) => {
     const oreSummary: OreSummary = Object.entries(ores[activityTab as keyof OreStateType]).reduce(
       (acc, [oreName, oreValue]) => {
         return {
@@ -89,9 +90,9 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
       {} as OreSummary
     )
     const oreTotal = Object.values(ores[activityTab as keyof OreStateType]).reduce((acc, ore) => acc + ore, 0)
-    const storesGrouped = findAllStoreChoices(oreSummary, true)
+    const storesGrouped = await findAllStoreChoices(ds, oreSummary, true)
     return { storesGrouped, oreSummary, oreTotal }
-  }, [ores, activityTab])
+  }) || { storesGrouped: [], oreSummary: {}, oreTotal: 0 }
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()

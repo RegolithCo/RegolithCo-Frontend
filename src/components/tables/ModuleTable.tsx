@@ -34,7 +34,7 @@ import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
-import { useLookups } from '../../hooks/useLookups'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
@@ -48,18 +48,10 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 
 export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
-  const store = useLookups()
   const styles = tableStylesThunk(theme)
-  const [loadoutLookup, setLoadoutLookup] = React.useState<LoadoutLookup | null>(null)
   const [categoryFilter, setCategoryFilter] = React.useState<string[]>(['A', 'P', 'G'])
 
-  React.useEffect(() => {
-    const getLoadout = async () => {
-      const loadoutResult = await store.getLookup('loadout')
-      setLoadoutLookup(loadoutResult)
-    }
-    getLoadout()
-  }, [store])
+  const loadoutLookup = useAsyncLookupData<LoadoutLookup>((ds) => ds.getLookup('loadout'))
 
   const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))

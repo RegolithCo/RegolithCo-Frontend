@@ -3,6 +3,7 @@ import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export interface ShipOreChooserProps {
   values?: ShipOreEnum[]
@@ -34,16 +35,20 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
     .setMidpoint(shipRowKeys.length) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
-  // Sort descendng value
-  shipRowKeys.sort((a, b) => {
-    const aPrice = findPrice(a as ShipOreEnum, undefined, true)
-    const bPrice = findPrice(b as ShipOreEnum, undefined, true)
-    return bPrice - aPrice
-  })
+
+  const sortedShipRowKeys =
+    useAsyncLookupData(async (ds) => {
+      const prices = await Promise.all(shipRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
+      return shipRowKeys.sort((a, b) => {
+        const aPrice = prices[shipRowKeys.indexOf(a)]
+        const bPrice = prices[shipRowKeys.indexOf(b)]
+        return bPrice - aPrice
+      })
+    }) || []
 
   return (
     <Grid container spacing={0.5} margin={0}>
-      {shipRowKeys.map((shipOreKey, rowIdx) => {
+      {sortedShipRowKeys.map((shipOreKey, rowIdx) => {
         let fgc = fgColors[rowIdx]
         let bgc = bgColors[rowIdx]
         if (shipOreKey === ShipOreEnum.Quantanium) {

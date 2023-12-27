@@ -2,6 +2,7 @@ import React from 'react'
 import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { SalvageOreEnum, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export interface SalvageOreChooserProps {
   multiple?: boolean
@@ -28,16 +29,20 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
   const salvageRowKeys = Object.values(SalvageOreEnum)
   const bgColors = ['#a1a1a1', '#4b4b4b']
   const fgColors = ['#ffffff', '#ffffff']
-  // Sort descendng value
-  salvageRowKeys.sort((a, b) => {
-    const aPrice = findPrice(a as SalvageOreEnum)
-    const bPrice = findPrice(b as SalvageOreEnum)
-    return bPrice - aPrice
-  })
+
+  const sortedSalvageRowKeys =
+    useAsyncLookupData(async (ds) => {
+      const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
+      return salvageRowKeys.sort((a, b) => {
+        const aPrice = prices[salvageRowKeys.indexOf(a)]
+        const bPrice = prices[salvageRowKeys.indexOf(b)]
+        return bPrice - aPrice
+      })
+    }) || []
 
   return (
     <Grid container spacing={0.5}>
-      {salvageRowKeys.map((salvageOreKey, rowIdx) => {
+      {sortedSalvageRowKeys.map((salvageOreKey, rowIdx) => {
         const fgc = fgColors[rowIdx]
         const bgc = bgColors[rowIdx]
         const active = selected.includes(salvageOreKey)

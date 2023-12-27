@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {
-  lookups,
   OreProcessingLookup,
   RefineryEnum,
   RefineryModifiers,
@@ -12,6 +11,7 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableB
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 type GridStats = { max: number | null; min: number | null }
 
@@ -30,50 +30,62 @@ export const RefineryBonusTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const hAxis: [RefineryEnum, string][] = Object.values(RefineryEnum).map((refVal) => [
-    refVal as RefineryEnum,
-    (lookups.tradeports.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
-  ])
-  hAxis.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+  const { hAxis, vAxis, rows } = useAsyncLookupData(async (ds) => {
+    const tradeportData = await ds.getLookup('tradeportLookups')
+    const refineryBonusLookup = await ds.getLookup('refineryBonusLookup')
 
-  let vAxis: [ShipOreEnum, string][] = []
-  const sortable = Object.entries(ShipOreEnum)
-    .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
-    .map(([oreKey, oreVal]) => [oreKey, oreVal])
-  sortable.sort(
-    (a, b) => findPrice(b[1] as ShipOreEnum, undefined, true) - findPrice(a[1] as ShipOreEnum, undefined, true)
-  )
-  vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
+    const hAxis: [RefineryEnum, string][] = Object.values(RefineryEnum).map((refVal) => [
+      refVal as RefineryEnum,
+      (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
+    ])
+    hAxis.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
 
-  const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
-    const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
-      const opl = lookups.refineryBonusLookup[refinery] as OreProcessingLookup
-      if (!opl) return [NaN, NaN, NaN]
-      const outArr = opl[ore] as RefineryModifiers
+    let vAxis: [ShipOreEnum, string][] = []
+    const sortable = Object.entries(ShipOreEnum)
+      .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
+      .map(([oreKey, oreVal]) => [oreKey, oreVal])
+    const prices = await Promise.all(
+      sortable.map(([, oreVal]) => findPrice(ds, oreVal as ShipOreEnum, undefined, true))
+    )
+    sortable.sort(
+      (a, b) =>
+        prices[sortable.findIndex(([, oreVal]) => oreVal === b[1])] -
+        prices[sortable.findIndex(([, oreVal]) => oreVal === a[1])]
+    )
+    vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
 
-      const outArrNormed = outArr.map((val) => {
-        if (val === null) return null
-        else return (val - 1) * 100
-      }) as RefineryModifiers
+    const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
+      const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
+        const opl = refineryBonusLookup[refinery] as OreProcessingLookup
+        if (!opl) return [NaN, NaN, NaN]
+        const outArr = opl[ore] as RefineryModifiers
 
-      outArrNormed.forEach((val, idx) => {
-        if (val !== null) {
-          const max = gridStatsArr[idx].max
-          const min = gridStatsArr[idx].min
-          if (max === null || val > max) {
-            gridStatsArr[idx].max = val
-            gridStatsArr[idx].min = val * -1
+        const outArrNormed = outArr.map((val) => {
+          if (val === null) return null
+          else return (val - 1) * 100
+        }) as RefineryModifiers
+
+        outArrNormed.forEach((val, idx) => {
+          if (val !== null) {
+            const max = gridStatsArr[idx].max
+            const min = gridStatsArr[idx].min
+            if (max === null || val > max) {
+              gridStatsArr[idx].max = val
+              gridStatsArr[idx].min = val * -1
+            }
+            if (min === null || val < min) {
+              gridStatsArr[idx].max = val * -1
+              gridStatsArr[idx].min = val
+            }
           }
-          if (min === null || val < min) {
-            gridStatsArr[idx].max = val * -1
-            gridStatsArr[idx].min = val
-          }
-        }
+        })
+        return outArrNormed
       })
-      return outArrNormed
+      return cols
     })
-    return cols
-  })
+
+    return { hAxis, vAxis, rows }
+  }, []) || { hAxis: [], vAxis: [], rows: [] }
 
   // Now map the values to a color index
   const rowColColors: RefineryModifiers[][] = rows.map((row) =>

@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { lookups, MiningLoadout, SessionUser, User } from '@regolithco/common'
+import { MiningLoadout, SessionUser, User } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -21,6 +21,7 @@ import { SessionContext } from '../../../context/session.context'
 import { ModuleIcon } from '../../../icons'
 import { GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { AppContext } from '../../../context/app.context'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupUserProps {
@@ -32,6 +33,7 @@ export interface ActivePopupUserProps {
 export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose, sessionUser }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
+  const shipLookups = useAsyncLookupData((ds) => ds.getLookup('shipLookups')) || []
 
   const {
     captains,
@@ -49,7 +51,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
       : null
 
   const vehicleCode = theirCaptain?.vehicleCode || sessionUser.vehicleCode
-  const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
+  const vehicle = vehicleCode ? shipLookups.find((s) => s.code === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(sessionUser.owner?.scName as string)
   const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]

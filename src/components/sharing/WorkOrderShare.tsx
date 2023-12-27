@@ -19,7 +19,7 @@ import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { AppContext } from '../../context/app.context'
-import { useLookups } from '../../hooks/useLookups'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export type WorkOrderShareSettings = {
   hideNames?: boolean
@@ -60,18 +60,10 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 
 export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, settings }) => {
   const theme = useTheme()
-  const store = useLookups()
   const styles = workOrderStylesThunk(theme)
   const { getSafeName } = React.useContext(AppContext)
-  const [summary, setSummary] = React.useState<WorkOrderSummary | null>(null) // Adjust the initial state based on your needs
 
-  React.useEffect(() => {
-    const fetchSummary = async () => {
-      const result = await calculateWorkOrder(store, workOrder)
-      setSummary(result)
-    }
-    fetchSummary()
-  }, [store, workOrder])
+  const summary = useAsyncLookupData<WorkOrderSummary>(calculateWorkOrder, [workOrder])
 
   let WorkIcon: SvgIconComponent
   let title = ''

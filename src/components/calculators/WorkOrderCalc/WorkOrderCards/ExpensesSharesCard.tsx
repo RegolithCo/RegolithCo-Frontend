@@ -53,6 +53,7 @@ import { ExpenseTable } from '../../../fields/ExpenseTable'
 import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
+import { useAsyncLookupData } from '../../../../hooks/useLookups'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -82,10 +83,8 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const useScrollerRef = React.useRef<HTMLDivElement>(null)
   const shipOrder = workOrder as ShipMiningOrder
 
-  const storeChoices = useMemo(
-    () => findAllStoreChoices(summary.oreSummary, Boolean(shipOrder.isRefined)),
-    [summary.oreSummary]
-  )
+  const storeChoices = useAsyncLookupData(findAllStoreChoices, [summary.oreSummary, Boolean(shipOrder.isRefined)]) || []
+
   const myStoreChoice = useMemo(
     () => storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0],
     [storeChoices]

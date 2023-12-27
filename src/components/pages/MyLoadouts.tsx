@@ -34,7 +34,8 @@ import { MODMAP, statsOrder } from '../calculators/LoadoutCalc/LoadoutCalcStats'
 import { LoadoutStat } from '../calculators/LoadoutCalc/LoadoutStat'
 import { MValue, MValueFormat } from '../fields/MValue'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
-import { useLookups } from '../../hooks/useLookups'
+import { useAsyncLookupData } from '../../hooks/useLookups'
+
 dayjs.extend(relativeTime)
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -69,8 +70,6 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const store = useLookups()
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState<string | null>(null)
 
   const sortedLoadouts = React.useMemo(() => {
     if (!loadouts || loadouts.length === 0) return []
@@ -83,21 +82,21 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
     return loadoutsCopy
   }, [loadouts])
 
-  const [statsArr, setStatsArr] = React.useState<(AllStats | null)[]>([])
+  const statsArr =
+    useAsyncLookupData<(AllStats | null)[]>(
+      (ds) => {
+        return Promise.all(
+          sortedLoadouts.map(async (loadout) => {
+            if (!loadout) return null
+            const sanitizedLoadout = await sanitizeLoadout(ds, loadout)
+            return calcLoadoutStats(ds, sanitizedLoadout)
+          })
+        )
+      },
+      [sortedLoadouts]
+    ) || []
 
-  React.useEffect(() => {
-    const fetchStatsArr = async () => {
-      const results = await Promise.all(
-        sortedLoadouts.map(async (loadout) => {
-          if (!loadout) return null
-          const sanitizedLoadout = await sanitizeLoadout(store, loadout)
-          return await calcLoadoutStats(store, sanitizedLoadout)
-        })
-      )
-      setStatsArr(results)
-    }
-    fetchStatsArr()
-  }, [sortedLoadouts])
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState<string | null>(null)
 
   // Load an object if we need to
   const activeLoadoutObj = React.useMemo(() => {

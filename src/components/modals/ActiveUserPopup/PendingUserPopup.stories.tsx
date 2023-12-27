@@ -4,6 +4,8 @@ import { StoryFn, Meta } from '@storybook/react'
 import { PendingUserPopup as PendingUserPopupC, PendingUserPopupProps } from './PendingUserPopup'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { Session } from '@regolithco/common'
+import { useStorybookAsyncLookupData } from '../../../hooks/useLookupStorybook'
 
 export default {
   title: 'Modals/PendingUserPopup',
@@ -20,13 +22,14 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const session = fakeSession()
+  const fakeSessionObj = useStorybookAsyncLookupData<Session>(fakeSession)
+  if (!fakeSessionObj) return <div>Loading Fake session...</div>
   const meUser = fakeUserProfile({ friends: ['userB_Friend'] })
   return (
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session,
+        session: fakeSessionObj,
         myUserProfile: meUser,
         ...contextProps,
       }}

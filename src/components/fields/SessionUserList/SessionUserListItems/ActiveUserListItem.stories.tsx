@@ -4,8 +4,9 @@ import { StoryFn, Meta } from '@storybook/react'
 import { ActiveUserListItem as ActiveUserComponent, ActiveUserListItemProps } from './ActiveUserListItem'
 import { fakeSession, fakeSessionUser } from '@regolithco/common/dist/mock'
 import { List, Typography } from '@mui/material'
-import { SessionUser, SessionUserStateEnum, User, UserStateEnum } from '@regolithco/common'
+import { Session, SessionUser, SessionUserStateEnum, User, UserStateEnum } from '@regolithco/common'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
+import { useStorybookAsyncLookupData } from '../../../../hooks/useLookupStorybook'
 
 export default {
   title: 'UserList/ActiveUser',
@@ -31,7 +32,8 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const session = fakeSession()
+  const fakeSessionObj = useStorybookAsyncLookupData<Session>(fakeSession)
+  if (!fakeSessionObj) return <div>Loading Fake session...</div>
   const sessionUser = componentProps?.sessionUser as SessionUser
 
   // Test all the different user states
@@ -65,7 +67,7 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session,
+        session: fakeSessionObj,
         ...contextProps,
       }}
     >

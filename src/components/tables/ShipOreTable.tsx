@@ -3,11 +3,11 @@ import { getShipOreName, ShipOreEnum, findPrice } from '@regolithco/common'
 import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../fields/MValue'
-import { useLookups } from '../../hooks/useLookups'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export const ShipOreTable: React.FC = () => {
   const theme = useTheme()
-  const dataStore = useLookups()
+
   const shipRowKeys = Object.values(ShipOreEnum)
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#a46800', '#246f9a', '#246f9a', '#246f9a', '#229f63')
@@ -15,22 +15,21 @@ export const ShipOreTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const [priceLookups, setPriceLookups] = React.useState<Partial<{ [key in ShipOreEnum]: [number, number] }>>({})
-
-  React.useEffect(() => {
-    const calculatePriceLookups = async () => {
-      const lookups: Partial<{ [key in ShipOreEnum]: [number, number] }> = {}
-      for (const shipOreKey of shipRowKeys) {
-        const [price1, price2] = await Promise.all([
-          findPrice(dataStore, shipOreKey as ShipOreEnum, undefined, true),
-          findPrice(dataStore, shipOreKey as ShipOreEnum, undefined, false),
-        ])
-        lookups[shipOreKey] = [price1, price2]
-      }
-      setPriceLookups(lookups)
-    }
-    calculatePriceLookups()
-  }, [shipRowKeys])
+  const priceLookups =
+    useAsyncLookupData<Partial<{ [key in ShipOreEnum]: [number, number] }>>(
+      async (ds) => {
+        const lookups: Partial<{ [key in ShipOreEnum]: [number, number] }> = {}
+        for (const shipOreKey of shipRowKeys) {
+          const [price1, price2] = await Promise.all([
+            findPrice(ds, shipOreKey as ShipOreEnum, undefined, true),
+            findPrice(ds, shipOreKey as ShipOreEnum, undefined, false),
+          ])
+          lookups[shipOreKey] = [price1, price2]
+        }
+        return lookups
+      },
+      [shipRowKeys]
+    ) || {}
 
   // Sort descendng value
   shipRowKeys.sort((a, b) => {

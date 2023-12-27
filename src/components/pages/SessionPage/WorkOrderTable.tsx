@@ -21,7 +21,7 @@ import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { WorkOrderTableRow } from './WorkOrderTableRow'
-import { useLookups } from '../../../hooks/useLookups'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export interface WorkOrderTableProps {
   isDashboard?: boolean
@@ -65,7 +65,6 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isShare, isDashboard }) => {
   const theme = useTheme()
-  const store = useLookups()
   const { session } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, Boolean(isActive || isShare))
@@ -76,31 +75,27 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
 
-  React.useEffect(() => {
-    const calculateSummaries = async () => {
-      const sortedWorkOrders = [...workOrders].sort((a, b) => a.createdAt - b.createdAt)
-      setSortedWorkOrders(sortedWorkOrders)
+  useAsyncLookupData<void>(async (ds) => {
+    const sortedWorkOrders = [...workOrders].sort((a, b) => a.createdAt - b.createdAt)
+    setSortedWorkOrders(sortedWorkOrders)
 
-      const summaries: Record<string, WorkOrderSummary> = {}
-      for (const workOrder of sortedWorkOrders) {
-        summaries[workOrder.orderId] = await calculateWorkOrder(store, workOrder)
-      }
-      setSummaries(summaries)
-
-      const volSCU = Object.values(summaries).reduce(
-        (acc, summary) =>
-          acc +
-          (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) /
-            100,
-        0
-      )
-      setVolSCU(volSCU)
-
-      const shareAmount = Object.values(summaries).reduce((acc, summary) => acc + summary.shareAmount, 0)
-      setShareAmount(shareAmount)
+    const summaries: Record<string, WorkOrderSummary> = {}
+    for (const workOrder of sortedWorkOrders) {
+      summaries[workOrder.orderId] = await calculateWorkOrder(ds, workOrder)
     }
-    calculateSummaries()
-  }, [workOrders])
+    setSummaries(summaries)
+
+    const volSCU = Object.values(summaries).reduce(
+      (acc, summary) =>
+        acc +
+        (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) / 100,
+      0
+    )
+    setVolSCU(volSCU)
+
+    const shareAmount = Object.values(summaries).reduce((acc, summary) => acc + summary.shareAmount, 0)
+    setShareAmount(shareAmount)
+  }, [])
 
   return (
     <TableContainer sx={styles.table}>

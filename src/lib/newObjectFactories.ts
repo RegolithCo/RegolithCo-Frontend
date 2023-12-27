@@ -32,11 +32,10 @@ import {
   WorkOrder,
   WorkOrderDefaults,
   WorkOrderStateEnum,
-  lookups,
   CrewHierarchy,
   WorkOrderExpense,
+  DataStore,
 } from '@regolithco/common'
-const LASERS = lookups.loadout.lasers
 
 export function profile2User(profile: UserProfile): User {
   const { createdAt, updatedAt, userId, scName, state } = profile
@@ -378,7 +377,20 @@ export function dummySessionUser(owner: UserProfile): SessionUser {
   }
 }
 
-export function newMiningLoadout(ship: LoadoutShipEnum, userProfile: UserProfile): MiningLoadout {
+export async function newMiningLoadout(
+  ds: DataStore,
+  ship: LoadoutShipEnum,
+  userProfile: UserProfile
+): Promise<MiningLoadout> {
+  const activeLasers = await Promise.all(
+    ship === LoadoutShipEnum.Mole
+      ? [
+          newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
+          newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
+          newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
+        ]
+      : [newMiningLoadoutActiveLaser(ds, DEFAULT_PROSPECTOR_LASER)]
+  )
   return {
     name: 'New Loadout',
     loadoutId: 'NEWLOADOUT',
@@ -386,14 +398,7 @@ export function newMiningLoadout(ship: LoadoutShipEnum, userProfile: UserProfile
     updatedAt: Date.now(),
     owner: profile2User(userProfile),
     ship,
-    activeLasers:
-      ship === LoadoutShipEnum.Mole
-        ? [
-            newMiningLoadoutActiveLaser(DEFAULT_MOLE_LASER),
-            newMiningLoadoutActiveLaser(DEFAULT_MOLE_LASER),
-            newMiningLoadoutActiveLaser(DEFAULT_MOLE_LASER),
-          ]
-        : [newMiningLoadoutActiveLaser(DEFAULT_PROSPECTOR_LASER)],
+    activeLasers,
     inventoryGadgets: [],
     inventoryLasers: [],
     inventoryModules: [],
@@ -401,8 +406,12 @@ export function newMiningLoadout(ship: LoadoutShipEnum, userProfile: UserProfile
   }
 }
 
-export function newMiningLoadoutActiveLaser(laser: MiningLaserEnum): ActiveMiningLaserLoadout {
-  const slots = LASERS[laser].slots
+export async function newMiningLoadoutActiveLaser(
+  ds: DataStore,
+  laser: MiningLaserEnum
+): Promise<ActiveMiningLaserLoadout> {
+  const loadoutLookups = await ds.getLookup('loadout')
+  const slots = loadoutLookups.lasers[laser].slots
   return {
     laser,
     laserActive: true,

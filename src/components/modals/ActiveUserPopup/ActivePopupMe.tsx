@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { User, SessionUserStateEnum, lookups, SessionUser, SessionStateEnum } from '@regolithco/common'
+import { User, SessionUserStateEnum, SessionUser, SessionStateEnum } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -24,6 +24,7 @@ import { VehicleChooser } from '../../fields/VehicleChooser'
 import { LoadoutSelect } from '../../fields/LoadoutSelect'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
@@ -34,8 +35,12 @@ export interface ActivePopupMeProps {
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
+  const shipLookups = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
   const { session, mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
     React.useContext(SessionContext)
+
+  if (!shipLookups) return null
+
   const sessionActive = session?.state === SessionStateEnum.Active
   const myCaptain: SessionUser | null =
     mySessionUser.captainId && crewHierarchy[mySessionUser.captainId]
@@ -46,7 +51,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
     Boolean(crewHierarchy[mySessionUser.ownerId])
 
   const vehicleCode = myCaptain?.vehicleCode || mySessionUser.vehicleCode
-  const vehicle = vehicleCode ? lookups.shipLookups.find((s) => s.code === vehicleCode) : null
+  const vehicle = vehicleCode ? shipLookups.find((s) => s.code === vehicleCode) : null
   return (
     <Dialog
       open={open}

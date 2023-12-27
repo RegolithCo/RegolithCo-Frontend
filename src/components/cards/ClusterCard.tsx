@@ -36,6 +36,7 @@ import { MenuItemObj, useSessionContextMenu } from '../modals/SessionContextMenu
 import { SessionContext } from '../../context/session.context'
 import { AttendanceStateEnum, SCOUTING_FIND_STATE_NAMES } from '../calculators/ScoutingFindCalc'
 import { DeleteScoutingFindModal } from '../modals/DeleteScoutingFindModal'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
@@ -56,8 +57,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   } = React.useContext(SessionContext)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const theme = scoutingFindStateThemes[scoutingFind.state]
-  const summary = clusterCalc(scoutingFind)
-  const ores = summary.oreSort || []
+  const summary = useAsyncLookupData(clusterCalc, [scoutingFind])
+  const ores = summary && summary.oreSort ? summary.oreSort : []
   const findType = scoutingFind.clusterType
   const amISessionOwner = session?.ownerId === myUserProfile.userId
   const allowDelete = amISessionOwner || scoutingFind.ownerId === myUserProfile?.userId
@@ -210,6 +211,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   }
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
+  if (!summary) return null
   return (
     <ThemeProvider theme={theme}>
       {contextMenuNode}

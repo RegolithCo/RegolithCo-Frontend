@@ -57,6 +57,7 @@ import dayjs from 'dayjs'
 import { NoteAddDialog } from '../../modals/NoteAddDialog'
 import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../../context/app.context'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -340,7 +341,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       itemName = plural ? 'Gems' : 'Gem'
       break
   }
-  const summary = clusterCalc(scoutingFind as ScoutingFind)
+  const summary = useAsyncLookupData(clusterCalc, [scoutingFind as ScoutingFind])
   // let profitSymbol = '~'
   // if (scanComplete) profitSymbol = ''
   // else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
@@ -369,6 +370,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const scoutId = makeHumanIds(getSafeName(scoutingFind.owner?.scName), scoutingFind.scoutingFindId)
 
   const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
+
+  if (!summary) return null
 
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume

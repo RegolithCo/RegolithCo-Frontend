@@ -6,6 +6,8 @@ import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
 import { List, Typography } from '@mui/material'
 import { PendingUserListItem as SoloInnactiveC, PendingUserListItemProps } from './PendingUserListItem'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
+import { Session } from '@regolithco/common'
+import { useStorybookAsyncLookupData } from '../../../../hooks/useLookupStorybook'
 
 export default {
   title: 'UserList/SoloInnactive',
@@ -22,13 +24,15 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const session = fakeSession()
+  const fakeSessionObj = useStorybookAsyncLookupData<Session>(fakeSession)
+  if (!fakeSessionObj) return <div>Loading Fake session...</div>
+
   const meUser = fakeUserProfile({ friends: ['userB_Friend'] })
   return (
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session,
+        session: fakeSessionObj,
         myUserProfile: meUser,
         ...contextProps,
       }}

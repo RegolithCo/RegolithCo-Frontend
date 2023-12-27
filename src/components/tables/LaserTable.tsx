@@ -36,7 +36,7 @@ import Gradient from 'javascript-color-gradient'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
-import { useLookups } from '../../hooks/useLookups'
+import { useAsyncLookupData } from '../../hooks/useLookups'
 
 export interface LaserTableProps {
   onAddToLoadout: (module: MiningLaserEnum) => void
@@ -51,21 +51,13 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 
 export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
-  const store = useLookups()
   const styles = tableStylesThunk(theme)
   const [selected, setSelected] = React.useState<MiningLaserEnum[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
-  const [loadoutLookup, setLoadoutLookup] = React.useState<LoadoutLookup | null>(null)
   const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
 
-  React.useEffect(() => {
-    const getLoadout = async () => {
-      const loadoutResult = await store.getLookup('loadout')
-      setLoadoutLookup(loadoutResult)
-    }
-    getLoadout()
-  }, [store])
+  const loadoutLookup = useAsyncLookupData<LoadoutLookup>((ds) => ds.getLookup('loadout'))
 
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#229f63')

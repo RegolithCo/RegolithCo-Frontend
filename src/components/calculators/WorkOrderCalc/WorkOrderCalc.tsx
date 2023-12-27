@@ -14,6 +14,7 @@ import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
 import { DetailsCard } from './WorkOrderCards/DetailsCard'
 import { OreCard } from './WorkOrderCards/OreCard'
 import log from 'loglevel'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export interface WorkOrderCalcProps {
   workOrder: WorkOrder
@@ -69,8 +70,9 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   const theme = useTheme()
   const styles = workOrderStylesThunk(theme)
-  const summary = useMemo(() => calculateWorkOrder(props.workOrder), [props.workOrder])
+  const summary = useAsyncLookupData(calculateWorkOrder, [props.workOrder])
   const { workOrder } = props
+  if (!summary) return null
   return (
     <>
       {workOrder.orderType !== ActivityEnum.Other && (

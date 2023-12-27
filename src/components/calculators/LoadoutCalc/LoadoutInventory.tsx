@@ -10,16 +10,17 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum, lookups } from '@regolithco/common'
+import { MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LaserMenuItem, ModuleMenuItem } from './loadoutMenus'
-
-const LASERS = lookups.loadout.lasers
-const GADGETS = lookups.loadout.gadgets
-const MODULES = lookups.loadout.modules
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 const getSortOrder = (key: string): string => {
   let sortOrder = 'Z'
+  const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return sortOrder
+  const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
+
   if (GADGETS[key as MiningGadgetEnum]) sortOrder = '1'
   else if (LASERS[key as MiningLaserEnum]) sortOrder = '4'
   else if (MODULES[key as MiningModuleEnum] && MODULES[key as MiningModuleEnum].active) sortOrder = '2'
@@ -51,6 +52,9 @@ export interface LoadoutInventoryProps {
 export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onChange, readonly }) => {
   const theme = useTheme()
   const [value, setValue] = useState('')
+  const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return null
+  const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
   return (
     <Card
       sx={{

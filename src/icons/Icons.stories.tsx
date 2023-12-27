@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { RockIcon, ClawIcon, GemIcon, DiscordIcon, LaserIcon, ModuleIcon } from './index'
-import { SvgIcon, Typography } from '@mui/material'
+import { SvgIcon } from '@mui/material'
 
 export default {
   title: 'Icons',
