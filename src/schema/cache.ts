@@ -15,12 +15,12 @@ export type ActiveMiningLaserLoadoutFieldPolicy = {
 	modules?: FieldPolicy<any> | FieldReadFunction<any>,
 	modulesActive?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type CIGLookupsKeySpecifier = ('densitiesLookups' | 'methodsBonusLookup' | 'refineryBonusLookup' | 'oreProcessingLookup' | CIGLookupsKeySpecifier)[];
+export type CIGLookupsKeySpecifier = ('densitiesLookups' | 'methodsBonusLookup' | 'oreProcessingLookup' | 'refineryBonusLookup' | CIGLookupsKeySpecifier)[];
 export type CIGLookupsFieldPolicy = {
 	densitiesLookups?: FieldPolicy<any> | FieldReadFunction<any>,
 	methodsBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>,
-	refineryBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>,
-	oreProcessingLookup?: FieldPolicy<any> | FieldReadFunction<any>
+	oreProcessingLookup?: FieldPolicy<any> | FieldReadFunction<any>,
+	refineryBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type CrewShareKeySpecifier = ('createdAt' | 'note' | 'orderId' | 'scName' | 'session' | 'sessionId' | 'share' | 'shareType' | 'state' | 'updatedAt' | 'workOrder' | CrewShareKeySpecifier)[];
 export type CrewShareFieldPolicy = {

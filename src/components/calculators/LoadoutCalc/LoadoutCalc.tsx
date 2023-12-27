@@ -35,6 +35,8 @@ import { LoadoutCreateModal } from '../../modals/LoadoutCreateModal'
 import { WarningModal } from '../../modals/WarningModal'
 import { LoadoutShareModal } from '../../modals/LoadoutShareModal'
 import { ExportImageIcon } from '../../../icons/badges'
+import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { noop } from 'lodash'
 
 export interface LoadoutCalcProps {
   miningLoadout?: MiningLoadout
@@ -103,42 +105,68 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const [countWarningModalOpen, setCountWarningModalOpen] = React.useState(false)
   const [editingName, setEditingName] = React.useState(false)
   const [shareModalOpen, setShareModalOpen] = React.useState(false)
-  const [newLoadout, _setNewLoadout] = React.useState<MiningLoadout>(
-    sanitizeLoadout(miningLoadout || newMiningLoadout(DEFAULT_SHIP, owner))
-  )
+  const [newLoadout, _setNewLoadout] = React.useState<MiningLoadout>()
   const [hoverLoadout, _setHoverLoadout] = React.useState<MiningLoadout | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
-  const stats = React.useMemo(() => {
-    const loadout = hoverLoadout || newLoadout
-    if (!loadout) return null
-    const sanitizedLoadout = sanitizeLoadout(loadout)
-    return calcLoadoutStats(sanitizedLoadout)
-  }, [newLoadout, hoverLoadout])
+  const { stats, activeLasers, laserSize, setNewLoadout, setHoverLoadout, handleShipChange } = useAsyncLookupData(
+    async (ds) => {
+      const loadout = hoverLoadout || newLoadout
+      if (!loadout) return null
+      const sanitizedLoadout = await sanitizeLoadout(ds, loadout)
+      const stats = await calcLoadoutStats(ds, sanitizedLoadout)
 
-  const activeLasers = newLoadout.activeLasers || []
-  const laserSize = newLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+      let myNewLoadout: MiningLoadout = newLoadout
+        ? { ...newLoadout }
+        : miningLoadout || (await newMiningLoadout(ds, DEFAULT_SHIP, owner))
+      if (!myNewLoadout) {
+        myNewLoadout = miningLoadout || (await newMiningLoadout(ds, DEFAULT_SHIP, owner))
+        _setNewLoadout(myNewLoadout)
+      }
 
-  const setNewLoadout = (sbl: MiningLoadout) => {
-    if (hoverLoadout) _setHoverLoadout(null)
-    const sanitizedLoadout = sanitizeLoadout(sbl)
-    _setNewLoadout(sanitizedLoadout)
-  }
-  const setHoverLoadout = (hl: MiningLoadout | null) => {
-    if (hl === null) return _setHoverLoadout(null)
-    const sanitizedLoadout = sanitizeLoadout(hl)
-    _setHoverLoadout(sanitizedLoadout)
-  }
+      const setNewLoadout = async (sbl?: MiningLoadout) => {
+        if (hoverLoadout) _setHoverLoadout(null)
+        const finalLoadout = sbl || (await newMiningLoadout(ds, myNewLoadout.ship as LoadoutShipEnum, owner))
+        const sanitizedLoadout = await sanitizeLoadout(ds, finalLoadout)
+        _setNewLoadout(sanitizedLoadout)
+      }
+      const setHoverLoadout = async (hl: MiningLoadout | null) => {
+        if (hl === null) return _setHoverLoadout(null)
+        const sanitizedLoadout = await sanitizeLoadout(ds, hl)
+        _setHoverLoadout(sanitizedLoadout)
+      }
 
-  const handleShipChange = (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
-    if (newShip === newLoadout.ship || !newShip) return
-    const newLoadoutCopy = newMiningLoadout(newShip, owner)
-    setNewLoadout({
-      ...newLoadout,
-      ship: newShip,
-      activeLasers: newLoadoutCopy.activeLasers,
-    })
+      const activeLasers = myNewLoadout.activeLasers || []
+      const laserSize = myNewLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+
+      const handleShipChange = async (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
+        if (newShip === myNewLoadout.ship || !newShip) return
+        const newLoadoutCopy = await newMiningLoadout(ds, newShip, owner)
+        setNewLoadout({
+          ...myNewLoadout,
+          ship: newShip,
+          activeLasers: newLoadoutCopy.activeLasers,
+        })
+      }
+
+      return {
+        stats,
+        activeLasers,
+        laserSize,
+        setNewLoadout,
+        setHoverLoadout,
+        handleShipChange,
+      }
+    },
+    [newLoadout, hoverLoadout, miningLoadout]
+  ) || {
+    stats: null,
+    activeLasers: [],
+    laserSize: 0,
+    setNewLoadout: () => noop,
+    setHoverLoadout: () => noop,
+    handleShipChange: () => noop,
   }
 
   const Wrapper = useCallback(
@@ -206,6 +234,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     [onClose, open]
   )
 
+  if (!newLoadout) return null
   return (
     <Wrapper>
       <Card
@@ -433,9 +462,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
             <Button
               variant="contained"
               color="secondary"
-              onClick={() =>
-                setNewLoadout(miningLoadout || newMiningLoadout(newLoadout.ship as LoadoutShipEnum, owner))
-              }
+              onClick={() => setNewLoadout(miningLoadout)}
               startIcon={<Refresh />}
             >
               Reset

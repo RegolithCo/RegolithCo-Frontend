@@ -8,7 +8,6 @@ import {
   MiningLaserEnum,
   MiningModuleEnum,
   ModuleLoadoutStats,
-  lookups,
   MiningModule,
 } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
@@ -17,10 +16,7 @@ import { toolMenuStatsOrder } from './LoadoutCalcStats'
 import { ModuleIcon } from '../../../icons/Module'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
-
-const LASERS = lookups.loadout.lasers
-const GADGETS = lookups.loadout.gadgets
-const MODULES = lookups.loadout.modules
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 const baseProps: React.ComponentProps<typeof Select> = {
   fullWidth: true,
@@ -64,7 +60,10 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const moduleKeys: MiningModuleEnum[] = Object.keys(MODULES).map((key) => key as MiningModuleEnum)
+  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return null
+
+  const moduleKeys: MiningModuleEnum[] = Object.keys(loadoutLookups.modules).map((key) => key as MiningModuleEnum)
   return (
     <Stack direction="row" spacing={1} paddingBottom={2}>
       {value && (
@@ -138,8 +137,8 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
             Active Modules
           </ListSubheader>
           {moduleKeys.reduce((acc, key, idx) => {
-            const module = MODULES[key as MiningModuleEnum] as MiningModule
-            const lastModule = idx > 0 ? MODULES[moduleKeys[idx - 1]] : null
+            const module = loadoutLookups.modules[key as MiningModuleEnum] as MiningModule
+            const lastModule = idx > 0 ? loadoutLookups.modules[moduleKeys[idx - 1]] : null
             return [
               ...acc,
               !module.active && lastModule && lastModule.active ? (
@@ -193,14 +192,17 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const laserChoices: MiningLaserEnum[] = Object.keys(LASERS)
-    .filter((key) => laserSize >= LASERS[key as MiningLaserEnum].size)
+  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return null
+
+  const laserChoices: MiningLaserEnum[] = Object.keys(loadoutLookups.lasers)
+    .filter((key) => laserSize >= loadoutLookups.lasers[key as MiningLaserEnum].size)
     // .filter((key) => laserSize === LASERS[key as MiningLaserEnum].size)
     .map((l) => l as MiningLaserEnum)
   // Sort first by size then by name
   laserChoices.sort((a, b) => {
-    const laserA = LASERS[a]
-    const laserB = LASERS[b]
+    const laserA = loadoutLookups.lasers[a]
+    const laserB = loadoutLookups.lasers[b]
     if (laserA.size < laserB.size) return 1
     if (laserA.size > laserB.size) return -1
     if (laserA.name > laserB.name) return 1
@@ -271,12 +273,12 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
             <em>Select None</em>
           </MenuItem>
           {laserChoices.reduce((acc, key, idx) => {
-            const thisLaser = LASERS[key as MiningLaserEnum]
+            const thisLaser = loadoutLookups.lasers[key as MiningLaserEnum]
             const lastLaserKey = idx > 0 ? (laserChoices[idx - 1] as MiningLaserEnum) : null
 
             const showSubheader =
               (laserSize > 1 && idx === 0) ||
-              (lastLaserKey && thisLaser.size !== LASERS[lastLaserKey as MiningLaserEnum].size)
+              (lastLaserKey && thisLaser.size !== loadoutLookups.lasers[lastLaserKey as MiningLaserEnum].size)
 
             if (showSubheader)
               acc.push(
@@ -287,7 +289,7 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
                     color: theme.palette.secondary.contrastText,
                   }}
                 >
-                  Size {LASERS[key as MiningLaserEnum].size} Mining Lasers
+                  Size {loadoutLookups.lasers[key as MiningLaserEnum].size} Mining Lasers
                 </ListSubheader>
               )
             acc.push(
@@ -318,7 +320,9 @@ export interface LaserMenuItemProps {
 
 export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   const theme = useTheme()
-  const laser = LASERS[laserCode as MiningLaserEnum]
+  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return null
+  const laser = loadoutLookups.lasers[laserCode as MiningLaserEnum]
   return (
     <>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: '0.8rem' }}>
@@ -363,7 +367,10 @@ export interface ModuleMenuItemProps {
 
 export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
   const theme = useTheme()
-  const module = MODULES[moduleCode as MiningModuleEnum] || GADGETS[moduleCode as MiningGadgetEnum]
+  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return null
+  const module =
+    loadoutLookups.modules[moduleCode as MiningModuleEnum] || loadoutLookups.gadgets[moduleCode as MiningGadgetEnum]
   if (!module) return null
   const isGadget = module.category === 'G'
   return (

@@ -1,11 +1,8 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, Stack, Typography, useTheme } from '@mui/material'
-import { ActiveMiningLaserLoadout, Maybe, MiningLaserEnum, MiningModuleEnum, lookups } from '@regolithco/common'
+import { ActiveMiningLaserLoadout, Maybe, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
 import { LaserChooserMenu, ModuleChooserMenu } from './loadoutMenus'
-
-const LASERS = lookups.loadout.lasers
-const GADGETS = lookups.loadout.gadgets
-const MODULES = lookups.loadout.modules
+import { useAsyncLookupData } from '../../../hooks/useLookups'
 
 export interface LoadoutLaserRowProps {
   activeLaser: Maybe<ActiveMiningLaserLoadout | null>
@@ -25,11 +22,13 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
+  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups) return null
   const hasLaser = Boolean(activeLaser && activeLaser.laser)
   const laserCode = activeLaser?.laser
   const laserIsActive = activeLaser?.laserActive
-  const laser = hasLaser ? LASERS[laserCode as MiningLaserEnum] : undefined
-  const slots = hasLaser ? LASERS[activeLaser?.laser as MiningLaserEnum].slots : 0
+  const laser = hasLaser ? loadoutLookups.lasers[laserCode as MiningLaserEnum] : undefined
+  const slots = hasLaser ? loadoutLookups.lasers[activeLaser?.laser as MiningLaserEnum].slots : 0
 
   const activeModuleSelectValues: (MiningModuleEnum | string)[] = (activeLaser?.modules as MiningModuleEnum[]) || []
   while (activeModuleSelectValues.length < slots) {
@@ -58,11 +57,11 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
       if (!module) return null
       return module
     })
-    const thisModule = module ? MODULES[module] : null
+    const thisModule = module ? loadoutLookups.modules[module] : null
     const newModulesActive = Array.from({ length: slots }).map((_, idx) => {
       const mapModule = activeLaser?.modules[idx] || null
       if (mapModule && idx !== slotIdx) {
-        const arrModule = MODULES[mapModule as MiningModuleEnum]
+        const arrModule = loadoutLookups.modules[mapModule as MiningModuleEnum]
         const value = Boolean(arrModule && activeLaser?.modulesActive[idx])
         if (
           // Only one active module can be on at a time on a laser
@@ -77,7 +76,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
 
       if (!mapModule) return false
 
-      const module = MODULES[mapModule as MiningModuleEnum]
+      const module = loadoutLookups.modules[mapModule as MiningModuleEnum]
       // Passive modules are alwaus active if the laser is
       if (laserIsActive && !module.active) return true
 
