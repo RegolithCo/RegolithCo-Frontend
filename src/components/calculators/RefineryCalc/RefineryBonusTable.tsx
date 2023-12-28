@@ -117,8 +117,21 @@ export const RefineryBonusTable: React.FC = () => {
         <TableContainer
           sx={{
             align: 'center',
+            overflow: 'auto',
+            position: 'relative',
+            '& table': {
+              borderCollapse: 'separate',
+              '& th:first-of-type': {
+                left: 0,
+                zIndex: 1,
+              },
+              '& thead th:first-of-type': {
+                zIndex: 2,
+              },
+            },
             [theme.breakpoints.down('sm')]: {
               '& .MuiTableCell-root * ': {
+                // border: '1px solid red',
                 fontSize: '0.75rem!important',
               },
             },
@@ -135,8 +148,11 @@ export const RefineryBonusTable: React.FC = () => {
                     fontFamily: fontFamilies.robotoMono,
                     fontWeight: 'bold',
                     fontSize: '1.2rem',
-                    '& .MuiTableCell-root * ': {
-                      fontSize: '0.75rem!important',
+                    // I want this first column to be sticky
+                    position: 'sticky',
+                    zIndex: 3,
+                    [theme.breakpoints.down('sm')]: {
+                      fontSize: '0.75rem',
                     },
                   }}
                 >
@@ -150,7 +166,11 @@ export const RefineryBonusTable: React.FC = () => {
                     valign="top"
                     sx={{
                       px: 0.1,
-                      textAlign: 'center',
+                      pl: 1,
+                      minWidth: '100px',
+                      textAlign: 'left',
+                      // Text align to the top
+                      verticalAlign: 'top',
                       fontFamily: fontFamilies.robotoMono,
                       background: colIdx % 2 === 0 ? '#000000' : '#222222',
                       '& .MuiTableCell-root * ': {
@@ -172,7 +192,17 @@ export const RefineryBonusTable: React.FC = () => {
               {rows.map((row, rowIdx) => {
                 return (
                   <TableRow key={`row-${rowIdx}`}>
-                    <TableCell component="th" scope="row">
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      sx={{
+                        // I want this first column to be sticky
+                        position: 'sticky',
+                        background: theme.palette.background.default,
+                        zIndex: 3,
+                        borderRight: `3px solid ${theme.palette.primary.main}`,
+                      }}
+                    >
                       <MValue value={vAxis[rowIdx][1]} format={MValueFormat.string} />
                     </TableCell>
                     {row.map((col, colIdx) => {
@@ -196,6 +226,7 @@ export const RefineryBonusTable: React.FC = () => {
                           sx={{
                             lineHeight: 1,
                             p: 0.5,
+                            pr: 3,
                             background: val !== 0 ? bgcol : colIdx % 2 === 0 ? '#00000066' : '#11111166',
                             color: fgcol,
                           }}

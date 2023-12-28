@@ -12,6 +12,7 @@ import {
   RadioGroup,
   Typography,
   InputAdornment,
+  Alert,
 } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 // import log from 'loglevel'
@@ -53,10 +54,17 @@ export const RefineryCalc: React.FC = () => {
     setRefMetric(RefineryMetricEnum.netProfit)
     setOreType(ShipOreEnum.Quantanium)
   }
+  const showWarning: boolean = (
+    [
+      RefineryMetricEnum.refiningCost,
+      RefineryMetricEnum.refiningTime,
+      RefineryMetricEnum.timeVProfit,
+    ] as RefineryMetricEnum[]
+  ).includes(refMetric)
 
   return (
     <Box>
-      <Grid container spacing={2} margin={1} maxWidth={800}>
+      <Grid container spacing={2} margin={1}>
         {/* ROW 1 */}
         <Grid xs={12} sm={6}>
           {refMode === RefineryPivotEnum.method ? (
@@ -148,7 +156,7 @@ export const RefineryCalc: React.FC = () => {
 
         {/* ROW 2 */}
 
-        <Grid xs={12} sm={4}>
+        <Grid xs={12} sm={3}>
           <FormControl>
             <FormLabel id="metric-label">
               <Typography color="secondary" sx={{ fontSize: 18, borderBottom: '1px solid' }}>
@@ -172,7 +180,7 @@ export const RefineryCalc: React.FC = () => {
           </FormControl>
         </Grid>
 
-        <Grid xs={12} sm={4}>
+        <Grid xs={12} sm={3}>
           <FormControl>
             <FormLabel id="metric-label">
               <Typography color="secondary" sx={{ fontSize: 18, borderBottom: '1px solid' }}>
@@ -196,23 +204,33 @@ export const RefineryCalc: React.FC = () => {
                 control={<Radio />}
                 label={RefineryMetricEnum.oreYields}
               />
-              {/* <FormControlLabel
+              <FormControlLabel
                 value={RefineryMetricEnum.refiningCost}
                 control={<Radio />}
                 label={RefineryMetricEnum.refiningCost}
-              /> */}
-              {/* <FormControlLabel
+              />
+              <FormControlLabel
                 value={RefineryMetricEnum.refiningTime}
                 control={<Radio />}
                 label={RefineryMetricEnum.refiningTime}
-              /> */}
-              {/* <FormControlLabel
+              />
+              <FormControlLabel
                 value={RefineryMetricEnum.timeVProfit}
                 control={<Radio />}
                 label={RefineryMetricEnum.timeVProfit}
-              /> */}
+              />
             </RadioGroup>
           </FormControl>
+        </Grid>
+
+        <Grid xs={12} sm={6}>
+          {showWarning && (
+            <Alert severity="warning">
+              NOTE: Ever since 3.20 the <strong>time</strong> and <strong>cost</strong> bonuses of individual refineries
+              have been moved and we presently have no way to find them again. Time nad cost calculations will be very
+              rough until further notice.
+            </Alert>
+          )}
         </Grid>
       </Grid>
       <RefineryCalcTable

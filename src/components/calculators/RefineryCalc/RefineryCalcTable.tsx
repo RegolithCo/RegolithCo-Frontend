@@ -1,12 +1,14 @@
 import * as React from 'react'
 import {
   yieldCalc,
+  getRefiningTime,
   RefineryEnum,
   RefineryMethodEnum,
   getRefineryMethodName,
   ShipOreEnum,
   getShipOreName,
   findPrice,
+  getRefiningCost,
 } from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
@@ -89,13 +91,11 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
               const finalOre = (refMode === RefineryPivotEnum.oreType ? rowKey : oreType) as ShipOreEnum
               const finalRefinery = colKey as RefineryEnum
 
-              // if (refMode === RefineryPivot.oreType && finalOre === ShipOreEnum.Inertmaterial) return [null, null]
               const finalMethod = (
                 refMode === RefineryPivotEnum.oreType ? method : (rowKey as RefineryMethodEnum)
               ) as RefineryMethodEnum
               const oreYield = await yieldCalc(ds, finalAmt, finalOre, finalRefinery, finalMethod)
-              // const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
-              const refCost = 0
+              const refCost = await getRefiningCost(ds, oreYield, finalOre, finalRefinery, finalMethod)
               const marketPrice = (await findPrice(ds, finalOre as ShipOreEnum, undefined, true)) / 100
               switch (refMetric) {
                 case RefineryMetricEnum.netProfit:
@@ -108,11 +108,14 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                   outArr[0] = refCost
                   break
                 case RefineryMetricEnum.refiningTime:
-                  outArr[0] = 0
+                  outArr[0] = await getRefiningTime(ds, finalAmt, finalOre, finalRefinery, finalMethod)
                   break
                 case RefineryMetricEnum.timeVProfit:
                   // We need an array of values for this one to normalize things
-                  outArr = [null, null]
+                  outArr = [
+                    oreYield * marketPrice - refCost,
+                    await getRefiningTime(ds, finalAmt, finalOre, finalRefinery, finalMethod),
+                  ]
                   break
               }
               if (outArr[0] !== null) {
@@ -211,6 +214,18 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     <TableContainer
       sx={{
         align: 'center',
+        overflow: 'auto',
+        position: 'relative',
+        '& table': {
+          borderCollapse: 'separate',
+          '& th:first-of-type': {
+            left: 0,
+            zIndex: 1,
+          },
+          '& thead th:first-of-type': {
+            zIndex: 2,
+          },
+        },
         [theme.breakpoints.down('sm')]: {
           '& .MuiTableCell-root * ': {
             // border: '1px solid red',
@@ -229,6 +244,9 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
                 fontSize: '1.2rem',
+                // I want this first column to be sticky
+                position: 'sticky',
+                zIndex: 3,
                 [theme.breakpoints.down('sm')]: {
                   fontSize: '0.75rem',
                 },
@@ -245,7 +263,11 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                 valign="top"
                 sx={{
                   px: 0.1,
-                  textAlign: 'center',
+                  pl: 1,
+                  minWidth: '100px',
+                  textAlign: 'left',
+                  // Text align to the top
+                  verticalAlign: 'top',
                   fontFamily: fontFamilies.robotoMono,
                   background: colIdx % 2 === 0 ? '#000000' : '#222222',
                   '& .MuiTableCell-root * ': {
@@ -267,7 +289,17 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
           {rows.map((row, rowIdx) => {
             return (
               <TableRow key={`row-${rowIdx}`}>
-                <TableCell component="th" scope="row">
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{
+                    // I want this first column to be sticky
+                    position: 'sticky',
+                    background: theme.palette.background.default,
+                    zIndex: 3,
+                    borderRight: `3px solid ${theme.palette.primary.main}`,
+                  }}
+                >
                   <MValue value={vAxis[rowIdx][1]} format={MValueFormat.string} />
                 </TableCell>
                 {row.map(([val1, val2], colIdx) => {

@@ -1,8 +1,17 @@
 ### December 2?, 2023
 ## 1.0.45 - TITLE HERE
 
+This is one of those big refactor patches where hopefully nobody notices anything different. Until this point the UEX prices have been hardcoded which meant deploying the whole codebase every time we sync the data. I did this to save time at the beginning but now it's just an albatross around my neck.
+
+#### New features
+
+- UEX Prices now live update every hour. This is paving the way to the upcoming V2 upgrade of the UEX API Which should allow some amazing new Regolith features (more on that later)
 - Added an "Add Row" button to the composite add tool to make it work better on mobile.
-- Added Cachebusting strategies to make the stats update more regularly
+- Brought back the "refining time" and "refining cost" tables with a warning about how rough these calculations are.
+
+#### Fixes
+
+- Added Cache-busting strategies to make the stats update more regularly
 - Slight improvement to the "Service Down" screen. We need a more robust solution for this but this will do for now. 
 - Decreased load time on profile view by decoupling two queries that should not have been coupled in the first place.
 - Switched to lazy loading for session list view. This should improve load times for users with lots of sessions and also take some query stress off the DB since very few people will ever load more than a page or two in the past.
