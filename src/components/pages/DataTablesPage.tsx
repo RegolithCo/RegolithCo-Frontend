@@ -10,6 +10,7 @@ import { RefineryBonusTable } from '../calculators/RefineryCalc/RefineryBonusTab
 import { RefineryCalc } from '../calculators/RefineryCalc'
 import { ObjectValues } from '@regolithco/common'
 import { VehicleOreTable } from '../tables/VehicleOreTable'
+import { SalvagingOreTable } from '../tables/SalvagingOreTable'
 
 export const DataTablesPageContainer: React.FC = () => {
   const navigate = useNavigate()
@@ -127,6 +128,12 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
               Ship Mining
             </Typography>
             <ShipOreTable />
+          </Grid>
+          <Grid xs={12}>
+            <Typography variant="h4" sx={{ borderBottom: '1px solid', mb: 4 }}>
+              Salvaging
+            </Typography>
+            <SalvagingOreTable />
           </Grid>
           <Grid xs={12}>
             <Typography variant="h4" sx={{ borderBottom: '1px solid', mb: 4 }}>
