@@ -34,6 +34,7 @@ import {
   SalvageOreEnum,
   SalvageOrder,
   findPrice,
+  DataStore,
 } from '@regolithco/common'
 import { MValue } from '../../../fields/MValue'
 import { RefineryControl } from '../../../fields/RefineryControl'
@@ -138,12 +139,16 @@ export const OreCard: React.FC<OreCardProps> = ({
       [summary.oreSummary, isEditing]
     ) || []
 
-  const oreAmtCalcThunk = useAsyncLookupData<
+  const ds = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
+
+  const oreAmtCalcWrapped = React.useCallback<
     (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) => Promise<number>
   >(
-    async (ds) => async (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) =>
-      oreAmtCalc(ds, amt, ore, refinery, method),
-    []
+    (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) => {
+      if (ds) return oreAmtCalc(ds, amt, ore, refinery, method)
+      else return Promise.resolve(0)
+    },
+    [ds]
   )
 
   let unit = 'SCU'
@@ -159,7 +164,7 @@ export const OreCard: React.FC<OreCardProps> = ({
       break
   }
 
-  if (!oreAmtCalcThunk) return null
+  if (!ds || !oreAmtCalcWrapped) return null
   return (
     <Card sx={sx}>
       <CardHeader
@@ -336,7 +341,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                             e.target.value,
                             false,
                             workOrder.orderType,
-                            oreAmtCalcThunk
+                            oreAmtCalcWrapped
                           )
                         }
                         onBlur={() => setEditCell(undefined)}
@@ -394,7 +399,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                               e.target.value,
                               true,
                               workOrder.orderType,
-                              oreAmtCalcThunk
+                              oreAmtCalcWrapped
                             )
                           }
                           onFocus={(event) => {

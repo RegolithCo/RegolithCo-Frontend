@@ -27,6 +27,7 @@ import {
 } from '@mui/material'
 import {
   AnyOreEnum,
+  DataStore,
   findPrice,
   FindSummary,
   getOreName,
@@ -65,9 +66,10 @@ export interface ShipRockEntryModalProps {
 const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   paper: {
     '& .MuiDialog-paper': {
-      overflow: 'auto',
+      overflow: 'hidden',
       height: '100%',
       [theme.breakpoints.up('md')]: {
+        overflow: 'visible',
         minHeight: 550,
         maxHeight: 900,
         borderRadius: 4,
@@ -225,9 +227,11 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         resistanceF / 100 !== newShipRock.res)
   )
 
-  const setNewShipRock = useAsyncLookupData<(newRock: ShipRock) => void>(async (ds) => {
-    return async (newRock: ShipRock) => {
-      if (!newRock) return
+  const ds = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
+
+  const setNewShipRock = React.useCallback(
+    async (newRock: ShipRock) => {
+      if (!newRock || !ds) return
       const newOres = [...(newRock.ores || []).filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)]
       // Set the entry for ShipOreEnum.Inertmaterial to be 1- the sum of all other ores
       const total = newOres.reduce(
@@ -245,11 +249,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
       _setNewShipRock((oldRock) => {
         return { ...oldRock, ...newRock, ores: newOres }
       })
-    }
-  }) as (newRock: ShipRock) => void
+    },
+    [ds]
+  )
 
   React.useEffect(() => {
-    if (shipRock && setNewShipRock && !isEqual(shipRock, newShipRock)) {
+    if (!setNewShipRock || !shipRock) return
+    if (!isEqual(shipRock, newShipRock)) {
       setNewShipRock(shipRock)
     }
   }, [shipRock, setNewShipRock])
@@ -273,16 +279,19 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     [newShipRock]
   )
 
-  const ores = useAsyncLookupData<ShipRockOre[]>(async (ds) => {
-    const ores = await Promise.all(
-      (newShipRock.ores || []).map(async (ore) => {
-        const price = await findPrice(ds, ore.ore as ShipOreEnum, undefined, true)
-        return { ...ore, price }
-      })
-    )
-    ores.sort(({ price: priceA }, { price: priceB }) => priceB - priceA)
-    return ores
-  })
+  const ores = useAsyncLookupData<ShipRockOre[]>(
+    async (ds) => {
+      const ores = await Promise.all(
+        (newShipRock.ores || []).map(async (ore) => {
+          const price = await findPrice(ds, ore.ore as ShipOreEnum, undefined, true)
+          return { ...ore, price }
+        })
+      )
+      ores.sort(({ price: priceA }, { price: priceB }) => priceB - priceA)
+      return ores
+    },
+    [newShipRock]
+  )
 
   if (!oreProps || !ores) return null
   // NO HOOKS BELOW HERE

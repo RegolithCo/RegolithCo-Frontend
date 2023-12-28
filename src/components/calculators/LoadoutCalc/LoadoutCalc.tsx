@@ -112,34 +112,35 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 
   const { stats, activeLasers, laserSize, setNewLoadout, setHoverLoadout, handleShipChange } = useAsyncLookupData(
     async (ds) => {
-      const loadout = hoverLoadout || newLoadout
-      if (!loadout) return null
-      const sanitizedLoadout = await sanitizeLoadout(ds, loadout)
-      const stats = await calcLoadoutStats(ds, sanitizedLoadout)
-
-      let myNewLoadout: MiningLoadout = newLoadout
+      const myNewLoadout: MiningLoadout = newLoadout
         ? { ...newLoadout }
         : miningLoadout || (await newMiningLoadout(ds, DEFAULT_SHIP, owner))
-      if (!myNewLoadout) {
-        myNewLoadout = miningLoadout || (await newMiningLoadout(ds, DEFAULT_SHIP, owner))
-        _setNewLoadout(myNewLoadout)
-      }
 
+      if (!newLoadout) _setNewLoadout(myNewLoadout)
+
+      const loadout = hoverLoadout || myNewLoadout
+
+      const activeLasers = myNewLoadout.activeLasers || []
+      const laserSize = myNewLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+
+      const sanitizedLoadout = await sanitizeLoadout<MiningLoadout>(ds, loadout)
+      const stats = await calcLoadoutStats(ds, sanitizedLoadout)
+
+      // Callback to set a new loadout
       const setNewLoadout = async (sbl?: MiningLoadout) => {
         if (hoverLoadout) _setHoverLoadout(null)
         const finalLoadout = sbl || (await newMiningLoadout(ds, myNewLoadout.ship as LoadoutShipEnum, owner))
         const sanitizedLoadout = await sanitizeLoadout(ds, finalLoadout)
         _setNewLoadout(sanitizedLoadout)
       }
+      // Callback to set a new hover loadout
       const setHoverLoadout = async (hl: MiningLoadout | null) => {
         if (hl === null) return _setHoverLoadout(null)
         const sanitizedLoadout = await sanitizeLoadout(ds, hl)
         _setHoverLoadout(sanitizedLoadout)
       }
 
-      const activeLasers = myNewLoadout.activeLasers || []
-      const laserSize = myNewLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
-
+      // Callback to handle ship change
       const handleShipChange = async (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
         if (newShip === myNewLoadout.ship || !newShip) return
         const newLoadoutCopy = await newMiningLoadout(ds, newShip, owner)

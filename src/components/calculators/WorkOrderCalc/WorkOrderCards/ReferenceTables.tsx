@@ -40,14 +40,17 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(([ship, mult, cargoKey, unit], idx) => (
-            <TableRow key={`ref-${idx}`}>
-              <TableCell>{ship.name}</TableCell>
-              <TableCell align="right" sx={{ fontFamily: fontFamilies.robotoMono }}>
-                {cargoKey === 'cargo' ? (ship.cargo as number) * mult : (ship.miningHold as number) * mult} {unit}
-              </TableCell>
-            </TableRow>
-          ))}
+          {rows.map(([ship, mult, cargoKey, unit], idx) => {
+            if (!ship) return null
+            return (
+              <TableRow key={`ref-${idx}`}>
+                <TableCell>{ship.name}</TableCell>
+                <TableCell align="right" sx={{ fontFamily: fontFamilies.robotoMono }}>
+                  {cargoKey === 'cargo' ? (ship.cargo as number) * mult : (ship.miningHold as number) * mult} {unit}
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </TableContainer>

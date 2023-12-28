@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   Autocomplete,
   Card,
@@ -25,20 +25,21 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
   const theme = useTheme()
   const [value, setValue] = useState('')
   const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
 
-  const getSortOrder = (key: string): string => {
-    let sortOrder = 'Z'
-    const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
-    if (!loadoutLookups) return sortOrder
-    const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
+  const getSortOrder = useCallback(
+    (key: string): string => {
+      let sortOrder = 'Z'
+      if (!loadoutLookups) return sortOrder
+      const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
 
-    if (GADGETS[key as MiningGadgetEnum]) sortOrder = '1'
-    else if (LASERS[key as MiningLaserEnum]) sortOrder = '4'
-    else if (MODULES[key as MiningModuleEnum] && MODULES[key as MiningModuleEnum].active) sortOrder = '2'
-    else if (MODULES[key as MiningModuleEnum] && !MODULES[key as MiningModuleEnum].active) sortOrder = '3'
-    return `${sortOrder}${key}`
-  }
+      if (GADGETS[key as MiningGadgetEnum]) sortOrder = '1'
+      else if (LASERS[key as MiningLaserEnum]) sortOrder = '4'
+      else if (MODULES[key as MiningModuleEnum] && MODULES[key as MiningModuleEnum].active) sortOrder = '2'
+      else if (MODULES[key as MiningModuleEnum] && !MODULES[key as MiningModuleEnum].active) sortOrder = '3'
+      return `${sortOrder}${key}`
+    },
+    [loadoutLookups]
+  )
 
   const autoCompleteItems = [
     ...Object.values(MiningLaserEnum),
@@ -55,6 +56,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
     return 0
   })
 
+  if (!loadoutLookups) return null
   const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
   return (
     <Card
