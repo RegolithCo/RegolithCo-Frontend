@@ -360,7 +360,6 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                 <Box sx={{ px: { xs: 1, sm: 2, md: 2 }, py: 2 }}>
                   <WorkOrderTypeChooser
                     allowNone
-                    hideOther
                     value={newSettings.sessionSettings?.activity || undefined}
                     onChange={(newActivity) => {
                       setNewSettings({

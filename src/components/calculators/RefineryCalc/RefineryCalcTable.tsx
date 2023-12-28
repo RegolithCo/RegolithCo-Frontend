@@ -244,7 +244,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
                 fontSize: '1.2rem',
-                // I want this first column to be sticky
+
                 position: 'sticky',
                 zIndex: 3,
                 [theme.breakpoints.down('sm')]: {
@@ -293,7 +293,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                   component="th"
                   scope="row"
                   sx={{
-                    // I want this first column to be sticky
+                    // STICKY FIRST COLUMN
                     position: 'sticky',
                     background: theme.palette.background.default,
                     zIndex: 3,

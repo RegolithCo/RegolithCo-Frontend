@@ -220,7 +220,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
           <Table size="small" aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell sx={styles.shortHeader}>Laser</TableCell>
+                <TableCell sx={styles.shortHeaderFirst}>Laser</TableCell>
                 <TableCell sx={styles.shortHeader} align="center">
                   Size
                 </TableCell>
@@ -311,10 +311,25 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                       },
                     }}
                   >
-                    {/* <TableCell padding="checkbox" sx={styles.tinyCell}>
-                      <Checkbox checked={rowSelected} />
-                    </TableCell> */}
-                    <TableCell sx={{ fontFamily: fontFamilies.robotoMono, whiteSpace: 'nowrap', fontWeight: 'bold' }}>
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      sx={{
+                        fontFamily: fontFamilies.robotoMono,
+                        whiteSpace: 'nowrap',
+                        fontWeight: 'bold',
+                        // STICKY FIRST COLUMN
+                        position: 'sticky',
+                        backgroundColor: rowSelected ? '#444' : theme.palette.background.paper,
+                        '&:hover': {
+                          backgroundColor: rowSelected
+                            ? alpha(theme.palette.action.selected, 1)
+                            : alpha(theme.palette.action.hover, 1),
+                        },
+                        zIndex: 3,
+                        borderRight: `3px solid ${theme.palette.primary.main}`,
+                      }}
+                    >
                       {laser.name}
                     </TableCell>
                     <TableCell padding="checkbox" align="center" sx={styles.tinyCell}>

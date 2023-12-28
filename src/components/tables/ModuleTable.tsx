@@ -19,6 +19,7 @@ import {
   Button,
   Switch,
   Tooltip,
+  alpha,
 } from '@mui/material'
 import {
   BackwardStats,
@@ -220,7 +221,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
           <Table size="small" aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell sx={styles.shortHeader}>Module</TableCell>
+                <TableCell sx={styles.shortHeaderFirst}>Module</TableCell>
                 <TableCell sx={styles.shortHeader} align="center">
                   Type
                 </TableCell>
@@ -289,11 +290,23 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                     }}
                   >
                     <TableCell
-                      sx={Object.assign({}, topBorder, {
+                      component="th"
+                      scope="row"
+                      sx={{
                         fontFamily: fontFamilies.robotoMono,
                         whiteSpace: 'nowrap',
                         fontWeight: 'bold',
-                      })}
+                        // STICKY FIRST COLUMN
+                        position: 'sticky',
+                        backgroundColor: rowSelected ? '#444' : theme.palette.background.paper,
+                        '&:hover': {
+                          backgroundColor: rowSelected
+                            ? alpha(theme.palette.action.selected, 1)
+                            : alpha(theme.palette.action.hover, 1),
+                        },
+                        zIndex: 3,
+                        borderRight: `3px solid ${theme.palette.primary.main}`,
+                      }}
                     >
                       {lm.name}
                     </TableCell>

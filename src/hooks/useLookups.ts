@@ -89,14 +89,14 @@ export const useAsyncLookupData = <T>(
   const [result, setResult] = React.useState<T | null>(null)
 
   useEffect(() => {
-    log.debug('useAsyncLookupData data change', [data, ...(args || [])])
+    // log.debug('useAsyncLookupData data change', [data, ...(args || [])])
     asyncFunction(store, ...(args || []))
       .then((result) => setResult(result))
       .catch((err) => console.error(err))
   }, [store, ...(args || [])])
 
   const memoizedResult = React.useMemo(() => {
-    log.debug('useAsyncLookupData memoized result', { result })
+    log.debug('useAsyncLookupData memoized result')
     return result
   }, [result])
 

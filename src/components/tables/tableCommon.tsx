@@ -5,7 +5,17 @@ import { MValueFormat, MValueFormatter } from '../fields/MValue'
 export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   table: {
     width: 'auto',
-    // Body cels
+    position: 'relative',
+    '& table': {
+      borderCollapse: 'separate',
+      '& th:first-of-type': {
+        left: 0,
+        zIndex: 1,
+      },
+      '& thead th:first-of-type': {
+        zIndex: 2,
+      },
+    },
     '& .MuiTableBody-root .MuiTableCell-root': {
       width: 40,
       minWidth: 40,
@@ -31,6 +41,13 @@ export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> =
     borderRight: `4px solid ${theme.palette.divider}!important`,
   },
   shortHeader: {
+    pt: 12,
+    verticalAlign: 'bottom',
+  },
+  shortHeaderFirst: {
+    backgroundColor: theme.palette.background.default,
+    position: 'sticky',
+    zIndex: 3,
     pt: 12,
     verticalAlign: 'bottom',
   },

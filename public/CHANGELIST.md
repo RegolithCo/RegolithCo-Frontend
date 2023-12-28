@@ -9,6 +9,7 @@ This is one of those big refactor patches where hopefully nobody notices anythin
 - Added an "Add Row" button to the composite add tool to make it work better on mobile.
 - Brought back the "refining time" and "refining cost" tables with a warning about how rough these calculations are.
 - Added a Salvaging table to the market prices table page.
+- Sticky first column on some of the tables.
 
 #### Fixes
 
