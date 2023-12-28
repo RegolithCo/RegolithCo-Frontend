@@ -10,6 +10,7 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
+import { makeVar } from '@apollo/client'
 import log from 'loglevel'
 import {
   CrewShare,
@@ -92,6 +93,29 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           UserInterface: ['User', 'UserProfile'],
         },
         typePolicies: {
+          Query: {
+            fields: {
+              lookups: {
+                read(existingData) {
+                  // log.debug('Reading LookupData from cache')
+                  const storedData = localStorage.getItem('LookupData:Data')
+                  const storedTimestamp = localStorage.getItem('LookupData:lastUpdate')
+                  if (storedData && storedTimestamp && Date.now() - Number(storedTimestamp) < 60 * 60 * 1000) {
+                    // log.debug('LookupData is fresh, returning from cache')
+                    return JSON.parse(storedData)
+                  }
+                  // log.debug('LookupData is stale, returning from server')
+                  return existingData
+                },
+                merge(existingData, incomingData) {
+                  // log.debug('Merging LookupData from cache')
+                  localStorage.setItem('LookupData:Data', JSON.stringify(incomingData))
+                  localStorage.setItem('LookupData:lastUpdate', String(Date.now()))
+                  return incomingData
+                },
+              },
+            },
+          },
           UserInterface: {
             keyFields: ['userId'],
           },
