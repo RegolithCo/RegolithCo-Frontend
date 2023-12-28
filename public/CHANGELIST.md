@@ -1,5 +1,5 @@
 ### December 2?, 2023
-## 1.0.45 - TITLE HERE
+## 1.0.45 - Holiday Refactor
 
 This is one of those big refactor patches where hopefully nobody notices anything different. Until this point the UEX prices have been hardcoded which meant deploying the whole codebase every time we sync the data. I did this to save time at the beginning but now it's just an albatross around my neck.
 
@@ -13,10 +13,10 @@ This is one of those big refactor patches where hopefully nobody notices anythin
 
 #### Fixes
 
-- Added Cache-busting strategies to make the stats update more regularly
 - Slight improvement to the "Service Down" screen. We need a more robust solution for this but this will do for now. 
-- Decreased load time on profile view by decoupling two queries that should not have been coupled in the first place.
-- Switched to lazy loading for session list view. This should improve load times for users with lots of sessions and also take some query stress off the DB since very few people will ever load more than a page or two in the past.
+- Decreased load time on **profile page** by decoupling two queries that should not have been coupled in the first place.
+- Added Cache-busting strategies to make the stats update more regularly
+- Switched to lazy-loading for session list view. This should improve load times for users with lots of sessions and also take some query stress off the DB since very few people will ever load more than a page or two in the past.
 
 -----
 
