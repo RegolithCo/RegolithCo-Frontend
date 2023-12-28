@@ -30,16 +30,15 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   oreAmt,
   oreType,
   method,
-
   refMetric,
   refMode,
 }) => {
   const theme = useTheme()
   // Only used for time v profit
-  const gridStatsArr: [GridStats, GridStats] = [
+  const [gridStatsArr, setGridStatsArr] = React.useState<GridStats[]>([
     { max: null, min: null },
     { max: null, min: null },
-  ]
+  ])
   const bgColorArr = ['#a10d00', '#fd8300', '#fdbe00', '#fdbe00', '#00861b']
   const bgColors = new Gradient()
     .setColorGradient(...bgColorArr)
@@ -47,86 +46,94 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { hAxis, vAxis, rows } = useAsyncLookupData(async (ds) => {
-    const tradeportData = await ds.getLookup('tradeportLookups')
-    const hAxis = Object.values(RefineryEnum).map((refVal) => [
-      refVal as RefineryEnum,
-      (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
-    ])
-    hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
+  const { hAxis, vAxis, rows } = useAsyncLookupData(
+    async (ds, oreAmt, oreType, method, refMetric, refMode) => {
+      const tradeportData = await ds.getLookup('tradeportLookups')
+      const hAxis = Object.values(RefineryEnum).map((refVal) => [
+        refVal as RefineryEnum,
+        (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
+      ])
+      hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
 
-    let vAxis: [ShipOreEnum | RefineryMethodEnum, string][] = []
-    if (refMode === RefineryPivotEnum.oreType) {
-      const sortable = Object.entries(ShipOreEnum)
-        .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
-        .map(([oreKey, oreVal]) => [oreKey, oreVal])
-      const prices = await Promise.all(
-        sortable.map(([, oreVal]) => findPrice(ds, oreVal as ShipOreEnum, undefined, true))
-      )
-      sortable.sort(
-        (a, b) =>
-          prices[sortable.findIndex(([, val]) => val === b[1])] - prices[sortable.findIndex(([, val]) => val === a[1])]
-      )
-      vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
-    } else {
-      vAxis = Object.values(RefineryMethodEnum).map((methodVal) => [methodVal, getRefineryMethodName(methodVal)])
-      vAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
-    }
-    // now we need to figure out the rows
-
-    const rows: [number | null, number | null][][] = await Promise.all(
-      vAxis.map(async ([rowKey]) => {
-        const cols: [number | null, number | null][] = await Promise.all(
-          hAxis.map(async ([colKey]) => {
-            let outArr: [number | null, number | null] = [null, null]
-
-            // We need to send the SCU in as cSCU for the calculation
-            const finalAmt = oreAmt ? oreAmt * 100 : 0
-            const finalOre = (refMode === RefineryPivotEnum.oreType ? rowKey : oreType) as ShipOreEnum
-            const finalRefinery = colKey as RefineryEnum
-
-            // if (refMode === RefineryPivot.oreType && finalOre === ShipOreEnum.Inertmaterial) return [null, null]
-            const finalMethod = (
-              refMode === RefineryPivotEnum.oreType ? method : (rowKey as RefineryMethodEnum)
-            ) as RefineryMethodEnum
-            const oreYield = await yieldCalc(ds, finalAmt, finalOre, finalRefinery, finalMethod)
-            // const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
-            const refCost = 0
-            const marketPrice = (await findPrice(ds, finalOre as ShipOreEnum, undefined, true)) / 100
-            switch (refMetric) {
-              case RefineryMetricEnum.netProfit:
-                outArr[0] = oreYield * marketPrice - refCost
-                break
-              case RefineryMetricEnum.oreYields:
-                outArr[0] = oreYield / 100
-                break
-              case RefineryMetricEnum.refiningCost:
-                outArr[0] = refCost
-                break
-              case RefineryMetricEnum.refiningTime:
-                outArr[0] = 0
-                break
-              case RefineryMetricEnum.timeVProfit:
-                // We need an array of values for this one to normalize things
-                outArr = [null, null]
-                break
-            }
-            if (outArr[0] !== null) {
-              if (gridStatsArr[0].max === null || outArr[0] > gridStatsArr[0].max) gridStatsArr[0].max = outArr[0]
-              if (gridStatsArr[0].min === null || outArr[0] < gridStatsArr[0].min) gridStatsArr[0].min = outArr[0]
-            }
-            if (outArr[1] !== null) {
-              if (gridStatsArr[1].max === null || outArr[1] > gridStatsArr[1].max) gridStatsArr[1].max = outArr[1]
-              if (gridStatsArr[1].min === null || outArr[1] < gridStatsArr[1].min) gridStatsArr[1].min = outArr[1]
-            }
-            return outArr
-          })
+      let vAxis: [ShipOreEnum | RefineryMethodEnum, string][] = []
+      if (refMode === RefineryPivotEnum.oreType) {
+        const sortable = Object.entries(ShipOreEnum)
+          .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
+          .map(([oreKey, oreVal]) => [oreKey, oreVal])
+        const prices = await Promise.all(
+          sortable.map(([, oreVal]) => findPrice(ds, oreVal as ShipOreEnum, undefined, true))
         )
-        return cols
-      })
-    )
-    return { hAxis, vAxis, rows }
-  }) || { hAxis: [], vAxis: [], rows: [] }
+        sortable.sort(
+          (a, b) =>
+            prices[sortable.findIndex(([, val]) => val === b[1])] -
+            prices[sortable.findIndex(([, val]) => val === a[1])]
+        )
+        vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
+      } else {
+        vAxis = Object.values(RefineryMethodEnum).map((methodVal) => [methodVal, getRefineryMethodName(methodVal)])
+        vAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
+      }
+      // now we need to figure out the rows
+      const newGridStats: GridStats[] = [
+        { max: null, min: null },
+        { max: null, min: null },
+      ]
+      const rows: [number | null, number | null][][] = await Promise.all(
+        vAxis.map(async ([rowKey]) => {
+          const cols: [number | null, number | null][] = await Promise.all(
+            hAxis.map(async ([colKey]) => {
+              let outArr: [number | null, number | null] = [null, null]
+
+              // We need to send the SCU in as cSCU for the calculation
+              const finalAmt = oreAmt ? oreAmt * 100 : 0
+              const finalOre = (refMode === RefineryPivotEnum.oreType ? rowKey : oreType) as ShipOreEnum
+              const finalRefinery = colKey as RefineryEnum
+
+              // if (refMode === RefineryPivot.oreType && finalOre === ShipOreEnum.Inertmaterial) return [null, null]
+              const finalMethod = (
+                refMode === RefineryPivotEnum.oreType ? method : (rowKey as RefineryMethodEnum)
+              ) as RefineryMethodEnum
+              const oreYield = await yieldCalc(ds, finalAmt, finalOre, finalRefinery, finalMethod)
+              // const refCost = getRefiningCost(oreYield, finalOre, finalRefinery, finalMethod)
+              const refCost = 0
+              const marketPrice = (await findPrice(ds, finalOre as ShipOreEnum, undefined, true)) / 100
+              switch (refMetric) {
+                case RefineryMetricEnum.netProfit:
+                  outArr[0] = oreYield * marketPrice - refCost
+                  break
+                case RefineryMetricEnum.oreYields:
+                  outArr[0] = oreYield / 100
+                  break
+                case RefineryMetricEnum.refiningCost:
+                  outArr[0] = refCost
+                  break
+                case RefineryMetricEnum.refiningTime:
+                  outArr[0] = 0
+                  break
+                case RefineryMetricEnum.timeVProfit:
+                  // We need an array of values for this one to normalize things
+                  outArr = [null, null]
+                  break
+              }
+              if (outArr[0] !== null) {
+                if (newGridStats[0].max === null || outArr[0] > newGridStats[0].max) newGridStats[0].max = outArr[0]
+                if (newGridStats[0].min === null || outArr[0] < newGridStats[0].min) newGridStats[0].min = outArr[0]
+              }
+              if (outArr[1] !== null) {
+                if (newGridStats[1].max === null || outArr[1] > newGridStats[1].max) newGridStats[1].max = outArr[1]
+                if (newGridStats[1].min === null || outArr[1] < newGridStats[1].min) newGridStats[1].min = outArr[1]
+              }
+              return outArr
+            })
+          )
+          return cols
+        })
+      )
+      setGridStatsArr(newGridStats)
+      return { hAxis, vAxis, rows }
+    },
+    [oreAmt, oreType, method, refMetric, refMode]
+  ) || { hAxis: [], vAxis: [], rows: [] }
 
   let numberFormat1: MValueFormat = MValueFormat.number
   let numberFormat2: MValueFormat = MValueFormat.number

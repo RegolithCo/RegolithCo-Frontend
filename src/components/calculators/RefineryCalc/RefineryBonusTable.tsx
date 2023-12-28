@@ -18,11 +18,12 @@ type GridStats = { max: number | null; min: number | null }
 export const RefineryBonusTable: React.FC = () => {
   const theme = useTheme()
   // Only used for time v profit
-  const gridStatsArr: [GridStats, GridStats, GridStats] = [
+  const [gridStatsArr, setGridStatsArr] = React.useState<[GridStats, GridStats, GridStats]>([
     { max: null, min: null },
     { max: null, min: null },
     { max: null, min: null },
-  ]
+  ])
+
   const bgColorArr = ['#b93327', '#000000', '#229f63']
   const bgColors = new Gradient()
     .setColorGradient(...bgColorArr)
@@ -54,6 +55,11 @@ export const RefineryBonusTable: React.FC = () => {
     )
     vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
 
+    const newGridStatsArr: [GridStats, GridStats, GridStats] = [
+      { max: null, min: null },
+      { max: null, min: null },
+      { max: null, min: null },
+    ]
     const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
       const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
         const opl = refineryBonusLookup[refinery] as OreProcessingLookup
@@ -67,15 +73,15 @@ export const RefineryBonusTable: React.FC = () => {
 
         outArrNormed.forEach((val, idx) => {
           if (val !== null) {
-            const max = gridStatsArr[idx].max
-            const min = gridStatsArr[idx].min
+            const max = newGridStatsArr[idx].max
+            const min = newGridStatsArr[idx].min
             if (max === null || val > max) {
-              gridStatsArr[idx].max = val
-              gridStatsArr[idx].min = val * -1
+              newGridStatsArr[idx].max = val
+              newGridStatsArr[idx].min = val * -1
             }
             if (min === null || val < min) {
-              gridStatsArr[idx].max = val * -1
-              gridStatsArr[idx].min = val
+              newGridStatsArr[idx].max = val * -1
+              newGridStatsArr[idx].min = val
             }
           }
         })
@@ -83,6 +89,7 @@ export const RefineryBonusTable: React.FC = () => {
       })
       return cols
     })
+    setGridStatsArr(newGridStatsArr)
 
     return { hAxis, vAxis, rows }
   }, []) || { hAxis: [], vAxis: [], rows: [] }

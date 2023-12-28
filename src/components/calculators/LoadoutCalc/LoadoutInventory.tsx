@@ -15,34 +15,6 @@ import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LaserMenuItem, ModuleMenuItem } from './loadoutMenus'
 import { useAsyncLookupData } from '../../../hooks/useLookups'
 
-const getSortOrder = (key: string): string => {
-  let sortOrder = 'Z'
-  const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return sortOrder
-  const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
-
-  if (GADGETS[key as MiningGadgetEnum]) sortOrder = '1'
-  else if (LASERS[key as MiningLaserEnum]) sortOrder = '4'
-  else if (MODULES[key as MiningModuleEnum] && MODULES[key as MiningModuleEnum].active) sortOrder = '2'
-  else if (MODULES[key as MiningModuleEnum] && !MODULES[key as MiningModuleEnum].active) sortOrder = '3'
-  return `${sortOrder}${key}`
-}
-
-const autoCompleteItems = [
-  ...Object.values(MiningLaserEnum),
-  ...Object.values(MiningGadgetEnum),
-  ...Object.values(MiningModuleEnum),
-]
-autoCompleteItems.sort((a, b) => {
-  const sortKeyA = getSortOrder(a)
-  const sortKeyB = getSortOrder(b)
-
-  // finally do an alphabetical sort
-  if (sortKeyA < sortKeyB) return -1
-  if (sortKeyA > sortKeyB) return 1
-  return 0
-})
-
 export interface LoadoutInventoryProps {
   loadout: MiningLoadout
   onChange: (miningLoadout: MiningLoadout) => void
@@ -54,6 +26,35 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
   const [value, setValue] = useState('')
   const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
   if (!loadoutLookups) return null
+
+  const getSortOrder = (key: string): string => {
+    let sortOrder = 'Z'
+    const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+    if (!loadoutLookups) return sortOrder
+    const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
+
+    if (GADGETS[key as MiningGadgetEnum]) sortOrder = '1'
+    else if (LASERS[key as MiningLaserEnum]) sortOrder = '4'
+    else if (MODULES[key as MiningModuleEnum] && MODULES[key as MiningModuleEnum].active) sortOrder = '2'
+    else if (MODULES[key as MiningModuleEnum] && !MODULES[key as MiningModuleEnum].active) sortOrder = '3'
+    return `${sortOrder}${key}`
+  }
+
+  const autoCompleteItems = [
+    ...Object.values(MiningLaserEnum),
+    ...Object.values(MiningGadgetEnum),
+    ...Object.values(MiningModuleEnum),
+  ]
+  autoCompleteItems.sort((a, b) => {
+    const sortKeyA = getSortOrder(a)
+    const sortKeyB = getSortOrder(b)
+
+    // finally do an alphabetical sort
+    if (sortKeyA < sortKeyB) return -1
+    if (sortKeyA > sortKeyB) return 1
+    return 0
+  })
+
   const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
   return (
     <Card

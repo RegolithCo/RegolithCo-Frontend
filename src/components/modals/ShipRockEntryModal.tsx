@@ -227,6 +227,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
 
   const setNewShipRock = useAsyncLookupData<(newRock: ShipRock) => void>(async (ds) => {
     return async (newRock: ShipRock) => {
+      if (!newRock) return
       const newOres = [...(newRock.ores || []).filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)]
       // Set the entry for ShipOreEnum.Inertmaterial to be 1- the sum of all other ores
       const total = newOres.reduce(
@@ -248,8 +249,10 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   }) as (newRock: ShipRock) => void
 
   React.useEffect(() => {
-    if (shipRock && !isEqual(shipRock, newShipRock)) setNewShipRock(shipRock)
-  }, [shipRock])
+    if (shipRock && setNewShipRock && !isEqual(shipRock, newShipRock)) {
+      setNewShipRock(shipRock)
+    }
+  }, [shipRock, setNewShipRock])
 
   const oreProps = useAsyncLookupData<[number, number, number, Partial<Record<AnyOreEnum, FindSummary>>]>(
     async (ds) => {

@@ -70,7 +70,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   const styles = stylesThunk(theme, Boolean(isActive || isShare))
 
   // NOTE: Order is REALLY important here
-  const [summaries, setSummaries] = React.useState<Record<string, WorkOrderSummary>>({})
+  const [summaries, setSummaries] = React.useState<Record<string, WorkOrderSummary>>()
   const [volSCU, setVolSCU] = React.useState(0)
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
@@ -97,6 +97,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
     setShareAmount(shareAmount)
   }, [])
 
+  if (!summaries) return null
   return (
     <TableContainer sx={styles.table}>
       <Table size="small" stickyHeader>

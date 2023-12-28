@@ -16,25 +16,25 @@ export const ShipOreTable: React.FC = () => {
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
   const priceLookups =
-    useAsyncLookupData<Partial<{ [key in ShipOreEnum]: [number, number] }>>(
-      async (ds) => {
-        const lookups: Partial<{ [key in ShipOreEnum]: [number, number] }> = {}
-        for (const shipOreKey of shipRowKeys) {
-          const [price1, price2] = await Promise.all([
-            findPrice(ds, shipOreKey as ShipOreEnum, undefined, true),
-            findPrice(ds, shipOreKey as ShipOreEnum, undefined, false),
-          ])
-          lookups[shipOreKey] = [price1, price2]
-        }
-        return lookups
-      },
-      [shipRowKeys]
-    ) || {}
+    useAsyncLookupData<Partial<{ [key in ShipOreEnum]: [number, number] }>>(async (ds) => {
+      const lookups: Partial<{ [key in ShipOreEnum]: [number, number] }> = {}
+      for (const shipOreKey of shipRowKeys) {
+        const [price1, price2] = await Promise.all([
+          findPrice(ds, shipOreKey as ShipOreEnum, undefined, true),
+          findPrice(ds, shipOreKey as ShipOreEnum, undefined, false),
+        ])
+        lookups[shipOreKey] = [price1, price2]
+      }
+      return lookups
+    }) || {}
 
   // Sort descendng value
   shipRowKeys.sort((a, b) => {
     const aPrice = priceLookups[a as ShipOreEnum] as [number, number]
     const bPrice = priceLookups[b as ShipOreEnum] as [number, number]
+    if (!aPrice && !bPrice) return 0
+    if (!aPrice) return 1
+    if (!bPrice) return -1
     return bPrice[0] - aPrice[0]
   })
 

@@ -82,7 +82,7 @@ export const VehicleOreTable: React.FC = () => {
                 <TableCell component="th" scope="row">
                   <MValue value={getVehicleOreName(shipRowKey)} format={MValueFormat.string} />
                 </TableCell>
-                {finalTable[rowIdx].map((colVal, colIdx) => {
+                {(finalTable[rowIdx] || []).map((colVal, colIdx) => {
                   return (
                     <TableCell
                       align="right"

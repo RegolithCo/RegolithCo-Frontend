@@ -46,7 +46,7 @@ const splitLink = split(
     return Boolean(
       definition.kind === 'OperationDefinition' &&
         definition.operation === 'query' &&
-        definition.name?.value.startsWith('Public') // change this condition based on your needs
+        definition.name?.value.startsWith('getPublic') // change this condition based on your needs
     )
   },
   publicLink,
