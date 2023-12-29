@@ -63,9 +63,11 @@ export const SessionShare: React.FC<SessionShareProps> = ({ session, settings })
 
   const { getSafeName } = React.useContext(AppContext)
 
-  const sessionSummary = useAsyncLookupData<SessionBreakdown>(sessionReduce, [session?.workOrders?.items || []])
+  const { lookupData: sessionSummary, lookupLoading } = useAsyncLookupData<SessionBreakdown>(sessionReduce, [
+    session?.workOrders?.items || [],
+  ])
 
-  if (!sessionSummary) return null
+  if (!sessionSummary || lookupLoading) return <div>Loading...</div>
   return (
     <Paper elevation={11} sx={{ p: 2 }}>
       <Toolbar

@@ -63,7 +63,7 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
   const styles = workOrderStylesThunk(theme)
   const { getSafeName } = React.useContext(AppContext)
 
-  const summary = useAsyncLookupData<WorkOrderSummary>(calculateWorkOrder, [workOrder])
+  const { lookupData: summary, lookupLoading } = useAsyncLookupData<WorkOrderSummary>(calculateWorkOrder, [workOrder])
 
   let WorkIcon: SvgIconComponent
   let title = ''
@@ -88,7 +88,7 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
     default:
       return <>DisplayError</>
   }
-  if (!summary) return null
+  if (!summary || lookupLoading) return null
   return (
     <Paper elevation={11} sx={{ p: 2 }}>
       <Toolbar

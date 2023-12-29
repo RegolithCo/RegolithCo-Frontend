@@ -35,7 +35,7 @@ export interface ActivePopupMeProps {
 export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
-  const shipLookups = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
+  const { lookupData: shipLookups } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
   const { session, mySessionUser, updateMySessionUser, myUserProfile, captains, crewHierarchy, setActiveModal } =
     React.useContext(SessionContext)
 

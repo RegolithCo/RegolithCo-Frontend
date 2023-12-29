@@ -121,25 +121,26 @@ export const OreCard: React.FC<OreCardProps> = ({
   const isRefineryMethodLocked = (templateJob?.lockedFields || [])?.includes('method')
 
   // Creating and sorting the ore table rows shouldn't happen on every render. It's expensive.
-  const oreTableRows =
-    useAsyncLookupData(
-      async (ds) => {
-        const oreTableRows = Object.entries(summary?.oreSummary || [])
-        const prices = await Promise.all(oreTableRows.map(([oreKey]) => findPrice(ds, oreKey as ShipOreEnum)))
-        oreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
-          const aPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === a)]
-          const bPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === b)]
-          // Sort the ore by price. The refinery sorts by value of the ore, but that would create chaos while the user
-          // is editing the ore amounts. So we sort by the price of the ore.
-          if (isEditing) return aPrice - bPrice
-          else return rb * bPrice - ra * aPrice
-        })
-        return oreTableRows
-      },
-      [summary.oreSummary, isEditing]
-    ) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData(
+    async (ds) => {
+      const oreTableRows = Object.entries(summary?.oreSummary || [])
+      const prices = await Promise.all(oreTableRows.map(([oreKey]) => findPrice(ds, oreKey as ShipOreEnum)))
+      oreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
+        const aPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === a)]
+        const bPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === b)]
+        // Sort the ore by price. The refinery sorts by value of the ore, but that would create chaos while the user
+        // is editing the ore amounts. So we sort by the price of the ore.
+        if (isEditing) return aPrice - bPrice
+        else return rb * bPrice - ra * aPrice
+      })
+      return oreTableRows
+    },
+    [summary.oreSummary, isEditing]
+  )
 
-  const ds = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
+  const oreTableRows = lookupData || []
+
+  const { lookupData: ds } = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
 
   const oreAmtCalcWrapped = React.useCallback<
     (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) => Promise<number>
@@ -164,7 +165,7 @@ export const OreCard: React.FC<OreCardProps> = ({
       break
   }
 
-  if (!ds || !oreAmtCalcWrapped) return null
+  if (!ds || !oreAmtCalcWrapped || lookupLoading) return null
   return (
     <Card sx={sx}>
       <CardHeader

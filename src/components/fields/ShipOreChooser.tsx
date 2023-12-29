@@ -36,16 +36,18 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const sortedShipRowKeys =
-    useAsyncLookupData(async (ds) => {
-      const prices = await Promise.all(shipRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
-      return shipRowKeys.sort((a, b) => {
-        const aPrice = prices[shipRowKeys.indexOf(a)]
-        const bPrice = prices[shipRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-    }) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
+    const prices = await Promise.all(shipRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
+    return shipRowKeys.sort((a, b) => {
+      const aPrice = prices[shipRowKeys.indexOf(a)]
+      const bPrice = prices[shipRowKeys.indexOf(b)]
+      return bPrice - aPrice
+    })
+  })
 
+  const sortedShipRowKeys = lookupData || []
+
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <Grid container spacing={0.5} margin={0}>
       {sortedShipRowKeys.map((shipOreKey, rowIdx) => {

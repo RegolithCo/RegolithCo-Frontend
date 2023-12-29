@@ -76,7 +76,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const [ship, setShip] = React.useState<Vehicle | null>(null)
   const [activityTab, setActivityTab] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
 
-  const { oreSummary, storesGrouped, oreTotal } = useAsyncLookupData(async (ds) => {
+  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
     const oreSummary: OreSummary = Object.entries(ores[activityTab as keyof OreStateType]).reduce(
       (acc, [oreName, oreValue]) => {
         return {
@@ -92,7 +92,9 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
     const oreTotal = Object.values(ores[activityTab as keyof OreStateType]).reduce((acc, ore) => acc + ore, 0)
     const storesGrouped = await findAllStoreChoices(ds, oreSummary, true)
     return { storesGrouped, oreSummary, oreTotal }
-  }) || { storesGrouped: [], oreSummary: {}, oreTotal: 0 }
+  })
+
+  const { storesGrouped, oreSummary, oreTotal } = lookupData || { storesGrouped: [], oreSummary: {}, oreTotal: 0 }
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
@@ -114,6 +116,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const percentFull = ship?.cargo ? (100 * cargoFilled) / (ship?.cargo || 0.001) : 0
   const progressText = `${cargoFilled.toFixed(0)} / ${ship?.cargo || 0} SCU (${percentFull.toFixed(0)}%)`
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <Box sx={{}}>
       <Alert severity="warning" sx={{ mb: 2 }}>

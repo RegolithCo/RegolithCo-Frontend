@@ -24,7 +24,7 @@ export interface LoadoutInventoryProps {
 export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onChange, readonly }) => {
   const theme = useTheme()
   const [value, setValue] = useState('')
-  const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
 
   const getSortOrder = useCallback(
     (key: string): string => {
@@ -56,7 +56,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
     return 0
   })
 
-  if (!loadoutLookups) return null
+  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
   const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
   return (
     <Card

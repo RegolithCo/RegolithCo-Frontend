@@ -30,16 +30,18 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
   const bgColors = ['#a1a1a1', '#4b4b4b']
   const fgColors = ['#ffffff', '#ffffff']
 
-  const sortedSalvageRowKeys =
-    useAsyncLookupData(async (ds) => {
-      const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
-      return salvageRowKeys.sort((a, b) => {
-        const aPrice = prices[salvageRowKeys.indexOf(a)]
-        const bPrice = prices[salvageRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-    }) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
+    const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
+    return salvageRowKeys.sort((a, b) => {
+      const aPrice = prices[salvageRowKeys.indexOf(a)]
+      const bPrice = prices[salvageRowKeys.indexOf(b)]
+      return bPrice - aPrice
+    })
+  })
 
+  const sortedSalvageRowKeys = lookupData || []
+
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <Grid container spacing={0.5}>
       {sortedSalvageRowKeys.map((salvageOreKey, rowIdx) => {

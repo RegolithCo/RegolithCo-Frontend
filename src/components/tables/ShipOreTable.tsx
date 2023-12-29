@@ -15,8 +15,8 @@ export const ShipOreTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const priceLookups =
-    useAsyncLookupData<Partial<{ [key in ShipOreEnum]: [number, number] }>>(async (ds) => {
+  const { lookupData, lookupLoading } = useAsyncLookupData<Partial<{ [key in ShipOreEnum]: [number, number] }>>(
+    async (ds) => {
       const lookups: Partial<{ [key in ShipOreEnum]: [number, number] }> = {}
       for (const shipOreKey of shipRowKeys) {
         const [price1, price2] = await Promise.all([
@@ -26,7 +26,9 @@ export const ShipOreTable: React.FC = () => {
         lookups[shipOreKey] = [price1, price2]
       }
       return lookups
-    }) || {}
+    }
+  )
+  const priceLookups = lookupData || {}
 
   // Sort descendng value
   shipRowKeys.sort((a, b) => {
@@ -71,6 +73,7 @@ export const ShipOreTable: React.FC = () => {
     return colorIdxs as [number, number, number, number, number, number]
   })
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">

@@ -31,7 +31,7 @@ export const RefineryBonusTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { hAxis, vAxis, rows } = useAsyncLookupData(async (ds) => {
+  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
     const tradeportData = await ds.getLookup('tradeportLookups')
     const refineryBonusLookup = await ds.getLookup('refineryBonusLookup')
 
@@ -92,7 +92,9 @@ export const RefineryBonusTable: React.FC = () => {
     setGridStatsArr(newGridStatsArr)
 
     return { hAxis, vAxis, rows }
-  }, []) || { hAxis: [], vAxis: [], rows: [] }
+  }, [])
+
+  const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
 
   // Now map the values to a color index
   const rowColColors: RefineryModifiers[][] = rows.map((row) =>
@@ -110,7 +112,7 @@ export const RefineryBonusTable: React.FC = () => {
 
   const tables = ['Yield']
   const reversed = [false, true, true]
-
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <>
       {tables.map((tableName, tableIdx) => (

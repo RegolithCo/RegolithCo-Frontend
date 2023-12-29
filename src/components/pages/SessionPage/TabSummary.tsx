@@ -129,7 +129,9 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   const styles = stylesThunk(theme, isSessionActive)
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
 
-  const sessionSummary = useAsyncLookupData<SessionBreakdown>(sessionReduce, [session?.workOrders?.items || []])
+  const { lookupData: sessionSummary } = useAsyncLookupData<SessionBreakdown>(sessionReduce, [
+    session?.workOrders?.items || [],
+  ])
 
   if (!sessionSummary) return null
   return (

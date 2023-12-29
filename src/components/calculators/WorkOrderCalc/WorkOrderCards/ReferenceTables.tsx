@@ -9,7 +9,9 @@ export interface ReferenceTablesProps {
 }
 
 export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) => {
-  const lups = useAsyncLookupData((ds) => ds.getLookup('shipLookups')) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
+
+  const lups = lookupData || []
   const rows: [Vehicle, number, string, string][] = []
   let show = true
   switch (activity) {
@@ -28,6 +30,7 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
     default:
       show = false
   }
+  if (lookupLoading) return <div>Loading...</div>
   if (!show) return null
   return (
     <TableContainer

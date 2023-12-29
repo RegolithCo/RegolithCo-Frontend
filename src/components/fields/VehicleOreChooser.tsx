@@ -27,7 +27,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
   const fgColors = ['#000000', '#ffffff', '#ffffff']
   // Sort descendng value
 
-  const sortedVehicleRowKeys = useAsyncLookupData(async (ds) => {
+  const { lookupData: sortedVehicleRowKeys, lookupLoading } = useAsyncLookupData(async (ds) => {
     const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(ds, vehicleOreKey)))
     return vehicleRowKeys.sort((a, b) => {
       const aPrice = prices[vehicleRowKeys.indexOf(a)]
@@ -35,7 +35,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
       return bPrice - aPrice
     })
   })
-  if (!sortedVehicleRowKeys) return null
+  if (!sortedVehicleRowKeys || lookupLoading) return <div>Loading...</div>
 
   return (
     <Grid container spacing={0.5}>

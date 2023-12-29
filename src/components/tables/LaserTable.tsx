@@ -57,7 +57,9 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
   const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
 
-  const loadoutLookup = useAsyncLookupData<LoadoutLookup>((ds) => ds.getLookup('loadout'))
+  const { lookupData: loadoutLookup, lookupLoading } = useAsyncLookupData<LoadoutLookup>((ds) =>
+    ds.getLookup('loadout')
+  )
 
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#229f63')
@@ -135,6 +137,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   }
 
   const stores = Object.values(MiningStoreEnum)
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <>
       <Typography variant="h6" sx={{ mb: 2 }}>

@@ -110,7 +110,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
-  const { stats, activeLasers, laserSize, setNewLoadout, setHoverLoadout, handleShipChange } = useAsyncLookupData(
+  const { lookupData, lookupLoading } = useAsyncLookupData(
     async (ds) => {
       const myNewLoadout: MiningLoadout = newLoadout
         ? { ...newLoadout }
@@ -235,7 +235,8 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     [onClose, open]
   )
 
-  if (!newLoadout) return null
+  if (!newLoadout || lookupLoading || !lookupData) return <Wrapper>Loading...</Wrapper>
+  const { stats, activeLasers, laserSize, setNewLoadout, setHoverLoadout, handleShipChange } = lookupData
   return (
     <Wrapper>
       <Card

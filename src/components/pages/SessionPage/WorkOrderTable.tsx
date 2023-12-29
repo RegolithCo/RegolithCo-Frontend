@@ -75,7 +75,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
 
-  useAsyncLookupData<void>(async (ds) => {
+  const { lookupLoading } = useAsyncLookupData<void>(async (ds) => {
     const sortedWorkOrders = [...workOrders].sort((a, b) => a.createdAt - b.createdAt)
     setSortedWorkOrders(sortedWorkOrders)
 
@@ -97,6 +97,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
     setShareAmount(shareAmount)
   }, [])
 
+  if (lookupLoading) return <div>Loading...</div>
   if (!summaries) return null
   return (
     <TableContainer sx={styles.table}>

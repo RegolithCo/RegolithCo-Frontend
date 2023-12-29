@@ -77,14 +77,14 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
   const theme = useTheme()
   const styles = styleThunk(theme)
 
-  const storeChoices = useAsyncLookupData<StoreChoice[]>(findAllStoreChoices, [ores, isRefined]) || []
-
+  const { lookupData, lookupLoading } = useAsyncLookupData<StoreChoice[]>(findAllStoreChoices, [ores, isRefined])
+  const storeChoices = lookupData || []
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
     .setColorGradient(...quaColors)
     .setMidpoint(storeChoices ? storeChoices.length : 0) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
-
+  if (lookupLoading) return null
   return (
     <>
       <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="sm" fullWidth>

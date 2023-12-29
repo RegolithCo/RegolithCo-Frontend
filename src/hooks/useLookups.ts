@@ -39,7 +39,7 @@ class ClientDataStore implements DataStore {
 export const useAsyncLookupData = <T>(
   asyncFunction: (ds: DataStore, ...innerArgs: any[]) => Promise<T>,
   args?: any[]
-): T | null => {
+): { lookupData: T | null; lookupLoading: boolean } => {
   // Use the Apollo Client hook to fetch data
   const { data } = useGetPublicLookupsQuery()
 
@@ -100,5 +100,5 @@ export const useAsyncLookupData = <T>(
     return result
   }, [result])
 
-  return memoizedResult
+  return { lookupData: memoizedResult, lookupLoading: store?.loading || false }
 }

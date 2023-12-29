@@ -33,8 +33,8 @@ export interface ActivePopupUserProps {
 export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose, sessionUser }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
-  const shipLookups = useAsyncLookupData((ds) => ds.getLookup('shipLookups')) || []
-
+  const { lookupData } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
+  const shipLookups = lookupData || []
   const {
     captains,
     mySessionUser,

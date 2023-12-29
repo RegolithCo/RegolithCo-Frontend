@@ -15,8 +15,8 @@ export const SalvagingOreTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const priceLookups =
-    useAsyncLookupData<Partial<{ [key in SalvageOreEnum]: [number, number] }>>(async (ds) => {
+  const { lookupData, lookupLoading } = useAsyncLookupData<Partial<{ [key in SalvageOreEnum]: [number, number] }>>(
+    async (ds) => {
       const lookups: Partial<{ [key in SalvageOreEnum]: [number, number] }> = {}
       for (const shipOreKey of salvageRowKeys) {
         const [price1, price2] = await Promise.all([
@@ -26,7 +26,10 @@ export const SalvagingOreTable: React.FC = () => {
         lookups[shipOreKey] = [price1, price2]
       }
       return lookups
-    }) || {}
+    }
+  )
+
+  const priceLookups = lookupData || {}
 
   // Sort descendng value
   salvageRowKeys.sort((a, b) => {
@@ -64,6 +67,7 @@ export const SalvagingOreTable: React.FC = () => {
     return colorIdxs as [number, number, number]
   })
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">

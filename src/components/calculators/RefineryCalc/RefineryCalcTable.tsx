@@ -48,7 +48,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { hAxis, vAxis, rows } = useAsyncLookupData(
+  const { lookupData, lookupLoading } = useAsyncLookupData(
     async (ds, oreAmt, oreType, method, refMetric, refMode) => {
       const tradeportData = await ds.getLookup('tradeportLookups')
       const hAxis = Object.values(RefineryEnum).map((refVal) => [
@@ -136,7 +136,9 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       return { hAxis, vAxis, rows }
     },
     [oreAmt, oreType, method, refMetric, refMode]
-  ) || { hAxis: [], vAxis: [], rows: [] }
+  )
+
+  const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
 
   let numberFormat1: MValueFormat = MValueFormat.number
   let numberFormat2: MValueFormat = MValueFormat.number
@@ -210,6 +212,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     })
   }
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <TableContainer
       sx={{

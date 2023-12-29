@@ -82,19 +82,20 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
     return loadoutsCopy
   }, [loadouts])
 
-  const statsArr =
-    useAsyncLookupData<(AllStats | null)[]>(
-      (ds) => {
-        return Promise.all(
-          sortedLoadouts.map(async (loadout) => {
-            if (!loadout) return null
-            const sanitizedLoadout = await sanitizeLoadout(ds, loadout)
-            return calcLoadoutStats(ds, sanitizedLoadout)
-          })
-        )
-      },
-      [sortedLoadouts]
-    ) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData<(AllStats | null)[]>(
+    (ds) => {
+      return Promise.all(
+        sortedLoadouts.map(async (loadout) => {
+          if (!loadout) return null
+          const sanitizedLoadout = await sanitizeLoadout(ds, loadout)
+          return calcLoadoutStats(ds, sanitizedLoadout)
+        })
+      )
+    },
+    [sortedLoadouts]
+  )
+
+  const statsArr = lookupData || []
 
   const [deleteModalOpen, setDeleteModalOpen] = React.useState<string | null>(null)
 
@@ -110,6 +111,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
     }
   }, [activeLoadout, loadouts])
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 2 }}>

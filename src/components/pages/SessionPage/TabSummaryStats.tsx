@@ -15,11 +15,14 @@ export interface TabSummaryStatsProps {
 
 export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isShare }) => {
   const theme = useTheme()
-  const sessionSummary = useAsyncLookupData<SessionBreakdown>(sessionReduce, [session?.workOrders?.items || []])
+  const { lookupData: sessionSummary, lookupLoading } = useAsyncLookupData<SessionBreakdown>(sessionReduce, [
+    session?.workOrders?.items || [],
+  ])
 
   const clusterCount = session.scouting?.items.length
   const rockCount = session.scouting?.items.reduce((acc, cur) => acc + (cur.clusterCount || 0), 0)
 
+  if (lookupLoading) return <div>Loading...</div>
   if (!sessionSummary) {
     return null
   }

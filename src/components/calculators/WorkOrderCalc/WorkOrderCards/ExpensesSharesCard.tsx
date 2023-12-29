@@ -83,8 +83,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const useScrollerRef = React.useRef<HTMLDivElement>(null)
   const shipOrder = workOrder as ShipMiningOrder
 
-  const storeChoices = useAsyncLookupData(findAllStoreChoices, [summary.oreSummary, Boolean(shipOrder.isRefined)]) || []
-
+  const { lookupData, lookupLoading } = useAsyncLookupData(findAllStoreChoices, [
+    summary.oreSummary,
+    Boolean(shipOrder.isRefined),
+  ])
+  const storeChoices = lookupData || []
   const myStoreChoice = useMemo(
     () => storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0],
     [storeChoices]
@@ -105,6 +108,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
     }
   }, [myStoreChoice, workOrder.shareAmount])
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <>
       <Card sx={sx}>

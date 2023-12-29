@@ -70,9 +70,9 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   const theme = useTheme()
   const styles = workOrderStylesThunk(theme)
-  const summary = useAsyncLookupData(calculateWorkOrder, [props.workOrder])
+  const { lookupData: summary, lookupLoading } = useAsyncLookupData(calculateWorkOrder, [props.workOrder])
   const { workOrder } = props
-  if (!summary) return null
+  if (!summary || lookupLoading) return <div>Loading...</div>
   return (
     <>
       {workOrder.orderType !== ActivityEnum.Other && (

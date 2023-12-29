@@ -60,8 +60,8 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
 
   const moduleKeys: MiningModuleEnum[] = Object.keys(loadoutLookups.modules).map((key) => key as MiningModuleEnum)
   return (
@@ -192,8 +192,8 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
 
   const laserChoices: MiningLaserEnum[] = Object.keys(loadoutLookups.lasers)
     .filter((key) => laserSize >= loadoutLookups.lasers[key as MiningLaserEnum].size)
@@ -320,8 +320,8 @@ export interface LaserMenuItemProps {
 
 export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
   const laser = loadoutLookups.lasers[laserCode as MiningLaserEnum]
   return (
     <>
@@ -367,8 +367,8 @@ export interface ModuleMenuItemProps {
 
 export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
   const module =
     loadoutLookups.modules[moduleCode as MiningModuleEnum] || loadoutLookups.gadgets[moduleCode as MiningGadgetEnum]
   if (!module) return null

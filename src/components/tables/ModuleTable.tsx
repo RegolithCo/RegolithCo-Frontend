@@ -52,7 +52,9 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const styles = tableStylesThunk(theme)
   const [categoryFilter, setCategoryFilter] = React.useState<string[]>(['A', 'P', 'G'])
 
-  const loadoutLookup = useAsyncLookupData<LoadoutLookup>((ds) => ds.getLookup('loadout'))
+  const { lookupData: loadoutLookup, lookupLoading } = useAsyncLookupData<LoadoutLookup>((ds) =>
+    ds.getLookup('loadout')
+  )
 
   const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
@@ -120,6 +122,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
     G: <Chip label="Gadget" size="small" color="info" />,
   }
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <>
       <Typography variant="h6" sx={{ mb: 2 }}>

@@ -15,21 +15,21 @@ export const VehicleOreTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const sortedVehicleRowKeys =
-    useAsyncLookupData<VehicleOreEnum[]>(async (ds) => {
-      const vehicleRowKeys = Object.values(VehicleOreEnum)
-      const prices = await Promise.all(vehicleRowKeys.map((key) => findPrice(ds, key as VehicleOreEnum)))
-      const sortedKeys = [...vehicleRowKeys].sort((a, b) => {
-        const aPrice = prices[vehicleRowKeys.indexOf(a)]
-        const bPrice = prices[vehicleRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-      return sortedKeys
-    }) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData<VehicleOreEnum[]>(async (ds) => {
+    const vehicleRowKeys = Object.values(VehicleOreEnum)
+    const prices = await Promise.all(vehicleRowKeys.map((key) => findPrice(ds, key as VehicleOreEnum)))
+    const sortedKeys = [...vehicleRowKeys].sort((a, b) => {
+      const aPrice = prices[vehicleRowKeys.indexOf(a)]
+      const bPrice = prices[vehicleRowKeys.indexOf(b)]
+      return bPrice - aPrice
+    })
+    return sortedKeys
+  })
+  const sortedVehicleRowKeys = lookupData || []
 
   const vehicleRowKeys = React.useMemo(() => sortedVehicleRowKeys, [sortedVehicleRowKeys])
 
-  const finalTable =
+  const { lookupData: finalTable } =
     useAsyncLookupData<[number, number, number][]>(
       async (ds) => {
         const table: [number, number, number][] = []
@@ -43,6 +43,7 @@ export const VehicleOreTable: React.FC = () => {
       [sortedVehicleRowKeys]
     ) || []
 
+  if (lookupLoading || !finalTable) return <div>Loading...</div>
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 460, mx: 'auto' }} size="small" aria-label="simple table">

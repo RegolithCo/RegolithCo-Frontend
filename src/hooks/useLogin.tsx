@@ -30,6 +30,7 @@ import { LoginRefresh } from '../components/modals/LoginRefresh'
 import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
 import { usePageVisibility } from './usePageVisibility'
 import { getMainDefinition } from '@apollo/client/utilities'
+import { AppVersion } from '../components/fields/AppVersion'
 
 // Create HttpLinks for each endpoint
 const privateLink = new HttpLink({
@@ -39,6 +40,16 @@ const privateLink = new HttpLink({
 const publicLink = new HttpLink({
   uri: config.apiUrlPub, // change this to your public API url
 })
+
+const getVersion = (): string => {
+  let version = 'UNKNOWN'
+  try {
+    version = document.querySelector<HTMLMetaElement>('meta[name=version]')?.content || 'UNKNOWN'
+  } catch (err) {
+    log.error('Failed to get version from meta tag', err)
+  }
+  return version
+}
 
 // Use the split function to direct requests to different endpoints
 const splitLink = split(
@@ -100,7 +111,14 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   // log.debug('Reading LookupData from cache')
                   const storedData = localStorage.getItem('LookupData:Data')
                   const storedTimestamp = localStorage.getItem('LookupData:lastUpdate')
-                  if (storedData && storedTimestamp && Date.now() - Number(storedTimestamp) < 60 * 60 * 1000) {
+                  const storedVersion = localStorage.getItem('LookupData:version')
+                  const version = getVersion()
+                  if (
+                    storedData &&
+                    storedTimestamp &&
+                    version === storedVersion &&
+                    Date.now() - Number(storedTimestamp) < 60 * 60 * 1000
+                  ) {
                     // log.debug('LookupData is fresh, returning from cache')
                     return JSON.parse(storedData)
                   }
@@ -111,6 +129,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   // log.debug('Merging LookupData from cache')
                   localStorage.setItem('LookupData:Data', JSON.stringify(incomingData))
                   localStorage.setItem('LookupData:lastUpdate', String(Date.now()))
+                  localStorage.setItem('LookupData:version', getVersion())
                   return incomingData
                 },
               },

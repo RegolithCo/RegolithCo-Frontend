@@ -34,7 +34,7 @@ export interface PendingUserPopupProps {
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
-  const shipLookups = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
+  const { lookupData: shipLookups } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
   const {
     captains,
     session,

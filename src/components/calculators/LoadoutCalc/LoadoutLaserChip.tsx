@@ -24,7 +24,7 @@ export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+  const { lookupData: loadoutLookups } = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
   if (!loadoutLookups) return null
   const laser = loadoutLookups.lasers[laserCode]
   return (
@@ -101,7 +101,7 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
   onDelete,
 }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+  const { lookupData: loadoutLookups } = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
   if (!loadoutLookups) return null
 
   const module =

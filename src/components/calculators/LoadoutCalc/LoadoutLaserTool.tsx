@@ -22,7 +22,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const loadoutLookups = useAsyncLookupData((ds) => ds.getLookup('loadout'))
+  const { lookupData: loadoutLookups } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
   if (!loadoutLookups) return null
   const hasLaser = Boolean(activeLaser && activeLaser.laser)
   const laserCode = activeLaser?.laser

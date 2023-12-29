@@ -57,7 +57,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   } = React.useContext(SessionContext)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const theme = scoutingFindStateThemes[scoutingFind.state]
-  const summary = useAsyncLookupData(clusterCalc, [scoutingFind])
+  const { lookupData: summary, lookupLoading } = useAsyncLookupData(clusterCalc, [scoutingFind])
+
   const ores = summary && summary.oreSort ? summary.oreSort : []
   const findType = scoutingFind.clusterType
   const amISessionOwner = session?.ownerId === myUserProfile.userId
@@ -210,7 +211,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
     opacity = 0.5
   }
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
-
+  if (lookupLoading) return <div>Loading...</div>
   if (!summary) return null
   return (
     <ThemeProvider theme={theme}>

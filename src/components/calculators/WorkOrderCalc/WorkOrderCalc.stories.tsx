@@ -59,7 +59,7 @@ const Template: StoryFn<{
   orderType: ActivityEnum
 }> = (args) => {
   const { orderType, ...other } = args
-  const workOrder = useAsyncLookupData<WorkOrder>((ds) => {
+  const { lookupData: workOrder, lookupLoading } = useAsyncLookupData<WorkOrder>((ds) => {
     switch (orderType) {
       case ActivityEnum.ShipMining:
         return fakeShipMiningOrder(ds)
@@ -74,7 +74,7 @@ const Template: StoryFn<{
   const onChange = (order: WorkOrder) => {
     log.debug(`WorkOrderUpdate: ${orderType}`, order)
   }
-  if (!workOrder) return <div>loading fake workorder...</div>
+  if (!workOrder || lookupLoading) return <div>loading fake workorder...</div>
 
   const otherWorkOrder = other as Partial<WorkOrder>
   const newWorkOrder: WorkOrder = { ...workOrder, ...otherWorkOrder } as WorkOrder

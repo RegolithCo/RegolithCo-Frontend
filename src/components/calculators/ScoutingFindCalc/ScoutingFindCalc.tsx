@@ -341,7 +341,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       itemName = plural ? 'Gems' : 'Gem'
       break
   }
-  const summary = useAsyncLookupData(clusterCalc, [scoutingFind as ScoutingFind])
+  const { lookupData: summary, lookupLoading } = useAsyncLookupData(clusterCalc, [scoutingFind as ScoutingFind])
   // let profitSymbol = '~'
   // if (scanComplete) profitSymbol = ''
   // else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
@@ -371,7 +371,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
 
-  if (!summary) return null
+  if (!summary || lookupLoading) return <div>loading...</div>
 
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume

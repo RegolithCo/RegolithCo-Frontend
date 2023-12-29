@@ -58,7 +58,8 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
 
   const { contextMenuNode, handleContextMenu } = useSessionUserContextMenu(sessionUser)
 
-  const shipLookup = useAsyncLookupData((ds) => ds.getLookup('shipLookups')) || []
+  const { lookupData, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
+  const shipLookup = lookupData || []
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
   const vehicle = sessionUser.vehicleCode ? shipLookup.find((s) => s.code === sessionUser.vehicleCode) : null
@@ -161,6 +162,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
 
   const stateColor = stateColorsBg[sessionUser.state] || undefined
 
+  if (lookupLoading) return <div>Loading...</div>
   return (
     <>
       {contextMenuNode}

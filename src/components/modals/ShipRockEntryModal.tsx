@@ -227,7 +227,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         resistanceF / 100 !== newShipRock.res)
   )
 
-  const ds = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
+  const { lookupData: ds } = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
 
   const setNewShipRock = React.useCallback(
     async (newRock: ShipRock) => {
@@ -260,7 +260,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     }
   }, [shipRock, setNewShipRock])
 
-  const oreProps = useAsyncLookupData<[number, number, number, Partial<Record<AnyOreEnum, FindSummary>>]>(
+  const { lookupData: oreProps } = useAsyncLookupData<
+    [number, number, number, Partial<Record<AnyOreEnum, FindSummary>>]
+  >(
     async (ds) => {
       try {
         const {
@@ -279,7 +281,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     [newShipRock]
   )
 
-  const ores = useAsyncLookupData<ShipRockOre[]>(
+  const { lookupData: ores, lookupLoading } = useAsyncLookupData<ShipRockOre[]>(
     async (ds) => {
       const ores = await Promise.all(
         (newShipRock.ores || []).map(async (ore) => {
@@ -293,9 +295,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     [newShipRock]
   )
 
-  if (!oreProps || !ores) return null
+  if (!oreProps || !ores || lookupLoading) return <div>Loading...</div>
   // NO HOOKS BELOW HERE
-  const [volume, value, percentTotal, byOre] = oreProps
+  const [volume, value, percentTotal, byOre] = oreProps || [0, 0, 0, {}]
 
   // This can be disabled for a whole bunch of reasons
   const disabled =

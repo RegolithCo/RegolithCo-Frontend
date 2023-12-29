@@ -53,9 +53,9 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
-  const planetLookups = useAsyncLookupData((ds) => ds.getLookup('planetLookups'))
+  const { lookupData: planetLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('planetLookups'))
 
-  if (!planetLookups) return null
+  if (!planetLookups || lookupLoading) return <div>Loading...</div>
   // NO HOOKS BELOW HERE
 
   const planetName = cityStores.planet ? planetLookups['ST'][cityStores.planet].name : ''
