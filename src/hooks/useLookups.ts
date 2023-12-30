@@ -96,7 +96,7 @@ export const useAsyncLookupData = <T>(
   }, [store, ...(args || [])])
 
   const memoizedResult = React.useMemo(() => {
-    log.debug('useAsyncLookupData memoized result')
+    // log.debug('useAsyncLookupData memoized result')
     return result
   }, [result])
 

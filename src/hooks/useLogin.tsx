@@ -10,7 +10,6 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
-import { makeVar } from '@apollo/client'
 import log from 'loglevel'
 import {
   CrewShare,
@@ -21,7 +20,7 @@ import {
   UserProfile,
   UserStateEnum,
 } from '@regolithco/common'
-import { useGetUserProfileQuery } from '../schema'
+import { GetPublicLookupsDocument, useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
 import { LoginContext, useOAuth2 } from './useOAuth2'
 import { LoginChoice } from '../components/modals/LoginChoice'
@@ -30,7 +29,6 @@ import { LoginRefresh } from '../components/modals/LoginRefresh'
 import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
 import { usePageVisibility } from './usePageVisibility'
 import { getMainDefinition } from '@apollo/client/utilities'
-import { AppVersion } from '../components/fields/AppVersion'
 
 // Create HttpLinks for each endpoint
 const privateLink = new HttpLink({
@@ -110,7 +108,9 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                 read(existingData) {
                   // log.debug('Reading LookupData from cache')
                   const storedData = localStorage.getItem('LookupData:Data')
+                  // Anything older than an hour is stale
                   const storedTimestamp = localStorage.getItem('LookupData:lastUpdate')
+                  // If the version changes, we need to refresh
                   const storedVersion = localStorage.getItem('LookupData:version')
                   const version = getVersion()
                   if (
@@ -126,7 +126,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   return existingData
                 },
                 merge(existingData, incomingData) {
-                  // log.debug('Merging LookupData from cache')
+                  log.debug('Merging LookupData from cache')
                   localStorage.setItem('LookupData:Data', JSON.stringify(incomingData))
                   localStorage.setItem('LookupData:lastUpdate', String(Date.now()))
                   localStorage.setItem('LookupData:version', getVersion())
@@ -292,7 +292,14 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   useEffect(() => {
     if (!token || (token.length === 0 && apolloClient)) {
       log.debug('User is not authenticated, clearing cache')
+      // Save the data you want to keep. This will save us having to redownload lookup data for unauthenticated users
+      const dataToKeep = apolloClient.readQuery({ query: GetPublicLookupsDocument })
+      // Clear the cache
       apolloClient.clearStore()
+      // Write the data you want to keep back to the cache
+      if (dataToKeep) {
+        apolloClient.writeQuery({ query: GetPublicLookupsDocument, data: dataToKeep })
+      }
     }
   }, [token, apolloClient])
   return (

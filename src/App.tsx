@@ -79,6 +79,7 @@ export const App: React.FC = () => {
 
           <Route path="/terms" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
           <Route path="/privacy" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
+
           <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<ErrorPage />} />
           <Route path="/market-price" element={<MarketPriceCalcPage />} errorElement={<ErrorPage />} />
           <Route

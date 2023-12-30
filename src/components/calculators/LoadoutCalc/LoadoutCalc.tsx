@@ -21,7 +21,14 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { LoadoutShipEnum, MiningLoadout, UserProfile, calcLoadoutStats, sanitizeLoadout } from '@regolithco/common'
+import {
+  LoadoutShipEnum,
+  MiningLoadout,
+  UserProfile,
+  calcLoadoutStats,
+  sanitizeLoadout,
+  LoadoutLookup,
+} from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
@@ -102,6 +109,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   const [createModalOpen, setCreateModalOpen] = React.useState(false)
+  const [loadoutLookups, setLoadoutLookups] = React.useState<LoadoutLookup>()
   const [countWarningModalOpen, setCountWarningModalOpen] = React.useState(false)
   const [editingName, setEditingName] = React.useState(false)
   const [shareModalOpen, setShareModalOpen] = React.useState(false)
@@ -112,6 +120,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 
   const { lookupData, lookupLoading } = useAsyncLookupData(
     async (ds) => {
+      ds.getLookup('loadout').then((res) => setLoadoutLookups(res))
       const myNewLoadout: MiningLoadout = newLoadout
         ? { ...newLoadout }
         : miningLoadout || (await newMiningLoadout(ds, DEFAULT_SHIP, owner))

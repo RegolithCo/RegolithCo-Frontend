@@ -12,6 +12,7 @@ import { MyAuthProvider } from './hooks/useOAuth2'
 import LogRocket from 'logrocket'
 import { AppContextWrapper } from './context/app.context'
 import { ErrorBoundary } from './Error'
+import { LookupsContextWrapper } from './context/lookupsContext'
 
 if (process.env.NODE_ENV !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -31,7 +32,9 @@ root.render(
           <MyAuthProvider>
             <APIProvider>
               <AppContextWrapper>
-                <App />
+                <LookupsContextWrapper>
+                  <App />
+                </LookupsContextWrapper>
               </AppContextWrapper>
             </APIProvider>
           </MyAuthProvider>

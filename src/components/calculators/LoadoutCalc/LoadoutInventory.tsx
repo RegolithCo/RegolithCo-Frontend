@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import {
   Autocomplete,
   Card,
@@ -13,7 +13,7 @@ import {
 import { MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LaserMenuItem, ModuleMenuItem } from './loadoutMenus'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface LoadoutInventoryProps {
   loadout: MiningLoadout
@@ -24,7 +24,8 @@ export interface LoadoutInventoryProps {
 export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onChange, readonly }) => {
   const theme = useTheme()
   const [value, setValue] = useState('')
-  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
+  const { lookups } = useContext(LookupsContext)
+  const loadoutLookups = lookups?.Loadout
 
   const getSortOrder = useCallback(
     (key: string): string => {
@@ -56,7 +57,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
     return 0
   })
 
-  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
+  if (!loadoutLookups) return null
   const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
   return (
     <Card
