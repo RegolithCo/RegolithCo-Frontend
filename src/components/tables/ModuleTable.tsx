@@ -29,13 +29,13 @@ import {
   MiningStoreEnum,
   ObjectValues,
   getMiningStoreName,
-  LoadoutLookup,
+  Lookups,
 } from '@regolithco/common'
 import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
@@ -51,17 +51,15 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
   const [categoryFilter, setCategoryFilter] = React.useState<string[]>(['A', 'P', 'G'])
-
-  const { lookupData: loadoutLookup, lookupLoading } = useAsyncLookupData<LoadoutLookup>((ds) =>
-    ds.getLookup('loadout')
-  )
+  const dataStore = React.useContext(LookupsContext)
 
   const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
 
   const filteredValues = React.useMemo(() => {
-    if (!loadoutLookup) return []
+    if (!dataStore.ready) return []
+    const loadoutLookup = dataStore.getLookup('loadout') as Lookups['loadout']
     return [...Object.values(loadoutLookup.modules), ...Object.values(loadoutLookup.gadgets)]
       .filter((mod) => {
         if (filterSelected && !selected.includes(mod.code as MiningGadgetEnum | MiningModuleEnum)) return false
@@ -73,7 +71,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
         if (categoryFilter.includes('P') && mod.category === 'P') return true
         if (categoryFilter.includes('G') && mod.category === 'G') return true
       })
-  }, [categoryFilter, filterSelected, loadoutLookup])
+  }, [categoryFilter, filterSelected, dataStore.ready])
 
   const [maxMin] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
@@ -122,7 +120,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
     G: <Chip label="Gadget" size="small" color="info" />,
   }
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <>
       <Typography variant="h6" sx={{ mb: 2 }}>

@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { MiningLoadout, SessionUser, User } from '@regolithco/common'
+import { MiningLoadout, SessionUser, ShipLookups, User } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -21,7 +21,8 @@ import { SessionContext } from '../../../context/session.context'
 import { ModuleIcon } from '../../../icons'
 import { GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { AppContext } from '../../../context/app.context'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
+
 dayjs.extend(relativeTime)
 
 export interface ActivePopupUserProps {
@@ -33,8 +34,8 @@ export interface ActivePopupUserProps {
 export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose, sessionUser }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
-  const { lookupData } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
-  const shipLookups = lookupData || []
+  const dataStore = React.useContext(LookupsContext)
+
   const {
     captains,
     mySessionUser,
@@ -45,6 +46,11 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
     crewHierarchy,
     removeFriend,
   } = React.useContext(SessionContext)
+
+  if (!dataStore.ready) return null
+
+  const shipLookups = dataStore.getLookup('shipLookups') as ShipLookups
+
   const theirCaptain: SessionUser | null =
     sessionUser.captainId && crewHierarchy[sessionUser.captainId]
       ? captains.find((c) => c.ownerId === sessionUser.captainId) || null

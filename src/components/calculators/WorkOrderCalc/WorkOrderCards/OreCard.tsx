@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Card,
   CardContent,
@@ -34,7 +34,6 @@ import {
   SalvageOreEnum,
   SalvageOrder,
   findPrice,
-  DataStore,
 } from '@regolithco/common'
 import { MValue } from '../../../fields/MValue'
 import { RefineryControl } from '../../../fields/RefineryControl'
@@ -50,7 +49,7 @@ import { fontFamilies } from '../../../../theme'
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
 import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
-import { useAsyncLookupData } from '../../../../hooks/useLookups'
+import { LookupsContext } from '../../../../context/lookupsContext'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -100,6 +99,8 @@ export const OreCard: React.FC<OreCardProps> = ({
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const [editCell, setEditCell] = React.useState<[string, boolean]>()
+  const dataStore = React.useContext(LookupsContext)
+  const [oreTableRows, setOreTableRows] = React.useState<[string, { collected: number; refined: number }][]>([])
   const editCellOre = editCell ? editCell[0] : null
   const editCellQty = editCell ? editCell[1] : null
 
@@ -121,35 +122,32 @@ export const OreCard: React.FC<OreCardProps> = ({
   const isRefineryMethodLocked = (templateJob?.lockedFields || [])?.includes('method')
 
   // Creating and sorting the ore table rows shouldn't happen on every render. It's expensive.
-  const { lookupData, lookupLoading } = useAsyncLookupData(
-    async (ds) => {
-      const oreTableRows = Object.entries(summary?.oreSummary || [])
-      const prices = await Promise.all(oreTableRows.map(([oreKey]) => findPrice(ds, oreKey as ShipOreEnum)))
-      oreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
-        const aPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === a)]
-        const bPrice = prices[oreTableRows.findIndex(([oreKey]) => oreKey === b)]
+  useEffect(() => {
+    const calcOreTableRows = async () => {
+      if (!dataStore.ready) return
+      const newOreTableRows = Object.entries(summary?.oreSummary || [])
+      const prices = await Promise.all(newOreTableRows.map(([oreKey]) => findPrice(dataStore, oreKey as ShipOreEnum)))
+      newOreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
+        const aPrice = prices[newOreTableRows.findIndex(([oreKey]) => oreKey === a)]
+        const bPrice = prices[newOreTableRows.findIndex(([oreKey]) => oreKey === b)]
         // Sort the ore by price. The refinery sorts by value of the ore, but that would create chaos while the user
         // is editing the ore amounts. So we sort by the price of the ore.
         if (isEditing) return aPrice - bPrice
         else return rb * bPrice - ra * aPrice
       })
-      return oreTableRows
-    },
-    [summary.oreSummary, isEditing]
-  )
-
-  const oreTableRows = lookupData || []
-
-  const { lookupData: ds } = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
+      setOreTableRows(newOreTableRows)
+    }
+    calcOreTableRows()
+  }, [summary.oreSummary, isEditing])
 
   const oreAmtCalcWrapped = React.useCallback<
     (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) => Promise<number>
   >(
     (amt: number, ore: ShipOreEnum, refinery: RefineryEnum, method: RefineryMethodEnum) => {
-      if (ds) return oreAmtCalc(ds, amt, ore, refinery, method)
+      if (dataStore.ready) return oreAmtCalc(dataStore, amt, ore, refinery, method)
       else return Promise.resolve(0)
     },
-    [ds]
+    [dataStore]
   )
 
   let unit = 'SCU'
@@ -165,7 +163,7 @@ export const OreCard: React.FC<OreCardProps> = ({
       break
   }
 
-  if (!ds || !oreAmtCalcWrapped || lookupLoading) return null
+  if (!oreAmtCalcWrapped || !dataStore.ready) return null
   return (
     <Card sx={sx}>
       <CardHeader

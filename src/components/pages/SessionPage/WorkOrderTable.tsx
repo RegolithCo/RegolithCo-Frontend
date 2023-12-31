@@ -21,7 +21,7 @@ import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { WorkOrderTableRow } from './WorkOrderTableRow'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface WorkOrderTableProps {
   isDashboard?: boolean
@@ -68,6 +68,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   const { session } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, Boolean(isActive || isShare))
+  const dataStore = React.useContext(LookupsContext)
 
   // NOTE: Order is REALLY important here
   const [summaries, setSummaries] = React.useState<Record<string, WorkOrderSummary>>()
@@ -75,29 +76,34 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
 
-  const { lookupLoading } = useAsyncLookupData<void>(async (ds) => {
-    const sortedWorkOrders = [...workOrders].sort((a, b) => a.createdAt - b.createdAt)
-    setSortedWorkOrders(sortedWorkOrders)
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    const calcWorkOrders = async () => {
+      const sortedWorkOrders = [...workOrders].sort((a, b) => a.createdAt - b.createdAt)
+      setSortedWorkOrders(sortedWorkOrders)
 
-    const summaries: Record<string, WorkOrderSummary> = {}
-    for (const workOrder of sortedWorkOrders) {
-      summaries[workOrder.orderId] = await calculateWorkOrder(ds, workOrder)
+      const summaries: Record<string, WorkOrderSummary> = {}
+      for (const workOrder of sortedWorkOrders) {
+        summaries[workOrder.orderId] = await calculateWorkOrder(dataStore, workOrder)
+      }
+      setSummaries(summaries)
+
+      const volSCU = Object.values(summaries).reduce(
+        (acc, summary) =>
+          acc +
+          (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) /
+            100,
+        0
+      )
+      setVolSCU(volSCU)
+
+      const shareAmount = Object.values(summaries).reduce((acc, summary) => acc + summary.shareAmount, 0)
+      setShareAmount(shareAmount)
     }
-    setSummaries(summaries)
+    calcWorkOrders()
+  }, [dataStore])
 
-    const volSCU = Object.values(summaries).reduce(
-      (acc, summary) =>
-        acc +
-        (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) / 100,
-      0
-    )
-    setVolSCU(volSCU)
-
-    const shareAmount = Object.values(summaries).reduce((acc, summary) => acc + summary.shareAmount, 0)
-    setShareAmount(shareAmount)
-  }, [])
-
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   if (!summaries) return null
   return (
     <TableContainer sx={styles.table}>

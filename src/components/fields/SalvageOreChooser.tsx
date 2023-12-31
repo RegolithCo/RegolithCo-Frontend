@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { SalvageOreEnum, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface SalvageOreChooserProps {
   multiple?: boolean
@@ -26,22 +26,27 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
 }) => {
   const [selected, setSelected] = React.useState<SalvageOreEnum[]>(values || [])
   const theme = useTheme()
+  const [sortedSalvageRowKeys, setSortedSalvageRowKeys] = React.useState<SalvageOreEnum[]>([])
   const salvageRowKeys = Object.values(SalvageOreEnum)
   const bgColors = ['#a1a1a1', '#4b4b4b']
   const fgColors = ['#ffffff', '#ffffff']
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
-    const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
-    return salvageRowKeys.sort((a, b) => {
-      const aPrice = prices[salvageRowKeys.indexOf(a)]
-      const bPrice = prices[salvageRowKeys.indexOf(b)]
-      return bPrice - aPrice
-    })
-  })
+  const dataStore = React.useContext(LookupsContext)
 
-  const sortedSalvageRowKeys = lookupData || []
+  useEffect(() => {
+    const calcSalvageRowKeys = async () => {
+      const salvageRowKeys = Object.values(SalvageOreEnum)
+      const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey)))
+      const newSorted = [...salvageRowKeys].sort((a, b) => {
+        const aPrice = prices[salvageRowKeys.indexOf(a)]
+        const bPrice = prices[salvageRowKeys.indexOf(b)]
+        return bPrice - aPrice
+      })
+      setSortedSalvageRowKeys(newSorted)
+    }
+    calcSalvageRowKeys()
+  }, [dataStore.ready])
 
-  if (lookupLoading) return <div>Loading...</div>
   return (
     <Grid container spacing={0.5}>
       {sortedSalvageRowKeys.map((salvageOreKey, rowIdx) => {

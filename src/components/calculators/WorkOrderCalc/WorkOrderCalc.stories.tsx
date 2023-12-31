@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { WorkOrderCalc } from './WorkOrderCalc'
@@ -7,11 +7,10 @@ import {
   fakeVehicleMiningOrder,
   fakeSalvageOrder,
   fakeOtherOrder,
-  fakeWorkOrders,
 } from '@regolithco/common/dist/mock'
 import log from 'loglevel'
 import { WorkOrder, RefineryMethodEnum, RefineryEnum, CrewShare, ActivityEnum } from '@regolithco/common'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { useStorybookLookups } from '../../../hooks/useLookupStorybook'
 
 export default {
   title: 'Calculators/WorkOrder',
@@ -59,22 +58,34 @@ const Template: StoryFn<{
   orderType: ActivityEnum
 }> = (args) => {
   const { orderType, ...other } = args
-  const { lookupData: workOrder, lookupLoading } = useAsyncLookupData<WorkOrder>((ds) => {
-    switch (orderType) {
-      case ActivityEnum.ShipMining:
-        return fakeShipMiningOrder(ds)
-      case ActivityEnum.VehicleMining:
-        return fakeVehicleMiningOrder()
-      case ActivityEnum.Salvage:
-        return fakeSalvageOrder()
-      case ActivityEnum.Other:
-        return fakeOtherOrder()
+  const [workOrder, setWorkOrder] = React.useState<WorkOrder>()
+  const dataStore = useStorybookLookups()
+
+  useEffect(() => {
+    const fakeWorkOrders = async () => {
+      if (!dataStore.ready) return
+      switch (orderType) {
+        case ActivityEnum.ShipMining:
+          setWorkOrder(await fakeShipMiningOrder(dataStore))
+          break
+        case ActivityEnum.VehicleMining:
+          setWorkOrder(await fakeVehicleMiningOrder())
+          break
+        case ActivityEnum.Salvage:
+          setWorkOrder(await fakeSalvageOrder())
+          break
+        case ActivityEnum.Other:
+          setWorkOrder(await fakeOtherOrder())
+          break
+      }
     }
-  })
+    fakeWorkOrders()
+  }, [orderType])
+
   const onChange = (order: WorkOrder) => {
     log.debug(`WorkOrderUpdate: ${orderType}`, order)
   }
-  if (!workOrder || lookupLoading) return <div>loading fake workorder...</div>
+  if (!workOrder) return <div>loading fake workorder...</div>
 
   const otherWorkOrder = other as Partial<WorkOrder>
   const newWorkOrder: WorkOrder = { ...workOrder, ...otherWorkOrder } as WorkOrder

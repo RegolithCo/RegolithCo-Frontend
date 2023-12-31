@@ -3,71 +3,69 @@ import { SalvageOreEnum, findPrice, getSalvageOreName } from '@regolithco/common
 import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../fields/MValue'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export const SalvagingOreTable: React.FC = () => {
   const theme = useTheme()
+  const [sortedSalvageRowKeys, setSortedSalvageRowKeys] = React.useState<SalvageOreEnum[]>([])
+  const [finalTable, setFinalTable] = React.useState<[number, number, number][]>()
+  const [colorizedRows, setColorizedRows] = React.useState<[number, number, number][]>([])
 
-  const salvageRowKeys = Object.values(SalvageOreEnum)
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#a46800', '#246f9a', '#246f9a', '#246f9a', '#229f63')
     .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { lookupData, lookupLoading } = useAsyncLookupData<Partial<{ [key in SalvageOreEnum]: [number, number] }>>(
-    async (ds) => {
-      const lookups: Partial<{ [key in SalvageOreEnum]: [number, number] }> = {}
-      for (const shipOreKey of salvageRowKeys) {
-        const [price1, price2] = await Promise.all([
-          findPrice(ds, shipOreKey as SalvageOreEnum, undefined, true),
-          findPrice(ds, shipOreKey as SalvageOreEnum, undefined, false),
-        ])
-        lookups[shipOreKey] = [price1, price2]
-      }
-      return lookups
-    }
-  )
+  const dataStore = React.useContext(LookupsContext)
 
-  const priceLookups = lookupData || {}
-
-  // Sort descendng value
-  salvageRowKeys.sort((a, b) => {
-    const aPrice = priceLookups[a as SalvageOreEnum] as [number, number]
-    const bPrice = priceLookups[b as SalvageOreEnum] as [number, number]
-    if (!aPrice && !bPrice) return 0
-    if (!aPrice) return 1
-    if (!bPrice) return -1
-    return bPrice[0] - aPrice[0]
-  })
-
-  const rowStats: { max: number; min: number }[] = []
-
-  const finalTable: [number, number, number][] = salvageRowKeys.map((shipOreKey, rowIdx) => {
-    const orePrices = priceLookups[shipOreKey]
-    const orePriceRefined = orePrices ? orePrices[0] : 0
-    const orePriceUnrefined = orePrices ? orePrices[1] : 0
-    const retVals = [orePriceUnrefined, orePriceUnrefined * 12, orePriceUnrefined * 420]
-    if (rowIdx === 0) {
-      retVals.forEach((value) => rowStats.push({ max: value, min: value }))
-    } else {
-      retVals.forEach((value, colIdx) => {
-        if (value > rowStats[colIdx].max) rowStats[colIdx].max = value
-        if (value < rowStats[colIdx].min) rowStats[colIdx].min = value
+  React.useEffect(() => {
+    const calcSalvageRowKeys = async () => {
+      const salvageRowKeys = Object.values(SalvageOreEnum)
+      const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey)))
+      const newSorted = [...salvageRowKeys].sort((a, b) => {
+        const aPrice = prices[salvageRowKeys.indexOf(a)]
+        const bPrice = prices[salvageRowKeys.indexOf(b)]
+        return bPrice - aPrice
       })
+
+      const priceLookups: Record<SalvageOreEnum, number> = salvageRowKeys.reduce((acc, key, idx) => {
+        acc[key] = prices[idx]
+        return acc
+      }, {} as Record<SalvageOreEnum, number>)
+
+      const rowStats: { max: number; min: number }[] = []
+
+      const newFinaltable: [number, number, number][] = salvageRowKeys.map((shipOreKey, rowIdx) => {
+        const orePrice = priceLookups[shipOreKey]
+        const retVals = [orePrice, orePrice * 12, orePrice * 420]
+        if (rowIdx === 0) {
+          retVals.forEach((value) => rowStats.push({ max: value, min: value }))
+        } else {
+          retVals.forEach((value, colIdx) => {
+            if (value > rowStats[colIdx].max) rowStats[colIdx].max = value
+            if (value < rowStats[colIdx].min) rowStats[colIdx].min = value
+          })
+        }
+        return retVals as [number, number, number]
+      })
+      // Now map the values to a color index
+      const colorizedRows: [number, number, number][] = salvageRowKeys.map((_, rowIdx) => {
+        const normalizedValues = newFinaltable[rowIdx].map((value, colIdx) => {
+          return (value - rowStats[colIdx].min) / (rowStats[colIdx].max - rowStats[colIdx].min)
+        })
+        const colorIdxs = normalizedValues.map((value) => Math.round(value * 99))
+        return colorIdxs as [number, number, number]
+      })
+
+      setSortedSalvageRowKeys(newSorted)
+      setFinalTable(newFinaltable)
+      setColorizedRows(colorizedRows)
     }
-    return retVals as [number, number, number]
-  })
-  // Now map the values to a color index
-  const colorizedRows: [number, number, number][] = salvageRowKeys.map((_, rowIdx) => {
-    const normalizedValues = finalTable[rowIdx].map((value, colIdx) => {
-      return (value - rowStats[colIdx].min) / (rowStats[colIdx].max - rowStats[colIdx].min)
-    })
-    const colorIdxs = normalizedValues.map((value) => Math.round(value * 99))
-    return colorIdxs as [number, number, number]
+    calcSalvageRowKeys()
   })
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!finalTable) return <div>Loading...</div>
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">
@@ -101,7 +99,7 @@ export const SalvagingOreTable: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {salvageRowKeys.map((shipRowKey, rowIdx) => {
+          {sortedSalvageRowKeys.map((shipRowKey, rowIdx) => {
             return (
               <TableRow key={`row-${rowIdx}`}>
                 <TableCell component="th" scope="row">

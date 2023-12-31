@@ -13,12 +13,12 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { AnyOreEnum, OreSummary, StoreChoice, getOreName } from '@regolithco/common'
+import { AnyOreEnum, OreSummary, StoreChoice, getOreName, Lookups } from '@regolithco/common'
 import { MValueFormat } from '../fields/MValue'
 import { MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { alpha } from '@mui/material'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface StoreChooserListItemProps {
   cityStores: StoreChoice
@@ -53,9 +53,10 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
-  const { lookupData: planetLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('planetLookups'))
+  const dataStore = React.useContext(LookupsContext)
 
-  if (!planetLookups || lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return null
+  const planetLookups = dataStore.getLookup('planetLookups') as Lookups['planetLookups']
   // NO HOOKS BELOW HERE
 
   const planetName = cityStores.planet ? planetLookups['ST'][cityStores.planet].name : ''

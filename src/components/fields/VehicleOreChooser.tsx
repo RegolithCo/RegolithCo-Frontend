@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { blue, green } from '@mui/material/colors'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface VehicleOreChooserProps {
   multiple?: boolean
@@ -22,20 +22,26 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
 }) => {
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
   const theme = useTheme()
-  const vehicleRowKeys = Object.values(VehicleOreEnum)
+  const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
   const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
   const fgColors = ['#000000', '#ffffff', '#ffffff']
   // Sort descendng value
 
-  const { lookupData: sortedVehicleRowKeys, lookupLoading } = useAsyncLookupData(async (ds) => {
-    const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(ds, vehicleOreKey)))
-    return vehicleRowKeys.sort((a, b) => {
-      const aPrice = prices[vehicleRowKeys.indexOf(a)]
-      const bPrice = prices[vehicleRowKeys.indexOf(b)]
-      return bPrice - aPrice
-    })
-  })
-  if (!sortedVehicleRowKeys || lookupLoading) return <div>Loading...</div>
+  const dataStore = React.useContext(LookupsContext)
+
+  useEffect(() => {
+    const calcVehicleRowKeys = async () => {
+      const vehicleRowKeys = Object.values(VehicleOreEnum)
+      const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(dataStore, vehicleOreKey)))
+      const newSorted = [...vehicleRowKeys].sort((a, b) => {
+        const aPrice = prices[vehicleRowKeys.indexOf(a)]
+        const bPrice = prices[vehicleRowKeys.indexOf(b)]
+        return bPrice - aPrice
+      })
+      setSortedVehicleRowKeys(newSorted)
+    }
+    calcVehicleRowKeys()
+  }, [dataStore])
 
   return (
     <Grid container spacing={0.5}>
@@ -113,8 +119,8 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 p: 0,
               }}
               onChange={() => {
-                setSelected(vehicleRowKeys)
-                onChange && onChange(vehicleRowKeys)
+                setSelected(sortedVehicleRowKeys)
+                onChange && onChange(sortedVehicleRowKeys)
               }}
             >
               All

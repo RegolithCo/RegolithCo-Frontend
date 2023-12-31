@@ -29,14 +29,14 @@ import {
   MiningStoreEnum,
   ObjectValues,
   getMiningStoreName,
-  LoadoutLookup,
+  Lookups,
 } from '@regolithco/common'
 import { BarChart, Bolt, Check, ClearAll, Store } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface LaserTableProps {
   onAddToLoadout: (module: MiningLaserEnum) => void
@@ -57,9 +57,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
   const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
 
-  const { lookupData: loadoutLookup, lookupLoading } = useAsyncLookupData<LoadoutLookup>((ds) =>
-    ds.getLookup('loadout')
-  )
+  const dataStore = React.useContext(LookupsContext)
 
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#229f63')
@@ -69,7 +67,8 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
   const filteredVals = React.useMemo(() => {
-    if (!loadoutLookup) return []
+    if (!dataStore.ready) return []
+    const loadoutLookup = dataStore.getLookup('loadout') as Lookups['loadout']
     return Object.values(loadoutLookup.lasers)
       .filter((laser) => {
         if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
@@ -81,7 +80,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         if (selected.length === 0) return true
         return selected.includes(laser.code as MiningLaserEnum)
       })
-  }, [filterSelected, selected, shipFilter, loadoutLookup])
+  }, [filterSelected, selected, shipFilter, dataStore.ready])
 
   const [maxMin, statsRank] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
@@ -137,7 +136,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   }
 
   const stores = Object.values(MiningStoreEnum)
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <>
       <Typography variant="h6" sx={{ mb: 2 }}>

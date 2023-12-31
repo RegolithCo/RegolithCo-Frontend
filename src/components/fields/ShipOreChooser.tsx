@@ -3,7 +3,7 @@ import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
 import { ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface ShipOreChooserProps {
   values?: ShipOreEnum[]
@@ -27,27 +27,38 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
     setSelected(values || [])
   }, [values])
 
-  const shipRowKeys = Object.values(ShipOreEnum)
+  const [sortedShipRowKeys, setSortedShipRowKeys] = React.useState<ShipOreEnum[]>([])
+  const [bgColors, setBgColors] = React.useState<string[]>([])
+  const [fgColors, setFgColors] = React.useState<string[]>([])
+
   const quaColors = ['#f700ff', '#ffffff']
   const innertColors = ['#848484', '#000000']
-  const bgColors = new Gradient()
-    .setColorGradient(theme.palette.success.main, theme.palette.secondary.main, theme.palette.grey[500])
-    .setMidpoint(shipRowKeys.length) // 100 is the number of colors to generate. Should be enough stops for our ores
-    .getColors()
-  const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
-    const prices = await Promise.all(shipRowKeys.map((shipOreKey) => findPrice(ds, shipOreKey)))
-    return shipRowKeys.sort((a, b) => {
-      const aPrice = prices[shipRowKeys.indexOf(a)]
-      const bPrice = prices[shipRowKeys.indexOf(b)]
-      return bPrice - aPrice
-    })
-  })
+  const dataStore = React.useContext(LookupsContext)
 
-  const sortedShipRowKeys = lookupData || []
+  useEffect(() => {
+    const calcShipRowKeys = async () => {
+      const shipRowKeys = Object.values(ShipOreEnum)
+      const prices = await Promise.all(shipRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey)))
+      const newSorted = [...shipRowKeys].sort((a, b) => {
+        const aPrice = prices[shipRowKeys.indexOf(a)]
+        const bPrice = prices[shipRowKeys.indexOf(b)]
+        return bPrice - aPrice
+      })
 
-  if (lookupLoading) return <div>Loading...</div>
+      const bgColors = new Gradient()
+        .setColorGradient(theme.palette.success.main, theme.palette.secondary.main, theme.palette.grey[500])
+        .setMidpoint(newSorted.length) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors()
+      const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+
+      setSortedShipRowKeys(newSorted)
+      setBgColors(bgColors)
+      setFgColors(fgColors)
+    }
+    calcShipRowKeys()
+  }, [dataStore])
+
   return (
     <Grid container spacing={0.5} margin={0}>
       {sortedShipRowKeys.map((shipOreKey, rowIdx) => {
@@ -131,8 +142,8 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 p: [0.5, 0.5],
               }}
               onChange={() => {
-                setSelected(shipRowKeys)
-                onChange && onChange(shipRowKeys)
+                setSelected(sortedShipRowKeys)
+                onChange && onChange(sortedShipRowKeys)
               }}
             >
               All

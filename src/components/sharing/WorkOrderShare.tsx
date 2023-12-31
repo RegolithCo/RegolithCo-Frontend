@@ -19,7 +19,7 @@ import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { AppContext } from '../../context/app.context'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export type WorkOrderShareSettings = {
   hideNames?: boolean
@@ -61,9 +61,19 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, settings }) => {
   const theme = useTheme()
   const styles = workOrderStylesThunk(theme)
+  const [summary, setSummary] = React.useState<WorkOrderSummary>()
   const { getSafeName } = React.useContext(AppContext)
 
-  const { lookupData: summary, lookupLoading } = useAsyncLookupData<WorkOrderSummary>(calculateWorkOrder, [workOrder])
+  const dataStore = React.useContext(LookupsContext)
+
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    calculateWorkOrder(dataStore, workOrder).then((newSumm) => {
+      setSummary(newSumm)
+    })
+  }, [workOrder, dataStore.ready])
+
+  if (!dataStore.ready) return null
 
   let WorkIcon: SvgIconComponent
   let title = ''
@@ -88,7 +98,7 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
     default:
       return <>DisplayError</>
   }
-  if (!summary || lookupLoading) return null
+  if (!summary || !summary) return null
   return (
     <Paper elevation={11} sx={{ p: 2 }}>
       <Toolbar

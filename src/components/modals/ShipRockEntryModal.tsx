@@ -50,7 +50,7 @@ import { isEqual } from 'lodash'
 import { DeleteModal } from './DeleteModal'
 import Numeral from 'numeral'
 import log from 'loglevel'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export const SHIP_ROCK_BOUNDS = [1, 150000]
 
@@ -199,6 +199,14 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
+  const dataStore = React.useContext(LookupsContext)
+  const [ores, setOres] = React.useState<ShipRockOre[]>([])
+  const [oreProps, setOreProps] = React.useState<[number, number, number, Partial<Record<AnyOreEnum, FindSummary>>]>([
+    0,
+    0,
+    0,
+    {},
+  ])
 
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
@@ -227,11 +235,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         resistanceF / 100 !== newShipRock.res)
   )
 
-  const { lookupData: ds } = useAsyncLookupData<DataStore>((ds) => Promise.resolve(ds))
-
   const setNewShipRock = React.useCallback(
     async (newRock: ShipRock) => {
-      if (!newRock || !ds) return
+      if (!newRock || !dataStore.ready) return
       const newOres = [...(newRock.ores || []).filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)]
       // Set the entry for ShipOreEnum.Inertmaterial to be 1- the sum of all other ores
       const total = newOres.reduce(
@@ -240,7 +246,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
       )
       newOres.push({ ore: ShipOreEnum.Inertmaterial, percent: 1 - total, __typename: 'ShipRockOre' })
       // Fetch the prices
-      const prices = await Promise.all(newOres.map((ore) => findPrice(ds, ore.ore as ShipOreEnum, undefined, true)))
+      const prices = await Promise.all(
+        newOres.map((ore) => findPrice(dataStore, ore.ore as ShipOreEnum, undefined, true))
+      )
       newOres.sort((a, b) => {
         const aPrice = prices[newOres.indexOf(a)]
         const bPrice = prices[newOres.indexOf(b)]
@@ -250,7 +258,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         return { ...oldRock, ...newRock, ores: newOres }
       })
     },
-    [ds]
+    [dataStore]
   )
 
   React.useEffect(() => {
@@ -260,42 +268,41 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
     }
   }, [shipRock, setNewShipRock])
 
-  const { lookupData: oreProps } = useAsyncLookupData<
-    [number, number, number, Partial<Record<AnyOreEnum, FindSummary>>]
-  >(
-    async (ds) => {
+  React.useEffect(() => {
+    const calcOreProps = async () => {
       try {
         const {
           rock: { volume, value },
           byOre,
-        } = await shipRockCalc(ds, newShipRock)
+        } = await shipRockCalc(dataStore, newShipRock)
         const percentTotal = (newShipRock.ores || [])
           .filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)
           .reduce((acc, { percent }) => acc + percent, 0)
-        return [volume, value, percentTotal, byOre]
+        setOreProps([volume, value, percentTotal, byOre])
       } catch (e) {
         log.error(e)
         return [0, 0, 0, {}]
       }
-    },
-    [newShipRock]
-  )
+    }
+    calcOreProps()
+  }, [newShipRock])
 
-  const { lookupData: ores, lookupLoading } = useAsyncLookupData<ShipRockOre[]>(
-    async (ds) => {
-      const ores = await Promise.all(
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    const calcOres = async () => {
+      const newOres = await Promise.all(
         (newShipRock.ores || []).map(async (ore) => {
-          const price = await findPrice(ds, ore.ore as ShipOreEnum, undefined, true)
+          const price = await findPrice(dataStore, ore.ore as ShipOreEnum, undefined, true)
           return { ...ore, price }
         })
       )
-      ores.sort(({ price: priceA }, { price: priceB }) => priceB - priceA)
-      return ores
-    },
-    [newShipRock]
-  )
+      newOres.sort(({ price: priceA }, { price: priceB }) => priceB - priceA)
+      setOres(newOres)
+    }
+    calcOres()
+  }, [newShipRock, dataStore])
 
-  if (!oreProps || !ores || lookupLoading) return <div>Loading...</div>
+  if (!oreProps || !ores || !dataStore.ready) return <div>Loading...</div>
   // NO HOOKS BELOW HERE
   const [volume, value, percentTotal, byOre] = oreProps || [0, 0, 0, {}]
 

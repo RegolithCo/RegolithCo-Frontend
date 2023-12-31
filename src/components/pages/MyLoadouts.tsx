@@ -34,7 +34,7 @@ import { MODMAP, statsOrder } from '../calculators/LoadoutCalc/LoadoutCalcStats'
 import { LoadoutStat } from '../calculators/LoadoutCalc/LoadoutStat'
 import { MValue, MValueFormat } from '../fields/MValue'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 dayjs.extend(relativeTime)
 
@@ -70,6 +70,9 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const [statsArr, setStatsArr] = React.useState<(AllStats | null)[]>([])
+
+  const dataStore = React.useContext(LookupsContext)
 
   const sortedLoadouts = React.useMemo(() => {
     if (!loadouts || loadouts.length === 0) return []
@@ -82,20 +85,20 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
     return loadoutsCopy
   }, [loadouts])
 
-  const { lookupData, lookupLoading } = useAsyncLookupData<(AllStats | null)[]>(
-    (ds) => {
-      return Promise.all(
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    const calcStatsArr = async () => {
+      const statsArr = await Promise.all(
         sortedLoadouts.map(async (loadout) => {
           if (!loadout) return null
-          const sanitizedLoadout = await sanitizeLoadout(ds, loadout)
-          return calcLoadoutStats(ds, sanitizedLoadout)
+          const sanitizedLoadout = await sanitizeLoadout(dataStore, loadout)
+          return calcLoadoutStats(dataStore, sanitizedLoadout)
         })
       )
-    },
-    [sortedLoadouts]
-  )
-
-  const statsArr = lookupData || []
+      setStatsArr(statsArr)
+    }
+    calcStatsArr()
+  }, [dataStore.ready])
 
   const [deleteModalOpen, setDeleteModalOpen] = React.useState<string | null>(null)
 
@@ -111,7 +114,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
     }
   }, [activeLoadout, loadouts])
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 2 }}>

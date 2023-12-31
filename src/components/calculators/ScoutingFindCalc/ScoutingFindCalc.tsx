@@ -41,6 +41,7 @@ import {
   VehicleOreEnum,
   makeHumanIds,
   ShipOreEnum,
+  FindClusterSummary,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { AddCircle, EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -57,7 +58,7 @@ import dayjs from 'dayjs'
 import { NoteAddDialog } from '../../modals/NoteAddDialog'
 import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../../context/app.context'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -297,9 +298,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const styles = stylesThunk(theme)
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(Boolean(isNew))
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
+  const [summary, setSummary] = React.useState<FindClusterSummary>()
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
   const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
   const { getSafeName } = React.useContext(AppContext)
+  const dataStore = React.useContext(LookupsContext)
 
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
@@ -341,7 +344,16 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       itemName = plural ? 'Gems' : 'Gem'
       break
   }
-  const { lookupData: summary, lookupLoading } = useAsyncLookupData(clusterCalc, [scoutingFind as ScoutingFind])
+  // const { lookupData: summary, lookupLoading } = useAsyncLookupData(clusterCalc, [scoutingFind as ScoutingFind])
+  React.useEffect(() => {
+    const calcSummary = async () => {
+      if (!dataStore.ready) return
+      const newSummary = await clusterCalc(dataStore, scoutingFind as ScoutingFind)
+      setSummary(newSummary)
+    }
+    calcSummary()
+  }, [scoutingFind, dataStore.ready])
+
   // let profitSymbol = '~'
   // if (scanComplete) profitSymbol = ''
   // else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
@@ -371,7 +383,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
 
-  if (!summary || lookupLoading) return <div>loading...</div>
+  if (!summary || !dataStore.ready) return <div>loading...</div>
 
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume

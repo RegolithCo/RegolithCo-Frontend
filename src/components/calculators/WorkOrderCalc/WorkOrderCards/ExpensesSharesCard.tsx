@@ -28,6 +28,7 @@ import {
   jsRound,
   CrewShare,
   ShareTypeEnum,
+  StoreChoice,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
@@ -53,7 +54,7 @@ import { ExpenseTable } from '../../../fields/ExpenseTable'
 import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
-import { useAsyncLookupData } from '../../../../hooks/useLookups'
+import { LookupsContext } from '../../../../context/lookupsContext'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -76,22 +77,25 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   sx,
 }) => {
   const theme = useTheme()
+  const dataStore = React.useContext(LookupsContext)
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
   const [confirmPriceReset, setConfirmPriceReset] = useState<boolean>(false)
+  const [storeChoices, setStoreChoices] = useState<StoreChoice[]>([])
+  const [myStoreChoice, setMyStoreChoice] = useState<StoreChoice>()
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
   const useScrollerRef = React.useRef<HTMLDivElement>(null)
   const shipOrder = workOrder as ShipMiningOrder
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(findAllStoreChoices, [
-    summary.oreSummary,
-    Boolean(shipOrder.isRefined),
-  ])
-  const storeChoices = lookupData || []
-  const myStoreChoice = useMemo(
-    () => storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0],
-    [storeChoices]
-  )
+  useEffect(() => {
+    const calcMyStoreChoice = async () => {
+      if (!dataStore.ready) return
+      const storeChoices = await findAllStoreChoices(dataStore, summary.oreSummary, Boolean(shipOrder.isRefined))
+      setStoreChoices(storeChoices)
+      setMyStoreChoice(storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0])
+    }
+    calcMyStoreChoice()
+  }, [summary.oreSummary, shipOrder.isRefined, workOrder.sellStore])
 
   const shareAmountIsSet = typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null
 
@@ -108,7 +112,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
     }
   }, [myStoreChoice, workOrder.shareAmount])
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready || !myStoreChoice) return <div>Loading...</div>
   return (
     <>
       <Card sx={sx}>

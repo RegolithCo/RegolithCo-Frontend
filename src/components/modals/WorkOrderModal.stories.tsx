@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { WorkOrderModal as WorkOrderModalC } from './WorkOrderModal'
@@ -11,7 +11,7 @@ import {
 import log from 'loglevel'
 import { ActivityEnum, WorkOrder } from '@regolithco/common'
 import { WorkOrderContext, workOrderContextDefaults } from '../../context/workOrder.context'
-import { useStorybookAsyncLookupData } from '../../hooks/useLookupStorybook'
+import { useStorybookLookups } from '../../hooks/useLookupStorybook'
 
 export default {
   title: 'Modals/WorkOrderModal',
@@ -32,27 +32,32 @@ export default {
 } as Meta<typeof WorkOrderModalC>
 
 const Template: StoryFn<typeof WorkOrderModalC> = ({ ...args }) => {
-  const workOrder = useStorybookAsyncLookupData<WorkOrder>((ds) => {
-    const { activity } = args as any
-    switch (activity) {
-      case ActivityEnum.ShipMining:
-        return fakeShipMiningOrder(ds)
-        break
-      case ActivityEnum.VehicleMining:
-        return fakeVehicleMiningOrder()
-        break
-      case ActivityEnum.Salvage:
-        return fakeSalvageOrder()
-        break
-      case ActivityEnum.Other:
-        return fakeOtherOrder()
-        break
-      default:
-        throw new Error(`Unknown ActivityEnum: ${activity}`)
-    }
-  })
-  if (!workOrder) return <div>Loading Fake workOrder...</div>
+  const [workOrder, setWorkOrder] = React.useState<WorkOrder>()
+  const dataStore = useStorybookLookups()
+  const { activity } = args as any
 
+  useEffect(() => {
+    const fakeWorkOrders = async () => {
+      if (!dataStore.ready) return
+      switch (activity) {
+        case ActivityEnum.ShipMining:
+          setWorkOrder(await fakeShipMiningOrder(dataStore))
+          break
+        case ActivityEnum.VehicleMining:
+          setWorkOrder(await fakeVehicleMiningOrder())
+          break
+        case ActivityEnum.Salvage:
+          setWorkOrder(await fakeSalvageOrder())
+          break
+        case ActivityEnum.Other:
+          setWorkOrder(await fakeOtherOrder())
+          break
+      }
+    }
+    fakeWorkOrders()
+  }, [activity])
+
+  if (!workOrder) return <div>loading</div>
   return (
     <WorkOrderContext.Provider
       value={{

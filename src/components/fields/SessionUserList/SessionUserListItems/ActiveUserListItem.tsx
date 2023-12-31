@@ -9,7 +9,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { getSessionUserStateName, MiningLoadout, SessionUser, SessionUserStateEnum, User } from '@regolithco/common'
+import {
+  getSessionUserStateName,
+  MiningLoadout,
+  SessionUser,
+  SessionUserStateEnum,
+  ShipLookups,
+  User,
+} from '@regolithco/common'
 import { Group, MoreVert, RocketLaunch } from '@mui/icons-material'
 import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
@@ -20,7 +27,7 @@ import { fontFamilies } from '../../../../theme'
 import { shipColorLookup, ShipTypeEnum } from '../../VehicleChooser'
 import { AppContext } from '../../../../context/app.context'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
-import { useAsyncLookupData } from '../../../../hooks/useLookups'
+import { LookupsContext } from '../../../../context/lookupsContext'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
@@ -32,6 +39,7 @@ export interface ActiveUserListItemProps {
 export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionUser, isCrewDisplay, expandButton }) => {
   const theme = useTheme()
   const listItemRef = useRef<HTMLLIElement>(null)
+  const dataStore = React.useContext(LookupsContext)
   const { getSafeName, hideNames } = React.useContext(AppContext)
   const {
     session,
@@ -58,11 +66,12 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
 
   const { contextMenuNode, handleContextMenu } = useSessionUserContextMenu(sessionUser)
 
-  const { lookupData, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
-  const shipLookup = lookupData || []
+  if (!dataStore.ready) return null
+
+  const shipLookups = dataStore.getLookup('shipLookups') as ShipLookups
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
-  const vehicle = sessionUser.vehicleCode ? shipLookup.find((s) => s.code === sessionUser.vehicleCode) : null
+  const vehicle = sessionUser.vehicleCode ? shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
   const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.code : vehicle?.name
   const vehicleColor = vehicle ? shipColorLookup(theme)[vehicle.role as ShipTypeEnum] : 'inherit'
 
@@ -160,9 +169,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
     )
   }
 
-  const stateColor = stateColorsBg[sessionUser.state] || undefined
+  // const stateColor = stateColorsBg[sessionUser.state] || undefined
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <>
       {contextMenuNode}

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { SxProps, Theme, useTheme } from '@mui/material'
 
 import {
@@ -14,7 +14,7 @@ import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
 import { DetailsCard } from './WorkOrderCards/DetailsCard'
 import { OreCard } from './WorkOrderCards/OreCard'
 import log from 'loglevel'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface WorkOrderCalcProps {
   workOrder: WorkOrder
@@ -69,10 +69,22 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 
 export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   const theme = useTheme()
+  const [summary, setSummary] = React.useState<any>(null)
   const styles = workOrderStylesThunk(theme)
-  const { lookupData: summary, lookupLoading } = useAsyncLookupData(calculateWorkOrder, [props.workOrder])
+  const dataStore = React.useContext(LookupsContext)
+  // const { lookupData: summary, lookupLoading } = useAsyncLookupData(calculateWorkOrder, [props.workOrder])
+
+  useEffect(() => {
+    if (!dataStore.ready) return
+    const calcSummary = async () => {
+      const summary = await calculateWorkOrder(dataStore, props.workOrder)
+      setSummary(summary)
+    }
+    calcSummary()
+  }, [props.workOrder, dataStore.ready])
+
   const { workOrder } = props
-  if (!summary || lookupLoading) return <div>Loading...</div>
+  if (!summary || !dataStore.ready) return <div>Loading...</div>
   return (
     <>
       {workOrder.orderType !== ActivityEnum.Other && (

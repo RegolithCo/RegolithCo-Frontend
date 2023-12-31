@@ -6,7 +6,7 @@ import { MValue, MValueFormat } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { fontFamilies } from '../../../theme'
 import dayjs from 'dayjs'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface TabSummaryStatsProps {
   session: Session
@@ -15,14 +15,21 @@ export interface TabSummaryStatsProps {
 
 export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isShare }) => {
   const theme = useTheme()
-  const { lookupData: sessionSummary, lookupLoading } = useAsyncLookupData<SessionBreakdown>(sessionReduce, [
-    session?.workOrders?.items || [],
-  ])
+  const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown>()
+
+  const dataStore = React.useContext(LookupsContext)
+
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    sessionReduce(dataStore, session?.workOrders?.items || []).then((res) => {
+      setSessionSummary(res)
+    })
+  }, [dataStore.ready])
 
   const clusterCount = session.scouting?.items.length
   const rockCount = session.scouting?.items.reduce((acc, cur) => acc + (cur.clusterCount || 0), 0)
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   if (!sessionSummary) {
     return null
   }

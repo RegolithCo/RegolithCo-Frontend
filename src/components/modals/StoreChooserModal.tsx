@@ -18,7 +18,7 @@ import { Stack } from '@mui/system'
 import Gradient from 'javascript-color-gradient'
 import { Cancel, ResetTv } from '@mui/icons-material'
 import { StoreChooserListItem } from '../fields/StoreChooserListItem'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface StoreChooserModalProps {
   open?: boolean
@@ -76,15 +76,26 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
 }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
+  const [storeChoices, setStoreChoices] = React.useState<StoreChoice[]>([])
 
-  const { lookupData, lookupLoading } = useAsyncLookupData<StoreChoice[]>(findAllStoreChoices, [ores, isRefined])
-  const storeChoices = lookupData || []
+  const dataStore = React.useContext(LookupsContext)
+  if (!dataStore.ready) return null
+
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    const calcStoreChoices = async () => {
+      const storeChoices = await findAllStoreChoices(dataStore, ores, isRefined)
+      setStoreChoices(storeChoices)
+    }
+    calcStoreChoices()
+  }, [dataStore.ready, ores, isRefined])
+
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
     .setColorGradient(...quaColors)
     .setMidpoint(storeChoices ? storeChoices.length : 0) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
-  if (lookupLoading) return null
+
   return (
     <>
       <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="sm" fullWidth>

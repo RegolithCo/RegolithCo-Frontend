@@ -4,7 +4,10 @@ import lookupMocks from '../mock/lookupMocks.json'
 
 class StorybookDataStore implements DataStore {
   public loading = false
-  async getLookup<K extends keyof Lookups>(key: K): Promise<Lookups[K]> {
+  public error = null
+  public ready = false
+
+  getLookup<K extends keyof Lookups>(key: K): Lookups[K] {
     switch (key) {
       case 'densitiesLookups':
         return lookupMocks.data.lookups.CIG.densitiesLookups as Lookups[K]
@@ -33,26 +36,4 @@ class StorybookDataStore implements DataStore {
 export const useStorybookLookups = (): DataStore => {
   const [dataStore] = useState(new StorybookDataStore())
   return dataStore
-}
-
-/**
- * When we have more complex needs we can use this hook
- * @param asyncFunction
- * @param args
- * @returns
- */
-export const useStorybookAsyncLookupData = <T>(
-  asyncFunction: (ds: DataStore, ...innerArgs: any[]) => Promise<T>,
-  args?: any[]
-): T | null => {
-  const [store] = React.useState<DataStore>(new StorybookDataStore())
-  const [result, setResult] = React.useState<T | null>(null)
-
-  useEffect(() => {
-    asyncFunction(store, ...(args || []))
-      .then((result) => setResult(result))
-      .catch((err) => console.error(err))
-  }, [...(args || [])])
-
-  return result
 }

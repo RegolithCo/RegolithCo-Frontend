@@ -4,46 +4,51 @@ import { Typography, TableContainer, Table, TableHead, TableRow, TableCell, Tabl
 import Gradient from 'javascript-color-gradient'
 // import log from 'loglevel'
 import { MValue, MValueFormat } from '../fields/MValue'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export const VehicleOreTable: React.FC = () => {
   const theme = useTheme()
+  const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
+  const [bgColors, setBgColors] = React.useState<string[]>([])
+  const [fgColors, setFgColors] = React.useState<string[]>([])
+  const [finalTable, setFinalTable] = React.useState<([number, number, number] | undefined)[]>()
 
-  const bgColors = new Gradient()
-    .setColorGradient('#b93327', '#a46800', '#246f9a', '#229f63')
-    .setMidpoint(4) // 100 is the number of colors to generate. Should be enough stops for our ores
-    .getColors()
-  const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+  const dataStore = React.useContext(LookupsContext)
 
-  const { lookupData, lookupLoading } = useAsyncLookupData<VehicleOreEnum[]>(async (ds) => {
-    const vehicleRowKeys = Object.values(VehicleOreEnum)
-    const prices = await Promise.all(vehicleRowKeys.map((key) => findPrice(ds, key as VehicleOreEnum)))
-    const sortedKeys = [...vehicleRowKeys].sort((a, b) => {
-      const aPrice = prices[vehicleRowKeys.indexOf(a)]
-      const bPrice = prices[vehicleRowKeys.indexOf(b)]
-      return bPrice - aPrice
-    })
-    return sortedKeys
-  })
-  const sortedVehicleRowKeys = lookupData || []
+  React.useEffect(() => {
+    if (!dataStore.ready) return
+    const calcVehicleRowKeys = async () => {
+      const vehicleRowKeys = Object.values(VehicleOreEnum)
+      const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(dataStore, vehicleOreKey)))
+      const newSorted = [...vehicleRowKeys].sort((a, b) => {
+        const aPrice = prices[vehicleRowKeys.indexOf(a)]
+        const bPrice = prices[vehicleRowKeys.indexOf(b)]
+        return bPrice - aPrice
+      })
+      const bgColors = new Gradient()
+        .setColorGradient('#b93327', '#a46800', '#246f9a', '#229f63')
+        .setMidpoint(4) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors()
+      const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
+
+      const table: [number, number, number][] = []
+      for (const key of sortedVehicleRowKeys) {
+        const orePrice = (await findPrice(dataStore, key as VehicleOreEnum)) / 1000
+        const retVals = [orePrice, orePrice * 800, orePrice * 3500]
+        table.push(retVals as [number, number, number])
+      }
+
+      setSortedVehicleRowKeys(newSorted)
+      setFinalTable(table)
+      setBgColors(bgColors)
+      setFgColors(fgColors)
+    }
+    calcVehicleRowKeys()
+  }, [dataStore])
 
   const vehicleRowKeys = React.useMemo(() => sortedVehicleRowKeys, [sortedVehicleRowKeys])
 
-  const { lookupData: finalTable } =
-    useAsyncLookupData<[number, number, number][]>(
-      async (ds) => {
-        const table: [number, number, number][] = []
-        for (const key of sortedVehicleRowKeys) {
-          const orePrice = (await findPrice(ds, key as VehicleOreEnum)) / 1000
-          const retVals = [orePrice, orePrice * 800, orePrice * 3500]
-          table.push(retVals as [number, number, number])
-        }
-        return table
-      },
-      [sortedVehicleRowKeys]
-    ) || []
-
-  if (lookupLoading || !finalTable) return <div>Loading...</div>
+  if (!finalTable || dataStore.loading) return <div>Loading...</div>
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 460, mx: 'auto' }} size="small" aria-label="simple table">

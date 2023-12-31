@@ -2,7 +2,7 @@ import React from 'react'
 import { useRouteError } from 'react-router-dom'
 import { BrowserRouter as Router } from 'react-router-dom'
 import log from 'loglevel'
-import { Typography, Container, Button } from '@mui/material'
+import { Typography, Container, Button, Divider } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { PageWrapper } from './components/PageWrapper'
 import { AppWrapperContainer } from './components/AppWrapper'
@@ -42,8 +42,29 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
               Try reloading the page. It may fix the issue. If this error persists, please consider copying the error
               and pasting it in our `report-bugs` channel on Discord.
             </Typography>
-
-            <Typography variant="overline">Error Details (Click to copy)</Typography>
+            <Stack direction="row" spacing={2}>
+              <Button startIcon={<Replay />} color="info" variant="contained" size="large" onClick={handleReload}>
+                Try Reloading
+              </Button>
+              <Button
+                startIcon={<DiscordIcon />}
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ fontSize: '1rem', p: 2, maxWidth: 200 }}
+                href="https://discord.gg/6TKSYHNJha"
+                target="_blank"
+              >
+                Discord Server
+              </Button>
+            </Stack>
+            <Divider sx={{ my: 5 }} />
+            <Typography variant="overline" sx={{ mt: 5 }}>
+              Error Details (Click to copy)
+            </Typography>
+            <Typography paragraph>
+              If you are reporting this error, please include the details below. This will help us debug the issue.
+            </Typography>
             <Box
               onClick={() => {
                 const text = error?.toString() + '\n' + errorInfo?.componentStack
@@ -63,23 +84,6 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
               <pre>{error?.toString()}</pre>
               <pre>{errorInfo?.componentStack}</pre>
             </Box>
-
-            <Stack direction="row" spacing={2}>
-              <Button startIcon={<Replay />} color="info" variant="contained" size="large" onClick={handleReload}>
-                Try Reloading
-              </Button>
-              <Button
-                startIcon={<DiscordIcon />}
-                variant="contained"
-                color="primary"
-                fullWidth
-                sx={{ fontSize: '1rem', p: 2, maxWidth: 200 }}
-                href="https://discord.gg/6TKSYHNJha"
-                target="_blank"
-              >
-                Discord Server
-              </Button>
-            </Stack>
           </Container>
         </PageWrapper>
       </AppWrapperContainer>

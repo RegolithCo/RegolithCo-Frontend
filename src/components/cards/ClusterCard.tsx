@@ -24,6 +24,7 @@ import {
   VehicleClusterFind,
   SessionUserStateEnum,
   makeHumanIds,
+  FindClusterSummary,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies, scoutingFindStateThemes } from '../../theme'
@@ -36,7 +37,7 @@ import { MenuItemObj, useSessionContextMenu } from '../modals/SessionContextMenu
 import { SessionContext } from '../../context/session.context'
 import { AttendanceStateEnum, SCOUTING_FIND_STATE_NAMES } from '../calculators/ScoutingFindCalc'
 import { DeleteScoutingFindModal } from '../modals/DeleteScoutingFindModal'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 dayjs.extend(relativeTime)
 
 export interface ClusterCardProps {
@@ -56,15 +57,24 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
     scoutingAttendanceMap,
   } = React.useContext(SessionContext)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
+  const [summary, setSummary] = React.useState<FindClusterSummary>()
   const theme = scoutingFindStateThemes[scoutingFind.state]
-  const { lookupData: summary, lookupLoading } = useAsyncLookupData(clusterCalc, [scoutingFind])
 
   const ores = summary && summary.oreSort ? summary.oreSort : []
   const findType = scoutingFind.clusterType
   const amISessionOwner = session?.ownerId === myUserProfile.userId
   const allowDelete = amISessionOwner || scoutingFind.ownerId === myUserProfile?.userId
   const { getSafeName } = React.useContext(AppContext)
+  const dataStore = React.useContext(LookupsContext)
   const attendanceCount = (scoutingFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length
+
+  React.useEffect(() => {
+    const calcSummary = async () => {
+      const newSummary = await clusterCalc(dataStore, scoutingFind)
+      setSummary(newSummary)
+    }
+    calcSummary()
+  }, [scoutingFind, dataStore])
 
   // Conveneince variables
   const shipFind = scoutingFind as ShipClusterFind
@@ -211,7 +221,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
     opacity = 0.5
   }
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   if (!summary) return null
   return (
     <ThemeProvider theme={theme}>

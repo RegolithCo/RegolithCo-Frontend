@@ -111,7 +111,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   // Anything older than an hour is stale
                   const storedTimestamp = localStorage.getItem('LookupData:lastUpdate')
                   // If the version changes, we need to refresh
-                  const storedVersion = localStorage.getItem('LookupData:version')
+                  const storedVersion = localStorage.getItem('LookupData:version') + 'sss'
                   const version = getVersion()
                   if (
                     storedData &&

@@ -37,6 +37,7 @@ import log from 'loglevel'
 import { ExportImageIcon } from '../../icons/badges'
 import { YoutubeEmbed } from '../fields/YoutubeEmbed'
 import { AboutPageFAQ } from './AboutPageFAQ'
+import { PatreonButton } from '../fields/PatreonButton'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -258,39 +259,16 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               sx={{ width: '100%', mb: 3 }}
             >
               <Box sx={{ flex: 1, height: '100%' }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  href="https://ko-fi.com/regolithco"
-                  target="_blank"
-                  fullWidth
-                  sx={{ fontSize: '2rem', p: 1, flex: 1, height: 64 }}
-                  startIcon={
-                    <Avatar
-                      sx={{ height: 64, width: 64 }}
-                      src={`${process.env.PUBLIC_URL}/images/icons/kofi_s_logo_nolabel.webp`}
-                    />
-                  }
-                >
-                  Ko-Fi
-                </Button>
-                <Typography paragraph color="text.secondary" variant="caption" component="div" textAlign="center">
-                  One-time donation
-                </Typography>
+                <iframe
+                  id="kofiframe"
+                  src="https://ko-fi.com/regolithco/?hidefeed=true&widget=true&embed=true&preview=true"
+                  style={{ border: 'none', width: '100%', padding: '4px', background: '#f9f9f9' }}
+                  height="712"
+                  title="regolithco"
+                />
               </Box>
               <Box sx={{ flex: 1, height: '100%' }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  href="https://patreon.com/user?u=64746907"
-                  target="_blank"
-                  fullWidth
-                  color="secondary"
-                  sx={{ fontSize: '2rem', p: 1, flex: 1, height: 64 }}
-                  startIcon={<Coffee sx={{ height: 44, width: 44 }} />}
-                >
-                  Patreon
-                </Button>
+                <PatreonButton />
                 <Typography paragraph color="text.secondary" variant="caption" component="div" textAlign="center">
                   Monthly subscription
                 </Typography>

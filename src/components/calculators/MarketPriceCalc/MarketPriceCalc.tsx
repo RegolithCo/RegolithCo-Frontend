@@ -25,6 +25,7 @@ import {
   OreSummary,
   SalvageOreEnum,
   ShipOreEnum,
+  StoreChoice,
   Vehicle,
   VehicleOreEnum,
 } from '@regolithco/common'
@@ -38,7 +39,7 @@ import { fontFamilies } from '../../../theme'
 import { VehicleChooser } from '../../fields/VehicleChooser'
 import { Cancel } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface MarketPriceCalc {
   propA?: string
@@ -63,6 +64,10 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
+  const dataStore = React.useContext(LookupsContext)
+  const [storesGrouped, setStoresGrouped] = React.useState<StoreChoice[]>([])
+  const [oreSummary, setOreSummary] = React.useState<OreSummary>({})
+  const [oreTotal, setOreTotal] = React.useState<number>(0)
   const [ores, setOres] = React.useState<OreStateType>({
     [ActivityEnum.ShipMining]: { [ShipOreEnum.Agricium]: 3200 },
     [ActivityEnum.VehicleMining]: {
@@ -76,25 +81,29 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const [ship, setShip] = React.useState<Vehicle | null>(null)
   const [activityTab, setActivityTab] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
-    const oreSummary: OreSummary = Object.entries(ores[activityTab as keyof OreStateType]).reduce(
-      (acc, [oreName, oreValue]) => {
-        return {
-          ...acc,
-          [oreName]: {
-            collected: 0,
-            refined: oreValue || 0,
-          },
-        }
-      },
-      {} as OreSummary
-    )
-    const oreTotal = Object.values(ores[activityTab as keyof OreStateType]).reduce((acc, ore) => acc + ore, 0)
-    const storesGrouped = await findAllStoreChoices(ds, oreSummary, true)
-    return { storesGrouped, oreSummary, oreTotal }
-  })
+  React.useEffect(() => {
+    async function calcStats() {
+      const oreSummary: OreSummary = Object.entries(ores[activityTab as keyof OreStateType]).reduce(
+        (acc, [oreName, oreValue]) => {
+          return {
+            ...acc,
+            [oreName]: {
+              collected: 0,
+              refined: oreValue || 0,
+            },
+          }
+        },
+        {} as OreSummary
+      )
+      const oreTotal = Object.values(ores[activityTab as keyof OreStateType]).reduce((acc, ore) => acc + ore, 0)
+      const storesGrouped = await findAllStoreChoices(dataStore, oreSummary, true)
+      setStoresGrouped(storesGrouped)
+      setOreSummary(oreSummary)
+      setOreTotal(oreTotal)
+    }
 
-  const { storesGrouped, oreSummary, oreTotal } = lookupData || { storesGrouped: [], oreSummary: {}, oreTotal: 0 }
+    if (dataStore.ready) calcStats()
+  }, [ores, dataStore])
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()
@@ -116,7 +125,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const percentFull = ship?.cargo ? (100 * cargoFilled) / (ship?.cargo || 0.001) : 0
   const progressText = `${cargoFilled.toFixed(0)} / ${ship?.cargo || 0} SCU (${percentFull.toFixed(0)}%)`
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <Box sx={{}}>
       <Alert severity="warning" sx={{ mb: 2 }}>

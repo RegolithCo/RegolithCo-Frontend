@@ -10,7 +10,7 @@ import { TabSummaryStats } from '../pages/SessionPage/TabSummaryStats'
 import { OwingList } from '../pages/SessionPage/TabSummary'
 import { WorkOrderTable } from '../pages/SessionPage/WorkOrderTable'
 import { AppContext } from '../../context/app.context'
-import { useAsyncLookupData } from '../../hooks/useLookups'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export type SessionShareSettings = {
   hideNames?: boolean
@@ -60,14 +60,22 @@ const sessionShareStyleThunk = (theme: Theme): Record<string, SxProps<Theme>> =>
 export const SessionShare: React.FC<SessionShareProps> = ({ session, settings }) => {
   const theme = useTheme()
   const styles = sessionShareStyleThunk(theme)
+  const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown>()
+  const dataStore = React.useContext(LookupsContext)
 
   const { getSafeName } = React.useContext(AppContext)
 
-  const { lookupData: sessionSummary, lookupLoading } = useAsyncLookupData<SessionBreakdown>(sessionReduce, [
-    session?.workOrders?.items || [],
-  ])
+  React.useEffect(() => {
+    const calcSessionSummary = async () => {
+      if (!session?.workOrders?.items) return
+      sessionReduce(dataStore, session?.workOrders?.items || []).then((res) => {
+        setSessionSummary(res)
+      })
+    }
+    calcSessionSummary()
+  }, [session?.workOrders?.items])
 
-  if (!sessionSummary || lookupLoading) return <div>Loading...</div>
+  if (!sessionSummary || !dataStore.ready) return <div>Loading...</div>
   return (
     <Paper elevation={11} sx={{ p: 2 }}>
       <Toolbar

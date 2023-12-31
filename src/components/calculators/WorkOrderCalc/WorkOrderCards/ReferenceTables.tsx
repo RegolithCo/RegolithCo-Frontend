@@ -1,17 +1,19 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { ActivityEnum, Vehicle } from '@regolithco/common'
+import { ActivityEnum, ShipLookups, Vehicle } from '@regolithco/common'
 import { fontFamilies } from '../../../../theme'
-import { useAsyncLookupData } from '../../../../hooks/useLookups'
+import { LookupsContext } from '../../../../context/lookupsContext'
 
 export interface ReferenceTablesProps {
   activity: ActivityEnum
 }
 
 export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) => {
-  const { lookupData, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('shipLookups'))
+  const dataStore = React.useContext(LookupsContext)
 
-  const lups = lookupData || []
+  if (!dataStore.ready) return null
+  const lups = dataStore.getLookup('shipLookups') as ShipLookups
+
   const rows: [Vehicle, number, string, string][] = []
   let show = true
   switch (activity) {
@@ -30,7 +32,7 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
     default:
       show = false
   }
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   if (!show) return null
   return (
     <TableContainer
