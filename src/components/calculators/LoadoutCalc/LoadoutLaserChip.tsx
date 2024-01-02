@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Chip, PaletteColor, Switch, Tooltip, alpha, keyframes, useTheme } from '@mui/material'
-import { MiningGadgetEnum, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
+import { LoadoutLookup, MiningGadgetEnum, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
 import { Cancel } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface LoadoutLaserChipProps {
   laserCode: MiningLaserEnum
@@ -24,9 +24,13 @@ export const LoadoutLaserChip: React.FC<LoadoutLaserChipProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups } = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
+
   const laser = loadoutLookups.lasers[laserCode]
+
+  if (!dataStore.ready) return null
   return (
     <Chip
       label={laser.name}
@@ -101,8 +105,9 @@ export const LoadoutModuleChip: React.FC<LoadoutModuleChipProps> = ({
   onDelete,
 }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups } = useAsyncLookupData(async (ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+  const dataStore = useContext(LookupsContext)
+  if (!dataStore.ready) return null
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
 
   const module =
     loadoutLookups.modules[moduleCode as MiningModuleEnum] || loadoutLookups.gadgets[moduleCode as MiningGadgetEnum]

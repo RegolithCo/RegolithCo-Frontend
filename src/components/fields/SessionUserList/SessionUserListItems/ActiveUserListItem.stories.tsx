@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ActiveUserListItem as ActiveUserComponent, ActiveUserListItemProps } from './ActiveUserListItem'
@@ -6,7 +6,7 @@ import { fakeSession, fakeSessionUser } from '@regolithco/common/dist/mock'
 import { List, Typography } from '@mui/material'
 import { Session, SessionUser, SessionUserStateEnum, User, UserStateEnum } from '@regolithco/common'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'
-import { useStorybookAsyncLookupData } from '../../../../hooks/useLookupStorybook'
+import { useStorybookLookups } from '../../../../hooks/useLookupStorybook'
 
 export default {
   title: 'UserList/ActiveUser',
@@ -32,7 +32,18 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const fakeSessionObj = useStorybookAsyncLookupData<Session>(fakeSession)
+  const [fakeSessionObj, setFakeSessionObj] = React.useState<Session>()
+
+  const dataStore = useStorybookLookups()
+
+  useEffect(() => {
+    const calcFakeSession = async () => {
+      const fakeSess = await fakeSession(dataStore)
+      setFakeSessionObj(fakeSess)
+    }
+    calcFakeSession()
+  }, [dataStore])
+
   if (!fakeSessionObj) return <div>Loading Fake session...</div>
   const sessionUser = componentProps?.sessionUser as SessionUser
 

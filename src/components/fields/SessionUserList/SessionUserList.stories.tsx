@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionUserList as SessionUserListComponent, SessionUserListProps } from './SessionUserList'
@@ -6,7 +6,7 @@ import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/commo
 import { Box } from '@mui/system'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { Session } from '@regolithco/common'
-import { useStorybookAsyncLookupData } from '../../../hooks/useLookupStorybook'
+import { useStorybookLookups } from '../../../hooks/useLookupStorybook'
 
 export default {
   title: 'UserList/UserList',
@@ -23,8 +23,20 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: TemplateProps) => {
-  const fakeSessionObj = useStorybookAsyncLookupData<Session>(fakeSession)
+  const [fakeSessionObj, setFakeSessionObj] = React.useState<Session>()
+
+  const dataStore = useStorybookLookups()
+
+  useEffect(() => {
+    const calcFakeSession = async () => {
+      const fakeSess = await fakeSession(dataStore)
+      setFakeSessionObj(fakeSess)
+    }
+    calcFakeSession()
+  }, [dataStore])
+
   if (!fakeSessionObj) return <div>Loading Fake session...</div>
+
   const meUser = fakeUserProfile({ friends: ['userB_Friend'] })
   return (
     <SessionContext.Provider

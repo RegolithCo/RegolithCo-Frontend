@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import {
   Box,
   Button,
@@ -27,7 +27,8 @@ import {
   UserProfile,
   calcLoadoutStats,
   sanitizeLoadout,
-  LoadoutLookup,
+  ActiveMiningLaserLoadout,
+  AllStats,
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -42,8 +43,7 @@ import { LoadoutCreateModal } from '../../modals/LoadoutCreateModal'
 import { WarningModal } from '../../modals/WarningModal'
 import { LoadoutShareModal } from '../../modals/LoadoutShareModal'
 import { ExportImageIcon } from '../../../icons/badges'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
-import { noop } from 'lodash'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface LoadoutCalcProps {
   miningLoadout?: MiningLoadout
@@ -106,10 +106,14 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 }) => {
   const theme = useTheme()
   const owner = userProfile || dummyUserProfile()
+  const dataStore = useContext(LookupsContext)
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
+  const [stats, setStats] = React.useState<AllStats>()
+  const [activeLasers, setActiveLasers] = React.useState<ActiveMiningLaserLoadout[]>([])
+  const [laserSize, setLaserSize] = React.useState(0)
+
   const [createModalOpen, setCreateModalOpen] = React.useState(false)
-  const [loadoutLookups, setLoadoutLookups] = React.useState<LoadoutLookup>()
   const [countWarningModalOpen, setCountWarningModalOpen] = React.useState(false)
   const [editingName, setEditingName] = React.useState(false)
   const [shareModalOpen, setShareModalOpen] = React.useState(false)
@@ -118,66 +122,70 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(
-    async (ds) => {
-      ds.getLookup('loadout').then((res) => setLoadoutLookups(res))
+  const setNewLoadout = useCallback(
+    async (sbl?: MiningLoadout) => {
+      if (!newLoadout) return
+      if (hoverLoadout) _setHoverLoadout(null)
+      const finalLoadout = sbl || (await newMiningLoadout(dataStore, newLoadout.ship as LoadoutShipEnum, owner))
+      const sanitizedLoadout = await sanitizeLoadout(dataStore, finalLoadout)
+      _setNewLoadout(sanitizedLoadout)
+    },
+    [dataStore, newLoadout]
+  )
+
+  const setHoverLoadout = useCallback(
+    async (hl: MiningLoadout | null) => {
+      if (hl === null) return _setHoverLoadout(null)
+      const sanitizedLoadout = await sanitizeLoadout(dataStore, hl)
+      _setHoverLoadout(sanitizedLoadout)
+    },
+    [dataStore]
+  )
+
+  const handleShipChange = useCallback(
+    async (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
+      if (!newLoadout) return
+      if (newShip === newLoadout?.ship || !newShip) return
+      const newLoadoutCopy = await newMiningLoadout(dataStore, newShip, owner)
+      setNewLoadout({
+        ...newLoadout,
+        ship: newShip,
+        activeLasers: newLoadoutCopy.activeLasers,
+      })
+    },
+    [newLoadout, owner]
+  )
+
+  useEffect(() => {
+    const asyncCalc = async () => {
+      if (!dataStore.ready) return
       const myNewLoadout: MiningLoadout = newLoadout
         ? { ...newLoadout }
-        : miningLoadout || (await newMiningLoadout(ds, DEFAULT_SHIP, owner))
+        : miningLoadout || (await newMiningLoadout(dataStore, DEFAULT_SHIP, owner))
 
       if (!newLoadout) _setNewLoadout(myNewLoadout)
+    }
+    asyncCalc()
+  }, [dataStore.ready])
 
-      const loadout = hoverLoadout || myNewLoadout
+  useEffect(() => {
+    if (!dataStore.ready) return
+    const asyncCalc = async () => {
+      const loadout = hoverLoadout || newLoadout
+      if (!loadout) return
 
-      const activeLasers = myNewLoadout.activeLasers || []
-      const laserSize = myNewLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+      const activeLasers = (loadout.activeLasers as ActiveMiningLaserLoadout[]) || []
+      const laserSize = loadout.ship === LoadoutShipEnum.Mole ? 2 : 1
 
-      const sanitizedLoadout = await sanitizeLoadout<MiningLoadout>(ds, loadout)
-      const stats = await calcLoadoutStats(ds, sanitizedLoadout)
+      const sanitizedLoadout = await sanitizeLoadout<MiningLoadout>(dataStore, loadout)
+      const stats = await calcLoadoutStats(dataStore, sanitizedLoadout)
 
-      // Callback to set a new loadout
-      const setNewLoadout = async (sbl?: MiningLoadout) => {
-        if (hoverLoadout) _setHoverLoadout(null)
-        const finalLoadout = sbl || (await newMiningLoadout(ds, myNewLoadout.ship as LoadoutShipEnum, owner))
-        const sanitizedLoadout = await sanitizeLoadout(ds, finalLoadout)
-        _setNewLoadout(sanitizedLoadout)
-      }
-      // Callback to set a new hover loadout
-      const setHoverLoadout = async (hl: MiningLoadout | null) => {
-        if (hl === null) return _setHoverLoadout(null)
-        const sanitizedLoadout = await sanitizeLoadout(ds, hl)
-        _setHoverLoadout(sanitizedLoadout)
-      }
-
-      // Callback to handle ship change
-      const handleShipChange = async (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
-        if (newShip === myNewLoadout.ship || !newShip) return
-        const newLoadoutCopy = await newMiningLoadout(ds, newShip, owner)
-        setNewLoadout({
-          ...myNewLoadout,
-          ship: newShip,
-          activeLasers: newLoadoutCopy.activeLasers,
-        })
-      }
-
-      return {
-        stats,
-        activeLasers,
-        laserSize,
-        setNewLoadout,
-        setHoverLoadout,
-        handleShipChange,
-      }
-    },
-    [newLoadout, hoverLoadout, miningLoadout]
-  ) || {
-    stats: null,
-    activeLasers: [],
-    laserSize: 0,
-    setNewLoadout: () => noop,
-    setHoverLoadout: () => noop,
-    handleShipChange: () => noop,
-  }
+      setActiveLasers(activeLasers)
+      setLaserSize(laserSize)
+      setStats(stats)
+    }
+    asyncCalc()
+  }, [dataStore.ready, hoverLoadout, miningLoadout, newLoadout, owner])
 
   const Wrapper = useCallback(
     ({ children }: { children: React.ReactNode }) => {
@@ -244,8 +252,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     [onClose, open]
   )
 
-  if (!newLoadout || lookupLoading || !lookupData) return <Wrapper>Loading...</Wrapper>
-  const { stats, activeLasers, laserSize, setNewLoadout, setHoverLoadout, handleShipChange } = lookupData
+  if (!dataStore.ready || !newLoadout) return <div>Loading Loadout Stats...</div>
   return (
     <Wrapper>
       <Card

@@ -82,11 +82,12 @@ export const ShipOreTable: React.FC = () => {
       setSortedShipRowKeys(newSorted)
     }
     calcShipRowKeys()
-  }, [dataStore])
+  }, [dataStore.ready])
 
   const rowStats: { max: number; min: number }[] = []
 
-  if (!finalTable) return <div>Loading...</div>
+  if (!finalTable || !dataStore.ready) return <div>Loading prices...</div>
+
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">

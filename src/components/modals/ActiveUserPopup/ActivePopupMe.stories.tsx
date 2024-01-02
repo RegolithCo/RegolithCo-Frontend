@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ActivePopupMe as ActivePopupMeC, ActivePopupMeProps } from './ActivePopupMe'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/mock'
-import { SessionUser, User } from '@regolithco/common'
-import { useStorybookAsyncLookupData } from '../../../hooks/useLookupStorybook'
+import { Session, SessionUser, User } from '@regolithco/common'
+import { useStorybookLookups } from '../../../hooks/useLookupStorybook'
 
 export default {
   title: 'Modals/ActivePopupMe',
@@ -23,10 +23,21 @@ interface TemplateProps {
 }
 
 const Template: StoryFn<TemplateProps> = ({ isCrew, componentProps, contextProps }: TemplateProps) => {
-  const session = useStorybookAsyncLookupData(fakeSession)
-  if (!session) return <div>Loading Fake session...</div>
+  const [fakeSessionObj, setFakeSessionObj] = React.useState<Session>()
 
-  const sessionMembers: SessionUser[] = session.activeMembers?.items || []
+  const dataStore = useStorybookLookups()
+
+  useEffect(() => {
+    const calcFakeSession = async () => {
+      const fakeSess = await fakeSession(dataStore)
+      setFakeSessionObj(fakeSess)
+    }
+    calcFakeSession()
+  }, [dataStore])
+
+  if (!fakeSessionObj) return <div>Loading Fake session...</div>
+
+  const sessionMembers: SessionUser[] = fakeSessionObj.activeMembers?.items || []
   // Random session member chosen from sessionMembers
   const meUser = fakeUserProfile(sessionMembers[Math.floor(Math.random() * sessionMembers.length)].owner as User)
   const captains = isCrew
@@ -44,7 +55,7 @@ const Template: StoryFn<TemplateProps> = ({ isCrew, componentProps, contextProps
     <SessionContext.Provider
       value={{
         ...sessionContextDefault,
-        session,
+        session: fakeSessionObj,
         captains,
         myUserProfile: meUser,
         mySessionUser: sessionUser,

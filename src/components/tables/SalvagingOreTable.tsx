@@ -21,6 +21,7 @@ export const SalvagingOreTable: React.FC = () => {
 
   React.useEffect(() => {
     const calcSalvageRowKeys = async () => {
+      if (!dataStore.ready) return
       const salvageRowKeys = Object.values(SalvageOreEnum)
       const prices = await Promise.all(salvageRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey)))
       const newSorted = [...salvageRowKeys].sort((a, b) => {
@@ -63,9 +64,10 @@ export const SalvagingOreTable: React.FC = () => {
       setColorizedRows(colorizedRows)
     }
     calcSalvageRowKeys()
-  })
+  }, [dataStore.ready])
 
-  if (!finalTable) return <div>Loading...</div>
+  if (!finalTable || !dataStore.ready) return <div>Loading prices...</div>
+
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 900, mx: 'auto' }} size="small" aria-label="simple table">

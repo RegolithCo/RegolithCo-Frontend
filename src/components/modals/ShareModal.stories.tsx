@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ShareModal as ShareModalC } from './ShareModal'
@@ -10,7 +10,7 @@ import {
 } from '@regolithco/common/dist/mock'
 import { SessionContext, sessionContextDefault, SessionTabs } from '../../context/session.context'
 import { Session } from '@regolithco/common'
-import { useStorybookAsyncLookupData } from '../../hooks/useLookupStorybook'
+import { useStorybookLookups } from '../../hooks/useLookupStorybook'
 
 export default {
   title: 'Modals/Share',
@@ -22,13 +22,19 @@ const Template: StoryFn<typeof ShareModalC> = (args) => {
   const [orderId, openWorkOrderModal] = React.useState<string>()
   const [scoutingFind, openScoutingModal] = React.useState<string>()
   const [activeTab, setActiveTab] = React.useState<SessionTabs>(SessionTabs.SETTINGS)
+  const dataStore = useStorybookLookups()
+  const [fakeSessionObj, setFakeSessionObj] = React.useState<Session>()
 
-  const fakeSessionObj = useStorybookAsyncLookupData<Session>((ds) => {
-    return fakeSession(ds, {
-      activeMembers: fakePaginatedSessionUserList(40),
-      mentionedUsers: fakeSCNameList(40),
-    })
-  })
+  useEffect(() => {
+    const calcFakeSession = async () => {
+      const fakeSess = await fakeSession(dataStore, {
+        activeMembers: fakePaginatedSessionUserList(40),
+        mentionedUsers: fakeSCNameList(40),
+      })
+      setFakeSessionObj(fakeSess)
+    }
+    calcFakeSession()
+  }, [dataStore])
 
   if (!fakeSessionObj) return <div>Loading Fake session...</div>
 

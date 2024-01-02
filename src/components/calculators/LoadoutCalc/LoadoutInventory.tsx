@@ -10,7 +10,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum } from '@regolithco/common'
+import { LoadoutLookup, MiningGadgetEnum, MiningLaserEnum, MiningLoadout, MiningModuleEnum } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LaserMenuItem, ModuleMenuItem } from './loadoutMenus'
 import { LookupsContext } from '../../../context/lookupsContext'
@@ -24,8 +24,8 @@ export interface LoadoutInventoryProps {
 export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onChange, readonly }) => {
   const theme = useTheme()
   const [value, setValue] = useState('')
-  const { lookups } = useContext(LookupsContext)
-  const loadoutLookups = lookups?.Loadout
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
 
   const getSortOrder = useCallback(
     (key: string): string => {
@@ -57,7 +57,7 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
     return 0
   })
 
-  if (!loadoutLookups) return null
+  if (!dataStore.ready) return null
   const { gadgets: GADGETS, lasers: LASERS, modules: MODULES } = loadoutLookups
   return (
     <Card

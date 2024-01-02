@@ -3,10 +3,7 @@ import { Meta, StoryFn } from '@storybook/react'
 
 import { ShareWrapper } from './ShareWrapper'
 import { ImageDownloadComponent } from './ImageDownloadComponent'
-import { fakeShipMiningOrder } from '@regolithco/common/dist/mock'
 import { WorkOrderShare } from './WorkOrderShare'
-import { useStorybookAsyncLookupData } from '../../hooks/useLookupStorybook'
-import { ShipMiningOrder } from '@regolithco/common'
 
 export default {
   title: 'Sharing/WorkOrderShare',

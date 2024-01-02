@@ -32,7 +32,7 @@ export const VehicleOreTable: React.FC = () => {
       const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
       const table: [number, number, number][] = []
-      for (const key of sortedVehicleRowKeys) {
+      for (const key of newSorted) {
         const orePrice = (await findPrice(dataStore, key as VehicleOreEnum)) / 1000
         const retVals = [orePrice, orePrice * 800, orePrice * 3500]
         table.push(retVals as [number, number, number])
@@ -44,11 +44,10 @@ export const VehicleOreTable: React.FC = () => {
       setFgColors(fgColors)
     }
     calcVehicleRowKeys()
-  }, [dataStore])
+  }, [dataStore.ready])
 
-  const vehicleRowKeys = React.useMemo(() => sortedVehicleRowKeys, [sortedVehicleRowKeys])
+  if (!finalTable || !dataStore.ready) return <div>Loading prices...</div>
 
-  if (!finalTable || dataStore.loading) return <div>Loading...</div>
   return (
     <TableContainer>
       <Table sx={{ minWidth: 400, maxWidth: 460, mx: 'auto' }} size="small" aria-label="simple table">
@@ -82,7 +81,7 @@ export const VehicleOreTable: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {vehicleRowKeys.map((shipRowKey, rowIdx) => {
+          {sortedVehicleRowKeys.map((shipRowKey, rowIdx) => {
             return (
               <TableRow key={`row-${rowIdx}`}>
                 <TableCell component="th" scope="row">

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Box, ListSubheader, MenuItem, Select, Stack, Typography, lighten, useTheme } from '@mui/material'
 import {
   AllStats,
@@ -9,6 +9,7 @@ import {
   MiningModuleEnum,
   ModuleLoadoutStats,
   MiningModule,
+  LoadoutLookup,
 } from '@regolithco/common'
 import { LoadoutLaserChip, LoadoutModuleChip } from './LoadoutLaserChip'
 import { LoadoutStat } from './LoadoutStat'
@@ -16,7 +17,7 @@ import { toolMenuStatsOrder } from './LoadoutCalcStats'
 import { ModuleIcon } from '../../../icons/Module'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 const baseProps: React.ComponentProps<typeof Select> = {
   fullWidth: true,
@@ -60,8 +61,10 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
+
+  if (!loadoutLookups || !dataStore.ready) return <div>Loading...</div>
 
   const moduleKeys: MiningModuleEnum[] = Object.keys(loadoutLookups.modules).map((key) => key as MiningModuleEnum)
   return (
@@ -192,8 +195,9 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
+  if (!dataStore.ready) return null
 
   const laserChoices: MiningLaserEnum[] = Object.keys(loadoutLookups.lasers)
     .filter((key) => laserSize >= loadoutLookups.lasers[key as MiningLaserEnum].size)
@@ -320,8 +324,9 @@ export interface LaserMenuItemProps {
 
 export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
+  if (!dataStore.ready) return null
   const laser = loadoutLookups.lasers[laserCode as MiningLaserEnum]
   return (
     <>
@@ -367,8 +372,9 @@ export interface ModuleMenuItemProps {
 
 export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups, lookupLoading } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups || lookupLoading) return <div>Loading...</div>
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
+  if (!dataStore.ready) return null
   const module =
     loadoutLookups.modules[moduleCode as MiningModuleEnum] || loadoutLookups.gadgets[moduleCode as MiningGadgetEnum]
   if (!module) return null

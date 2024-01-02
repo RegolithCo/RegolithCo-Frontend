@@ -6,17 +6,22 @@ import {
   ShipOreEnum,
   getShipOreName,
   findPrice,
+  RefineryMethodEnum,
 } from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 type GridStats = { max: number | null; min: number | null }
 
 export const RefineryBonusTable: React.FC = () => {
   const theme = useTheme()
+  const dataStore = React.useContext(LookupsContext)
+  const [hAxis, setHAxis] = React.useState<string[][]>([])
+  const [vAxis, setVAxis] = React.useState<[ShipOreEnum | RefineryMethodEnum, string][]>([])
+  const [rows, setRows] = React.useState<RefineryModifiers[][]>([])
   // Only used for time v profit
   const [gridStatsArr, setGridStatsArr] = React.useState<[GridStats, GridStats, GridStats]>([
     { max: null, min: null },
@@ -31,70 +36,75 @@ export const RefineryBonusTable: React.FC = () => {
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(async (ds) => {
-    const tradeportData = await ds.getLookup('tradeportLookups')
-    const refineryBonusLookup = await ds.getLookup('refineryBonusLookup')
+  React.useEffect(() => {
+    const calcTable = async () => {
+      if (!dataStore.ready) return
+      const tradeportData = await dataStore.getLookup('tradeportLookups')
+      const refineryBonusLookup = await dataStore.getLookup('refineryBonusLookup')
 
-    const hAxis: [RefineryEnum, string][] = Object.values(RefineryEnum).map((refVal) => [
-      refVal as RefineryEnum,
-      (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
-    ])
-    hAxis.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+      const hAxis: [RefineryEnum, string][] = Object.values(RefineryEnum).map((refVal) => [
+        refVal as RefineryEnum,
+        (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
+      ])
+      hAxis.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
 
-    let vAxis: [ShipOreEnum, string][] = []
-    const sortable = Object.entries(ShipOreEnum)
-      .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
-      .map(([oreKey, oreVal]) => [oreKey, oreVal])
-    const prices = await Promise.all(
-      sortable.map(([, oreVal]) => findPrice(ds, oreVal as ShipOreEnum, undefined, true))
-    )
-    sortable.sort(
-      (a, b) =>
-        prices[sortable.findIndex(([, oreVal]) => oreVal === b[1])] -
-        prices[sortable.findIndex(([, oreVal]) => oreVal === a[1])]
-    )
-    vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
+      let vAxis: [ShipOreEnum, string][] = []
+      const sortable = Object.entries(ShipOreEnum)
+        .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
+        .map(([oreKey, oreVal]) => [oreKey, oreVal])
+      const prices = await Promise.all(
+        sortable.map(([, oreVal]) => findPrice(dataStore, oreVal as ShipOreEnum, undefined, true))
+      )
+      sortable.sort(
+        (a, b) =>
+          prices[sortable.findIndex(([, oreVal]) => oreVal === b[1])] -
+          prices[sortable.findIndex(([, oreVal]) => oreVal === a[1])]
+      )
+      vAxis = sortable.map(([, oreVal]) => [oreVal as ShipOreEnum, getShipOreName(oreVal as ShipOreEnum)])
 
-    const newGridStatsArr: [GridStats, GridStats, GridStats] = [
-      { max: null, min: null },
-      { max: null, min: null },
-      { max: null, min: null },
-    ]
-    const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
-      const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
-        const opl = refineryBonusLookup[refinery] as OreProcessingLookup
-        if (!opl) return [NaN, NaN, NaN]
-        const outArr = opl[ore] as RefineryModifiers
+      const newGridStatsArr: [GridStats, GridStats, GridStats] = [
+        { max: null, min: null },
+        { max: null, min: null },
+        { max: null, min: null },
+      ]
+      const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
+        const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
+          const opl = refineryBonusLookup[refinery] as OreProcessingLookup
+          if (!opl) return [NaN, NaN, NaN]
+          const outArr = opl[ore] as RefineryModifiers
 
-        const outArrNormed = outArr.map((val) => {
-          if (val === null) return null
-          else return (val - 1) * 100
-        }) as RefineryModifiers
+          const outArrNormed = outArr.map((val) => {
+            if (val === null) return null
+            else return (val - 1) * 100
+          }) as RefineryModifiers
 
-        outArrNormed.forEach((val, idx) => {
-          if (val !== null) {
-            const max = newGridStatsArr[idx].max
-            const min = newGridStatsArr[idx].min
-            if (max === null || val > max) {
-              newGridStatsArr[idx].max = val
-              newGridStatsArr[idx].min = val * -1
+          outArrNormed.forEach((val, idx) => {
+            if (val !== null) {
+              const max = newGridStatsArr[idx].max
+              const min = newGridStatsArr[idx].min
+              if (max === null || val > max) {
+                newGridStatsArr[idx].max = val
+                newGridStatsArr[idx].min = val * -1
+              }
+              if (min === null || val < min) {
+                newGridStatsArr[idx].max = val * -1
+                newGridStatsArr[idx].min = val
+              }
             }
-            if (min === null || val < min) {
-              newGridStatsArr[idx].max = val * -1
-              newGridStatsArr[idx].min = val
-            }
-          }
+          })
+          return outArrNormed
         })
-        return outArrNormed
+        return cols
       })
-      return cols
-    })
-    setGridStatsArr(newGridStatsArr)
-
-    return { hAxis, vAxis, rows }
+      setGridStatsArr(newGridStatsArr)
+      setRows(rows)
+      setHAxis(hAxis)
+      setVAxis(vAxis)
+    }
+    calcTable()
   }, [])
 
-  const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
+  // const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
 
   // Now map the values to a color index
   const rowColColors: RefineryModifiers[][] = rows.map((row) =>
@@ -112,7 +122,7 @@ export const RefineryBonusTable: React.FC = () => {
 
   const tables = ['Yield']
   const reversed = [false, true, true]
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <>
       {tables.map((tableName, tableIdx) => (

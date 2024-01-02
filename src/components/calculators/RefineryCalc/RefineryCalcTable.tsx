@@ -9,13 +9,14 @@ import {
   getShipOreName,
   findPrice,
   getRefiningCost,
+  UEXTradeport,
 } from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { RefineryMetricEnum, RefineryPivotEnum } from './RefineryCalc'
 import { fontFamilies } from '../../../theme'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 // vAxis={verticalAxis} hAxis={horizontalAxis} oreType={oreType} value={oreAmt}
 interface RefineryCalcTableProps {
@@ -36,6 +37,10 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   refMode,
 }) => {
   const theme = useTheme()
+  const dataStore = React.useContext(LookupsContext)
+  const [hAxis, setHAxis] = React.useState<string[][]>([])
+  const [vAxis, setVAxis] = React.useState<[ShipOreEnum | RefineryMethodEnum, string][]>([])
+  const [rows, setRows] = React.useState<[number | null, number | null][][]>([])
   // Only used for time v profit
   const [gridStatsArr, setGridStatsArr] = React.useState<GridStats[]>([
     { max: null, min: null },
@@ -48,9 +53,10 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     .getColors()
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const { lookupData, lookupLoading } = useAsyncLookupData(
-    async (ds, oreAmt, oreType, method, refMetric, refMode) => {
-      const tradeportData = await ds.getLookup('tradeportLookups')
+  React.useEffect(() => {
+    const calcTable = async () => {
+      if (!dataStore.ready) return
+      const tradeportData = dataStore.getLookup('tradeportLookups') as UEXTradeport[]
       const hAxis = Object.values(RefineryEnum).map((refVal) => [
         refVal as RefineryEnum,
         (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
@@ -63,7 +69,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
           .filter(([, val]) => val !== ShipOreEnum.Inertmaterial)
           .map(([oreKey, oreVal]) => [oreKey, oreVal])
         const prices = await Promise.all(
-          sortable.map(([, oreVal]) => findPrice(ds, oreVal as ShipOreEnum, undefined, true))
+          sortable.map(([, oreVal]) => findPrice(dataStore, oreVal as ShipOreEnum, undefined, true))
         )
         sortable.sort(
           (a, b) =>
@@ -94,9 +100,9 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
               const finalMethod = (
                 refMode === RefineryPivotEnum.oreType ? method : (rowKey as RefineryMethodEnum)
               ) as RefineryMethodEnum
-              const oreYield = await yieldCalc(ds, finalAmt, finalOre, finalRefinery, finalMethod)
-              const refCost = await getRefiningCost(ds, oreYield, finalOre, finalRefinery, finalMethod)
-              const marketPrice = (await findPrice(ds, finalOre as ShipOreEnum, undefined, true)) / 100
+              const oreYield = await yieldCalc(dataStore, finalAmt, finalOre, finalRefinery, finalMethod)
+              const refCost = await getRefiningCost(dataStore, oreYield, finalOre, finalRefinery, finalMethod)
+              const marketPrice = (await findPrice(dataStore, finalOre as ShipOreEnum, undefined, true)) / 100
               switch (refMetric) {
                 case RefineryMetricEnum.netProfit:
                   outArr[0] = oreYield * marketPrice - refCost
@@ -108,13 +114,13 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
                   outArr[0] = refCost
                   break
                 case RefineryMetricEnum.refiningTime:
-                  outArr[0] = await getRefiningTime(ds, finalAmt, finalOre, finalRefinery, finalMethod)
+                  outArr[0] = await getRefiningTime(dataStore, finalAmt, finalOre, finalRefinery, finalMethod)
                   break
                 case RefineryMetricEnum.timeVProfit:
                   // We need an array of values for this one to normalize things
                   outArr = [
                     oreYield * marketPrice - refCost,
-                    await getRefiningTime(ds, finalAmt, finalOre, finalRefinery, finalMethod),
+                    await getRefiningTime(dataStore, finalAmt, finalOre, finalRefinery, finalMethod),
                   ]
                   break
               }
@@ -133,12 +139,14 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
         })
       )
       setGridStatsArr(newGridStats)
-      return { hAxis, vAxis, rows }
-    },
-    [oreAmt, oreType, method, refMetric, refMode]
-  )
+      setHAxis(hAxis)
+      setVAxis(vAxis)
+      setRows(rows)
+    }
+    calcTable()
+  }, [oreAmt, oreType, method, refMetric, refMode])
 
-  const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
+  // const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
 
   let numberFormat1: MValueFormat = MValueFormat.number
   let numberFormat2: MValueFormat = MValueFormat.number
@@ -212,7 +220,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
     })
   }
 
-  if (lookupLoading) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading...</div>
   return (
     <TableContainer
       sx={{

@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Card, CardContent, CardHeader, Stack, Typography, useTheme } from '@mui/material'
-import { ActiveMiningLaserLoadout, Maybe, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
+import { ActiveMiningLaserLoadout, LoadoutLookup, Maybe, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
 import { LaserChooserMenu, ModuleChooserMenu } from './loadoutMenus'
-import { useAsyncLookupData } from '../../../hooks/useLookups'
+import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface LoadoutLaserRowProps {
   activeLaser: Maybe<ActiveMiningLaserLoadout | null>
@@ -22,8 +22,10 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   readonly,
 }) => {
   const theme = useTheme()
-  const { lookupData: loadoutLookups } = useAsyncLookupData((ds) => ds.getLookup('loadout'))
-  if (!loadoutLookups) return null
+
+  const dataStore = useContext(LookupsContext)
+  const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
+
   const hasLaser = Boolean(activeLaser && activeLaser.laser)
   const laserCode = activeLaser?.laser
   const laserIsActive = activeLaser?.laserActive
@@ -95,6 +97,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
     )
   }
 
+  if (!dataStore.ready) return null
   return (
     <Card
       elevation={hasLaser && laserIsActive ? 8 : 1}
