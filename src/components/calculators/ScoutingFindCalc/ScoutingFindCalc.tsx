@@ -383,7 +383,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const enableEditButton = (standalone && scoutingFind.clusterType !== ScoutingFindTypeEnum.Ship) || allowEdit
 
-  if (!summary || !dataStore.ready) return <div>loading...</div>
+  if (!summary || !dataStore.ready) return <div>loading lookups...</div>
 
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume
@@ -749,7 +749,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       <Grid key={idx} xs={6} sm={4} md={3}>
                         <ShipRockCard
                           rock={newRock}
-                          rockValue={summary.byRock ? summary.byRock[idx].value : undefined}
+                          rockValue={
+                            summary.byRock && summary.byRock.length > idx ? summary.byRock[idx].value : undefined
+                          }
                           allowEdit={allowEdit}
                           onChangeState={(newState) => {
                             onChange &&

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -92,7 +92,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
       if (!dataStore.ready) return
       const storeChoices = await findAllStoreChoices(dataStore, summary.oreSummary, Boolean(shipOrder.isRefined))
       setStoreChoices(storeChoices)
-      setMyStoreChoice(storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0])
+      if (storeChoices.length === 0) {
+        setMyStoreChoice(undefined)
+      } else {
+        setMyStoreChoice(storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0])
+      }
     }
     calcMyStoreChoice()
   }, [summary.oreSummary, shipOrder.isRefined, workOrder.sellStore])
@@ -112,7 +116,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
     }
   }, [myStoreChoice, workOrder.shareAmount])
 
-  if (!dataStore.ready || !myStoreChoice) return <div>Loading...</div>
+  if (!dataStore.ready) return <div>Loading lookups...</div>
   return (
     <>
       <Card sx={sx}>
@@ -153,7 +157,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                 Sell Price Estimate:
               </Typography>
               <List dense>
-                {storeChoices.length > 0 ? (
+                {storeChoices.length > 0 && myStoreChoice ? (
                   <StoreChooserListItem
                     onClick={() => isEditing && setStoreChooserOpen(true)}
                     ores={summary.oreSummary}
@@ -572,7 +576,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           }
           onClose={() => setConfirmPriceReset(false)}
           onConfirm={() => {
-            setShareAmountInputVal(myStoreChoice?.price)
+            setShareAmountInputVal(myStoreChoice?.price || 0)
             onChange({
               ...workOrder,
               shareAmount: null,

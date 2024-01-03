@@ -83,7 +83,9 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   // const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
   const backgroundColor = isSeller ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
   const hasNote = crewShare.note && crewShare.note.length > 0
-  const finalPayout: ShareAmtArr = isSeller
+  const finalPayout: ShareAmtArr = !payoutSummary
+    ? [0, 0, 0]
+    : isSeller
     ? [payoutSummary[0] + (remainder || 0), payoutSummary[1] + (remainder || 0), 0]
     : payoutSummary
   return (

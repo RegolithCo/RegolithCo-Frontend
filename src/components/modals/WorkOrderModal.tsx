@@ -126,6 +126,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
   const styles = styleThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
+  // We need to make sure newWorkOrder is always up to date with the workOrder
   React.useEffect(() => {
     setNewWorkOrder(workOrder)
   }, [workOrder])

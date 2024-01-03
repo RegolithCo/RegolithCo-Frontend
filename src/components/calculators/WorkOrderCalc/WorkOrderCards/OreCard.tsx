@@ -354,9 +354,16 @@ export const OreCard: React.FC<OreCardProps> = ({
                             event.preventDefault()
                             setEditCell(oreTableRows.length > idx + 1 ? [oreTableRows[idx + 1][0], true] : undefined)
                           } else if (event.key === 'Tab') {
+                            const isShiftPressed = event.shiftKey
                             event.preventDefault()
                             // Set next cell down to edit mode
-                            setEditCell(oreTableRows.length > idx + 1 ? [oreTableRows[idx + 1][0], true] : undefined)
+                            if (isShiftPressed) {
+                              const prevIdx = idx - 1
+                              setEditCell(prevIdx > 0 ? [oreTableRows[prevIdx][0], true] : undefined)
+                            } else {
+                              const nextIdx = idx + 1
+                              setEditCell(oreTableRows.length > nextIdx ? [oreTableRows[nextIdx][0], true] : undefined)
+                            }
                           } else if (event.key === 'Escape') {
                             event.preventDefault()
                             setEditCell(undefined)
@@ -415,9 +422,19 @@ export const OreCard: React.FC<OreCardProps> = ({
                               event.preventDefault()
                               setEditCell(oreTableRows.length > idx + 1 ? [oreTableRows[idx + 1][0], false] : undefined)
                             } else if (event.key === 'Tab') {
+                              const isShiftPressed = event.shiftKey
                               event.preventDefault()
+
                               // Set next cell down to edit mode
-                              setEditCell(oreTableRows.length > idx + 1 ? [oreTableRows[idx + 1][0], false] : undefined)
+                              if (isShiftPressed) {
+                                const prevIdx = idx - 1
+                                setEditCell(prevIdx > 0 ? [oreTableRows[prevIdx][0], false] : undefined)
+                              } else {
+                                const nextIdx = idx + 1
+                                setEditCell(
+                                  oreTableRows.length > nextIdx ? [oreTableRows[nextIdx][0], false] : undefined
+                                )
+                              }
                             } else if (event.key === 'Escape') {
                               event.preventDefault()
                               setEditCell(undefined)

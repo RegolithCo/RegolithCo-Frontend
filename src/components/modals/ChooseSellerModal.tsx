@@ -39,6 +39,7 @@ export const ChooseSellerModal: React.FC<ChooseSellerModalProps> = ({
             if (valid) {
               setValid(true)
               setNewScName(newScName)
+              setTimeout(onClose, 200)
             } else {
               setValid(false)
               setNewScName(null)
