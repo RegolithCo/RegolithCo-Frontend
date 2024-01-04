@@ -1992,6 +1992,42 @@ export function useGetSessionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetSessionQueryHookResult = ReturnType<typeof useGetSessionQuery>;
 export type GetSessionLazyQueryHookResult = ReturnType<typeof useGetSessionLazyQuery>;
 export type GetSessionQueryResult = Apollo.QueryResult<types.GetSessionQuery, types.GetSessionQueryVariables>;
+export const GetSessionUpdatedDocument = gql`
+    query getSessionUpdated($sessionId: ID!) {
+  session(sessionId: $sessionId) {
+    sessionId
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetSessionUpdatedQuery__
+ *
+ * To run a query within a React component, call `useGetSessionUpdatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSessionUpdatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSessionUpdatedQuery({
+ *   variables: {
+ *      sessionId: // value for 'sessionId'
+ *   },
+ * });
+ */
+export function useGetSessionUpdatedQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
+      }
+export function useGetSessionUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
+        }
+export type GetSessionUpdatedQueryHookResult = ReturnType<typeof useGetSessionUpdatedQuery>;
+export type GetSessionUpdatedLazyQueryHookResult = ReturnType<typeof useGetSessionUpdatedLazyQuery>;
+export type GetSessionUpdatedQueryResult = Apollo.QueryResult<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>;
 export const GetSessionShareDocument = gql`
     query getSessionShare($joinId: ID!) {
   sessionShare(joinId: $joinId) {
