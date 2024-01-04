@@ -101,7 +101,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
       setShareAmount(shareAmount)
     }
     calcWorkOrders()
-  }, [dataStore])
+  }, [dataStore, workOrders])
 
   if (!dataStore.ready) return <div>Loading...</div>
   if (!summaries) return null

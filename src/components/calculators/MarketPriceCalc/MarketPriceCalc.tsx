@@ -103,7 +103,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
     }
 
     if (dataStore.ready) calcStats()
-  }, [ores, dataStore])
+  }, [ores, dataStore, activityTab])
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
   const bgColors = new Gradient()

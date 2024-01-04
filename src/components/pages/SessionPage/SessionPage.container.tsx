@@ -212,7 +212,7 @@ export const SessionPageContainer: React.FC = () => {
         )) ||
       undefined
     )
-  }, [sessionQueries.session, modalOrderId])
+  }, [sessionQueries.session?.workOrders?.items, modalOrderId])
   const modalScoutingFind: ScoutingFind | undefined = React.useMemo(() => {
     return (
       (sessionQueries.session &&
@@ -222,7 +222,7 @@ export const SessionPageContainer: React.FC = () => {
         )) ||
       undefined
     )
-  }, [sessionQueries.session, modalScoutingFindId])
+  }, [sessionQueries.session?.scouting?.items, modalScoutingFindId])
 
   // NO HOOKS BELOW HERE PLEASE
   if (sessionQueries.loading && !sessionQueries.session) return <PageLoader title="loading session..." loading />

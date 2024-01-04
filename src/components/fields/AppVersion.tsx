@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Box, useTheme } from '@mui/material'
 import { fontFamilies } from '../../theme'
+import { useVersions } from '../../hooks/useVersions'
 
 export type AppVersion = {
   version: string
@@ -10,28 +11,11 @@ export type AppVersion = {
 
 export const AppVersion: React.FC = () => {
   const theme = useTheme()
-  const [version, setVersion] = React.useState<AppVersion>({
-    version: '0.0.0',
-    commit: '0000000',
-    stage: 'dev',
-  })
+  const { commit, isProd, stage, appVersion, scVersion } = useVersions()
 
-  React.useEffect(() => {
-    const version = document.querySelector<HTMLMetaElement>('meta[name=version]')?.content
-    const commit = document.querySelector<HTMLMetaElement>('meta[name=commit]')?.content
-    const stage = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
-    setVersion({
-      version: !version || version === '%VERSION%' ? '0.0.0' : version,
-      commit: !commit || commit === '%COMMIT%' ? '0000000' : commit,
-      stage: !stage || stage === '%STAGE%' ? 'dev' : stage,
-      // stage: 'production',
-    })
-  }, [])
-
-  let versionStr = `v${version?.version}`
-  const isProd = version.stage === 'production'
+  let versionStr = `v${appVersion}`
   if (!isProd) {
-    versionStr += `-${version?.stage} [#${version.commit}]`
+    versionStr += `-${stage} [#${commit}]`
   }
 
   return (

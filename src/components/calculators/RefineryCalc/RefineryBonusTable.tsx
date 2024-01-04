@@ -102,7 +102,7 @@ export const RefineryBonusTable: React.FC = () => {
       setVAxis(vAxis)
     }
     calcTable()
-  }, [])
+  }, [dataStore.ready])
 
   // const { hAxis, vAxis, rows } = lookupData || { hAxis: [], vAxis: [], rows: [] }
 
