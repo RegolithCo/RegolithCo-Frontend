@@ -126,14 +126,18 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedWorkOrders.map((workOrder: WorkOrder) => (
-            <WorkOrderTableRow
-              key={`wo-${workOrder.orderId}`}
-              workOrder={workOrder}
-              isShare={isShare}
-              summary={summaries[workOrder.orderId]}
-            />
-          ))}
+          {sortedWorkOrders.map((workOrder: WorkOrder) => {
+            // Might have to wait for the summaries to catch up
+            if (!summaries[workOrder.orderId]) return null
+            return (
+              <WorkOrderTableRow
+                key={`wo-${workOrder.orderId}`}
+                workOrder={workOrder}
+                isShare={isShare}
+                summary={summaries[workOrder.orderId]}
+              />
+            )
+          })}
         </TableBody>
         <TableFooter sx={styles.footer}>
           <TableRow>

@@ -301,6 +301,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                         position: 'sticky',
                         backgroundColor: rowSelected ? '#444' : theme.palette.background.paper,
                         '&:hover': {
+                          color: theme.palette.primary.contrastText,
                           backgroundColor: rowSelected
                             ? alpha(theme.palette.action.selected, 1)
                             : alpha(theme.palette.action.hover, 1),

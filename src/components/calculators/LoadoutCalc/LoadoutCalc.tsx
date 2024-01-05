@@ -124,7 +124,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 
   const setNewLoadout = useCallback(
     async (sbl?: MiningLoadout) => {
-      if (!newLoadout) return
+      if (!newLoadout || isShare) return
       if (hoverLoadout) _setHoverLoadout(null)
       const finalLoadout = sbl || (await newMiningLoadout(dataStore, newLoadout.ship as LoadoutShipEnum, owner))
       const sanitizedLoadout = await sanitizeLoadout(dataStore, finalLoadout)
@@ -135,6 +135,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 
   const setHoverLoadout = useCallback(
     async (hl: MiningLoadout | null) => {
+      if (isShare) return
       if (hl === null) return _setHoverLoadout(null)
       const sanitizedLoadout = await sanitizeLoadout(dataStore, hl)
       _setHoverLoadout(sanitizedLoadout)
@@ -144,7 +145,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
 
   const handleShipChange = useCallback(
     async (event: React.MouseEvent<HTMLElement>, newShip: LoadoutShipEnum) => {
-      if (!newLoadout) return
+      if (!newLoadout || isShare) return
       if (newShip === newLoadout?.ship || !newShip) return
       const newLoadoutCopy = await newMiningLoadout(dataStore, newShip, owner)
       setNewLoadout({
@@ -174,18 +175,18 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
       const loadout = hoverLoadout || newLoadout
       if (!loadout) return
 
-      const activeLasers = (loadout.activeLasers as ActiveMiningLaserLoadout[]) || []
-      const laserSize = loadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+      const stats = await calcLoadoutStats(dataStore, loadout)
+      setStats(stats)
 
-      const sanitizedLoadout = await sanitizeLoadout<MiningLoadout>(dataStore, loadout)
-      const stats = await calcLoadoutStats(dataStore, sanitizedLoadout)
+      if (!newLoadout) return
+      const activeLasers = (newLoadout.activeLasers as ActiveMiningLaserLoadout[]) || []
+      const laserSize = newLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
 
       setActiveLasers(activeLasers)
       setLaserSize(laserSize)
-      setStats(stats)
     }
     asyncCalc()
-  }, [dataStore.ready, hoverLoadout, miningLoadout, newLoadout, owner])
+  }, [dataStore.ready, hoverLoadout, newLoadout])
 
   const Wrapper = useCallback(
     ({ children }: { children: React.ReactNode }) => {
