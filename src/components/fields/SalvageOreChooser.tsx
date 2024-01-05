@@ -28,7 +28,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
   const theme = useTheme()
   const [sortedSalvageRowKeys, setSortedSalvageRowKeys] = React.useState<SalvageOreEnum[]>([])
   const salvageRowKeys = Object.values(SalvageOreEnum)
-  const bgColors = ['#a1a1a1', '#4b4b4b']
+  const bgColors = ['#b7af3f', '#3f7bb7']
   const fgColors = ['#ffffff', '#ffffff']
 
   const dataStore = React.useContext(LookupsContext)
