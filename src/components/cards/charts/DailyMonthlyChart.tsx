@@ -74,7 +74,7 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
             clamp: true,
           }}
           theme={{
-            textColor: 'white',
+            // textColor: 'white',
             legends: {
               text: {
                 fill: 'white',

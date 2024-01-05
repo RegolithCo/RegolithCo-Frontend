@@ -88,18 +88,10 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const [sessionError, setSessionError] = React.useState<ErrorCode>()
+  const [lastUpdated, setLastUpdated] = React.useState<number>(0)
   const isPageVisible = usePageVisibility()
 
   const sessionUserQry = useGetSessionUserQuery({
-    variables: {
-      sessionId: sessionId as string,
-    },
-    skip: !sessionId,
-  })
-
-  // This is the lightweight query that we use to update the session
-  // It should only contain: sesisoniD, timestamps for updatedAt and createdAt and the state
-  const sessionUpdatedQry = useGetSessionUpdatedQuery({
     variables: {
       sessionId: sessionId as string,
     },
@@ -110,15 +102,27 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     variables: {
       sessionId: sessionId as string,
     },
-    onCompleted: (data) => {
-      if (!data.session) return
-      // If the updated date is newer than the session date then we need to update the full sessionQry
-      if (data.session?.updatedAt > (sessionQry.data?.session?.updatedAt || 0)) {
-        sessionQry.refetch()
-      }
-    },
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
   })
+
+  // This is the lightweight query that we use to update the session
+  // It should only contain: sesisoniD, timestamps for updatedAt and createdAt and the state
+  const sessionUpdatedQry = useGetSessionUpdatedQuery({
+    variables: {
+      sessionId: sessionId as string,
+    },
+    fetchPolicy: 'no-cache', // This has got to be fresh every time
+    skip: !sessionId,
+  })
+
+  React.useEffect(() => {
+    if (!sessionUpdatedQry.data?.session?.updatedAt) return
+    const newUpdatedAt = sessionUpdatedQry.data?.session?.updatedAt
+    const needUpdate = newUpdatedAt !== lastUpdated
+    // If the updated date is newer than the session date then we need to update the full sessionQry
+    if (needUpdate) sessionQry.refetch()
+    setLastUpdated(newUpdatedAt)
+  }, [sessionUpdatedQry.data?.session?.updatedAt])
 
   // TODO: This is our sloppy poll function we need to update to lower data costs
   React.useEffect(() => {
@@ -130,7 +134,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         Date.now() - oneDayMs > sessionUpdatedQry.data?.session.updatedAt ||
         sessionUpdatedQry.data?.session.state !== SessionStateEnum.Active
           ? 60000
-          : 5000 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
+          : 10000 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
       sessionUpdatedQry.startPolling(pollTime)
     } else {
       sessionUpdatedQry.stopPolling()

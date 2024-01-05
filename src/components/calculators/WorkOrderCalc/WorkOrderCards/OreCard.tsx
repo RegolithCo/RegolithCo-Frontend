@@ -45,8 +45,6 @@ import { SalvageOreChooser } from '../../../fields/SalvageOreChooser'
 
 import log from 'loglevel'
 import { fontFamilies } from '../../../../theme'
-// import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers'
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
 import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
 import { LookupsContext } from '../../../../context/lookupsContext'

@@ -77,9 +77,11 @@ export const PieChart: React.FC<PieChartProps> = ({ title, ores, activityTypes, 
             from: 'color',
             modifiers: [['darker', 0.2]],
           }}
-          theme={{
-            textColor: '#eeeeee',
-          }}
+          theme={
+            {
+              // textColor: '#eeeeee',
+            }
+          }
           arcLinkLabelsSkipAngle={10}
           arcLinkLabelsTextColor="#eeeeee"
           arcLinkLabelsThickness={2}
