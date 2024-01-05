@@ -13,6 +13,7 @@ This is one of those big refactor patches where hopefully nobody notices anythin
 
 #### Fixes
 
+- Decreased polling interval on sessions so things should update a little snappier. Also reduced the query burden of that polling so the server should be a little happier.
 - Slight improvement to the "Service Down" screen. We need a more robust solution for this but this will do for now. 
 - Decreased load time on **profile page** by decoupling two queries that should not have been coupled in the first place.
 - Added Cache-busting strategies to make the stats update more regularly

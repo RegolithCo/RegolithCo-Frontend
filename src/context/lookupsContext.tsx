@@ -79,7 +79,11 @@ export const lookupsDefault: DataStore = new ClientDataStore()
 export const LookupsContext = createContext<DataStore>(lookupsDefault)
 
 export const LookupsContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
-  const { data, loading } = useGetPublicLookupsQuery()
+  const { data, loading } = useGetPublicLookupsQuery({
+    fetchPolicy: 'cache-first',
+    // Refetch every hour
+    pollInterval: 3600 * 1000,
+  })
   const [dataStore] = React.useState<ClientDataStore>(new ClientDataStore())
 
   const noLoadingPaths = ['/']

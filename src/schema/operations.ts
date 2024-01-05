@@ -1996,7 +1996,11 @@ export const GetSessionUpdatedDocument = gql`
     query getSessionUpdated($sessionId: ID!) {
   session(sessionId: $sessionId) {
     sessionId
+    createdAt
     updatedAt
+    finishedAt
+    ownerId
+    state
   }
 }
     `;

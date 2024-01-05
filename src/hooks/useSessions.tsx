@@ -19,6 +19,7 @@ import {
   useMarkCrewSharePaidMutation,
   useUpdateSessionUserCaptainMutation,
   useUpdatePendingUserCaptainMutation,
+  useGetSessionUpdatedQuery,
 } from '../schema'
 import {
   CrewShare,
@@ -96,9 +97,25 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     skip: !sessionId,
   })
 
+  // This is the lightweight query that we use to update the session
+  // It should only contain: sesisoniD, timestamps for updatedAt and createdAt and the state
+  const sessionUpdatedQry = useGetSessionUpdatedQuery({
+    variables: {
+      sessionId: sessionId as string,
+    },
+    skip: !sessionId,
+  })
+
   const sessionQry = useGetSessionQuery({
     variables: {
       sessionId: sessionId as string,
+    },
+    onCompleted: (data) => {
+      if (!data.session) return
+      // If the updated date is newer than the session date then we need to update the full sessionQry
+      if (data.session?.updatedAt > (sessionQry.data?.session?.updatedAt || 0)) {
+        sessionQry.refetch()
+      }
     },
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
   })
@@ -106,17 +123,17 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   // TODO: This is our sloppy poll function we need to update to lower data costs
   React.useEffect(() => {
     // If we have a real session, poll every 10 seconds
-    if (isPageVisible && sessionQry.data?.session) {
+    if (isPageVisible && sessionUpdatedQry.data?.session) {
       // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
       const oneDayMs = 86400000 // 24 hours in milliseconds
       const pollTime =
-        Date.now() - oneDayMs > sessionQry.data?.session.updatedAt ||
-        sessionQry.data?.session.state !== SessionStateEnum.Active
+        Date.now() - oneDayMs > sessionUpdatedQry.data?.session.updatedAt ||
+        sessionUpdatedQry.data?.session.state !== SessionStateEnum.Active
           ? 60000
-          : 10000
-      sessionQry.startPolling(pollTime)
+          : 5 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
+      sessionUpdatedQry.startPolling(pollTime)
     } else {
-      sessionQry.stopPolling()
+      sessionUpdatedQry.stopPolling()
     }
     // Also stop all polling when when this component is unmounted
     return () => {
