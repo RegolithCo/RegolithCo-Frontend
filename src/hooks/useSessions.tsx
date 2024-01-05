@@ -130,7 +130,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         Date.now() - oneDayMs > sessionUpdatedQry.data?.session.updatedAt ||
         sessionUpdatedQry.data?.session.state !== SessionStateEnum.Active
           ? 60000
-          : 5 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
+          : 5000 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
       sessionUpdatedQry.startPolling(pollTime)
     } else {
       sessionUpdatedQry.stopPolling()
