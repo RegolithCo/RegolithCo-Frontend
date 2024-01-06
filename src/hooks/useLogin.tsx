@@ -293,13 +293,13 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
     if (!token || (token.length === 0 && apolloClient)) {
       log.debug('User is not authenticated, clearing cache')
       // Save the data you want to keep. This will save us having to redownload lookup data for unauthenticated users
-      const dataToKeep = apolloClient.readQuery({ query: GetPublicLookupsDocument })
-      // Clear the cache
-      apolloClient.clearStore()
-      // Write the data you want to keep back to the cache
-      if (dataToKeep) {
-        apolloClient.writeQuery({ query: GetPublicLookupsDocument, data: dataToKeep })
-      }
+      // const dataToKeep = apolloClient.readQuery({ query: GetPublicLookupsDocument })
+      // // Clear the cache
+      // apolloClient.clearStore()
+      // // Write the data you want to keep back to the cache
+      // if (dataToKeep) {
+      //   apolloClient.writeQuery({ query: GetPublicLookupsDocument, data: dataToKeep })
+      // }
     }
   }, [token, apolloClient])
   return (
