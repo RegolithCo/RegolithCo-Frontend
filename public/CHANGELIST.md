@@ -1,4 +1,4 @@
-### December 2?, 2023
+### January 6, 2024
 ## 1.0.45 - Holiday Refactor
 
 This is one of those big refactor patches where hopefully nobody notices anything different. Until this point the UEX prices have been hardcoded which meant deploying the whole codebase every time we sync the data. I did this to save time at the beginning but now it's just an albatross around my neck.
