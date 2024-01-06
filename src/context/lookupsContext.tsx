@@ -31,6 +31,7 @@ export class ClientDataStore implements DataStore {
   setData = (lookups: GetPublicLookupsQuery['lookups']) => {
     this.lookups = lookups
     this.setLoading(false)
+    if (lookups) this.setReady(true)
   }
 
   keyFinder = <K extends keyof Lookups>(key: K): Lookups[K] | null => {
@@ -84,7 +85,7 @@ export const LookupsContextWrapper: React.FC<PropsWithChildren> = ({ children })
     // Refetch every hour
     pollInterval: 3600 * 1000,
   })
-  const [dataStore] = React.useState<ClientDataStore>(new ClientDataStore())
+  const [dataStore, setDataStore] = React.useState<ClientDataStore>(new ClientDataStore())
 
   const noLoadingPaths = ['/']
   const prefix = process.env.PUBLIC_URL || ''
@@ -100,8 +101,9 @@ export const LookupsContextWrapper: React.FC<PropsWithChildren> = ({ children })
 
   useEffect(() => {
     if (data && data.lookups) {
-      dataStore.setData(data.lookups)
-      dataStore.setReady(true)
+      const newDataStore = new ClientDataStore()
+      newDataStore.setData(data.lookups)
+      setDataStore(newDataStore)
     }
   }, [data])
 

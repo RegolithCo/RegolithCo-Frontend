@@ -291,7 +291,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   }, [postLoginRedirect, setPostLoginRedirect, userProfileQry])
   useEffect(() => {
     if (!token || (token.length === 0 && apolloClient)) {
-      log.debug('User is not authenticated, clearing cache')
+      // log.debug('User is not authenticated, clearing cache')
       // Save the data you want to keep. This will save us having to redownload lookup data for unauthenticated users
       // const dataToKeep = apolloClient.readQuery({ query: GetPublicLookupsDocument })
       // // Clear the cache
