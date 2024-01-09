@@ -131,15 +131,13 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   const [payConfirm, setPayConfirm] = React.useState<ConfirmModalState | undefined>()
 
   const dataStore = React.useContext(LookupsContext)
-  // const { lookupData: sessionSummary } = useAsyncLookupData<SessionBreakdown>(sessionReduce, [
-  //   session?.workOrders?.items || [],
-  // ])
+
   React.useEffect(() => {
     if (!dataStore.ready) return
     sessionReduce(dataStore, session?.workOrders?.items || []).then((res) => {
       setSessionSummary(res)
     })
-  }, [dataStore.ready])
+  }, [dataStore.ready, session?.workOrders?.items])
 
   if (!dataStore.ready || !sessionSummary) return null
   return (
