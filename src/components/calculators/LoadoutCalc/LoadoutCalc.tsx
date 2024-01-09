@@ -188,74 +188,10 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
     asyncCalc()
   }, [dataStore.ready, hoverLoadout, newLoadout])
 
-  const Wrapper = useCallback(
-    ({ children }: { children: React.ReactNode }) => {
-      const bgImage = 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));'
-      if (isModal)
-        return (
-          <Dialog
-            open={!!open}
-            onClose={onClose}
-            maxWidth="lg"
-            fullWidth
-            fullScreen={isSmall}
-            sx={{
-              '& .MuiDialog-paper': {
-                [theme.breakpoints.down('md')]: {
-                  margin: 0,
-                  borderRadius: 0,
-                  maxHeight: '100%',
-                  width: '100%',
-                },
-                [theme.breakpoints.up('md')]: isShare
-                  ? {}
-                  : {
-                      m: 0,
-                      p: 2,
-                      borderRadius: 10,
-                      boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-                      border: `10px solid ${theme.palette.primary.main}`,
-                    },
-                background: theme.palette.background.default,
-                backgroundImage: bgImage,
-              },
-            }}
-          >
-            {children}
-          </Dialog>
-        )
-      else
-        return (
-          <Box
-            sx={{
-              [theme.breakpoints.down('sm')]: {
-                borderRadius: 0,
-              },
-              [theme.breakpoints.up('md')]: isShare
-                ? {}
-                : {
-                    mx: 3,
-                    my: 6,
-                    px: 2,
-                    py: 2,
-                    borderRadius: 10,
-                    boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
-                    border: `10px solid ${theme.palette.primary.main}`,
-                  },
-              background: theme.palette.background.default,
-              backgroundImage: bgImage,
-            }}
-          >
-            {children}
-          </Box>
-        )
-    },
-    [onClose, open]
-  )
-
   if (!dataStore.ready || !newLoadout) return <div>Loading Loadout Stats...</div>
+
   return (
-    <Wrapper>
+    <LoadoutWrapper isModal={isModal} isShare={isShare} open={open || false} onClose={onClose}>
       <Card
         sx={{
           [theme.breakpoints.down('sm')]: {
@@ -568,7 +504,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
       {!isShare && (
         <LoadoutShareModal open={shareModalOpen} onClose={() => setShareModalOpen(false)} loadout={newLoadout} />
       )}
-    </Wrapper>
+    </LoadoutWrapper>
   )
 }
 
@@ -614,4 +550,75 @@ export const ShipChooser: React.FC<ShipChooserProps> = ({ onChange, ship: value,
       </ToggleButton>
     </ToggleButtonGroup>
   )
+}
+
+interface LoadoutWrapperProps extends React.PropsWithChildren {
+  isModal?: boolean
+  isShare?: boolean
+  open: boolean
+  onClose?: () => void
+}
+
+const LoadoutWrapper: React.FC<LoadoutWrapperProps> = ({ children, isModal, isShare, open, onClose }) => {
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
+  const bgImage = 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));'
+  if (isModal)
+    return (
+      <Dialog
+        open={!!open}
+        onClose={onClose}
+        maxWidth="lg"
+        fullWidth
+        fullScreen={isSmall}
+        sx={{
+          '& .MuiDialog-paper': {
+            [theme.breakpoints.down('md')]: {
+              margin: 0,
+              borderRadius: 0,
+              maxHeight: '100%',
+              width: '100%',
+            },
+            [theme.breakpoints.up('md')]: isShare
+              ? {}
+              : {
+                  m: 0,
+                  p: 2,
+                  borderRadius: 10,
+                  boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+                  border: `10px solid ${theme.palette.primary.main}`,
+                },
+            background: theme.palette.background.default,
+            backgroundImage: bgImage,
+          },
+        }}
+      >
+        {children}
+      </Dialog>
+    )
+  else
+    return (
+      <Box
+        sx={{
+          [theme.breakpoints.down('sm')]: {
+            borderRadius: 0,
+          },
+          [theme.breakpoints.up('md')]: isShare
+            ? {}
+            : {
+                mx: 3,
+                my: 6,
+                px: 2,
+                py: 2,
+                borderRadius: 10,
+                boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+                border: `10px solid ${theme.palette.primary.main}`,
+              },
+          background: theme.palette.background.default,
+          backgroundImage: bgImage,
+        }}
+      >
+        {children}
+      </Box>
+    )
 }
