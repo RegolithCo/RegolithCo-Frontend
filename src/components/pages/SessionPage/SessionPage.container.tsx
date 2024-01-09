@@ -508,12 +508,22 @@ export const SessionPageContainer: React.FC = () => {
 
         {/* Leave Session Modal */}
         <ConfirmModal
-          title="Leave the session?"
-          message="Are you sure you want to leave this session? You will not be able to find it again unless you still have the URL."
+          title="Leave the session? Are you sure?"
+          message={
+            <>
+              <Typography paragraph>
+                In general <strong>DO NOT LEAVE SESSIONS</strong> unless you don't want to participate anymore.
+              </Typography>
+              <Typography paragraph color="error">
+                If you leave this session it will be <strong>REMOVED</strong> from your session history and you will not
+                see work order payment updates or be able to join again without another invite.
+              </Typography>
+            </>
+          }
           onClose={() => setActiveModal(null)}
           open={activeModal === DialogEnum.LEAVE_SESSION}
           onConfirm={sessionQueries.leaveSession}
-          cancelBtnText="Cancel"
+          cancelBtnText="No, Cancel!"
           confirmBtnText="Yes, Leave"
         />
 
