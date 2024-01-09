@@ -1,3 +1,14 @@
+### January 9, 2024
+## 1.0.46 - A Patch for the refactor
+
+This is just a quick patch to follow up on the last patch. 
+
+- Fixed some asynchronous update issues where changes weren't showing up until page reload. I would bet there's still more of these I haven't found though.
+- Loadout lists got a little love and now show the loadout modules in the list so you can see what it is at a glance.
+- Fixed the text on the "Leave session" dialog. I've noticed folks leaving sessions because they think they have to when the session is done. I want to make it clear that leaving a session will delete it from your history and prevent you from seeing payment updates in case folks didn't intend that.
+- Misc other hotfixes and stability adjustments.
+
+
 ### January 6, 2024
 ## 1.0.45 - Holiday Refactor
 
