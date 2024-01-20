@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {
+  alpha,
   Autocomplete,
   Box,
   Button,
@@ -7,10 +8,12 @@ import {
   FormControl,
   FormControlLabel,
   InputLabel,
+  keyframes,
   List,
   ListItem,
   ListItemSecondaryAction,
   MenuItem,
+  PaletteColor,
   Select,
   Stack,
   Switch,
@@ -37,6 +40,7 @@ import {
   UserSuggest,
   CrewShareTemplateInput,
 } from '@regolithco/common'
+import log from 'loglevel'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Delete, Lock, LockOpen, Person, RestartAlt, Save, StopCircle } from '@mui/icons-material'
@@ -49,6 +53,7 @@ import { omit } from 'lodash'
 import { fontFamilies } from '../../../theme'
 import { DialogEnum } from '../../../context/session.context'
 import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
+import { isEqual } from 'lodash'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -65,6 +70,21 @@ export interface SessionSettingsTabProps {
   setActiveModal?: (modal: DialogEnum) => void
   userSuggest?: UserSuggest
 }
+
+const pulse = (color: PaletteColor) => keyframes`
+0% { 
+  /* box-shadow: 0 0 0 0 transparent;  */
+  color: ${color.dark} 
+}
+50% { 
+  /* box-shadow: 0 0 5px 5px ${alpha(color.light, 0.5)};  */
+  color: ${color.light} 
+}
+100% { 
+  box-shadow: 0 0 0 0 transparent; 
+  /* color:  ${color.dark} */
+}
+`
 
 const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<Theme>> => ({
   tabContainerOuter: {
@@ -150,13 +170,21 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const [forceRefresh, setForceRefresh] = React.useState(0)
   const [newSession, setNewSession] = React.useState<SessionInput | null>(null)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
-
+  const [oldSettings, setOldSettings] = React.useState<DestructuredSettings>(makeNewSettings(session, sessionSettings))
   const [newSettings, setNewSettings] = React.useState<DestructuredSettings>(makeNewSettings(session, sessionSettings))
   const [nameValid, setNameValid] = React.useState(true)
   const [notevalid, setNoteValid] = React.useState(true)
+  const isDirty = React.useMemo(() => !isEqual(oldSettings, newSettings), [oldSettings, newSettings])
 
   React.useEffect(() => {
-    setNewSettings(makeNewSettings(session, sessionSettings))
+    const incomingSettings = makeNewSettings(session, sessionSettings)
+    // Do a deep object compare and only update if the session settings actually changed
+    if (!isEqual(oldSettings, incomingSettings)) {
+      // We want to update these as infrequently as possible because we may lose work
+      log.debug('settings CHANGED', JSON.stringify(newSettings), JSON.stringify(incomingSettings))
+      setOldSettings(incomingSettings)
+      setNewSettings(incomingSettings)
+    }
   }, [
     session,
     sessionSettings,
@@ -744,6 +772,25 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
         spacing={1}
         alignItems="center"
       >
+        {isDirty && (
+          <Typography
+            variant="body1"
+            component="div"
+            color="error"
+            sx={{
+              textTransform: 'uppercase',
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+              animation: `${pulse(theme.palette.error)} 1s infinite`,
+              // borderRadius: 2,
+              px: 2,
+              py: 1,
+              // border: `2px solid ${theme.palette.error.main}`,
+            }}
+          >
+            [[Unsaved changes]]
+          </Typography>
+        )}
         <Box sx={{ flexGrow: 1 }} />
         <Button
           color="info"
