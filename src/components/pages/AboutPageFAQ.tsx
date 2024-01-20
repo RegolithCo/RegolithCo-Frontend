@@ -98,6 +98,27 @@ export const AboutPageFAQ: React.FC = () => {
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
+          "I can't log in with either Google or Discord"
+        </Typography>
+        <Typography gutterBottom component="div">
+          In rare cases we've been seeing some logins blocked. There are some things you can try:
+          <ul>
+            <li>
+              <strong>Clear your browser cache</strong> reload the page
+            </li>
+            <li>
+              Sometimes <strong>ad blockers like Privacy Badger</strong> can cause problems. Try disabling them for this
+              site (we will never serve you ads) and reload the page
+            </li>
+            <li>
+              <strong>Try a different browser</strong> (Chrome, Firefox, Edge, etc.)
+            </li>
+          </ul>
+        </Typography>
+        <Typography paragraph>(BTW, if you're reading this CIG then we'd love to hear from you!)</Typography>
+      </Paper>
+      <Paper elevation={5} sx={styles.innerPaper}>
+        <Typography variant="h5" gutterBottom>
           "Star citizen X.XX is going to change mining. Can Regolith adapt?"
         </Typography>
         <Typography gutterBottom>
