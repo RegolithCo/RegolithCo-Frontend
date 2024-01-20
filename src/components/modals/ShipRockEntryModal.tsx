@@ -52,7 +52,7 @@ import Numeral from 'numeral'
 import log from 'loglevel'
 import { LookupsContext } from '../../context/lookupsContext'
 
-export const SHIP_ROCK_BOUNDS = [1, 150000]
+export const SHIP_ROCK_BOUNDS = [1, 200000]
 
 export interface ShipRockEntryModalProps {
   open?: boolean
