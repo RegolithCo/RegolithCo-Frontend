@@ -13,6 +13,7 @@ import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 import { ScoutingFind, scoutingFindDestructured, SessionUser } from '@regolithco/common'
 import { useSnackbar } from 'notistack'
+import { ScoutingFindTypenames } from '../types'
 
 type useSessionsReturn = {
   scoutingFind?: ScoutingFind
@@ -20,7 +21,7 @@ type useSessionsReturn = {
   querying: boolean
   mutating: boolean
   updateScoutingFind: (newFind: ScoutingFind) => void
-  deleteScoutingFind: (findId: string) => void
+  deleteScoutingFind: (findId: string, __typename: ScoutingFindTypenames) => void
   joinScoutingFind: (findId: string, enRoute: boolean) => void
   leaveScoutingFind: (findId: string) => void
 }
@@ -104,14 +105,32 @@ export const useScoutingFind = (
         },
       })
     },
-    deleteScoutingFind: (findId: string) => {
+    deleteScoutingFind: (findId: string, __typename: ScoutingFindTypenames) =>
       deleteScoutingFindMutation[0]({
         variables: {
           scoutingFindId: findId,
           sessionId,
         },
-      })
-    },
+        onCompleted: () => {
+          enqueueSnackbar('Scouting Find Deleted!', { variant: 'warning' })
+          if (window.location.pathname.includes(findId)) navigate(`/session/${sessionId}`)
+        },
+        update: (cache) => {
+          // need to identify this from anyOrderId NOT workOrderQry.data?.workOrder
+          const id = cache.identify({ sessionId, scoutingFindId: findId, __typename })
+          if (!id) return
+          cache.evict({ id })
+          cache.gc()
+        },
+        optimisticResponse: () => ({
+          __typename: 'Mutation',
+          deleteScoutingFind: {
+            sessionId,
+            scoutingFindId: findId,
+            __typename,
+          },
+        }),
+      }),
     joinScoutingFind: (findId: string, enRoute: boolean) => {
       joinScoutingFindMutation[0]({
         variables: {

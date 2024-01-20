@@ -1525,10 +1525,13 @@ export type UpdateScoutingFindMutationOptions = Apollo.BaseMutationOptions<types
 export const DeleteScoutingFindDocument = gql`
     mutation deleteScoutingFind($sessionId: ID!, $scoutingFindId: ID!) {
   deleteScoutingFind(sessionId: $sessionId, scoutingFindId: $scoutingFindId) {
-    ...ScoutingIdFragment
+    ... on ScoutingFindInterface {
+      sessionId
+      scoutingFindId
+    }
   }
 }
-    ${ScoutingIdFragmentFragmentDoc}`;
+    `;
 export type DeleteScoutingFindMutationFn = Apollo.MutationFunction<types.DeleteScoutingFindMutation, types.DeleteScoutingFindMutationVariables>;
 
 /**

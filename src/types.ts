@@ -5,3 +5,6 @@ export type Config = {
   googleClientId: string
   discordClientId: string
 }
+
+export type ScoutingFindTypenames = 'SalvageFind' | 'ShipClusterFind' | 'VehicleClusterFind'
+export type WorkOrderTypenames = 'OtherOrder' | 'SalvageOrder' | 'ShipMiningOrder' | 'VehicleMiningOrder'

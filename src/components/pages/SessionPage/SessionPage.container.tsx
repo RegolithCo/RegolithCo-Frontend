@@ -421,7 +421,7 @@ export const SessionPageContainer: React.FC = () => {
               joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
               leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
               onDelete: () => {
-                modalScoutingFindQry.deleteScoutingFind(modalScoutingFind.scoutingFindId)
+                modalScoutingFindQry.deleteScoutingFind(modalScoutingFind.scoutingFindId, modalScoutingFind.__typename)
                 setActiveModal(null)
               },
               onChange: (newScouting) => {

@@ -24,6 +24,7 @@ import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
 import log from 'loglevel'
+import { WorkOrderTypenames } from '../types'
 
 type useSessionsReturn = {
   workOrder?: WorkOrder
@@ -34,7 +35,7 @@ type useSessionsReturn = {
   updateAnyWorkOrder: (newWorkOrder: WorkOrder, anyOrderId: string) => void
   failWorkOrder: (reason?: string) => void
   deleteWorkOrder: () => void
-  deleteAnyWorkOrder: (anyOrderId: string, __typename: string) => void
+  deleteAnyWorkOrder: (anyOrderId: string, __typename: WorkOrderTypenames) => void
   deleteCrewShare: (scName: string) => void
 }
 
@@ -198,7 +199,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         },
       })
     },
-    deleteAnyWorkOrder: (anyOrderId: string, __typename: string) =>
+    deleteAnyWorkOrder: (anyOrderId: string, __typename: WorkOrderTypenames) =>
       deleteWorkOrderMutation[0]({
         variables: {
           sessionId,
@@ -206,12 +207,21 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         },
         onCompleted: () => {
           enqueueSnackbar('Work Order Deleted', { variant: 'success' })
-          navigate(`/session/${sessionId}`)
+          if (window.location.pathname.includes(orderId)) navigate(`/session/${sessionId}`)
         },
         update: (cache) => {
           // need to identify this from anyOrderId NOT workOrderQry.data?.workOrder
           cache.evict({ id: cache.identify({ sessionId, orderId: anyOrderId, __typename }) })
+          cache.gc()
         },
+        optimisticResponse: () => ({
+          __typename: 'Mutation',
+          deleteWorkOrder: {
+            sessionId,
+            orderId: anyOrderId,
+            __typename,
+          },
+        }),
       }),
     deleteWorkOrder: () =>
       deleteWorkOrderMutation[0]({
@@ -221,11 +231,24 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         },
         onCompleted: () => {
           enqueueSnackbar('Work Order Deleted', { variant: 'success' })
-          navigate(`/session/${sessionId}`)
+          // If the current path is inside the work order, navigate to the session
+          if (window.location.pathname.includes(orderId)) navigate(`/session/${sessionId}`)
         },
         update: (cache) => {
-          cache.evict({ id: cache.identify(workOrderQry.data?.workOrder as WorkOrder) })
+          // need to identify this from anyOrderId NOT workOrderQry.data?.workOrder
+          const id = cache.identify({ sessionId, orderId, __typename: workOrderQry.data?.workOrder?.__typename })
+          if (!id) return
+          cache.evict({ id })
+          cache.gc()
         },
+        optimisticResponse: () => ({
+          __typename: 'Mutation',
+          deleteWorkOrder: {
+            sessionId,
+            orderId,
+            __typename: workOrderQry.data?.workOrder?.__typename as WorkOrderTypenames,
+          },
+        }),
       }),
     deleteCrewShare: (scName: string) => {
       return deleteCrewShareMutation[0]({

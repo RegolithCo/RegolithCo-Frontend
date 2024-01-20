@@ -475,7 +475,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
         open={deleteConfirmModal}
         onConfirm={() => {
           if (!allowDelete) return
-          deleteScoutingFind && deleteScoutingFind(scoutingFind.scoutingFindId)
+          deleteScoutingFind && deleteScoutingFind(scoutingFind.scoutingFindId, scoutingFind.__typename)
           setDeleteConfirmModal(false)
         }}
       />

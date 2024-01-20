@@ -18,6 +18,7 @@ import {
 } from '@regolithco/common'
 import { createContext } from 'react'
 import log from 'loglevel'
+import { ScoutingFindTypenames, WorkOrderTypenames } from '../types'
 
 type ObjectValues<T> = T[keyof T]
 export const DialogEnum = {
@@ -108,7 +109,7 @@ export interface SessionContextType {
   // Work orders
   createWorkOrder: (workOrder: WorkOrder) => void
   deleteWorkOrder: (workOrderId: string) => void
-  deleteAnyWorkOrder: (workOrderId: string, __typename: string) => void
+  deleteAnyWorkOrder: (workOrderId: string, __typename: WorkOrderTypenames) => void
   updateModalWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
   updateAnyWorkOrder: (newWorkOrder: WorkOrder, newOrderId: string) => void
   setWorkOrderShareId: (workOrderId: string) => void
@@ -117,7 +118,7 @@ export interface SessionContextType {
   // scouting
   createScoutingFind: (scoutingFind: ScoutingFind) => void
   updateScoutingFind: (scoutingFind: ScoutingFind) => void
-  deleteScoutingFind: (scoutingFindId: string) => void
+  deleteScoutingFind: (scoutingFindId: string, __typename: ScoutingFindTypenames) => void
   joinScoutingFind: (findId: string, enRoute: boolean) => void
   setScoutingFindShareId: (findId: string) => void
   leaveScoutingFind: (findId: string) => void
