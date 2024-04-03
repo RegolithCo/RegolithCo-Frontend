@@ -459,6 +459,8 @@ export const UserProfileFragmentFragmentDoc = gql`
   createdAt
   updatedAt
   lastActive
+  plan
+  apiKey
   state
   verifyCode
   sessionShipCode

@@ -35,6 +35,7 @@ import {
   CrewHierarchy,
   WorkOrderExpense,
   DataStore,
+  UserPlanEnum,
 } from '@regolithco/common'
 
 export function profile2User(profile: UserProfile): User {
@@ -329,6 +330,7 @@ export function dummyUserProfile(): UserProfile {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     lastActive: Date.now(),
+    plan: UserPlanEnum.Free,
     friends: [],
     loadouts: [],
     sessionSettings: {
@@ -346,6 +348,7 @@ export function newUserProfile(scName: string): UserProfile {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     lastActive: Date.now(),
+    plan: UserPlanEnum.Free,
     friends: [],
     loadouts: [],
     sessionSettings: {
