@@ -20,7 +20,7 @@ import {
   UserProfile,
   UserStateEnum,
 } from '@regolithco/common'
-import { GetPublicLookupsDocument, useGetUserProfileQuery } from '../schema'
+import { useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
 import { LoginContext, useOAuth2 } from './useOAuth2'
 import { LoginChoice } from '../components/modals/LoginChoice'
@@ -33,6 +33,9 @@ import { getMainDefinition } from '@apollo/client/utilities'
 // Create HttpLinks for each endpoint
 const privateLink = new HttpLink({
   uri: config.apiUrl, // change this to your private API url
+  headers: {
+    'x-api-key': config.webApiKey,
+  },
 })
 
 const publicLink = new HttpLink({

@@ -63,7 +63,7 @@ export type MiningLoadoutFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateUserProfile' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'setUserPlan' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateUserProfile' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'userAPIKey' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -92,6 +92,7 @@ export type MutationFieldPolicy = {
 	requestVerifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
 	rotateShareId?: FieldPolicy<any> | FieldReadFunction<any>,
 	setLookupData?: FieldPolicy<any> | FieldReadFunction<any>,
+	setUserPlan?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatePendingUserCaptain?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -101,6 +102,7 @@ export type MutationFieldPolicy = {
 	updateWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	upsertCrewShare?: FieldPolicy<any> | FieldReadFunction<any>,
 	upsertSessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
+	userAPIKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	verifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type OtherOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isSold' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'sellStore' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'version' | OtherOrderKeySpecifier)[];
@@ -424,8 +426,9 @@ export type UserInterfaceFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'scName' | 'sessionSettings' | 'sessionShipCode' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('apiKey' | 'avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'plan' | 'scName' | 'sessionSettings' | 'sessionShipCode' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
+	apiKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewSharesPayee?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -436,6 +439,7 @@ export type UserProfileFieldPolicy = {
 	lastActive?: FieldPolicy<any> | FieldReadFunction<any>,
 	loadouts?: FieldPolicy<any> | FieldReadFunction<any>,
 	mySessions?: FieldPolicy<any> | FieldReadFunction<any>,
+	plan?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionSettings?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionShipCode?: FieldPolicy<any> | FieldReadFunction<any>,

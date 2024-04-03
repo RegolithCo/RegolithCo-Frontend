@@ -4,6 +4,7 @@ export type Config = {
   shareUrl: string
   googleClientId: string
   discordClientId: string
+  webApiKey: string
 }
 
 export type ScoutingFindTypenames = 'SalvageFind' | 'ShipClusterFind' | 'VehicleClusterFind'

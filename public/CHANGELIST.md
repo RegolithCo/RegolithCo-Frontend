@@ -1,10 +1,12 @@
 ### Jan 20, 2024
+## 1.0.47 - Small,critical fixes
 
 This is a tiny update to fix some very small nagging bugs
 
 - Rock mass limits have been updated to 200,000
 - Work order and scouting find deletions are optimistic now so they should feel snappier.
 - Added a note to the FAQ about Ad-blockers sometimes interferring with login.
+- Several other bugs too esoteric or boring to mention.
 
 ### January 9, 2024
 ## 1.0.46 - A Patch for the refactor
