@@ -33,9 +33,6 @@ import { getMainDefinition } from '@apollo/client/utilities'
 // Create HttpLinks for each endpoint
 const privateLink = new HttpLink({
   uri: config.apiUrl, // change this to your private API url
-  headers: {
-    'x-api-key': config.webApiKey,
-  },
 })
 
 const publicLink = new HttpLink({
@@ -83,6 +80,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         ...headers,
         authType: authType,
         authorization: token ? `Bearer ${token}` : '',
+        'x-api-key': config.webApiKey,
         ...DEV_HEADERS,
       }
       devQueries(finalHeaders)
