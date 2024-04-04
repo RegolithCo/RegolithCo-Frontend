@@ -26,6 +26,8 @@ export const ProfilePageContainer: React.FC = () => {
       loading={userProfileQueries.loading}
       refreshAvatar={userProfileQueries.refreshAvatar}
       resetDefaultSettings={userProfileQueries.resetDefaultSettings}
+      deleteAPIKey={userProfileQueries.deleteAPIKey}
+      upsertAPIKey={userProfileQueries.upsertAPIKey}
       verifiedFriends={{}}
       navigate={navigate}
     />

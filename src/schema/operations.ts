@@ -664,6 +664,74 @@ export function useVerifyUserMutation(baseOptions?: Apollo.MutationHookOptions<t
 export type VerifyUserMutationHookResult = ReturnType<typeof useVerifyUserMutation>;
 export type VerifyUserMutationResult = Apollo.MutationResult<types.VerifyUserMutation>;
 export type VerifyUserMutationOptions = Apollo.BaseMutationOptions<types.VerifyUserMutation, types.VerifyUserMutationVariables>;
+export const UpsertApiKeyDocument = gql`
+    mutation upsertAPIKey {
+  userAPIKey {
+    userId
+    scName
+    apiKey
+  }
+}
+    `;
+export type UpsertApiKeyMutationFn = Apollo.MutationFunction<types.UpsertApiKeyMutation, types.UpsertApiKeyMutationVariables>;
+
+/**
+ * __useUpsertApiKeyMutation__
+ *
+ * To run a mutation, you first call `useUpsertApiKeyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpsertApiKeyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [upsertApiKeyMutation, { data, loading, error }] = useUpsertApiKeyMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUpsertApiKeyMutation(baseOptions?: Apollo.MutationHookOptions<types.UpsertApiKeyMutation, types.UpsertApiKeyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.UpsertApiKeyMutation, types.UpsertApiKeyMutationVariables>(UpsertApiKeyDocument, options);
+      }
+export type UpsertApiKeyMutationHookResult = ReturnType<typeof useUpsertApiKeyMutation>;
+export type UpsertApiKeyMutationResult = Apollo.MutationResult<types.UpsertApiKeyMutation>;
+export type UpsertApiKeyMutationOptions = Apollo.BaseMutationOptions<types.UpsertApiKeyMutation, types.UpsertApiKeyMutationVariables>;
+export const DeletApiKeyDocument = gql`
+    mutation deletAPIKey {
+  userAPIKey(revoke: true) {
+    userId
+    scName
+    apiKey
+  }
+}
+    `;
+export type DeletApiKeyMutationFn = Apollo.MutationFunction<types.DeletApiKeyMutation, types.DeletApiKeyMutationVariables>;
+
+/**
+ * __useDeletApiKeyMutation__
+ *
+ * To run a mutation, you first call `useDeletApiKeyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletApiKeyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletApiKeyMutation, { data, loading, error }] = useDeletApiKeyMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeletApiKeyMutation(baseOptions?: Apollo.MutationHookOptions<types.DeletApiKeyMutation, types.DeletApiKeyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.DeletApiKeyMutation, types.DeletApiKeyMutationVariables>(DeletApiKeyDocument, options);
+      }
+export type DeletApiKeyMutationHookResult = ReturnType<typeof useDeletApiKeyMutation>;
+export type DeletApiKeyMutationResult = Apollo.MutationResult<types.DeletApiKeyMutation>;
+export type DeletApiKeyMutationOptions = Apollo.BaseMutationOptions<types.DeletApiKeyMutation, types.DeletApiKeyMutationVariables>;
 export const AddFriendsDocument = gql`
     mutation addFriends($friends: [String]!) {
   addFriends(friends: $friends) {

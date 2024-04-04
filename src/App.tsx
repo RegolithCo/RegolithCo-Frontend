@@ -133,6 +133,15 @@ export const App: React.FC = () => {
             }
             errorElement={<ErrorPage />}
           />
+          <Route
+            path={`/${ProfileTabsEnum.API}`}
+            element={
+              <AuthGate>
+                <ProfilePageContainer />
+              </AuthGate>
+            }
+            errorElement={<ErrorPage />}
+          />
           {/* Session page has 3 ways into it*/}
           <Route
             path="/session"

@@ -1,11 +1,13 @@
 import {
   GetUserProfileDocument,
   useAddFriendsMutation,
+  useDeletApiKeyMutation,
   useDeleteUserProfileMutation,
   useGetUserProfileQuery,
   useRefreshAvatarMutation,
   useRemoveFriendsMutation,
   useRequestAccountVerifyMutation,
+  useUpsertApiKeyMutation,
   useUpsertUserMutation,
   useVerifyUserMutation,
 } from '../schema'
@@ -41,6 +43,8 @@ type useSessionsReturn = {
   addFriend: (friend: string) => void
   refreshAvatar: (remove?: boolean) => void
   removeFriend: (friend: string) => void
+  upsertAPIKey: () => void
+  deleteAPIKey: () => void
 }
 
 export const useUserProfile = (): useSessionsReturn => {
@@ -69,6 +73,8 @@ export const useUserProfile = (): useSessionsReturn => {
   const verifyUserMutation = useVerifyUserMutation()
   const addFriendsMutation = useAddFriendsMutation()
   const removeFriendsMutation = useRemoveFriendsMutation()
+  const upsertAPIKeyMutation = useUpsertApiKeyMutation()
+  const deleteAPIKeyMutation = useDeletApiKeyMutation()
 
   const refreshAvatarMutation = useRefreshAvatarMutation()
 
@@ -81,6 +87,8 @@ export const useUserProfile = (): useSessionsReturn => {
     addFriendsMutation,
     removeFriendsMutation,
     refreshAvatarMutation,
+    upsertAPIKeyMutation,
+    deleteAPIKeyMutation,
   ]
 
   const loading = queries.some((q) => q.loading)
@@ -100,6 +108,16 @@ export const useUserProfile = (): useSessionsReturn => {
             scName,
           },
         },
+        refetchQueries: [GetUserProfileDocument],
+      })
+    },
+    upsertAPIKey: () => {
+      upsertAPIKeyMutation[0]({
+        refetchQueries: [GetUserProfileDocument],
+      })
+    },
+    deleteAPIKey: () => {
+      deleteAPIKeyMutation[0]({
         refetchQueries: [GetUserProfileDocument],
       })
     },

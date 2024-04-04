@@ -7,14 +7,16 @@ import {
   DestructuredSettings,
   UserSuggest,
   makeAvatar,
+  UserPlanEnum,
 } from '@regolithco/common'
 
 import { PageWrapper } from '../PageWrapper'
 import {
   Alert,
-  Avatar,
   Box,
   Button,
+  IconButton,
+  Link,
   List,
   ListItem,
   ListItemAvatar,
@@ -22,12 +24,13 @@ import {
   SxProps,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { Edit, Person, Verified } from '@mui/icons-material'
+import { ContentCopy, Edit, Verified, Visibility, VisibilityOff } from '@mui/icons-material'
 import { RemoveUserModal } from '../modals/RemoveUserModal'
 import { ChangeUsernameModal } from '../modals/ChangeUsernameModal'
 import { DeleteProfileModal } from '../modals/DeleteProfileModal'
@@ -40,11 +43,13 @@ import { VehicleChooser } from '../fields/VehicleChooser'
 import { Theme } from '@mui/system'
 import { AppContext } from '../../context/app.context'
 import { UserAvatar } from '../UserAvatar'
+import { ConfirmModal } from '../modals/ConfirmModal'
 
 export const ProfileTabsEnum = {
   PROFILE: 'profile',
   FRIENDS: 'profile/friends',
   SESSION_DEFAULTS: 'profile/session-settings',
+  API: 'profile/api',
 } as const
 export type ProfileTabsEnum = ObjectValues<typeof ProfileTabsEnum>
 
@@ -53,6 +58,8 @@ export const ProfileModals = {
   ChangeUsername: 'ChangeUsername',
   DeleteProfile: 'DeleteProfile',
   SessionSettings: 'SeessionSettings',
+  ResetAPIKey: 'ResetAPIKey',
+  RevokeAPI: 'RevokeAPI',
 } as const
 export type ProfileModals = ObjectValues<typeof ProfileModals>
 
@@ -63,12 +70,14 @@ export interface ProfilePageProps {
   activeTab: ProfileTabsEnum
   setActiveTab: (tab: ProfileTabsEnum) => void
   navigate?: (path: string) => void
-  addFriend?: (friendName: string) => void
-  removeFriend?: (friendName: string) => void
-  resetDefaultSettings?: () => void
+  addFriend: (friendName: string) => void
+  removeFriend: (friendName: string) => void
+  resetDefaultSettings: () => void
   refreshAvatar: (remove?: boolean) => void
-  updateUserProfile?: (userProfile: UserProfileInput, settings?: DestructuredSettings) => void
-  deleteProfile?: (leaveData: boolean) => void
+  updateUserProfile: (userProfile: UserProfileInput, settings?: DestructuredSettings) => void
+  deleteProfile: (leaveData: boolean) => void
+  upsertAPIKey: () => void
+  deleteAPIKey: () => void
 }
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -116,6 +125,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   addFriend,
   deleteProfile,
   removeFriend,
+  upsertAPIKey,
+  deleteAPIKey,
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
@@ -126,6 +137,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings'])
   )
   const [friend2remove, setFriend2remove] = React.useState<string>()
+  const [showAPIKey, setShowAPIKey] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     if (userProfile)
@@ -152,6 +164,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <Tab label="Profile" value={ProfileTabsEnum.PROFILE} />
           <Tab label="Friends" value={ProfileTabsEnum.FRIENDS} />
           <Tab label="Session Defaults" value={ProfileTabsEnum.SESSION_DEFAULTS} />
+          <Tab label="API Access" value={ProfileTabsEnum.API} />
         </Tabs>
       </Box>
       <Box sx={styles.container}>
@@ -245,6 +258,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 </Alert>
               </Box>
             </Box>
+
+            {/* {userProfile.plan && userProfile.plan !== UserPlanEnum.Free && (
+              <Box sx={styles.section}>
+                <Typography component="div" sx={styles.sectionTitle}>
+                  Support Level
+                </Typography>
+                <Box sx={styles.sectionBody}>{userProfile.plan}</Box>
+              </Box>
+            )} */}
 
             {userProfile.state !== UserStateEnum.Verified && (
               <Box sx={styles.section}>
@@ -437,6 +459,103 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </Box>
           </>
         )}
+
+        {activeTab === ProfileTabsEnum.API && (
+          <Box sx={{ px: 2 }}>
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                API Access
+              </Typography>
+            </Box>
+            <Box sx={styles.sectionBody}>
+              {userProfile.apiKey && (
+                <Stack spacing={2} direction="row">
+                  <TextField
+                    label="API Token"
+                    value={showAPIKey ? userProfile.apiKey : '**************************'}
+                    fullWidth
+                    disabled
+                    InputProps={{
+                      sx: {
+                        fontFamily: fontFamilies.robotoMono,
+                        textAlign: 'center',
+                        color: showAPIKey ? theme.palette.warning.main : 'transparent',
+                      },
+                      readOnly: true,
+                    }}
+                  />
+                  <Tooltip title={showAPIKey ? 'Hide' : 'Show'}>
+                    <IconButton
+                      color={showAPIKey ? 'primary' : 'default'}
+                      onClick={() => {
+                        setShowAPIKey(!showAPIKey)
+                      }}
+                    >
+                      {showAPIKey ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Copy to clipboard">
+                    <IconButton
+                      onClick={() => {
+                        if (userProfile.apiKey) navigator.clipboard.writeText(userProfile.apiKey)
+                      }}
+                    >
+                      <ContentCopy />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              )}
+              <Stack spacing={2} direction="row">
+                {userProfile.apiKey ? (
+                  <Button onClick={() => setModalOpen(ProfileModals.ResetAPIKey)}>Regenerate Token</Button>
+                ) : (
+                  <Button onClick={upsertAPIKey}>Generate API Token</Button>
+                )}
+                {userProfile.apiKey && (
+                  <Button onClick={() => setModalOpen(ProfileModals.RevokeAPI)}>Delete token</Button>
+                )}
+              </Stack>
+            </Box>
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                Notes
+              </Typography>
+            </Box>
+            <Box sx={styles.sectionBody}>
+              <Typography paragraph variant="body2">
+                <strong>DO NOT SHARE THIS CODE OR MAKE IT PUBLIC IN ANY WAY</strong>. Anyone with this code has full
+                access to your Regolith Account.
+              </Typography>
+              <Typography paragraph variant="body2">
+                To use the Regolith API you need to include your API key in the header of your requests as follows:
+              </Typography>
+              <pre>{`{"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
+
+              <Typography paragraph variant="body2">
+                The base level is capped at 3,600 requests per day. If you need more, please contact us using discord.
+              </Typography>
+              <Typography paragraph variant="body2">
+                The Regolith API uses{' '}
+                <Link href="https://graphql.org/" target="_blank" rel="noreferrer">
+                  GraphQL
+                </Link>{' '}
+                for making requests. GraphQL is a query language for APIs and a runtime for executing those queries by
+                using a type system you define for your data. It is an alternative to <strong>REST</strong>.
+              </Typography>
+              <Typography paragraph variant="body2">
+                You can use tools like{' '}
+                <Link href="https://www.postman.com/" target="_blank" rel="noreferrer">
+                  Postman
+                </Link>{' '}
+                or{' '}
+                <Link href="https://insomnia.rest/" target="_blank" rel="noreferrer">
+                  Insomnia
+                </Link>{' '}
+                to test your API calls.
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Box>
 
       <DeleteProfileModal
@@ -457,6 +576,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           updateUserProfile && updateUserProfile({ ...newUserProfile, scName: newName })
           setModalOpen(null)
         }}
+      />
+
+      <ConfirmModal
+        open={modalOpen === ProfileModals.ResetAPIKey}
+        title="Reset API Key"
+        message="This will invalidate the current key and generate a new one. Are you sure? All applications using this key will need to be updated."
+        onClose={() => setModalOpen(null)}
+        onConfirm={upsertAPIKey}
+      />
+
+      <ConfirmModal
+        open={modalOpen === ProfileModals.RevokeAPI}
+        title="Revoke API Key"
+        message="This will invalidate the current key. Are you sure? All applications using this key will need to be updated."
+        onClose={() => setModalOpen(null)}
+        onConfirm={deleteAPIKey}
       />
 
       <RemoveUserModal
