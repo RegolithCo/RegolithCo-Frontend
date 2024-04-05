@@ -8,7 +8,6 @@ const config: Config = {
   shareUrl: (window as any).CLIENT_CONFIG.shareUrl || process.env.REACT_APP_SHARE_URL,
   googleClientId: (window as any).CLIENT_CONFIG.googleClientId || process.env.REACT_APP_GOOGLE_CLIENT_ID,
   discordClientId: (window as any).CLIENT_CONFIG.discordClientId || process.env.REACT_APP_DISCORD_CLIENT_ID,
-  webApiKey: (window as any).CLIENT_CONFIG.webApiKey || process.env.REACT_APP_WEB_API_KEY,
 }
 
 export default config

@@ -7,7 +7,6 @@ import {
   DestructuredSettings,
   UserSuggest,
   makeAvatar,
-  UserPlanEnum,
 } from '@regolithco/common'
 
 import { PageWrapper } from '../PageWrapper'
@@ -44,6 +43,7 @@ import { Theme } from '@mui/system'
 import { AppContext } from '../../context/app.context'
 import { UserAvatar } from '../UserAvatar'
 import { ConfirmModal } from '../modals/ConfirmModal'
+import config from '../../config'
 
 export const ProfileTabsEnum = {
   PROFILE: 'profile',
@@ -529,6 +529,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Typography paragraph variant="body2">
                 To use the Regolith API you need to include your API key in the header of your requests as follows:
               </Typography>
+              <pre>URL: {config.apiUrl}</pre>
               <pre>{`{"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
 
               <Typography paragraph variant="body2">
