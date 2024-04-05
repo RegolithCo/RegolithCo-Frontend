@@ -529,8 +529,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Typography paragraph variant="body2">
                 To use the Regolith API you need to include your API key in the header of your requests as follows:
               </Typography>
-              <pre>URL: {config.apiUrl}</pre>
-              <pre>{`{"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
+              <pre>POST: {config.apiUrl}</pre>
+              <pre>{`Headers: {"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
 
               <Typography paragraph variant="body2">
                 The base level is capped at 3,600 requests per day. If you need more, please contact us using discord.
