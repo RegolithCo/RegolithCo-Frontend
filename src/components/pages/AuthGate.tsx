@@ -17,10 +17,14 @@ export interface AuthGateProps {
 export const AuthGate: React.FC<AuthGateProps> = ({ allowNoInit, children, fallback }) => {
   const { isAuthenticated, loading, isInitialized, APIWorking, maintenanceMode } = useLogin()
 
+  // Detect if localStorage has a redirect_url set and then redirect to it
+  const redirect_url = localStorage.getItem('redirect_url')
+
   if (!APIWorking) {
     if (maintenanceMode) return <MaintenancePage msg={maintenanceMode} />
     // Store the current URL so we can redirect back after the site comes back online
-    localStorage.setItem('redirect_url', window.location.href)
+    // Only set this if there is not already a redirect_url set
+    if (!redirect_url) localStorage.setItem('redirect_url', window.location.href)
     return <ServiceDownPage />
   }
   // If the use is not authenticated AND we are not loading, show an error and the login button
@@ -41,8 +45,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ allowNoInit, children, fallb
       </PageWrapper>
     )
   }
-  // Detect if localStorage has a redirect_url set and then redirect to it
-  const redirect_url = localStorage.getItem('redirect_url')
+
   if (redirect_url) {
     localStorage.removeItem('redirect_url')
     return <Navigate to={redirect_url} />

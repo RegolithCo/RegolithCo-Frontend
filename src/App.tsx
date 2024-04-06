@@ -152,8 +152,22 @@ export const App: React.FC = () => {
             }
             errorElement={<ErrorPage />}
           />
-          <Route path="/session/:sessionId" element={<RedirectToTab />} />
-          <Route path="/join/:joinId" element={<SessionJoinContainer />} />
+          <Route
+            path="/session/:sessionId"
+            element={
+              <AuthGate>
+                <RedirectToTab />
+              </AuthGate>
+            }
+          />
+          <Route
+            path="/join/:joinId"
+            element={
+              <AuthGate>
+                <SessionJoinContainer />
+              </AuthGate>
+            }
+          />
           <Route
             path="/session/:sessionId/:tab"
             element={

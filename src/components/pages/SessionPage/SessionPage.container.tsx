@@ -76,7 +76,7 @@ export const SessionPageContainer: React.FC = () => {
   const myUserProfile = userQry.userProfile as UserProfile
   const mySessionUser = sessionQueries.sessionUser as SessionUser
   const isActive = session?.state === SessionStateEnum.Active
-  const amISessionOwner = session?.ownerId === myUserProfile.userId
+  const amISessionOwner = myUserProfile && session?.ownerId === myUserProfile.userId
   const shareUrl: string | null = session?.joinId ? `${config.shareUrl}?joinId=${session?.joinId}` : null
 
   const returnToSession = () => navigate(makeSessionUrls({ sessionId, tab }))

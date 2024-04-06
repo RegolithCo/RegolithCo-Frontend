@@ -91,6 +91,11 @@ export const SessionSettingFragmentFragmentDoc = gql`
   allowUnverifiedUsers
   usersCanAddUsers
   usersCanInviteUsers
+  lockToDiscordGuild {
+    iconUrl
+    id
+    name
+  }
   gravityWell
   location
   lockedFields
@@ -404,6 +409,11 @@ export const SessionShareFragmentFragmentDoc = gql`
   activity
   specifyUsers
   allowUnverifiedUsers
+  lockToDiscordGuild {
+    iconUrl
+    id
+    name
+  }
 }
     `;
 export const SessionActiveMembersFragmentFragmentDoc = gql`

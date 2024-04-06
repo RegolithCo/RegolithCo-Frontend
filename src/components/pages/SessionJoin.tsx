@@ -1,12 +1,13 @@
 import * as React from 'react'
 
-import { defaultSessionName, getActivityName, SessionShare } from '@regolithco/common'
+import { defaultSessionName, DiscordGuild, getActivityName, SessionShare } from '@regolithco/common'
 import { PageWrapper } from '../PageWrapper'
-import { Alert, AlertTitle, Box, Button, Paper, Typography } from '@mui/material'
+import { Alert, AlertTitle, Avatar, Box, Button, Paper, Typography, useTheme } from '@mui/material'
 import { SessionJoinError } from './SessionJoin.container'
 import dayjs from 'dayjs'
 import { fontFamilies } from '../../theme'
-import { ArrowBack } from '@mui/icons-material'
+import { ArrowBack, Diversity3 } from '@mui/icons-material'
+import { Stack } from '@mui/system'
 
 export interface SessionJoinProps {
   sessionShare?: SessionShare
@@ -14,6 +15,37 @@ export interface SessionJoinProps {
   joinSession: () => void
   navigate: (path: string) => void
   joinErrors: SessionJoinError[]
+}
+
+const DiscordGuildDisplay: React.FC<{ guild: DiscordGuild }> = ({ guild }) => {
+  const theme = useTheme()
+  return (
+    <Box
+      sx={{
+        borderRadius: 10,
+        background: theme.palette.background.default,
+        border: `5px solid ${theme.palette.primary.main}`,
+        px: 4,
+        py: 2,
+        m: 2,
+      }}
+    >
+      <Stack direction="column" alignItems="center" spacing={1}>
+        <Typography variant="caption" color="text.secondary" sx={{ marginRight: 1 }}>
+          You must be a member of
+        </Typography>
+        <Box display="flex" alignItems="center">
+          <Avatar src={guild?.iconUrl || undefined} sx={{ width: 24, height: 24, marginRight: 1 }}>
+            <Diversity3 color="primary" />
+          </Avatar>
+          {guild?.name}
+        </Box>
+        <Typography variant="caption" color="text.secondary" sx={{ marginRight: 1 }}>
+          And have permission to join a voice channel
+        </Typography>
+      </Stack>
+    </Box>
+  )
 }
 
 export const SessionJoin: React.FC<SessionJoinProps> = ({
@@ -63,32 +95,40 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
             <Typography paragraph>
               If you are in contact with the session owner ask them to add you to the Inactive user list.
             </Typography>
-            <Button
-              startIcon={<ArrowBack />}
-              onClick={() => {
-                navigate('/session')
-              }}
-              sx={{ ml: 2 }}
-              variant="contained"
-            >
-              Back to Sessions
-            </Button>
           </Alert>
         )}
+        {joinErrors.includes(SessionJoinError.NeedDiscord) && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            <AlertTitle>Discord Server Membership Required</AlertTitle>
+            <Typography paragraph>
+              This session requires you to be logged into Regolith using Discord authentication.
+            </Typography>
+            {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
+          </Alert>
+        )}
+        {joinErrors.includes(SessionJoinError.NotInDiscordServer) && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            <AlertTitle>Not in Discord Server</AlertTitle>
+            <Typography paragraph>
+              This session requires you to be a member of a specific Discord server to join.
+            </Typography>
+            {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
+          </Alert>
+        )}
+        {joinErrors.includes(SessionJoinError.NotPermittedInDiscordServer) && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            <AlertTitle>Not Permitted in Discord Server</AlertTitle>
+            <Typography paragraph>
+              You are a member of the required Discord server but do not have permission to join a voice channel.
+            </Typography>
+            {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
+          </Alert>
+        )}
+
         {joinErrors.includes(SessionJoinError.UnverifiedNotAllowd) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>Only verified users are allowed to join this session</AlertTitle>
             <Typography paragraph>The user has requested that only verified users join this session</Typography>
-            <Button
-              startIcon={<ArrowBack />}
-              onClick={() => {
-                navigate('/session')
-              }}
-              sx={{ ml: 2 }}
-              variant="contained"
-            >
-              Back to Sessions
-            </Button>
           </Alert>
         )}
         {joinErrors.includes(SessionJoinError.Closed) && (
@@ -98,17 +138,19 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
               This session has been closed either deliberately or due to inactivity and is no longer accepting new
               users.
             </Typography>
-            <Button
-              startIcon={<ArrowBack />}
-              onClick={() => {
-                navigate('/session')
-              }}
-              sx={{ ml: 2 }}
-              variant="contained"
-            >
-              Back to Sessions
-            </Button>
           </Alert>
+        )}
+        {joinErrors.length > 0 && (
+          <Button
+            startIcon={<ArrowBack />}
+            onClick={() => {
+              navigate('/session')
+            }}
+            sx={{ ml: 2 }}
+            variant="contained"
+          >
+            Back to Sessions
+          </Button>
         )}
       </Paper>
 

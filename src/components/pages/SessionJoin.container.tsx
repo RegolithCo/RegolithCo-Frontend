@@ -1,6 +1,7 @@
 import { ErrorCode, SessionStateEnum, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useDiscordGuilds } from '../../hooks/useDiscordGuilds'
 import { useJoinSession } from '../../hooks/useJoinSession'
 import { useLogin } from '../../hooks/useOAuth2'
 import { PageLoader } from './PageLoader'
@@ -17,6 +18,9 @@ export const SessionJoinError = {
   UnverifiedNotAllowd: 'UnverifiedNotAllowd',
   NotOnList: 'NotOnList',
   Closed: 'Closed',
+  NeedDiscord: 'NeedDiscord',
+  NotInDiscordServer: 'NotInDiscordServer',
+  NotPermittedInDiscordServer: 'NotPermittedInDiscordServer',
 } as const
 export type SessionJoinError = ObjectValues<typeof SessionJoinError>
 
@@ -24,6 +28,7 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   const { joinId } = useParams()
   const { userProfile } = useLogin()
   const navigate = useNavigate()
+  const { isDiscord, hasOneValid, myGuilds, loading: discordLoading } = useDiscordGuilds()
   const joinErrors: SessionJoinError[] = []
 
   const { joinSession, loading, mutating, sessionError, sessionShare } = useJoinSession(joinId)
@@ -41,9 +46,20 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   if (sessionShare?.state === SessionStateEnum.Closed) {
     joinErrors.push(SessionJoinError.Closed)
   }
+  if (sessionShare?.lockToDiscordGuild) {
+    const myGuild = myGuilds.find((guild) => guild.id === sessionShare?.lockToDiscordGuild?.id)
 
-  // NO HOOKS BELOW HERE PLEASE
-  if (loading) return <PageLoader title="loading invitation..." loading />
+    if (!isDiscord && !discordLoading) {
+      joinErrors.push(SessionJoinError.NeedDiscord)
+    } else if (!myGuild) {
+      joinErrors.push(SessionJoinError.NotInDiscordServer)
+    } else if (!myGuild.hasPermission) {
+      joinErrors.push(SessionJoinError.NotPermittedInDiscordServer)
+    }
+  }
+  if (loading)
+    // NO HOOKS BELOW HERE PLEASE
+    return <PageLoader title="loading invitation..." loading />
 
   if (sessionError || !sessionShare) {
     return <SessionNotFound action={() => navigate('/sessions')} />

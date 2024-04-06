@@ -13,7 +13,7 @@ const discordConfig: TAuthConfig = {
   redirectUri: redirectUrl,
   autoLogin: false,
   decodeToken: false,
-  scope: 'identify',
+  scope: 'identify guilds',
 }
 
 type UseOAuth2Return = IAuthContext & {
@@ -71,6 +71,9 @@ export const useOAuth2 = (): UseOAuth2Return => {
     setGoogleToken()
     googleLogout()
     logOut()
+    // Clear the localcache
+    localStorage.removeItem('myGuilds')
+    localStorage.removeItem('myGuildsTime')
     log.debug('LOGGED OUT')
   }
 

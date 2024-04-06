@@ -39,6 +39,7 @@ import {
   SessionStateEnum,
   UserSuggest,
   CrewShareTemplateInput,
+  DiscordGuildInput,
 } from '@regolithco/common'
 import log from 'loglevel'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
@@ -54,6 +55,8 @@ import { fontFamilies } from '../../../theme'
 import { DialogEnum } from '../../../context/session.context'
 import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
 import { isEqual } from 'lodash'
+import { useDiscordGuilds } from '../../../hooks/useDiscordGuilds'
+import { DiscordServerControl } from '../../fields/DiscordServerControl'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -175,13 +178,14 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const [nameValid, setNameValid] = React.useState(true)
   const [notevalid, setNoteValid] = React.useState(true)
   const isDirty = React.useMemo(() => !isEqual(oldSettings, newSettings), [oldSettings, newSettings])
+  const { isDiscord, error, loading: loadingDiscordGuilds, myGuilds } = useDiscordGuilds()
 
   React.useEffect(() => {
     const incomingSettings = makeNewSettings(session, sessionSettings)
     // Do a deep object compare and only update if the session settings actually changed
     if (!isEqual(oldSettings, incomingSettings)) {
       // We want to update these as infrequently as possible because we may lose work
-      log.debug('settings CHANGED', JSON.stringify(newSettings), JSON.stringify(incomingSettings))
+      // log.debug('settings CHANGED', JSON.stringify(newSettings), JSON.stringify(incomingSettings))
       setOldSettings(incomingSettings)
       setNewSettings(incomingSettings)
     }
@@ -504,6 +508,20 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     />
                   }
                   label="Require user verification to join."
+                />
+                <DiscordServerControl
+                  lockToDiscordGuild={newSettings.sessionSettings?.lockToDiscordGuild as DiscordGuildInput}
+                  onChange={(guild) => {
+                    setNewSettings({
+                      ...newSettings,
+                      sessionSettings: {
+                        ...newSettings.sessionSettings,
+                        lockToDiscordGuild: guild,
+                      },
+                    })
+                  }}
+                  isDiscordEnabled={true}
+                  options={myGuilds}
                 />
 
                 {/* <FormControlLabel

@@ -43,6 +43,12 @@ export type CrewShareTemplateFieldPolicy = {
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type DiscordGuildKeySpecifier = ('iconUrl' | 'id' | 'name' | DiscordGuildKeySpecifier)[];
+export type DiscordGuildFieldPolicy = {
+	iconUrl?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type LookupDataKeySpecifier = ('CIG' | 'Loadout' | 'UEX' | LookupDataKeySpecifier)[];
 export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -271,24 +277,26 @@ export type SessionFieldPolicy = {
 	version?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'gravityWell' | 'location' | 'lockedFields' | 'specifyUsers' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
+export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'gravityWell' | 'location' | 'lockToDiscordGuild' | 'lockedFields' | 'specifyUsers' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
 export type SessionSettingsFieldPolicy = {
 	activity?: FieldPolicy<any> | FieldReadFunction<any>,
 	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	gravityWell?: FieldPolicy<any> | FieldReadFunction<any>,
 	location?: FieldPolicy<any> | FieldReadFunction<any>,
+	lockToDiscordGuild?: FieldPolicy<any> | FieldReadFunction<any>,
 	lockedFields?: FieldPolicy<any> | FieldReadFunction<any>,
 	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	usersCanAddUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	usersCanInviteUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderDefaults?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionShareKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'createdAt' | 'finishedAt' | 'name' | 'note' | 'onTheList' | 'sessionId' | 'specifyUsers' | 'state' | 'updatedAt' | 'version' | SessionShareKeySpecifier)[];
+export type SessionShareKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'createdAt' | 'finishedAt' | 'lockToDiscordGuild' | 'name' | 'note' | 'onTheList' | 'sessionId' | 'specifyUsers' | 'state' | 'updatedAt' | 'version' | SessionShareKeySpecifier)[];
 export type SessionShareFieldPolicy = {
 	activity?: FieldPolicy<any> | FieldReadFunction<any>,
 	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	finishedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	lockToDiscordGuild?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
 	onTheList?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -578,6 +586,10 @@ export type StrictTypedTypePolicies = {
 	CrewShareTemplate?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CrewShareTemplateKeySpecifier | (() => undefined | CrewShareTemplateKeySpecifier),
 		fields?: CrewShareTemplateFieldPolicy,
+	},
+	DiscordGuild?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | DiscordGuildKeySpecifier | (() => undefined | DiscordGuildKeySpecifier),
+		fields?: DiscordGuildFieldPolicy,
 	},
 	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
