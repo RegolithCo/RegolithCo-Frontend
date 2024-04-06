@@ -37,7 +37,7 @@ import log from 'loglevel'
 import { ExportImageIcon } from '../../icons/badges'
 import { YoutubeEmbed } from '../fields/YoutubeEmbed'
 import { AboutPageFAQ } from './AboutPageFAQ'
-import { PatreonButton } from '../fields/PatreonButton'
+// import { PatreonButton } from '../fields/PatreonButton'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -250,7 +250,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               would be amazing!
             </Typography>
             <Typography paragraph variant="subtitle1">
-              Any amount at all is a big help!
+              Any amount at all is a big help! (
+              <Link href="https://ko-fi.com/regolithco" target="_blank">
+                open Ko-fi donation page in new tab
+              </Link>{' '}
+              )
             </Typography>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
@@ -267,12 +271,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                   title="regolithco"
                 />
               </Box>
-              <Box sx={{ flex: 1, height: '100%' }}>
+              {/* <Box sx={{ flex: 1, height: '100%' }}>
                 <PatreonButton />
                 <Typography paragraph color="text.secondary" variant="caption" component="div" textAlign="center">
                   Monthly subscription
                 </Typography>
-              </Box>
+              </Box> */}
             </Stack>
             <Divider sx={{ mb: 3 }} />
             <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>

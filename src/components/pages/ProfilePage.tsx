@@ -7,6 +7,7 @@ import {
   DestructuredSettings,
   UserSuggest,
   makeAvatar,
+  UserPlanEnum,
 } from '@regolithco/common'
 
 import { PageWrapper } from '../PageWrapper'
@@ -64,7 +65,7 @@ export const ProfileModals = {
 export type ProfileModals = ObjectValues<typeof ProfileModals>
 
 export interface ProfilePageProps {
-  userProfile: UserProfile
+  userProfile?: UserProfile
   verifiedFriends: VerifiedUserLookup
   loading?: boolean
   activeTab: ProfileTabsEnum
@@ -150,6 +151,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
 
   const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'sm'
+
+  if (loading || !userProfile)
+    return (
+      <PageWrapper title="User Profile" loading={loading} maxWidth={maxWidth} sx={styles.pageWrapper}>
+        <Box sx={styles.container}>
+          <Typography variant="h4">Loading...</Typography>
+        </Box>
+      </PageWrapper>
+    )
 
   return (
     <PageWrapper title="User Profile" loading={loading} maxWidth={maxWidth} sx={styles.pageWrapper}>
@@ -515,6 +525,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   <Button onClick={() => setModalOpen(ProfileModals.RevokeAPI)}>Delete token</Button>
                 )}
               </Stack>
+              {userProfile.apiKey && userProfile.plan === UserPlanEnum.Admin && (
+                <Alert severity="warning" sx={{ mt: 2 }}>
+                  <Typography paragraph variant="body2">
+                    Feel free to use the API for your own projects. If you are using API calls regularly we'd really
+                    appreciate your support to cover our server costs. If you haven't already please consider becoming a
+                    supporter on{' '}
+                    <Link href="https://ko-fi.com/regolithco" target="_blank">
+                      Ko-Fi HERE
+                    </Link>{' '}
+                  </Typography>
+                </Alert>
+              )}
             </Box>
             <Box sx={styles.section}>
               <Typography component="div" sx={styles.sectionTitle}>
@@ -524,16 +546,35 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             <Box sx={styles.sectionBody}>
               <Typography paragraph variant="body2">
                 <strong>DO NOT SHARE THIS CODE OR MAKE IT PUBLIC IN ANY WAY</strong>. Anyone with this code has full
-                access to your Regolith Account.
+                access to your <em>(and only your)</em> Regolith Account.
               </Typography>
               <Typography paragraph variant="body2">
                 To use the Regolith API you need to include your API key in the header of your requests as follows:
               </Typography>
-              <pre>POST: {config.apiUrl}</pre>
-              <pre>{`Headers: {"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
+              <Box
+                sx={{
+                  p: 2,
+                  mb: 2,
+                  border: '1px solid #666',
+                  backgroundColor: '#333',
+                  fontFamily: fontFamilies.robotoMono,
+                }}
+              >
+                <pre>POST: {config.apiUrl}</pre>
+                <pre>{`Headers: {"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
+                <pre>{`Body (JSON):{"query":"query {\n  profile {\n    userId\n    scName\n    avatarUrl\n    createdAt\n    updatedAt\n  }\n}"}`}</pre>
+                <Typography paragraph variant="caption">
+                  (If you're sending this in as a raw string you'll need to collapse the line breaks into a single line
+                  using '\n')
+                </Typography>
+              </Box>
 
               <Typography paragraph variant="body2">
-                The base level is capped at 3,600 requests per day. If you need more, please contact us using discord.
+                The base level is capped at 3,600 requests per day. If you need more, please contact us on{' '}
+                <Link href="https://discord.gg/6TKSYHNJha" target="_blank">
+                  Discord
+                </Link>
+                .
               </Typography>
               <Typography paragraph variant="body2">
                 The Regolith API uses{' '}
@@ -541,7 +582,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   GraphQL
                 </Link>{' '}
                 for making requests. GraphQL is a query language for APIs and a runtime for executing those queries by
-                using a type system you define for your data. It is an alternative to <strong>REST</strong>.
+                using a type system you define for your data. It is an alternative to <strong>REST</strong> and it is
+                self-documenting.
               </Typography>
               <Typography paragraph variant="body2">
                 You can use tools like{' '}
@@ -552,7 +594,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <Link href="https://insomnia.rest/" target="_blank" rel="noreferrer">
                   Insomnia
                 </Link>{' '}
-                to test your API calls.
+                or{' '}
+                <Link
+                  // href="https://cloud.hasura.io/public/graphiql?endpoint=https%3A%2F%2Fapi.regolith.rocks%2Fstaging"
+                  // We need to encode config.apiUrl
+                  href={`https://cloud.hasura.io/public/graphiql?endpoint=${encodeURIComponent(config.apiUrl)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Hasura
+                </Link>{' '}
+                to test your API calls and explore the schema.
               </Typography>
             </Box>
           </Box>

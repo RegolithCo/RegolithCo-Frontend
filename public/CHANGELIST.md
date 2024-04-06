@@ -1,3 +1,18 @@
+### April 6, 2024
+## 1.0.47 - API Access and Discord Server Restriction
+
+This one has been a long time coming but there were some very fundamental changes that had to be done on the back end before I could work on the fun stuff.
+
+#### New Features
+
+- **API Access**: You can now get an API Key and make calls to the Regolith API. Why would you want to do this? For the data nerds out there who want more control or to help develop 3rd party tools. 
+- **Discord Server Restriction**: You can now restrict your session to only users who are in your discord server.
+
+#### Bug Fixes
+
+- Fixed some edge case permissions issues. There are still more to get through though.
+
+
 ### Jan 20, 2024
 ## 1.0.47 - Small,critical fixes
 

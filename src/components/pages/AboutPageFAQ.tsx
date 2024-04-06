@@ -157,9 +157,15 @@ export const AboutPageFAQ: React.FC = () => {
         </Typography>
         <Typography paragraph>
           Feel free to use the site as much as you'd like totally free. If you'd like to contribute towards server costs
-          or buy me a coffee on <Link href="https://ko-fi.com/regolithco">ko-fi</Link> or{' '}
-          <Link href="https://patreon.com/user?u=64746907">Patreon</Link> that would be greatly appreciated. Beyond
-          that, I have no plans to monetize the site through advertising or any other methods.
+          or buy me a coffee on{' '}
+          <Link href="https://ko-fi.com/regolithco" target="_blank">
+            ko-fi
+          </Link>{' '}
+          {/* or{' '}
+          <Link href="https://patreon.com/user?u=64746907">Patreon</Link> 
+           */}
+          that would be greatly appreciated. Beyond that, I have no plans to monetize the site through advertising or
+          any other methods.
         </Typography>
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>

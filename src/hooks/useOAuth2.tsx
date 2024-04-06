@@ -74,6 +74,7 @@ export const useOAuth2 = (): UseOAuth2Return => {
     // Clear the localcache
     localStorage.removeItem('myGuilds')
     localStorage.removeItem('myGuildsTime')
+    localStorage.removeItem('redirect_url')
     log.debug('LOGGED OUT')
   }
 
