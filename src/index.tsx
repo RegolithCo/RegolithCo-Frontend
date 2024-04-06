@@ -13,12 +13,17 @@ import LogRocket from 'logrocket'
 import { AppContextWrapper } from './context/app.context'
 import { ErrorBoundary } from './Error'
 import { LookupsContextWrapper } from './context/lookupsContext'
+import config from './config'
 
-if (process.env.NODE_ENV !== 'production') {
+if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
   log.enableAll()
   log.debug('Logging is set to enable all')
   LogRocket.init('xiwxu9/regolith')
+  log.debug(`Logging is set to all for stage ${config.stage}`)
+} else {
+  log.setLevel('info')
+  log.info(`Logging is set to info for stage ${config.stage}`)
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)

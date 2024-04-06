@@ -596,7 +596,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 </Link>{' '}
                 or{' '}
                 <Link
-                  // href="https://cloud.hasura.io/public/graphiql?endpoint=https%3A%2F%2Fapi.regolith.rocks%2Fstaging"
                   // We need to encode config.apiUrl
                   href={`https://cloud.hasura.io/public/graphiql?endpoint=${encodeURIComponent(config.apiUrl)}`}
                   target="_blank"

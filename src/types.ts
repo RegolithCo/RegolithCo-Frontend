@@ -1,5 +1,6 @@
 export type Config = {
   apiUrl: string
+  stage: string
   apiUrlPub: string
   shareUrl: string
   googleClientId: string

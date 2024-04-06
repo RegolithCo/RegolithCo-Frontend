@@ -390,12 +390,14 @@ export const SessionFragmentFragmentDoc = gql`
     }
     nextToken
   }
+  ...SessionSummaryFragment
 }
     ${UserFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}
 ${SessionUserFragmentFragmentDoc}
 ${ScoutingFindFragmentFragmentDoc}
-${WorkOrderFragmentFragmentDoc}`;
+${WorkOrderFragmentFragmentDoc}
+${SessionSummaryFragmentFragmentDoc}`;
 export const SessionShareFragmentFragmentDoc = gql`
     fragment SessionShareFragment on SessionShare {
   sessionId
