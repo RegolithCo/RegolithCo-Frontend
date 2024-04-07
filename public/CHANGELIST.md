@@ -11,6 +11,8 @@ This one has been a long time coming but there were some very fundamental change
 #### Bug Fixes
 
 - Fixed some edge case permissions issues. There are still more to get through though.
+- Better handling of failed work orders.
+- Summaries now correctly separate and report Gross Vs. Net earnings.
 
 
 ### Jan 20, 2024

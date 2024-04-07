@@ -1,9 +1,16 @@
 import * as React from 'react'
 
-import { ActivityEnum, getTimezoneStr, makeHumanIds, ShipMiningOrder, WorkOrder } from '@regolithco/common'
+import {
+  ActivityEnum,
+  getTimezoneStr,
+  makeHumanIds,
+  ShipMiningOrder,
+  WorkOrder,
+  WorkOrderStateEnum,
+} from '@regolithco/common'
 import dayjs from 'dayjs'
 import { getActivityName, WorkOrderSummary } from '@regolithco/common'
-import { Checkbox, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
+import { alpha, Checkbox, Chip, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
@@ -70,34 +77,6 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       ? finalOres[0]
       : '???'
 
-  // switch (state) {
-  //   // case WorkOrderStateEnum.RefiningComplete:
-  //   //   stateIcon = <AddBusiness color="success" />
-  //   //   break
-  //   case WorkOrderStateEnum.Failed:
-  //     stateIcon = <Dangerous color="error" />
-  //     break
-  //   case WorkOrderStateEnum.Done:
-  //     stateIcon = <PriceCheck color="success" />
-  //     break
-  //   case WorkOrderStateEnum.RefiningComplete:
-  //     stateIcon = (
-  //       <Badge badgeContent={<CheckCircle />}>
-  //         <Factory />
-  //       </Badge>
-  //     )
-  //     break
-  //   case WorkOrderStateEnum.RefiningStarted:
-  //     stateIcon = <Factory color="secondary" />
-  //     break
-  //   case WorkOrderStateEnum.Unknown:
-  //     stateIcon = <QuestionMark />
-  //     break
-  //   default:
-  //     stateIcon = <ClawIcon />
-  //     break
-  // }
-
   const { contextMenuNode, handleContextMenu } = useSessionContextMenu({
     header: `Work Order: ${makeHumanIds(
       getSafeName(workOrder.sellerscName || workOrder.owner?.scName),
@@ -144,32 +123,51 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
   })
 
   const onRowClick = () => openWorkOrderModal && openWorkOrderModal(workOrder.orderId)
+  const isFailed = workOrder.state === WorkOrderStateEnum.Failed
+
+  const workOrderGrossShareAmt = isFailed ? 0 : summary.grossValue || 0
+  const workOrderNetShareAmt = summary.shareAmount
 
   return (
-    <TableRow key={workOrder.orderId} sx={{ cursor: 'context-menu' }} onContextMenu={handleContextMenu}>
+    <TableRow
+      key={workOrder.orderId}
+      onContextMenu={handleContextMenu}
+      sx={{
+        cursor: 'context-menu',
+        backgroundColor: isFailed ? alpha(theme.palette.error.dark, 0.1) : undefined,
+        fontFamily: fontFamilies.robotoMono,
+        fontWeight: 'bold',
+        '& .MuiTypography-root': {
+          fontFamily: fontFamilies.robotoMono,
+          fontWeight: 'bold',
+          color: isFailed ? theme.palette.error.main : undefined,
+        },
+      }}
+    >
       {contextMenuNode}
       <TableCell align="center" onClick={onRowClick}>
-        <Tooltip title={getActivityName(workOrder.orderType)}>
-          <OrderIcon />
-        </Tooltip>
+        {isFailed ? (
+          <Chip label="FAILED" color="error" size="small" />
+        ) : (
+          <Tooltip title={getActivityName(workOrder.orderType)}>
+            <OrderIcon />
+          </Tooltip>
+        )}
       </TableCell>
+
       <TableCell onClick={onRowClick}>
         <MValue
           value={makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
           format={MValueFormat.string}
         />
       </TableCell>
-      {/* State */}
-      {/* {!isShare && (
-        <TableCell align="center" onClick={onRowClick}>
-          <Tooltip title={workOrder.state}>{stateIcon}</Tooltip>
-        </TableCell>
-      )} */}
 
       {/* crew shares */}
       <TableCell align="center" onClick={onRowClick}>
-        {workOrder.crewShares?.length || 0}
+        <Typography>{workOrder.crewShares?.length || 0}</Typography>
       </TableCell>
+
+      {/* ORE NAMES */}
       <TableCell
         onClick={onRowClick}
         sx={{
@@ -180,7 +178,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
           maxWidth: 150,
         }}
       >
-        {oreNames}
+        <Typography>{oreNames}</Typography>
       </TableCell>
       <TableCell
         onClick={onRowClick}
@@ -198,26 +196,33 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       <Tooltip
         title={
           <>
-            Work Order Profit:
-            {MValueFormatter(workOrder.shareAmount || summary.shareAmount || 0, MValueFormat.currency)}
+            Work Order Gross Profit (Total revenue from sale):
+            <br />
+            {MValueFormatter(workOrderGrossShareAmt, MValueFormat.currency)}
           </>
         }
       >
         <TableCell align="right" onClick={onRowClick}>
-          <MValue value={workOrder.shareAmount || summary.shareAmount || 0} format={MValueFormat.currency_sm} />
+          <MValue value={workOrderGrossShareAmt} format={MValueFormat.currency_sm} />
+        </TableCell>
+      </Tooltip>
+      <Tooltip
+        title={
+          <>
+            Work Order Net Profit (Gross Minus Fees/Expenses/costs):
+            <br />
+            {MValueFormatter(workOrderNetShareAmt, MValueFormat.currency)}
+          </>
+        }
+      >
+        <TableCell align="right" onClick={onRowClick}>
+          <MValue value={workOrderNetShareAmt} format={MValueFormat.currency_sm} />
         </TableCell>
       </Tooltip>
       {isShare ? (
         <TableCell align="left" onClick={onRowClick}>
           {summary.completionTime && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: theme.palette.primary.light,
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-              }}
-            >
+            <Typography>
               {dayjs(
                 shipOrder.processStartTime
                   ? shipOrder.processStartTime + (shipOrder.processDurationS || 0) * 1000
@@ -234,27 +239,9 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
               startTime={shipOrder.processStartTime as number}
               totalTime={(shipOrder.processDurationS || 0) * 1000}
               useMValue
-              typoProps={{
-                variant: 'caption',
-                sx: {
-                  color: theme.palette.primary.light,
-                  fontFamily: fontFamilies.robotoMono,
-                  fontWeight: 'bold',
-                },
-              }}
             />
           ) : (
-            <MValue
-              value={workOrder.createdAt}
-              format={MValueFormat.dateTime}
-              typoProps={{
-                variant: 'caption',
-                sx: {
-                  fontFamily: fontFamilies.robotoMono,
-                  fontWeight: 'bold',
-                },
-              }}
-            />
+            <MValue value={workOrder.createdAt} format={MValueFormat.dateTime} />
           )}
         </TableCell>
       )}
@@ -278,16 +265,11 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
         <TableCell align="center" padding="checkbox" onClick={onRowClick}>
           <Tooltip title={`All crew shares ${isPaid ? 'are' : 'are NOT'} paid`}>
             {numCrewShares > 1 ? (
-              <Typography
-                variant="caption"
-                sx={{ color: isPaid ? theme.palette.success.main : theme.palette.error.main }}
-              >
+              <Typography>
                 {numPaid}/{(workOrder.crewShares || []).length}
               </Typography>
             ) : (
-              <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
-                N/A
-              </Typography>
+              <Typography>N/A</Typography>
             )}
           </Tooltip>
         </TableCell>

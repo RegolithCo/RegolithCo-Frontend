@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { SessionStateEnum, WorkOrder } from '@regolithco/common'
+import { SessionStateEnum, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
 import { calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   SxProps,
@@ -73,6 +73,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
   // NOTE: Order is REALLY important here
   const [summaries, setSummaries] = React.useState<Record<string, WorkOrderSummary>>()
   const [volSCU, setVolSCU] = React.useState(0)
+  const [grossAmount, setGrossAmount] = React.useState(0)
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
 
@@ -97,8 +98,16 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
       )
       setVolSCU(volSCU)
 
-      const shareAmount = Object.values(summaries).reduce((acc, summary) => acc + summary.shareAmount, 0)
-      setShareAmount(shareAmount)
+      const [grossAmt, shareAmt] = workOrders.reduce(
+        (acc, wo) => {
+          const newGross = wo.state === WorkOrderStateEnum.Failed ? acc[0] : acc[0] + summaries[wo.orderId].grossValue
+          const newNet = acc[1] + summaries[wo.orderId].shareAmount
+          return [newGross, newNet]
+        },
+        [0, 0]
+      )
+      setGrossAmount(grossAmt)
+      setShareAmount(shareAmt)
     }
     calcWorkOrders()
   }, [dataStore, workOrders])
@@ -115,7 +124,8 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
             <TableCell align="center">Shares</TableCell>
             <TableCell>Ores</TableCell>
             <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Gross Profit</TableCell>
+            <TableCell align="right">Gross</TableCell>
+            <TableCell align="right">Net</TableCell>
             <TableCell align="left">
               <Tooltip title="Finished At / Time left">
                 <AccessTime />
@@ -145,7 +155,12 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
             <TableCell align="right">
               <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
             </TableCell>
-            <Tooltip title={<>Gross Profit: {MValueFormatter(shareAmount, MValueFormat.currency)}</>}>
+            <Tooltip title={<>Gross Profit: {MValueFormatter(grossAmount, MValueFormat.currency)}</>}>
+              <TableCell align="right">
+                <MValue value={grossAmount} format={MValueFormat.currency_sm} />
+              </TableCell>
+            </Tooltip>
+            <Tooltip title={<>Net Profit: {MValueFormatter(shareAmount, MValueFormat.currency)}</>}>
               <TableCell align="right">
                 <MValue value={shareAmount} format={MValueFormat.currency_sm} />
               </TableCell>

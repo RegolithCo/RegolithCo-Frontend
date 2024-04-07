@@ -117,10 +117,10 @@ export const SessionPageContainer: React.FC = () => {
     return { crewHierarchy, singleActives, captains, singleInnactives }
   }, [session?.activeMembers?.items, session?.mentionedUsers])
 
-  const userSuggest: UserSuggest = React.useMemo(
-    () => createUserSuggest(session, myUserProfile, mySessionUser, crewHierarchy),
-    [session, myUserProfile, mySessionUser, crewHierarchy]
-  )
+  const userSuggest: UserSuggest = React.useMemo(() => {
+    if (!session || !myUserProfile || !mySessionUser) return {} as UserSuggest
+    return createUserSuggest(session, myUserProfile, mySessionUser, crewHierarchy)
+  }, [session, myUserProfile, mySessionUser, crewHierarchy])
 
   const openActiveUserModal = (userId: string | null) => {
     setPendingUserModalScName(null)
@@ -230,6 +230,8 @@ export const SessionPageContainer: React.FC = () => {
   if (sessionQueries.sessionError || !sessionQueries.session) {
     return <SessionNotFound action={() => navigate('/sessions')} />
   }
+
+  if (!mySessionUser || !myUserProfile || !session) return <PageLoader title="loading session..." loading />
 
   return (
     <>
@@ -531,14 +533,6 @@ export const SessionPageContainer: React.FC = () => {
         <DownloadModal
           open={activeModal === DialogEnum.DOWNLOAD_SESSION}
           onClose={() => setActiveModal(null)}
-          title="Download Session"
-          // description="Download the session data as a CSV or JSON file."
-          description="Download the session data as a JSON file."
-          // downloadCSV={() => {
-          //   if (!session) return
-          //   const csvObj = session2csv(session)
-          //   downloadFile(csvObj, createSafeFileName(session.name || 'Session', session.sessionId) + '.csv', 'text/csv')
-          // }}
           downloadJSON={() => {
             if (!session) return
             const jsonObj = JSON.stringify(session2Json(session), null, 2)

@@ -278,7 +278,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
         <Tooltip
           title={
             <Typography>
-              Total value of all work orders: <br />
+              Total net profit from all work orders: <br />
               {MValueFormatter(aUEC, MValueFormat.currency)}
             </Typography>
           }

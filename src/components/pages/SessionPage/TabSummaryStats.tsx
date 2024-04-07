@@ -47,7 +47,49 @@ export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isSha
           <ListItemText primary="Gross earnings" />
           <ListItemSecondaryAction>
             <MValue
+              value={sessionSummary.grossValue}
+              format={MValueFormat.currency}
+              typoProps={{
+                px: 2,
+                fontSize: '1.1rem',
+                lineHeight: '2rem',
+              }}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText primary="Total Expenses" />
+          <ListItemSecondaryAction>
+            <MValue
+              value={-sessionSummary.expensesValue}
+              format={MValueFormat.currency}
+              typoProps={{
+                px: 2,
+                fontSize: '1.1rem',
+                lineHeight: '2rem',
+              }}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText primary="Net earnings" />
+          <ListItemSecondaryAction>
+            <MValue
               value={sessionSummary.shareAmount}
+              format={MValueFormat.currency}
+              typoProps={{
+                px: 2,
+                fontSize: '1.1rem',
+                lineHeight: '2rem',
+              }}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText primary="Total Losses (failed work orders)" />
+          <ListItemSecondaryAction>
+            <MValue
+              value={-sessionSummary.lossValue}
               format={MValueFormat.currency}
               typoProps={{
                 px: 2,
