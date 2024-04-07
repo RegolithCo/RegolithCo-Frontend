@@ -326,8 +326,9 @@ export type SessionSummaryTotalsFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicle?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionSummaryWorkOrderKeySpecifier = ('isSold' | 'orderType' | 'paidShares' | 'unpaidShares' | SessionSummaryWorkOrderKeySpecifier)[];
+export type SessionSummaryWorkOrderKeySpecifier = ('isFailed' | 'isSold' | 'orderType' | 'paidShares' | 'unpaidShares' | SessionSummaryWorkOrderKeySpecifier)[];
 export type SessionSummaryWorkOrderFieldPolicy = {
+	isFailed?: FieldPolicy<any> | FieldReadFunction<any>,
 	isSold?: FieldPolicy<any> | FieldReadFunction<any>,
 	orderType?: FieldPolicy<any> | FieldReadFunction<any>,
 	paidShares?: FieldPolicy<any> | FieldReadFunction<any>,

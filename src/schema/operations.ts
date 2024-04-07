@@ -163,6 +163,7 @@ export const SessionSummaryFragmentFragmentDoc = gql`
     workOrderSummaries {
       orderType
       isSold
+      isFailed
       unpaidShares
       paidShares
     }
