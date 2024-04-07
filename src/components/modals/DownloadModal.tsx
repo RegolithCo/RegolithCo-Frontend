@@ -1,25 +1,19 @@
 import { BorderAll, CloudDownload, DataObject } from '@mui/icons-material'
-import { Avatar, Box, Button, Modal, Stack, Typography, useTheme } from '@mui/material'
+import { Avatar, Box, Button, Link, Modal, Stack, Typography, useTheme } from '@mui/material'
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { MUIRouterLink } from '../RouterLink'
 
 export type DownloadModalProps = {
   open?: boolean
-  title: string
-  description: string
   downloadCSV?: () => void
   downloadJSON?: () => void
   onClose: () => void
 }
 
-export const DownloadModal: React.FC<DownloadModalProps> = ({
-  open,
-  title,
-  description,
-  downloadCSV,
-  downloadJSON,
-  onClose,
-}) => {
+export const DownloadModal: React.FC<DownloadModalProps> = ({ open, downloadCSV, downloadJSON, onClose }) => {
   const theme = useTheme()
+  const navigate = useNavigate()
 
   return (
     <Modal open={Boolean(open)} onClose={onClose}>
@@ -42,11 +36,11 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             <CloudDownload color="inherit" />
           </Avatar>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {title}
+            Download Session
           </Typography>
         </Stack>
         <Typography id="modal-modal-title" variant="body1" component="div" paragraph>
-          {description}
+          Download the session data as a JSON file.
         </Typography>
         {downloadCSV && (
           <Button
@@ -82,6 +76,10 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             Download JSON
           </Button>
         )}
+        <Typography variant="caption" component="div" paragraph>
+          Regolith is now <MUIRouterLink localUrl="/profile/api">API enabled</MUIRouterLink>. If you'd rather fetch data
+          programmatically, you can use the API to get the data you need.
+        </Typography>
       </Box>
     </Modal>
   )

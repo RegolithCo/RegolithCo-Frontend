@@ -20,8 +20,6 @@ DeleteProfileModal.args = {
   onClose: () => {
     console.log('Closed')
   },
-  title: 'Download Modal',
-  description: 'This is a description',
   downloadCSV() {
     console.log('CSV')
   },
