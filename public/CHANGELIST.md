@@ -5,14 +5,16 @@ This one has been a long time coming but there were some very fundamental change
 
 #### New Features
 
-- **API Access**: You can now get an API Key and make calls to the Regolith API. Why would you want to do this? For the data nerds out there who want more control or to help develop 3rd party tools. 
+- **API Token Access**: You can now get an API Key and make calls to the Regolith API. Why would you want to do this? For the data nerds and tool developers out there who want to get their hands dirty. 
 - **Discord Server Restriction**: You can now restrict your session to only users who are in your discord server.
 
 #### Bug Fixes
 
+- Loadouts: More than one active module can be turned on for each laser
+- Work orders: Better handling of failed state.
+- Work orders: Summaries now correctly separate and report Gross Vs. Net earnings.
 - Fixed some edge case permissions issues. There are still more to get through though.
-- Better handling of failed work orders.
-- Summaries now correctly separate and report Gross Vs. Net earnings.
+- Complete reworking of the back end SDK connections to improve efficiencey and future-proofing.
 
 
 ### Jan 20, 2024

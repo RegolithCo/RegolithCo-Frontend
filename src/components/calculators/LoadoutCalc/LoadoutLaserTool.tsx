@@ -53,36 +53,20 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
 
   const onModuleChange = (slotIdx: number) => (module: MiningModuleEnum | '', isActive: boolean, hover: boolean) => {
     if (!hasLaser) return onChange(null, hover)
+
+    // If the laser is off, we can't change the modules
     const newModules = Array.from({ length: slots }).map((_, idx) => {
       if ((activeLaser?.modules || []).length <= idx) return null
       if (idx !== slotIdx) return activeLaser?.modules[idx] || null
       if (!module) return null
       return module
     })
-    const thisModule = module ? loadoutLookups.modules[module] : null
+    // const thisModule = module ? loadoutLookups.modules[module] : null
     const newModulesActive = Array.from({ length: slots }).map((_, idx) => {
-      const mapModule = activeLaser?.modules[idx] || null
-      if (mapModule && idx !== slotIdx) {
-        const arrModule = loadoutLookups.modules[mapModule as MiningModuleEnum]
-        const value = Boolean(arrModule && activeLaser?.modulesActive[idx])
-        if (
-          // Only one active module can be on at a time on a laser
-          value === true &&
-          thisModule?.active &&
-          arrModule.active &&
-          thisModule?.code === arrModule.code
-        )
-          return false
-        return value
-      }
-
-      if (!mapModule) return false
-
-      const module = loadoutLookups.modules[mapModule as MiningModuleEnum]
-      // Passive modules are alwaus active if the laser is
-      if (laserIsActive && !module.active) return true
-
-      return Boolean(laserIsActive && module.active && isActive)
+      // const thisModule = activeLaser?.modules[idx] || null
+      const thisActive = activeLaser?.modulesActive[idx] || false
+      if (idx !== slotIdx) return thisActive
+      else return isActive
     })
     // Now just check that this active m is the only one that's on
     onChange(
