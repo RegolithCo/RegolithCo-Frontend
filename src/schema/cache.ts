@@ -180,10 +180,11 @@ export type QueryFieldPolicy = {
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrder?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type RefineryRowKeySpecifier = ('amt' | 'ore' | RefineryRowKeySpecifier)[];
+export type RefineryRowKeySpecifier = ('amt' | 'ore' | 'yield' | RefineryRowKeySpecifier)[];
 export type RefineryRowFieldPolicy = {
 	amt?: FieldPolicy<any> | FieldReadFunction<any>,
-	ore?: FieldPolicy<any> | FieldReadFunction<any>
+	ore?: FieldPolicy<any> | FieldReadFunction<any>,
+	yield?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SalvageFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
 export type SalvageFindFieldPolicy = {
@@ -364,7 +365,7 @@ export type ShipClusterFindFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'isSold' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processDurationS' | 'processStartTime' | 'refinery' | 'sellStore' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | 'version' | ShipMiningOrderKeySpecifier)[];
+export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'isSold' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processDurationS' | 'processEndTime' | 'processStartTime' | 'refinery' | 'sellStore' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | 'version' | ShipMiningOrderKeySpecifier)[];
 export type ShipMiningOrderFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -380,6 +381,7 @@ export type ShipMiningOrderFieldPolicy = {
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	processDurationS?: FieldPolicy<any> | FieldReadFunction<any>,
+	processEndTime?: FieldPolicy<any> | FieldReadFunction<any>,
 	processStartTime?: FieldPolicy<any> | FieldReadFunction<any>,
 	refinery?: FieldPolicy<any> | FieldReadFunction<any>,
 	sellStore?: FieldPolicy<any> | FieldReadFunction<any>,

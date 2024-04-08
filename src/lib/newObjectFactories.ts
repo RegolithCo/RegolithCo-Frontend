@@ -239,6 +239,7 @@ export function newWorkOrderMaker(
           defaults.shipOres?.map((ore) => ({
             ore,
             amt: 0,
+            yield: 0,
             __typename: 'RefineryRow',
           })) || [],
         expenses,

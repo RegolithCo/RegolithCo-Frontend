@@ -212,6 +212,7 @@ export const OreCard: React.FC<OreCardProps> = ({
               const newOres: RefineryRow[] = oreChoices.map((oreChoice) => ({
                 ore: oreChoice,
                 amt: oldOres.find(({ ore }) => ore === oreChoice)?.amt || 0,
+                yield: 0, // NOTE: we calculate yield on the fly in the app
                 __typename: 'RefineryRow',
               }))
               onChange({ ...shipOrder, shipOres: newOres })
@@ -519,9 +520,9 @@ const tableChange = async (
         const existingRowIdx = existingOres.findIndex((row) => row?.ore === oreKey)
 
         if (existingRowIdx > -1) {
-          existingOres[existingRowIdx] = { ore: shipOre, amt, __typename: 'RefineryRow' }
+          existingOres[existingRowIdx] = { ore: shipOre, amt, yield: 0, __typename: 'RefineryRow' }
         } else {
-          existingOres.push({ ore: shipOre, amt, __typename: 'RefineryRow' })
+          existingOres.push({ ore: shipOre, amt, yield: 0, __typename: 'RefineryRow' })
         }
         onChange({
           ...shipOrder,

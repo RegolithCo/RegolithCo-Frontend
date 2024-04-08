@@ -152,7 +152,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           shareAmount,
           sellStore,
         },
-        shipOres: removeKeyRecursive(shipOres, '__typename'),
+        shipOres: (shipOres || []).map(({ amt, ore }) => ({ amt, ore })),
         vehicleOres: removeKeyRecursive(vehicleOres, '__typename'),
         salvageOres: removeKeyRecursive(salvageOres, '__typename'),
       },
