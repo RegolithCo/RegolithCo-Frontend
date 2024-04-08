@@ -15,7 +15,7 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Textfit } from 'react-textfit'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { DailyMonthlyChart } from './charts/DailyMonthlyChart'
-import { PieChart } from './charts/PieChart'
+import { OrePieChart } from './charts/OrePieChart'
 import { fontFamilies } from '../../theme'
 import { Stack } from '@mui/system'
 
@@ -34,7 +34,8 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
   const matches = useMediaQuery(theme.breakpoints.up('md'))
 
   const usersFormatted = formatCardNumber(stats?.total?.users || 0)
-  const aUECFormatted = formatCardNumber(stats?.total?.aUEC || 0)
+  const aUECFormatted = formatCardNumber(stats?.total?.grossProfitaUEC || 0)
+  const lossFormatted = formatCardNumber(stats?.total?.lossaUEC || 0)
   const rawOreSCUFormatted = formatCardNumber(stats?.total?.rawOreSCU || 0)
   const totalSessionsFormatted = formatCardNumber(stats?.total?.sessions || 0)
   const workOrdersFormatted = formatCardNumber(stats?.total?.workOrders || 0)
@@ -54,7 +55,17 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
           value={aUECFormatted[0]}
           scale={aUECFormatted[1]}
           subText="aUEC Earned"
-          tooltip={`${MValueFormatter(stats?.total?.aUEC || 0, MValueFormat.number)} aUEC Earned by users`}
+          tooltip={`${MValueFormatter(stats?.total?.grossProfitaUEC || 0, MValueFormat.number)} aUEC Earned by users`}
+          loading={statsLoading.total}
+        />
+        <SiteStatsCard
+          value={lossFormatted[0]}
+          scale={lossFormatted[1]}
+          subText="aUEC Lost"
+          tooltip={`${MValueFormatter(
+            stats?.total?.grossProfitaUEC || 0,
+            MValueFormat.number
+          )} aUEC Lost due to crashes, piracy etc.`}
           loading={statsLoading.total}
         />
         <SiteStatsCard
@@ -95,7 +106,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
         )}
         {!statsLoading.total && (
           <Grid xs={12} sm={6} md={6}>
-            <PieChart
+            <OrePieChart
               title="Activity Types"
               activityTypes={stats?.total?.workOrderTypes || {}}
               loading={statsLoading.total}
@@ -104,17 +115,22 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
         )}
         {!statsLoading.total && (
           <Grid xs={12} sm={6} md={6}>
-            <PieChart title="Ship Ores" ores={stats?.total?.shipOres || {}} loading={statsLoading.total} />
+            <OrePieChart title="Ship Ores" ores={stats?.total?.shipOres || {}} loading={statsLoading.total} />
           </Grid>
         )}
         {!statsLoading.total && (
           <Grid xs={12} sm={6} md={6}>
-            <PieChart title="Vehicle Ores" ores={stats?.total?.vehicleOres || {}} loading={statsLoading.total} />
+            <OrePieChart title="Vehicle Ores" ores={stats?.total?.vehicleOres || {}} loading={statsLoading.total} />
           </Grid>
         )}
         {!statsLoading.total && (
           <Grid xs={12} sm={6} md={6}>
-            <PieChart title="Salvage Ores" ores={stats?.total?.salvageOres || {}} loading={statsLoading.total} />
+            <OrePieChart title="Salvage Ores" ores={stats?.total?.salvageOres || {}} loading={statsLoading.total} />
+          </Grid>
+        )}
+        {!statsLoading.total && (
+          <Grid xs={12} sm={6} md={6}>
+            <OrePieChart title="Failure Reasons" ores={stats?.total?.failReasons || {}} loading={statsLoading.total} />
           </Grid>
         )}
       </Grid>
@@ -145,9 +161,9 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
   const styles = stylesThunk(theme)
   return (
     <Grid
-      xs={4}
-      sm={3}
-      md={2}
+      xs={6}
+      sm={4}
+      md={3}
       sx={{
         '& *': {
           whiteSpace: 'nowrap',

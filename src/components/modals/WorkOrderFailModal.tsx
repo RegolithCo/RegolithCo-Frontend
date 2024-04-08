@@ -60,7 +60,7 @@ export const WorkOrderFailModal: React.FC<WorkOrderFailModalProps> = ({ open, on
               setReason(newValue)
             }}
           >
-            {failReasons.map((reason, idx) => (
+            {failReasons.map(([reason, short], idx) => (
               <FormControlLabel key={`failreason-${idx}`} value={reason} control={<Radio />} label={reason} />
             ))}
             <FormControlLabel value="other" control={<Radio />} label="Other" />

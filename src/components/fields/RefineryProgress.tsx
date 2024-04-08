@@ -11,7 +11,7 @@ interface RefineryProgressProps {
   onChange: (durationMs: number) => void
 }
 
-type InputValueType = [string, string[], number]
+type InputValueType = [string, number[], number]
 
 function reverseFormat(invalue?: number): string {
   if (!invalue) return '0:0:0:0'
@@ -25,37 +25,35 @@ function reverseFormat(invalue?: number): string {
 
 function formatValue(inputValue: string): InputValueType {
   // Remove any non-digit characters from the input and remove any leading zeros
-  const cleanedValue = inputValue.replace(/[^\d]/g, '').replace(/^0+/, '')
+  const cleanedIntValues = inputValue
+    .split(':')
+    .map((segment) => parseInt(segment.replace(/\D/g, '').replace(/^0+/, ''), 10))
+    .reverse()
 
-  // Split the cleanedValue into segments
-  const parsedSegments = (
-    cleanedValue
-      .split('')
-      .reverse()
-      .join('')
-      .match(/.{1,2}/g) || []
-  ).map((segment) => segment.split('').reverse().join(''))
-  const formattedValue = [...parsedSegments].reverse().join(':')
+  let formattedValue = ''
 
   // the segments take the form
   let durationMin = 0
-  if (parsedSegments.length > 0) {
-    durationMin += parseInt(parsedSegments[0])
+  if (cleanedIntValues.length > 0) {
+    durationMin += cleanedIntValues[0]
+    formattedValue += cleanedIntValues[0]
   }
-  if (parsedSegments.length > 1) {
-    durationMin += parseInt(parsedSegments[1]) * 60
+  if (cleanedIntValues.length > 1) {
+    durationMin += cleanedIntValues[1] * 60
+    formattedValue += `:${cleanedIntValues[1]}`
   }
-  if (parsedSegments.length > 2) {
-    durationMin += parseInt(parsedSegments[2]) * 24 * 60
+  if (cleanedIntValues.length > 2) {
+    durationMin += cleanedIntValues[2] * 24 * 60
+    formattedValue += `:${cleanedIntValues[2]}`
   }
 
-  return [formattedValue, parsedSegments, durationMin * 60]
+  return [formattedValue, cleanedIntValues, durationMin * 60]
 }
 
 export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, editable, totalTimeS, onChange }) => {
   const [isEditing, setIsEditing] = React.useState(false)
   const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTime, (totalTimeS || 0) * 1000)
-  const [[stringValue, segments, numValMs], setValue] = React.useState<[string, string[], number]>(
+  const [[stringValue, segments, numValMs], setValue] = React.useState<[string, number[], number]>(
     formatValue(reverseFormat(totalTimeS))
   )
   const theme = useTheme()

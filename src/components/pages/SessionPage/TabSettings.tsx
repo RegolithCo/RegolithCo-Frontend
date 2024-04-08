@@ -520,7 +520,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       },
                     })
                   }}
-                  isDiscordEnabled={true}
+                  isDiscordEnabled={isDiscord}
                   options={myGuilds}
                 />
 

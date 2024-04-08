@@ -212,12 +212,13 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
 
 type StatsObjectRowKeys = keyof Pick<
   StatsObject,
-  'users' | 'workOrders' | 'sessions' | 'scoutingRocks' | 'aUEC'
+  'users' | 'workOrders' | 'sessions' | 'scoutingRocks' | 'grossProfitaUEC' | 'lossaUEC'
   // | 'rawOreSCU'
 >
 
 const LINES: Record<StatsObjectRowKeys, { label: string; color: string }> = {
-  aUEC: { label: 'aUEC Earned', color: 'hsl(132, 92%, 50%)' },
+  grossProfitaUEC: { label: 'Gross Profit (aUEC)', color: 'hsl(132, 92%, 50%)' },
+  lossaUEC: { label: 'Loss (aUEC)', color: 'hsl(0, 0%, 51%)' },
   scoutingRocks: { label: 'Scouted Rocks', color: 'hsl(66, 70%, 50%)' },
   workOrders: { label: 'Work Orders', color: 'hsl(295, 70%, 50%)' },
   sessions: { label: 'Mining Sessions', color: 'hsl(88, 70%, 50%)' },

@@ -5,7 +5,7 @@ import { MayHaveLabel, ResponsivePie } from '@nivo/pie'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 
-export interface PieChartProps {
+export interface OrePieChartProps {
   title: string
   ores?: StatsObject['shipOres'] | StatsObject['vehicleOres'] | StatsObject['salvageOres']
   activityTypes?: StatsObject['workOrderTypes']
@@ -16,7 +16,7 @@ export interface PieChartProps {
  * @param param0
  * @returns
  */
-export const PieChart: React.FC<PieChartProps> = ({ title, ores, activityTypes, loading }) => {
+export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityTypes, loading }) => {
   const theme = useTheme()
 
   const normalizedData: MayHaveLabel[] = React.useMemo(() => {
