@@ -1,18 +1,19 @@
-### April 6, 2024
+### April 12, 2024
 ## 1.0.47 - API Access and Discord Server Restriction
 
 This one has been a long time coming but there were some very fundamental changes that had to be done on the back end before I could work on the fun stuff.
 
 #### New Features
 
-- **API Token Access**: You can now get an API Key and make calls to the Regolith API. Why would you want to do this? For the data nerds and tool developers out there who want to get their hands dirty. 
 - **Discord Server Restriction**: You can now restrict your session to only users who are in your discord server.
+- **API Token Access**: You can now get an API Key and make calls to the Regolith API. Why would you want to do this? For the data nerds and tool developers out there who want to get their hands dirty. Also a few convenience fields like `processEndTime` and `yield` on refined ores have been added.
 
 #### Bug Fixes
 
 - Loadouts: More than one active module can be turned on for each laser
-- Work orders: Better handling of failed state.
-- Work orders: Summaries now correctly separate and report Gross Vs. Net earnings.
+- Work Orders: Looks like CIG has changeed back from `DD:HH:MM` to `HHH:MM` so the countdown input has been reflected to take that input (even though it's less friendly IMHO)
+- Work Orders: Better handling of failed state.
+- Work Orders: Summaries now correctly separate and report Gross Vs. Net earnings.
 - Fixed some edge case permissions issues. There are still more to get through though.
 - Complete reworking of the back end SDK connections to improve efficiencey and future-proofing.
 

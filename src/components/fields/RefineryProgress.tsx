@@ -11,49 +11,54 @@ interface RefineryProgressProps {
   onChange: (durationMs: number) => void
 }
 
-type InputValueType = [string, number[], number]
+type InputValueType = [string, string[], number]
 
 function reverseFormat(invalue?: number): string {
-  if (!invalue) return '0:0:0:0'
-  const days = Math.floor(invalue / (24 * 60 * 60))
-  const hours = Math.floor((invalue % (24 * 60 * 60)) / (60 * 60))
+  if (!invalue) return '0:0'
+  const hours = Math.floor(invalue / (60 * 60))
   const minutes = Math.floor((invalue % (60 * 60)) / 60)
-  const seconds = Math.floor(invalue % 60)
-
-  return `${days}:${hours}:${minutes}:${seconds}`
+  return `${hours}:${minutes}`
 }
 
 function formatValue(inputValue: string): InputValueType {
   // Remove any non-digit characters from the input and remove any leading zeros
-  const cleanedIntValues = inputValue
-    .split(':')
-    .map((segment) => parseInt(segment.replace(/\D/g, '').replace(/^0+/, ''), 10))
-    .reverse()
+  const cleanedValue = inputValue.replace(/[^\d]/g, '').replace(/^0+/, '')
 
-  let formattedValue = ''
+  // Split the cleanedValue into segments
+  // 123:45 -> 54321 ['54321', '54', '321']
+  const cleanedReversedSegments = cleanedValue
+    .split('')
+    .reverse()
+    .join('')
+    .match(/^([0-9]{1,2})([0-9]*)$/)
+
+  // ['54321', '54', '321'] -> ['54', '321'] -> ['45', '123']
+  const parsedSegments = (cleanedReversedSegments ? [cleanedReversedSegments[1], cleanedReversedSegments[2]] : [])
+    .filter((a) => a && a.length > 0)
+    .map((segment) => segment.split('').reverse().join(''))
 
   // the segments take the form
   let durationMin = 0
-  if (cleanedIntValues.length > 0) {
-    durationMin += cleanedIntValues[0]
-    formattedValue += cleanedIntValues[0]
+  // Minutes
+  if (parsedSegments.length > 0) {
+    durationMin += parseInt(parsedSegments[0], 10)
   }
-  if (cleanedIntValues.length > 1) {
-    durationMin += cleanedIntValues[1] * 60
-    formattedValue += `:${cleanedIntValues[1]}`
+  // hours
+  if (parsedSegments.length > 1) {
+    durationMin += parseInt(parsedSegments[1], 10) * 60
   }
-  if (cleanedIntValues.length > 2) {
-    durationMin += cleanedIntValues[2] * 24 * 60
-    formattedValue += `:${cleanedIntValues[2]}`
-  }
+  // if (parsedSegments.length > 2) {
+  //   durationMin += parseInt(parsedSegments[2]) * 24 * 60
+  // }
 
-  return [formattedValue, cleanedIntValues, durationMin * 60]
+  const formattedValue = [...parsedSegments].reverse().join(':')
+  return [formattedValue, parsedSegments, durationMin * 60]
 }
 
 export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, editable, totalTimeS, onChange }) => {
   const [isEditing, setIsEditing] = React.useState(false)
   const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTime, (totalTimeS || 0) * 1000)
-  const [[stringValue, segments, numValMs], setValue] = React.useState<[string, number[], number]>(
+  const [[stringValue, segments, numValS], setValue] = React.useState<[string, string[], number]>(
     formatValue(reverseFormat(totalTimeS))
   )
   const theme = useTheme()
@@ -63,7 +68,8 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
 
     const inputValue = event.target.value
     const formattedValue = formatValue(inputValue)
-    if (formattedValue[0].length > 9) {
+    // We cap to 5 characters because values above 999H  are ridiculous
+    if (formattedValue[0].length > 6) {
       return
     }
 
@@ -123,7 +129,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
           {!isStarted && (totalTimeS || 0) > 0
             ? MValueFormatter((totalTimeS || 0) * 1000, MValueFormat.durationS)
             : null}
-          {!isFinished && !isStarted && '00:00:00:00'}
+          {!isFinished && !isStarted && '00:00:00'}
         </Typography>
       )}
       {isEditing && (
@@ -148,14 +154,13 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
             <Typography
               variant="caption"
               align="center"
+              component={'div'}
               sx={{
                 fontFamily: fontFamilies.robotoMono,
                 color: theme.palette.secondary.main,
               }}
             >
-              {segments.length > 2 && `${segments[2]} day, `}
-              {segments.length > 1 && `${segments[1]} hr, `}
-              {`${segments[0] || 0} min`}
+              {MValueFormatter((numValS || 0) * 1000, MValueFormat.durationS)}
             </Typography>
           }
         >
@@ -180,7 +185,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
-                onChange(numValMs)
+                onChange(numValS)
                 setIsEditing(false)
               } else if (e.key === 'Escape') {
                 e.preventDefault()
@@ -188,13 +193,13 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
               }
             }}
             onBlur={() => {
-              onChange(numValMs)
+              onChange(numValS)
               setIsEditing(false)
             }}
             value={stringValue || ''}
             onChange={handleChange}
             sx={{}}
-            placeholder="DD:HH:MM"
+            placeholder="HHH:MM"
           />
         </Tooltip>
       )}

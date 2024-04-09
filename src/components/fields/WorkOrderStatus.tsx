@@ -36,7 +36,7 @@ export const WorkOrderStatus: React.FC<WorkOrderStatusProps> = ({ woSumm }) => {
 
   let leftColor = leftState ? goodColor : badColor
   let rightColor = rightState ? goodColor : badColor
-  let borderColor = leftState && rightState ? goodColor : theme.palette.error.main
+  let borderColor = leftState && rightState ? goodColor : badColor
 
   if (woSumm.isFailed) {
     leftColor = errorColor
