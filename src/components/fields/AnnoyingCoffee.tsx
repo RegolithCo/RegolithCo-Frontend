@@ -49,7 +49,7 @@ export const AnnoyingCoffee: React.FC<AnnoyingCoffeeProps> = ({ show, navigate }
 
   if (!show || !navigate || mediumDown) return null
   return (
-    <Tooltip title="Buy me a coffee" placement="left">
+    <Tooltip title="Help with server costs!" placement="left">
       <Fab
         color="primary"
         aria-label="add"

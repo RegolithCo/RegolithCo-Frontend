@@ -206,6 +206,9 @@ export const OreCard: React.FC<OreCardProps> = ({
         {isEditing && workOrder.orderType === ActivityEnum.ShipMining && (
           <ShipOreChooser
             multiple
+            showAllBtn
+            showNoneBtn
+            showInnert
             values={(shipOrder.shipOres as RefineryRow[])?.map(({ ore }) => ore) || []}
             onChange={(oreChoices) => {
               const oldOres: RefineryRow[] = (shipOrder.shipOres as RefineryRow[]) || []

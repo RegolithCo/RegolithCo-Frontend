@@ -504,6 +504,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             <ThemeProvider theme={themeOrig}>
               <ShipOreChooser
                 multiple
+                showAllBtn
+                showNoneBtn
+                showInnert
                 values={ores.map((o) => o.ore as ShipOreEnum)}
                 onChange={(shipOreEnum) => {
                   const chosenOres = shipOreEnum.map<ShipRockOre>((ore) => {

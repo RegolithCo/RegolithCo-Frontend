@@ -9,19 +9,26 @@ export interface VehicleOreChooserProps {
   multiple?: boolean
   requireValue?: boolean
   showAllBtn?: boolean
+  showNoneBtn?: boolean
   values?: VehicleOreEnum[]
   onChange?: (value: VehicleOreEnum[]) => void
+  onClick?: (value: VehicleOreEnum) => void
 }
 
 export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
   multiple,
   onChange,
+  onClick,
   values,
   showAllBtn,
+  showNoneBtn,
   requireValue,
 }) => {
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
   const theme = useTheme()
+  // If you pass undefined as values then it will be treated as an empty array
+  // and we will treat this as buttons instead of toggle values
+  const isToggleButtons = Array.isArray(values)
   const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
   const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
   const fgColors = ['#000000', '#ffffff', '#ffffff']
@@ -48,7 +55,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
       {sortedVehicleRowKeys.map((vehicleOreKey, rowIdx) => {
         const fgc = fgColors[rowIdx]
         const bgc = bgColors[rowIdx]
-        const active = selected.includes(vehicleOreKey)
+        const active = isToggleButtons ? selected.includes(vehicleOreKey) : true
         return (
           <Grid xs={3} key={`grid-${rowIdx}`}>
             <ToggleButton
@@ -58,21 +65,26 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
               selected={active}
               size="small"
               key={`tbutt-${vehicleOreKey}`}
+              onClick={(e, value) => {
+                onClick && onClick(value)
+              }}
               onChange={() => {
                 let newValue: VehicleOreEnum[] = []
-                if (!active) {
-                  if (multiple) {
-                    newValue = [...selected, vehicleOreKey]
+                if (isToggleButtons) {
+                  if (!active) {
+                    if (multiple) {
+                      newValue = [...selected, vehicleOreKey]
+                    } else {
+                      newValue = [vehicleOreKey]
+                    }
                   } else {
-                    newValue = [vehicleOreKey]
+                    newValue = selected.filter((v) => v !== vehicleOreKey)
                   }
-                } else {
-                  newValue = selected.filter((v) => v !== vehicleOreKey)
+                  if (requireValue && newValue.length === 0) {
+                    return
+                  }
+                  setSelected(newValue)
                 }
-                if (requireValue && newValue.length === 0) {
-                  return
-                }
-                setSelected(newValue)
                 onChange && onChange(newValue)
               }}
               sx={{
@@ -128,7 +140,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
           </Tooltip>
         </Grid>
       )}
-      {!requireValue && (
+      {!requireValue && showNoneBtn && (
         <Grid xs={3}>
           <Tooltip title="Remove all selected ores">
             <ToggleButton

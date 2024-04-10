@@ -8,8 +8,10 @@ export interface SalvageOreChooserProps {
   multiple?: boolean
   requireValue?: boolean
   showAllBtn?: boolean
+  showNoneBtn?: boolean
   values?: SalvageOreEnum[]
   onChange?: (value: SalvageOreEnum[]) => void
+  onClick?: (value: SalvageOreEnum) => void
 }
 
 const btnNames: Record<SalvageOreEnum, string> = {
@@ -20,12 +22,17 @@ const btnNames: Record<SalvageOreEnum, string> = {
 export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
   multiple,
   onChange,
+  onClick,
   values,
   showAllBtn,
+  showNoneBtn,
   requireValue,
 }) => {
   const [selected, setSelected] = React.useState<SalvageOreEnum[]>(values || [])
   const theme = useTheme()
+  // If you pass undefined as values then it will be treated as an empty array
+  // and we will treat this as buttons instead of toggle values
+  const isToggleButtons = Array.isArray(values)
   const [sortedSalvageRowKeys, setSortedSalvageRowKeys] = React.useState<SalvageOreEnum[]>([])
   const salvageRowKeys = Object.values(SalvageOreEnum)
   const bgColors = ['#b7af3f', '#3f7bb7']
@@ -52,7 +59,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
       {sortedSalvageRowKeys.map((salvageOreKey, rowIdx) => {
         const fgc = fgColors[rowIdx]
         const bgc = bgColors[rowIdx]
-        const active = selected.includes(salvageOreKey)
+        const active = isToggleButtons ? selected.includes(salvageOreKey) : true
         return (
           <Grid xs={3} key={`grid-${rowIdx}`}>
             <ToggleButton
@@ -62,6 +69,9 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
               selected={active}
               size="small"
               key={`tbutt-${salvageOreKey}`}
+              onClick={(e, value) => {
+                onClick && onClick(value)
+              }}
               onChange={() => {
                 let newValue: SalvageOreEnum[] = []
                 if (!active) {
@@ -132,7 +142,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
           </Tooltip>
         </Grid>
       )}
-      {!requireValue && (
+      {!requireValue && showNoneBtn && (
         <Grid xs={3}>
           <Tooltip title="Remove all selected ores">
             <ToggleButton

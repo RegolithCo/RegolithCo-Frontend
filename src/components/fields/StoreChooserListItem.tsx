@@ -56,8 +56,35 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const dataStore = React.useContext(LookupsContext)
 
   if (!dataStore.ready) return null
-  const planetLookups = dataStore.getLookup('planetLookups') as Lookups['planetLookups']
-  // NO HOOKS BELOW HERE
+  const planetLookups = React.useMemo(
+    () => dataStore.getLookup('planetLookups') as Lookups['planetLookups'],
+    [dataStore]
+  )
+  const oreKeys = Object.keys(ores)
+  const oreSecondaries = React.useMemo(() => {
+    return Object.keys(ores).map((ore, index) => {
+      const found = !cityStores.missingOres.includes(ore as AnyOreEnum)
+      const oreName = getOreName(ore as AnyOreEnum)
+      return (
+        <Tooltip key={`tt-${index}`} title={found ? `${oreName} can be sold here` : `${oreName} cannot be sold here`}>
+          <Chip
+            key={index}
+            label={compact ? oreName.slice(0, 4) : oreName}
+            size="small"
+            sx={{
+              ...styles.tinyChips,
+              background: found ? theme.palette.primary.main : theme.palette.primary.contrastText,
+              color: found ? theme.palette.primary.contrastText : theme.palette.primary.dark,
+            }}
+          />
+        </Tooltip>
+      )
+    })
+  }, [oreKeys, cityStores.missingOres, compact, styles.tinyChips])
+
+  const price = React.useMemo(() => Object.values(cityStores.prices).reduce((a, b) => a + b, 0), [cityStores.prices])
+
+  // // NO HOOKS BELOW HERE
 
   const planetName = cityStores.planet ? planetLookups['ST'][cityStores.planet].name : ''
   const satellite = cityStores.satellite
@@ -65,7 +92,6 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
     : undefined
   const city = cityStores.city || ''
   // Price is the sum of all the prices
-  const price = Object.values(cityStores.prices).reduce((a, b) => a + b, 0)
 
   const contents = (
     <>
@@ -87,36 +113,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
         secondaryTypographyProps={{
           component: 'div',
         }}
-        secondary={
-          !compact && (
-            <Box>
-              {Object.keys(ores).map((ore, index) => {
-                const found = !cityStores.missingOres.includes(ore as AnyOreEnum)
-                return (
-                  <Tooltip
-                    key={`tt-${index}`}
-                    title={
-                      found
-                        ? `${getOreName(ore as AnyOreEnum)} can be sold here`
-                        : `${getOreName(ore as AnyOreEnum)} cannot be sold here`
-                    }
-                  >
-                    <Chip
-                      key={index}
-                      label={compact ? getOreName(ore as AnyOreEnum).slice(0, 4) : getOreName(ore as AnyOreEnum)}
-                      size="small"
-                      sx={{
-                        ...styles.tinyChips,
-                        background: found ? theme.palette.primary.main : theme.palette.primary.contrastText,
-                        color: found ? theme.palette.primary.contrastText : theme.palette.primary.dark,
-                      }}
-                    />
-                  </Tooltip>
-                )
-              })}
-            </Box>
-          )
-        }
+        secondary={!compact && <Box>{oreSecondaries}</Box>}
       />
       <ListItemText
         sx={{
@@ -172,7 +169,6 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
       />
     </>
   )
-
   const itemSx = {
     borderRadius: 3,
     // background: '#222',

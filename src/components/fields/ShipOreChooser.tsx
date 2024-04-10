@@ -10,17 +10,26 @@ export interface ShipOreChooserProps {
   multiple?: boolean
   requireValue?: boolean
   showAllBtn?: boolean
+  showNoneBtn?: boolean
+  showInnert?: boolean
   onChange?: (value: ShipOreEnum[]) => void
+  onClick?: (value: ShipOreEnum) => void
 }
 
 export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
   multiple,
   onChange,
+  onClick,
   values,
   requireValue,
   showAllBtn,
+  showNoneBtn,
+  showInnert,
 }) => {
   const [selected, setSelected] = React.useState<ShipOreEnum[]>(values || [])
+  // If you pass undefined as values then it will be treated as an empty array
+  // and we will treat this as buttons instead of toggle values
+  const isToggleButtons = Array.isArray(values)
   const theme = useTheme()
 
   useEffect(() => {
@@ -38,8 +47,14 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
 
   useEffect(() => {
     const calcShipRowKeys = async () => {
-      const shipRowKeys = Object.values(ShipOreEnum)
-      const prices = await Promise.all(shipRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey)))
+      const shipRowKeys = Object.values(ShipOreEnum).filter((v) => {
+        if (showInnert) return true
+        return v !== ShipOreEnum.Inertmaterial
+      })
+      const prices = await Promise.all(
+        // Note we choose the refined price here to sort by because that's what most people will do
+        shipRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey, undefined, true))
+      )
       const newSorted = [...shipRowKeys].sort((a, b) => {
         const aPrice = prices[shipRowKeys.indexOf(a)]
         const bPrice = prices[shipRowKeys.indexOf(b)]
@@ -57,7 +72,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
       setFgColors(fgColors)
     }
     calcShipRowKeys()
-  }, [dataStore])
+  }, [dataStore, showInnert])
 
   return (
     <Grid container spacing={0.5} margin={0}>
@@ -72,7 +87,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
           fgc = innertColors[1]
           bgc = innertColors[0]
         }
-        const active = selected.includes(shipOreKey)
+        const active = isToggleButtons ? selected.includes(shipOreKey) : true
         return (
           <Grid xs={2} key={`orechooserow-${rowIdx}`}>
             <ToggleButton
@@ -82,18 +97,23 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
               selected={active}
               size="small"
               key={`tbutt-${shipOreKey}`}
+              onClick={(e, value) => {
+                onClick && onClick(value)
+              }}
               onChange={() => {
                 let newValue: ShipOreEnum[] = []
-                if (!active) {
-                  if (multiple) {
-                    newValue = [...selected, shipOreKey]
+                if (isToggleButtons) {
+                  if (!active) {
+                    if (multiple) {
+                      newValue = [...selected, shipOreKey]
+                    } else {
+                      newValue = [shipOreKey]
+                    }
                   } else {
-                    newValue = [shipOreKey]
+                    newValue = selected.filter((v) => v !== shipOreKey)
                   }
-                } else {
-                  newValue = selected.filter((v) => v !== shipOreKey)
+                  setSelected(newValue)
                 }
-                setSelected(newValue)
                 onChange && onChange(newValue)
               }}
               sx={{
@@ -122,7 +142,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
           </Grid>
         )
       })}
-      {multiple && (
+      {multiple && showAllBtn && (
         // {multiple && showAllBtn && (
         <Grid xs={2}>
           <Tooltip title="Select all ores">
@@ -151,7 +171,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
           </Tooltip>
         </Grid>
       )}
-      {!requireValue && (
+      {!requireValue && showNoneBtn && (
         <Grid xs={2}>
           <Tooltip title="Remove all selected ores">
             <ToggleButton

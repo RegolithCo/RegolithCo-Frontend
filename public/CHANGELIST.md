@@ -7,6 +7,7 @@ This one has been a long time coming but there were some very fundamental change
 
 - **Discord Server Restriction**: You can now restrict your session to only users who are in your discord server.
 - **API Token Access**: You can now get an API Key and make calls to the Regolith API. Why would you want to do this? For the data nerds and tool developers out there who want to get their hands dirty. Also a few convenience fields like `processEndTime` and `yield` on refined ores have been added.
+- The **Market Price finder** tool now allows multiple rows of the same type and load calculation with mixed activity types (ship, vehicle and salvage)
 
 #### Bug Fixes
 
@@ -14,6 +15,8 @@ This one has been a long time coming but there were some very fundamental change
 - Work Orders: Looks like CIG has changeed back from `DD:HH:MM` to `HHH:MM` so the countdown input has been reflected to take that input (even though it's less friendly IMHO)
 - Work Orders: Better handling of failed state.
 - Work Orders: Summaries now correctly separate and report Gross Vs. Net earnings.
+- Ore chooser widgets were sorted improperly.
+- The Market price finder was taking too long for entries to be calculated.
 - Fixed some edge case permissions issues. There are still more to get through though.
 - Complete reworking of the back end SDK connections to improve efficiencey and future-proofing.
 

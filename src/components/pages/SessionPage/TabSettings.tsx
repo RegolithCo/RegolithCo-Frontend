@@ -728,6 +728,9 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                         <ShipOreChooser
                           values={newSettings.shipOreDefaults || []}
                           multiple
+                          showAllBtn
+                          showNoneBtn
+                          showInnert
                           onChange={(newVals) => {
                             setNewSettings({
                               ...newSettings,
