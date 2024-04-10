@@ -36,6 +36,7 @@ import { VehicleChooser } from '../../fields/VehicleChooser'
 import { Cancel } from '@mui/icons-material'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { throttle } from 'lodash'
+import numeral from 'numeral'
 
 export interface MarketPriceCalc {
   propA?: string
@@ -103,7 +104,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
 
   // Inside your component
   React.useEffect(() => {
-    if (oreTotal > 0) throttledFindAllStoreChoices(theme, dataStore, oreSummary, setStoreEls)
+    throttledFindAllStoreChoices(theme, dataStore, oreSummary, setStoreEls)
   }, [oreTotal, oreSummary, dataStore])
 
   const cargoFilled = React.useMemo<number>(() => {
@@ -500,7 +501,7 @@ const OreChooserList: React.FC<OreChooserListProps> = ({ ores, onChange, onDelet
                 }}
               />
               <TextField
-                value={(oreValue * (isVehicleOre ? 10 : 0.01)).toFixed(0)}
+                value={numeral(oreValue * (isVehicleOre ? 10 : 0.01)).format('0,0')}
                 id={`ore-${idx}`}
                 sx={{ flex: '1 1 40%' }}
                 onFocus={(e) => {
@@ -554,7 +555,7 @@ const OreChooserList: React.FC<OreChooserListProps> = ({ ores, onChange, onDelet
                   } else if (event.key === 'ArrowDown') {
                     // Set next cell down to edit mode
                     event.preventDefault()
-                    if (oreValue > incValue) onChange(idx, oreValue - incValue)
+                    if (oreValue >= incValue) onChange(idx, oreValue - incValue)
                   } else if (event.key === 'Escape') {
                     event.preventDefault()
                   } else if (event.key.match(/^[0-9]+$/)) {
@@ -565,7 +566,8 @@ const OreChooserList: React.FC<OreChooserListProps> = ({ ores, onChange, onDelet
                   }
                 }}
                 onChange={(e) => {
-                  const newValue = e.target.value
+                  // strip the commas
+                  const newValue = e.target.value.replace(/,/g, '')
                   if (newValue === '') {
                     onChange(idx, 0)
                     return
