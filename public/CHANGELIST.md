@@ -1,5 +1,5 @@
 ### April 12, 2024
-## 1.0.47 - API Access and Discord Server Restriction
+## 1.0.48 - API Access and Discord Server Restriction
 
 This one has been a long time coming but there were some very fundamental changes that had to be done on the back end before I could work on the fun stuff.
 
