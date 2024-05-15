@@ -1,46 +1,33 @@
 import React, { useEffect } from 'react'
-import { Autocomplete, MenuItem, TextField, Typography, useTheme } from '@mui/material'
-import { Vehicle, ObjectValues, ShipLookups } from '@regolithco/common'
+import { Autocomplete, MenuItem, TextField, Theme, Typography, useTheme } from '@mui/material'
+import { Vehicle, ShipLookups, VehicleRoleEnum } from '@regolithco/common'
 import numeral from 'numeral'
-import { Theme } from '@mui/system'
 import { LookupsContext } from '../../context/lookupsContext'
-
-export const ShipTypeEnum = {
-  Mining: 'Mining',
-  Freight: 'Freight',
-  Transport: 'Transport',
-  Gunship: 'Gunship',
-  Fighter: 'Fighter',
-} as const
-export type ShipTypeEnum = ObjectValues<typeof ShipTypeEnum>
 
 export interface VehicleChooserProps {
   label?: string
   vehicle?: string
   disabled?: boolean
   onChange: (vehicleCode: Vehicle | null) => void
-  hide?: [ShipTypeEnum]
-  show?: [ShipTypeEnum]
+  hide?: [VehicleRoleEnum]
+  show?: [VehicleRoleEnum]
   onlyCargo?: boolean
 }
 
-export const shipColorLookup = (theme: Theme): Record<ShipTypeEnum, string> => ({
-  [ShipTypeEnum.Mining]: theme.palette.secondary.main,
-  [ShipTypeEnum.Freight]: theme.palette.info.main,
-  [ShipTypeEnum.Transport]: theme.palette.info.main,
-  [ShipTypeEnum.Gunship]: theme.palette.error.main,
-  [ShipTypeEnum.Fighter]: theme.palette.error.main,
+export const shipColorLookup = (theme: Theme): Record<VehicleRoleEnum, string> => ({
+  [VehicleRoleEnum.Mining]: theme.palette.secondary.main,
+  [VehicleRoleEnum.Freight]: theme.palette.info.main,
+  [VehicleRoleEnum.Fighter]: theme.palette.error.main,
+  [VehicleRoleEnum.Other]: theme.palette.grey[500],
 })
 
 const NONEOPTION: Vehicle = {
-  code: 'NONE',
+  UEXID: '0',
   name: 'None',
-  role: '',
+  role: VehicleRoleEnum.Other,
   cargo: 0,
   miningHold: 0,
-  buyAt: [],
   maker: '',
-  rentAt: [],
   __typename: 'Vehicle',
 }
 
@@ -64,9 +51,9 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
     const shipLookups = dataStore.getLookup('shipLookups') as ShipLookups
     const calcShipRowKeys = async () => {
       const newShips = [...shipLookups].filter((ship) => {
-        if (hide) return !hide.includes(ship.role as ShipTypeEnum)
-        if (show) return show.includes(ship.role as ShipTypeEnum)
-        if (onlyCargo) return ship.role !== ShipTypeEnum.Mining && ship.cargo && ship.cargo > 0
+        if (hide) return !hide.includes(ship.role as VehicleRoleEnum)
+        if (show) return show.includes(ship.role as VehicleRoleEnum)
+        if (onlyCargo) return ship.role !== VehicleRoleEnum.Mining && ship.cargo && ship.cargo > 0
         return true
       })
       newShips.sort((a, b) => {
@@ -82,7 +69,7 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
 
   if (!dataStore.ready) return <div>Loading...</div>
 
-  const currVal: Vehicle = sortedShips ? sortedShips.find((ship) => ship.code === vehicle) || NONEOPTION : NONEOPTION
+  const currVal: Vehicle = sortedShips ? sortedShips.find((ship) => ship.UEXID === vehicle) || NONEOPTION : NONEOPTION
 
   return (
     <Autocomplete
@@ -94,15 +81,15 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
         return (
           <MenuItem
             {...props}
-            value={ship.code}
+            value={ship.UEXID}
             sx={{
-              color: shipColorLookup(theme)[ship.role as ShipTypeEnum] || 'inherit',
+              color: shipColorLookup(theme)[ship.role as VehicleRoleEnum] || 'inherit',
             }}
           >
             {ship.name}
             <div style={{ flexGrow: 1 }} />
             <Typography variant="caption">
-              {ship.role} {ship.code !== 'NONE' && shipSCUVAl > 0 && `(${numeral(shipSCUVAl).format('0,0')} SCU)`}
+              {ship.role} {ship.UEXID !== 'NONE' && shipSCUVAl > 0 && `(${numeral(shipSCUVAl).format('0,0')} SCU)`}
             </Typography>
           </MenuItem>
         )
@@ -115,7 +102,7 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
         if (typeof option === 'string') return option
         else {
           const shipSCUVAl = option.miningHold || option.cargo || 0
-          const scuAmt = option.code !== 'NONE' && shipSCUVAl > 0 ? ` (${numeral(shipSCUVAl).format('0,0')} SCU)` : ''
+          const scuAmt = option.UEXID !== 'NONE' && shipSCUVAl > 0 ? ` (${numeral(shipSCUVAl).format('0,0')} SCU)` : ''
           return option.name + scuAmt
         }
       }}
@@ -123,8 +110,8 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
       renderInput={(params) => <TextField {...params} label={label || 'Current Ship'} />}
       onChange={(event, option) => {
         if (disabled) return
-        if (option && option.code === NONEOPTION.code) return onChange(null)
-        if (option && !sortedShips.find((ship) => ship.code === option.code)) {
+        if (option && option.UEXID === NONEOPTION.UEXID) return onChange(null)
+        if (option && !sortedShips.find((ship) => ship.UEXID === option.UEXID)) {
           return onChange(null)
         }
         return onChange(option)

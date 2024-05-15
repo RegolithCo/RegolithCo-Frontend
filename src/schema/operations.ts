@@ -456,12 +456,10 @@ export const VehicleFragmentFragmentDoc = gql`
     fragment VehicleFragment on Vehicle {
   maker
   name
-  code
+  UEXID
   cargo
   miningHold
   role
-  buyAt
-  rentAt
 }
     `;
 export const UserProfileFragmentFragmentDoc = gql`

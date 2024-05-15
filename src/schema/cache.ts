@@ -463,15 +463,13 @@ export type UserProfileFieldPolicy = {
 	verifyCode?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type VehicleKeySpecifier = ('buyAt' | 'cargo' | 'code' | 'maker' | 'miningHold' | 'name' | 'rentAt' | 'role' | VehicleKeySpecifier)[];
+export type VehicleKeySpecifier = ('UEXID' | 'cargo' | 'maker' | 'miningHold' | 'name' | 'role' | VehicleKeySpecifier)[];
 export type VehicleFieldPolicy = {
-	buyAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	UEXID?: FieldPolicy<any> | FieldReadFunction<any>,
 	cargo?: FieldPolicy<any> | FieldReadFunction<any>,
-	code?: FieldPolicy<any> | FieldReadFunction<any>,
 	maker?: FieldPolicy<any> | FieldReadFunction<any>,
 	miningHold?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	rentAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	role?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type VehicleClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | 'vehicleRocks' | VehicleClusterFindKeySpecifier)[];
