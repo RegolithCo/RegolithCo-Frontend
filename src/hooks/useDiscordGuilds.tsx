@@ -10,7 +10,7 @@ export const useDiscordGuilds = () => {
   const [error, setError] = React.useState<Error | null>(null)
 
   React.useEffect(() => {
-    if (authType !== AuthTypeEnum.DISCORD || !token) return
+    if (authType !== AuthTypeEnum.Discord || !token) return
 
     const fetchGuilds = async () => {
       try {
@@ -51,5 +51,5 @@ export const useDiscordGuilds = () => {
 
   const hasOneValid = myGuilds.length > 0 && myGuilds.some((guild) => guild.hasPermission)
 
-  return { myGuilds, loading, error, isDiscord: authType === AuthTypeEnum.DISCORD, hasOneValid }
+  return { myGuilds, loading, error, isDiscord: authType === AuthTypeEnum.Discord, hasOneValid }
 }

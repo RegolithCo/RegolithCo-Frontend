@@ -45,9 +45,9 @@ export const LoginRefresh: React.FC<LoginRefreshProps> = ({ open, onClose, authT
           }}
           size="large"
           fullWidth
-          startIcon={authType === AuthTypeEnum.GOOGLE ? <Google /> : <DiscordIcon />}
+          startIcon={authType === AuthTypeEnum.Google ? <Google /> : <DiscordIcon />}
         >
-          Login with {authType === AuthTypeEnum.GOOGLE ? 'Google' : 'Discord'}
+          Login with {authType === AuthTypeEnum.Google ? 'Google' : 'Discord'}
         </Button>
         <Button
           fullWidth

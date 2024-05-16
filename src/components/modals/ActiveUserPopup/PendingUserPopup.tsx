@@ -61,7 +61,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
 
   const theirCaptainId = pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : null
   const vehicleCode = theirCaptain?.vehicleCode
-  const vehicle = vehicleCode ? shipLookups.find((s) => s.code === vehicleCode) : null
+  const vehicle = vehicleCode ? shipLookups.find((s) => s.UEXID === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(pendingUser.scName as string)
   const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]

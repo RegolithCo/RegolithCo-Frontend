@@ -410,7 +410,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     label="Mining Vehicle"
                     vehicle={userProfile.sessionShipCode as string | undefined}
                     onChange={(newVehicle) => {
-                      const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.code }
+                      const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.UEXID as string }
                       setNewUserProfile(updatedNewUserProfile)
                       updateUserProfile && updateUserProfile(updatedNewUserProfile)
                     }}
@@ -432,7 +432,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     vehicle={userProfile.deliveryShipCode as string | undefined}
                     onlyCargo
                     onChange={(newVehicle) => {
-                      const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newVehicle?.code }
+                      const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newVehicle?.UEXID as string }
                       setNewUserProfile(updatedNewUserProfile)
                       updateUserProfile && updateUserProfile(updatedNewUserProfile)
                     }}

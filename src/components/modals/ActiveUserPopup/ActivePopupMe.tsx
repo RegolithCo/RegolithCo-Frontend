@@ -53,7 +53,7 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
     Boolean(crewHierarchy[mySessionUser.ownerId])
 
   const vehicleCode = myCaptain?.vehicleCode || mySessionUser.vehicleCode
-  const vehicle = vehicleCode ? shipLookups.find((s) => s.code === vehicleCode) : null
+  const vehicle = vehicleCode ? shipLookups.find((s) => s.UEXID === vehicleCode) : null
   return (
     <Dialog
       open={open}
@@ -150,12 +150,12 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
 
           {!myCaptain ? (
             <VehicleChooser
-              vehicle={vehicle?.code}
+              vehicle={vehicle?.UEXID}
               disabled={Boolean(!sessionActive)}
               onChange={(vehicle) => {
                 updateMySessionUser({
                   isPilot: true,
-                  vehicleCode: vehicle?.code,
+                  vehicleCode: vehicle?.UEXID,
                 })
               }}
             />

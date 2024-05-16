@@ -57,7 +57,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
       : null
 
   const vehicleCode = theirCaptain?.vehicleCode || sessionUser.vehicleCode
-  const vehicle = vehicleCode ? shipLookups.find((s) => s.code === vehicleCode) : null
+  const vehicle = vehicleCode ? shipLookups.find((s) => s.UEXID === vehicleCode) : null
 
   const isMyFriend = myUserProfile?.friends?.includes(sessionUser.owner?.scName as string)
   const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]

@@ -21,7 +21,7 @@ DeleteProfileModal.args = {
   onClose: () => {
     console.log('Closed')
   },
-  authType: AuthTypeEnum.DISCORD,
+  authType: AuthTypeEnum.Discord,
   setAuthType: (authType: AuthTypeEnum) => {
     console.log('Set Auth Type', authType)
   },

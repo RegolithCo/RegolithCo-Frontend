@@ -324,7 +324,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
             <VehicleChooser
               label={'Cargo Ship (Optional)'}
               onlyCargo
-              vehicle={ship?.code}
+              vehicle={ship?.UEXID}
               onChange={(vcode) => setShip(vcode)}
             />
             {ship && (

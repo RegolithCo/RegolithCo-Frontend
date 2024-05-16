@@ -66,10 +66,10 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
             }
           }}
         >
-          <ToggleButton value={AuthTypeEnum.DISCORD} aria-label="left aligned">
+          <ToggleButton value={AuthTypeEnum.Discord} aria-label="left aligned">
             <DiscordIcon /> Discord
           </ToggleButton>
-          <ToggleButton value={AuthTypeEnum.GOOGLE} aria-label="centered">
+          <ToggleButton value={AuthTypeEnum.Google} aria-label="centered">
             <Google /> Google
           </ToggleButton>
         </ToggleButtonGroup>
@@ -85,11 +85,11 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
           }}
           size="large"
           fullWidth
-          startIcon={authType === AuthTypeEnum.GOOGLE ? <Google /> : <DiscordIcon />}
+          startIcon={authType === AuthTypeEnum.Google ? <Google /> : <DiscordIcon />}
         >
-          Login with {authType === AuthTypeEnum.GOOGLE ? 'Google' : 'Discord'}
+          Login with {authType === AuthTypeEnum.Google ? 'Google' : 'Discord'}
         </Button>
-        {authType === AuthTypeEnum.GOOGLE && (
+        {authType === AuthTypeEnum.Google && (
           <Alert severity="warning" variant="filled">
             <strong>Note: (Dec 18, 2023)</strong> The google auth does work but it's having trouble remembering the
             login after an hour or so and will make you re-login every time. This should be fixable but until then we

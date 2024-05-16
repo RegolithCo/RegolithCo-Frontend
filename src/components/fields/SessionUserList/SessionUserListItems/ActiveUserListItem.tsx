@@ -8,6 +8,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  useTheme,
 } from '@mui/material'
 import {
   getSessionUserStateName,
@@ -16,15 +17,16 @@ import {
   SessionUserStateEnum,
   ShipLookups,
   User,
+  VehicleRoleEnum,
 } from '@regolithco/common'
 import { Group, MoreVert, RocketLaunch } from '@mui/icons-material'
-import { alpha, useTheme } from '@mui/system'
+import { alpha } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { ModuleIcon } from '../../../../icons'
 import { StateChip, stateColorsBGThunk } from './StateChip'
 import { fontFamilies } from '../../../../theme'
-import { shipColorLookup, ShipTypeEnum } from '../../VehicleChooser'
+import { shipColorLookup } from '../../VehicleChooser'
 import { AppContext } from '../../../../context/app.context'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
 import { LookupsContext } from '../../../../context/lookupsContext'
@@ -71,9 +73,9 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
   const shipLookups = dataStore.getLookup('shipLookups') as ShipLookups
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
-  const vehicle = sessionUser.vehicleCode ? shipLookups.find((s) => s.code === sessionUser.vehicleCode) : null
-  const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.code : vehicle?.name
-  const vehicleColor = vehicle ? shipColorLookup(theme)[vehicle.role as ShipTypeEnum] : 'inherit'
+  const vehicle = sessionUser.vehicleCode ? shipLookups.find((s) => s.UEXID === sessionUser.vehicleCode) : null
+  const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.UEXID : vehicle?.name
+  const vehicleColor = vehicle ? shipColorLookup(theme)[vehicle.role as VehicleRoleEnum] : 'inherit'
 
   const user = sessionUser.owner as User
 

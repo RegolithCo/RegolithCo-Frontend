@@ -58,10 +58,10 @@ export const useOAuth2 = (): UseOAuth2Return => {
   }, [googleToken])
 
   const fancyLogin = async () => {
-    if (authType === AuthTypeEnum.DISCORD) {
+    if (authType === AuthTypeEnum.Discord) {
       googleLogout()
       login()
-    } else if (authType === AuthTypeEnum.GOOGLE) {
+    } else if (authType === AuthTypeEnum.Google) {
       logOut()
       googleLogin()
     }
@@ -80,7 +80,7 @@ export const useOAuth2 = (): UseOAuth2Return => {
 
   return {
     tokenData,
-    token: authType === AuthTypeEnum.GOOGLE ? googleToken[0] : token,
+    token: authType === AuthTypeEnum.Google ? googleToken[0] : token,
     error,
     idToken,
     authType,
@@ -104,7 +104,7 @@ type LoginSwitcherObj = {
 }
 
 export const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
-  authType: AuthTypeEnum.DISCORD,
+  authType: AuthTypeEnum.Discord,
   refreshPopupOpen: false,
   setRefreshPopupOpen: (open: boolean) => {
     //
@@ -127,7 +127,7 @@ export const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
 export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Instead of state the authType is stored in local storage next to the other pkce keys.
   // This should persist the key with the other choices
-  const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.DISCORD)
+  const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.Discord)
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
   const [refreshPopupOpen, setRefreshPopupOpen] = useState(false)
   const [googleToken, _setGoogleToken] = useLocalStorage<[string, number | null]>('ROCP_GooToken', ['', null])
