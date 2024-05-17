@@ -1,3 +1,10 @@
+### May 18, 2024
+## 1.0.49 - UEX 2.0 API Price synching
+
+The primary fix here is rewriting our price synching scripts to work with the new UEX 2.0 API. This was mostly straightforward but involved some ID type changes so database migration was innevitable. 
+
+Also this was a good opportunity to do some minor refactors in preparation for some new features planned for some time in the future.
+
 ### April 12, 2024
 ## 1.0.48 - API Access and Discord Server Restriction
 
