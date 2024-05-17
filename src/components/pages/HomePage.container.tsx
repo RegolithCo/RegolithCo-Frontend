@@ -7,17 +7,34 @@ import { useLogin } from '../../hooks/useOAuth2'
 import { HomePage } from './HomePage'
 import dayjs from 'dayjs'
 import log from 'loglevel'
+import { RegolithAlert } from '../../types'
 
 export const HomePageContainer: React.FC = () => {
   const userCtx = useLogin()
   const navigate = useNavigate()
   const [stats, setStats] = React.useState<Partial<StatsObjectSummary>>({})
+  const [alerts, setAlerts] = React.useState<RegolithAlert[]>([])
   const [statsLoading, setStatsLoading] = React.useState<Record<keyof StatsObjectSummary, boolean>>({
     daily: true,
     monthly: true,
     yearly: true,
     total: true,
   })
+
+  React.useEffect(() => {
+    // Loop over all the possible keys of StatsObjectSummary and fetch them
+    // Suffix the URL with query params of ?cachebust=YYYY-MM-DD-HH
+    axios
+      .get(`/alerts.json`)
+      .then((response) => {
+        //Set the data to the state
+        setAlerts((stats) => response.data as RegolithAlert[])
+      })
+      .catch((error) => {
+        //If there is an error, log it. DO NOT FAIL
+        log.error(error)
+      })
+  }, [])
 
   React.useEffect(() => {
     // Loop over all the possible keys of StatsObjectSummary and fetch them
@@ -42,5 +59,5 @@ export const HomePageContainer: React.FC = () => {
     }
   }, [])
 
-  return <HomePage userCtx={userCtx} navigate={navigate} stats={stats} statsLoading={statsLoading} />
+  return <HomePage userCtx={userCtx} navigate={navigate} stats={stats} alerts={alerts} statsLoading={statsLoading} />
 }

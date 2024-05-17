@@ -1,15 +1,4 @@
-import {
-  Alert,
-  AlertTitle,
-  Card,
-  CardContent,
-  CardMedia,
-  Divider,
-  Link,
-  Paper,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Card, CardContent, CardMedia, Divider, Link, Paper, Stack, Typography, useTheme } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { alpha } from '@mui/system'
 import * as React from 'react'
@@ -22,11 +11,14 @@ import { StatsObjectSummary } from '@regolithco/common'
 import { AlertPyro } from '../modals/announcements/AlertPyro'
 import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
+import { RegolithAlert } from '../../types'
+import { HomePageAlert } from '../HomePageAlert'
 
 interface HomePageProps {
   userCtx: LoginContextObj
   navigate?: (path: string) => void
   handleLogin?: () => void
+  alerts?: RegolithAlert[]
   stats: Partial<StatsObjectSummary>
   statsLoading: Record<keyof StatsObjectSummary, boolean>
 }
@@ -99,8 +91,9 @@ const HomeCard: React.FC<{
   )
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, statsLoading }) => {
+export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, alerts, statsLoading }) => {
   const [alertModalOpen, setAlertModalOpen] = React.useState(false)
+  const nowDate = new Date()
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography
@@ -113,30 +106,13 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
         <Link href="https://robertsspaceindustries.com/">Star Citizen</Link> Miners organize, share, and scout together.
       </Typography>
       <Divider sx={{ my: 2 }} />
-      {/* OUR MAIN CHOICE */}
-      {/* <Typography
-        variant="h5"
-        sx={{ mb: 2, fontFamily: fontFamilies.robotoMono, color: theme.palette.secondary.dark }}
-        gutterBottom
-      >
-        Tools
-      </Typography> */}
-      {/* <Alert severity="info" sx={{ mb: 2 }}>
-        <AlertTitle>A note about 3.19</AlertTitle>
-        TL;DR: Expect weirdness and <strong>thank you</strong> for your patience while we all learn the new meta.
-        <Link onClick={() => setAlertModalOpen(true)}>Read More</Link>
-      </Alert> */}
-      {
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          <AlertTitle>A note about 3.21, 3.21.1, 3.22 and the road to Pyro</AlertTitle>
-          Expect weirdness and <strong>thank you again</strong> for your patience while all our tools catch up.
-          <em>
-            <Link onClick={() => setAlertModalOpen(true)} sx={{ cursor: 'pointer' }}>
-              (Read More)
-            </Link>
-          </em>
-        </Alert>
-      }
+      {alerts && alerts.length > 0 && (
+        <Stack spacing={2} mb={2}>
+          {alerts.map((alert, i) => (
+            <HomePageAlert alert={alert} key={i} />
+          ))}
+        </Stack>
+      )}
       <Grid container spacing={4} mb={4}>
         <HomeCard
           title={`Mining Sessions ${userCtx.isInitialized ? '' : '(Login)'}`}
@@ -179,9 +155,6 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, st
           url="/tables/ore"
         />
       </Grid>
-      {/* <Alert319 open={alertModalOpen} onClose={() => setAlertModalOpen(false)} /> */}
-      <AlertPyro open={alertModalOpen} onClose={() => setAlertModalOpen(false)} />
-
       {/* STATS */}
       <Divider sx={{ my: 2 }} />
       <Paper sx={{ p: 2, my: 3 }} elevation={1}>
