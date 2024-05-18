@@ -74,7 +74,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
 
   const scoutingFind = scoutingAttendanceMap.get(sessionUser.ownerId)
   const vehicle = sessionUser.vehicleCode ? shipLookups.find((s) => s.UEXID === sessionUser.vehicleCode) : null
-  const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.UEXID : vehicle?.name
+  const finalVehicleName = vehicle && vehicle.name.length > 16 ? vehicle.name.substring(0, 14) + '...' : vehicle?.name
   const vehicleColor = vehicle ? shipColorLookup(theme)[vehicle.role as VehicleRoleEnum] : 'inherit'
 
   const user = sessionUser.owner as User
