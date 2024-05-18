@@ -257,6 +257,10 @@ export function formatChartData(
             value = value / proRate
           }
         }
+        // Make sure to handle any NaN or null values
+        if (isNaN(value) || value === null) {
+          value = 0
+        }
         return {
           //
           x: dateVal,
@@ -268,6 +272,10 @@ export function formatChartData(
     // Now normalize the y
     const max = serie.data.reduce((acc, cur) => Math.max(acc, (cur.y as number) || 0), 0)
     serie.data.forEach((d) => {
+      if (max === 0) {
+        d.y = 0
+        return
+      }
       d.y = (d.val || 0) / max
     })
 
