@@ -5,6 +5,9 @@ The primary fix here is rewriting our price synching scripts to work with the ne
 
 Also this was a good opportunity to do some minor refactors in preparation for some new features planned for some time in the future.
 
+HOTFIX: Fixed an issue where users who require discord membership for their sessions were not able to unset it.
+HOTFIX: Minor fix to homepage chart for daily view
+
 ### April 12, 2024
 ## 1.0.48 - API Access and Discord Server Restriction
 
