@@ -56,10 +56,12 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
   React.useEffect(() => {
     const calcTable = async () => {
       if (!dataStore.ready) return
-      const tradeportData = dataStore.getLookup('tradeportLookups') as UEXTradeport[]
+      const tradeportData = ((await dataStore.getLookup('tradeportLookups')) || []).filter(
+        ({ refinery }) => refinery === true
+      )
       const hAxis = Object.values(RefineryEnum).map((refVal) => [
         refVal as RefineryEnum,
-        (tradeportData.find(({ code }) => code === refVal)?.name as string) || (refVal as string),
+        (tradeportData.find(({ code }) => code.endsWith(refVal))?.name_short as string) || (refVal as string),
       ])
       hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
 

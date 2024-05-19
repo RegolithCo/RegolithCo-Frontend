@@ -7,6 +7,7 @@ Also this was a good opportunity to do some minor refactors in preparation for s
 
 HOTFIX: Fixed an issue where users who require discord membership for their sessions were not able to unset it.
 HOTFIX: Minor fix to homepage chart for daily view
+HOTFIX: Minor fix to Refinery names on data tables
 
 ### April 12, 2024
 ## 1.0.48 - API Access and Discord Server Restriction
