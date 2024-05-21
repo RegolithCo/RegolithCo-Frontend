@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/images/favicons/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/images/favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/images/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/images/favicons/favicon-16x16.png">
-    <link rel="mask-icon" href="%PUBLIC_URL%/images/favicons/safari-pinned-tab.svg" color="#fbc02d">
+    <link rel="shortcut icon" href="/images/favicons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicons/favicon-16x16.png">
+    <link rel="mask-icon" href="/images/favicons/safari-pinned-tab.svg" color="#fbc02d">
     <meta name="msapplication-TileColor" content="#fbc02d">
     <meta name="theme-color" content="#fbc02d">
     
@@ -17,7 +17,7 @@
     <meta name="stage" content="%STAGE%" />    
     <meta name="theme-color" content="#000000" />
 
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
 
     <title>Regolith Co. - Star Citizen Mining Tool</title>
     <meta name="description" content="Regolith Co. is a fansite dedicated to helping Star Citizen Miners organize, share, and scout together.">
@@ -26,18 +26,18 @@
 
     <meta property="og:title" content="Regolith Co. - Don't mine alone">
     <meta property="og:description" content="Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.">
-    <meta property="og:image" content="%PUBLIC_URL%/images/socialicon.jpg">
+    <meta property="og:image" content="/images/socialicon.jpg">
     <meta property="og:url" content="https://regolith.rocks">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Regolith Co. - Don't mine alone">
     <meta name="twitter:description" content="Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.">
-    <meta name="twitter:image"  content="%PUBLIC_URL%/images/socialicon.jpg">
+    <meta name="twitter:image"  content="/images/socialicon.jpg">
     <link rel="canonical" href="https://regolith.rocks" />
 
     <meta itemprop="name" content="Regolith Co. - Don't mine alone">
     <meta itemprop="description" content="Regolith Co. is a fansite dedicated to helping Star Citizen players organize, share, and scout together.">
-    <meta itemprop="image" content="%PUBLIC_URL%/images/socialicon.jpg">
+    <meta itemprop="image" content="/images/socialicon.jpg">
 
     <!-- Fonts to support Material Design -->
     <link
@@ -52,15 +52,7 @@
     <div id="root"></div>
 
   </body>
-  <script src="%PUBLIC_URL%/config.js"></script>
-  <script type="application/ld+json">
-    {
-      "@context": "http://schema.org",
-      "@type": "Organization",
-      "name": "Regolith Co.",
-      "description": "Dedicated to helping Star Citizen players organize, share, and scout together.",
-      "url": "https://regolith.rocks",
-      "logo": "%PUBLIC_URL%/images/socialicon.jpg"
-    }
-    </script>    
+  <script src="/config.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>  
 </html>

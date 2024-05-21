@@ -29,7 +29,7 @@ const styles: Record<string, SxProps<Theme>> = {
     margin: 0,
     overflow: 'hidden',
     backgroundImage: {
-      md: `url('${process.env.PUBLIC_URL}/images/bg/${BGImagesEnum.OPTION1}')`,
+      md: `url('${import.meta.env.BASE_URL}/images/bg/${BGImagesEnum.OPTION1}')`,
     },
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
@@ -109,7 +109,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bg
       sx={{
         ...styles.container,
         backgroundImage: {
-          md: `url('${process.env.PUBLIC_URL}/images/bg/${bgImageFinal}')`,
+          md: `url('${import.meta.env.BASE_URL}/images/bg/${bgImageFinal}')`,
         },
       }}
     >

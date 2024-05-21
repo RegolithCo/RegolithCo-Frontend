@@ -32,7 +32,7 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
   }
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router basename={import.meta.env.BASE_URL}>
       <TopBarContainer />
       <AppWrapperContainer>
         <PageWrapper title="ERROR: Something went wrong" maxWidth="lg">

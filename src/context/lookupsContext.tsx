@@ -88,7 +88,7 @@ export const LookupsContextWrapper: React.FC<PropsWithChildren> = ({ children })
   const [dataStore, setDataStore] = React.useState<ClientDataStore>(new ClientDataStore())
 
   const noLoadingPaths = ['/']
-  const prefix = process.env.PUBLIC_URL || ''
+  const prefix = import.meta.env.BASE_URL || ''
 
   const currentPath = normalizePath(window.location.pathname)
   const isNoLoadingPath = noLoadingPaths.some((path) => normalizePath(`${prefix}${path}`) === currentPath)

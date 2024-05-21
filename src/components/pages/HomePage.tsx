@@ -69,7 +69,7 @@ const HomeCard: React.FC<{
         onClick={onClick}
       >
         <Wrapper>
-          <CardMedia sx={{ height: 140 }} image={`${process.env.PUBLIC_URL}/${imgageUrl}`} title={title} />
+          <CardMedia sx={{ height: 140 }} image={`${import.meta.env.BASE_URL}/${imgageUrl}`} title={title} />
           <CardContent sx={{ flexGrow: 1 }}>
             <Typography
               variant="overline"

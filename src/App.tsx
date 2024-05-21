@@ -30,7 +30,7 @@ export const App: React.FC = () => {
 
   if (needIntervention)
     return (
-      <Router basename={process.env.PUBLIC_URL}>
+      <Router basename={import.meta.env.BASE_URL}>
         <TopBarContainer />
         <AppWrapperContainer>
           <Routes>
@@ -50,7 +50,7 @@ export const App: React.FC = () => {
     )
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router basename={import.meta.env.BASE_URL}>
       <TopBarContainer />
       <StagingWarning
         open={stagingWarningOpen}

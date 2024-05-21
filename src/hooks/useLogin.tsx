@@ -94,7 +94,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         authLink,
         splitLink,
       ]),
-      connectToDevTools: process.env.NODE_ENV === 'development',
+      connectToDevTools: import.meta.env.MODE === 'development',
       cache: new InMemoryCache({
         possibleTypes: {
           WorkOrderInterface: ['VehicleMiningOrder', 'OtherOrder', 'SalvageOrder', 'ShipMiningOrder'],
@@ -116,7 +116,9 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   if (
                     storedData &&
                     storedTimestamp &&
+                    // If the app version is the same, we can use the data
                     version === storedVersion &&
+                    // If the data is less than an hour old, return it from the cache
                     Date.now() - Number(storedTimestamp) < 60 * 60 * 1000
                   ) {
                     // log.debug('LookupData is fresh, returning from cache')
@@ -284,7 +286,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
 
   useEffect(() => {
     if (postLoginRedirect && isAuthenticated && Boolean(userProfileQry.data?.profile)) {
-      const newUrl = new URL(process.env.PUBLIC_URL + postLoginRedirect, window.location.origin)
+      const newUrl = new URL(import.meta.env.BASE_URL + postLoginRedirect, window.location.origin)
       setPostLoginRedirect(null)
       window.location.href = newUrl.toString()
     }
@@ -324,7 +326,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
         openPopup: (newLoginRedirect?: string) => {
           // Set up a redirect for later look in <TopbarContainer /> for the code that actions this
           // When the user returns
-          const baseUrl = process.env.PUBLIC_URL
+          const baseUrl = import.meta.env.BASE_URL
           // I want the path relative to the base url using window.location.pathname
           const relpath = window.location.pathname.replace(baseUrl, '')
           setPostLoginRedirect(newLoginRedirect || relpath)

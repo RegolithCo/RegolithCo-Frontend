@@ -54,7 +54,7 @@ export const useUserProfile = (): useSessionsReturn => {
 
   useEffect(() => {
     // Logrocket only runs when not in production since we only get the free plan
-    if (process.env.NODE_ENV !== 'production') {
+    if (import.meta.env.MODE !== 'production') {
       const logrocketname = userProfileQry.data?.profile?.scName || 'UNAUTHENTICATED'
       const logRocketObj: Record<string, string | number | boolean> = userProfileQry.data
         ? {

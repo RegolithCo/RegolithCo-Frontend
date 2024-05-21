@@ -22,7 +22,7 @@ export const ShareWrapper = ({ children }: { children: React.ReactNode }): JSX.E
       sx={{
         ...styles.container,
         backgroundImage: {
-          // md: `url('${process.env.PUBLIC_URL}/images/bg/${bgImageFinal}')`,
+          // md: `url('${import.meta.env.BASE_URL}/images/bg/${bgImageFinal}')`,
         },
       }}
     >

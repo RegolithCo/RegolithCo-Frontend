@@ -92,7 +92,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const myAvatar = user
     ? makeAvatar(user?.avatarUrl as string)
-    : `${process.env.PUBLIC_URL}/images/avatars/PendingUser.jpg`
+    : `${import.meta.env.BASE_URL}/images/avatars/PendingUser.jpg`
   const isInnactive = !user && pendingUser
   const theme = useTheme()
   const styles = stylesThunk(theme)
@@ -159,7 +159,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                 <Error color="error" />
               ) : (
                 <img
-                  src={`${process.env.PUBLIC_URL}/images/avatars/NoAvatar.jpg`}
+                  src={`${import.meta.env.BASE_URL}/images/avatars/NoAvatar.jpg`}
                   style={{
                     height: '100%',
                     width: '100%',
