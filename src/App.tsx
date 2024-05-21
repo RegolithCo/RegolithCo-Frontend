@@ -22,6 +22,7 @@ import { ErrorPage } from './Error'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
+const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
 
 export const App: React.FC = () => {
   const { isAuthenticated, isInitialized, loading, error } = useLogin()
@@ -30,7 +31,7 @@ export const App: React.FC = () => {
 
   if (needIntervention)
     return (
-      <Router basename={import.meta.env.BASE_URL}>
+      <Router basename={basename}>
         <TopBarContainer />
         <AppWrapperContainer>
           <Routes>
@@ -50,7 +51,7 @@ export const App: React.FC = () => {
     )
 
   return (
-    <Router basename={import.meta.env.BASE_URL}>
+    <Router basename={basename}>
       <TopBarContainer />
       <StagingWarning
         open={stagingWarningOpen}

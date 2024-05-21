@@ -11,6 +11,8 @@ import { Replay } from '@mui/icons-material'
 import { TopBarContainer } from './components/TopBar.container'
 import { useSnackbar } from 'notistack'
 
+const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
+
 export function ErrorPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const error: any = useRouteError()
@@ -32,7 +34,7 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
   }
 
   return (
-    <Router basename={import.meta.env.BASE_URL}>
+    <Router basename={basename}>
       <TopBarContainer />
       <AppWrapperContainer>
         <PageWrapper title="ERROR: Something went wrong" maxWidth="lg">
