@@ -1,3 +1,16 @@
+### May 22, 2024
+## 1.0.50 - UEX 2.0 API Price synching
+
+Not much to notice here but I completely changed the front-end scaffolding framework I was using. This will cut build times, speed up development and it creates a much smaller javascript package size as a nice added bonus. This kind of regular refactoring is really important if you don't want to always have 8 hours of work before you can implement anything cool.
+
+### Error Handling
+
+- Before we were just seeing "Mutation Error" which is not useful for debugging. Now you can copy the error and send it to the developer.
+
+### Bug Fixes
+
+- Salvaging table now sorts correctly (CMAT and RMCO were reversed and had each other's prices)
+
 ### May 18, 2024
 ## 1.0.49 - UEX 2.0 API Price synching
 

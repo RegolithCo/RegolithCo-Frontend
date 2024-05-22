@@ -7,6 +7,7 @@ import {
   from,
   NormalizedCacheObject,
   split,
+  ApolloError,
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
@@ -29,6 +30,11 @@ import { LoginRefresh } from '../components/modals/LoginRefresh'
 import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
 import { usePageVisibility } from './usePageVisibility'
 import { getMainDefinition } from '@apollo/client/utilities'
+import { SnackbarKey, useSnackbar } from 'notistack'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import { DiscordIcon } from '../icons'
+import { CopyAll } from '@mui/icons-material'
+import { fontFamilies } from '../theme'
 
 // Create HttpLinks for each endpoint
 const privateLink = new HttpLink({
@@ -64,6 +70,25 @@ const splitLink = split(
 )
 
 /**
+ * This is only here to show an error dialog provided by a snackbar
+ */
+export type ApolloErrorDialog = {
+  error: ApolloError
+  notisKey: SnackbarKey
+  queryName: string
+}
+export type ApolloErrorDialogContext = {
+  errorDialog: ApolloErrorDialog | null
+  setErrorDialog: (error: ApolloErrorDialog | null) => void
+}
+export const ApolloErrorContext = React.createContext<ApolloErrorDialogContext>({
+  errorDialog: null,
+  setErrorDialog: () => {
+    throw new Error('Not implemented')
+  },
+})
+
+/**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
  * @param param0
  * @returns
@@ -73,6 +98,8 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   // const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
   const [APIWorking, setAPIWorking] = useState(true)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
+  const [errorDialog, setErrorDialog] = useState<ApolloErrorDialog | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
 
   const client = useMemo(() => {
     const authLink = setContext(async (_, { headers }) => {
@@ -233,11 +260,70 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
     })
   }, [token, loginInProgress, authType])
 
+  // See useGQLErrors.tsx for the error handling
+  const errorDialogEl = React.useMemo(() => {
+    if (!errorDialog) return null
+    const errorText = { queryName: errorDialog.queryName, error: errorDialog.error }
+    return (
+      <Dialog open={errorDialog !== null} onClose={() => setErrorDialog(null)}>
+        <DialogTitle>Regolith Error</DialogTitle>
+
+        <DialogContent>
+          <Typography variant="body2">You can send this error to support for help.</Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              fontFamily: fontFamilies.robotoMono,
+            }}
+          >
+            <code>
+              <pre>{JSON.stringify(errorText, null, 2)}</pre>
+            </code>
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            startIcon={<CopyAll />}
+            color="info"
+            size="small"
+            onClick={() => {
+              const text = JSON.stringify(errorText, null, 2)
+              navigator.clipboard.writeText(text)
+              // Now notify
+              enqueueSnackbar('Copied to clipboard', { variant: 'info' })
+            }}
+          >
+            Copy to clipboard
+          </Button>
+          <Button
+            startIcon={<DiscordIcon />}
+            variant="contained"
+            size="small"
+            color="primary"
+            sx={{ fontSize: '1rem', p: 2 }}
+            href="https://discord.gg/6TKSYHNJha"
+            target="_blank"
+          >
+            Regolith Discord Server
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }, [errorDialog])
+
   return (
     <ApolloProvider client={client}>
-      <UserProfileProvider apolloClient={client} APIWorking={APIWorking} maintenanceMode={maintenanceMode}>
-        {children}
-      </UserProfileProvider>
+      <ApolloErrorContext.Provider
+        value={{
+          errorDialog: errorDialog,
+          setErrorDialog: (error: ApolloErrorDialog | null) => setErrorDialog(error),
+        }}
+      >
+        {errorDialogEl}
+        <UserProfileProvider apolloClient={client} APIWorking={APIWorking} maintenanceMode={maintenanceMode}>
+          {children}
+        </UserProfileProvider>
+      </ApolloErrorContext.Provider>
     </ApolloProvider>
   )
 }
@@ -304,6 +390,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
       // }
     }
   }, [token, apolloClient])
+
   return (
     <LoginContext.Provider
       value={{

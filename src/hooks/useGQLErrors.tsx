@@ -3,6 +3,9 @@ import { useSnackbar } from 'notistack'
 import { MutationTuple, QueryResult } from '@apollo/client'
 import log from 'loglevel'
 import { ErrorCode } from '@regolithco/common'
+import { IconButton } from '@mui/material'
+import { Close, Info } from '@mui/icons-material'
+import { ApolloErrorContext } from './useLogin'
 /**
  * Just a handy hook to handle errors from queries and mutations
  *
@@ -21,16 +24,41 @@ const ExceptList: ErrorCode[] = [
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: MutationTuple<any, any>[]) => {
-  const { enqueueSnackbar } = useSnackbar()
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const { errorDialog, setErrorDialog } = React.useContext(ApolloErrorContext)
   React.useEffect(() => {
-    queries.forEach(({ error }) => {
+    queries.forEach(({ error, observable }) => {
       try {
         if (error) {
           if (error.graphQLErrors) {
             error.graphQLErrors.forEach((gqlErr) => {
               if (gqlErr.extensions && ExceptList.includes(gqlErr.extensions.code as ErrorCode)) return
-              console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
-              enqueueSnackbar('Query Error:' + error.name, { variant: 'error' })
+              log.error(`❌ [GraphQL error]:  ${observable.queryName} ${JSON.stringify(error, null, 2)}`)
+              enqueueSnackbar('Error:' + (error.message || error.name), {
+                variant: 'error',
+                autoHideDuration: errorDialog ? null : 5000,
+                persist: Boolean(errorDialog),
+                action: (key) => {
+                  return (
+                    <>
+                      <IconButton
+                        onClick={() =>
+                          setErrorDialog({
+                            error: error,
+                            notisKey: key,
+                            queryName: observable.queryName || 'UNKNOWN',
+                          })
+                        }
+                      >
+                        <Info />
+                      </IconButton>
+                      <IconButton onClick={() => closeSnackbar(key)}>
+                        <Close />
+                      </IconButton>
+                    </>
+                  )
+                },
+              })
             })
           }
           log.debug(error)
@@ -47,5 +75,5 @@ export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: Mutati
     })
   }, [...queries.map((q) => q.error), ...mutations.map((op) => op[1].error)])
 
-  return
+  return errorDialog
 }

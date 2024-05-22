@@ -318,7 +318,14 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
   })
 
-  const queries = [sessionQry, sessionUserQry, sessionActiveMemberQry, sessionWorkOrdersQry, sessionScoutingQry]
+  const queries = [
+    sessionQry,
+    sessionUserQry,
+    sessionActiveMemberQry,
+    sessionWorkOrdersQry,
+    sessionScoutingQry,
+    sessionUpdatedQry,
+  ]
   const mutations = [
     updateSessionMutation,
     addSessionMentionsMutation,
