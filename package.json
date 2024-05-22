@@ -78,10 +78,8 @@
   },
   "scripts": {
     "start": "dotenv -e ../../.env.local.docker vite",
-    "build": "dotenv -e ../../.env.local.staging tsc && vite build",
+    "build": "./scripts/fancyBuild.sh",
     "preview": "dotenv -e ../../.env.local.docker vite preview",
-    "startOLD": "dotenv -e ../../.env.local.docker react-scripts start",
-    "buildOLD": "dotenv -e ../../.env.staging -- ./scripts/fancyBuild.sh",
     "test": "react-scripts test",
     "lint": "tsc --noEmit && eslint src/**/* --fix",
     "storybook": "storybook dev -p 6006",

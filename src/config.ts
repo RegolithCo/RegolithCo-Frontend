@@ -11,5 +11,5 @@ const config: Config = {
   googleClientId: (window as any).CLIENT_CONFIG.googleClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID,
   discordClientId: (window as any).CLIENT_CONFIG.discordClientId || import.meta.env.VITE_DISCORD_CLIENT_ID,
 }
-console.log('MARZIPAN', import.meta.env)
+
 export default config

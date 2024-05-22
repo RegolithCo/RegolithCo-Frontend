@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 # Build everything
 yarn build:gql
-yarn react-scripts build 
+yarn vite build
 
 # get the current version and commit hash
 version=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')

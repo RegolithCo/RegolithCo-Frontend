@@ -37,7 +37,7 @@ export const SalvagingOreTable: React.FC = () => {
 
       const rowStats: { max: number; min: number }[] = []
 
-      const newFinaltable: [number, number, number][] = salvageRowKeys.map((shipOreKey, rowIdx) => {
+      const newFinaltable: [number, number, number][] = newSorted.map((shipOreKey, rowIdx) => {
         const orePrice = priceLookups[shipOreKey]
         const retVals = [orePrice, orePrice * 12, orePrice * 420]
         if (rowIdx === 0) {

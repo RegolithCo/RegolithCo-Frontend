@@ -159,7 +159,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                 <Error color="error" />
               ) : (
                 <img
-                  src={`/images/avatars/NoAvatar.jpg`}
+                  src={`${import.meta.env.BASE_URL}/images/avatars/NoAvatar.jpg`}
                   style={{
                     height: '100%',
                     width: '100%',
