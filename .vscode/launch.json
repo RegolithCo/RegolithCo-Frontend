@@ -8,8 +8,8 @@
       "name": "🚀 Launch",
       "request": "launch",
       "type": "chrome",
-      "url": "http://localhost:5173/regolithco",
-      "webRoot": "${workspaceFolder}../../"
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src"
     }, 
     {
       "name": "📖 Storybook Debug",

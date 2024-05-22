@@ -3,6 +3,8 @@ import { Config } from './types'
 import.meta.env
 // import log from 'loglevel'
 
+const is_dev = import.meta.env.MODE === 'development'
+
 const config: Config = {
   apiUrl: (window as any).CLIENT_CONFIG.apiUrl || import.meta.env.VITE_API_URL,
   stage: (window as any).CLIENT_CONFIG.stage || import.meta.env.VITE_STAGE,

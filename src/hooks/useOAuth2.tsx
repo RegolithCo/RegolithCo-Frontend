@@ -4,7 +4,8 @@ import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAut
 import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
-const redirectUrl = new URL(import.meta.env.BASE_URL, window.location.origin).toString()
+
+const redirectUrl = new URL('', window.location.origin).toString()
 
 const discordConfig: TAuthConfig = {
   clientId: '1067082442877440050',

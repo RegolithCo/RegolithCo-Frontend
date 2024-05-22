@@ -286,7 +286,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
 
   useEffect(() => {
     if (postLoginRedirect && isAuthenticated && Boolean(userProfileQry.data?.profile)) {
-      const newUrl = new URL(import.meta.env.BASE_URL + postLoginRedirect, window.location.origin)
+      const newUrl = new URL(postLoginRedirect, window.location.origin)
       setPostLoginRedirect(null)
       window.location.href = newUrl.toString()
     }
@@ -326,9 +326,8 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
         openPopup: (newLoginRedirect?: string) => {
           // Set up a redirect for later look in <TopbarContainer /> for the code that actions this
           // When the user returns
-          const baseUrl = import.meta.env.BASE_URL
           // I want the path relative to the base url using window.location.pathname
-          const relpath = window.location.pathname.replace(baseUrl, '')
+          const relpath = window.location.pathname
           setPostLoginRedirect(newLoginRedirect || relpath)
 
           setOpenPopup(true)

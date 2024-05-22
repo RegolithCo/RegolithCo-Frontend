@@ -25,7 +25,7 @@ export const HomePageContainer: React.FC = () => {
     // Loop over all the possible keys of StatsObjectSummary and fetch them
     // Suffix the URL with query params of ?cachebust=YYYY-MM-DD-HH
     axios
-      .get(`${import.meta.env.BASE_URL}/alerts.json`)
+      .get(`/alerts.json`)
       .then((response) => {
         //Set the data to the state
         setAlerts((stats) => response.data as RegolithAlert[])
@@ -43,7 +43,7 @@ export const HomePageContainer: React.FC = () => {
 
     for (const key of ['daily', 'monthly', 'yearly', 'total']) {
       axios
-        .get(`${import.meta.env.BASE_URL}/stats/${key}.json?cachebust=${dateSuffix}`)
+        .get(`/stats/${key}.json?cachebust=${dateSuffix}`)
         .then((response) => {
           //Set the data to the state
           setStats((stats) => ({ ...(stats || {}), [key as keyof StatsObjectSummary]: response.data }))

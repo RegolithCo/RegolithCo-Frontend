@@ -77,7 +77,7 @@
     "webpack": "^5.88.2"
   },
   "scripts": {
-    "start": "dotenv -e ../../.env.local.docker vite",
+    "start": "dotenv -e ../../.env.local.docker vite --mode staging",
     "build": "./scripts/fancyBuild.sh",
     "preview": "dotenv -e ../../.env.local.docker vite preview",
     "test": "react-scripts test",
