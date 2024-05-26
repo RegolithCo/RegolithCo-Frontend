@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { useTheme, Box, Typography, alpha } from '@mui/material'
-import { ActivityEnum, getActivityName, jsRound, StatsObject } from '@regolithco/common'
+import { jsRound, StatsObject } from '@regolithco/common'
 import { MayHaveLabel, ResponsivePie } from '@nivo/pie'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 
 export interface OrePieChartProps {
   title: string
+  groupThreshold?: number
   ores?: StatsObject['shipOres'] | StatsObject['vehicleOres'] | StatsObject['salvageOres']
   activityTypes?: StatsObject['workOrderTypes']
   loading: boolean
@@ -16,38 +17,54 @@ export interface OrePieChartProps {
  * @param param0
  * @returns
  */
-export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityTypes, loading }) => {
+export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityTypes, loading, groupThreshold }) => {
   const theme = useTheme()
+  const finalGroupThreshold = groupThreshold || 0
 
   const normalizedData: MayHaveLabel[] = React.useMemo(() => {
     if (loading) return []
     if (!ores && !activityTypes) return []
+
+    const processData = (data: Record<string, number>) => {
+      const total = Object.values(data).reduce((acc, curr) => acc + curr, 0)
+      const normed = Object.entries(data).reduce(
+        (acc, [key, value]) => ({ ...acc, [key]: value / total }),
+        {} as Record<string, number>
+      )
+
+      const aboveThreshold = Object.entries(normed)
+        .filter(([_, value]) => value >= finalGroupThreshold)
+        .map<MayHaveLabel>(([key, _]) => ({
+          id: key,
+          label: key,
+          value: normed[key],
+          realValue: data[key],
+        }))
+
+      const belowThresholdTotal = Object.entries(normed)
+        .filter(([_, value]) => value < finalGroupThreshold)
+        .reduce((acc, [_, value]) => acc + value, 0)
+
+      if (belowThresholdTotal > 0) {
+        aboveThreshold.push({
+          id: 'Other',
+          label: 'Other',
+          value: belowThresholdTotal,
+          realValue: belowThresholdTotal * total,
+        } as MayHaveLabel)
+      }
+
+      return aboveThreshold
+    }
+
     if (ores) {
-      const total = Object.values(ores).reduce((acc, curr) => acc + curr, 0)
-      const normed = Object.entries(ores).reduce(
-        (acc, [key, value]) => ({ ...acc, [key]: value / total }),
-        {} as Record<string, number>
-      )
-      return Object.entries(ores).map<MayHaveLabel>(([key, value]) => ({
-        id: key,
-        label: key,
-        value: normed[key],
-        realValue: value,
-      }))
+      return processData(ores)
     } else if (activityTypes) {
-      const total = Object.values(activityTypes).reduce((acc, curr) => acc + curr, 0)
-      const normed = Object.entries(activityTypes).reduce(
-        (acc, [key, value]) => ({ ...acc, [key]: value / total }),
-        {} as Record<string, number>
-      )
-      return Object.entries(activityTypes).map<MayHaveLabel>(([key, value]) => ({
-        id: getActivityName(key as ActivityEnum),
-        label: getActivityName(key as ActivityEnum),
-        value: normed[key],
-        realValue: value,
-      }))
-    } else return []
-  }, [ores])
+      return processData(activityTypes)
+    } else {
+      return []
+    }
+  }, [ores, activityTypes])
 
   return (
     <Box>

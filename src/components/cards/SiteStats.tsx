@@ -115,7 +115,12 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
         )}
         {!statsLoading.total && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Ship Ores" ores={stats?.total?.shipOres || {}} loading={statsLoading.total} />
+            <OrePieChart
+              title="Ship Ores"
+              groupThreshold={0.04}
+              ores={stats?.total?.shipOres || {}}
+              loading={statsLoading.total}
+            />
           </Grid>
         )}
         {!statsLoading.total && (
