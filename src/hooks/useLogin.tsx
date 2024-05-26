@@ -75,6 +75,7 @@ const splitLink = split(
 export type ApolloErrorDialog = {
   error: ApolloError
   notisKey: SnackbarKey
+  timestamp: string
   queryName: string
 }
 export type ApolloErrorDialogContext = {
@@ -263,7 +264,11 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   // See useGQLErrors.tsx for the error handling
   const errorDialogEl = React.useMemo(() => {
     if (!errorDialog) return null
-    const errorText = { queryName: errorDialog.queryName, error: errorDialog.error }
+    const errorText = {
+      queryName: errorDialog.queryName,
+      timestamp: errorDialog.timestamp,
+      error: errorDialog.error,
+    }
     return (
       <Dialog open={errorDialog !== null} onClose={() => setErrorDialog(null)}>
         <DialogTitle>Regolith Error</DialogTitle>

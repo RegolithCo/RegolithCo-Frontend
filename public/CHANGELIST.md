@@ -10,6 +10,9 @@ Not much to notice here but I completely changed the front-end scaffolding frame
 ### Bug Fixes
 
 - Salvaging table now sorts correctly (CMAT and RMCO were reversed and had each other's prices)
+- Bug where Substract Transfer Fee wasn't being set correctly
+- Bug where expenses aren't being saved properly.
+
 
 ### May 18, 2024
 ## 1.0.49 - UEX 2.0 API Price synching

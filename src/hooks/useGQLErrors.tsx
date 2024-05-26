@@ -46,6 +46,7 @@ export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: Mutati
                           setErrorDialog({
                             error: error,
                             notisKey: key,
+                            timestamp: new Date().toISOString(),
                             queryName: observable.queryName || 'UNKNOWN',
                           })
                         }
@@ -69,8 +70,32 @@ export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: Mutati
     })
     mutations.forEach(([_, { error }]) => {
       if (error) {
-        enqueueSnackbar('Mutation Error:' + error.name, { variant: 'error' })
-        // if (error) console.error('upsert', error.graphQLErrors)
+        enqueueSnackbar('Error:' + (error.message || error.name), {
+          variant: 'error',
+          autoHideDuration: errorDialog ? null : 5000,
+          persist: Boolean(errorDialog),
+          action: (key) => {
+            return (
+              <>
+                <IconButton
+                  onClick={() =>
+                    setErrorDialog({
+                      error: error,
+                      notisKey: key,
+                      timestamp: new Date().toISOString(),
+                      queryName: 'ERROR',
+                    })
+                  }
+                >
+                  <Info />
+                </IconButton>
+                <IconButton onClick={() => closeSnackbar(key)}>
+                  <Close />
+                </IconButton>
+              </>
+            )
+          },
+        })
       }
     })
   }, [...queries.map((q) => q.error), ...mutations.map((op) => op[1].error)])
