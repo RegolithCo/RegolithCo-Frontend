@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { useTheme, Typography, Box, RadioGroup, FormControlLabel, Radio } from '@mui/material'
 import { ObjectValues, StatsObject, StatsObjectSummary } from '@regolithco/common'
-import { ResponsiveLine, Serie } from '@nivo/line'
+import { DatumValue, ResponsiveLine, Serie, LineSvgProps } from '@nivo/line'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
+import dayjs from 'dayjs'
+import log from 'loglevel'
 
 export interface DailyMonthlyChartProps {
   stats: Partial<StatsObjectSummary>
@@ -45,6 +47,8 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
         return { chartData: formatChartData(stats?.daily, chartType, 30), chartformat: '%m' }
     }
   }, [chartType, stats])
+
+  const markers = React.useMemo(() => getMarkers(chartType), [chartType])
 
   return (
     <Box>
@@ -98,6 +102,7 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
               },
             },
           }}
+          markers={markers}
           // curve="basis"
           enableArea={true}
           enableGridX={false}
@@ -282,4 +287,130 @@ export function formatChartData(
     series.push(serie)
   })
   return series
+}
+
+const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
+  // If it's MONTH Then we should go from march 2023 to now. if it's daily then it should be the last 30 days
+  const startDate: dayjs.Dayjs = chartType === ChartTypesEnum.MONTH ? dayjs('2023-03-01') : dayjs().subtract(30, 'days')
+  const endDate: dayjs.Dayjs = dayjs()
+  const rounding = chartType === ChartTypesEnum.MONTH ? 'month' : 'day'
+
+  const markers: LineSvgProps['markers'] = [
+    {
+      axis: 'x' as const,
+      value: dayjs('2023-03-01').startOf('month').toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: 'Regolith LIVE! (SC 3.18)',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+    // SC 3.18 : March 10th 2023
+    // {
+    //   axis: 'x' as const,
+    //   value: dayjs('2023-03-10').startOf('month').toDate(),
+    //   lineStyle: { stroke: 'white', strokeWidth: 2 },
+    //   legend: 'SC 3.18',
+    //   textStyle: { fill: 'white', fontSize: 8 },
+    //   legendOrientation: 'vertical' as const,
+    // },
+    // Starfield launched September 6, 2023
+    {
+      axis: 'x' as const,
+      value: dayjs('2023-09-06').startOf(rounding).toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: 'Starfield (3.20)',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+    // SC 3.19 : May 16th 2023
+    {
+      axis: 'x' as const,
+      value: dayjs('2023-05-16').startOf(rounding).toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: '3.19',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+    // SC 3.20 : September 19th 2023
+    // {
+    //   axis: 'x' as const,
+    //   value: dayjs('2023-09-19').startOf(rounding).toDate(),
+    //   lineStyle: { stroke: 'white', strokeWidth: 2 },
+    //   legend: 'SC 3.20',
+    //   textStyle: { fill: 'white', fontSize: 8 },
+    //   legendOrientation: 'vertical' as const,
+    // },
+    // SC 3.21 : October 19th 2023
+    // {
+    //   axis: 'x' as const,
+    //   value: dayjs('2023-10-19').startOf(rounding).toDate(),
+    //   lineStyle: { stroke: 'white', strokeWidth: 2 },
+    //   legend: 'SC 3.21',
+    //   textStyle: { fill: 'white', fontSize: 8 },
+    //   legendOrientation: 'vertical' as const,
+    // },
+    // SC 3.22 : December 14st 2023
+    {
+      axis: 'x' as const,
+      value: dayjs('2023-12-14').startOf(rounding).toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: '3.22',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+    // citizen con Oct 21 - 22, 2023
+    {
+      axis: 'x' as const,
+      value: dayjs('2023-10-21').startOf(rounding).toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: 'CitizenCon (3.21)',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+    // IAE 2023 Nov 30, 2023
+    {
+      axis: 'x' as const,
+      value: dayjs('2023-11-30').startOf(rounding).toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: 'IAE 2953',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+    // Fleet week 2024: May 24, 2024
+    {
+      axis: 'x' as const,
+      value: dayjs('2024-05-24').startOf(rounding).toDate(),
+      lineStyle: { stroke: 'white', strokeWidth: 1 },
+      legend: 'Fleet Week 2954 (3.23)',
+      textStyle: { fill: 'white', fontSize: 8 },
+      legendOrientation: 'vertical' as const,
+    },
+  ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
+
+  // If this is DAILY then also add all the sundays
+  if (chartType === ChartTypesEnum.DAY) {
+    // Find all the sundays between the start and end date
+    const sundays = []
+    let sunday = startDate
+    while (sunday.isBefore(endDate)) {
+      if (sunday.day() === 0) {
+        sundays.push(sunday)
+      }
+      sunday = sunday.add(1, 'day')
+    }
+    // Add the sundays to the markers
+    sundays.forEach((sunday) => {
+      markers.push({
+        axis: 'x' as const,
+        value: sunday.startOf('day').toDate(),
+        lineStyle: { stroke: '#555555', strokeWidth: 1 },
+        legend: 'Sunday',
+        textStyle: { fill: 'white', fontSize: 8 },
+        legendOrientation: 'vertical' as const,
+      })
+    })
+  }
+  // Sort date ascending
+  markers.sort((a, b) => (a.value > b.value ? 1 : -1))
+  return markers
 }
