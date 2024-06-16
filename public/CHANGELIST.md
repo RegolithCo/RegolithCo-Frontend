@@ -1,4 +1,4 @@
-### May 22, 2024
+### May 31, 2024
 ## 1.0.50 - UEX 2.0 API Price synching
 
 Not much to notice here but I completely changed the front-end scaffolding framework I was using. This will cut build times, speed up development and it creates a much smaller javascript package size as a nice added bonus. This kind of regular refactoring is really important if you don't want to always have 8 hours of work before you can implement anything cool.

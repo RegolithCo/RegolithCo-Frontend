@@ -71,6 +71,30 @@ export const darkOptions: ThemeOptions = {
           msOverflowStyle: 'none', // IE 10+ scrollbars turn off
           scrollbarWidth: 'none', // Firefox scrollbars turn off
         },
+        'body #root *::-webkit-scrollbar': {
+          width: '32px', // Adjust scrollbar width
+          height: '32px', // Adjust scrollbar height for horizontal scrollbars
+          borderRadius: '16px', // Adjust for rounded corners
+        },
+        'body #root *::-webkit-scrollbar-track': {
+          background: 'pink', // Scrollbar track color
+          borderRadius: '16px', // Adjust for rounded corners
+        },
+        'body *::-webkit-scrollbar-thumb': {
+          backgroundColor: 'red', // Scrollbar thumb color
+          borderRadius: '16px', // Adjust for rounded corners
+          border: `3px solid ${'#918464'}`, // Optional: Adds some space between the thumb and the track
+        },
+        // For Firefox
+        'body #root *': {
+          scrollbarWidth: 'thin', // Can be 'auto', 'thin', or 'none'
+          scrollbarColor: `${'red'} ${'pink'}`, // thumb and track color
+          scrollbars: {
+            width: '32px', // Adjust scrollbar width
+            height: '32px', // Adjust scrollbar height for horizontal scrollbars
+            borderRadius: '16px', // Adjust for rounded corners
+          },
+        },
         html: {
           height: '100%',
         },
