@@ -48,8 +48,7 @@ export const SessionUserList: React.FC<SessionUserListProps> = () => {
       disablePadding
       sx={{
         position: 'relative',
-        height: '100%',
-        overflowY: 'scroll',
+        overflowY: 'hidden',
         overflowX: 'hidden',
       }}
     >

@@ -53,7 +53,7 @@ export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+const stylesThunk = (theme: Theme, isCalculator?: boolean): Record<string, SxProps<Theme>> => ({
   title: {
     display: 'flex',
     fontFamily: fontFamilies.robotoMono,
@@ -70,7 +70,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     flex: '1 1',
     flexDirection: 'column',
     overflowX: 'hidden',
-    overflow: { md: 'scroll' },
+    overflowY: { md: 'scroll', lg: isCalculator ? 'visible' : 'scroll' },
   },
   table: {
     '& *': {
@@ -89,13 +89,14 @@ export const OreCard: React.FC<OreCardProps> = ({
   summary,
   onChange,
   isShare,
+  isCalculator,
   allowEdit,
   templateJob,
   isEditing,
   sx,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const styles = stylesThunk(theme, isCalculator)
   const [editCell, setEditCell] = React.useState<[string, boolean]>()
   const dataStore = React.useContext(LookupsContext)
   const [oreTableRows, setOreTableRows] = React.useState<[string, { collected: number; refined: number }][]>([])

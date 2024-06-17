@@ -37,8 +37,7 @@ export const CrewUserList: React.FC<CrewUserListProps> = () => {
       disablePadding
       sx={{
         position: 'relative',
-        height: '100%',
-        overflowY: 'scroll',
+        overflowY: 'hidden',
         overflowX: 'hidden',
       }}
     >

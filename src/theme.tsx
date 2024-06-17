@@ -1,7 +1,8 @@
 import { grey, orange, purple, red, yellow } from '@mui/material/colors'
-import { createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
+import { alpha, createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
 import { Theme } from '@mui/material'
 import { ScoutingFindStateEnum, WorkOrderStateEnum } from '@regolithco/common'
+import { CSSObject } from '@emotion/react'
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -64,41 +65,11 @@ export const darkOptions: ThemeOptions = {
     },
     MuiCssBaseline: {
       styleOverrides: {
-        'body *::-webkit-scrollbar': {
-          display: 'none', // Safari and Chrome scrollbars turn off
-        },
-        'body *': {
-          msOverflowStyle: 'none', // IE 10+ scrollbars turn off
-          scrollbarWidth: 'none', // Firefox scrollbars turn off
-        },
-        'body #root *::-webkit-scrollbar': {
-          width: '32px', // Adjust scrollbar width
-          height: '32px', // Adjust scrollbar height for horizontal scrollbars
-          borderRadius: '16px', // Adjust for rounded corners
-        },
-        'body #root *::-webkit-scrollbar-track': {
-          background: 'pink', // Scrollbar track color
-          borderRadius: '16px', // Adjust for rounded corners
-        },
-        'body *::-webkit-scrollbar-thumb': {
-          backgroundColor: 'red', // Scrollbar thumb color
-          borderRadius: '16px', // Adjust for rounded corners
-          border: `3px solid ${'#918464'}`, // Optional: Adds some space between the thumb and the track
-        },
         // For Firefox
-        'body #root *': {
-          scrollbarWidth: 'thin', // Can be 'auto', 'thin', or 'none'
-          scrollbarColor: `${'red'} ${'pink'}`, // thumb and track color
-          scrollbars: {
-            width: '32px', // Adjust scrollbar width
-            height: '32px', // Adjust scrollbar height for horizontal scrollbars
-            borderRadius: '16px', // Adjust for rounded corners
-          },
-        },
-        html: {
+        body: {
           height: '100%',
         },
-        body: {
+        html: {
           height: '100%',
         },
         // This is our app container
@@ -124,6 +95,44 @@ export const darkOptions: ThemeOptions = {
       },
     },
   },
+}
+// Scrollbars
+// https://css-tricks.com/custom-scrollbars-in-webkit/
+if (darkOptions.components?.MuiCssBaseline) {
+  const tempTheme = createTheme(darkOptions)
+  const scrollBarThumbColor = tempTheme.palette?.error?.main || '#6c0b0b'
+  const scrollBarBackground = tempTheme.palette?.background.default || '#44444422'
+  const scrollBarBorderRadius = '10px'
+
+  darkOptions.components.MuiCssBaseline.styleOverrides = {
+    ...(darkOptions.components.MuiCssBaseline.styleOverrides as CSSObject),
+    body: {
+      height: '100%',
+      // scrollbarWidth: 'thin', // Can be 'auto', 'thin', or 'none'
+      // scrollbarColor: `${tempTheme.palette?.error?.dark || 'red'} ${
+      //   tempTheme.palette?.background.default || '#44444444'
+      // }`, // thumb and track color
+      // scrollbars: {
+      //   width: '32px', // Adjust scrollbar width
+      //   height: '32px', // Adjust scrollbar height for horizontal scrollbars
+      //   borderRadius: '16px', // Adjust for rounded corners
+      // },
+    },
+    '::-webkit-scrollbar': {
+      width: '10px', // Adjust scrollbar width
+      height: '10px', // Adjust scrollbar height for horizontal scrollbars
+      borderRadius: scrollBarBorderRadius, // Adjust for rounded corners
+    },
+    '::-webkit-scrollbar-track': {
+      background: scrollBarBackground, // Scrollbar track color
+      borderRadius: scrollBarBorderRadius, // Adjust for rounded corners
+    },
+    '::-webkit-scrollbar-thumb': {
+      backgroundColor: scrollBarThumbColor, // Scrollbar thumb color
+      borderRadius: scrollBarBorderRadius, // Adjust for rounded corners
+      border: `2px solid ${scrollBarBackground}`, // Optional: Adds some space between the thumb and the track
+    },
+  }
 }
 
 // A custom theme for this app

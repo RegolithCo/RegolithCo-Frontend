@@ -82,7 +82,7 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
           display: 'flex',
           minHeight: 700,
           overflowX: 'hidden',
-          overflowY: 'scroll',
+          overflowY: 'visible',
         }}
       >
         <WorkOrderCalc

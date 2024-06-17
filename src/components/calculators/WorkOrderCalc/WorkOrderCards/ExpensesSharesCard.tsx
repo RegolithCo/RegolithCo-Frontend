@@ -149,7 +149,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
         <CardContent
           id="workorder-expenses-shares-card"
           ref={useScrollerRef}
-          sx={{ flex: '1 1', overflowX: { md: 'hidden', sm: 'scroll' }, overflow: { md: 'scroll' } }}
+          sx={{
+            flex: '1 1',
+            overflowX: { md: 'hidden', sm: 'scroll' },
+            overflowY: { md: 'scroll', lg: isCalculator ? 'visible' : 'scroll' },
+          }}
         >
           {workOrder.orderType !== ActivityEnum.Other && (
             <>

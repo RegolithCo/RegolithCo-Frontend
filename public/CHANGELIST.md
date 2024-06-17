@@ -1,3 +1,14 @@
+### June 18, 2024
+## 1.0.51 - Style Cleanup and scrollbars
+
+You asked for it! You got it! Scrollbars are back! I know, I know, you're welcome.
+
+This patch introduces a few little fixes that had been building up as well inlcuding:
+
+- Prospector with Mole bags is now a ship option you can choose.
+- Scrollbars should be visible wherever appropriate
+- A duplicated root DIV was causing some layout issues. This has been removed.
+
 ### May 31, 2024
 ## 1.0.50 - UEX 2.0 API Price synching
 

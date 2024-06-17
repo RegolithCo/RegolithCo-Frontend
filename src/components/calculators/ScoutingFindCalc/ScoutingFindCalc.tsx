@@ -270,7 +270,8 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       // display: 'flex',
       height: '100%',
       maxHeight: 200,
-      overflow: 'scroll',
+      overflowX: 'auto',
+      overflowY: 'scroll',
     },
   },
   scansGridShare: {

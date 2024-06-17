@@ -81,7 +81,9 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
           </Box>
         }
       />
-      <CardContent sx={{ flex: '1 1', overflowY: { md: 'scroll' } }}>
+      <CardContent
+        sx={{ flex: '1 1', overflowX: 'hidden', overflowY: { md: 'scroll', lg: isCalculator ? 'visible' : 'scroll' } }}
+      >
         <FormGroup>
           {workOrder.orderType === ActivityEnum.ShipMining && (
             <>

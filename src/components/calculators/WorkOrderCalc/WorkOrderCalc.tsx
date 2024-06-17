@@ -49,7 +49,7 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      minHeight: 600,
+      // minHeight: 600,
       overflowX: 'hidden',
       overflowY: 'hidden',
     },

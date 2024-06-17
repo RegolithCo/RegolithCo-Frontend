@@ -60,6 +60,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   drawerAccordionDetails: {
     p: 0,
     pb: 2,
+    overflow: 'visible',
   },
   paper: {},
 })
