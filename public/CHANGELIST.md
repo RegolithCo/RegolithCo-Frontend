@@ -1,4 +1,12 @@
-### June 18, 2024
+### July 5, 2024
+## 1.0.52 - Bugs bugs bugs
+
+This is a quick patch to fix two issues that came up:
+
+1. When selecting "Alternate Seller" on a work order the summary tab was not showing all unpaid crew shares correctly
+2. When choosing "Share unrefined value" on a work order with a store selected that doesn't allow unrefined ore to be purchased the gross value was being set to zero.
+
+### June 17, 2024
 ## 1.0.51 - Style Cleanup and scrollbars
 
 You asked for it! You got it! Scrollbars are back! I know, I know, you're welcome.
@@ -6,8 +14,9 @@ You asked for it! You got it! Scrollbars are back! I know, I know, you're welcom
 This patch introduces a few little fixes that had been building up as well inlcuding:
 
 - Prospector with Mole bags is now a ship option you can choose.
-- Scrollbars should be visible wherever appropriate
-- A duplicated root DIV was causing some layout issues. This has been removed.
+- Scrollbars should be visible wherever appropriate (and hopefully nowhere else).
+- The reference numbers table on the work order tool has been restored. 
+- A duplicated root DIV was causing some layout issues. This has been removed so hopefully those of you that saw a huge scrollable space under the app shouldn't anymore.
 
 ### May 31, 2024
 ## 1.0.50 - UEX 2.0 API Price synching

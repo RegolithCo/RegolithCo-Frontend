@@ -253,6 +253,7 @@ export const OwingList: React.FC<OwingListProps> = ({
     },
     []
   )
+
   // sort rowArr by pushing sessionUser.owner.sCN to the front and then alphabetically
   rowArr.sort((a, b) => {
     if (sessionUser && a[0] === sessionUser.owner?.scName) return -1
@@ -284,7 +285,8 @@ export const OwingList: React.FC<OwingListProps> = ({
       {rowArr.map(([payerSCName, payeeSCName, amt], idy) => {
         const payerUser = (session.activeMembers?.items || []).find(({ owner }) => owner?.scName === payerSCName)
         const payeeUser = (session.activeMembers?.items || []).find(({ owner }) => owner?.scName === payeeSCName)
-        if (payerUser?.owner?.scName === payeeUser?.owner?.scName) return null
+
+        if (payerSCName === payeeSCName) return null
 
         const crewShares = (session.workOrders?.items || [])
           .filter(({ owner, sellerscName }) => {
