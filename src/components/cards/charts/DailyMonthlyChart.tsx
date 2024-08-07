@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { useTheme, Typography, Box, RadioGroup, FormControlLabel, Radio } from '@mui/material'
 import { ObjectValues, StatsObject, StatsObjectSummary } from '@regolithco/common'
+import { CartesianMarkerProps } from '@nivo/core'
 import { DatumValue, ResponsiveLine, Serie, LineSvgProps } from '@nivo/line'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import log from 'loglevel'
 
 export interface DailyMonthlyChartProps {
@@ -71,7 +72,7 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
           data={chartData}
           margin={{ top: 30, right: 20, bottom: 60, left: 10 }}
           xScale={{
-            type: 'point',
+            type: 'linear',
             min: 'auto',
             max: 'auto',
             nice: true,
@@ -295,7 +296,7 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
   const endDate: dayjs.Dayjs = dayjs()
   const rounding = chartType === ChartTypesEnum.MONTH ? 'month' : 'day'
 
-  const markers: LineSvgProps['markers'] = [
+  const markers: CartesianMarkerProps[] = [
     {
       axis: 'x' as const,
       value: dayjs('2023-03-01').startOf('month').toDate(),
@@ -390,7 +391,7 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
   // If this is DAILY then also add all the sundays
   if (chartType === ChartTypesEnum.DAY) {
     // Find all the sundays between the start and end date
-    const sundays = []
+    const sundays: Dayjs[] = []
     let sunday = startDate
     while (sunday.isBefore(endDate)) {
       if (sunday.day() === 0) {

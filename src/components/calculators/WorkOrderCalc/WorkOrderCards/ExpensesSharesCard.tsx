@@ -41,6 +41,8 @@ import {
   Help,
   Percent,
   PieChart,
+  QuestionAnswer,
+  QuestionMark,
   RestartAlt,
   Store,
   TableView,
@@ -49,7 +51,7 @@ import {
 import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
 import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
-import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
 import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
@@ -155,6 +157,43 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             overflowY: { md: 'scroll', lg: isCalculator ? 'visible' : 'scroll' },
           }}
         >
+          {workOrder.orderType === ActivityEnum.ShipMining && !shipOrder.shareRefinedValue && (
+            <Box
+              sx={{
+                border: `1px solid ${theme.palette.grey[500]}`,
+                borderRadius: 3,
+                mt: 0.5,
+                mb: 2,
+                p: 0.5,
+                px: 1,
+              }}
+            >
+              <Tooltip
+                title={
+                  <Box>
+                    <Typography variant="overline" component="div">
+                      Estimated Unrefined Value?
+                    </Typography>
+                    <Typography variant="caption">
+                      When you <strong>deselect</strong> "Share Refined Value" your crew shares will be divided based on
+                      the estimated price of what you "would" sell your unrefined ore for (even though you're refining
+                      and selling at a TDD).
+                    </Typography>
+                  </Box>
+                }
+              >
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="GrayText">
+                    Estimated Unrefined Value:
+                  </Typography>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Typography variant="overline" color="GrayText">
+                    {MValueFormatter(summary.unrefinedValue, MValueFormat.currency)}
+                  </Typography>
+                </Stack>
+              </Tooltip>
+            </Box>
+          )}
           {workOrder.orderType !== ActivityEnum.Other && (
             <>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">

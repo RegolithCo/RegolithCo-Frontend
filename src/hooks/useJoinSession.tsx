@@ -49,7 +49,7 @@ export const useJoinSession = (joinId?: string): useSessionsReturn => {
   React.useEffect(() => {
     if (sessionJoinQuery.error) {
       try {
-        if (sessionJoinQuery.error.graphQLErrors.find((e) => e.extensions.code === ErrorCode.SESSION_NOT_FOUND))
+        if (sessionJoinQuery.error.graphQLErrors.find((e) => e.extensions?.code === ErrorCode.SESSION_NOT_FOUND))
           navigate('/')
       } catch {
         //

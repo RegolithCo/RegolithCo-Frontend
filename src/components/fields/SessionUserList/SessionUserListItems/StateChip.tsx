@@ -33,7 +33,7 @@ export const StateChip: React.FC<StateChipProps> = ({ userState, scoutingFind })
   const colorsBg = stateColorsBGThunk(theme)
   const colorsFg = stateColorsFGThunk(theme)
   const { navigate } = React.useContext(SessionContext)
-  const stateObjects = []
+  const stateObjects: React.ReactNode[] = []
 
   if (userState) {
     if (scoutingFind) {

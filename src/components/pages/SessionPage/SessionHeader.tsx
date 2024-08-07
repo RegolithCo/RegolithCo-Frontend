@@ -27,7 +27,7 @@ export interface SesionHeaderProps {
 const TwelveHoursMs = 12 * 60 * 60 * 1000
 
 export const sessionSubtitleArr = (session: Session, protect: boolean): string[] => {
-  const subtitleArr = []
+  const subtitleArr: string[] = []
   const sessionSettings: Partial<SessionSettings> = session.sessionSettings || {}
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))

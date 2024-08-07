@@ -55,7 +55,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
   navigate,
   joinErrors,
 }) => {
-  const subtitleArr = []
+  const subtitleArr: string[] = []
   if (sessionShare?.activity) subtitleArr.push(getActivityName(sessionShare?.activity))
 
   return (

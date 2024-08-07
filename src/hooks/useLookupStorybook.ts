@@ -23,7 +23,7 @@ class StorybookDataStore implements DataStore {
         return lookupMocks.data.lookups.UEX.maxPrices as Lookups[K]
       case 'shipLookups':
         return lookupMocks.data.lookups.UEX.ships as Lookups[K]
-      case 'tradeportsLookups':
+      case 'tradeportLookups':
         return lookupMocks.data.lookups.UEX.tradeports as Lookups[K]
       case 'loadout':
         return lookupMocks.data.lookups.Loadout as Lookups[K]

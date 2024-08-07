@@ -148,7 +148,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   React.useEffect(() => {
     if (sessionQry.error) {
       try {
-        if (sessionQry.error.graphQLErrors.find((e) => e.extensions.code === ErrorCode.SESSION_NOT_FOUND)) navigate('/')
+        if (sessionQry.error.graphQLErrors.find((e) => e.extensions?.code === ErrorCode.SESSION_NOT_FOUND)) navigate('/')
       } catch {
         //
       }

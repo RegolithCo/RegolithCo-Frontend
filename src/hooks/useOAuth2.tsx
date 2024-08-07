@@ -80,6 +80,8 @@ export const useOAuth2 = (): UseOAuth2Return => {
   }
 
   return {
+    logIn: fancyLogin,
+    login: fancyLogin,
     tokenData,
     token: authType === AuthTypeEnum.Google ? googleToken[0] : token,
     error,
@@ -88,7 +90,6 @@ export const useOAuth2 = (): UseOAuth2Return => {
     setRefreshPopupOpen,
     refreshPopupOpen,
     setAuthType,
-    login: fancyLogin,
     logOut: fancyLogout,
     loginInProgress,
     idTokenData,

@@ -1,12 +1,5 @@
-import {
-  ArrowCircleUp,
-  ArrowCircleUpOutlined,
-  ExpandCircleDown,
-  ExpandCircleDownOutlined,
-  More,
-} from '@mui/icons-material'
-import { Alert, AlertTitle, Box, Button, Divider, IconButton, Link, Paper, Stack, Typography } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { ExpandCircleDown, ExpandCircleDownOutlined } from '@mui/icons-material';
+import { Alert, AlertTitle, Button, Link, Stack } from '@mui/material';
 import * as React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { RegolithAlert } from '../types'
@@ -54,7 +47,7 @@ export const HomePageAlert: React.FC<HomePageAlertProps> = ({ alert }) => {
       {expanded && (
         <ReactMarkdown
           components={{
-            a: ({ node, ...props }) => <Link {...props} target="_blank" />,
+            a: ({ node, ref, ...props }) => <Link {...props} target="_blank" />,
           }}
         >
           {alert.message}

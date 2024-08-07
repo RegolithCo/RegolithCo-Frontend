@@ -30,7 +30,7 @@ export const AddPendingUsersModal: React.FC<AddInnactiveUsersModalProps> = ({ op
   const handleChange = (addName: string): string | null => {
     const addNameLower = addName.toLowerCase()
 
-    let error = null
+    let error: string | null = null
     if (!addName || addName.trim().length === 0) error = 'Please enter a name'
     else if (addNameLower === myUserProfile.scName.toLowerCase()) error = 'You cannot add yourself'
     else if (activeNames.includes(addNameLower)) error = 'User has already joined'

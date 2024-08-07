@@ -55,8 +55,8 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
   } = React.useContext(SessionContext)
   const stateColorsBg = stateColorsBGThunk(theme)
   const isMe = myUserProfile.userId === sessionUser.ownerId
-  const secondaryText = []
-  const stateObjects = []
+  const secondaryText: React.ReactNode[] = []
+  const stateObjects: React.ReactNode[] = []
   const isOwner = sessionUser.ownerId === session?.ownerId
   const captain =
     sessionUser.captainId && crewHierarchy[sessionUser.captainId]
