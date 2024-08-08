@@ -230,6 +230,29 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Typography>
             </CardContent>
           </Card>
+          <Card elevation={20} sx={styles.card}>
+            <CardHeader title="Policies" />
+            <CardContent>
+              <List>
+                <ListItemButton href="/PRIVACY.txt" target="_blank">
+                  <ListItemAvatar>
+                    <Avatar alt="Privacy Policy">
+                      <Info />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Privacy Policy" />
+                </ListItemButton>
+                <ListItemButton href="/EULA.txt" target="_blank">
+                  <ListItemAvatar>
+                    <Avatar alt="EULA">
+                      <Info />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="EULA" />
+                </ListItemButton>
+              </List>
+            </CardContent>
+          </Card>
         </Box>
       )}
       {/* FAQ TAB =================================== */}
