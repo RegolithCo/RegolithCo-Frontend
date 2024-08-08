@@ -27,7 +27,7 @@ const filter = createFilterOptions<
       session: boolean
       named: boolean
       crew: boolean
-    }
+    },
   ]
 >()
 

@@ -10,10 +10,17 @@ export interface ScoutingFindTypeChooserProps {
   allowNone?: boolean
 }
 
+type Row = {
+  icon: React.ReactNode
+  title: string
+  description: React.ReactNode
+  value: ScoutingFindTypeEnum
+}
+
 export const ScoutingFindTypeChooser: React.FC<ScoutingFindTypeChooserProps> = ({ onChange, value, allowNone }) => {
   const theme = useTheme()
 
-  const rows: any[] = [
+  const rows: Row[] = [
     {
       icon: <RockIcon />,
       title: 'Ship',

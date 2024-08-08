@@ -1,15 +1,5 @@
 import * as React from 'react'
-import {
-  useTheme,
-  SxProps,
-  Theme,
-  Card,
-  Typography,
-  CardMedia,
-  Tooltip,
-  useMediaQuery,
-  CircularProgress,
-} from '@mui/material'
+import { useTheme, SxProps, Theme, Card, Typography, CardMedia, Tooltip, CircularProgress } from '@mui/material'
 import { formatCardNumber, StatsObjectSummary } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Textfit } from 'react-textfit'
@@ -30,8 +20,8 @@ export interface SiteStatsProps {
  * @returns
  */
 export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => {
-  const theme = useTheme()
-  const matches = useMediaQuery(theme.breakpoints.up('md'))
+  // const theme = useTheme()
+  // const matches = useMediaQuery(theme.breakpoints.up('md'))
 
   const usersFormatted = formatCardNumber(stats?.total?.users || 0)
   const aUECFormatted = formatCardNumber(stats?.total?.grossProfitaUEC || 0)

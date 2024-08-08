@@ -41,8 +41,6 @@ import {
   Help,
   Percent,
   PieChart,
-  QuestionAnswer,
-  QuestionMark,
   RestartAlt,
   Store,
   TableView,
@@ -51,7 +49,7 @@ import {
 import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
 import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
-import { MValue, MValueFormat, MValueFormatter } from '../../../fields/MValue'
+import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
 import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
@@ -266,7 +264,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     shareAmount: 0,
                   })
                 }
-              } catch (e) {
+              } catch {
                 //
               }
             }}
@@ -447,7 +445,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                                   updatedAt: Date.now(),
                                   state: false,
                                   __typename: 'CrewShare',
-                                } as CrewShare)
+                                }) as CrewShare
                             ),
                           ],
                         })
@@ -494,7 +492,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                                   updatedAt: Date.now(),
                                   state: false,
                                   __typename: 'CrewShare',
-                                } as CrewShare)
+                                }) as CrewShare
                             ),
                           ],
                         })

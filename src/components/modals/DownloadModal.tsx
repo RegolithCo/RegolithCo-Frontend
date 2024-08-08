@@ -1,7 +1,6 @@
 import { BorderAll, CloudDownload, DataObject } from '@mui/icons-material'
-import { Avatar, Box, Button, Link, Modal, Stack, Typography, useTheme } from '@mui/material'
+import { Avatar, Box, Button, Modal, Stack, Typography, useTheme } from '@mui/material'
 import * as React from 'react'
-import { useNavigate } from 'react-router-dom'
 import { MUIRouterLink } from '../RouterLink'
 
 export type DownloadModalProps = {
@@ -13,7 +12,7 @@ export type DownloadModalProps = {
 
 export const DownloadModal: React.FC<DownloadModalProps> = ({ open, downloadCSV, downloadJSON, onClose }) => {
   const theme = useTheme()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   return (
     <Modal open={Boolean(open)} onClose={onClose}>

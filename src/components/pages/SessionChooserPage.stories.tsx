@@ -1,10 +1,10 @@
-import React from 'react'
+// import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionChooserPage as SessionChooserPageC } from './SessionChooserPage'
-import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
-import { User } from '@regolithco/common'
-import log from 'loglevel'
+// import { fakeUserProfile } from '@regolithco/common/dist/mock'
+// import { User } from '@regolithco/common'
+// import log from 'loglevel'
 
 export default {
   title: 'Pages/SessionChooserPage',
@@ -18,9 +18,9 @@ export default {
 const Template: StoryFn<typeof SessionChooserPageC> = (args) => <SessionChooserPageC {...args} />
 
 export const SessionChooserPage = Template.bind({})
-const userProfile = fakeUserProfile()
-const { userId, scName, createdAt, updatedAt, state } = userProfile
-const user: User = { userId, scName, createdAt, updatedAt, state, __typename: 'User' }
+// const userProfile = fakeUserProfile()
+// const { userId, scName, createdAt, updatedAt, state } = userProfile
+// const user: User = { userId, scName, createdAt, updatedAt, state, __typename: 'User' }
 // SessionChooserPage.args = {
 //   userProfile,
 //   mySessions: Array.from({ length: 20 }, () => fakeSession({ owner: user })),

@@ -1,6 +1,5 @@
 import React from 'react'
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material'
-import { Check } from '@mui/icons-material'
 import { MAX_NOTE_LENGTH } from '@regolithco/common'
 
 export type NoteAddDialogProps = {
@@ -13,7 +12,7 @@ export type NoteAddDialogProps = {
 
 export const NoteAddDialog: React.FC<NoteAddDialogProps> = ({ open, note, title, onClose, onChange }) => {
   const [newNote, setNewNote] = React.useState<string>(note || '')
-  const [noteValid, setNoteValid] = React.useState<boolean>(true)
+  // const [noteValid, setNoteValid] = React.useState<boolean>(true)
 
   return (
     <Dialog

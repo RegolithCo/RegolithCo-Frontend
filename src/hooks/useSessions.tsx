@@ -59,6 +59,7 @@ import { useGQLErrors } from './useGQLErrors'
 import { useLogin } from './useOAuth2'
 import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
+import { Reference, StoreObject } from '@apollo/client'
 
 type useSessionsReturn = {
   session?: Session
@@ -148,7 +149,8 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   React.useEffect(() => {
     if (sessionQry.error) {
       try {
-        if (sessionQry.error.graphQLErrors.find((e) => e.extensions?.code === ErrorCode.SESSION_NOT_FOUND)) navigate('/')
+        if (sessionQry.error.graphQLErrors.find((e) => e.extensions?.code === ErrorCode.SESSION_NOT_FOUND))
+          navigate('/')
       } catch {
         //
       }
@@ -294,7 +296,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         id: cache.identify(userProfile as UserProfile),
         fields: {
           joinedSessions(existingSessionsRefs, { readField }) {
-            return existingSessionsRefs.items.filter((sessionRef: any) => {
+            return existingSessionsRefs.items.filter((sessionRef: StoreObject | Reference) => {
               return sessionId !== readField('sessionId', sessionRef)
             })
           },
@@ -359,7 +361,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
                 scName: s,
                 captainId: null,
                 __typename: 'PendingUser',
-              } as PendingUser)
+              }) as PendingUser
           ),
         ]
         newMentionedMembers.sort(({ scName: a }, { scName: b }) => a.toLowerCase().localeCompare(b.toLowerCase()))

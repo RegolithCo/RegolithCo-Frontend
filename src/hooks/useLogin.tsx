@@ -350,7 +350,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
   APIWorking,
   maintenanceMode,
 }) => {
-  const { logOut, login, token, error, loginInProgress, authType, setAuthType, refreshPopupOpen, setRefreshPopupOpen } =
+  const { logOut, logIn, token, loginInProgress, authType, setAuthType, refreshPopupOpen, setRefreshPopupOpen } =
     useOAuth2()
   const [openPopup, setOpenPopup] = useState(false)
   const isPageVisible = usePageVisibility()
@@ -408,7 +408,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
           userProfileQry.data?.profile?.userId && userProfileQry.data?.profile?.state === UserStateEnum.Verified
         ),
         userProfile: userProfileQry.data?.profile as UserProfile,
-        login,
+        logIn,
         refreshPopupOpen,
         logOut: () => {
           logOut()
@@ -428,7 +428,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
           <LoginRefresh
             open={refreshPopupOpen}
             onClose={() => setRefreshPopupOpen(false)}
-            login={login}
+            login={logIn}
             logOut={logOut}
             authType={authType}
           />
@@ -439,7 +439,7 @@ const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
             open={openPopup}
             authType={authType}
             setAuthType={setAuthType}
-            login={login}
+            login={logIn}
             onClose={() => setOpenPopup(false)}
           />
         ),

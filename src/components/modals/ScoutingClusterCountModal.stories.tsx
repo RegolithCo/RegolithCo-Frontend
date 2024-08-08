@@ -1,8 +1,6 @@
-import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ScoutingClusterCountModal as ScoutingClusterCountModalC } from './ScoutingClusterCountModal'
-import { fakeShipClusterFind } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Modals/ScoutingClusterCountModal',

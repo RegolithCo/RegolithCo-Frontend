@@ -29,7 +29,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   const hasLaser = Boolean(activeLaser && activeLaser.laser)
   const laserCode = activeLaser?.laser
   const laserIsActive = activeLaser?.laserActive
-  const laser = hasLaser ? loadoutLookups.lasers[laserCode as MiningLaserEnum] : undefined
+  // const laser = hasLaser ? loadoutLookups.lasers[laserCode as MiningLaserEnum] : undefined
   const slots = hasLaser ? loadoutLookups.lasers[activeLaser?.laser as MiningLaserEnum].slots : 0
 
   const activeModuleSelectValues: (MiningModuleEnum | string)[] = (activeLaser?.modules as MiningModuleEnum[]) || []

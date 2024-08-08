@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ClusterCalcPage as ClusterCalcPageC } from './ClusterCalcPage'
-import { fakeUserProfile } from '@regolithco/common/dist/mock'
+// import { fakeUserProfile } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Pages/ClusterCalcPage',

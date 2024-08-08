@@ -33,7 +33,7 @@ export interface PendingUserPopupProps {
 
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
-  const { getSafeName, hideNames } = React.useContext(AppContext)
+  const { getSafeName } = React.useContext(AppContext)
 
   const dataStore = React.useContext(LookupsContext)
   const {

@@ -88,15 +88,15 @@ export const StatsCell: React.FC<{
         ? theme.palette.success.main
         : theme.palette.success.dark
       : isBold
-      ? theme.palette.error.main
-      : theme.palette.error.dark
+        ? theme.palette.error.main
+        : theme.palette.error.dark
     : finalValue > 0
-    ? isBold
-      ? theme.palette.success.main
-      : theme.palette.success.dark
-    : isBold
-    ? theme.palette.error.main
-    : theme.palette.error.dark
+      ? isBold
+        ? theme.palette.success.main
+        : theme.palette.success.dark
+      : isBold
+        ? theme.palette.error.main
+        : theme.palette.error.dark
   return (
     <TableCell sx={finalSx}>
       <span style={{ color }}>

@@ -162,15 +162,15 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
                 const itemType = LASERS[option as MiningLaserEnum]
                   ? 'Laser'
                   : GADGETS[option as MiningGadgetEnum]
-                  ? 'Gadget'
-                  : MODULES[option as MiningModuleEnum]
-                  ? 'Module'
-                  : ''
-                const qualifier = MODULES[option as MiningModuleEnum]
-                  ? MODULES[option as MiningModuleEnum].active
-                    ? 'Active '
-                    : 'Passive '
-                  : ''
+                    ? 'Gadget'
+                    : MODULES[option as MiningModuleEnum]
+                      ? 'Module'
+                      : ''
+                // const qualifier = MODULES[option as MiningModuleEnum]
+                //   ? MODULES[option as MiningModuleEnum].active
+                //     ? 'Active '
+                //     : 'Passive '
+                //   : ''
 
                 return (
                   <MenuItem {...props} value={option}>

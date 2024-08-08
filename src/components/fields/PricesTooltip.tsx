@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
-import { useTheme, SxProps, Theme, Tooltip, Typography } from '@mui/material'
+import { useTheme, Tooltip, Typography } from '@mui/material'
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
 
 export interface PricesTooltipProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,7 +11,7 @@ export interface PricesTooltipProps {
 
 export const PricesTooltip: React.FC<PricesTooltipProps> = ({ children, placement }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const styles = stylesThunk(theme)
 
   const ttText = (
     <div>

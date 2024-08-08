@@ -11,7 +11,7 @@ export type AppVersion = {
 
 export const AppVersion: React.FC = () => {
   const theme = useTheme()
-  const { commit, isProd, stage, appVersion, scVersion } = useVersions()
+  const { commit, isProd, stage, appVersion } = useVersions()
 
   let versionStr = `v${appVersion}`
   if (!isProd) {

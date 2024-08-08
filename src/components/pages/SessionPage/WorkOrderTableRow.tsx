@@ -72,10 +72,10 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
     workOrder.orderType === ActivityEnum.Other
       ? 'N/A'
       : finalOres.length > 1
-      ? finalOres.map((o) => o.slice(0, 3)).join(', ')
-      : finalOres[0]
-      ? finalOres[0]
-      : '???'
+        ? finalOres.map((o) => o.slice(0, 3)).join(', ')
+        : finalOres[0]
+          ? finalOres[0]
+          : '???'
 
   const { contextMenuNode, handleContextMenu } = useSessionContextMenu({
     header: `Work Order: ${makeHumanIds(

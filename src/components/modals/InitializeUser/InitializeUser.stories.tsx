@@ -33,7 +33,7 @@ const fns = {
     log.info('deleteUser')
   },
 }
-const login: LoginContextObj = {
+const loginCtxMock: LoginContextObj = {
   isAuthenticated: true,
   isInitialized: false,
   APIWorking: true,
@@ -49,7 +49,7 @@ const login: LoginContextObj = {
   openPopup: () => {
     log.info('openPopup')
   },
-  login: (authType: AuthTypeEnum) => {
+  logIn: (authType: AuthTypeEnum) => {
     log.info('signIn', authType)
   },
   logOut: () => {
@@ -60,8 +60,8 @@ const login: LoginContextObj = {
 
 export const Initialize = Template.bind({})
 Initialize.args = {
-  login: {
-    ...login,
+  loginCtx: {
+    ...loginCtxMock,
     isAuthenticated: true,
     isInitialized: false,
     isVerified: false,
@@ -72,8 +72,8 @@ Initialize.args = {
 
 export const Verify = Template.bind({})
 Verify.args = {
-  login: {
-    ...login,
+  loginCtx: {
+    ...loginCtxMock,
     isAuthenticated: true,
     isInitialized: true,
     isVerified: false,
@@ -84,8 +84,8 @@ Verify.args = {
 
 export const Done = Template.bind({})
 Done.args = {
-  login: {
-    ...login,
+  loginCtx: {
+    ...loginCtxMock,
     isAuthenticated: true,
     isInitialized: true,
     isVerified: true,

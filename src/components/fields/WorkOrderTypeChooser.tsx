@@ -11,6 +11,13 @@ export interface WorkOrderTypeChooserProps {
   allowNone?: boolean
 }
 
+type Row = {
+  icon: React.ReactNode
+  title: string
+  description: React.ReactNode
+  value: ActivityEnum
+}
+
 export const WorkOrderTypeChooser: React.FC<WorkOrderTypeChooserProps> = ({
   onChange,
   value,
@@ -19,7 +26,7 @@ export const WorkOrderTypeChooser: React.FC<WorkOrderTypeChooserProps> = ({
 }) => {
   const theme = useTheme()
 
-  const rows: any[] = [
+  const rows: Row[] = [
     {
       icon: <RockIcon />,
       title: 'Ship mining',

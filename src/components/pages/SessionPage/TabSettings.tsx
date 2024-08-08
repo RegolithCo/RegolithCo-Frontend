@@ -41,7 +41,6 @@ import {
   CrewShareTemplateInput,
   DiscordGuildInput,
 } from '@regolithco/common'
-import log from 'loglevel'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Delete, Lock, LockOpen, Person, RestartAlt, Save, StopCircle } from '@mui/icons-material'

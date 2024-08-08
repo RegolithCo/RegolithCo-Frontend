@@ -18,7 +18,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     mySessionUser,
     captains,
     session,
-    leaveSession,
+    // leaveSession,
     setActiveModal,
     removeFriend,
     removeSessionMentions,
@@ -80,7 +80,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
 
   if (sessionUser && sessionUser.loadout) {
     menuItems.push({
-      label: `Loadout: ${sessionUser.loadout?.name}` || 'No Loadout Selected',
+      label: sessionUser.loadout?.name ? `Loadout: ${sessionUser.loadout?.name}` : 'No Loadout Selected',
       disabled: !sessionUser.loadout,
       icon: <ModuleIcon fontSize="small" />,
       onClick: () => {

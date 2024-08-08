@@ -399,8 +399,8 @@ export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) =>
             color: isGadget
               ? theme.palette.info.main
               : module.active
-              ? theme.palette.primary.main
-              : theme.palette.secondary.main,
+                ? theme.palette.primary.main
+                : theme.palette.secondary.main,
           }}
         >
           {module.name}

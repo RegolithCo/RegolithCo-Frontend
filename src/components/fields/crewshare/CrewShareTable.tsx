@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Theme, SxProps, Tooltip, Box } from '@mui/material'
+import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Tooltip, Box } from '@mui/material'
 import {
   CrewShare,
   ShareTypeEnum,
@@ -28,17 +28,17 @@ export interface CrewShareTableProps {
   summary: WorkOrderSummary
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-  gridContainer: {
-    [theme.breakpoints.up('md')]: {},
-    '& .MuiTableCell-root *': {
-      [theme.breakpoints.down('sm')]: {
-        border: '1px solid red',
-        fontSize: '0.2rem',
-      },
-    },
-  },
-})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+//   gridContainer: {
+//     [theme.breakpoints.up('md')]: {},
+//     '& .MuiTableCell-root *': {
+//       [theme.breakpoints.down('sm')]: {
+//         border: '1px solid red',
+//         fontSize: '0.2rem',
+//       },
+//     },
+//   },
+// })
 
 export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   workOrder,
@@ -55,7 +55,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   userSuggest,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const styles = stylesThunk(theme)
   const [keyCounter, setKeyCounter] = React.useState(0)
 
   const sortedCrewshares: [number, CrewShare][] = (workOrder.crewShares || []).map((cs, idx) => [idx, cs])

@@ -31,7 +31,7 @@ export const InitializeUserContainer: React.FC<InitializeUserContainerProps> = (
         deleteUser: userQueries.deleteProfile,
       }}
       loading={userQueries.loading || userQueries.mutating}
-      login={userCtx}
+      loginCtx={userCtx}
     />
   )
 }

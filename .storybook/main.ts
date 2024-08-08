@@ -1,4 +1,5 @@
 import { dirname, join } from 'path'
+import { env } from 'process'
 
 export default {
   stories: [ '../src/**/*.stories.@(js|jsx|ts|tsx)'],

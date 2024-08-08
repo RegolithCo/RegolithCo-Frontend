@@ -11,7 +11,7 @@ import { Replay } from '@mui/icons-material'
 import { TopBarContainer } from './components/TopBar.container'
 import { useSnackbar } from 'notistack'
 
-const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
+// const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
 
 export function ErrorPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,7 +27,7 @@ export interface GenericErrorProps {
 }
 
 export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleReload = () => {
     window.location.reload()

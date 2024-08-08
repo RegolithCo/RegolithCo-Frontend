@@ -5,8 +5,6 @@ import {
   TableCell,
   TableBody,
   useTheme,
-  Theme,
-  SxProps,
   Box,
   Typography,
   IconButton,
@@ -31,23 +29,23 @@ export interface ExpenseTableProps {
   summary: WorkOrderSummary
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-  gridContainer: {
-    [theme.breakpoints.up('md')]: {},
-    '& .MuiTableCell-root *': {
-      [theme.breakpoints.down('sm')]: {
-        border: '1px solid red',
-        fontSize: '0.2rem',
-      },
-    },
-  },
-})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+//   gridContainer: {
+//     [theme.breakpoints.up('md')]: {},
+//     '& .MuiTableCell-root *': {
+//       [theme.breakpoints.down('sm')]: {
+//         border: '1px solid red',
+//         fontSize: '0.2rem',
+//       },
+//     },
+//   },
+// })
 
 export type ExpenseRow = Omit<WorkOrderExpense, '__typename'> & { idx: number }
 
 export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, onChange, isEditing, isShare }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const styles = stylesThunk(theme)
   const [editingRow, setEditingRow] = React.useState<number | null>(null)
   const customExpenses = workOrder.expenses || []
   const expenses: ExpenseRow[] = []
@@ -251,8 +249,8 @@ const ExpenseRowName: React.FC<{
   onChange: (val: string) => void
   onCancel: () => void
 }> = ({ name, isEditing, onChange, onCancel }) => {
-  const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const theme = useTheme()
+  // const styles = stylesThunk(theme)
   return (
     <>
       {!isEditing ? (
@@ -310,7 +308,7 @@ const ExpenseRowAmount: React.FC<{
   onCancel: () => void
 }> = ({ amount, isEditing, onChange, onCancel }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const styles = stylesThunk(theme)
 
   if (!isEditing) return <MValue value={amount * -1} format={MValueFormat.currency} />
 

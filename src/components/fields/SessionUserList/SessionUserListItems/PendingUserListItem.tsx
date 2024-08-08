@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, IconButton, Typography } from '@mui/material'
 import { PendingUser } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
@@ -7,7 +7,6 @@ import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
 import { AppContext } from '../../../../context/app.context'
-import { useSessionContextMenu } from '../../../modals/SessionContextMenu'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
 
 export interface PendingUserListItemProps {

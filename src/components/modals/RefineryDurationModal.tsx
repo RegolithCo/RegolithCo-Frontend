@@ -1,6 +1,5 @@
-import React, { ChangeEvent } from 'react'
-import { TextField, Button, useTheme, Typography, Modal, Box, Stack } from '@mui/material'
-import { fontFamilies } from '../../theme'
+import React from 'react'
+// import { useTheme } from '@mui/material'
 
 export type RefineryDurationModalProps = {
   open?: boolean
@@ -9,8 +8,8 @@ export type RefineryDurationModalProps = {
 }
 
 export const RefineryDurationModal: React.FC<RefineryDurationModalProps> = ({ open, onClose, onChange }) => {
-  const [[stringValue, segments, numberValue], setValue] = React.useState<[string, string[], number]>(['', [], 0])
-  const theme = useTheme()
+  // const [[stringValue, segments, numberValue], setValue] = React.useState<[string, string[], number]>(['', [], 0])
+  // const theme = useTheme()
 
   // NOT IN USE
   return null

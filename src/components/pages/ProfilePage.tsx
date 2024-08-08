@@ -6,7 +6,7 @@ import {
   UserProfileInput,
   DestructuredSettings,
   UserSuggest,
-  makeAvatar,
+  // makeAvatar,
   UserPlanEnum,
 } from '@regolithco/common'
 
@@ -148,7 +148,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const friends: string[] = [...(userProfile?.friends || [])]
   // Alphabetically sort friends
   friends.sort((a, b) => a.localeCompare(b))
-  const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
+  // const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
 
   const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'sm'
 

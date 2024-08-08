@@ -18,7 +18,7 @@ export const retryLink = new RetryLink({
     },
   },
 })
-export const makeLogLink = (logFn: (...args: any[]) => void): ApolloLink =>
+export const makeLogLink = (logFn: (...args: unknown[]) => void): ApolloLink =>
   new ApolloLink((operation, forward) => {
     return forward(operation).map((data) => {
       try {

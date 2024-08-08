@@ -35,7 +35,7 @@ const filter = createFilterOptions<
       session: boolean
       named: boolean
       crew: boolean
-    }
+    },
   ]
 >()
 
@@ -78,7 +78,7 @@ export const MentionedUserList: React.FC<MentionedUserListProps> = ({
         }}
       >
         {(mentionedUsers || []).map((mentionedUser, idx) => {
-          const isVerified = Boolean(verifiedUsers[mentionedUser.scName])
+          // const isVerified = Boolean(verifiedUsers[mentionedUser.scName])
           return (
             <ListItem
               key={`userlist-${idx}`}

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Card, useTheme, SxProps, Theme, IconButton, Box, Tooltip } from '@mui/material'
-import { Add, Cancel, Delete, SvgIconComponent } from '@mui/icons-material'
+import { Add, Cancel, SvgIconComponent } from '@mui/icons-material'
 
 export interface EmptyScanCardProps {
   onClick?: () => void

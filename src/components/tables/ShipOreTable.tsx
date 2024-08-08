@@ -26,10 +26,13 @@ export const ShipOreTable: React.FC = () => {
         shipRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey, undefined, false))
       )
 
-      const priceLookups: Record<ShipOreEnum, [number, number]> = shipRowKeys.reduce((acc, key, idx) => {
-        acc[key] = [pricesRefined[idx], pricesUnrefined[idx]]
-        return acc
-      }, {} as Record<ShipOreEnum, [number, number]>)
+      const priceLookups: Record<ShipOreEnum, [number, number]> = shipRowKeys.reduce(
+        (acc, key, idx) => {
+          acc[key] = [pricesRefined[idx], pricesUnrefined[idx]]
+          return acc
+        },
+        {} as Record<ShipOreEnum, [number, number]>
+      )
 
       const newSorted = [...shipRowKeys].sort((a, b) => {
         const aPrice = pricesRefined[shipRowKeys.indexOf(a)] || 0

@@ -80,13 +80,13 @@ const ToolGrid: React.FC<ToolGridProps> = ({ ship, children, isShare }) => {
             lg: 4,
           }
       : isShare
-      ? { xs: 3 }
-      : {
-          xs: 12,
-          sm: 6,
-          md: 6,
-          lg: 4,
-        }
+        ? { xs: 3 }
+        : {
+            xs: 12,
+            sm: 6,
+            md: 6,
+            lg: 4,
+          }
   return <Grid {...gridProps}>{children}</Grid>
 }
 

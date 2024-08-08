@@ -11,7 +11,7 @@ interface WorkOrderStatusProps {
 export const WorkOrderStatus: React.FC<WorkOrderStatusProps> = ({ woSumm }) => {
   const theme = useTheme()
   let WorkIcon: SvgIconComponent
-  const title = ''
+  // const title = ''
   switch (woSumm.orderType) {
     case ActivityEnum.Salvage:
       WorkIcon = ClawIcon

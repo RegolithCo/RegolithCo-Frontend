@@ -9,7 +9,6 @@ import {
   getShipOreName,
   findPrice,
   getRefiningCost,
-  UEXTradeport,
 } from '@regolithco/common'
 import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
 import Gradient from 'javascript-color-gradient'

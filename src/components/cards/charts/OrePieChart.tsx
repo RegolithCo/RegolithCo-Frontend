@@ -125,12 +125,16 @@ export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityT
                 <Typography variant="h6">{`${jsRound(datum.value * 100, 0)}%`}</Typography>
                 {ores && (
                   <Typography variant="h6">
-                    {MValueFormatter(jsRound((datum.data as any).realValue * 100, 0), MValueFormat.volSCU)}
+                    {MValueFormatter(
+                      jsRound((datum.data as unknown as { realValue: number }).realValue * 100, 0),
+                      MValueFormat.volSCU
+                    )}
                   </Typography>
                 )}
                 {activityTypes && (
                   <Typography variant="h6">
-                    {MValueFormatter((datum.data as any).realValue, MValueFormat.number)} Work Orders
+                    {MValueFormatter((datum.data as unknown as { realValue: number }).realValue, MValueFormat.number)}{' '}
+                    Work Orders
                   </Typography>
                 )}
               </Box>

@@ -18,7 +18,7 @@ const Template: StoryFn<typeof HomePageComponent> = (args) => <HomePageComponent
 export const HomePage = Template.bind({})
 HomePage.args = {
   userCtx: {
-    login: () => {
+    logIn: () => {
       console.log('sign in')
     },
     popup: null,

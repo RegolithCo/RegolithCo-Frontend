@@ -1,5 +1,5 @@
-import { grey, orange, purple, red, yellow } from '@mui/material/colors'
-import { alpha, createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
+import { grey, orange, purple } from '@mui/material/colors'
+import { createTheme, PaletteOptions, ThemeOptions } from '@mui/material/styles'
 import { Theme } from '@mui/material'
 import { ScoutingFindStateEnum, WorkOrderStateEnum } from '@regolithco/common'
 import { CSSObject } from '@emotion/react'

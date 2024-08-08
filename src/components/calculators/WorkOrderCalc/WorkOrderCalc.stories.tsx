@@ -9,7 +9,7 @@ import {
   fakeOtherOrder,
 } from '@regolithco/common/dist/mock'
 import log from 'loglevel'
-import { WorkOrder, RefineryMethodEnum, RefineryEnum, CrewShare, ActivityEnum } from '@regolithco/common'
+import { WorkOrder, RefineryMethodEnum, RefineryEnum, ActivityEnum } from '@regolithco/common'
 import { useStorybookLookups } from '../../../hooks/useLookupStorybook'
 
 export default {
@@ -89,7 +89,7 @@ const Template: StoryFn<{
 
   const otherWorkOrder = other as Partial<WorkOrder>
   const newWorkOrder: WorkOrder = { ...workOrder, ...otherWorkOrder } as WorkOrder
-  const crewShares = newWorkOrder.crewShares as CrewShare[]
+  // const crewShares = newWorkOrder.crewShares as CrewShare[]
   return <WorkOrderCalc onChange={onChange} workOrder={newWorkOrder} />
 }
 

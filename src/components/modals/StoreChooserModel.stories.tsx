@@ -25,7 +25,7 @@ StoreChooserModal.args = {
     [ShipOreEnum.Bexalite]: { collected: 1000, refined: 1000 },
     [ShipOreEnum.Diamond]: { collected: 1000, refined: 1000 },
     [ShipOreEnum.Corundum]: { collected: 1000, refined: 1000 },
-    [ShipOreEnum.Iron]: { collected: 1000, refined: 1000 }
+    [ShipOreEnum.Iron]: { collected: 1000, refined: 1000 },
   },
   open: true,
   initStore: 'CRUTD',

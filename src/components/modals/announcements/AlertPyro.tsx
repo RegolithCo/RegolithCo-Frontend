@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme, Link } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
 import { Newspaper } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 

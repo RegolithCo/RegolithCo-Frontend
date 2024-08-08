@@ -4,7 +4,10 @@ import React, { useEffect } from 'react'
 import { Preview } from '@storybook/react'
 import { ThemeProvider } from '@mui/system'
 import { CssBaseline } from '@mui/material'
+import { SnackbarProvider } from 'notistack'
 import { theme } from '../src/theme'
+import { AppContextWrapper } from '../src/context/app.context'
+import { LookupsContextWrapper } from '../src/context/lookupsContext'
 log.setLevel(log.levels.DEBUG)
 
 const preview: Preview = {
@@ -20,8 +23,15 @@ const preview: Preview = {
 
       return (
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Story />
+          <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
+
+            <CssBaseline />
+            <AppContextWrapper>
+              <LookupsContextWrapper>
+                <Story />
+              </LookupsContextWrapper>
+            </AppContextWrapper>
+          </SnackbarProvider>
         </ThemeProvider>
       )
     },

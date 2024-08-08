@@ -3,7 +3,7 @@ import { StoryFn, Meta } from '@storybook/react'
 
 import { LoadoutCalc as LoadoutCalcC } from './LoadoutCalc'
 import { LoadoutShipEnum, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
-import { fakeUser } from '@regolithco/common/dist/mock'
+import { mock } from '@regolithco/common'
 
 export default {
   title: 'Calcul/LoadoutCalc',
@@ -24,7 +24,7 @@ LoadoutCalcProspector.args = {
     updatedAt: Date.now(),
     loadoutId: '123',
     name: 'My Loadout',
-    owner: fakeUser(),
+    owner: mock.fakeUser(),
     activeLasers: [
       {
         laser: MiningLaserEnum.ArborMh1,
@@ -49,7 +49,7 @@ LoadoutCalcMole.args = {
     updatedAt: Date.now(),
     loadoutId: '123',
     name: 'My Loadout',
-    owner: fakeUser(),
+    owner: mock.fakeUser(),
     activeLasers: [
       {
         laser: MiningLaserEnum.ArborMh2,

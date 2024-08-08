@@ -242,8 +242,8 @@ export const OwingList: React.FC<OwingListProps> = ({
         ...sessionSummary.owed,
       }
     : isPaid
-    ? sessionSummary.paid
-    : sessionSummary.owed
+      ? sessionSummary.paid
+      : sessionSummary.owed
   const rowArr: [string, string, number][] = Object.entries(rowObj).reduce<[string, string, number][]>(
     (acc, [payerSCName, payeeObj]) => {
       Object.entries(payeeObj).forEach(([payeeSCName, amt]) => {

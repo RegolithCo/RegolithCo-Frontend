@@ -14,7 +14,6 @@ export interface ClusterCalcPageProps {
 }
 
 export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile }) => {
-  // eslint-disable-next-line no-unused-vars
   const [clusters, setClusters] = React.useState<{ [key in ScoutingFindTypeEnum]?: ScoutingFind }>({})
   const [activeScoutingFindType, setActiveScoutingFindType] = React.useState<ScoutingFindTypeEnum>(
     ScoutingFindTypeEnum.Ship

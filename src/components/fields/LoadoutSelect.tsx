@@ -1,5 +1,5 @@
 import React from 'react'
-import { MenuItem, Select, Stack, Typography, useTheme } from '@mui/material'
+import { MenuItem, Select, Stack, Typography } from '@mui/material'
 import { SessionUser, MiningLoadout } from '@regolithco/common'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
@@ -14,7 +14,7 @@ export interface LoadoutSelectPRops {
 }
 
 export const LoadoutSelect: React.FC<LoadoutSelectPRops> = ({ sessionUser, loadouts, onChange, disabled }) => {
-  const theme = useTheme()
+  // const theme = useTheme()
 
   return (
     <Select

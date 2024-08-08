@@ -2,12 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ScoutingFindCalc, ScoutingFindCalcProps } from './ScoutingFindCalc'
-import {
-  fakeSalvageFind,
-  fakeSessionUser,
-  fakeShipClusterFind,
-  fakeVehicleClusterFind,
-} from '@regolithco/common/dist/mock'
+import { mock } from '@regolithco/common'
 import { ScoutingFindTypeEnum } from '@regolithco/common'
 
 export default {
@@ -24,16 +19,16 @@ export default {
 } as Meta<typeof ScoutingFindCalc>
 
 const Template: StoryFn<typeof ScoutingFindCalc> = (args: ScoutingFindCalcProps) => {
-  const { findType, ...props } = args as any
+  const { findType, ...props } = args as ScoutingFindCalcProps & { findType: ScoutingFindTypeEnum }
   switch (findType) {
     case ScoutingFindTypeEnum.Ship:
-      props.scoutingFind = fakeShipClusterFind()
+      props.scoutingFind = mock.fakeShipClusterFind()
       break
     case ScoutingFindTypeEnum.Vehicle:
-      props.scoutingFind = fakeVehicleClusterFind()
+      props.scoutingFind = mock.fakeVehicleClusterFind()
       break
     case ScoutingFindTypeEnum.Salvage:
-      props.scoutingFind = fakeSalvageFind()
+      props.scoutingFind = mock.fakeSalvageFind()
       break
   }
 
@@ -42,18 +37,18 @@ const Template: StoryFn<typeof ScoutingFindCalc> = (args: ScoutingFindCalcProps)
 
 export const New = Template.bind({})
 New.args = {
-  scoutingFind: fakeShipClusterFind(),
-  me: fakeSessionUser(),
+  scoutingFind: mock.fakeShipClusterFind(),
+  me: mock.fakeSessionUser(),
 }
 
 export const Scout = Template.bind({})
 Scout.args = {
-  scoutingFind: fakeShipClusterFind(),
-  me: fakeSessionUser(),
+  scoutingFind: mock.fakeShipClusterFind(),
+  me: mock.fakeSessionUser(),
 }
 
 export const Observer = Template.bind({})
 Observer.args = {
-  scoutingFind: fakeShipClusterFind(),
-  me: fakeSessionUser(),
+  scoutingFind: mock.fakeShipClusterFind(),
+  me: mock.fakeSessionUser(),
 }

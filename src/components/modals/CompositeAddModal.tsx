@@ -10,15 +10,15 @@ import {
   DialogTitle,
   IconButton,
   TextField,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
 import { Stack } from '@mui/system'
-import { Add, Cancel, Check, Delete } from '@mui/icons-material'
+import { Add, Cancel, Check } from '@mui/icons-material'
 import { jsRound } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import log from 'loglevel'
 
 export interface CompositeAddModal {
   open: boolean
@@ -93,7 +93,7 @@ export const CompositeAddModal: React.FC<CompositeAddModal> = ({ open, startAmt,
               }}
               value={Numeral(row).format(`0,0`)}
               onKeyDown={(event) => {
-                const isShiftPressed = event.shiftKey
+                // const isShiftPressed = event.shiftKey
 
                 if (event.key === 'Escape') onClose()
                 // If The user presses 'up' or 'down', increment or decrement the value
@@ -149,7 +149,8 @@ export const CompositeAddModal: React.FC<CompositeAddModal> = ({ open, startAmt,
                   } else {
                     // DO another thing
                   }
-                } catch (e) {
+                } catch {
+                  log.error(e)
                   //
                 }
               }}

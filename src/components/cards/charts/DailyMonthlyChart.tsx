@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { useTheme, Typography, Box, RadioGroup, FormControlLabel, Radio } from '@mui/material'
 import { ObjectValues, StatsObject, StatsObjectSummary } from '@regolithco/common'
-import { CartesianMarkerProps } from '@nivo/core'
-import { DatumValue, ResponsiveLine, Serie, LineSvgProps } from '@nivo/line'
+import { CartesianMarkerProps, linearGradientDef } from '@nivo/core'
+import { ResponsiveLine, Serie, LineSvgProps } from '@nivo/line'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import dayjs, { Dayjs } from 'dayjs'
-import log from 'loglevel'
+// import log from 'loglevel'
 
 export interface DailyMonthlyChartProps {
   stats: Partial<StatsObjectSummary>
@@ -14,6 +14,8 @@ export interface DailyMonthlyChartProps {
 }
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
+type ExtendedCartesianMarkerProps = Pick<CartesianMarkerProps, 'value' | 'legend'> &
+  Partial<Omit<CartesianMarkerProps, 'value' | 'legend'>>
 
 export const ChartTypesEnum = {
   DAY: 'DAY',
@@ -31,7 +33,7 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
   const theme = useTheme()
   const [chartType, setChartType] = React.useState<ChartTypesEnum>(ChartTypesEnum.MONTH)
 
-  const { chartData, chartformat } = React.useMemo(() => {
+  const { chartData } = React.useMemo(() => {
     const chartformat = '%Y-%m-%d'
     if (!stats) return { chartData: [], chartformat }
     switch (chartType) {
@@ -71,19 +73,25 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
         <ResponsiveLine
           data={chartData}
           margin={{ top: 30, right: 20, bottom: 60, left: 10 }}
-          xScale={{
-            type: 'linear',
-            min: 'auto',
-            max: 'auto',
-            nice: true,
-            clamp: true,
-          }}
+          // xScale={{
+          //   type: 'linear',
+          //   min: 'auto',
+          //   max: 'auto',
+          //   nice: true,
+          //   clamp: true,
+          // }}
           theme={{
             // textColor: 'white',
             legends: {
               text: {
                 fill: 'white',
               },
+            },
+            markers: {
+              fontSize: '10',
+              lineColor: 'white',
+              textColor: 'white',
+              lineStrokeWidth: 1,
             },
             crosshair: {
               line: {
@@ -104,20 +112,20 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
             },
           }}
           markers={markers}
-          // curve="basis"
+          // curve="monotoneX"
           enableArea={true}
           enableGridX={false}
           enableGridY={false}
           enableSlices="x"
-          yScale={{
-            type: 'linear',
-            min: 'auto',
-            max: 'auto',
-            nice: true,
-            clamp: true,
-            // stacked: true,
-            // reverse: false,
-          }}
+          // yScale={{
+          //   type: 'linear',
+          //   min: 'auto',
+          //   max: 'auto',
+          //   nice: true,
+          //   clamp: true,
+          //   // stacked: true,
+          //   // reverse: false,
+          // }}
           axisTop={null}
           axisRight={null}
           axisBottom={{
@@ -156,7 +164,9 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
                       }}
                     >
                       <strong>{point.serieId}: </strong>
-                      <span>{MValueFormatter((point.data as any).val, MValueFormat.number_sm, 0)}</span>
+                      <span>
+                        {MValueFormatter((point.data as unknown as { val: string }).val, MValueFormat.number_sm, 0)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -170,6 +180,13 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
           pointBorderColor={{ from: 'serieColor' }}
           pointLabelYOffset={-12}
           useMesh={false}
+          defs={[
+            linearGradientDef('gradientA', [
+              { offset: 0, color: 'inherit' },
+              { offset: 100, color: 'inherit', opacity: 0 },
+            ]),
+          ]}
+          fill={[{ match: '*', id: 'gradientA' }]}
           legends={[
             {
               anchor: 'top-left',
@@ -296,95 +313,63 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
   const endDate: dayjs.Dayjs = dayjs()
   const rounding = chartType === ChartTypesEnum.MONTH ? 'month' : 'day'
 
-  const markers: CartesianMarkerProps[] = [
+  const markerStyle: Omit<CartesianMarkerProps, 'legend' | 'value'> = {
+    axis: 'x',
+    lineStyle: { stroke: 'white', strokeWidth: 1 },
+    textStyle: { fill: 'white', fontSize: 9 },
+    legendOrientation: 'vertical',
+    legendPosition: 'bottom-right',
+  }
+
+  const markerPieces: ExtendedCartesianMarkerProps[] = [
     {
-      axis: 'x' as const,
       value: dayjs('2023-03-01').startOf('month').toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: 'Regolith LIVE! (SC 3.18)',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
+    // {
     // SC 3.18 : March 10th 2023
-    // {
-    //   axis: 'x' as const,
     //   value: dayjs('2023-03-10').startOf('month').toDate(),
-    //   lineStyle: { stroke: 'white', strokeWidth: 2 },
     //   legend: 'SC 3.18',
-    //   textStyle: { fill: 'white', fontSize: 8 },
-    //   legendOrientation: 'vertical' as const,
     // },
-    // Starfield launched September 6, 2023
     {
-      axis: 'x' as const,
+      // Starfield launched September 6, 2023
       value: dayjs('2023-09-06').startOf(rounding).toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: 'Starfield (3.20)',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
-    // SC 3.19 : May 16th 2023
     {
-      axis: 'x' as const,
+      // SC 3.19 : May 16th 2023
       value: dayjs('2023-05-16').startOf(rounding).toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: '3.19',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
+    // {
     // SC 3.20 : September 19th 2023
-    // {
-    //   axis: 'x' as const,
     //   value: dayjs('2023-09-19').startOf(rounding).toDate(),
-    //   lineStyle: { stroke: 'white', strokeWidth: 2 },
     //   legend: 'SC 3.20',
-    //   textStyle: { fill: 'white', fontSize: 8 },
-    //   legendOrientation: 'vertical' as const,
     // },
-    // SC 3.21 : October 19th 2023
     // {
-    //   axis: 'x' as const,
+    // SC 3.21 : October 19th 2023
     //   value: dayjs('2023-10-19').startOf(rounding).toDate(),
-    //   lineStyle: { stroke: 'white', strokeWidth: 2 },
     //   legend: 'SC 3.21',
-    //   textStyle: { fill: 'white', fontSize: 8 },
-    //   legendOrientation: 'vertical' as const,
     // },
-    // SC 3.22 : December 14st 2023
     {
-      axis: 'x' as const,
+      // SC 3.22 : December 14st 2023
       value: dayjs('2023-12-14').startOf(rounding).toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: '3.22',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
-    // citizen con Oct 21 - 22, 2023
     {
-      axis: 'x' as const,
+      // citizen con Oct 21 - 22, 2023
       value: dayjs('2023-10-21').startOf(rounding).toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: 'CitizenCon (3.21)',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
-    // IAE 2023 Nov 30, 2023
     {
-      axis: 'x' as const,
+      // IAE 2023 Nov 30, 2023
       value: dayjs('2023-11-30').startOf(rounding).toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: 'IAE 2953',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
-    // Fleet week 2024: May 24, 2024
     {
-      axis: 'x' as const,
+      // Fleet week 2024: May 24, 2024
       value: dayjs('2024-05-24').startOf(rounding).toDate(),
-      lineStyle: { stroke: 'white', strokeWidth: 1 },
       legend: 'Fleet Week 2954 (3.23)',
-      textStyle: { fill: 'white', fontSize: 8 },
-      legendOrientation: 'vertical' as const,
     },
   ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
 
@@ -401,17 +386,24 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
     }
     // Add the sundays to the markers
     sundays.forEach((sunday) => {
-      markers.push({
-        axis: 'x' as const,
+      markerPieces.push({
         value: sunday.startOf('day').toDate(),
-        lineStyle: { stroke: '#555555', strokeWidth: 1 },
+        lineStyle: { stroke: '#555555', strokeWidth: 2, opacity: 1 },
         legend: 'Sunday',
-        textStyle: { fill: 'white', fontSize: 8 },
-        legendOrientation: 'vertical' as const,
-      })
+        textStyle: { fill: 'red', fontSize: 8 },
+      } as ExtendedCartesianMarkerProps)
     })
   }
   // Sort date ascending
-  markers.sort((a, b) => (a.value > b.value ? 1 : -1))
-  return markers
+  markerPieces.sort((a, b) => (a.value > b.value ? 1 : -1))
+
+  return markerPieces.map((m) => {
+    return {
+      ...markerStyle,
+      ...m,
+      // These are required by Nivo or it throws an error
+      legendOffsetY: 10,
+      legendOffsetX: 10,
+    }
+  })
 }

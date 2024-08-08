@@ -30,10 +30,13 @@ export const SalvagingOreTable: React.FC = () => {
         return bPrice - aPrice
       })
 
-      const priceLookups: Record<SalvageOreEnum, number> = salvageRowKeys.reduce((acc, key, idx) => {
-        acc[key] = prices[idx]
-        return acc
-      }, {} as Record<SalvageOreEnum, number>)
+      const priceLookups: Record<SalvageOreEnum, number> = salvageRowKeys.reduce(
+        (acc, key, idx) => {
+          acc[key] = prices[idx]
+          return acc
+        },
+        {} as Record<SalvageOreEnum, number>
+      )
 
       const rowStats: { max: number; min: number }[] = []
 

@@ -31,7 +31,7 @@ type UseOAuth2Return = IAuthContext & {
 export const useOAuth2 = (): UseOAuth2Return => {
   const { authType, setAuthType, googleToken, setGoogleToken, refreshPopupOpen, setRefreshPopupOpen } =
     useContext(LoginContextWrapper)
-  const { tokenData, token, login, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
+  const { tokenData, token, logIn, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
   const googleTimerRef = React.useRef<NodeJS.Timeout>()
 
@@ -61,7 +61,7 @@ export const useOAuth2 = (): UseOAuth2Return => {
   const fancyLogin = async () => {
     if (authType === AuthTypeEnum.Discord) {
       googleLogout()
-      login()
+      logIn()
     } else if (authType === AuthTypeEnum.Google) {
       logOut()
       googleLogin()
@@ -81,7 +81,9 @@ export const useOAuth2 = (): UseOAuth2Return => {
 
   return {
     logIn: fancyLogin,
-    login: fancyLogin,
+    login: () => {
+      throw new Error('DEPPRECATED LOGIN')
+    },
     tokenData,
     token: authType === AuthTypeEnum.Google ? googleToken[0] : token,
     error,
@@ -183,7 +185,7 @@ const DEFAULT_LOGIN_CONTEXT: LoginContextObj = {
   openPopup: () => {
     log.warn('NOT SET UP FOR POPUP')
   },
-  login: (authType: AuthTypeEnum) => {
+  logIn: (authType: AuthTypeEnum) => {
     log.warn('NOT SET UP FOR LOGIN', authType)
   },
   logOut: () => {
@@ -219,7 +221,7 @@ export interface LoginContextObj {
   refreshPopupOpen: boolean
   refreshPopup: React.ReactNode
   setRefreshPopupOpen: (isOpen: boolean) => void
-  login: (authType: AuthTypeEnum) => void
+  logIn: (authType: AuthTypeEnum) => void
   logOut: () => void
   userProfile?: UserProfile
 }

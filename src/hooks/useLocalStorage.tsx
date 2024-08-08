@@ -8,7 +8,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (v: T) => void] {
     const item = localStorage.getItem(key)
     try {
       return item ? JSON.parse(item) : initialValue
-    } catch (error) {
+    } catch {
       return initialValue
     }
   })
@@ -18,7 +18,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (v: T) => void] {
       const valueToStore = value instanceof Function ? value(storedValue) : value
       setStoredValue(valueToStore)
       localStorage.setItem(key, JSON.stringify(valueToStore))
-    } catch (error) {
+    } catch {
       log.error(`Failed to store value '${value}' for key '${key}'`)
     }
   }

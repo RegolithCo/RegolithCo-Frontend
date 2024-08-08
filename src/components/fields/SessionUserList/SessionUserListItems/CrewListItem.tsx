@@ -34,7 +34,7 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
           [userId, 'Active', session?.activeMembers?.items.find((sm) => sm.ownerId === userId)] as [
             string,
             'Active',
-            SessionUser
+            SessionUser,
           ]
       ),
       ...innactiveSCNames.map(
@@ -42,7 +42,7 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
           [scName, 'Pending', session?.mentionedUsers.find((iu) => iu.scName === scName)] as [
             string,
             'Pending',
-            PendingUser
+            PendingUser,
           ]
       ),
     ]

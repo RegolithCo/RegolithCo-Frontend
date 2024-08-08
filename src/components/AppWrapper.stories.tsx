@@ -1,7 +1,7 @@
 import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
-import { AppWrapper as AppWrapperComponent, BGImagesEnum } from './AppWrapper'
+import { AppWrapper as AppWrapperComponent, AppWrapperProps, BGImagesEnum } from './AppWrapper'
 
 export default {
   title: 'AppWrapper',
@@ -22,7 +22,7 @@ export default {
 } as Meta<typeof AppWrapperComponent>
 
 const Template: StoryFn<typeof AppWrapperComponent> = (args) => {
-  const { backgroundSelect } = args as any
+  const { backgroundSelect } = args as AppWrapperProps & { backgroundSelect: BGImagesEnum }
   return (
     <div style={{ display: 'flex', height: '100%' }}>
       <AppWrapperComponent bgImage={backgroundSelect} {...args} />

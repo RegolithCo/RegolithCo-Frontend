@@ -5,9 +5,9 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  useTheme,
-  Theme,
-  SxProps,
+  // useTheme,
+  // Theme,
+  // SxProps,
   Autocomplete,
   TextField,
   createFilterOptions,
@@ -31,11 +31,11 @@ export interface CrewShareTemplateTableProps {
   userSuggest?: UserSuggest
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-  gridContainer: {
-    [theme.breakpoints.up('md')]: {},
-  },
-})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+//   gridContainer: {
+//     [theme.breakpoints.up('md')]: {},
+//   },
+// })
 
 const filter = createFilterOptions<
   [
@@ -45,7 +45,7 @@ const filter = createFilterOptions<
       session: boolean
       named: boolean
       crew: boolean
-    }
+    },
   ]
 >()
 
@@ -55,8 +55,8 @@ export const CrewShareTemplateTable: React.FC<CrewShareTemplateTableProps> = ({
   onDeleteCrewShare,
   userSuggest,
 }) => {
-  const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const theme = useTheme()
+  // const styles = stylesThunk(theme)
   const expenses: { name: string; value: number }[] = []
 
   const sortedCrewshares: [number, CrewShareTemplate][] = (crewShareTemplates || []).map((cs, idx) => [idx, cs])

@@ -17,10 +17,10 @@ export default {
   },
 } as Meta<typeof ActiveUserComponent>
 
-const meUser = fakeSessionUser(
-  { state: SessionUserStateEnum.Unknown },
-  { avatarUrl: '/images/avatars/dummyAvatar.png' }
-)
+// const meUser = fakeSessionUser(
+//   { state: SessionUserStateEnum.Unknown },
+//   { avatarUrl: '/images/avatars/dummyAvatar.png' }
+// )
 const otherUser = fakeSessionUser(
   { state: SessionUserStateEnum.Unknown },
   { avatarUrl: '/images/avatars/dummyAvatar.png' }

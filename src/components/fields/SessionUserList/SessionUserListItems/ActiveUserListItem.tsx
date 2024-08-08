@@ -24,7 +24,7 @@ import { alpha } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { ModuleIcon } from '../../../../icons'
-import { StateChip, stateColorsBGThunk } from './StateChip'
+import { StateChip } from './StateChip'
 import { fontFamilies } from '../../../../theme'
 import { shipColorLookup } from '../../VehicleChooser'
 import { AppContext } from '../../../../context/app.context'
@@ -45,7 +45,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
   const { getSafeName, hideNames } = React.useContext(AppContext)
   const {
     session,
-    navigate,
+    // navigate,
     myUserProfile,
     scoutingAttendanceMap,
     openLoadoutModal,
@@ -53,7 +53,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
     captains,
     crewHierarchy,
   } = React.useContext(SessionContext)
-  const stateColorsBg = stateColorsBGThunk(theme)
+  // const stateColorsBg = stateColorsBGThunk(theme)
   const isMe = myUserProfile.userId === sessionUser.ownerId
   const secondaryText: React.ReactNode[] = []
   const stateObjects: React.ReactNode[] = []

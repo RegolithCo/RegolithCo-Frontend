@@ -7,10 +7,10 @@ import { VerifyCodeField } from '../../fields/VerifyCodeField'
 import { UserProfile } from '@regolithco/common'
 import { LoginContextObj } from '../../../hooks/useOAuth2'
 
-interface InitializeUserProps {
+export interface InitializeUserProps {
   verifyOnly?: boolean
   userProfile?: UserProfile
-  login: LoginContextObj
+  loginCtx: LoginContextObj
   loading: boolean
   verifyError?: string
   fns: {
@@ -23,7 +23,7 @@ interface InitializeUserProps {
 }
 
 export const InitializeUser: React.FC<InitializeUserProps> = ({
-  login,
+  loginCtx: login,
   userProfile,
   loading,
   verifyError,

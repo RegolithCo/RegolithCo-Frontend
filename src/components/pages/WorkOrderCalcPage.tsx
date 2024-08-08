@@ -14,7 +14,7 @@ export interface WorkOrderCalcPageProps {
 
 export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfile }) => {
   const theme = useTheme()
-  // eslint-disable-next-line no-unused-vars
+
   const [workOrders, setWorkOrders] = React.useState<{ [key in ActivityEnum]?: WorkOrder }>({})
   const [activeActivity, setActiveActivity] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
   const owner = userProfile || dummyUserProfile()

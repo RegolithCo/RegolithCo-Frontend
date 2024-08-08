@@ -251,7 +251,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                       >
                         <List dense disablePadding>
                           {dayArr.map((session, idx) => {
-                            const { sessionId, name, owner, state, summary } = session
+                            const { sessionId, name, state } = session
                             const sessionActive = state === SessionStateEnum.Active
                             const subtitleArr = sessionSubtitleArr(session, hideNames)
                             return (

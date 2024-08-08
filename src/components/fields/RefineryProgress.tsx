@@ -57,7 +57,7 @@ function formatValue(inputValue: string): InputValueType {
 
 export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, editable, totalTimeS, onChange }) => {
   const [isEditing, setIsEditing] = React.useState(false)
-  const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTime, (totalTimeS || 0) * 1000)
+  const { isFinished, isStarted, remainingTime } = useCountdown(startTime, (totalTimeS || 0) * 1000)
   const [[stringValue, segments, numValS], setValue] = React.useState<[string, string[], number]>(
     formatValue(reverseFormat(totalTimeS))
   )

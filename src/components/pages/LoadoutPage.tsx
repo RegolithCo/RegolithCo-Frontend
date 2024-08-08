@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Link, SxProps, Tab, Tabs, Theme, Typography, useTheme } from '@mui/material'
+import { Alert, Link, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { Calculate, Person } from '@mui/icons-material'
 import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
@@ -11,12 +11,12 @@ import { MiningLoadout, UserProfile } from '@regolithco/common'
 import log from 'loglevel'
 import { MyLoadouts } from './MyLoadouts'
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-  innerPaper: {
-    p: 3,
-    mb: 4,
-  },
-})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+//   innerPaper: {
+//     p: 3,
+//     mb: 4,
+//   },
+// })
 
 export interface LoadoutPageProps {
   tab: string
@@ -51,7 +51,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
   deleteLoadout,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const styles = stylesThunk(theme)
 
   const finalTab = typeof tab === 'undefined' ? LoadoutTabIndex.Calculator : tab
 

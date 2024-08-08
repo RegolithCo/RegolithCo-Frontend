@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { ScoutingFindTypeEnum, Session, SessionSummary } from '@regolithco/common'
 import { Box, Chip, Stack, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/material'
-import { AccessTime, Factory, Person, Toll } from '@mui/icons-material'
+import { AccessTime, Factory, Toll } from '@mui/icons-material'
 import { MValue, MValueFormat, MValueFormatter } from './MValue'
 import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
 import { fontFamilies } from '../../theme'
-import { AppContext } from '../../context/app.context'
+// import { AppContext } from '../../context/app.context'
 import { WorkOrderStatus } from './WorkOrderStatus'
 import { ScoutingFindStatus } from './ScoutingFindStatus'
 import { SessionUsersStatus } from './SessionUsersStatus'
@@ -87,27 +87,27 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const { hideNames } = React.useContext(AppContext)
+  // const { hideNames } = React.useContext(AppContext)
   const {
     aUEC,
     activeMembers,
     totalMembers,
-    allPaid,
+    // allPaid,
     lastJobDone,
     oreSCU,
     refineries,
     scoutingFindsByType,
-    workOrderSummaries,
-    workOrdersByType,
+    // workOrderSummaries,
+    // workOrdersByType,
   } = session.summary as SessionSummary
 
   const oreSCUDecimals = oreSCU && oreSCU > 0 && oreSCU < 10 ? 1 : 0
 
   // Sum all the numeric values of workOrders
-  const totalWorkOrders = Object.values(workOrderSummaries || {}).reduce<number>(
-    (acc, curr) => (typeof curr === 'number' ? acc + curr : acc),
-    0
-  )
+  // const totalWorkOrders = Object.values(workOrderSummaries || {}).reduce<number>(
+  //   (acc, curr) => (typeof curr === 'number' ? acc + curr : acc),
+  //   0
+  // )
   const totalScoutingFnds = Object.values(scoutingFindsByType || {}).reduce<number>(
     (acc, curr) => (typeof curr === 'number' ? acc + curr : acc),
     0

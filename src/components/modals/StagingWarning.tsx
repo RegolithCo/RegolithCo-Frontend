@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme, Link } from '@mui/material'
-import { BugReport, Cake, Newspaper, Warning } from '@mui/icons-material'
+import { BugReport, Cake, Warning } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 
 export interface StagingWarningProps {

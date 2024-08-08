@@ -1,8 +1,7 @@
 import * as React from 'react'
 
 import { SessionStateEnum } from '@regolithco/common'
-import { Theme, Tooltip, Typography, useTheme } from '@mui/material'
-import { SxProps } from '@mui/system'
+import { Tooltip, Typography, useTheme } from '@mui/material'
 
 export interface SessionStateProps {
   sessionState: SessionStateEnum
@@ -10,11 +9,11 @@ export interface SessionStateProps {
   hasTooltip?: boolean
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
+// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({})
 
 export const SessionState: React.FC<SessionStateProps> = ({ sessionState, size, hasTooltip }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  // const styles = stylesThunk(theme)
 
   return (
     <Tooltip

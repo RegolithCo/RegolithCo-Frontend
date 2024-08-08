@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { AboutPage as AboutComponent } from './AboutPage'
-import { fakeUserProfile } from '@regolithco/common/dist/mock'
+// import { fakeUserProfile } from '@regolithco/common/dist/mock'
 
 export default {
   title: 'Pages/AboutPage',

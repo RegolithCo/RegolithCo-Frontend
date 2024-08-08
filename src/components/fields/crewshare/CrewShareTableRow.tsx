@@ -10,7 +10,6 @@ import {
   Select,
   MenuItem,
   useTheme,
-  Box,
   alpha,
 } from '@mui/material'
 import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum, ShareTypeToolTip } from '@regolithco/common'
@@ -70,14 +69,14 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   const tooltip = isMandatory
     ? 'The session owner has made this row mandatory'
     : isSessionRow
-    ? 'The session owner has suggested this row. You can change it if you want.'
-    : ''
+      ? 'The session owner has suggested this row. You can change it if you want.'
+      : ''
 
   const paidToolTip = isMe
     ? `This is you. ${isSeller ? 'You are the seller and are always paid' : ''}`
     : isSeller
-    ? `The seller. The seller is always paid`
-    : ''
+      ? `The seller. The seller is always paid`
+      : ''
   // : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
 
   // const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
@@ -86,8 +85,8 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   const finalPayout: ShareAmtArr = !payoutSummary
     ? [0, 0, 0]
     : isSeller
-    ? [payoutSummary[0] + (remainder || 0), payoutSummary[1] + (remainder || 0), 0]
-    : payoutSummary
+      ? [payoutSummary[0] + (remainder || 0), payoutSummary[1] + (remainder || 0), 0]
+      : payoutSummary
   return (
     <>
       <Tooltip title={tooltip} arrow placement="left" enterDelay={1000}>

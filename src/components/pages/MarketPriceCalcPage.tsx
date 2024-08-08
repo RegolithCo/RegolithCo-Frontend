@@ -8,7 +8,7 @@ export interface MarketPriceCalcPageProps {
 }
 
 export const MarketPriceCalcPage: React.FC<MarketPriceCalcPageProps> = ({ propA }) => {
-  const theme = useTheme()
+  // const theme = useTheme()
 
   return (
     <PageWrapper title="Market Price Finder" maxWidth="lg">

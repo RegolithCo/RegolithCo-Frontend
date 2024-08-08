@@ -25,7 +25,4 @@ DeleteProfileModal.args = {
   setAuthType: (authType: AuthTypeEnum) => {
     console.log('Set Auth Type', authType)
   },
-  login: () => {
-    console.log('Login')
-  },
 }

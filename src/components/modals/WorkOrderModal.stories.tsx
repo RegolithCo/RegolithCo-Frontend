@@ -8,7 +8,6 @@ import {
   fakeShipMiningOrder,
   fakeVehicleMiningOrder,
 } from '@regolithco/common/dist/mock'
-import log from 'loglevel'
 import { ActivityEnum, WorkOrder } from '@regolithco/common'
 import { WorkOrderContext, workOrderContextDefaults } from '../../context/workOrder.context'
 import { useStorybookLookups } from '../../hooks/useLookupStorybook'
@@ -34,6 +33,7 @@ export default {
 const Template: StoryFn<typeof WorkOrderModalC> = ({ ...args }) => {
   const [workOrder, setWorkOrder] = React.useState<WorkOrder>()
   const dataStore = useStorybookLookups()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { activity } = args as any
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionUserList as SessionUserListComponent, SessionUserListProps } from './SessionUserList'
-import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/mock'
 import { Box } from '@mui/system'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { Session } from '@regolithco/common'
@@ -54,7 +54,7 @@ const Template: StoryFn<TemplateProps> = ({ componentProps, contextProps }: Temp
   )
 }
 
-const fakeSessionUsers = Array.from({ length: 20 }, (_, i) => fakeSessionUser())
+// const fakeSessionUsers = Array.from({ length: 20 }, (_, i) => fakeSessionUser())
 
 export const UserList = Template.bind({})
 UserList.args = {

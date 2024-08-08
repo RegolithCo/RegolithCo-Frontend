@@ -8,12 +8,12 @@ import {
   WorkOrder,
   WorkOrderDefaults,
   CrewShare,
+  WorkOrderSummary,
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
 import { DetailsCard } from './WorkOrderCards/DetailsCard'
 import { OreCard } from './WorkOrderCards/OreCard'
-import log from 'loglevel'
 import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface WorkOrderCalcProps {
@@ -69,7 +69,7 @@ const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => (
 
 export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   const theme = useTheme()
-  const [summary, setSummary] = React.useState<any>(null)
+  const [summary, setSummary] = React.useState<WorkOrderSummary | null>(null)
   const styles = workOrderStylesThunk(theme)
   const dataStore = React.useContext(LookupsContext)
   // const { lookupData: summary, lookupLoading } = useAsyncLookupData(calculateWorkOrder, [props.workOrder])

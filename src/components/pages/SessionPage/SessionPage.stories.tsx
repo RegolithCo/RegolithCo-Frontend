@@ -1,14 +1,6 @@
-import React from 'react'
-import { StoryFn, Meta } from '@storybook/react'
+import { Meta } from '@storybook/react'
 
 import { SessionPage as SessionPageComponent } from './SessionPage'
-import {
-  fakePaginatedSessionUserList,
-  fakeSCNameList,
-  fakeSession,
-  fakeUserProfile,
-} from '@regolithco/common/dist/mock'
-import { SessionContext, sessionContextDefault, SessionTabs } from '../../../context/session.context'
 
 export default {
   title: 'Pages/SessionPage2',

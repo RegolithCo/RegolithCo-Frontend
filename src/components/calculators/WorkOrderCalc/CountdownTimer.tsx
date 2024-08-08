@@ -1,4 +1,4 @@
-import { SxProps, Theme, Tooltip, Typography, TypographyProps } from '@mui/material'
+import { SxProps, Theme, Typography, TypographyProps } from '@mui/material'
 import React from 'react'
 import { useCountdown } from '../../../hooks/useCountdown'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'

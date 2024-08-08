@@ -3,7 +3,7 @@ import { Typography, Box, Chip } from '@mui/material'
 
 export interface UserListItemProps {
   scName: string
-  props?: any
+  props?: React.HTMLAttributes<HTMLLIElement>
   friend: boolean
   crew: boolean
   session: boolean

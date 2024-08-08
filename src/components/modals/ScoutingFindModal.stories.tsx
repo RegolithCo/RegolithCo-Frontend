@@ -8,7 +8,7 @@ import {
   fakeShipClusterFind,
   fakeVehicleClusterFind,
 } from '@regolithco/common/dist/mock'
-import log from 'loglevel'
+// import log from 'loglevel'
 import { ScoutingFind, ScoutingFindTypeEnum } from '@regolithco/common'
 import {
   ScoutingFindContext,

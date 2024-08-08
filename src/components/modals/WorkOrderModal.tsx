@@ -19,7 +19,6 @@ import { AccountBalance, BackHand, Cancel, Create, Delete, Edit, Save, SvgIconCo
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
-import { DeleteModal } from './DeleteModal'
 import { WorkOrderContext } from '../../context/workOrder.context'
 import { ConfirmModal } from './ConfirmModal'
 import { AppContext } from '../../context/app.context'
@@ -112,11 +111,11 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     markCrewSharePaid,
     allowEdit,
     allowPay,
-    isSessionActive,
+    // isSessionActive,
     isMine,
     templateJob,
     failWorkOrder,
-    forceTemplate,
+    // forceTemplate,
     userSuggest,
   } = React.useContext(WorkOrderContext)
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>(workOrder)

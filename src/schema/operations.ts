@@ -1844,8 +1844,13 @@ export function useGetUserProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>(GetUserProfileDocument, options);
         }
+export function useGetUserProfileSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>(GetUserProfileDocument, options);
+        }
 export type GetUserProfileQueryHookResult = ReturnType<typeof useGetUserProfileQuery>;
 export type GetUserProfileLazyQueryHookResult = ReturnType<typeof useGetUserProfileLazyQuery>;
+export type GetUserProfileSuspenseQueryHookResult = ReturnType<typeof useGetUserProfileSuspenseQuery>;
 export type GetUserProfileQueryResult = Apollo.QueryResult<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>;
 export const GetLoadoutsDocument = gql`
     query getLoadouts {
@@ -1878,8 +1883,13 @@ export function useGetLoadoutsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>(GetLoadoutsDocument, options);
         }
+export function useGetLoadoutsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>(GetLoadoutsDocument, options);
+        }
 export type GetLoadoutsQueryHookResult = ReturnType<typeof useGetLoadoutsQuery>;
 export type GetLoadoutsLazyQueryHookResult = ReturnType<typeof useGetLoadoutsLazyQuery>;
+export type GetLoadoutsSuspenseQueryHookResult = ReturnType<typeof useGetLoadoutsSuspenseQuery>;
 export type GetLoadoutsQueryResult = Apollo.QueryResult<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>;
 export const GetSessionUserDocument = gql`
     query getSessionUser($sessionId: ID!) {
@@ -1905,7 +1915,7 @@ export const GetSessionUserDocument = gql`
  *   },
  * });
  */
-export function useGetSessionUserQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>) {
+export function useGetSessionUserQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUserQuery, types.GetSessionUserQueryVariables> & ({ variables: types.GetSessionUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>(GetSessionUserDocument, options);
       }
@@ -1913,8 +1923,13 @@ export function useGetSessionUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>(GetSessionUserDocument, options);
         }
+export function useGetSessionUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>(GetSessionUserDocument, options);
+        }
 export type GetSessionUserQueryHookResult = ReturnType<typeof useGetSessionUserQuery>;
 export type GetSessionUserLazyQueryHookResult = ReturnType<typeof useGetSessionUserLazyQuery>;
+export type GetSessionUserSuspenseQueryHookResult = ReturnType<typeof useGetSessionUserSuspenseQuery>;
 export type GetSessionUserQueryResult = Apollo.QueryResult<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>;
 export const GetMyUserSessionsDocument = gql`
     query getMyUserSessions($nextToken: String) {
@@ -1958,8 +1973,13 @@ export function useGetMyUserSessionsLazyQuery(baseOptions?: Apollo.LazyQueryHook
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>(GetMyUserSessionsDocument, options);
         }
+export function useGetMyUserSessionsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>(GetMyUserSessionsDocument, options);
+        }
 export type GetMyUserSessionsQueryHookResult = ReturnType<typeof useGetMyUserSessionsQuery>;
 export type GetMyUserSessionsLazyQueryHookResult = ReturnType<typeof useGetMyUserSessionsLazyQuery>;
+export type GetMyUserSessionsSuspenseQueryHookResult = ReturnType<typeof useGetMyUserSessionsSuspenseQuery>;
 export type GetMyUserSessionsQueryResult = Apollo.QueryResult<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>;
 export const GetJoinedUserSessionsDocument = gql`
     query getJoinedUserSessions($nextToken: String) {
@@ -2003,8 +2023,13 @@ export function useGetJoinedUserSessionsLazyQuery(baseOptions?: Apollo.LazyQuery
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>(GetJoinedUserSessionsDocument, options);
         }
+export function useGetJoinedUserSessionsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>(GetJoinedUserSessionsDocument, options);
+        }
 export type GetJoinedUserSessionsQueryHookResult = ReturnType<typeof useGetJoinedUserSessionsQuery>;
 export type GetJoinedUserSessionsLazyQueryHookResult = ReturnType<typeof useGetJoinedUserSessionsLazyQuery>;
+export type GetJoinedUserSessionsSuspenseQueryHookResult = ReturnType<typeof useGetJoinedUserSessionsSuspenseQuery>;
 export type GetJoinedUserSessionsQueryResult = Apollo.QueryResult<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>;
 export const GetUserDocument = gql`
     query getUser($userId: ID!) {
@@ -2030,7 +2055,7 @@ export const GetUserDocument = gql`
  *   },
  * });
  */
-export function useGetUserQuery(baseOptions: Apollo.QueryHookOptions<types.GetUserQuery, types.GetUserQueryVariables>) {
+export function useGetUserQuery(baseOptions: Apollo.QueryHookOptions<types.GetUserQuery, types.GetUserQueryVariables> & ({ variables: types.GetUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetUserQuery, types.GetUserQueryVariables>(GetUserDocument, options);
       }
@@ -2038,8 +2063,13 @@ export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ty
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetUserQuery, types.GetUserQueryVariables>(GetUserDocument, options);
         }
+export function useGetUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetUserQuery, types.GetUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetUserQuery, types.GetUserQueryVariables>(GetUserDocument, options);
+        }
 export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
+export type GetUserSuspenseQueryHookResult = ReturnType<typeof useGetUserSuspenseQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<types.GetUserQuery, types.GetUserQueryVariables>;
 export const GetSessionDocument = gql`
     query getSession($sessionId: ID!) {
@@ -2065,7 +2095,7 @@ export const GetSessionDocument = gql`
  *   },
  * });
  */
-export function useGetSessionQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionQuery, types.GetSessionQueryVariables>) {
+export function useGetSessionQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionQuery, types.GetSessionQueryVariables> & ({ variables: types.GetSessionQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionQuery, types.GetSessionQueryVariables>(GetSessionDocument, options);
       }
@@ -2073,8 +2103,13 @@ export function useGetSessionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionQuery, types.GetSessionQueryVariables>(GetSessionDocument, options);
         }
+export function useGetSessionSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionQuery, types.GetSessionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionQuery, types.GetSessionQueryVariables>(GetSessionDocument, options);
+        }
 export type GetSessionQueryHookResult = ReturnType<typeof useGetSessionQuery>;
 export type GetSessionLazyQueryHookResult = ReturnType<typeof useGetSessionLazyQuery>;
+export type GetSessionSuspenseQueryHookResult = ReturnType<typeof useGetSessionSuspenseQuery>;
 export type GetSessionQueryResult = Apollo.QueryResult<types.GetSessionQuery, types.GetSessionQueryVariables>;
 export const GetSessionUpdatedDocument = gql`
     query getSessionUpdated($sessionId: ID!) {
@@ -2105,7 +2140,7 @@ export const GetSessionUpdatedDocument = gql`
  *   },
  * });
  */
-export function useGetSessionUpdatedQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+export function useGetSessionUpdatedQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables> & ({ variables: types.GetSessionUpdatedQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
       }
@@ -2113,8 +2148,13 @@ export function useGetSessionUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHook
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
         }
+export function useGetSessionUpdatedSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
+        }
 export type GetSessionUpdatedQueryHookResult = ReturnType<typeof useGetSessionUpdatedQuery>;
 export type GetSessionUpdatedLazyQueryHookResult = ReturnType<typeof useGetSessionUpdatedLazyQuery>;
+export type GetSessionUpdatedSuspenseQueryHookResult = ReturnType<typeof useGetSessionUpdatedSuspenseQuery>;
 export type GetSessionUpdatedQueryResult = Apollo.QueryResult<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>;
 export const GetSessionShareDocument = gql`
     query getSessionShare($joinId: ID!) {
@@ -2140,7 +2180,7 @@ export const GetSessionShareDocument = gql`
  *   },
  * });
  */
-export function useGetSessionShareQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>) {
+export function useGetSessionShareQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables> & ({ variables: types.GetSessionShareQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
       }
@@ -2148,8 +2188,13 @@ export function useGetSessionShareLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
         }
+export function useGetSessionShareSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
+        }
 export type GetSessionShareQueryHookResult = ReturnType<typeof useGetSessionShareQuery>;
 export type GetSessionShareLazyQueryHookResult = ReturnType<typeof useGetSessionShareLazyQuery>;
+export type GetSessionShareSuspenseQueryHookResult = ReturnType<typeof useGetSessionShareSuspenseQuery>;
 export type GetSessionShareQueryResult = Apollo.QueryResult<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>;
 export const GetSessionStubDocument = gql`
     query getSessionStub($sessionId: ID!) {
@@ -2175,7 +2220,7 @@ export const GetSessionStubDocument = gql`
  *   },
  * });
  */
-export function useGetSessionStubQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>) {
+export function useGetSessionStubQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionStubQuery, types.GetSessionStubQueryVariables> & ({ variables: types.GetSessionStubQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>(GetSessionStubDocument, options);
       }
@@ -2183,8 +2228,13 @@ export function useGetSessionStubLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>(GetSessionStubDocument, options);
         }
+export function useGetSessionStubSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>(GetSessionStubDocument, options);
+        }
 export type GetSessionStubQueryHookResult = ReturnType<typeof useGetSessionStubQuery>;
 export type GetSessionStubLazyQueryHookResult = ReturnType<typeof useGetSessionStubLazyQuery>;
+export type GetSessionStubSuspenseQueryHookResult = ReturnType<typeof useGetSessionStubSuspenseQuery>;
 export type GetSessionStubQueryResult = Apollo.QueryResult<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>;
 export const GetSessionScoutingDocument = gql`
     query getSessionScouting($sessionId: ID!, $nextToken: String) {
@@ -2211,7 +2261,7 @@ export const GetSessionScoutingDocument = gql`
  *   },
  * });
  */
-export function useGetSessionScoutingQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>) {
+export function useGetSessionScoutingQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables> & ({ variables: types.GetSessionScoutingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>(GetSessionScoutingDocument, options);
       }
@@ -2219,8 +2269,13 @@ export function useGetSessionScoutingLazyQuery(baseOptions?: Apollo.LazyQueryHoo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>(GetSessionScoutingDocument, options);
         }
+export function useGetSessionScoutingSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>(GetSessionScoutingDocument, options);
+        }
 export type GetSessionScoutingQueryHookResult = ReturnType<typeof useGetSessionScoutingQuery>;
 export type GetSessionScoutingLazyQueryHookResult = ReturnType<typeof useGetSessionScoutingLazyQuery>;
+export type GetSessionScoutingSuspenseQueryHookResult = ReturnType<typeof useGetSessionScoutingSuspenseQuery>;
 export type GetSessionScoutingQueryResult = Apollo.QueryResult<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>;
 export const GetSessionActiveMembersDocument = gql`
     query getSessionActiveMembers($sessionId: ID!, $nextToken: String) {
@@ -2247,7 +2302,7 @@ export const GetSessionActiveMembersDocument = gql`
  *   },
  * });
  */
-export function useGetSessionActiveMembersQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>) {
+export function useGetSessionActiveMembersQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables> & ({ variables: types.GetSessionActiveMembersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>(GetSessionActiveMembersDocument, options);
       }
@@ -2255,8 +2310,13 @@ export function useGetSessionActiveMembersLazyQuery(baseOptions?: Apollo.LazyQue
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>(GetSessionActiveMembersDocument, options);
         }
+export function useGetSessionActiveMembersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>(GetSessionActiveMembersDocument, options);
+        }
 export type GetSessionActiveMembersQueryHookResult = ReturnType<typeof useGetSessionActiveMembersQuery>;
 export type GetSessionActiveMembersLazyQueryHookResult = ReturnType<typeof useGetSessionActiveMembersLazyQuery>;
+export type GetSessionActiveMembersSuspenseQueryHookResult = ReturnType<typeof useGetSessionActiveMembersSuspenseQuery>;
 export type GetSessionActiveMembersQueryResult = Apollo.QueryResult<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>;
 export const GetSessionWorkOrdersDocument = gql`
     query getSessionWorkOrders($sessionId: ID!, $nextToken: String) {
@@ -2283,7 +2343,7 @@ export const GetSessionWorkOrdersDocument = gql`
  *   },
  * });
  */
-export function useGetSessionWorkOrdersQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>) {
+export function useGetSessionWorkOrdersQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables> & ({ variables: types.GetSessionWorkOrdersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>(GetSessionWorkOrdersDocument, options);
       }
@@ -2291,8 +2351,13 @@ export function useGetSessionWorkOrdersLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>(GetSessionWorkOrdersDocument, options);
         }
+export function useGetSessionWorkOrdersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>(GetSessionWorkOrdersDocument, options);
+        }
 export type GetSessionWorkOrdersQueryHookResult = ReturnType<typeof useGetSessionWorkOrdersQuery>;
 export type GetSessionWorkOrdersLazyQueryHookResult = ReturnType<typeof useGetSessionWorkOrdersLazyQuery>;
+export type GetSessionWorkOrdersSuspenseQueryHookResult = ReturnType<typeof useGetSessionWorkOrdersSuspenseQuery>;
 export type GetSessionWorkOrdersQueryResult = Apollo.QueryResult<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>;
 export const GetWorkOrderDocument = gql`
     query getWorkOrder($orderId: ID!, $sessionId: ID!) {
@@ -2319,7 +2384,7 @@ export const GetWorkOrderDocument = gql`
  *   },
  * });
  */
-export function useGetWorkOrderQuery(baseOptions: Apollo.QueryHookOptions<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>) {
+export function useGetWorkOrderQuery(baseOptions: Apollo.QueryHookOptions<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables> & ({ variables: types.GetWorkOrderQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>(GetWorkOrderDocument, options);
       }
@@ -2327,8 +2392,13 @@ export function useGetWorkOrderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>(GetWorkOrderDocument, options);
         }
+export function useGetWorkOrderSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>(GetWorkOrderDocument, options);
+        }
 export type GetWorkOrderQueryHookResult = ReturnType<typeof useGetWorkOrderQuery>;
 export type GetWorkOrderLazyQueryHookResult = ReturnType<typeof useGetWorkOrderLazyQuery>;
+export type GetWorkOrderSuspenseQueryHookResult = ReturnType<typeof useGetWorkOrderSuspenseQuery>;
 export type GetWorkOrderQueryResult = Apollo.QueryResult<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>;
 export const GetScoutingFindDocument = gql`
     query getScoutingFind($scoutingFindId: ID!, $sessionId: ID!) {
@@ -2355,7 +2425,7 @@ export const GetScoutingFindDocument = gql`
  *   },
  * });
  */
-export function useGetScoutingFindQuery(baseOptions: Apollo.QueryHookOptions<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>) {
+export function useGetScoutingFindQuery(baseOptions: Apollo.QueryHookOptions<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables> & ({ variables: types.GetScoutingFindQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>(GetScoutingFindDocument, options);
       }
@@ -2363,8 +2433,13 @@ export function useGetScoutingFindLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>(GetScoutingFindDocument, options);
         }
+export function useGetScoutingFindSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>(GetScoutingFindDocument, options);
+        }
 export type GetScoutingFindQueryHookResult = ReturnType<typeof useGetScoutingFindQuery>;
 export type GetScoutingFindLazyQueryHookResult = ReturnType<typeof useGetScoutingFindLazyQuery>;
+export type GetScoutingFindSuspenseQueryHookResult = ReturnType<typeof useGetScoutingFindSuspenseQuery>;
 export type GetScoutingFindQueryResult = Apollo.QueryResult<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>;
 export const GetCrewSharesDocument = gql`
     query getCrewShares($sessionId: ID!, $orderId: ID, $nextToken: String) {
@@ -2395,7 +2470,7 @@ export const GetCrewSharesDocument = gql`
  *   },
  * });
  */
-export function useGetCrewSharesQuery(baseOptions: Apollo.QueryHookOptions<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>) {
+export function useGetCrewSharesQuery(baseOptions: Apollo.QueryHookOptions<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables> & ({ variables: types.GetCrewSharesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>(GetCrewSharesDocument, options);
       }
@@ -2403,8 +2478,13 @@ export function useGetCrewSharesLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>(GetCrewSharesDocument, options);
         }
+export function useGetCrewSharesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>(GetCrewSharesDocument, options);
+        }
 export type GetCrewSharesQueryHookResult = ReturnType<typeof useGetCrewSharesQuery>;
 export type GetCrewSharesLazyQueryHookResult = ReturnType<typeof useGetCrewSharesLazyQuery>;
+export type GetCrewSharesSuspenseQueryHookResult = ReturnType<typeof useGetCrewSharesSuspenseQuery>;
 export type GetCrewSharesQueryResult = Apollo.QueryResult<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>;
 export const GetPublicLookupsDocument = gql`
     query getPublicLookups {
@@ -2449,6 +2529,11 @@ export function useGetPublicLookupsLazyQuery(baseOptions?: Apollo.LazyQueryHookO
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>(GetPublicLookupsDocument, options);
         }
+export function useGetPublicLookupsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>(GetPublicLookupsDocument, options);
+        }
 export type GetPublicLookupsQueryHookResult = ReturnType<typeof useGetPublicLookupsQuery>;
 export type GetPublicLookupsLazyQueryHookResult = ReturnType<typeof useGetPublicLookupsLazyQuery>;
+export type GetPublicLookupsSuspenseQueryHookResult = ReturnType<typeof useGetPublicLookupsSuspenseQuery>;
 export type GetPublicLookupsQueryResult = Apollo.QueryResult<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>;

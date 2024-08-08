@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, useTheme } from '@mui/system'
-import { AccountCircle, NoAccounts, Person, SvgIconComponent } from '@mui/icons-material'
+import { AccountCircle, NoAccounts } from '@mui/icons-material'
 import { Chip, Tooltip } from '@mui/material'
 import { fontFamilies } from '../../theme'
 

@@ -46,7 +46,7 @@ const styles: Record<string, SxProps<Theme>> = {
 }
 
 export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { pathname, hash, key } = useLocation()
+  const { pathname } = useLocation()
 
   const pathnameRegex = pathname.match(/^(\/[^/]*)/)
   const allMatches = pathnameRegex && pathnameRegex.length > 0 ? pathnameRegex : ['/']
@@ -94,7 +94,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
   )
 }
 
-interface AppWrapperProps {
+export interface AppWrapperProps {
   bgImage?: BGImagesEnum
   showCoffee?: boolean
   children: React.ReactNode

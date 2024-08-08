@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { TopBar as TopBarComponent } from './TopBar'
-import { fakeUserProfile } from '@regolithco/common/dist/mock'
+import { mock } from '@regolithco/common'
 
 export default {
   title: 'TopBar',
@@ -18,7 +18,7 @@ const Template: StoryFn<typeof TopBarComponent> = (args) => <TopBarComponent {..
 export const LoggedIn = Template.bind({})
 LoggedIn.args = {
   userCtx: {
-    login: () => {
+    logIn: () => {
       console.log('sign in')
     },
     popup: null,
@@ -41,14 +41,14 @@ LoggedIn.args = {
     loading: false,
     error: undefined,
     maintenanceMode: undefined,
-    userProfile: fakeUserProfile(),
+    userProfile: mock.fakeUserProfile(),
   },
 }
 
 export const LoggedOut = Template.bind({})
 LoggedOut.args = {
   userCtx: {
-    login: () => {
+    logIn: () => {
       console.log('sign in')
     },
     popup: null,

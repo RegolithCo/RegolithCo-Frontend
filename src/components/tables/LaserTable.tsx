@@ -300,8 +300,8 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                 const bgColor = rowSelected
                   ? theme.palette.action.selected
                   : rowEven
-                  ? theme.palette.background.paper
-                  : theme.palette.background.default
+                    ? theme.palette.background.paper
+                    : theme.palette.background.default
                 return (
                   <TableRow
                     key={`${laser.code}-${idx}`}

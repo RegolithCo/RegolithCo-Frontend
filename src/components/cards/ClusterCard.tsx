@@ -15,13 +15,10 @@ import {
 } from '@mui/icons-material'
 import {
   clusterCalc,
-  SalvageFind,
   ScoutingFind,
   ScoutingFindStateEnum,
   getScoutingFindStateName,
   ScoutingFindTypeEnum,
-  ShipClusterFind,
-  VehicleClusterFind,
   SessionUserStateEnum,
   makeHumanIds,
   FindClusterSummary,
@@ -77,9 +74,9 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   }, [scoutingFind, dataStore])
 
   // Conveneince variables
-  const shipFind = scoutingFind as ShipClusterFind
-  const vehicleFind = scoutingFind as VehicleClusterFind
-  const salvageFind = scoutingFind as SalvageFind
+  // const shipFind = scoutingFind as ShipClusterFind
+  // const vehicleFind = scoutingFind as VehicleClusterFind
+  // const salvageFind = scoutingFind as SalvageFind
 
   let myAttendanceState = AttendanceStateEnum.NotJoined
   if (scoutingFind.attendanceIds?.includes(mySessionUser?.owner?.userId as string)) {
@@ -91,18 +88,18 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   }
 
   let Icon: SvgIconComponent = ClawIcon
-  let clusterSize = 0
+  // let clusterSize = 0
   switch (findType) {
     case ScoutingFindTypeEnum.Salvage:
       Icon = ClawIcon
-      clusterSize = salvageFind.wrecks?.length || 0
+      // clusterSize = salvageFind.wrecks?.length || 0
       break
     case ScoutingFindTypeEnum.Ship:
-      clusterSize = shipFind.shipRocks?.length || 0
+      // clusterSize = shipFind.shipRocks?.length || 0
       Icon = RockIcon
       break
     case ScoutingFindTypeEnum.Vehicle:
-      clusterSize = vehicleFind.vehicleRocks?.length || 0
+      // clusterSize = vehicleFind.vehicleRocks?.length || 0
       Icon = GemIcon
       break
   }

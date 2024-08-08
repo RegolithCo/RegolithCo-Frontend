@@ -27,7 +27,6 @@ import {
 } from '@mui/material'
 import {
   AnyOreEnum,
-  DataStore,
   findPrice,
   FindSummary,
   getOreName,
@@ -588,8 +587,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                         activeOrePercentText && activeOrePercentText[0] === idx
                           ? activeOrePercentText[1]
                           : ore.percent > 0
-                          ? ((ore.percent as number) * 100).toFixed(2)
-                          : '0'
+                            ? ((ore.percent as number) * 100).toFixed(2)
+                            : '0'
                       }
                       sx={styles.numfields}
                       disabled={ore.ore === ShipOreEnum.Inertmaterial}

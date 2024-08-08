@@ -1,5 +1,5 @@
-import { ExpandCircleDown, ExpandCircleDownOutlined } from '@mui/icons-material';
-import { Alert, AlertTitle, Button, Link, Stack } from '@mui/material';
+import { ExpandCircleDown, ExpandCircleDownOutlined } from '@mui/icons-material'
+import { Alert, AlertTitle, Button, Link, Stack } from '@mui/material'
 import * as React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { RegolithAlert } from '../types'

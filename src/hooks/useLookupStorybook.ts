@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { DataStore, Lookups } from '@regolithco/common'
 import lookupMocks from '../mock/lookupMocks.json'
 

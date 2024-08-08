@@ -7,14 +7,12 @@ import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
 import { StatsObjectSummary } from '@regolithco/common'
-// import { Alert319 } from '../modals/announcements/Alert319'
-import { AlertPyro } from '../modals/announcements/AlertPyro'
 import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
 
-interface HomePageProps {
+export interface HomePageProps {
   userCtx: LoginContextObj
   navigate?: (path: string) => void
   handleLogin?: () => void
@@ -92,8 +90,8 @@ const HomeCard: React.FC<{
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, alerts, statsLoading }) => {
-  const [alertModalOpen, setAlertModalOpen] = React.useState(false)
-  const nowDate = new Date()
+  // const [alertModalOpen, setAlertModalOpen] = React.useState(false)
+  // const nowDate = new Date()
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography
