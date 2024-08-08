@@ -5,13 +5,27 @@ import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
 
-const redirectUrl = new URL('', window.location.origin).toString()
+let redirectUri: string = ''
+switch (import.meta.env.MODE) {
+  case 'development':
+    redirectUri = new URL('', 'http://localhost:3000').toString()
+    break
+  case 'production':
+    redirectUri = new URL('', 'https://regolith.rocks/').toString()
+    break
+  case 'staging':
+    redirectUri = new URL('', 'https://staging.regolith.rocks/').toString()
+    break
+  default:
+    throw new Error('Unknown mode')
+}
+log.debug('REDIRECT URL', redirectUri)
 
 const discordConfig: TAuthConfig = {
   clientId: '1067082442877440050',
   authorizationEndpoint: 'https://discord.com/oauth2/authorize',
   tokenEndpoint: 'https://discord.com/api/oauth2/token',
-  redirectUri: redirectUrl,
+  redirectUri,
   autoLogin: false,
   decodeToken: false,
   scope: 'identify guilds',

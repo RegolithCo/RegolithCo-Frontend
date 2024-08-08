@@ -227,7 +227,7 @@ export const RefineryCalc: React.FC = () => {
           {showWarning && (
             <Alert severity="warning">
               NOTE: Ever since 3.20 the <strong>time</strong> and <strong>cost</strong> bonuses of individual refineries
-              have been moved and we presently have no way to find them again. Time nad cost calculations will be very
+              have been moved and we presently have no way to find them again. Time and cost calculations will be very
               rough until further notice.
             </Alert>
           )}

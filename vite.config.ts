@@ -7,4 +7,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'build',
   },
+  server: {
+    port: 3000,
+  },
 }))
