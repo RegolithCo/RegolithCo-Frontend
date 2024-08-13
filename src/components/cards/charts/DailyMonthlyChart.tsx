@@ -313,6 +313,8 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
   const endDate: dayjs.Dayjs = dayjs()
   const rounding = chartType === ChartTypesEnum.MONTH ? 'month' : 'day'
 
+  console.log('getMarkers', { startDate, endDate, today: dayjs() })
+
   const markerStyle: Omit<CartesianMarkerProps, 'legend' | 'value'> = {
     axis: 'x',
     lineStyle: { stroke: 'white', strokeWidth: 1 },
@@ -384,13 +386,14 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
       }
       sunday = sunday.add(1, 'day')
     }
+
     // Add the sundays to the markers
     sundays.forEach((sunday) => {
       markerPieces.push({
         value: sunday.startOf('day').toDate(),
         lineStyle: { stroke: '#555555', strokeWidth: 2, opacity: 1 },
         legend: 'Sunday',
-        textStyle: { fill: 'red', fontSize: 8 },
+        textStyle: { fill: 'white', fontSize: 8 },
       } as ExtendedCartesianMarkerProps)
     })
   }

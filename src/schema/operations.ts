@@ -747,6 +747,7 @@ export const AddFriendsDocument = gql`
     mutation addFriends($friends: [String]!) {
   addFriends(friends: $friends) {
     userId
+    updatedAt
     scName
     friends
   }
@@ -782,6 +783,7 @@ export const RemoveFriendsDocument = gql`
     mutation removeFriends($friends: [String]!) {
   removeFriends(friends: $friends) {
     userId
+    updatedAt
     scName
     friends
   }

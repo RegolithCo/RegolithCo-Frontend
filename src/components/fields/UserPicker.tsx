@@ -56,17 +56,21 @@ export const UserPicker: React.FC<UserPickerProps> = ({
         id="adduser"
         color="primary"
         key={`userPicker`}
-        renderOption={(props, [scName, { friend, session, named, crew }]) => (
-          <UserListItem
-            scName={scName}
-            key={`scname-${scName}-${friend}-${session}-${named}-${crew}}`}
-            props={props}
-            session={session}
-            named={named}
-            crew={crew}
-            friend={friend}
-          />
-        )}
+        renderOption={(props, [scName, { friend, session, named, crew }]) => {
+          // key will throw an error if we pas it through and then spread the props
+          const { key, ...rest } = props
+          return (
+            <UserListItem
+              scName={scName}
+              key={`scname-${scName}-${friend}-${session}-${named}-${crew}}`}
+              props={rest}
+              session={session}
+              named={named}
+              crew={crew}
+              friend={friend}
+            />
+          )
+        }}
         value={value}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {

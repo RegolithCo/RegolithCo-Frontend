@@ -91,9 +91,12 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
   }, [dataStore.ready, ores, isRefined])
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
+
+  // setMidpoint should be a number greater than or equal to the number of colors
+  const mindPoint = storeChoices && storeChoices.length > quaColors.length ? storeChoices.length : quaColors.length
   const bgColors = new Gradient()
     .setColorGradient(...quaColors)
-    .setMidpoint(storeChoices ? storeChoices.length : 0) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .setMidpoint(mindPoint) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
 
   return (

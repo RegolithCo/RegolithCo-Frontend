@@ -170,6 +170,12 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           },
           UserProfile: {
             fields: {
+              friends: {
+                merge(existing: string[] = [], incoming: string[]) {
+                  const merged = incoming || existing
+                  return merged
+                },
+              },
               sessionSettings: {
                 merge(existing: Partial<SessionSettings> = {}, incoming: Partial<SessionSettings> = {}) {
                   const merged = mergeSessionSettingsInplace(existing, incoming)

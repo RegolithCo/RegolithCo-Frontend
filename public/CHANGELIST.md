@@ -1,3 +1,7 @@
+### August 9, 2024
+
+- Chart libraries updated.
+
 ### July 5, 2024
 ## 1.0.52 - Bugs bugs bugs
 

@@ -155,43 +155,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             overflowY: { md: 'scroll', lg: isCalculator ? 'visible' : 'scroll' },
           }}
         >
-          {workOrder.orderType === ActivityEnum.ShipMining && !shipOrder.shareRefinedValue && (
-            <Box
-              sx={{
-                border: `1px solid ${theme.palette.grey[500]}`,
-                borderRadius: 3,
-                mt: 0.5,
-                mb: 2,
-                p: 0.5,
-                px: 1,
-              }}
-            >
-              <Tooltip
-                title={
-                  <Box>
-                    <Typography variant="overline" component="div">
-                      Estimated Unrefined Value?
-                    </Typography>
-                    <Typography variant="caption">
-                      When you <strong>deselect</strong> "Share Refined Value" your crew shares will be divided based on
-                      the estimated price of what you "would" sell your unrefined ore for (even though you're refining
-                      and selling at a TDD).
-                    </Typography>
-                  </Box>
-                }
-              >
-                <Stack direction="row" spacing={1}>
-                  <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="GrayText">
-                    Estimated Unrefined Value:
-                  </Typography>
-                  <Box sx={{ flexGrow: 1 }} />
-                  <Typography variant="overline" color="GrayText">
-                    {MValueFormatter(summary.unrefinedValue, MValueFormat.currency)}
-                  </Typography>
-                </Stack>
-              </Tooltip>
-            </Box>
-          )}
           {workOrder.orderType !== ActivityEnum.Other && (
             <>
               <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
@@ -381,6 +344,43 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               p: 0,
             }}
           />
+          {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && !shipOrder.shareRefinedValue && (
+            <Box
+              sx={{
+                border: `1px solid ${theme.palette.grey[500]}`,
+                borderRadius: 3,
+                mt: 0.5,
+                mb: 2,
+                p: 0.5,
+                px: 1,
+              }}
+            >
+              <Tooltip
+                title={
+                  <Box>
+                    <Typography variant="overline" component="div">
+                      Estimated Unrefined Value?
+                    </Typography>
+                    <Typography variant="caption">
+                      When you <strong>deselect</strong> "Share Refined Value" your crew shares will be divided based on
+                      the estimated price of what your ore would sell for unrefined (even though you're refining and
+                      selling at a TDD).
+                    </Typography>
+                  </Box>
+                }
+              >
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="GrayText">
+                    Estimated Unrefined Value:
+                  </Typography>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Typography variant="overline" color="GrayText">
+                    {MValueFormatter(summary.unrefinedValue, MValueFormat.currency)}
+                  </Typography>
+                </Stack>
+              </Tooltip>
+            </Box>
+          )}
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component="div">
             Expenses:
           </Typography>
@@ -547,7 +547,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                 <Typography variant="caption" component="ul">
                   <li>Users are not verified. Any valid Star Citizen username will work.</li>
                   <li>Any remaining money is assigned back to the owner.</li>
-                  <li>The owner pays no transfer fee (obviously).</li>
+                  <li>The owner does not pay any transfer fees (obviously).</li>
                 </Typography>
 
                 <Typography component="div" variant="overline">

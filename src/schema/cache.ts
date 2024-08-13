@@ -188,8 +188,10 @@ export type RefineryRowFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
 	yield?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SalvageFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
+export type SalvageFindKeySpecifier = ('CMAT' | 'RMC' | 'attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sellableAUEC' | 'sessionId' | 'state' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
 export type SalvageFindFieldPolicy = {
+	CMAT?: FieldPolicy<any> | FieldReadFunction<any>,
+	RMC?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendanceIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	clusterCount?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -199,6 +201,7 @@ export type SalvageFindFieldPolicy = {
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	scoutingFindId?: FieldPolicy<any> | FieldReadFunction<any>,
+	sellableAUEC?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,

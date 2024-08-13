@@ -50,7 +50,9 @@ type useSessionsReturn = {
 export const useUserProfile = (): useSessionsReturn => {
   const ctx = useLogin()
   const navigate = useNavigate()
-  const userProfileQry = useGetUserProfileQuery()
+  const userProfileQry = useGetUserProfileQuery({
+    // returnPartialData: true,
+  })
 
   useEffect(() => {
     // Logrocket only runs when not in production since we only get the free plan
@@ -65,7 +67,7 @@ export const useUserProfile = (): useSessionsReturn => {
         : {}
       LogRocket.identify(logrocketname, logRocketObj)
     }
-  }, [userProfileQry.data])
+  }, [userProfileQry.data?.profile?.userId])
 
   const upsertUserMutation = useUpsertUserMutation()
   const deleteUserProfileMutation = useDeleteUserProfileMutation()
@@ -197,7 +199,6 @@ export const useUserProfile = (): useSessionsReturn => {
           addFriends: {
             ...(userProfileQry.data?.profile as UserProfile),
             friends: [...(userProfileQry.data?.profile as UserProfile).friends, friend],
-            __typename: 'UserProfile',
           },
           __typename: 'Mutation',
         },
@@ -212,7 +213,6 @@ export const useUserProfile = (): useSessionsReturn => {
           removeFriends: {
             ...(userProfileQry.data?.profile as UserProfile),
             friends: (userProfileQry.data?.profile as UserProfile).friends.filter((f) => f !== friend),
-            __typename: 'UserProfile',
           },
           __typename: 'Mutation',
         },

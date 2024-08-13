@@ -140,6 +140,21 @@ export const AboutPageFAQ: React.FC = () => {
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
+          "Why do sessions close after 12 hours?"
+        </Typography>
+        <Typography gutterBottom>
+          You may notice that sessions will automatically close if there is no activity for 12 hours. This is to
+          discourage never-ending sessions from clogging up the database and to keep things performant and tidy. Once
+          closed sessions cannot be re-opened.
+        </Typography>
+        <Typography gutterBottom>
+          There may be times when you need to keep a session open longer than 12 hours. In those cases all you need to
+          do is update something in your session and that will reset the counter. You could add and delete a work order
+          or change the session description etc.
+        </Typography>
+      </Paper>
+      <Paper elevation={5} sx={styles.innerPaper}>
+        <Typography variant="h5" gutterBottom>
           "Will this tool always be free?"
         </Typography>
         <Typography paragraph>
