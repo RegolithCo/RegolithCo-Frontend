@@ -271,7 +271,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
         </Box>
 
         {/* The icon with the number (Absolute) */}
-        <Tooltip title="Cluster Size">
+        <Tooltip title={`${scoutingFind.clusterType} Cluster Size`}>
           <Avatar
             sx={{
               // zIndex: 10,

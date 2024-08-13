@@ -32,7 +32,6 @@ import {
   ScoutingFindTypeEnum,
   SessionUser,
   ShipRock,
-  RockStateEnum,
   ScoutingFindStateEnum,
   getScoutingFindStateName,
   SessionUserStateEnum,
@@ -44,22 +43,18 @@ import {
   FindClusterSummary,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AddCircle, EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
+import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter, findDecimals } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { ShipRockCard } from '../../cards/ShipRockCard'
-import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModal'
 import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
 import { ScoutingFindUserList } from './ScoutingFindUserList'
-import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { NoteAddDialog } from '../../modals/NoteAddDialog'
 import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { SalvageWreckCard } from '../../cards/SalvageWreckCard'
 import { ScoutingFindRocks } from './ScoutingFindRocks'
 import { ScoutingFindWrecks } from './ScoutingFindWrecks'
 dayjs.extend(relativeTime)
@@ -389,6 +384,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   if (!summary || !dataStore.ready) return <div>loading lookups...</div>
 
+  const salvageAUECSUmmary = salvageFind.wrecks?.reduce((acc, wreck) => acc + (wreck.sellableAUEC || 0), 0) || 0
+
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume
 
@@ -495,7 +492,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
-            <TableContainer sx={{ opacity: scoutingFind.clusterType !== ScoutingFindTypeEnum.Salvage ? 1 : 0.2 }}>
+            <TableContainer>
               <Table size="small" sx={styles.statsTable}>
                 <TableHead>
                   <TableRow>
@@ -530,6 +527,15 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                           </TableRow>
                         )
                       })}
+                  {salvageAUECSUmmary > 0 && (
+                    <TableRow>
+                      <TableCell>Cargo + Components</TableCell>
+                      <TableCell align="right"></TableCell>
+                      <TableCell align="right">
+                        {MValueFormatter(salvageAUECSUmmary, MValueFormat.number_sm, findDecimals(salvageAUECSUmmary))}
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
                 <TableFooter>
                   <TableRow sx={styles.totalRow}>

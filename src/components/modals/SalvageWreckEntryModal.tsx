@@ -379,7 +379,10 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                 >
                   <Box sx={{ flex: '1 0 60%' }}>
                     <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
-                      <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
+                      <Box sx={styles.sliderOreName}>
+                        {ore.ore}
+                        {/* {getSalvageOreName(ore.ore)} ({ore.ore}) */}
+                      </Box>
                     </Tooltip>
                   </Box>
                   <Box sx={{ flex: '1 0 30%' }}>

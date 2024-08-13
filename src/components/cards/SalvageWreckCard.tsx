@@ -13,32 +13,33 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from '@mui/material'
-import { ShipOreEnum, ShipRock, getShipOreName, RockStateEnum, SalvageWreck } from '@regolithco/common'
+import { WreckStateEnum, SalvageWreck, ShipLookups } from '@regolithco/common'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
-import { RockIcon } from '../../icons'
+import { ClawIcon } from '../../icons'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface SalvageWreckCardProps {
   wreck: SalvageWreck
   wreckValue?: number
   allowEdit?: boolean
-  onChangeState?: (state: RockStateEnum) => void
+  onChangeState?: (state: WreckStateEnum) => void
   onEditClick?: () => void
 }
 
-const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxProps<Theme>> => {
+const stylesThunk = (theme: Theme, rockState: WreckStateEnum): Record<string, SxProps<Theme>> => {
   let accentColor = theme.palette.primary.main
   let contrastColor = theme.palette.primary.contrastText
   switch (rockState) {
-    case RockStateEnum.Ready:
+    case WreckStateEnum.Ready:
       accentColor = theme.palette.primary.main
       contrastColor = theme.palette.primary.contrastText
       break
-    case RockStateEnum.Ignore:
+    case WreckStateEnum.Ignore:
       accentColor = theme.palette.grey[500]
       contrastColor = theme.palette.grey[900]
       break
-    case RockStateEnum.Depleted:
+    case WreckStateEnum.Depleted:
       accentColor = theme.palette.grey[500]
       contrastColor = theme.palette.grey[900]
       break
@@ -50,7 +51,7 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       minHeight: '140px',
       position: 'relative',
       overflow: 'hidden',
-      opacity: rockState !== RockStateEnum.Ready ? 0.5 : 1,
+      opacity: rockState !== WreckStateEnum.Ready ? 0.5 : 1,
       border: `1px solid ${accentColor}`,
       '& .MuiListItem-root': {
         flexGrow: 1,
@@ -98,6 +99,14 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
     },
+    shipName: {
+      fontFamily: fontFamilies.robotoMono,
+      fontWeight: 'bold',
+      // truncate with ellipses
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
     valueNum: {
       display: 'inline',
       fontSize: '0.7em',
@@ -106,14 +115,14 @@ const stylesThunk = (theme: Theme, rockState: RockStateEnum): Record<string, SxP
     },
     oreName: {
       color: theme.palette.text.secondary,
-      flex: '1 1 60%',
+      flex: '1 1 45%',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
     },
     orePercent: {
       textAlign: 'right',
-      flex: '1 1',
+      flex: '1 1 50%',
       color: theme.palette.text.primary,
     },
     currency: {
@@ -172,16 +181,30 @@ export const SalvageWreckCard: React.FC<SalvageWreckCardProps> = ({
   allowEdit,
 }) => {
   const theme = useTheme()
+  const dataStore = React.useContext(LookupsContext)
+  const [shipName, setShipName] = React.useState<string | undefined>(undefined)
   const styles = stylesThunk(theme, wreck.state)
   const onClickAction = allowEdit ? onEditClick : undefined
   const cursor = onClickAction ? 'pointer' : 'default'
 
+  React.useEffect(() => {
+    if (!dataStore.ready || !wreck || !wreck.shipCode) return
+    const shipLookups = dataStore.getLookup('shipLookups') as ShipLookups
+    const getShipName = async () => {
+      const ship = shipLookups.find((s) => s.UEXID === wreck.shipCode)
+      if (ship) {
+        setShipName(ship.name)
+      }
+    }
+    getShipName()
+  }, [dataStore, wreck])
+
   return (
     <Card sx={{ ...styles.card, '& *': { cursor } }}>
-      {wreck.state === RockStateEnum.Depleted && <Box sx={styles.depletedMark}>DONE</Box>}
-      {wreck.state === RockStateEnum.Ignore && <Box sx={styles.depletedMark}>IGNORE</Box>}
+      {wreck.state === WreckStateEnum.Depleted && <Box sx={styles.depletedMark}>DONE</Box>}
+      {wreck.state === WreckStateEnum.Ignore && <Box sx={styles.depletedMark}>IGNORE</Box>}
       <CardContent sx={styles.cardContent}>
-        <RockIcon
+        <ClawIcon
           onClick={onClickAction}
           sx={{
             position: 'absolute',
@@ -193,57 +216,68 @@ export const SalvageWreckCard: React.FC<SalvageWreckCardProps> = ({
           }}
         />
         <Box sx={{ ...styles.topBox, cursor }} onClick={onClickAction}>
-          TODO
-          {/* <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
-            <Typography sx={styles.massNum}>{MValueFormatter(rock.mass, MValueFormat.number_sm, 1)}</Typography>
+          <Stack direction="row" alignItems="center" sx={{ p: 0.5 }}>
+            <Typography sx={styles.shipName}>{wreck.isShip ? (shipName ? shipName : 'Ship') : 'Panel'}</Typography>
             <div style={{ flex: '1 1' }} />
             <Typography sx={styles.valueNum} component="div">
-              {rockValue ? MValueFormatter(rockValue, MValueFormat.currency_sm) : '??'}
+              {wreckValue ? MValueFormatter(wreckValue, MValueFormat.currency_sm) : '??'}
             </Typography>
-          </Stack> */}
+          </Stack>
         </Box>
 
-        {/* <List dense sx={{ ...styles.oreList, cursor: onClickAction ? 'pointer' : 'default' }} onClick={onClickAction}>
-          {wreck.ores &&
-            wreck.ores
-              .filter(({ ore }) => Boolean(ore) && ore !== ShipOreEnum.Inertmaterial)
-              .map(({ ore, percent }, idx) => (
-                <ListItem
-                  disableGutters
-                  disablePadding
-                  key={ore}
-                  sx={{ backgroundColor: idx % 2 === 0 ? '#000000aa' : 'transparent' }}
-                >
-                  <Typography component="div" sx={styles.oreName}>
-                    {getShipOreName(ore as ShipOreEnum)}
-                  </Typography>
-                  <Typography component="div" sx={styles.orePercent}>
-                    {percent ? MValueFormatter(percent, MValueFormat.percent, 0) : '??%'}
-                  </Typography>
-                </ListItem>
-              ))}
-        </List> */}
+        <List dense sx={{ ...styles.oreList, cursor: onClickAction ? 'pointer' : 'default' }} onClick={onClickAction}>
+          {wreck.salvageOres &&
+            wreck.salvageOres.map(({ ore, scu }, idx) => (
+              <ListItem
+                disableGutters
+                disablePadding
+                key={ore}
+                sx={{ backgroundColor: idx % 2 === 0 ? '#000000aa' : 'transparent' }}
+              >
+                <Typography component="div" sx={styles.oreName}>
+                  {ore}
+                </Typography>
+                <Typography component="div" sx={styles.orePercent}>
+                  {scu ? MValueFormatter(scu, MValueFormat.volSCU, 0) : '??SCU'}
+                </Typography>
+              </ListItem>
+            ))}
+          {wreck.sellableAUEC && (
+            <ListItem
+              disableGutters
+              disablePadding
+              sx={{ backgroundColor: (wreck.salvageOres.length + 1) % 2 === 0 ? '#000000aa' : 'transparent' }}
+            >
+              <Typography component="div" sx={styles.oreName}>
+                Cargo + Components
+              </Typography>
+              <Typography component="div" sx={styles.orePercent}>
+                {wreck.sellableAUEC ? MValueFormatter(wreck.sellableAUEC, MValueFormat.currency_sm, 0) : '??aUEC'}
+              </Typography>
+            </ListItem>
+          )}
+        </List>
         <Box sx={{ flexGrow: 1 }} />
         {allowEdit && (
           <ToggleButtonGroup
             size="small"
             value={wreck.state}
             exclusive
-            onChange={(e, newRockState: RockStateEnum) => {
+            onChange={(e, newRockState: WreckStateEnum) => {
               if (!onChangeState) return
-              if (!newRockState && wreck.state !== RockStateEnum.Ready) return onChangeState(RockStateEnum.Ready)
+              if (!newRockState && wreck.state !== WreckStateEnum.Ready) return onChangeState(WreckStateEnum.Ready)
               else if (wreck.state !== newRockState) return onChangeState(newRockState)
             }}
           >
             <ToggleButton
-              value={RockStateEnum.Depleted}
-              color={wreck.state === RockStateEnum.Ignore ? 'primary' : undefined}
+              value={WreckStateEnum.Depleted}
+              color={wreck.state === WreckStateEnum.Ignore ? 'primary' : undefined}
             >
               Done
             </ToggleButton>
             <ToggleButton
-              value={RockStateEnum.Ignore}
-              color={wreck.state === RockStateEnum.Ignore ? 'primary' : undefined}
+              value={WreckStateEnum.Ignore}
+              color={wreck.state === WreckStateEnum.Ignore ? 'primary' : undefined}
             >
               Ignore
             </ToggleButton>
