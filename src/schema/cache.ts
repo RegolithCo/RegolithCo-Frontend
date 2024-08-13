@@ -188,10 +188,8 @@ export type RefineryRowFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
 	yield?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SalvageFindKeySpecifier = ('CMAT' | 'RMC' | 'attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sellableAUEC' | 'sessionId' | 'state' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
+export type SalvageFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
 export type SalvageFindFieldPolicy = {
-	CMAT?: FieldPolicy<any> | FieldReadFunction<any>,
-	RMC?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendanceIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	clusterCount?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -201,7 +199,6 @@ export type SalvageFindFieldPolicy = {
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	scoutingFindId?: FieldPolicy<any> | FieldReadFunction<any>,
-	sellableAUEC?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -235,9 +232,18 @@ export type SalvageRowFieldPolicy = {
 	amt?: FieldPolicy<any> | FieldReadFunction<any>,
 	ore?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SalvageWreckKeySpecifier = ('size' | SalvageWreckKeySpecifier)[];
+export type SalvageWreckKeySpecifier = ('isShip' | 'salvageOres' | 'sellableAUEC' | 'shipCode' | 'state' | SalvageWreckKeySpecifier)[];
 export type SalvageWreckFieldPolicy = {
-	size?: FieldPolicy<any> | FieldReadFunction<any>
+	isShip?: FieldPolicy<any> | FieldReadFunction<any>,
+	salvageOres?: FieldPolicy<any> | FieldReadFunction<any>,
+	sellableAUEC?: FieldPolicy<any> | FieldReadFunction<any>,
+	shipCode?: FieldPolicy<any> | FieldReadFunction<any>,
+	state?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SalvageWreckOreKeySpecifier = ('ore' | 'scu' | SalvageWreckOreKeySpecifier)[];
+export type SalvageWreckOreFieldPolicy = {
+	ore?: FieldPolicy<any> | FieldReadFunction<any>,
+	scu?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ScoutingFindInterfaceKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | ScoutingFindInterfaceKeySpecifier)[];
 export type ScoutingFindInterfaceFieldPolicy = {
@@ -664,6 +670,10 @@ export type StrictTypedTypePolicies = {
 	SalvageWreck?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SalvageWreckKeySpecifier | (() => undefined | SalvageWreckKeySpecifier),
 		fields?: SalvageWreckFieldPolicy,
+	},
+	SalvageWreckOre?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SalvageWreckOreKeySpecifier | (() => undefined | SalvageWreckOreKeySpecifier),
+		fields?: SalvageWreckOreFieldPolicy,
 	},
 	ScoutingFindInterface?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ScoutingFindInterfaceKeySpecifier | (() => undefined | ScoutingFindInterfaceKeySpecifier),

@@ -277,7 +277,14 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   }
   ... on SalvageFind {
     wrecks {
-      size
+      state
+      isShip
+      shipCode
+      salvageOres {
+        ore
+        scu
+      }
+      sellableAUEC
     }
   }
 }

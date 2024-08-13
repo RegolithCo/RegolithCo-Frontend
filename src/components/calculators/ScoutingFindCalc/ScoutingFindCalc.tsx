@@ -59,6 +59,9 @@ import { NoteAddDialog } from '../../modals/NoteAddDialog'
 import { yellow } from '@mui/material/colors'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { SalvageWreckCard } from '../../cards/SalvageWreckCard'
+import { ScoutingFindRocks } from './ScoutingFindRocks'
+import { ScoutingFindWrecks } from './ScoutingFindWrecks'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -369,7 +372,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   }
 
   // Just a handy array to map over
-  const placeholderRocks: unknown[] =
+  const placeholderItems: unknown[] =
     clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
 
   const onSiteUsers: User[] =
@@ -580,7 +583,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               )}
             </Stack>
 
-            {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage && (
+            {/* {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage && (
               <Typography
                 variant="caption"
                 component="div"
@@ -593,7 +596,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 Note: Salvage scouting is still pretty new so all you can do for now is report the number of wrecks in
                 an area.
               </Typography>
-            )}
+            )} */}
             {!standalone && (
               <Tooltip title="Add a note">
                 <Box onClick={() => setOpenNoteDialog(true)}>
@@ -703,148 +706,20 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         </Grid>
         {/* Rock scans */}
         {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
-          <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
-            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ display: 'flex' }}>
-                <Typography variant="overline" component="div">
-                  Rocks Scanned: {shipFind.shipRocks?.length || vehicleFind.vehicleRocks?.length || 0}/
-                  {shipFind.clusterCount || 0}
-                </Typography>
-                <div style={{ flexGrow: 1 }} />
-                {allowEdit && (
-                  <Button
-                    startIcon={<AddCircle />}
-                    size="small"
-                    variant="text"
-                    onClick={() => {
-                      setEditScanModalOpen([-1, false])
-                      // setAddScanModalOpen({
-                      //   __typename: 'ShipRock',
-                      //   state: RockStateEnum.Ready,
-                      //   mass: 3000,
-                      //   ores: [],
-                      // })
-                      onChange &&
-                        onChange({
-                          ...shipFind,
-                          clusterCount: (shipFind.clusterCount || 0) + 1,
-                        })
-                    }}
-                  >
-                    Add Rock
-                  </Button>
-                )}
-              </Box>
-              <Grid
-                container
-                sx={isShare ? styles.scansGridShare : styles.scansGrid}
-                margin={{ xs: 0, sm: 1 }}
-                spacing={{ xs: 1, sm: 2 }}
-              >
-                {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
-                  (shipFind.shipRocks || []).map((rock, idx) => {
-                    const newOres = [...(rock.ores || [])]
-                    newOres.sort((a, b) => (b.percent || 0) - (a.percent || 0))
-                    const newRock = { ...rock, ores: newOres }
-                    return (
-                      <Grid key={idx} xs={6} sm={4} md={3}>
-                        <ShipRockCard
-                          rock={newRock}
-                          rockValue={
-                            summary.byRock && summary.byRock.length > idx ? summary.byRock[idx].value : undefined
-                          }
-                          allowEdit={allowEdit}
-                          onChangeState={(newState) => {
-                            onChange &&
-                              onChange({
-                                ...shipFind,
-                                shipRocks: (shipFind.shipRocks || []).map((r, idxx) => ({
-                                  ...r,
-                                  state: idxx === idx ? newState : r.state,
-                                })),
-                              })
-                          }}
-                          onEditClick={() => {
-                            setAddScanModalOpen(false)
-                            setEditScanModalOpen([idx, rock])
-                          }}
-                        />
-                      </Grid>
-                    )
-                  })}
-                {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
-                  placeholderRocks.map((_, idx) => (
-                    <Grid key={idx} xs={6} sm={4} md={3}>
-                      <EmptyScanCard
-                        Icon={RockIcon}
-                        onDelete={() => {
-                          if (!shipFind.shipRocks || !shipFind.clusterCount) return
-                          if (shipFind.clusterCount <= shipFind.shipRocks.length) return
-                          onChange &&
-                            onChange({
-                              ...shipFind,
-                              clusterCount: shipFind.clusterCount - 1,
-                            })
-                        }}
-                        onClick={() => {
-                          setEditScanModalOpen([-1, false])
-                          setAddScanModalOpen({
-                            __typename: 'ShipRock',
-                            state: RockStateEnum.Ready,
-                            mass: 3000,
-                            ores: [],
-                          })
-                        }}
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
-            </Box>
-          </Grid>
+          <ScoutingFindRocks
+            shipFind={shipFind}
+            summary={summary}
+            allowEdit={allowEdit}
+            isShare={isShare}
+            onChange={onChange}
+          />
+        )}
+        {/* Salvage scans */}
+        {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage && (
+          <ScoutingFindWrecks salvageFind={salvageFind} summary={summary} allowEdit={allowEdit} onChange={onChange} />
         )}
       </Grid>
-      {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
-        <ShipRockEntryModal
-          open={addScanModalOpen !== false || editScanModalOpen[1] !== false}
-          isNew={addScanModalOpen !== false}
-          onClose={() => {
-            addScanModalOpen !== false && setAddScanModalOpen(false)
-            editScanModalOpen[1] !== false && setEditScanModalOpen([-1, false])
-          }}
-          onDelete={() => {
-            // Just discard. No harm, no foul
-            addScanModalOpen !== false && setAddScanModalOpen(false)
-            // Actually remove the rock from the list
-            if (editScanModalOpen[1] !== false) {
-              onChange &&
-                onChange({
-                  ...(shipFind || {}),
-                  shipRocks: (shipFind?.shipRocks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
-                })
-              setEditScanModalOpen([-1, false])
-            }
-          }}
-          onSubmit={(rock) => {
-            if (addScanModalOpen !== false) {
-              onChange &&
-                onChange({
-                  ...(shipFind || {}),
-                  clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
-                  shipRocks: [...(shipFind?.shipRocks || []), rock],
-                })
-              setAddScanModalOpen(false)
-            } else if (editScanModalOpen[1] !== false) {
-              onChange &&
-                onChange({
-                  ...(shipFind || {}),
-                  shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
-                })
-              setEditScanModalOpen([-1, false])
-            }
-          }}
-          shipRock={addScanModalOpen !== false ? addScanModalOpen : (editScanModalOpen[1] as ShipRock)}
-        />
-      )}
+
       <ScoutingClusterCountModal
         open={editCountModalOpen}
         clusterCount={shipFind?.clusterCount || 1}

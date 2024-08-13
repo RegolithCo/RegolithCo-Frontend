@@ -61,7 +61,7 @@ export const EmptyScanCard: React.FC<EmptyScanCardProps> = ({ onClick, Icon, onD
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <Tooltip title="Delete this rock from the cluster" placement="top">
+      <Tooltip title="Delete from the cluster" placement="top">
         <Cancel
           sx={styles.deleteButton}
           onClick={(e) => {
@@ -71,7 +71,7 @@ export const EmptyScanCard: React.FC<EmptyScanCardProps> = ({ onClick, Icon, onD
           }}
         />
       </Tooltip>
-      <Tooltip title="Add a rock to this cluster" placement="top">
+      <Tooltip title="Add to this cluster" placement="top">
         <Card sx={styles.card} onClick={onClick}>
           <Icon sx={styles.waterMark} />
           <IconButton sx={styles.iconButton}>
