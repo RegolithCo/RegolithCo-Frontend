@@ -10,6 +10,7 @@ export const WorkOrderListFragmentFragmentDoc = gql`
   updatedAt
   ownerId
   sellerscName
+  sellerUserId
   state
   failReason
   isSold
@@ -40,6 +41,7 @@ export const WorkOrderIdFragmentFragmentDoc = gql`
   failReason
   ownerId
   sellerscName
+  sellerUserId
   shareAmount
   sellStore
   state
@@ -313,6 +315,7 @@ export const WorkOrderFragmentFragmentDoc = gql`
   ownerId
   isSold
   sellerscName
+  sellerUserId
   owner {
     ...UserFragment
   }
