@@ -104,7 +104,7 @@ export const SessionSettingFragmentFragmentDoc = gql`
     includeTransferFee
     crewShares {
       note
-      scName
+      payeeScName
       share
       shareType
     }
@@ -293,7 +293,8 @@ ${SessionUserFragmentFragmentDoc}`;
 export const CrewShareFragmentFragmentDoc = gql`
     fragment CrewShareFragment on CrewShare {
   sessionId
-  scName
+  payeeScName
+  payeeUserId
   orderId
   shareType
   share
@@ -1488,11 +1489,16 @@ export type UpsertCrewShareMutationHookResult = ReturnType<typeof useUpsertCrewS
 export type UpsertCrewShareMutationResult = Apollo.MutationResult<types.UpsertCrewShareMutation>;
 export type UpsertCrewShareMutationOptions = Apollo.BaseMutationOptions<types.UpsertCrewShareMutation, types.UpsertCrewShareMutationVariables>;
 export const DeleteCrewShareDocument = gql`
-    mutation deleteCrewShare($sessionId: ID!, $orderId: ID!, $scName: String!) {
-  deleteCrewShare(sessionId: $sessionId, orderId: $orderId, scName: $scName) {
+    mutation deleteCrewShare($sessionId: ID!, $orderId: ID!, $payeeScName: String!) {
+  deleteCrewShare(
+    sessionId: $sessionId
+    orderId: $orderId
+    payeeScName: $payeeScName
+  ) {
     sessionId
     orderId
-    scName
+    payeeScName
+    payeeUserId
   }
 }
     `;
@@ -1513,7 +1519,7 @@ export type DeleteCrewShareMutationFn = Apollo.MutationFunction<types.DeleteCrew
  *   variables: {
  *      sessionId: // value for 'sessionId'
  *      orderId: // value for 'orderId'
- *      scName: // value for 'scName'
+ *      payeeScName: // value for 'payeeScName'
  *   },
  * });
  */

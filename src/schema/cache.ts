@@ -22,12 +22,13 @@ export type CIGLookupsFieldPolicy = {
 	oreProcessingLookup?: FieldPolicy<any> | FieldReadFunction<any>,
 	refineryBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type CrewShareKeySpecifier = ('createdAt' | 'note' | 'orderId' | 'scName' | 'session' | 'sessionId' | 'share' | 'shareType' | 'state' | 'updatedAt' | 'workOrder' | CrewShareKeySpecifier)[];
+export type CrewShareKeySpecifier = ('createdAt' | 'note' | 'orderId' | 'payeeScName' | 'payeeUserId' | 'session' | 'sessionId' | 'share' | 'shareType' | 'state' | 'updatedAt' | 'workOrder' | CrewShareKeySpecifier)[];
 export type CrewShareFieldPolicy = {
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
 	orderId?: FieldPolicy<any> | FieldReadFunction<any>,
-	scName?: FieldPolicy<any> | FieldReadFunction<any>,
+	payeeScName?: FieldPolicy<any> | FieldReadFunction<any>,
+	payeeUserId?: FieldPolicy<any> | FieldReadFunction<any>,
 	session?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -36,10 +37,10 @@ export type CrewShareFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrder?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type CrewShareTemplateKeySpecifier = ('note' | 'scName' | 'share' | 'shareType' | CrewShareTemplateKeySpecifier)[];
+export type CrewShareTemplateKeySpecifier = ('note' | 'payeeScName' | 'share' | 'shareType' | CrewShareTemplateKeySpecifier)[];
 export type CrewShareTemplateFieldPolicy = {
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
-	scName?: FieldPolicy<any> | FieldReadFunction<any>,
+	payeeScName?: FieldPolicy<any> | FieldReadFunction<any>,
 	share?: FieldPolicy<any> | FieldReadFunction<any>,
 	shareType?: FieldPolicy<any> | FieldReadFunction<any>
 };
