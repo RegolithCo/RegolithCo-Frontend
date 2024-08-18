@@ -437,7 +437,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     )
                     setNewSettings({
                       ...newSettings,
-                      crewSharesDefaults: makeInputs.filter(({ scName: deleteMe }) => scName !== deleteMe),
+                      crewSharesDefaults: makeInputs.filter(({ payeeScName: deleteMe }) => scName !== deleteMe),
                     })
                   }}
                   crewShareTemplates={

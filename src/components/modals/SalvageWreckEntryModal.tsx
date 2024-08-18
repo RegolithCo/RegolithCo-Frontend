@@ -45,7 +45,7 @@ import { DeleteModal } from './DeleteModal'
 import Numeral from 'numeral'
 import { LookupsContext } from '../../context/lookupsContext'
 import { VehicleChooser } from '../fields/VehicleChooser'
-import log from 'loglevel'
+// import log from 'loglevel'
 
 export const SHIP_ROCK_BOUNDS = [1, 200000]
 

@@ -88,7 +88,7 @@ export const CrewShareTemplateTable: React.FC<CrewShareTemplateTableProps> = ({
               key={`crewShare-${idx}`}
               crewShare={crewShare}
               onDelete={() => {
-                onDeleteCrewShare && onDeleteCrewShare(crewShare.scName)
+                onDeleteCrewShare && onDeleteCrewShare(crewShare.payeeScName)
               }}
               onChange={(newCrewShare) => {
                 onChange(crewShareTemplates.map((cs, i) => (i === idx ? newCrewShare : cs)))
@@ -130,7 +130,9 @@ export const CrewShareTemplateTable: React.FC<CrewShareTemplateTableProps> = ({
           if (Array.isArray(option) && option[0]) return option[0]
           else return ''
         }}
-        getOptionDisabled={(option) => (crewShareTemplates || []).find((cs) => cs.scName === option[0]) !== undefined}
+        getOptionDisabled={(option) =>
+          (crewShareTemplates || []).find((cs) => cs.payeeScName === option[0]) !== undefined
+        }
         options={Object.entries(userSuggest || {})}
         sx={{ my: 3 }}
         fullWidth
@@ -154,7 +156,7 @@ export const CrewShareTemplateTable: React.FC<CrewShareTemplateTableProps> = ({
             onChange([
               ...(crewShareTemplates || []),
               {
-                scName: addName,
+                payeeScName: addName,
                 shareType: ShareTypeEnum.Share,
                 share: 1,
               },

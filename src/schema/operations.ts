@@ -316,6 +316,9 @@ export const WorkOrderFragmentFragmentDoc = gql`
   isSold
   sellerscName
   sellerUserId
+  seller {
+    ...UserFragment
+  }
   owner {
     ...UserFragment
   }
@@ -1416,11 +1419,11 @@ export type LeaveSessionMutationHookResult = ReturnType<typeof useLeaveSessionMu
 export type LeaveSessionMutationResult = Apollo.MutationResult<types.LeaveSessionMutation>;
 export type LeaveSessionMutationOptions = Apollo.BaseMutationOptions<types.LeaveSessionMutation, types.LeaveSessionMutationVariables>;
 export const MarkCrewSharePaidDocument = gql`
-    mutation markCrewSharePaid($sessionId: ID!, $orderId: ID!, $scName: String!, $isPaid: Boolean!) {
+    mutation markCrewSharePaid($sessionId: ID!, $orderId: ID!, $payeeScName: String!, $isPaid: Boolean!) {
   markCrewSharePaid(
     sessionId: $sessionId
     orderId: $orderId
-    scName: $scName
+    payeeScName: $payeeScName
     isPaid: $isPaid
   ) {
     ...CrewShareFragment
@@ -1444,7 +1447,7 @@ export type MarkCrewSharePaidMutationFn = Apollo.MutationFunction<types.MarkCrew
  *   variables: {
  *      sessionId: // value for 'sessionId'
  *      orderId: // value for 'orderId'
- *      scName: // value for 'scName'
+ *      payeeScName: // value for 'payeeScName'
  *      isPaid: // value for 'isPaid'
  *   },
  * });

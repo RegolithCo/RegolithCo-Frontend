@@ -153,8 +153,9 @@ export const SessionPageContainer: React.FC = () => {
 
   const createWorkOrder = async (workOrder: WorkOrder) => {
     const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
-      ({ scName, share, shareType, state, note }) => ({
-        scName,
+      ({ payeeScName, payeeUserId, share, shareType, state, note }) => ({
+        payeeScName,
+        payeeUserId,
         share,
         shareType,
         state: Boolean(state),
@@ -167,8 +168,9 @@ export const SessionPageContainer: React.FC = () => {
 
   const updateModalWorkOrder = async (workOrder: WorkOrder) => {
     const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
-      ({ scName, share, shareType, state, note }) => ({
-        scName,
+      ({ payeeScName, payeeUserId, share, shareType, state, note }) => ({
+        payeeScName,
+        payeeUserId,
         share,
         shareType,
         state: Boolean(state),
@@ -194,7 +196,7 @@ export const SessionPageContainer: React.FC = () => {
   // TODO: Need to fold this into the API call I think OR let session users add referenced users
   const createNewMentionedUsers = async (newShares: CrewShareInput[]): Promise<void> => {
     if (newShares && newShares.length > 0) {
-      const shareNames = newShares.map((s) => s.scName)
+      const shareNames = newShares.map((s) => s.payeeScName)
       const activeNames = (sessionQueries.session?.activeMembers?.items || []).map(({ owner }) => owner?.scName)
       const addToMentioned = shareNames.filter(
         (s) => !sessionQueries.session?.mentionedUsers?.find((u) => u.scName === s) && !activeNames.includes(s)

@@ -108,7 +108,7 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
               ...(workOrders ? workOrders : {}),
               [activeActivity]: {
                 ...activeWorkOrder,
-                crewShares: (activeWorkOrder.crewShares || [])?.filter((share) => share.scName !== scName),
+                crewShares: (activeWorkOrder.crewShares || [])?.filter((share) => share.payeeScName !== scName),
               },
             }
             setWorkOrders(newWorkOrders)
@@ -120,7 +120,7 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
               [activeActivity]: {
                 ...activeWorkOrder,
                 crewShares: (activeWorkOrder.crewShares || [])?.map((share) => {
-                  if (share.scName === crewShare.scName) return { ...share, state: paid }
+                  if (share.payeeScName === crewShare.payeeScName) return { ...share, state: paid }
                   return share
                 }),
               },

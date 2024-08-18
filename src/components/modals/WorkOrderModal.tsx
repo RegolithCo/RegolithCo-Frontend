@@ -273,7 +273,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                   setNewWorkOrder({
                     ...newWorkOrder,
                     crewShares: (newWorkOrder.crewShares || [])?.map((share) => {
-                      if (share.scName === crewShare.scName) return { ...share, state: paid }
+                      if (share.payeeScName === crewShare.payeeScName) return { ...share, state: paid }
                       return share
                     }),
                   })
@@ -282,7 +282,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               onDeleteCrewShare={(scName: string) => {
                 setNewWorkOrder({
                   ...newWorkOrder,
-                  crewShares: (newWorkOrder.crewShares || [])?.filter((share) => share.scName !== scName),
+                  crewShares: (newWorkOrder.crewShares || [])?.filter((share) => share.payeeScName !== scName),
                 })
               }}
               workOrder={newWorkOrder}

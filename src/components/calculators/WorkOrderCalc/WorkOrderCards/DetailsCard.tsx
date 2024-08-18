@@ -247,7 +247,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
                         const newCrewShares = (workOrder.crewShares || []).map((share) => {
                           // If this is a new workorder then we want to uncheck the paid box when we change the seller
                           let paid = share.state
-                          if (workOrder.sellerscName && share.scName === workOrder.sellerscName && isNew) {
+                          if (workOrder.sellerscName && share.payeeScName === workOrder.sellerscName && isNew) {
                             paid = false
                           }
                           return {
@@ -255,10 +255,10 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
                             state: paid,
                           }
                         })
-                        if (!newCrewShares.find((share) => share.scName === workOrder.owner?.scName)) {
+                        if (!newCrewShares.find((share) => share.payeeScName === workOrder.owner?.scName)) {
                           if (workOrder.owner?.scName)
                             newCrewShares.push({
-                              scName: workOrder.owner?.scName,
+                              payeeScName: workOrder.owner?.scName,
                               state: true,
                               shareType: ShareTypeEnum.Share,
                               createdAt: Date.now(),
@@ -360,7 +360,7 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
           const newCrewShares = (workOrder.crewShares || []).map((share) => {
             // If this is a new workorder then we want to uncheck the paid box for the USER when we change the seller
             let paid = share.state
-            if (share.scName === workOrder.owner?.scName && isNew) {
+            if (share.payeeScName === workOrder.owner?.scName && isNew) {
               paid = false
             }
             return {
@@ -368,9 +368,9 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
               state: paid,
             }
           })
-          if (!newCrewShares.find((share) => share.scName === seller)) {
+          if (!newCrewShares.find((share) => share.payeeScName === seller)) {
             newCrewShares.push({
-              scName: seller,
+              payeeScName: seller,
               state: true,
               shareType: ShareTypeEnum.Share,
               createdAt: Date.now(),

@@ -91,8 +91,8 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     <>
       <Tooltip title={tooltip} arrow placement="left" enterDelay={1000}>
         <TableRow sx={{ background: backgroundColor }}>
-          {isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
-          {!isSeller && <TableCell>{getSafeName(crewShare.scName)}</TableCell>}
+          {isSeller && <TableCell>{getSafeName(crewShare.payeeScName)}</TableCell>}
+          {!isSeller && <TableCell>{getSafeName(crewShare.payeeScName)}</TableCell>}
 
           {isEditing && !isMandatory ? formatCrewShareTypeEdit(crewShare, onChange) : formatCrewShareType(crewShare)}
           {formatCrewShare(crewShare, onChange, Boolean(isEditing && !isMandatory), editingShare, setEditingShare)}
@@ -154,7 +154,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
 
       {/* NOTE DIALOG */}
       <NoteAddDialog
-        title={`Note for: ${getSafeName(crewShare.scName)}`}
+        title={`Note for: ${getSafeName(crewShare.payeeScName)}`}
         open={openNoteDialog}
         onClose={() => setOpenNoteDialog(false)}
         note={crewShare.note as string}

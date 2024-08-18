@@ -293,7 +293,7 @@ export const OwingList: React.FC<OwingListProps> = ({
             return (sellerscName || owner?.scName) === payerSCName
           })
           .reduce((acc, wo) => {
-            const crewShare = (wo.crewShares || []).find((cs) => cs.scName === payeeSCName)
+            const crewShare = (wo.crewShares || []).find((cs) => cs.payeeScName === payeeSCName)
             if (crewShare) acc.push(crewShare)
             return acc
           }, [] as CrewShare[])
@@ -382,7 +382,7 @@ export const OwingList: React.FC<OwingListProps> = ({
                     <TableBody>
                       {crewShares.map((cs, idx) => {
                         const hasNote = cs.note && cs.note.length > 0
-                        const isMe = cs.scName === sessionUser?.owner?.scName
+                        const isMe = cs.payeeScName === sessionUser?.owner?.scName
                         let shareVal: React.ReactElement
                         switch (cs.shareType) {
                           case ShareTypeEnum.Amount:
@@ -402,11 +402,11 @@ export const OwingList: React.FC<OwingListProps> = ({
                         const { remainder, payoutSummary } = sessionSummary.orderBreakdowns[cs.orderId]
                         const finalPayout: ShareAmtArr = isMe
                           ? [
-                              payoutSummary[cs.scName][0] + (remainder || 0),
-                              payoutSummary[cs.scName][1] + (remainder || 0),
+                              payoutSummary[cs.payeeScName][0] + (remainder || 0),
+                              payoutSummary[cs.payeeScName][1] + (remainder || 0),
                               0,
                             ]
-                          : payoutSummary[cs.scName]
+                          : payoutSummary[cs.payeeScName]
                         return (
                           <TableRow
                             key={`wo-${idx}`}

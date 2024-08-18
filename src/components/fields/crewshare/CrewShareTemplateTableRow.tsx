@@ -40,7 +40,7 @@ export const CrewShareTemplateTableRow: React.FC<CrewShareTemplateTableRowProps>
   return (
     <>
       <TableRow>
-        <TableCell padding="none">{crewShare.scName}</TableCell>
+        <TableCell padding="none">{crewShare.payeeScName}</TableCell>
 
         {formatCrewShareTypeEdit(crewShareInput, onChange)}
         {formatCrewShare(crewShareInput, onChange, editingShare, setEditingShare)}

@@ -418,7 +418,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
                 ...sessionQry.session?.workOrders,
                 items: (sessionQry.session?.workOrders?.items as WorkOrder[]).map((wo) => ({
                   ...wo,
-                  crewShares: (wo.crewShares as CrewShare[]).filter((cs) => !scNames.includes(cs.scName)),
+                  crewShares: (wo.crewShares as CrewShare[]).filter((cs) => !scNames.includes(cs.payeeScName)),
                 })),
               },
             },
@@ -476,7 +476,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
                       .filter(({ ownerId }) => (activeUser ? ownerId !== activeUser.ownerId : true))
                       .map((wo) => ({
                         ...wo,
-                        crewShares: (wo.crewShares as CrewShare[]).filter((cs) => cs.scName !== scName),
+                        crewShares: (wo.crewShares as CrewShare[]).filter((cs) => cs.payeeScName !== scName),
                       })),
                   }
                 : undefined,
@@ -671,8 +671,8 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         shareAmount,
         sellStore,
       }
-      const newShares: CrewShareInput[] = (crewShares || []).map(({ scName, share, shareType, state, note }) => ({
-        scName,
+      const newShares: CrewShareInput[] = (crewShares || []).map(({ payeeScName, share, shareType, state, note }) => ({
+        payeeScName,
         share,
         shareType,
         state: Boolean(state),
@@ -725,12 +725,12 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     // NOTE: This looks similar to "setCrewSharePaid" in useWorkOrder.ts but it's much more lightweight
     markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => {
-      const { orderId, sessionId, scName } = crewShare
+      const { orderId, sessionId, payeeScName } = crewShare
       markCrewSharePaidMutation[0]({
         variables: {
           sessionId,
           orderId,
-          scName,
+          payeeScName,
           isPaid,
         },
         optimisticResponse: () => ({

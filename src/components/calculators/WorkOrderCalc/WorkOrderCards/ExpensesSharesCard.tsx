@@ -29,6 +29,7 @@ import {
   CrewShare,
   ShareTypeEnum,
   StoreChoice,
+  UserSuggest,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
@@ -415,15 +416,15 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                       color="primary"
                       startIcon={<GroupAddTwoTone />}
                       onClick={() => {
-                        const newShares: string[] = Object.entries(userSuggest)
-                          .reduce((acc, [scName, { named, session }]) => {
-                            if (named || session) {
-                              acc.push(scName)
+                        const newShares: UserSuggest[0][] = Object.entries(userSuggest)
+                          .reduce((acc, [scName, entry]) => {
+                            if (entry.named || entrysession) {
+                              acc.push([scName, userId])
                             }
                             return acc
                           }, [] as string[])
                           .filter((scName) => {
-                            return !workOrder.crewShares?.find((cs) => cs.scName === scName)
+                            return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
                           })
 
                         // Make sure we have something to add
@@ -432,21 +433,20 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                           ...workOrder,
                           crewShares: [
                             ...(workOrder.crewShares || []),
-                            ...newShares.map(
-                              (scName) =>
-                                ({
-                                  scName,
-                                  shareType: ShareTypeEnum.Share,
-                                  share: 1,
-                                  note: null,
-                                  createdAt: Date.now(),
-                                  orderId: workOrder.orderId,
-                                  sessionId: workOrder.sessionId,
-                                  updatedAt: Date.now(),
-                                  state: false,
-                                  __typename: 'CrewShare',
-                                }) as CrewShare
-                            ),
+                            ...newShares.map((payeeScName) => {
+                              return {
+                                payeeScName,
+                                shareType: ShareTypeEnum.Share,
+                                share: 1,
+                                note: null,
+                                createdAt: Date.now(),
+                                orderId: workOrder.orderId,
+                                sessionId: workOrder.sessionId,
+                                updatedAt: Date.now(),
+                                state: false,
+                                __typename: 'CrewShare',
+                              } as CrewShare
+                            }),
                           ],
                         })
                       }}
@@ -470,7 +470,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                             return acc
                           }, [] as string[])
                           .filter((scName) => {
-                            return !workOrder.crewShares?.find((cs) => cs.scName === scName)
+                            return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
                           })
 
                         // Make sure we have something to add
@@ -480,9 +480,9 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                           crewShares: [
                             ...(workOrder.crewShares || []),
                             ...newShares.map(
-                              (scName) =>
+                              (payeeScName) =>
                                 ({
-                                  scName,
+                                  payeeScName,
                                   shareType: ShareTypeEnum.Share,
                                   share: 1,
                                   note: null,
@@ -510,7 +510,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                       const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
                       onChange({
                         ...workOrder,
-                        crewShares: workOrder.crewShares?.filter((cs) => cs.scName === ownerSCName) || [],
+                        crewShares: workOrder.crewShares?.filter((cs) => cs.payeeScName === ownerSCName) || [],
                       })
                     }}
                   >

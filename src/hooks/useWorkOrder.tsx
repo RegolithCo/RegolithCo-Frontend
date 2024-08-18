@@ -85,7 +85,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           workOrder: {
             ...newWorkOrderQry.workOrder,
             crewShares: (newWorkOrderQry.workOrder?.crewShares || []).filter(
-              (cs) => cs.scName !== data?.deleteCrewShare?.scName
+              (cs) => cs.payeeScName !== data?.deleteCrewShare?.payeeScName
             ),
           },
         },
@@ -249,19 +249,19 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           },
         }),
       }),
-    deleteCrewShare: (scName: string) => {
+    deleteCrewShare: (payeeScName: string) => {
       return deleteCrewShareMutation[0]({
         variables: {
           sessionId,
           orderId,
-          scName,
+          payeeScName,
         },
         optimisticResponse: () => ({
           __typename: 'Mutation',
           deleteCrewShare: {
             sessionId,
             orderId,
-            scName,
+            payeeScName,
             __typename: 'CrewShare',
           },
         }),

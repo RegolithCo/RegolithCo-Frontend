@@ -62,7 +62,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   const typeOrder = [ShareTypeEnum.Amount, ShareTypeEnum.Percent, ShareTypeEnum.Share]
   sortedCrewshares.sort(([, csa], [, csb]) => {
     // Owner to the top
-    if (csa.scName === workOrder.owner?.scName) {
+    if (csa.payeeScName === workOrder.owner?.scName) {
       return 1
     }
     // Sort by index of the type order
@@ -70,7 +70,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
       return typeOrder.indexOf(csa.shareType) - typeOrder.indexOf(csb.shareType)
     }
     // sort by scName
-    return csa.scName.localeCompare(csb.scName)
+    return csa.payeeScName.localeCompare(csb.payeeScName)
   })
 
   const numSharesTotal = sortedCrewshares.reduce(
@@ -78,7 +78,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
     0
   )
 
-  const sessionRows = (templateJob?.crewShares || []).map(({ scName }) => scName)
+  const sessionRows = (templateJob?.crewShares || []).map(({ payeeScName }) => payeeScName)
   const mandatoryRows = templateJob?.lockedFields && templateJob?.lockedFields.includes('crewShares') ? sessionRows : []
 
   return (
@@ -113,20 +113,20 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             <CrewShareTableRow
               key={`crewShare-${idx}`}
               crewShare={crewShare}
-              isMe={crewShare.scName === workOrder.owner?.scName}
+              isMe={crewShare.payeeScName === workOrder.owner?.scName}
               isShare={isShare}
               isSeller={
                 workOrder.sellerscName
-                  ? crewShare.scName === workOrder.sellerscName
-                  : crewShare.scName === workOrder.owner?.scName
+                  ? crewShare.payeeScName === workOrder.sellerscName
+                  : crewShare.payeeScName === workOrder.owner?.scName
               }
               allowPay={allowPay}
               numSharesTotal={numSharesTotal}
-              isMandatory={mandatoryRows.includes(crewShare.scName)}
-              isSessionRow={sessionRows.includes(crewShare.scName)}
+              isMandatory={mandatoryRows.includes(crewShare.payeeScName)}
+              isSessionRow={sessionRows.includes(crewShare.payeeScName)}
               includeTransferFee={Boolean(workOrder.includeTransferFee)}
               onDelete={() => {
-                onDeleteCrewShare && onDeleteCrewShare(crewShare.scName)
+                onDeleteCrewShare && onDeleteCrewShare(crewShare.payeeScName)
               }}
               onChange={(newCrewShare) => {
                 onChange({
@@ -151,7 +151,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             onChange={(addName) => {
               if (
                 validateSCName(addName) &&
-                !(workOrder.crewShares || []).find((cs) => cs.scName.toLowerCase() === addName.toLowerCase())
+                !(workOrder.crewShares || []).find((cs) => cs.payeeScName.toLowerCase() === addName.toLowerCase())
               ) {
                 setKeyCounter(keyCounter + 1)
                 onChange({
@@ -159,7 +159,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
                   crewShares: [
                     ...(workOrder.crewShares || []),
                     {
-                      scName: addName,
+                      payeeScName: addName,
                       shareType: ShareTypeEnum.Share,
                       share: 1,
                       note: null,
@@ -184,7 +184,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             userSuggest={userSuggest}
             includeFriends
             includeMentioned
-            disableList={workOrder.crewShares?.map((cs) => cs.scName) || []}
+            disableList={workOrder.crewShares?.map((cs) => cs.payeeScName) || []}
           />
         </Box>
       )}

@@ -86,10 +86,16 @@ export function booleanDefault(cascade: (Maybe<boolean> | undefined)[]): boolean
   return undefined
 }
 
-export function defaultCrewShare(sessionId: string, scName: string, isPaid: boolean): CrewShare {
+export function defaultCrewShare(
+  sessionId: string,
+  payeeScName: string,
+  isPaid: boolean,
+  payeeUserId?: string
+): CrewShare {
   return {
     orderId: 'NEWWORKORDER', // This is a placeholder. it will never be committed
-    scName: scName,
+    payeeScName,
+    payeeUserId,
     sessionId: sessionId,
     shareType: ShareTypeEnum.Share,
     share: 1,
@@ -115,25 +121,33 @@ export function newWorkOrderMaker(
 
   // Convenience typings
   const defaultCrewShares: CrewShare[] = defaults.crewShares
-    ? defaults.crewShares.map(({ scName, share, shareType, note }) => ({
-        ...defaultCrewShare(session.sessionId, scName, false),
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        orderId: 'NEWWORKORDER', // This is a placeholder. it will never be committed
-        sessionId: session.sessionId,
-        state: false,
-        scName,
-        share,
-        shareType,
-        note,
-        __typename: 'CrewShare',
-      }))
+    ? defaults.crewShares.map(({ payeeScName, share, shareType, note }) => {
+        // If the payee is a crew member, then we need to look up their userId
+        const lookupPayeeId = session.activeMembers?.items.find(
+          (su) => su.owner?.scName.toLowerCase() === payeeScName.toLowerCase()
+        )
+        return {
+          ...defaultCrewShare(session.sessionId, payeeScName, false, lookupPayeeId?.ownerId),
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          orderId: 'NEWWORKORDER', // This is a placeholder. it will never be committed
+          sessionId: session.sessionId,
+          state: false,
+          payeeScName,
+          payeeUserId: lookupPayeeId?.ownerId,
+          share,
+          shareType,
+          note,
+          __typename: 'CrewShare',
+        }
+      })
     : []
   // this is for reference and easy searching
-  const defaultCrewScNames = defaultCrewShares.map((cs) => cs.scName)
+  const defaultCrewScNames = defaultCrewShares.map((cs) => cs.payeeScName)
 
   const crewHierarchyShares: CrewShare[] = []
   let sellerscName: string | undefined
+  let sellerUserId: string | undefined
 
   // If we're a member of a crew then we need to add our crew as a default
   if (crewHierarchy) {
@@ -144,15 +158,18 @@ export function newWorkOrderMaker(
       : undefined
     if (myCaptain) {
       sellerscName = myCaptain.owner?.scName
+      sellerUserId = myCaptain.owner?.userId
       // Make sure the captain gets a crew share
       // If they are already added through default crew share then just set them paid
       if (defaultCrewScNames.includes(myCaptain.owner?.scName as string)) {
-        const found = defaultCrewShares.find((cs) => cs.scName === myCaptain.owner?.scName) as CrewShare
+        const found = defaultCrewShares.find((cs) => cs.payeeScName === myCaptain.owner?.scName) as CrewShare
         found.state = true
       }
       // Otherwise add a new row
       else {
-        crewHierarchyShares.push(defaultCrewShare(session.sessionId, myCaptain.owner?.scName as string, true))
+        crewHierarchyShares.push(
+          defaultCrewShare(session.sessionId, myCaptain.owner?.scName as string, true, myCaptain.owner?.userId)
+        )
       }
     }
     const crew = crewHierarchy[myCaptain ? myCaptain.ownerId : mySessionUser.ownerId]
@@ -163,7 +180,7 @@ export function newWorkOrderMaker(
         su.ownerId !== mySessionUser.ownerId && // Not me (I get added later)
         !defaultCrewScNames.includes(su.owner?.scName as string) // not already added as a default share
       ) {
-        crewHierarchyShares.push(defaultCrewShare(session.sessionId, su.owner?.scName as string, false))
+        crewHierarchyShares.push(defaultCrewShare(session.sessionId, su.owner?.scName as string, false, su.ownerId))
       }
     })
     // All the inactive members of the crew get a crew share
@@ -182,10 +199,10 @@ export function newWorkOrderMaker(
   // Push a default crewShare for me if there isn't one already
   // Only set it paid if the seller is not set
   if (!defaultCrewScNames.includes(owner.scName)) {
-    crewShares.push(defaultCrewShare(session.sessionId, owner.scName, !sellerscName))
+    crewShares.push(defaultCrewShare(session.sessionId, owner.scName, !sellerscName, owner.userId))
   } else {
     // If I'm already in the default crew shares, then set me paid
-    const found = crewShares.find((cs) => cs.scName === owner.scName) as CrewShare
+    const found = crewShares.find((cs) => cs.payeeScName === owner.scName) as CrewShare
     found.state = true
   }
 
@@ -199,6 +216,7 @@ export function newWorkOrderMaker(
     owner: profile2User(owner),
     // note: defaults.note,
     sellerscName,
+    sellerUserId,
     isSold: false,
 
     shipOres: undefined,
