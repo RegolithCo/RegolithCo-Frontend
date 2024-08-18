@@ -153,14 +153,16 @@ export const SessionPageContainer: React.FC = () => {
 
   const createWorkOrder = async (workOrder: WorkOrder) => {
     const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
-      ({ payeeScName, payeeUserId, share, shareType, state, note }) => ({
-        payeeScName,
-        payeeUserId,
-        share,
-        shareType,
-        state: Boolean(state),
-        note,
-      })
+      ({ payeeScName, payeeUserId, share, shareType, state, note }) => {
+        return {
+          payeeScName: payeeUserId ? undefined : payeeScName,
+          payeeUserId,
+          share,
+          shareType,
+          state: Boolean(state),
+          note,
+        }
+      }
     )
     await createNewMentionedUsers(newShares)
     return sessionQueries.createWorkOrder(workOrder)
@@ -169,7 +171,7 @@ export const SessionPageContainer: React.FC = () => {
   const updateModalWorkOrder = async (workOrder: WorkOrder) => {
     const newShares: CrewShareInput[] = (workOrder.crewShares || []).map(
       ({ payeeScName, payeeUserId, share, shareType, state, note }) => ({
-        payeeScName,
+        payeeScName: payeeUserId ? undefined : payeeScName,
         payeeUserId,
         share,
         shareType,
@@ -196,7 +198,9 @@ export const SessionPageContainer: React.FC = () => {
   // TODO: Need to fold this into the API call I think OR let session users add referenced users
   const createNewMentionedUsers = async (newShares: CrewShareInput[]): Promise<void> => {
     if (newShares && newShares.length > 0) {
-      const shareNames = newShares.map((s) => s.payeeScName)
+      // NOTE: This is a little bit of an anti-pattern. payeeScName will always be set in the UI but we can only
+      // Send one of scName or UserId to the server. We need to check if the user is already in the session
+      const shareNames = newShares.map((s) => s.payeeScName as string)
       const activeNames = (sessionQueries.session?.activeMembers?.items || []).map(({ owner }) => owner?.scName)
       const addToMentioned = shareNames.filter(
         (s) => !sessionQueries.session?.mentionedUsers?.find((u) => u.scName === s) && !activeNames.includes(s)

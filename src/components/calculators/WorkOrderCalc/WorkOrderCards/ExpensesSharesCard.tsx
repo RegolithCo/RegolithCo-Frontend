@@ -416,10 +416,10 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                       color="primary"
                       startIcon={<GroupAddTwoTone />}
                       onClick={() => {
-                        const newShares: UserSuggest[0][] = Object.entries(userSuggest)
+                        const newShares: string[] = Object.entries(userSuggest)
                           .reduce((acc, [scName, entry]) => {
-                            if (entry.named || entrysession) {
-                              acc.push([scName, userId])
+                            if (entry.named || entry.session) {
+                              acc.push(scName)
                             }
                             return acc
                           }, [] as string[])
@@ -436,6 +436,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                             ...newShares.map((payeeScName) => {
                               return {
                                 payeeScName,
+                                payeeUserId: userSuggest[payeeScName].userId,
                                 shareType: ShareTypeEnum.Share,
                                 share: 1,
                                 note: null,
@@ -483,6 +484,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                               (payeeScName) =>
                                 ({
                                   payeeScName,
+                                  payeeUserId: userSuggest[payeeScName].userId,
                                   shareType: ShareTypeEnum.Share,
                                   share: 1,
                                   note: null,
