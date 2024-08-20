@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
-import { alpha, Theme, ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { ShipOreEnum, getShipOreName, findPrice } from '@regolithco/common'
-import Gradient from 'javascript-color-gradient'
+import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
+import { ShipOreEnum, getShipOreName } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { LookupsContext } from '../../context/lookupsContext'
+import { useShipOreColors } from '../../hooks/useShipOreColors'
 
 export interface ShipOreChooserProps {
   values?: ShipOreEnum[]
@@ -14,59 +13,6 @@ export interface ShipOreChooserProps {
   showInnert?: boolean
   onChange?: (value: ShipOreEnum[]) => void
   onClick?: (value: ShipOreEnum) => void
-}
-
-export const useShipOreColors = (): { ore: ShipOreEnum; fg: string; bg: string }[] => {
-  const theme = useTheme()
-  const [sortedShipRowKeys, setSortedShipRowKeys] = React.useState<ShipOreEnum[]>([])
-  const [bgColors, setBgColors] = React.useState<string[]>([])
-  const [fgColors, setFgColors] = React.useState<string[]>([])
-
-  const quaColors = ['#f700ff', '#ffffff']
-  const innertColors = ['#848484', '#000000']
-
-  const dataStore = React.useContext(LookupsContext)
-
-  useEffect(() => {
-    const calcShipRowKeys = async () => {
-      const shipRowKeys = Object.values(ShipOreEnum)
-      const prices = await Promise.all(
-        // Note we choose the refined price here to sort by because that's what most people will do
-        shipRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey, undefined, true))
-      )
-      const newSorted = [...shipRowKeys].sort((a, b) => {
-        const aPrice = prices[shipRowKeys.indexOf(a)]
-        const bPrice = prices[shipRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-
-      const bgColors = new Gradient()
-        .setColorGradient(theme.palette.success.main, theme.palette.secondary.main, theme.palette.grey[500])
-        .setMidpoint(newSorted.length) // 100 is the number of colors to generate. Should be enough stops for our ores
-        .getColors()
-      const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
-
-      setSortedShipRowKeys(newSorted)
-      setBgColors(bgColors)
-      setFgColors(fgColors)
-    }
-    calcShipRowKeys()
-  }, [dataStore])
-
-  return sortedShipRowKeys.map((shipOreKey, rowIdx) => {
-    let fgc = fgColors[rowIdx]
-    let bgc = bgColors[rowIdx]
-    if (shipOreKey === ShipOreEnum.Quantanium) {
-      fgc = quaColors[1]
-      bgc = quaColors[0]
-    }
-    if (shipOreKey === ShipOreEnum.Inertmaterial) {
-      fgc = innertColors[1]
-      bgc = innertColors[0]
-    }
-
-    return { ore: shipOreKey, fg: fgc, bg: bgc }
-  })
 }
 
 export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
@@ -84,62 +30,15 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
   // and we will treat this as buttons instead of toggle values
   const isToggleButtons = Array.isArray(values)
   const theme = useTheme()
+  const sortedShipRowColors = useShipOreColors()
 
   useEffect(() => {
     setSelected(values || [])
   }, [values])
 
-  const [sortedShipRowKeys, setSortedShipRowKeys] = React.useState<ShipOreEnum[]>([])
-  const [bgColors, setBgColors] = React.useState<string[]>([])
-  const [fgColors, setFgColors] = React.useState<string[]>([])
-
-  const quaColors = ['#f700ff', '#ffffff']
-  const innertColors = ['#848484', '#000000']
-
-  const dataStore = React.useContext(LookupsContext)
-
-  useEffect(() => {
-    const calcShipRowKeys = async () => {
-      const shipRowKeys = Object.values(ShipOreEnum).filter((v) => {
-        if (showInnert) return true
-        return v !== ShipOreEnum.Inertmaterial
-      })
-      const prices = await Promise.all(
-        // Note we choose the refined price here to sort by because that's what most people will do
-        shipRowKeys.map((shipOreKey) => findPrice(dataStore, shipOreKey, undefined, true))
-      )
-      const newSorted = [...shipRowKeys].sort((a, b) => {
-        const aPrice = prices[shipRowKeys.indexOf(a)]
-        const bPrice = prices[shipRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-
-      const bgColors = new Gradient()
-        .setColorGradient(theme.palette.success.main, theme.palette.secondary.main, theme.palette.grey[500])
-        .setMidpoint(newSorted.length) // 100 is the number of colors to generate. Should be enough stops for our ores
-        .getColors()
-      const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
-
-      setSortedShipRowKeys(newSorted)
-      setBgColors(bgColors)
-      setFgColors(fgColors)
-    }
-    calcShipRowKeys()
-  }, [dataStore, showInnert])
-
   return (
     <Grid container spacing={0.5} margin={0}>
-      {sortedShipRowKeys.map((shipOreKey, rowIdx) => {
-        let fgc = fgColors[rowIdx]
-        let bgc = bgColors[rowIdx]
-        if (shipOreKey === ShipOreEnum.Quantanium) {
-          fgc = quaColors[1]
-          bgc = quaColors[0]
-        }
-        if (shipOreKey === ShipOreEnum.Inertmaterial) {
-          fgc = innertColors[1]
-          bgc = innertColors[0]
-        }
+      {sortedShipRowColors.map(({ ore: shipOreKey, fg: fgc, bg: bgc }, rowIdx) => {
         const active = isToggleButtons ? selected.includes(shipOreKey) : true
         return (
           <Grid xs={2} key={`orechooserow-${rowIdx}`}>
@@ -215,8 +114,8 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 p: [0.5, 0.5],
               }}
               onChange={() => {
-                setSelected(sortedShipRowKeys)
-                onChange && onChange(sortedShipRowKeys)
+                setSelected(sortedShipRowColors.map((v) => v.ore))
+                onChange && onChange(sortedShipRowColors.map((v) => v.ore))
               }}
             >
               All

@@ -8,10 +8,11 @@ import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
 import { TabStats } from './TabStats'
 import { TabCrewShares } from './TabCrewShares'
-import { SessionDashTabsEnum } from './Dashboard.container'
+import { SessionDashTabsEnum, WorkOrderSummaryLookup } from './Dashboard.container'
 
 export interface DashboardProps {
   userProfile: UserProfile
+  workOrderSummaries: WorkOrderSummaryLookup
   activeTab: SessionDashTabsEnum
   mySessions: Session[]
   joinedSessions: Session[]

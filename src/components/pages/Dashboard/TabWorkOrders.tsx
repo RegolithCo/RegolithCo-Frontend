@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   ActivityEnum,
   getRefineryName,
-  getShipManufacturerName,
+  getShipOreName,
   makeHumanIds,
   RefineryEnum,
   ShipMiningOrder,
@@ -20,6 +20,8 @@ import { DoneAll } from '@mui/icons-material'
 import { DashboardProps } from './Dashboard'
 import log from 'loglevel'
 import { AppContext } from '../../../context/app.context'
+import { useShipOreColors } from '../../../hooks/useShipOreColors'
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 
 export const TabWorkOrders: React.FC<DashboardProps> = ({
   userProfile,
@@ -31,6 +33,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
 }) => {
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
+  const sortedShipRowColors = useShipOreColors()
   const workOrders: WorkOrder[] = React.useMemo(() => {
     const workOrders = [
       ...joinedSessions.reduce(
@@ -121,60 +124,84 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
         </Typography>
         <Divider />
         <Box sx={{ minHeight: 100, minWidth: 250 }}>
-          <SimpleTreeView>
-            {Object.entries(undeliveredWorkOrders).map(([refinery, orders]) => {
-              const totalSCU: number = orders.reduce(
-                (acc, wo) =>
-                  acc +
-                  wo.shipOres.reduce((acc, { amt }) => {
-                    const amount = Math.ceil(amt / 100)
-                    return acc + amount
-                  }, 0),
-                0
-              )
-              return (
-                <TreeItem
-                  key={refinery}
-                  itemId={refinery}
-                  label={
-                    <Stack justifyContent="space-between" alignItems="center" direction={'row'}>
-                      <Typography variant="h6">
-                        {getRefineryName(refinery as RefineryEnum)} ({orders.length} orders, {totalSCU} SCU)
-                      </Typography>
-                      <Button variant="contained" size="small" color="success" startIcon={<DoneAll />}>
-                        Mark All Delivered
-                      </Button>
-                    </Stack>
-                  }
-                >
-                  {orders.map((order) => {
-                    return (
-                      <TreeItem
-                        key={order.orderId}
-                        itemId={order.orderId}
-                        label={
-                          <Stack direction={'row'} spacing={1}>
-                            <Typography variant="h6">
-                              {makeHumanIds(getSafeName(order.sellerscName || order.owner?.scName), order.orderId)}
-                            </Typography>
+          {Object.keys(undeliveredWorkOrders).length === 0 ? (
+            <Typography variant="body1" component="div" gutterBottom>
+              No undelivered work orders
+            </Typography>
+          ) : (
+            <SimpleTreeView>
+              {Object.entries(undeliveredWorkOrders).map(([refinery, orders]) => {
+                const totalSCU: number = orders.reduce(
+                  (acc, wo) =>
+                    acc +
+                    wo.shipOres.reduce((acc, { amt }) => {
+                      const amount = Math.ceil(amt / 100)
+                      return acc + amount
+                    }, 0),
+                  0
+                )
+                return (
+                  <TreeItem
+                    key={refinery}
+                    itemId={refinery}
+                    label={
+                      <Stack justifyContent="space-between" alignItems="center" direction={'row'}>
+                        <Typography variant="h6">
+                          {getRefineryName(refinery as RefineryEnum)} ({orders.length} orders, {totalSCU} SCU)
+                        </Typography>
+                        <Button variant="contained" size="small" color="success" startIcon={<DoneAll />}>
+                          Mark All Delivered
+                        </Button>
+                      </Stack>
+                    }
+                  >
+                    {orders.map((order) => {
+                      return (
+                        <TreeItem
+                          key={order.orderId}
+                          itemId={order.orderId}
+                          label={
                             <Stack direction={'row'} spacing={1}>
-                              {order.shipOres.map((ore) => (
-                                <Chip label={`${ore.ore}: ${Math.ceil(ore.amt / 100)}`} color="primary" size="small" />
-                              ))}
+                              <Typography variant="subtitle1">
+                                {makeHumanIds(getSafeName(order.sellerscName || order.owner?.scName), order.orderId)}
+                              </Typography>
+                              <Grid2 sx={{ flex: '0 1 60%' }} container spacing={1}>
+                                {sortedShipRowColors.map((color) => {
+                                  const ore = order.shipOres.find((ore) => ore.ore === color.ore)
+                                  if (!ore || ore.amt <= 0) return null
+                                  return (
+                                    <Grid2 key={ore.ore} xs={3}>
+                                      <Chip
+                                        label={`${getShipOreName(ore.ore).slice(0, 4)}: ${Math.ceil(ore.amt / 100)} SCU`}
+                                        size="small"
+                                        sx={{
+                                          color: color.fg,
+                                          width: '100%',
+                                          fontSize: '0.75rem',
+                                          backgroundColor: color.bg,
+                                          textTransform: 'uppercase',
+                                          fontFamily: fontFamilies.robotoMono,
+                                          fontWeight: 'bold',
+                                        }}
+                                      />
+                                    </Grid2>
+                                  )
+                                })}
+                              </Grid2>
+                              <Box sx={{ flexGrow: 1 }} />
+                              <Button variant="contained" size="small" color="success" startIcon={<DoneAll />}>
+                                Mark Delivered
+                              </Button>
                             </Stack>
-                            <Box sx={{ flexGrow: 1 }} />
-                            <Button variant="contained" size="small" color="success" startIcon={<DoneAll />}>
-                              Mark Delivered
-                            </Button>
-                          </Stack>
-                        }
-                      />
-                    )
-                  })}
-                </TreeItem>
-              )
-            })}
-          </SimpleTreeView>
+                          }
+                        />
+                      )
+                    })}
+                  </TreeItem>
+                )
+              })}
+            </SimpleTreeView>
+          )}
         </Box>
       </Box>
       <Box>

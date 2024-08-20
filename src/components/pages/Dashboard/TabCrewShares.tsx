@@ -4,10 +4,16 @@ import { Alert, AlertTitle, Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
+import { CrewShare } from '@regolithco/common'
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
+import { TreeItem } from '@mui/x-tree-view/TreeItem'
+import log from 'loglevel'
+import { MValueFormatter } from '../../fields/MValue'
 
 export const TabCrewShares: React.FC<DashboardProps> = ({
   userProfile,
   mySessions,
+  workOrderSummaries,
   fetchMoreSessions,
   joinedSessions,
   allLoaded,
@@ -15,6 +21,76 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   navigate,
 }) => {
   const theme = useTheme()
+
+  // This is unfiltered. We shouldn't use these directly
+  const { relevantCrewShares } = React.useMemo(() => {
+    const myCrewShares = [...joinedSessions, ...mySessions].reduce(
+      (acc, session) => {
+        // NOTE: We need to filter out crewshares that don't involve us
+        return acc.concat(
+          (session.workOrders?.items || []).reduce(
+            (acc, wo) => {
+              try {
+                const csSumm = workOrderSummaries[wo.sessionId][wo.orderId].crewShareSummary || []
+                const csReturns = (wo.crewShares || []).map<[CrewShare, number]>((cs, idcs) => {
+                  const amts = csSumm[idcs] || [0, 0, 0]
+                  const amt = wo.includeTransferFee ? amts[1] : amts[0]
+                  return [cs, amt]
+                })
+                return acc.concat(csReturns)
+              } catch (e) {
+                return acc
+              }
+            },
+            [] as [CrewShare, number][]
+          )
+        )
+      },
+      [] as [CrewShare, number][]
+    )
+
+    const relevantCrewShares = myCrewShares.filter((csArr) => {
+      const cs = csArr[0]
+      // Any share where the payer is not also the payee
+      return (
+        workOrderSummaries[cs.sessionId][cs.orderId].sellerScName !== cs.payeeScName &&
+        // Any share where the payer or the payee is me
+        (cs.payeeScName === userProfile.scName ||
+          workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === userProfile.scName)
+      )
+    })
+    myCrewShares.sort((a, b) => a[0].createdAt - b[0].createdAt)
+
+    return { relevantCrewShares }
+  }, [mySessions, joinedSessions])
+
+  // Now let's make a more refined version of the crewShares
+  const { iOweShares, oweMeShares } = React.useMemo(() => {
+    // Filter to only unpaid shares
+    const unpaidShares = relevantCrewShares.filter((cs) => !cs[0].state)
+    const iOweShares: Record<string, { amt: number; shares: [CrewShare, number][] }> = {}
+    const oweMeShares: Record<string, { amt: number; shares: [CrewShare, number][] }> = {}
+
+    unpaidShares.forEach((csArr) => {
+      const cs = csArr[0]
+      if (cs.payeeScName === userProfile.scName) {
+        if (!oweMeShares[cs.payeeScName]) oweMeShares[cs.payeeScName] = { amt: 0, shares: [] }
+        oweMeShares[cs.payeeScName].shares.push(csArr)
+        oweMeShares[cs.payeeScName].amt += csArr[1]
+      } else {
+        if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0, shares: [] }
+        iOweShares[cs.payeeScName].shares.push(csArr)
+        iOweShares[cs.payeeScName].amt += csArr[1]
+      }
+    })
+
+    return {
+      iOweShares,
+      oweMeShares,
+    }
+  }, [relevantCrewShares, workOrderSummaries])
+
+  log.debug('crewShares', { relevantCrewShares, iOweShares, oweMeShares })
 
   return (
     <>
@@ -49,11 +125,72 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         <Typography variant="h5" component="h3" gutterBottom>
           Unpaid Crew Shares You Owe:
         </Typography>
+        <Box>
+          <SimpleTreeView>
+            {Object.entries(iOweShares).map(([scName, { amt, shares }]) => {
+              const uniqueSessions = Array.from(new Set(shares.map(([cs]) => cs.sessionId))).length
+              const uniqueOrderIds = Array.from(new Set(shares.map(([cs]) => cs.orderId))).length
+              return (
+                <TreeItem
+                  itemId={`iOwer_${scName}`}
+                  label={
+                    <Typography variant="body1">
+                      You owe {scName} {MValueFormatter(amt, 'currency')} from {uniqueOrderIds} orders in{' '}
+                      {uniqueSessions} sessions
+                    </Typography>
+                  }
+                >
+                  {shares.map(([cs, amt]) => (
+                    <TreeItem
+                      itemId={`${cs.sessionId}_${cs.orderId}_${cs.payeeScName}`}
+                      label={
+                        <Typography variant="body1">
+                          You owe {cs.payeeScName} {MValueFormatter(amt, 'currency')} from {cs.orderId} in{' '}
+                          {cs.sessionId}
+                        </Typography>
+                      }
+                    />
+                  ))}
+                </TreeItem>
+              )
+            })}
+          </SimpleTreeView>
+        </Box>
       </Box>
       <Box>
         <Typography variant="h5" component="h3" gutterBottom>
           Unpaid Crew Shares Owed to You:
         </Typography>
+        <Box>
+          <SimpleTreeView>
+            {Object.entries(oweMeShares).map(([scName, { amt, shares }]) => {
+              const uniqueSessions = Array.from(new Set(shares.map(([cs]) => cs.sessionId))).length
+              const uniqueOrderIds = Array.from(new Set(shares.map(([cs]) => cs.orderId))).length
+              return (
+                <TreeItem
+                  itemId={`iOwer_${scName}`}
+                  label={
+                    <Typography variant="body1">
+                      {scName} owes you {MValueFormatter(amt, 'currency')} from {uniqueOrderIds} orders in{' '}
+                      {uniqueSessions} sessions
+                    </Typography>
+                  }
+                >
+                  {shares.map(([cs, amt]) => (
+                    <TreeItem
+                      itemId={`${cs.sessionId}_${cs.orderId}_${cs.payeeScName}`}
+                      label={
+                        <Typography variant="body1">
+                          {cs.payeeScName} owes you {MValueFormatter(amt, 'currency')}
+                        </Typography>
+                      }
+                    />
+                  ))}
+                </TreeItem>
+              )
+            })}
+          </SimpleTreeView>
+        </Box>
       </Box>
       <Box>
         <Typography variant="h5" component="h3" gutterBottom>
