@@ -230,7 +230,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
             keyFields: ['loadoutId'],
           },
           CrewShare: {
-            keyFields: ['sessionId', 'scName', 'orderId'],
+            keyFields: ['sessionId', 'payeeScName', 'orderId'],
           },
           SessionUser: {
             keyFields: ['sessionId', 'ownerId'],

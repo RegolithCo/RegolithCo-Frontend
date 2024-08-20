@@ -9,7 +9,7 @@ import { SessionPageContainer } from './components/pages/SessionPage/SessionPage
 import { InitializeUserContainer } from './components/modals/InitializeUser/InitializeUser.container'
 import { DataTablesPageContainer } from './components/pages/DataTablesPage'
 import { AuthGate } from './components/pages/AuthGate'
-import { SessionChooserPageContainer } from './components/pages/SessionChooserPage.container'
+import { DashboardContainer, SessionDashTabsEnum } from './components/pages/Dashboard/Dashboard.container'
 import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage'
 import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
 import { useLogin } from './hooks/useOAuth2'
@@ -147,7 +147,25 @@ export const App: React.FC = () => {
             path="/session"
             element={
               <AuthGate>
-                <SessionChooserPageContainer />
+                <RedirectToDashboardTab />
+              </AuthGate>
+            }
+            errorElement={<ErrorPage />}
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <AuthGate>
+                <RedirectToDashboardTab />
+              </AuthGate>
+            }
+            errorElement={<ErrorPage />}
+          />
+          <Route
+            path="/dashboard/:tab"
+            element={
+              <AuthGate>
+                <DashboardContainer />
               </AuthGate>
             }
             errorElement={<ErrorPage />}
@@ -156,7 +174,7 @@ export const App: React.FC = () => {
             path="/session/:sessionId"
             element={
               <AuthGate>
-                <RedirectToTab />
+                <RedirectToSessionTab />
               </AuthGate>
             }
           />
@@ -205,7 +223,11 @@ export const App: React.FC = () => {
 
 export default App
 
-const RedirectToTab: React.FC = () => {
+const RedirectToSessionTab: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>()
   return <Navigate to={`/session/${sessionId}/dash`} replace />
+}
+
+const RedirectToDashboardTab: React.FC = () => {
+  return <Navigate to={`/dashboard/${SessionDashTabsEnum.sessions}`} replace />
 }

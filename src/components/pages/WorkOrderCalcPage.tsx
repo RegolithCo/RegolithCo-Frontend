@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Box, Stack, Typography, useTheme } from '@mui/material'
+import { Alert, Box, Link, Stack, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
 import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@regolithco/common'
@@ -72,10 +72,6 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
         >
           <WorkOrderTypeChooser onChange={setActiveActivity} value={activeActivity} />
         </Box>
-        <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
-          NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
-          share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>.
-        </Alert>
       </Stack>
       <Box
         sx={{
@@ -129,6 +125,11 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
           }}
         />
       </Box>
+      <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
+        NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
+        share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>{' '}
+        from the <Link href="/dashboard">dashboard</Link>.
+      </Alert>
     </PageWrapper>
   )
 }

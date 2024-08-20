@@ -24,7 +24,7 @@ import { WorkOrderTableRow } from './WorkOrderTableRow'
 import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface WorkOrderTableProps {
-  isDashboard?: boolean
+  isDashboard?: boolean // On the session dash we need the session id and owner
   workOrders: WorkOrder[]
   isShare?: boolean
 }
@@ -119,6 +119,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow sx={styles.tableHead}>
+            {isDashboard && <TableCell>Session</TableCell>}
             <TableCell align="center">Type</TableCell>
             <TableCell>Order Id</TableCell>
             <TableCell align="center">Shares</TableCell>
@@ -144,6 +145,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
                 key={`wo-${workOrder.orderId}`}
                 workOrder={workOrder}
                 isShare={isShare}
+                isDashboard={isDashboard}
                 summary={summaries[workOrder.orderId]}
               />
             )
@@ -151,7 +153,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
         </TableBody>
         <TableFooter sx={styles.footer}>
           <TableRow>
-            <TableCell colSpan={4}>Totals</TableCell>
+            <TableCell colSpan={isDashboard ? 5 : 4}>Totals</TableCell>
             <TableCell align="right">
               <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
             </TableCell>

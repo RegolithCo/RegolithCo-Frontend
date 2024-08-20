@@ -16,6 +16,7 @@ import {
   CalendarMonth,
   Celebration,
   Coffee,
+  Dashboard,
   Engineering,
   Group,
   HelpCenter,
@@ -114,7 +115,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
 
   const topBarMenu: MenuItemType[] = [
     //
-    { path: '/session', name: 'Sessions', icon: <CalendarMonth /> },
+    { path: '/dashboard', name: 'Dashboard', icon: <Dashboard /> },
     {
       name: 'Calculators',
       icon: <Calculate />,

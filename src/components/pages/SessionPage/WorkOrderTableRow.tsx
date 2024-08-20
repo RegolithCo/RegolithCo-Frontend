@@ -10,7 +10,7 @@ import {
 } from '@regolithco/common'
 import dayjs from 'dayjs'
 import { getActivityName, WorkOrderSummary } from '@regolithco/common'
-import { alpha, Checkbox, Chip, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
+import { alpha, Checkbox, Chip, Link, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
@@ -24,11 +24,12 @@ import { DeleteWorkOrderModal } from '../../modals/DeleteWorkOrderModal'
 export interface WorkOrderTableRowProps {
   workOrder: WorkOrder
   isShare?: boolean
+  isDashboard?: boolean
   openWorkOrderModal?: (orderId: string) => void
   summary: WorkOrderSummary
 }
 
-export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, isShare, summary }) => {
+export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder, isShare, summary, isDashboard }) => {
   const theme = useTheme()
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const { getSafeName } = React.useContext(AppContext)
@@ -145,6 +146,28 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({ workOrder,
       }}
     >
       {contextMenuNode}
+      {isDashboard && (
+        <TableCell
+          align="left"
+          sx={{
+            maxWidth: 250,
+          }}
+        >
+          <Tooltip title={session?.name}>
+            <Link href={`/session/${workOrder.sessionId}`} underline="hover">
+              <Typography
+                sx={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {workOrder.session?.name || workOrder.sessionId}
+              </Typography>
+            </Link>
+          </Tooltip>
+        </TableCell>
+      )}
       <TableCell align="center" onClick={onRowClick}>
         {isFailed ? (
           <Chip label="FAILED" color="error" size="small" />

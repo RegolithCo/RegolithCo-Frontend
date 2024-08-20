@@ -455,13 +455,11 @@ export type UserInterfaceFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('apiKey' | 'avatarUrl' | 'createdAt' | 'crewSharesPayee' | 'crewSharesPayer' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'plan' | 'scName' | 'sessionSettings' | 'sessionShipCode' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('apiKey' | 'avatarUrl' | 'createdAt' | 'deliveryShipCode' | 'friends' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'plan' | 'scName' | 'sessionSettings' | 'sessionShipCode' | 'state' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
 	apiKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
-	crewSharesPayee?: FieldPolicy<any> | FieldReadFunction<any>,
-	crewSharesPayer?: FieldPolicy<any> | FieldReadFunction<any>,
 	deliveryShipCode?: FieldPolicy<any> | FieldReadFunction<any>,
 	friends?: FieldPolicy<any> | FieldReadFunction<any>,
 	joinedSessions?: FieldPolicy<any> | FieldReadFunction<any>,

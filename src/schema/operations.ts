@@ -1958,17 +1958,13 @@ export const GetMyUserSessionsDocument = gql`
     userId
     mySessions(nextToken: $nextToken) {
       items {
-        ...SessionListFragment
-        ...SessionSummaryFragment
-        ...SessionUsersFragment
+        ...SessionFragment
       }
       nextToken
     }
   }
 }
-    ${SessionListFragmentFragmentDoc}
-${SessionSummaryFragmentFragmentDoc}
-${SessionUsersFragmentFragmentDoc}`;
+    ${SessionFragmentFragmentDoc}`;
 
 /**
  * __useGetMyUserSessionsQuery__
@@ -2008,17 +2004,13 @@ export const GetJoinedUserSessionsDocument = gql`
     userId
     joinedSessions(nextToken: $nextToken) {
       items {
-        ...SessionListFragment
-        ...SessionSummaryFragment
-        ...SessionUsersFragment
+        ...SessionFragment
       }
       nextToken
     }
   }
 }
-    ${SessionListFragmentFragmentDoc}
-${SessionSummaryFragmentFragmentDoc}
-${SessionUsersFragmentFragmentDoc}`;
+    ${SessionFragmentFragmentDoc}`;
 
 /**
  * __useGetJoinedUserSessionsQuery__

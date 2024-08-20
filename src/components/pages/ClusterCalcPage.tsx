@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Box, Stack, ThemeProvider, Typography, useTheme } from '@mui/material'
+import { Alert, Box, Link, Stack, ThemeProvider, Typography, useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 
 import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser, ScoutingFindStateEnum } from '@regolithco/common'
@@ -58,11 +58,6 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
         >
           <ScoutingFindTypeChooser onChange={setActiveScoutingFindType} value={activeScoutingFindType} />
         </Box>
-        <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
-          NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive
-          clusters or share your clusters with friends then consider logging in and creating/joining a{' '}
-          <strong>session</strong>.
-        </Alert>
       </Stack>
       <Box
         sx={{
@@ -90,6 +85,11 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
           </ThemeProvider>
         )}
       </Box>
+      <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
+        NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive clusters
+        or share your clusters with friends then consider logging in and creating/joining a <strong>session</strong>{' '}
+        from the <Link href="/dashboard">dashboard</Link>.
+      </Alert>
     </PageWrapper>
   )
 }
