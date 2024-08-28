@@ -10,6 +10,7 @@ import dayjs, { Dayjs } from 'dayjs'
 
 export interface DailyMonthlyChartProps {
   stats: Partial<StatsObjectSummary>
+  view?: ChartTypesEnum
   statsLoading: Record<keyof StatsObjectSummary, boolean>
 }
 
@@ -29,9 +30,9 @@ export type ChartTypesEnum = ObjectValues<typeof ChartTypesEnum>
  * @param param0
  * @returns
  */
-export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, statsLoading }) => {
+export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, statsLoading, view }) => {
   const theme = useTheme()
-  const [chartType, setChartType] = React.useState<ChartTypesEnum>(ChartTypesEnum.MONTH)
+  const [chartType, setChartType] = React.useState<ChartTypesEnum>(view || ChartTypesEnum.MONTH)
 
   const { chartData } = React.useMemo(() => {
     const chartformat = '%Y-%m-%d'

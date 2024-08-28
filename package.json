@@ -11,6 +11,7 @@
     "@mui/lab": "^5.0.0-alpha.159",
     "@mui/material": "^5.16.6",
     "@mui/system": "^5.16.6",
+    "@mui/x-date-pickers": "^7.13.0",
     "@mui/x-tree-view": "^7.13.0",
     "@nivo/line": "^0.87.0",
     "@nivo/pie": "^0.87.0",

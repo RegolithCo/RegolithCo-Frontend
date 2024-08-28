@@ -4,6 +4,7 @@ import { jsRound, StatsObject } from '@regolithco/common'
 import { MayHaveLabel, ResponsivePie } from '@nivo/pie'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
+import log from 'loglevel'
 
 export interface OrePieChartProps {
   title: string
@@ -45,7 +46,7 @@ export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityT
         .filter(([_, value]) => value < finalGroupThreshold)
         .reduce((acc, [_, value]) => acc + value, 0)
 
-      if (belowThresholdTotal > 0) {
+      if (belowThresholdTotal) {
         aboveThreshold.push({
           id: 'Other',
           label: 'Other',
@@ -53,7 +54,16 @@ export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityT
           realValue: belowThresholdTotal * total,
         } as MayHaveLabel)
       }
-
+      if (aboveThreshold.length === 0) {
+        return [
+          {
+            id: 'No Data',
+            label: 'No Data',
+            value: 1,
+            realValue: 0,
+          },
+        ]
+      }
       return aboveThreshold
     }
 
@@ -126,8 +136,9 @@ export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityT
                 {ores && (
                   <Typography variant="h6">
                     {MValueFormatter(
-                      jsRound((datum.data as unknown as { realValue: number }).realValue * 100, 0),
-                      MValueFormat.volSCU
+                      jsRound((datum.data as unknown as { realValue: number }).realValue, 0),
+                      MValueFormat.volSCU,
+                      0
                     )}
                   </Typography>
                 )}

@@ -7,6 +7,7 @@ import { useSessionList } from '../../../hooks/useSessionList'
 import { LookupsContext } from '../../../context/lookupsContext'
 
 import log from 'loglevel'
+import { DatePresetsEnum } from './TabStats/StatsDatePicker'
 
 export const SessionDashTabsEnum = {
   sessions: 'sessions',
@@ -24,7 +25,7 @@ export const DashboardContainer: React.FC = () => {
   const useSessionListQueries = useSessionList()
   const dataStore = React.useContext(LookupsContext)
   const [workOrderSummaries, setWorkOrderSummaries] = React.useState<WorkOrderSummaryLookup>({})
-  const { tab } = useParams()
+  const { tab, preset } = useParams()
 
   // Call calculateWorkOrder for each session and all of its work orders and store the results in state
   React.useEffect(() => {
@@ -50,7 +51,10 @@ export const DashboardContainer: React.FC = () => {
   return (
     <Dashboard
       activeTab={tab as SessionDashTabsEnum}
+      preset={preset as DatePresetsEnum}
       workOrderSummaries={workOrderSummaries}
+      paginationDate={useSessionListQueries.paginationDate}
+      setPaginationDate={useSessionListQueries.setPaginationDate}
       userProfile={userQueries.userProfile as UserProfile}
       joinedSessions={(useSessionListQueries.joinedSessions?.items || []) as Session[]}
       mySessions={(useSessionListQueries.mySessions?.items || []) as Session[]}

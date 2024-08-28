@@ -30,6 +30,7 @@ import log from 'loglevel'
 type useSessionsReturn = {
   mySessions?: UserProfile['mySessions']
   joinedSessions?: UserProfile['joinedSessions']
+  paginationDate: number
   setPaginationDate: (timestamp: number) => void
   fetchMoreSessions: () => void
   allLoaded: boolean
@@ -236,6 +237,7 @@ export const useSessionList = (): useSessionsReturn => {
   return {
     mySessions: mySessionsQry.data?.profile?.mySessions as UserProfile['mySessions'],
     joinedSessions: joinedSessionsQry.data?.profile?.joinedSessions as UserProfile['joinedSessions'],
+    paginationDate,
     setPaginationDate,
     fetchMoreSessions,
     allLoaded:

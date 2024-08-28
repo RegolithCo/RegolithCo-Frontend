@@ -1,22 +1,27 @@
 import * as React from 'react'
 
-import { Session, UserProfile } from '@regolithco/common'
-import { Box, Button, Paper, Tab, Tabs, useTheme } from '@mui/material'
-import { AddCircle, Insights } from '@mui/icons-material'
+import { Session, SessionStateEnum, UserProfile } from '@regolithco/common'
+import { Box, Button, ButtonGroup, IconButton, Menu, Paper, Tab, Tabs, useTheme } from '@mui/material'
+import { AddCircle, ChevronLeft, Insights, MoreHoriz, RocketLaunch } from '@mui/icons-material'
 import { Container, Stack } from '@mui/system'
 import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
-import { TabStats } from './TabStats'
+import { TabStats } from './TabStats/TabStats'
 import { TabCrewShares } from './TabCrewShares'
 import { SessionDashTabsEnum, WorkOrderSummaryLookup } from './Dashboard.container'
+import { DatePresetsEnum } from './TabStats/StatsDatePicker'
+import { JoinSessionButton } from './JoinSessionButton'
 
 export interface DashboardProps {
   userProfile: UserProfile
   workOrderSummaries: WorkOrderSummaryLookup
   activeTab: SessionDashTabsEnum
+  preset: DatePresetsEnum
   mySessions: Session[]
   joinedSessions: Session[]
   fetchMoreSessions: () => void
+  paginationDate: number
+  setPaginationDate: (date: number) => void
   loading?: boolean
   allLoaded?: boolean
   navigate?: (path: string) => void
@@ -47,24 +52,15 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
     },
   }
 
+  const activeSessions = React.useMemo(() => {
+    const activeSessions = props.mySessions.filter((session) => session.state === SessionStateEnum.Active)
+    return activeSessions
+  }, [props.mySessions])
+
   return (
     <Container maxWidth="lg">
       <Paper elevation={4} sx={styles.container}>
-        <Stack spacing={2} sx={{ my: 2 }} direction={{ xs: 'column', sm: 'row' }}>
-          <Box>
-            {onCreateNewSession && (
-              <Button
-                startIcon={<AddCircle />}
-                size="large"
-                variant="contained"
-                sx={{ margin: '0 auto' }}
-                onClick={onCreateNewSession}
-              >
-                Create a new Session
-              </Button>
-            )}
-          </Box>
-        </Stack>
+        <JoinSessionButton sessions={activeSessions} onCreateNewSession={onCreateNewSession} navigate={navigate} />
 
         <Tabs
           value={activeTab}

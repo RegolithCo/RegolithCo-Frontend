@@ -162,7 +162,7 @@ export const App: React.FC = () => {
             errorElement={<ErrorPage />}
           />
           <Route
-            path="/dashboard/:tab"
+            path="/dashboard/:tab/:preset?"
             element={
               <AuthGate>
                 <DashboardContainer />
