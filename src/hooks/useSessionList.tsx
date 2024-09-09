@@ -45,7 +45,7 @@ type useSessionsReturn = {
  * @returns
  */
 const getNewPaginationDate = (items?: Session[]): number => {
-  if (!items || items.length === 0) return dayjs().subtract(15, 'days').startOf('month').unix()
+  if (!items || items.length === 0) return dayjs().subtract(15, 'days').startOf('month').valueOf()
   const lastDate = items?.[items.length - 1]?.createdAt
   return lastDate
 }
