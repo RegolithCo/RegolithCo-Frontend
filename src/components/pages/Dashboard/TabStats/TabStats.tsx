@@ -8,9 +8,9 @@ import { DatePresetsEnum, StatsDatePicker } from './StatsDatePicker'
 import {
   CrewShare,
   formatCardNumber,
+  RegolithStatsSummary,
   SalvageOreEnum,
   ShipOreEnum,
-  StatsObject,
   VehicleOreEnum,
   WorkOrder,
 } from '@regolithco/common'
@@ -120,7 +120,7 @@ export const TabStats: React.FC<DashboardProps> = ({
           return acc
         }, acc)
       },
-      {} as StatsObject['workOrderTypes']
+      {} as RegolithStatsSummary['workOrderTypes']
     )
 
     const oreReduced = formatCardNumber(
@@ -170,9 +170,9 @@ export const TabStats: React.FC<DashboardProps> = ({
   }, [firstDate, lastDate, preset])
 
   const { shipOrePie, vehicleOrePie, salvageOrePie, expenses } = React.useMemo(() => {
-    const shipOrePie: StatsObject['shipOres'] = {}
-    const vehicleOrePie: StatsObject['vehicleOres'] = {}
-    const salvageOrePie: StatsObject['salvageOres'] = {}
+    const shipOrePie: Partial<RegolithStatsSummary['shipOres']> = {}
+    const vehicleOrePie: Partial<RegolithStatsSummary['vehicleOres']> = {}
+    const salvageOrePie: Partial<RegolithStatsSummary['salvageOres']> = {}
     let expenses: number = 0
 
     workOrdersFiltered.forEach(({ orderId, sessionId }) => {
@@ -316,17 +316,30 @@ export const TabStats: React.FC<DashboardProps> = ({
           )}
           {!loading && (
             <Grid xs={12} sm={6} md={6}>
-              <OrePieChart title="Ship Ores" groupThreshold={0.04} ores={shipOrePie} loading={Boolean(loading)} />
+              <OrePieChart
+                title="Ship Ores"
+                groupThreshold={0.04}
+                ores={shipOrePie as RegolithStatsSummary['shipOres']}
+                loading={Boolean(loading)}
+              />
             </Grid>
           )}
           {!loading && (
             <Grid xs={12} sm={6} md={6}>
-              <OrePieChart title="Vehicle Ores" ores={vehicleOrePie} loading={Boolean(loading)} />
+              <OrePieChart
+                title="Vehicle Ores"
+                ores={vehicleOrePie as RegolithStatsSummary['vehicleOres']}
+                loading={Boolean(loading)}
+              />
             </Grid>
           )}
           {!loading && (
             <Grid xs={12} sm={6} md={6}>
-              <OrePieChart title="Salvage Ores" ores={salvageOrePie} loading={Boolean(loading)} />
+              <OrePieChart
+                title="Salvage Ores"
+                ores={salvageOrePie as RegolithStatsSummary['salvageOres']}
+                loading={Boolean(loading)}
+              />
             </Grid>
           )}
         </Grid>

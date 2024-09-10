@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useTheme, SxProps, Theme, Card, Typography, CardMedia, Tooltip, CircularProgress } from '@mui/material'
-import { formatCardNumber, StatsObjectSummary } from '@regolithco/common'
+import { formatCardNumber, RegolithAllTimeStats, RegolithMonthStats } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Textfit } from 'react-textfit'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
@@ -10,8 +10,9 @@ import { fontFamilies } from '../../theme'
 import { Stack } from '@mui/system'
 
 export interface SiteStatsProps {
-  stats: Partial<StatsObjectSummary>
-  statsLoading: Record<keyof StatsObjectSummary, boolean>
+  last30Days?: RegolithMonthStats
+  allTime?: RegolithAllTimeStats
+  statsLoading: boolean
 }
 
 /**
@@ -19,17 +20,19 @@ export interface SiteStatsProps {
  * @param param0
  * @returns
  */
-export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => {
+export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, statsLoading }) => {
   // const theme = useTheme()
   // const matches = useMediaQuery(theme.breakpoints.up('md'))
 
-  const usersFormatted = formatCardNumber(stats?.total?.users || 0)
-  const aUECFormatted = formatCardNumber(stats?.total?.grossProfitaUEC || 0)
-  const lossFormatted = formatCardNumber(stats?.total?.lossaUEC || 0)
-  const rawOreSCUFormatted = formatCardNumber(stats?.total?.rawOreSCU || 0)
-  const totalSessionsFormatted = formatCardNumber(stats?.total?.sessions || 0)
-  const workOrdersFormatted = formatCardNumber(stats?.total?.workOrders || 0)
-  const rocksScoutedFormatted = formatCardNumber(stats?.total?.scoutingRocks || 0)
+  const usersFormatted = formatCardNumber(last30Days?.summary?.users || 0)
+  const aUECFormatted = formatCardNumber(last30Days?.summary?.grossProfitaUEC || 0)
+  const lossFormatted = formatCardNumber(last30Days?.summary?.lossaUEC || 0)
+  const rawOreSCUFormatted = formatCardNumber(last30Days?.summary?.rawOreSCU || 0)
+  const totalSessionsFormatted = formatCardNumber(last30Days?.summary?.sessions || 0)
+  const workOrdersFormatted = formatCardNumber(last30Days?.summary?.workOrders || 0)
+  const rocksScoutedFormatted = formatCardNumber(last30Days?.summary?.scouting?.rocks || 0)
+  const wrecksScoutedFormatted = formatCardNumber(last30Days?.summary?.scouting?.wrecks || 0)
+  const gemsScoutedFormatted = formatCardNumber(last30Days?.summary?.scouting?.gems || 0)
 
   return (
     <>
@@ -39,93 +42,130 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ stats, statsLoading }) => 
           scale={usersFormatted[1]}
           subText="Total Users"
           tooltip="Registered Users on the site"
-          loading={statsLoading.total}
+          loading={statsLoading}
         />
         <SiteStatsCard
           value={aUECFormatted[0]}
           scale={aUECFormatted[1]}
           subText="aUEC Earned"
-          tooltip={`${MValueFormatter(stats?.total?.grossProfitaUEC || 0, MValueFormat.number)} aUEC Earned by users`}
-          loading={statsLoading.total}
+          tooltip={`${MValueFormatter(last30Days?.summary?.grossProfitaUEC || 0, MValueFormat.number)} aUEC Earned by users`}
+          loading={statsLoading}
         />
         <SiteStatsCard
           value={lossFormatted[0]}
           scale={lossFormatted[1]}
           subText="aUEC Lost"
           tooltip={`${MValueFormatter(
-            stats?.total?.grossProfitaUEC || 0,
+            last30Days?.summary?.grossProfitaUEC || 0,
             MValueFormat.number
           )} aUEC Lost due to crashes, piracy etc.`}
-          loading={statsLoading.total}
+          loading={statsLoading}
         />
         <SiteStatsCard
           value={rawOreSCUFormatted[0]}
           scale={rawOreSCUFormatted[1]}
           subText="Raw Ore (SCU)"
           tooltip={`${MValueFormatter(
-            stats?.total?.rawOreSCU || 0,
+            last30Days?.summary?.rawOreSCU || 0,
             MValueFormat.number
           )} SCU of raw material mined, collected or salvaged`}
-          loading={statsLoading.total}
+          loading={statsLoading}
         />
         <SiteStatsCard
           value={totalSessionsFormatted[0]}
           scale={totalSessionsFormatted[1]}
           subText="Sessions"
           tooltip="User sessions"
-          loading={statsLoading.total}
+          loading={statsLoading}
         />
         <SiteStatsCard
           value={workOrdersFormatted[0]}
           scale={workOrdersFormatted[1]}
           subText="Work Orders"
-          loading={statsLoading.total}
+          loading={statsLoading}
         />
         <SiteStatsCard
           value={rocksScoutedFormatted[0]}
           scale={rocksScoutedFormatted[1]}
           subText="Rocks Scouted"
-          loading={statsLoading.total}
+          loading={statsLoading}
+        />
+        <SiteStatsCard
+          value={wrecksScoutedFormatted[0]}
+          scale={wrecksScoutedFormatted[1]}
+          subText="Wrecks Scouted"
+          loading={statsLoading}
+        />
+        <SiteStatsCard
+          value={wrecksScoutedFormatted[0]}
+          scale={wrecksScoutedFormatted[1]}
+          subText="ROC Gems Scouted"
+          loading={statsLoading}
         />
       </Grid>
       <Grid spacing={3} container sx={{ width: '100%' }}>
-        {!statsLoading.daily && !statsLoading.monthly && stats.daily && stats.monthly && (
+        {!statsLoading && (
           <Grid xs={12} my={3}>
-            <DailyMonthlyChart stats={stats} statsLoading={statsLoading} />
-          </Grid>
-        )}
-        {!statsLoading.total && (
-          <Grid xs={12} sm={6} md={6}>
-            <OrePieChart
-              title="Activity Types"
-              activityTypes={stats?.total?.workOrderTypes || {}}
-              loading={statsLoading.total}
+            <DailyMonthlyChart
+              last30Days={last30Days}
+              allTime={allTime}
+              statsLoading={statsLoading}
+              chartType="workOrders"
             />
           </Grid>
         )}
-        {!statsLoading.total && (
+        {/* {!statsLoading && (
+          <Grid xs={12} my={3}>
+            <DailyMonthlyChart
+              last30Days={last30Days}
+              allTime={allTime}
+              statsLoading={statsLoading}
+              chartType="scouting"
+            />
+          </Grid>
+        )} */}
+        {!statsLoading && (
+          <Grid xs={12} sm={6} md={6}>
+            <OrePieChart
+              title="Activity Types"
+              activityTypes={last30Days?.summary?.workOrderTypes}
+              loading={statsLoading}
+            />
+          </Grid>
+        )}
+        {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
             <OrePieChart
               title="Ship Ores"
               groupThreshold={0.04}
-              ores={stats?.total?.shipOres || {}}
-              loading={statsLoading.total}
+              ores={last30Days?.summary?.shipOres}
+              loading={statsLoading}
             />
           </Grid>
         )}
-        {!statsLoading.total && (
+        {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Vehicle Ores" ores={stats?.total?.vehicleOres || {}} loading={statsLoading.total} />
+            <OrePieChart
+              title="Refining Methods"
+              groupThreshold={0.04}
+              ores={last30Days?.summary?.refineryMethod}
+              loading={statsLoading}
+            />
           </Grid>
         )}
-        {!statsLoading.total && (
+        {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Salvage Ores" ores={stats?.total?.salvageOres || {}} loading={statsLoading.total} />
+            <OrePieChart title="Vehicle Ores" ores={last30Days?.summary?.vehicleOres} loading={statsLoading} />
           </Grid>
         )}
-        {!statsLoading.total && (
+        {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Failure Reasons" ores={stats?.total?.failReasons || {}} loading={statsLoading.total} />
+            <OrePieChart title="Salvage Ores" ores={last30Days?.summary?.salvageOres} loading={statsLoading} />
+          </Grid>
+        )}
+        {!statsLoading && (
+          <Grid xs={12} sm={6} md={6}>
+            <OrePieChart title="Failure Reasons" ores={last30Days?.summary?.failReasons} loading={statsLoading} />
           </Grid>
         )}
       </Grid>

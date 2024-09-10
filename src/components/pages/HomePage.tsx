@@ -6,7 +6,7 @@ import * as React from 'react'
 import { PageWrapper } from '../PageWrapper'
 import { LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
-import { StatsObjectSummary } from '@regolithco/common'
+import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
@@ -17,8 +17,9 @@ export interface HomePageProps {
   navigate?: (path: string) => void
   handleLogin?: () => void
   alerts?: RegolithAlert[]
-  stats: Partial<StatsObjectSummary>
-  statsLoading: Record<keyof StatsObjectSummary, boolean>
+  last30Days?: RegolithMonthStats
+  allTime?: RegolithAllTimeStats
+  statsLoading: boolean
 }
 
 const HomeCard: React.FC<{
@@ -89,7 +90,7 @@ const HomeCard: React.FC<{
   )
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, alerts, statsLoading }) => {
+export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Days, allTime, alerts, statsLoading }) => {
   // const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   // const nowDate = new Date()
   return (
@@ -168,7 +169,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, stats, al
         >
           Regolith Usage Stats
         </Typography>
-        <SiteStats stats={stats} statsLoading={statsLoading} />
+        <SiteStats last30Days={last30Days} allTime={allTime} statsLoading={statsLoading} />
       </Paper>
     </PageWrapper>
   )

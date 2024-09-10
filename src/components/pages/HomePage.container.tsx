@@ -1,4 +1,4 @@
-import { StatsObjectSummary } from '@regolithco/common'
+import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -12,14 +12,10 @@ import { RegolithAlert } from '../../types'
 export const HomePageContainer: React.FC = () => {
   const userCtx = useLogin()
   const navigate = useNavigate()
-  const [stats, setStats] = React.useState<Partial<StatsObjectSummary>>({})
+  const [last30Days, setLast30Days] = React.useState<RegolithMonthStats>()
+  const [allTime, setAllTime] = React.useState<RegolithAllTimeStats>()
+
   const [alerts, setAlerts] = React.useState<RegolithAlert[]>([])
-  const [statsLoading, setStatsLoading] = React.useState<Record<keyof StatsObjectSummary, boolean>>({
-    daily: true,
-    monthly: true,
-    yearly: true,
-    total: true,
-  })
 
   React.useEffect(() => {
     // Loop over all the possible keys of StatsObjectSummary and fetch them
@@ -40,24 +36,25 @@ export const HomePageContainer: React.FC = () => {
     // Loop over all the possible keys of StatsObjectSummary and fetch them
     // Suffix the URL with query params of ?cachebust=YYYY-MM-DD-HH
     const dateSuffix = dayjs().format('YYYY-MM-DD-HH')
-
-    for (const key of ['daily', 'monthly', 'yearly', 'total']) {
+    Promise.all([
       axios
-        .get(`/stats/${key}.json?cachebust=${dateSuffix}`)
-        .then((response) => {
-          //Set the data to the state
-          setStats((stats) => ({ ...(stats || {}), [key as keyof StatsObjectSummary]: response.data }))
-          //Set the loading to false
-          setStatsLoading((statsLoading) => ({ ...statsLoading, [key as keyof StatsObjectSummary]: false }))
-        })
-        .catch((error) => {
-          //If there is an error, log it. DO NOT FAIL
-          log.error(error)
-          //Set the loading to false
-          setStatsLoading((statsLoading) => ({ ...statsLoading, [key as keyof StatsObjectSummary]: false }))
-        })
-    }
+        .get(`/stats/last30.json?cachebust=${dateSuffix}`)
+        .then((response) => setLast30Days(response.data))
+        .catch((error) => log.error(error)),
+      axios.get(`/stats/alltime.json?cachebust=${dateSuffix}`).then((response) => {
+        setAllTime(response.data)
+      }),
+    ])
   }, [])
 
-  return <HomePage userCtx={userCtx} navigate={navigate} stats={stats} alerts={alerts} statsLoading={statsLoading} />
+  return (
+    <HomePage
+      userCtx={userCtx}
+      navigate={navigate}
+      last30Days={last30Days}
+      allTime={allTime}
+      alerts={alerts}
+      statsLoading={!(last30Days && allTime)}
+    />
+  )
 }

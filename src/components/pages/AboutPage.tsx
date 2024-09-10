@@ -85,7 +85,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
   const [changelist, setChangelist] = React.useState<string | null>(null)
 
   React.useEffect(() => {
-    // Loop over all the possible keys of StatsObjectSummary and fetch them
     axios
       .get(`/CHANGELIST.md`)
       .then((response) => {

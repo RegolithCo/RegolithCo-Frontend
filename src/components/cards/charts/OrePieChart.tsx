@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useTheme, Box, Typography, alpha } from '@mui/material'
-import { jsRound, StatsObject } from '@regolithco/common'
+import { jsRound, RegolithStatsSummary } from '@regolithco/common'
 import { MayHaveLabel, ResponsivePie } from '@nivo/pie'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
@@ -9,8 +9,13 @@ import log from 'loglevel'
 export interface OrePieChartProps {
   title: string
   groupThreshold?: number
-  ores?: StatsObject['shipOres'] | StatsObject['vehicleOres'] | StatsObject['salvageOres']
-  activityTypes?: StatsObject['workOrderTypes']
+  nameFinder?: (id: unknown) => string
+  ores?:
+    | RegolithStatsSummary['shipOres']
+    | RegolithStatsSummary['vehicleOres']
+    | RegolithStatsSummary['salvageOres']
+    | RegolithStatsSummary['refineryMethod']
+  activityTypes?: RegolithStatsSummary['workOrderTypes']
   loading: boolean
 }
 /**
@@ -64,6 +69,7 @@ export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityT
           },
         ]
       }
+
       return aboveThreshold
     }
 

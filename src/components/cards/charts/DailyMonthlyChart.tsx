@@ -1,17 +1,20 @@
 import * as React from 'react'
 import { useTheme, Typography, Box, RadioGroup, FormControlLabel, Radio } from '@mui/material'
-import { ObjectValues, StatsObject, StatsObjectSummary } from '@regolithco/common'
+import { ObjectValues, RegolithStatsSummary, RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import { CartesianMarkerProps, linearGradientDef } from '@nivo/core'
 import { ResponsiveLine, Serie, LineSvgProps } from '@nivo/line'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import dayjs, { Dayjs } from 'dayjs'
+import { isUndefined } from 'lodash'
 // import log from 'loglevel'
 
 export interface DailyMonthlyChartProps {
-  stats: Partial<StatsObjectSummary>
-  view?: ChartTypesEnum
-  statsLoading: Record<keyof StatsObjectSummary, boolean>
+  last30Days?: RegolithMonthStats
+  allTime?: RegolithAllTimeStats
+  chartType: 'workOrders' | 'scouting'
+  resolution?: ChartResolutionsEnum
+  statsLoading: boolean
 }
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
@@ -23,36 +26,44 @@ export const ChartTypesEnum = {
   MONTH: 'MONTH',
   // YEAR: 'YEAR',
 } as const
-export type ChartTypesEnum = ObjectValues<typeof ChartTypesEnum>
+export type ChartResolutionsEnum = ObjectValues<typeof ChartTypesEnum>
 
 /**
  * This is the wrpaper for all the types of things scouts can find
  * @param param0
  * @returns
  */
-export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, statsLoading, view }) => {
+export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({
+  last30Days,
+  allTime,
+  statsLoading,
+  chartType,
+  resolution,
+}) => {
   const theme = useTheme()
-  const [chartType, setChartType] = React.useState<ChartTypesEnum>(view || ChartTypesEnum.MONTH)
+  const [chartResolution, setChartResolution] = React.useState<ChartResolutionsEnum>(resolution || ChartTypesEnum.MONTH)
 
   const { chartData } = React.useMemo(() => {
     const chartformat = '%Y-%m-%d'
-    if (!stats) return { chartData: [], chartformat }
-    switch (chartType) {
+    if (!last30Days && !allTime) return { chartData: [], chartformat }
+    switch (chartResolution) {
       case ChartTypesEnum.DAY:
-        if (statsLoading.daily || !stats?.daily) return { chartData: formatChartData({}, chartType), chartformat }
-        return { chartData: formatChartData(stats?.daily, chartType, 30), chartformat: '%m-%d' }
+        if (statsLoading || !last30Days?.days)
+          return { chartData: formatChartData({}, chartResolution, chartType), chartformat }
+        return { chartData: formatChartData(last30Days?.days, chartResolution, chartType, 30), chartformat: '%m-%d' }
       case ChartTypesEnum.MONTH:
-        if (statsLoading.monthly || !stats?.monthly) return { chartData: formatChartData({}, chartType), chartformat }
-        return { chartData: formatChartData(stats?.monthly, chartType), chartformat: '%Y-%m' }
+        if (statsLoading || !allTime) return { chartData: formatChartData({}, chartResolution, chartType), chartformat }
+        return { chartData: formatChartData(allTime, chartResolution, chartType), chartformat: '%Y-%m' }
       // case ChartTypesEnum.YEAR:
       //   return formatChartData(stats?.yearly)
       default:
-        if (statsLoading.daily || !stats?.daily) return { chartData: formatChartData({}, chartType), chartformat }
-        return { chartData: formatChartData(stats?.daily, chartType, 30), chartformat: '%m' }
+        if (statsLoading || !last30Days?.days)
+          return { chartData: formatChartData({}, chartResolution, chartType), chartformat }
+        return { chartData: formatChartData(last30Days?.days, chartResolution, chartType, 30), chartformat: '%m' }
     }
-  }, [chartType, stats])
+  }, [chartResolution, last30Days, allTime])
 
-  const markers = React.useMemo(() => getMarkers(chartType), [chartType])
+  const markers = React.useMemo(() => getMarkers(chartResolution), [chartResolution])
 
   return (
     <Box>
@@ -66,8 +77,10 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
           borderBottom: `1px solid ${theme.palette.secondary.dark}`,
         }}
       >
-        {chartType === ChartTypesEnum.DAY && 'Daily'}
-        {chartType === ChartTypesEnum.MONTH && 'Monthly'}
+        {chartType === 'workOrders' && 'Work Orders: '}
+        {chartType === 'scouting' && 'Scouting: '}
+        {chartResolution === ChartTypesEnum.DAY && 'Daily'}
+        {chartResolution === ChartTypesEnum.MONTH && 'Monthly'}
         {/* {chartType === ChartTypesEnum.YEAR && 'Yearly'} */} Breakdown
       </Typography>
       <Box sx={{ height: 300 }}>
@@ -132,7 +145,7 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
           axisBottom={{
             format: (d) => {
               const date = new Date(d)
-              if (chartType === ChartTypesEnum.MONTH) {
+              if (chartResolution === ChartTypesEnum.MONTH) {
                 // add 2 days to the date so that the month is correct in any timezone
                 date.setDate(date.getDate() + 2)
                 return months[date.getMonth()]
@@ -152,8 +165,9 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
                 }}
               >
                 <Typography variant="caption" sx={{ color: 'white' }}>
-                  {chartType === ChartTypesEnum.MONTH && `${months[sliceDate.getMonth()]} ${sliceDate.getFullYear()}`}
-                  {chartType === ChartTypesEnum.DAY && (slice.points[0].data.x as Date).toDateString()}
+                  {chartResolution === ChartTypesEnum.MONTH &&
+                    `${months[sliceDate.getMonth()]} ${sliceDate.getFullYear()}`}
+                  {chartResolution === ChartTypesEnum.DAY && (slice.points[0].data.x as Date).toDateString()}
                 </Typography>
                 <div style={{ color: 'black' }}>
                   {slice.points.map((point) => (
@@ -223,8 +237,8 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
         defaultValue="female"
         name="radio-buttons-group"
         row
-        value={chartType}
-        onChange={(e) => setChartType(e.target.value as ChartTypesEnum)}
+        value={chartResolution}
+        onChange={(e) => setChartResolution(e.target.value as ChartResolutionsEnum)}
       >
         <FormControlLabel value={ChartTypesEnum.MONTH} control={<Radio />} label="By Month" />
         <FormControlLabel value={ChartTypesEnum.DAY} control={<Radio />} label="By Day" />
@@ -234,25 +248,30 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({ stats, sta
   )
 }
 
-type StatsObjectRowKeys = keyof Pick<
-  StatsObject,
-  'users' | 'workOrders' | 'sessions' | 'scoutingRocks' | 'grossProfitaUEC' | 'lossaUEC'
+type WorkOrderKeys = keyof Pick<
+  RegolithStatsSummary,
+  'users' | 'workOrders' | 'sessions' | 'grossProfitaUEC' | 'lossaUEC'
   // | 'rawOreSCU'
 >
+type ScoutingKeys = keyof RegolithStatsSummary['scouting']
 
-const LINES: Record<StatsObjectRowKeys, { label: string; color: string }> = {
+const WORK_ORDER_LINES: Record<WorkOrderKeys, { label: string; color: string }> = {
   grossProfitaUEC: { label: 'Gross Profit (aUEC)', color: 'hsl(132, 92%, 50%)' },
   lossaUEC: { label: 'Loss (aUEC)', color: 'hsl(0, 0%, 51%)' },
-  scoutingRocks: { label: 'Scouted Rocks', color: 'hsl(66, 70%, 50%)' },
   workOrders: { label: 'Work Orders', color: 'hsl(295, 70%, 50%)' },
   sessions: { label: 'Mining Sessions', color: 'hsl(88, 70%, 50%)' },
   users: { label: 'Active Users', color: 'hsl(237, 70%, 50%)' },
-  // rawOreSCU: { label: 'Ore Mined (SCU)', color: 'hsl(0, 0%, 51%)' },
+}
+const SCOUTING_LINES: Record<ScoutingKeys, { label: string; color: string }> = {
+  rocks: { label: 'Rocks', color: 'hsl(66, 70%, 50%)' },
+  wrecks: { label: 'Wrecks', color: 'hsl(66, 70%, 50%)' },
+  gems: { label: 'Gems', color: 'hsl(66, 70%, 50%)' },
 }
 
 export function formatChartData(
-  stats: Record<string, StatsObject>,
-  chartType: ChartTypesEnum,
+  stats: Record<string, RegolithStatsSummary>,
+  chartResolution: ChartResolutionsEnum,
+  chartType: 'workOrders' | 'scouting',
   maxVals?: number
 ): Serie[] {
   let keys = Object.keys(stats)
@@ -264,15 +283,16 @@ export function formatChartData(
   }
 
   const series: Serie[] = []
-  Object.entries(LINES).forEach(([key, { label, color }]) => {
+  Object.entries(chartType === 'scouting' ? SCOUTING_LINES : WORK_ORDER_LINES).forEach(([key, { label, color }]) => {
     const serie: Serie = {
       id: label,
       color,
       data: keys.map((k) => {
-        const dateVal = new Date(k + 'T00:00:00')
+        const dateVal = chartResolution === ChartTypesEnum.MONTH ? new Date(k + 'T00:00:00') : new Date(k + 'T00:00:00')
         // If the dateval is the current month and the month is not over then we need to pro-rate the value
-        let value: number = stats[k][key as StatsObjectRowKeys]
-        if (chartType === ChartTypesEnum.MONTH) {
+        let value: number = stats[k][key as WorkOrderKeys | ScoutingKeys]
+        if (isUndefined(value)) value = stats[k].scouting[key as keyof RegolithStatsSummary['scouting']]
+        if (chartResolution === ChartTypesEnum.MONTH) {
           const now = new Date()
           if (now.getMonth() === dateVal.getMonth() && now.getFullYear() === dateVal.getFullYear()) {
             const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
@@ -308,7 +328,7 @@ export function formatChartData(
   return series
 }
 
-const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
+const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] => {
   // If it's MONTH Then we should go from march 2023 to now. if it's daily then it should be the last 30 days
   const startDate: dayjs.Dayjs = chartType === ChartTypesEnum.MONTH ? dayjs('2023-03-01') : dayjs().subtract(30, 'days')
   const endDate: dayjs.Dayjs = dayjs()
@@ -373,6 +393,11 @@ const getMarkers = (chartType: ChartTypesEnum): LineSvgProps['markers'] => {
       // Fleet week 2024: May 24, 2024
       value: dayjs('2024-05-24').startOf(rounding).toDate(),
       legend: 'Fleet Week 2954 (3.23)',
+    },
+    {
+      // citizen con Oct 21 - 22, 2023
+      value: dayjs('2024-08-29').startOf(rounding).toDate(),
+      legend: '3.24',
     },
   ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
 
