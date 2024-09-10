@@ -1,0 +1,332 @@
+import * as React from 'react'
+
+import {
+  calculateWorkOrder,
+  CrewShare,
+  makeHumanIds,
+  SessionUser,
+  ShareAmtArr,
+  ShareTypeEnum,
+  User,
+  UserProfile,
+  WorkOrder,
+  WorkOrderSummary,
+} from '@regolithco/common'
+import {
+  Box,
+  Button,
+  Collapse,
+  Divider,
+  Link,
+  ListItemButton,
+  ListItemText,
+  Stack,
+  SxProps,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Theme,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
+import log from 'loglevel'
+
+import {
+  ChevronRight,
+  Description,
+  ExpandMore,
+  PriceCheck,
+  Toll as TollIcon,
+  PieChart as PieChartIcon,
+  Percent,
+} from '@mui/icons-material'
+import numeral from 'numeral'
+import { fontFamilies } from '../../theme'
+import { UserAvatar } from '../UserAvatar'
+import { MValue, MValueFormat } from './MValue'
+import { AppContext } from '../../context/app.context'
+import { LookupsContext } from '../../context/lookupsContext'
+
+const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
+  [ShareTypeEnum.Amount]: <TollIcon sx={{ fontSize: '1em' }} />,
+  [ShareTypeEnum.Percent]: <Percent sx={{ fontSize: '1em' }} />,
+  [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: '1em' }} />,
+}
+
+const styles: Record<string, SxProps<Theme>> = {
+  username: {
+    fontSize: '1rem',
+    lineHeight: 2,
+    fontFamily: fontFamilies.robotoMono,
+    fontWeight: 'bold',
+  },
+}
+
+export type ConfirmModalState = {
+  payerUser?: User
+  payerUserSCName?: string
+  payeeUser?: User
+  payeeUserSCName?: string
+  amt: number
+  crewShares: CrewShare[]
+}
+
+export interface OwingListItemProps {
+  payerSCName: string
+  payeeSCName: string
+  payerUser?: SessionUser
+  payeeUser?: SessionUser
+  meUser?: User
+  workOrders: WorkOrder[]
+  amt: number
+  mutating?: boolean
+  isPaid?: boolean
+  isShare?: boolean
+  setPayConfirm?: (state: ConfirmModalState) => void
+  onRowClick?: (workOrderId: string) => void
+}
+
+export const OwingListItem: React.FC<OwingListItemProps> = ({
+  payerSCName,
+  payeeSCName,
+  payerUser,
+  payeeUser,
+  meUser,
+  workOrders,
+  amt,
+  mutating,
+  isPaid,
+  isShare,
+  setPayConfirm,
+  onRowClick,
+}) => {
+  const theme = useTheme()
+  const [isExpanded, setIsExpanded] = React.useState(false)
+  const dataStore = React.useContext(LookupsContext)
+  const [workOrderCalcs, setWorkOrderCalcs] = React.useState<WorkOrderSummary[] | null>(null)
+  const { hideNames, getSafeName } = React.useContext(AppContext)
+
+  React.useEffect(() => {
+    if (!dataStore || dataStore.loading) return
+    const doCalc = async () => {
+      const calcs = await Promise.all(
+        workOrders.map(async (wo) => {
+          const breakdown = await calculateWorkOrder(dataStore, wo)
+          return breakdown
+        })
+      )
+      setWorkOrderCalcs(calcs)
+    }
+    doCalc()
+  }, [workOrders, dataStore])
+
+  if (payerSCName === payeeSCName) return null
+
+  const crewShares = workOrders
+    .filter(({ owner, sellerscName }) => {
+      return (sellerscName || owner?.scName) === payerSCName
+    })
+    .reduce((acc, wo) => {
+      const crewShare = (wo.crewShares || []).find((cs) => cs.payeeScName === payeeSCName)
+      if (crewShare) acc.push(crewShare)
+      return acc
+    }, [] as CrewShare[])
+    .filter((cs) => cs.state === isPaid)
+
+  const uniqueWorkOrders = crewShares.reduce((acc, { orderId }) => {
+    if (!acc.includes(orderId)) acc.push(orderId)
+    return acc
+  }, [] as string[]).length
+  const uniqueSessions = crewShares.reduce((acc, { sessionId }) => {
+    if (!acc.includes(sessionId)) acc.push(sessionId)
+    return acc
+  }, [] as string[]).length
+
+  return (
+    <Box>
+      <ListItemButton key={'row-button'} onClick={isShare ? undefined : () => setIsExpanded((prev) => !prev)}>
+        <ListItemText>
+          <Stack direction="row" spacing={1}>
+            {isExpanded && !isShare && <ExpandMore />}
+            {!isExpanded && !isShare && <ChevronRight />}
+            <Stack direction="row" spacing={1} sx={{ flex: '1 1 40%' }}>
+              <UserAvatar user={payerUser?.owner as User} size="small" privacy={hideNames} />
+              <Typography sx={styles.username}>{getSafeName(payerSCName)}</Typography>
+              <Divider orientation="vertical" flexItem />
+              <Typography variant="overline">{isPaid ? 'paid' : 'owes'}</Typography>
+              <Divider orientation="vertical" flexItem />
+              <UserAvatar user={payeeUser?.owner as User} size="small" privacy={hideNames} />
+              <Typography sx={styles.username}>{getSafeName(payeeSCName)}</Typography>
+            </Stack>
+            <Stack direction="row" spacing={1} sx={{ flex: '1 1 20%' }}>
+              <Typography variant="overline">for</Typography>
+              <Typography variant="overline" color="primary">
+                {uniqueWorkOrders}
+              </Typography>
+              <Typography variant="overline">work orders</Typography>
+              {uniqueSessions > 1 && (
+                <>
+                  <Typography variant="overline">in</Typography>
+                  <Typography variant="overline" color="primary">
+                    {uniqueSessions}
+                  </Typography>
+                  <Typography variant="overline">sessions</Typography>
+                </>
+              )}
+            </Stack>
+            <MValue
+              value={amt}
+              format={MValueFormat.currency}
+              typoProps={{
+                px: 2,
+                flex: '1 1 20%',
+                textAlign: 'right',
+                fontSize: '1.1rem',
+                lineHeight: '2rem',
+              }}
+            />
+            {!isPaid && !isShare && (
+              <Button
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  setPayConfirm &&
+                    setPayConfirm({
+                      payeeUser: payeeUser?.owner as User,
+                      payeeUserSCName: payeeSCName,
+                      payerUser: payerUser?.owner as User,
+                      payerUserSCName: payerSCName,
+                      amt,
+                      crewShares,
+                    })
+                }}
+                sx={{ opacity: payerSCName !== meUser?.scName ? 0.1 : 1 }}
+                disabled={payerSCName !== meUser?.scName}
+                startIcon={<PriceCheck />}
+                variant="contained"
+                color={mutating ? 'secondary' : 'success'}
+              >
+                Pay
+              </Button>
+            )}
+          </Stack>
+        </ListItemText>
+      </ListItemButton>
+      <Collapse in={isExpanded} key={'row-collapse'} timeout="auto" unmountOnExit>
+        <Box sx={{ p: 2 }}>
+          <TableContainer sx={{ border: '1px solid', borderRadius: 4 }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Work Order</TableCell>
+                  <TableCell>Share Type</TableCell>
+                  <TableCell>Share</TableCell>
+                  <TableCell align="right">Amount</TableCell>
+                  <TableCell>Note</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {crewShares.map((cs, idx) => {
+                  const hasNote = cs.note && cs.note.length > 0
+                  const isMe = cs.payeeScName === meUser?.scName
+                  let shareVal: React.ReactElement
+                  switch (cs.shareType) {
+                    case ShareTypeEnum.Amount:
+                      shareVal = <MValue value={cs.share} format={MValueFormat.number} />
+                      break
+                    case ShareTypeEnum.Percent:
+                      shareVal = <MValue value={cs.share} format={MValueFormat.percent} />
+                      break
+                    case ShareTypeEnum.Share:
+                      shareVal = <MValue value={cs.share} format={MValueFormat.number} decimals={0} />
+                      break
+                    default:
+                      shareVal = <MValue value={cs.share} format={MValueFormat.number} />
+                      break
+                  }
+                  const workOrderIdx = workOrders.findIndex((wo) => wo.orderId === cs.orderId)
+                  if (workOrderIdx < 0) return null
+                  const workOrder = workOrders[workOrderIdx]
+                  if (!workOrderCalcs || !workOrderCalcs[idx]) return null
+
+                  const { remainder, payoutSummary } = workOrderCalcs[workOrderIdx]
+                  const finalPayout: ShareAmtArr = isMe
+                    ? [
+                        payoutSummary[cs.payeeScName][0] + (remainder || 0),
+                        payoutSummary[cs.payeeScName][1] + (remainder || 0),
+                        0,
+                      ]
+                    : payoutSummary[cs.payeeScName]
+                  log.debug('finalPayout', { workOrders, workOrderCalcs, finalPayout })
+                  return (
+                    <TableRow
+                      key={`wo-${idx}`}
+                      onClick={() => onRowClick && onRowClick(cs.orderId)}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: '#FFFFFF33',
+                        },
+                      }}
+                    >
+                      <TableCell>
+                        <Link>
+                          {makeHumanIds(getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName), cs.orderId)}
+                        </Link>
+                      </TableCell>
+                      <Tooltip title={`Share type: ${cs.shareType}`}>
+                        <TableCell>{crewShareTypeIcons[cs.shareType as ShareTypeEnum]}</TableCell>
+                      </Tooltip>
+                      <TableCell>{shareVal}</TableCell>
+                      {isMe
+                        ? formatPayout(theme, finalPayout, false)
+                        : formatPayout(theme, finalPayout, Boolean(workOrder?.includeTransferFee))}
+                      {hasNote ? (
+                        <Tooltip title={`NOTE: ${cs.note}`}>
+                          <TableCell>
+                            <Description color="primary" />
+                          </TableCell>
+                        </Tooltip>
+                      ) : (
+                        <TableCell></TableCell>
+                      )}
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Collapse>
+    </Box>
+  )
+}
+
+const formatPayout = (theme: Theme, shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactNode => {
+  let tooltip = ''
+  if (includeTfr) {
+    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout - ${numeral(shareArr[0] - shareArr[1]).format(
+      '0,0'
+    )} transfer fee`
+  } else {
+    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout`
+  }
+  return (
+    <Tooltip title={tooltip}>
+      <TableCell align="right" sx={{ color: theme.palette.primary.light }}>
+        <MValue
+          value={shareArr[1]}
+          format={MValueFormat.currency}
+          typoProps={{
+            color: shareArr[1] >= 0 ? theme.palette.primary.light : 'error',
+          }}
+        />
+      </TableCell>
+    </Tooltip>
+  )
+}

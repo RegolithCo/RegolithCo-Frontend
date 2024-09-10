@@ -114,7 +114,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
       )}
       <Grid container spacing={4} mb={4}>
         <HomeCard
-          title={`Mining Sessions ${userCtx.isInitialized ? '' : '(Login)'}`}
+          title={`Session Dashboard ${userCtx.isInitialized ? '' : '(Login)'}`}
           focus
           description="Organize your multi-crew, multi-ship mining adventure! Supports hand, vehicle and ship mining as well as scouting and salvaging."
           imgageUrl="images/sm/mining.jpg"

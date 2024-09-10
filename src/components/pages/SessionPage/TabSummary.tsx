@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import {
   CrewShare,
-  makeHumanIds,
   Session,
   SessionBreakdown,
   sessionReduce,
@@ -12,38 +11,9 @@ import {
   ShareTypeEnum,
   User,
 } from '@regolithco/common'
-import {
-  Box,
-  Button,
-  Collapse,
-  Divider,
-  Link,
-  List,
-  ListItemButton,
-  ListItemText,
-  Stack,
-  SxProps,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Theme,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Box, List, Stack, SxProps, TableCell, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import {
-  ChevronRight,
-  Description,
-  ExpandMore,
-  PriceCheck,
-  Toll as TollIcon,
-  PieChart as PieChartIcon,
-  Percent,
-} from '@mui/icons-material'
+import { Toll as TollIcon, PieChart as PieChartIcon, Percent } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { UserAvatar } from '../../UserAvatar'
 import numeral from 'numeral'
@@ -53,6 +23,7 @@ import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { OwingListItem } from '../../fields/OwingListItem'
 
 export interface TabSummaryProps {
   propA?: string
@@ -232,10 +203,6 @@ export const OwingList: React.FC<OwingListProps> = ({
   setPayConfirm,
   openWorkOrderModal,
 }) => {
-  const theme = useTheme()
-  const { hideNames, getSafeName } = React.useContext(AppContext)
-  const styles = stylesThunk(theme, session?.state === SessionStateEnum.Active)
-  const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
   const rowObj = isShare
     ? {
         ...sessionSummary.paid,
@@ -285,172 +252,31 @@ export const OwingList: React.FC<OwingListProps> = ({
       {rowArr.map(([payerSCName, payeeSCName, amt], idy) => {
         const payerUser = (session.activeMembers?.items || []).find(({ owner }) => owner?.scName === payerSCName)
         const payeeUser = (session.activeMembers?.items || []).find(({ owner }) => owner?.scName === payeeSCName)
+        // if (!payerUser || !payeeUser) return null
 
         if (payerSCName === payeeSCName) return null
 
-        const crewShares = (session.workOrders?.items || [])
-          .filter(({ owner, sellerscName }) => {
-            return (sellerscName || owner?.scName) === payerSCName
-          })
-          .reduce((acc, wo) => {
-            const crewShare = (wo.crewShares || []).find((cs) => cs.payeeScName === payeeSCName)
-            if (crewShare) acc.push(crewShare)
-            return acc
-          }, [] as CrewShare[])
-          .filter((cs) => cs.state === isPaid)
-
         // if (!owedRow) return null
         const rowKey = `owed-${payerSCName}-${payeeSCName}-${idy}`
-        const isExpanded = Boolean(expandedRows[rowKey])
+
         return (
-          <Box key={rowKey + '-wrapper'}>
-            <ListItemButton
-              key={rowKey + '-button'}
-              onClick={
-                isShare
-                  ? undefined
-                  : () => {
-                      setExpandedRows({
-                        ...expandedRows,
-                        [rowKey]: !isExpanded,
-                      })
-                    }
-              }
-            >
-              <ListItemText>
-                <Stack direction="row" spacing={1}>
-                  {isExpanded && !isShare && <ExpandMore />}
-                  {!isExpanded && !isShare && <ChevronRight />}
-                  <UserAvatar user={payerUser?.owner as User} size="small" privacy={hideNames} />
-                  <Typography sx={styles.username}>{getSafeName(payerSCName)}</Typography>
-                  <Divider orientation="vertical" flexItem />
-                  <Typography variant="overline">owes</Typography>
-                  <Divider orientation="vertical" flexItem />
-                  <UserAvatar user={payeeUser?.owner as User} size="small" privacy={hideNames} />
-                  <Typography sx={styles.username}>{getSafeName(payeeSCName)}</Typography>
-                  <div style={{ flexGrow: 1 }} />
-                  <MValue
-                    value={amt}
-                    format={MValueFormat.currency}
-                    typoProps={{
-                      px: 2,
-                      fontSize: '1.1rem',
-                      lineHeight: '2rem',
-                    }}
-                  />
-                  {!isPaid && !isShare && (
-                    <Button
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        setPayConfirm &&
-                          setPayConfirm({
-                            payeeUser: payeeUser?.owner as User,
-                            payeeUserSCName: payeeSCName,
-                            payerUser: payerUser?.owner as User,
-                            payerUserSCName: payerSCName,
-                            amt,
-                            crewShares,
-                          })
-                      }}
-                      sx={{ opacity: payerSCName !== sessionUser?.owner?.scName ? 0.1 : 1 }}
-                      disabled={payerSCName !== sessionUser?.owner?.scName}
-                      startIcon={<PriceCheck />}
-                      variant="contained"
-                      color={mutating ? 'secondary' : 'success'}
-                    >
-                      Pay
-                    </Button>
-                  )}
-                </Stack>
-              </ListItemText>
-            </ListItemButton>
-            <Collapse in={isExpanded} key={rowKey + '-collapse'} timeout="auto" unmountOnExit>
-              <Box sx={{ p: 2 }}>
-                <TableContainer sx={{ border: '1px solid', borderRadius: 4 }}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Work Order</TableCell>
-                        <TableCell>Share Type</TableCell>
-                        <TableCell>Share</TableCell>
-                        <TableCell align="right">Amount</TableCell>
-                        <TableCell>Note</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {crewShares.map((cs, idx) => {
-                        const hasNote = cs.note && cs.note.length > 0
-                        const isMe = cs.payeeScName === sessionUser?.owner?.scName
-                        let shareVal: React.ReactElement
-                        switch (cs.shareType) {
-                          case ShareTypeEnum.Amount:
-                            shareVal = <MValue value={cs.share} format={MValueFormat.number} />
-                            break
-                          case ShareTypeEnum.Percent:
-                            shareVal = <MValue value={cs.share} format={MValueFormat.percent} />
-                            break
-                          case ShareTypeEnum.Share:
-                            shareVal = <MValue value={cs.share} format={MValueFormat.number} decimals={0} />
-                            break
-                          default:
-                            shareVal = <MValue value={cs.share} format={MValueFormat.number} />
-                            break
-                        }
-                        const workOrder = (session.workOrders?.items || []).find((wo) => wo.orderId === cs.orderId)
-                        const { remainder, payoutSummary } = sessionSummary.orderBreakdowns[cs.orderId]
-                        const finalPayout: ShareAmtArr = isMe
-                          ? [
-                              payoutSummary[cs.payeeScName][0] + (remainder || 0),
-                              payoutSummary[cs.payeeScName][1] + (remainder || 0),
-                              0,
-                            ]
-                          : payoutSummary[cs.payeeScName]
-                        return (
-                          <TableRow
-                            key={`wo-${idx}`}
-                            onClick={() => openWorkOrderModal && openWorkOrderModal(cs.orderId)}
-                            sx={{
-                              cursor: 'pointer',
-                              '&:hover': {
-                                backgroundColor: '#FFFFFF33',
-                              },
-                            }}
-                          >
-                            <TableCell>
-                              <Link>
-                                {makeHumanIds(
-                                  getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName),
-                                  cs.orderId
-                                )}
-                              </Link>
-                            </TableCell>
-                            <Tooltip title={`Share type: ${cs.shareType}`}>
-                              <TableCell>{crewShareTypeIcons[cs.shareType as ShareTypeEnum]}</TableCell>
-                            </Tooltip>
-                            <TableCell>{shareVal}</TableCell>
-                            {isMe
-                              ? formatPayout(finalPayout, false)
-                              : formatPayout(finalPayout, Boolean(workOrder?.includeTransferFee))}
-                            {hasNote ? (
-                              <Tooltip title={`NOTE: ${cs.note}`}>
-                                <TableCell>
-                                  <Description color="primary" />
-                                </TableCell>
-                              </Tooltip>
-                            ) : (
-                              <TableCell></TableCell>
-                            )}
-                          </TableRow>
-                        )
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </Collapse>
-          </Box>
+          <OwingListItem
+            key={rowKey}
+            {...{
+              payerSCName,
+              payeeSCName,
+              payerUser,
+              payeeUser,
+              amt,
+              workOrders: session.workOrders?.items || [],
+              meUser: sessionUser?.owner as User,
+              isPaid,
+              isShare,
+              setPayConfirm,
+              mutating,
+              onRowClick: () => openWorkOrderModal && openWorkOrderModal(rowKey),
+            }}
+          />
         )
       })}
     </List>
