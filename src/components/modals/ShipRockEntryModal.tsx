@@ -327,7 +327,19 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const massError = Boolean(massErrorReason.length > 0)
   return (
     <>
-      <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs" fullScreen={isSmall}>
+      <Dialog
+        open={Boolean(open)}
+        onClose={onClose}
+        sx={styles.paper}
+        maxWidth="xs"
+        fullScreen={isSmall}
+        onKeyDown={(e) => {
+          if (!disabled && e.key === 'Enter') {
+            onSubmit && onSubmit(newShipRock)
+            onClose()
+          }
+        }}
+      >
         <RockIcon sx={styles.icon} />
         <Tooltip
           title={
@@ -605,7 +617,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                         event.target.select()
                       }}
                       onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === 'Tab') {
+                        if (event.key === 'Tab') {
                           const newIdx = event.shiftKey ? idx - 1 : idx + 1
                           if (newIdx >= 0 && newIdx < ores.length) {
                             event.preventDefault()

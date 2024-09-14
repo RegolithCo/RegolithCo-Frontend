@@ -33,6 +33,7 @@ import {
   getSalvageOreName,
   SalvageOreEnum,
   SalvageWreck,
+  SalvageWreckOre,
   WreckStateEnum,
 } from '@regolithco/common'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
@@ -192,6 +193,15 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
   }>({})
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement>>>({})
+  const sortOres = React.useCallback((ores: SalvageWreckOre[]): SalvageWreckOre[] => {
+    const newOres = [...(ores || [])]
+    newOres.sort((a, b) => {
+      const aPrice = prices[newOres.indexOf(a)]
+      const bPrice = prices[newOres.indexOf(b)]
+      return bPrice - aPrice
+    })
+    return newOres
+  }, [])
 
   const [newWreck, _setNewWreck] = React.useState<SalvageWreck>(
     !isNew && wreck
@@ -199,7 +209,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
       : ({
           state: WreckStateEnum.Ready,
           isShip: true,
-          salvageOres: Object.values(SalvageOreEnum).map((ore) => ({ ore, scu: 0 })),
+          salvageOres: sortOres(Object.values(SalvageOreEnum).map((ore) => ({ ore, scu: 0 }) as SalvageWreckOre)),
           sellableAUEC: null,
           shipCode: null,
           __typename: 'SalvageWreck',
@@ -225,20 +235,16 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
           {} as { [key in SalvageOreEnum]?: number }
         )
       )
-      newOres.sort((a, b) => {
-        const aPrice = prices[newOres.indexOf(a)]
-        const bPrice = prices[newOres.indexOf(b)]
-        return bPrice - aPrice
-      })
       newOres.forEach((ore) => {
         const price = prices[newOres.indexOf(ore)]
         value += price * (ore.scu || 0)
         volume += ore.scu || 0
       })
 
+      const sortedOres = sortOres(newOres)
       setValueVolume([value, volume])
       _setNewWreck((oldWreck) => {
-        return { ...oldWreck, ...newWreck, ores: newOres }
+        return { ...oldWreck, ...newWreck, salvageOres: sortedOres }
       })
     },
     [dataStore]
@@ -250,7 +256,20 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
   const sellableAUECError = false
   return (
     <>
-      <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="xs" fullScreen={isSmall} fullWidth>
+      <Dialog
+        open={Boolean(open)}
+        onClose={onClose}
+        sx={styles.paper}
+        maxWidth="xs"
+        fullScreen={isSmall}
+        fullWidth
+        onKeyDown={(e) => {
+          if (!disabled && e.key === 'Enter') {
+            onSubmit && onSubmit(newWreck)
+            onClose()
+          }
+        }}
+      >
         <ClawIcon sx={styles.icon} />
         <Tooltip
           title={
@@ -358,15 +377,12 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
           <Typography variant="overline" sx={styles.headTitles} component="div">
             Composition
           </Typography>
-          {/* <Box sx={{ mb: 2 }}>
-        <ThemeProvider theme={themeOrig}>
-          <SalvageOreChooser multiple values={ores.map((o) => o.ore as SalvageOreEnum)} />
-        </ThemeProvider>
-      </Box> */}
+
           <Box sx={{ mb: 2 }}>
             {newWreck.salvageOres.map((ore, idx) => {
-              if (!inputRefs[ore.ore]) {
-                inputRefs[ore.ore] = React.createRef()
+              const oreName = ore.ore
+              if (!inputRefs[oreName]) {
+                inputRefs[oreName] = React.createRef()
                 setInputRefs({ ...inputRefs })
               }
               return (
@@ -378,16 +394,16 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                   alignItems={'center'}
                 >
                   <Box sx={{ flex: '1 0 60%' }}>
-                    <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
+                    <Tooltip title={getOreName(oreName as AnyOreEnum)} placement="right">
                       <Box sx={styles.sliderOreName}>
                         {ore.ore}
-                        {/* {getSalvageOreName(ore.ore)} ({ore.ore}) */}
+                        {/* {getSalvageOreName(oreName)} ({oreName}) */}
                       </Box>
                     </Tooltip>
                   </Box>
                   <Box sx={{ flex: '1 0 30%' }}>
                     <TextField
-                      inputRef={inputRefs[ore.ore]}
+                      inputRef={inputRefs[oreName]}
                       value={Numeral(ore.scu || 0).format(`0,0`)}
                       sx={styles.numfields}
                       InputProps={{
@@ -399,7 +415,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                       onFocus={(event) => {
                         // if (ore.percent > 0)
                         //   setActiveOrePercentText([idx, parseNum(((ore.percent as number) * 100).toFixed(2), 2, 2)])
-                        // inputRefs[ore.ore]?.current?.select()
+                        // inputRefs[oreName]?.current?.select()
                         event.target.select()
                       }}
                       onKeyDown={(event) => {
@@ -424,7 +440,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                           let retVal = o.scu
                           if (retVal < 0) retVal = 0
                           if (retVal > 1) retVal = 1
-                          if (o.ore === ore.ore) {
+                          if (o.ore === oreName) {
                             return { ...o, scu: rawValue }
                           }
                           return o

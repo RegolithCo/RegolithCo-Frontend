@@ -297,8 +297,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(Boolean(isNew))
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [summary, setSummary] = React.useState<FindClusterSummary>()
-  // const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
-  // const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
   const { getSafeName } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
 
@@ -310,11 +308,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const salvageFind = scoutingFind as SalvageFind
 
   // Some convenience variables
-  // const hasCount = Boolean(scoutingFind.clusterCount)
   let hasScans = false
-  // let scanComplete = false
   let numScans = 0
-  const clusterCount = scoutingFind.clusterCount || 0
 
   let Icon: SvgIconComponent = ClawIcon
   let itemName = ''
@@ -713,7 +708,13 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         )}
         {/* Salvage scans */}
         {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage && (
-          <ScoutingFindWrecks salvageFind={salvageFind} summary={summary} allowEdit={allowEdit} onChange={onChange} />
+          <ScoutingFindWrecks
+            salvageFind={salvageFind}
+            summary={summary}
+            allowEdit={allowEdit}
+            isShare={isShare}
+            onChange={onChange}
+          />
         )}
       </Grid>
 
