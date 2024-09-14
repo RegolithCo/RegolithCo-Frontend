@@ -317,7 +317,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
         </Tooltip>
         <DialogContent sx={styles.dialogContent}>
           <Alert severity="warning">
-            <Typography variant="caption">All values are estimates and optional.</Typography>
+            <Typography variant="caption">All values are meant to be rough estimates and totally optional.</Typography>
           </Alert>
           <Grid2 container spacing={2} paddingX={0} sx={styles.compositionGrid}>
             <Grid2 xs={5}>

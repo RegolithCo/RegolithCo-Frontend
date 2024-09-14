@@ -31,7 +31,6 @@ import {
   getOreName,
   ScoutingFindTypeEnum,
   SessionUser,
-  ShipRock,
   ScoutingFindStateEnum,
   getScoutingFindStateName,
   SessionUserStateEnum,
@@ -298,8 +297,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(Boolean(isNew))
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [summary, setSummary] = React.useState<FindClusterSummary>()
-  const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
-  const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
+  // const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
+  // const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
   const { getSafeName } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
 
@@ -343,7 +342,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       itemName = plural ? 'Gems' : 'Gem'
       break
   }
-  // const { lookupData: summary, lookupLoading } = useAsyncLookupData(clusterCalc, [scoutingFind as ScoutingFind])
+
   React.useEffect(() => {
     const calcSummary = async () => {
       if (!dataStore.ready) return
@@ -353,10 +352,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     calcSummary()
   }, [scoutingFind, dataStore.ready])
 
-  // let profitSymbol = '~'
-  // if (scanComplete) profitSymbol = ''
-  // else if (hasCount && hasScans && numScans < clusterCount) profitSymbol = '>'
-
   let myAttendanceState = AttendanceStateEnum.NotJoined
   if (scoutingFind.attendanceIds?.includes(me?.owner?.userId as string)) {
     myAttendanceState = me
@@ -365,10 +360,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         : AttendanceStateEnum.Joined
       : AttendanceStateEnum.NotJoined
   }
-
-  // Just a handy array to map over
-  const placeholderItems: unknown[] =
-    clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
 
   const onSiteUsers: User[] =
     scoutingFind.attendance?.filter((a) => a.state === SessionUserStateEnum.OnSite).map(({ owner }) => owner as User) ||

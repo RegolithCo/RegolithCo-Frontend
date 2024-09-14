@@ -1,9 +1,12 @@
-### August 9, 2024
+### September 20, 2024
+## 1.0.53 - The Space Accountant Patch
 
 - Chart libraries updated.
 - New helper control for when sharing unrefined values.
 - Added new control for estimating the RMC, CMAT and aUEC of salvage wrecks.
+- Reduced the frequency of some UEX Synch calls to reduce our burden on that service. Prices will still synch hourly but ships, planets, companies etc. will synch daily.
 - Many performance tweaks.
+
 
 ### July 5, 2024
 ## 1.0.52 - Bugs bugs bugs

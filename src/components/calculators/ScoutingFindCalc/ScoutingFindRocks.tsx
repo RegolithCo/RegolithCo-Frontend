@@ -68,7 +68,8 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
 
   // Some convenience variables
   // let scanComplete = false
-  const numScans = 0
+  const hasScans = shipFind.shipRocks && shipFind.shipRocks.length > 0
+  const numScans = hasScans ? shipFind.shipRocks.length : 0
 
   // Convenience type guards
   const clusterCount = shipFind.clusterCount || 0

@@ -70,7 +70,8 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
 
   // Some convenience variables
   // let scanComplete = false
-  const numScans = 0
+  const hasScans = salvageFind.wrecks && salvageFind.wrecks.length > 0
+  const numScans = hasScans ? salvageFind.wrecks.length : 0
 
   // Convenience type guards
   const clusterCount = salvageFind.clusterCount || 0
