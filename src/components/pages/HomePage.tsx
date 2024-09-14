@@ -117,7 +117,7 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
           title={`Session Dashboard ${userCtx.isInitialized ? '' : '(Login)'}`}
           focus
           description="Organize your multi-crew, multi-ship mining adventure! Supports hand, vehicle and ship mining as well as scouting and salvaging."
-          imgageUrl="images/sm/mining.jpg"
+          imgageUrl="images/sm/dashboard.jpg"
           url={userCtx.isAuthenticated ? (userCtx.isInitialized ? '/session' : '/verify') : undefined}
           onClick={() => {
             if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')

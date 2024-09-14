@@ -134,6 +134,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
           // py: 2,
         },
       }}
+      slotProps={{
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(3px)',
+          },
+        },
+      }}
     >
       <DialogTitle
         sx={{

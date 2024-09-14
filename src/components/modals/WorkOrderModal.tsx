@@ -196,6 +196,13 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       fullScreen={!mediumUp}
       disableEscapeKeyDown={isEditing}
       sx={{ ...styles.paper }}
+      slotProps={{
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(1px)',
+          },
+        },
+      }}
     >
       <WorkIcon color="inherit" fontSize="large" sx={styles.icon} />
       <Box sx={styles.containerBox}>

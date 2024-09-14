@@ -123,7 +123,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
       children: [
         { path: '/workorder', name: 'Work Order', icon: <Engineering /> },
         { path: '/cluster', name: 'Rock / Cluster Calculator', icon: <RockIcon /> },
-        { path: '/loadouts', name: 'Ship Loadouts', icon: <ModuleIcon /> },
+        { path: '/loadouts', name: 'Ship Mining Loadouts', icon: <ModuleIcon /> },
         { path: '/market-price', name: 'Market Price Calculator', icon: <Storefront /> },
       ],
     },

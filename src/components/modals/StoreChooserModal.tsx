@@ -41,7 +41,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       backgroundImage: 'none',
       borderRadius: 4,
       position: 'relative',
-      outline: `10px solid ${theme.palette.primary.contrastText}`,
+      outline: `3px solid ${theme.palette.primary.contrastText}`,
       border: `10px solid ${theme.palette.primary.main}`,
       maxHeight: 300,
     },
@@ -101,7 +101,20 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
 
   return (
     <>
-      <Dialog open={Boolean(open)} onClose={onClose} sx={styles.paper} maxWidth="sm" fullWidth>
+      <Dialog
+        open={Boolean(open)}
+        onClose={onClose}
+        sx={styles.paper}
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          backdrop: {
+            sx: {
+              backdropFilter: 'blur(3px)',
+            },
+          },
+        }}
+      >
         <Box sx={styles.headerBar}>
           <Stack direction="row">
             <Typography variant="h6" sx={styles.cardTitle}>

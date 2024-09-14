@@ -97,6 +97,13 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
         maxWidth="md"
         disableEscapeKeyDown
         sx={styles.dialog}
+        slotProps={{
+          backdrop: {
+            sx: {
+              backdropFilter: 'blur(1px)',
+            },
+          },
+        }}
       >
         <Box sx={styles.boxContainer}>
           {/* SHARE BUTTON */}
