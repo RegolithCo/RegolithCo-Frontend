@@ -7,6 +7,7 @@ import {
   SessionUser,
   ShareAmtArr,
   ShareTypeEnum,
+  smartDate,
   User,
   UserProfile,
   WorkOrder,
@@ -67,9 +68,9 @@ const styles: Record<string, SxProps<Theme>> = {
 }
 
 export type ConfirmModalState = {
-  payerUser?: User
+  payerUser?: User | UserProfile
   payerUserSCName?: string
-  payeeUser?: User
+  payeeUser?: User | UserProfile
   payeeUserSCName?: string
   amt: number
   crewShares: CrewShare[]
@@ -78,16 +79,17 @@ export type ConfirmModalState = {
 export interface OwingListItemProps {
   payerSCName: string
   payeeSCName: string
-  payerUser?: SessionUser
-  payeeUser?: SessionUser
-  meUser?: User
+  payerUser?: SessionUser | User | UserProfile
+  payeeUser?: SessionUser | User | UserProfile
+  meUser?: SessionUser | User | UserProfile
   workOrders: WorkOrder[]
   amt: number
   mutating?: boolean
   isPaid?: boolean
   isShare?: boolean
+  crossSession?: boolean
   setPayConfirm?: (state: ConfirmModalState) => void
-  onRowClick?: (workOrderId: string) => void
+  onRowClick?: (sessionId: string, orderId: string) => void
 }
 
 export const OwingListItem: React.FC<OwingListItemProps> = ({
@@ -101,6 +103,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
   mutating,
   isPaid,
   isShare,
+  crossSession,
   setPayConfirm,
   onRowClick,
 }) => {
@@ -146,6 +149,10 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
     return acc
   }, [] as string[]).length
 
+  const normalizedPayee = (payeeUser as SessionUser)?.owner || (payeeUser as User)
+  const normalizedPayer = (payerUser as SessionUser)?.owner || (payerUser as User)
+  const normalizedMeUSer = (meUser as SessionUser)?.owner || (meUser as User)
+
   return (
     <Box>
       <ListItemButton key={'row-button'} onClick={isShare ? undefined : () => setIsExpanded((prev) => !prev)}>
@@ -154,30 +161,23 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
             {isExpanded && !isShare && <ExpandMore />}
             {!isExpanded && !isShare && <ChevronRight />}
             <Stack direction="row" spacing={1} sx={{ flex: '1 1 40%' }}>
-              <UserAvatar user={payerUser?.owner as User} size="small" privacy={hideNames} />
+              <UserAvatar user={normalizedPayer} size="small" privacy={hideNames} />
               <Typography sx={styles.username}>{getSafeName(payerSCName)}</Typography>
               <Divider orientation="vertical" flexItem />
               <Typography variant="overline">{isPaid ? 'paid' : 'owes'}</Typography>
               <Divider orientation="vertical" flexItem />
-              <UserAvatar user={payeeUser?.owner as User} size="small" privacy={hideNames} />
+              <UserAvatar user={normalizedPayee} size="small" privacy={hideNames} />
               <Typography sx={styles.username}>{getSafeName(payeeSCName)}</Typography>
             </Stack>
-            <Stack direction="row" spacing={1} sx={{ flex: '1 1 20%' }}>
-              <Typography variant="overline">for</Typography>
-              <Typography variant="overline" color="primary">
-                {uniqueWorkOrders}
-              </Typography>
-              <Typography variant="overline">work orders</Typography>
-              {uniqueSessions > 1 && (
-                <>
-                  <Typography variant="overline">in</Typography>
-                  <Typography variant="overline" color="primary">
-                    {uniqueSessions}
-                  </Typography>
-                  <Typography variant="overline">sessions</Typography>
-                </>
+            <Typography variant="overline">
+              for <span style={{ color: theme.palette.primary.main }}>{uniqueWorkOrders}</span> work order(s)
+              {(uniqueSessions > 1 || crossSession) && (
+                <span>
+                  {' '}
+                  in <span style={{ color: theme.palette.primary.main }}>{uniqueSessions}</span> session(s)
+                </span>
               )}
-            </Stack>
+            </Typography>
             <MValue
               value={amt}
               format={MValueFormat.currency}
@@ -197,16 +197,16 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                   e.preventDefault()
                   setPayConfirm &&
                     setPayConfirm({
-                      payeeUser: payeeUser?.owner as User,
+                      payeeUser: normalizedPayee,
                       payeeUserSCName: payeeSCName,
-                      payerUser: payerUser?.owner as User,
+                      payerUser: normalizedPayer,
                       payerUserSCName: payerSCName,
                       amt,
                       crewShares,
                     })
                 }}
-                sx={{ opacity: payerSCName !== meUser?.scName ? 0.1 : 1 }}
-                disabled={payerSCName !== meUser?.scName}
+                sx={{ opacity: payerSCName !== normalizedMeUSer?.scName ? 0.1 : 1 }}
+                disabled={payerSCName !== normalizedMeUSer?.scName}
                 startIcon={<PriceCheck />}
                 variant="contained"
                 color={mutating ? 'secondary' : 'success'}
@@ -223,6 +223,8 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
             <Table size="small">
               <TableHead>
                 <TableRow>
+                  {(crossSession || uniqueSessions > 0) && <TableCell>Session</TableCell>}
+                  {(crossSession || uniqueSessions > 0) && <TableCell>Date</TableCell>}
                   <TableCell>Work Order</TableCell>
                   <TableCell>Share Type</TableCell>
                   <TableCell>Share</TableCell>
@@ -233,7 +235,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
               <TableBody>
                 {crewShares.map((cs, idx) => {
                   const hasNote = cs.note && cs.note.length > 0
-                  const isMe = cs.payeeScName === meUser?.scName
+                  const isMe = cs.payeeScName === normalizedMeUSer?.scName
                   let shareVal: React.ReactElement
                   switch (cs.shareType) {
                     case ShareTypeEnum.Amount:
@@ -266,7 +268,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                   return (
                     <TableRow
                       key={`wo-${idx}`}
-                      onClick={() => onRowClick && onRowClick(cs.orderId)}
+                      onClick={() => onRowClick && onRowClick(cs.sessionId, cs.orderId)}
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {
@@ -274,6 +276,10 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                         },
                       }}
                     >
+                      {(crossSession || uniqueSessions > 0) && (
+                        <TableCell>{workOrder.session?.name || workOrder.sessionId}</TableCell>
+                      )}
+                      {(crossSession || uniqueSessions > 0) && <TableCell>{smartDate(workOrder.createdAt)}</TableCell>}
                       <TableCell>
                         <Link>
                           {makeHumanIds(getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName), cs.orderId)}

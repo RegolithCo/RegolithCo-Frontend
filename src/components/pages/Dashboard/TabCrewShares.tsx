@@ -1,14 +1,17 @@
 import * as React from 'react'
 
-import { Alert, AlertTitle, Typography, useTheme } from '@mui/material'
+import { Alert, AlertTitle, List, Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
-import { CrewShare } from '@regolithco/common'
+import { CrewShare, User, WorkOrder } from '@regolithco/common'
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import log from 'loglevel'
 import { MValueFormatter } from '../../fields/MValue'
+import { OwingListItem } from '../../fields/OwingListItem'
+
+type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
 
 export const TabCrewShares: React.FC<DashboardProps> = ({
   userProfile,
@@ -21,6 +24,16 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   navigate,
 }) => {
   const theme = useTheme()
+  const workOrderLookups = [...mySessions, ...joinedSessions].reduce((acc, session) => {
+    acc[session.sessionId] = (session.workOrders?.items || []).reduce(
+      (acc, wo) => {
+        acc[wo.orderId] = wo
+        return acc
+      },
+      {} as Record<string, WorkOrder>
+    )
+    return acc
+  }, {} as WorkOrderLookup)
 
   // This is unfiltered. We shouldn't use these directly
   const { relevantCrewShares } = React.useMemo(() => {
@@ -126,35 +139,45 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           Unpaid Crew Shares You Owe:
         </Typography>
         <Box>
-          <SimpleTreeView>
+          <List>
             {Object.entries(iOweShares).map(([scName, { amt, shares }]) => {
-              const uniqueSessions = Array.from(new Set(shares.map(([cs]) => cs.sessionId))).length
-              const uniqueOrderIds = Array.from(new Set(shares.map(([cs]) => cs.orderId))).length
+              const workOrders = shares.map(([cs]) => {
+                const wo = workOrderLookups[cs.sessionId][cs.orderId]
+                const foundSession = [...mySessions, ...joinedSessions].find((s) => s.sessionId === cs.sessionId)
+                if (foundSession) {
+                  const { workOrders, ...rest } = foundSession
+                  wo.session = rest
+                }
+                return wo
+              })
+              // Find the first user in any session that has the same scName
+              const sessionUser = [...mySessions, ...joinedSessions]
+                .flatMap(({ activeMembers }) => activeMembers?.items || [])
+                .find((u) => u.owner?.scName === scName)
               return (
-                <TreeItem
-                  itemId={`iOwer_${scName}`}
-                  label={
-                    <Typography variant="body1">
-                      You owe {scName} {MValueFormatter(amt, 'currency')} from {uniqueOrderIds} orders in{' '}
-                      {uniqueSessions} sessions
-                    </Typography>
-                  }
-                >
-                  {shares.map(([cs, amt]) => (
-                    <TreeItem
-                      itemId={`${cs.sessionId}_${cs.orderId}_${cs.payeeScName}`}
-                      label={
-                        <Typography variant="body1">
-                          You owe {cs.payeeScName} {MValueFormatter(amt, 'currency')} from {cs.orderId} in{' '}
-                          {cs.sessionId}
-                        </Typography>
-                      }
-                    />
-                  ))}
-                </TreeItem>
+                <OwingListItem
+                  payeeSCName={scName}
+                  payerSCName={userProfile.scName}
+                  payerUser={userProfile}
+                  amt={amt}
+                  workOrders={workOrders}
+                  isPaid={false}
+                  meUser={userProfile}
+                  mutating={false}
+                  crossSession
+                  payeeUser={sessionUser}
+                  onRowClick={(sessionId, orderId) => {
+                    const url = `/session/${sessionId}/dash/w/${orderId}`
+                    window.open(url, '_blank')
+                  }}
+                  isShare={false}
+                  setPayConfirm={() => {
+                    console.log('setPayConfirm')
+                  }}
+                />
               )
             })}
-          </SimpleTreeView>
+          </List>
         </Box>
       </Box>
       <Box>

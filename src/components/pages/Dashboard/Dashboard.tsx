@@ -1,9 +1,9 @@
 import * as React from 'react'
 
 import { Session, SessionStateEnum, UserProfile } from '@regolithco/common'
-import { Box, Button, ButtonGroup, IconButton, Menu, Paper, Tab, Tabs, useTheme } from '@mui/material'
-import { AddCircle, ChevronLeft, Insights, MoreHoriz, RocketLaunch } from '@mui/icons-material'
-import { Container, Stack } from '@mui/system'
+import { Paper, Tab, Tabs, useTheme } from '@mui/material'
+import { Insights } from '@mui/icons-material'
+import { Container } from '@mui/system'
 import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
 import { TabStats } from './TabStats/TabStats'

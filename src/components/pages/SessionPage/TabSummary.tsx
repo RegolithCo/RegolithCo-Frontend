@@ -23,7 +23,7 @@ import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { OwingListItem } from '../../fields/OwingListItem'
+import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 
 export interface TabSummaryProps {
   propA?: string
@@ -81,15 +81,6 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
     mb: 2,
   },
 })
-
-type ConfirmModalState = {
-  payerUser?: User
-  payerUserSCName?: string
-  payeeUser?: User
-  payeeUserSCName?: string
-  amt: number
-  crewShares: CrewShare[]
-}
 
 export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
@@ -269,7 +260,7 @@ export const OwingList: React.FC<OwingListProps> = ({
               payeeUser,
               amt,
               workOrders: session.workOrders?.items || [],
-              meUser: sessionUser?.owner as User,
+              meUser: sessionUser,
               isPaid,
               isShare,
               setPayConfirm,
@@ -280,30 +271,5 @@ export const OwingList: React.FC<OwingListProps> = ({
         )
       })}
     </List>
-  )
-}
-
-const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactNode => {
-  const theme = useTheme()
-  let tooltip = ''
-  if (includeTfr) {
-    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout - ${numeral(shareArr[0] - shareArr[1]).format(
-      '0,0'
-    )} transfer fee`
-  } else {
-    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout`
-  }
-  return (
-    <Tooltip title={tooltip}>
-      <TableCell align="right" sx={{ color: theme.palette.primary.light }}>
-        <MValue
-          value={shareArr[1]}
-          format={MValueFormat.currency}
-          typoProps={{
-            color: shareArr[1] >= 0 ? theme.palette.primary.light : 'error',
-          }}
-        />
-      </TableCell>
-    </Tooltip>
   )
 }
