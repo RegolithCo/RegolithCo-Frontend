@@ -1,5 +1,7 @@
 import {
   calculateWorkOrder,
+  CrewShare,
+  MarkCrewSharePaidMutation,
   ObjectValues,
   Session,
   UpdateWorkOrderMutation,
@@ -17,7 +19,7 @@ import { LookupsContext } from '../../../context/lookupsContext'
 
 import log from 'loglevel'
 import { DatePresetsEnum } from './TabStats/StatsDatePicker'
-import { useUpdateWorkOrderMutation } from '../../../schema'
+import { useMarkCrewSharePaidMutation, useUpdateWorkOrderMutation } from '../../../schema'
 
 export const SessionDashTabsEnum = {
   sessions: 'sessions',
@@ -75,6 +77,40 @@ export const DashboardContainer: React.FC = () => {
     })
   }
 
+  const markCrewSharePaidMutation = useMarkCrewSharePaidMutation()
+  const markCrewSharesPaid = (shares: CrewShare[]) => {
+    return Promise.all(
+      shares.map((share) => {
+        const { orderId, sessionId, payeeScName } = share
+        return markCrewSharePaidMutation[0]({
+          variables: {
+            isPaid: true,
+            sessionId,
+            orderId,
+            payeeScName,
+          },
+          optimisticResponse: () => {
+            return {
+              __typename: 'Mutation',
+              markCrewSharePaid: {
+                ...share,
+                isPaid: true,
+              },
+            } as MarkCrewSharePaidMutation
+          },
+        })
+          .then((res) => {
+            // log.info('Marked crew share paid', res)
+          })
+          .catch((e) => {
+            // log.error('Failed to mark crew share paid', e)
+          })
+      })
+    ).then(() => {
+      // log.debug('Marked all crew shares paid')
+    })
+  }
+
   // Call calculateWorkOrder for each session and all of its work orders and store the results in state
   React.useEffect(() => {
     if (!userQueries.userProfile || !useSessionListQueries.joinedSessions || !useSessionListQueries.mySessions) return
@@ -100,6 +136,7 @@ export const DashboardContainer: React.FC = () => {
       preset={preset as DatePresetsEnum}
       workOrderSummaries={workOrderSummaries}
       deliverWorkOrders={deliverWorkOrders}
+      markCrewSharesPaid={markCrewSharesPaid}
       paginationDate={useSessionListQueries.paginationDate}
       setPaginationDate={useSessionListQueries.setPaginationDate}
       userProfile={userQueries.userProfile as UserProfile}
@@ -110,7 +147,8 @@ export const DashboardContainer: React.FC = () => {
         userQueries.loading ||
         useSessionListQueries.loading ||
         userQueries.mutating ||
-        updateWorkOrderMutation[1].loading
+        updateWorkOrderMutation[1].loading ||
+        markCrewSharePaidMutation[1].loading
       }
       allLoaded={useSessionListQueries.allLoaded}
       navigate={navigate}

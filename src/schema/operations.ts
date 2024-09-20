@@ -2,6 +2,16 @@ import * as types from '@regolithco/common'
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
+export const UserFragmentFragmentDoc = gql`
+    fragment UserFragment on User {
+  userId
+  scName
+  avatarUrl
+  createdAt
+  updatedAt
+  state
+}
+    `;
 export const WorkOrderListFragmentFragmentDoc = gql`
     fragment WorkOrderListFragment on WorkOrderInterface {
   orderId
@@ -11,6 +21,9 @@ export const WorkOrderListFragmentFragmentDoc = gql`
   ownerId
   sellerscName
   sellerUserId
+  seller {
+    ...UserFragment
+  }
   state
   failReason
   isSold
@@ -18,7 +31,7 @@ export const WorkOrderListFragmentFragmentDoc = gql`
   orderType
   note
 }
-    `;
+    ${UserFragmentFragmentDoc}`;
 export const ScoutingIdFragmentFragmentDoc = gql`
     fragment ScoutingIdFragment on ScoutingFindInterface {
   sessionId
@@ -42,11 +55,14 @@ export const WorkOrderIdFragmentFragmentDoc = gql`
   ownerId
   sellerscName
   sellerUserId
+  seller {
+    ...UserFragment
+  }
   shareAmount
   sellStore
   state
 }
-    `;
+    ${UserFragmentFragmentDoc}`;
 export const SessionIdFragmentFragmentDoc = gql`
     fragment SessionIdFragment on Session {
   sessionId
@@ -75,16 +91,6 @@ export const SessionWorkOrderStatusFragmentFragmentDoc = gql`
   orderId
   isSold
   orderType
-}
-    `;
-export const UserFragmentFragmentDoc = gql`
-    fragment UserFragment on User {
-  userId
-  scName
-  avatarUrl
-  createdAt
-  updatedAt
-  state
 }
     `;
 export const SessionSettingFragmentFragmentDoc = gql`

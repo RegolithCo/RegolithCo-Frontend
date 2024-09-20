@@ -15,6 +15,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   mySessions,
   workOrderSummaries,
   fetchMoreSessions,
+  markCrewSharesPaid,
   joinedSessions,
   allLoaded,
   loading,
@@ -89,12 +90,20 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         const { workOrders, ...rest } = foundSession
         wo.session = rest
       }
-      if (cs.payeeScName === userProfile.scName) {
+
+      if (
+        cs.payeeScName === userProfile.scName &&
+        workOrderSummaries[cs.sessionId][cs.orderId].sellerScName !== userProfile.scName
+      ) {
+        if (cs.payeeScName === userProfile.scName) return
         if (!oweMeShares[cs.payeeScName]) oweMeShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
         oweMeShares[cs.payeeScName].shares.push(csArr)
         oweMeShares[cs.payeeScName].workOrders.push(wo)
         oweMeShares[cs.payeeScName].amt += csArr[1]
-      } else {
+      } else if (
+        cs.payeeScName !== userProfile.scName &&
+        workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === userProfile.scName
+      ) {
         if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
         iOweShares[cs.payeeScName].shares.push(csArr)
         iOweShares[cs.payeeScName].workOrders.push(wo)
@@ -138,80 +147,115 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           </Typography>
         </Alert>
       </Stack>
-
-      <Box>
-        <Typography variant="h5" component="h3" gutterBottom>
-          Unpaid Crew Shares You Owe:
+      <Box
+        sx={{
+          p: 3,
+          pb: 5,
+          my: 5,
+          borderRadius: 7,
+          // backgroundColor: '#282828',
+          display: 'flex',
+          flexDirection: 'column',
+          border: `5px solid ${theme.palette.primary.main}`,
+        }}
+      >
+        <Typography
+          variant="h5"
+          component="h3"
+          gutterBottom
+          sx={{
+            fontFamily: fontFamilies.robotoMono,
+            fontWeight: 'bold',
+            color: theme.palette.secondary.dark,
+          }}
+        >
+          Unpaid Crew Shares
         </Typography>
         <Box>
-          <List>
-            {Object.entries(iOweShares).map(([scName, { amt, shares, workOrders }]) => {
-              // Find the first user in any session that has the same scName
-              const payeeUser = [...mySessions, ...joinedSessions]
-                .flatMap(({ activeMembers }) => activeMembers?.items || [])
-                .find((u) => u.owner?.scName === scName)
-              return (
-                <OwingListItem
-                  payeeSCName={scName}
-                  payerSCName={userProfile.scName}
-                  payerUser={userProfile}
-                  amt={amt}
-                  workOrders={workOrders}
-                  isPaid={false}
-                  meUser={userProfile}
-                  mutating={false}
-                  crossSession
-                  payeeUser={payeeUser}
-                  onRowClick={(sessionId, orderId) => {
-                    const url = `/session/${sessionId}/dash/w/${orderId}`
-                    window.open(url, '_blank')
-                  }}
-                  isShare={false}
-                  setPayConfirm={() => {
-                    console.log('setPayConfirm')
-                  }}
-                />
-              )
-            })}
-          </List>
+          <Typography variant="h5" component="h3" gutterBottom>
+            You Owe:
+          </Typography>
+          <Box>
+            <List>
+              {Object.keys(iOweShares).length === 0 && (
+                <Alert severity="info">
+                  <AlertTitle>No Crew Shares</AlertTitle>
+                  You don't owe any crew shares to anyone.
+                </Alert>
+              )}
+              {Object.entries(iOweShares).map(([scName, { amt, shares, workOrders }]) => {
+                // Find the first user in any session that has the same scName
+                const payeeUser = [...mySessions, ...joinedSessions]
+                  .flatMap(({ activeMembers }) => activeMembers?.items || [])
+                  .find((u) => u.owner?.scName === scName)
+                return (
+                  <OwingListItem
+                    payeeSCName={scName}
+                    payerSCName={userProfile.scName}
+                    payerUser={userProfile}
+                    amt={amt}
+                    workOrders={workOrders}
+                    isPaid={false}
+                    meUser={userProfile}
+                    mutating={loading}
+                    crossSession
+                    payeeUser={payeeUser}
+                    onRowClick={(sessionId, orderId) => {
+                      const url = `/session/${sessionId}/dash/w/${orderId}`
+                      window.open(url, '_blank')
+                    }}
+                    isShare={false}
+                    setPayConfirm={() => {
+                      markCrewSharesPaid(shares.map(([cs]) => cs))
+                    }}
+                  />
+                )
+              })}
+            </List>
+          </Box>
         </Box>
-      </Box>
-      <Box>
-        <Typography variant="h5" component="h3" gutterBottom>
-          Unpaid Crew Shares Owed to You:
-        </Typography>
         <Box>
-          <List>
-            {Object.entries(oweMeShares).map(([scName, { amt, shares, workOrders }]) => {
-              // Find the first user in any session that has the same scName
-              const payerUser = [...mySessions, ...joinedSessions]
-                .flatMap(({ activeMembers }) => activeMembers?.items || [])
-                .find((u) => u.owner?.scName === scName)
-              return (
-                <OwingListItem
-                  payeeSCName={userProfile.scName}
-                  payerSCName={scName}
-                  payerUser={userProfile}
-                  amt={amt}
-                  workOrders={workOrders}
-                  isPaid={false}
-                  meUser={userProfile}
-                  mutating={false}
-                  crossSession
-                  payeeUser={payerUser}
-                  onRowClick={(sessionId, orderId) => {
-                    const url = `/session/${sessionId}/dash/w/${orderId}`
-                    window.open(url, '_blank')
-                  }}
-                  isShare={false}
-                  setPayConfirm={() => {
-                    console.log('setPayConfirm')
-                  }}
-                />
-              )
-            })}
-          </List>
-          {/* <SimpleTreeView>
+          <Typography variant="h5" component="h3" gutterBottom>
+            Owed to You:
+          </Typography>
+          <Box>
+            <List>
+              {Object.keys(oweMeShares).length === 0 && (
+                <Alert severity="info">
+                  <AlertTitle>No Crew Shares</AlertTitle>
+                  You don't owe any crew shares to anyone.
+                </Alert>
+              )}
+              {Object.entries(oweMeShares).map(([scName, { amt, shares, workOrders }]) => {
+                // Find the first user in any session that has the same scName
+                const payerUser = [...mySessions, ...joinedSessions]
+                  .flatMap(({ activeMembers }) => activeMembers?.items || [])
+                  .find((u) => u.owner?.scName === scName)
+                return (
+                  <OwingListItem
+                    payeeSCName={userProfile.scName}
+                    payerSCName={scName}
+                    payerUser={userProfile}
+                    amt={amt}
+                    workOrders={workOrders}
+                    isPaid={false}
+                    meUser={userProfile}
+                    mutating={loading}
+                    crossSession
+                    payeeUser={payerUser}
+                    onRowClick={(sessionId, orderId) => {
+                      const url = `/session/${sessionId}/dash/w/${orderId}`
+                      window.open(url, '_blank')
+                    }}
+                    isShare={false}
+                    setPayConfirm={() => {
+                      markCrewSharesPaid(shares.map(([cs]) => cs))
+                    }}
+                  />
+                )
+              })}
+            </List>
+            {/* <SimpleTreeView>
             {Object.entries(oweMeShares).map(([scName, { amt, shares }]) => {
               const uniqueSessions = Array.from(new Set(shares.map(([cs]) => cs.sessionId))).length
               const uniqueOrderIds = Array.from(new Set(shares.map(([cs]) => cs.orderId))).length
@@ -239,6 +283,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
               )
             })}
           </SimpleTreeView> */}
+          </Box>
         </Box>
       </Box>
       <Box>
