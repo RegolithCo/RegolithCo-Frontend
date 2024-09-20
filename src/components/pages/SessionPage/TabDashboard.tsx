@@ -24,6 +24,7 @@ import { ClusterCard } from '../../cards/ClusterCard'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
+import { WorkOrderTableColsEnum } from './WorkOrderTableRow'
 
 export interface TabDashboardProps {
   propA?: string
@@ -87,7 +88,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
-  const { session, createNewWorkOrder, createNewScoutingFind } = React.useContext(SessionContext)
+  const { session, createNewWorkOrder, createNewScoutingFind, openWorkOrderModal } = React.useContext(SessionContext)
   const [[topExpanded, bottomExpanded], setExpanded] = React.useState([true, true])
 
   // Handlers for the SpeedDials
@@ -171,7 +172,24 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         sx={{ ...styles.collapse, flex: topExpanded ? `1 1 ${bottomExpanded ? '48%' : '90%'}` : '0 0 0' }}
       >
         <Box sx={styles.sectionContent}>
-          <WorkOrderTable isDashboard workOrders={filteredWorkOrders || []} />
+          <WorkOrderTable
+            workOrders={filteredWorkOrders || []}
+            sessionActive={isActive}
+            onRowClick={(sessionId, orderId) => openWorkOrderModal(orderId)}
+            columns={[
+              WorkOrderTableColsEnum.Activity,
+              WorkOrderTableColsEnum.Refinery,
+              WorkOrderTableColsEnum.OrderId,
+              WorkOrderTableColsEnum.Shares,
+              WorkOrderTableColsEnum.Ores,
+              WorkOrderTableColsEnum.Volume,
+              WorkOrderTableColsEnum.Gross,
+              WorkOrderTableColsEnum.Net,
+              WorkOrderTableColsEnum.FinishedTime,
+              WorkOrderTableColsEnum.Sold,
+              WorkOrderTableColsEnum.Paid,
+            ]}
+          />
         </Box>
         {topExpanded && workOrderFABAnchorEl && (
           <Popper open anchorEl={workOrderFABAnchorEl} placement="bottom-end">

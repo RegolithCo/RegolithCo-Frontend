@@ -9,6 +9,7 @@ import { fontFamilies } from '../../theme'
 import { WorkOrderStatus } from './WorkOrderStatus'
 import { ScoutingFindStatus } from './ScoutingFindStatus'
 import { SessionUsersStatus } from './SessionUsersStatus'
+import { RefineryIcon } from './RefineryIcon'
 
 export interface SessionListSummaryProps {
   session: Session
@@ -239,9 +240,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
                   mr: 1,
                 }}
               />
-              <Box sx={styles.refineryName}>
-                <Factory sx={styles.icon} /> {refineries[0]}
-              </Box>
+              <RefineryIcon shortName={refineries[0]} />
               {refineries.length > 1 && `(+${refineries.length - 1})`}
               {lastJobDone && lastJobDone > 0 && (
                 <AccessTime

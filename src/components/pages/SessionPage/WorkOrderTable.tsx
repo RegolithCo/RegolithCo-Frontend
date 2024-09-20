@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { SessionStateEnum, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
+import { WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
 import { calculateWorkOrder, WorkOrderSummary } from '@regolithco/common'
 import {
   SxProps,
@@ -16,17 +16,19 @@ import {
   useTheme,
 } from '@mui/material'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { AccessTime } from '@mui/icons-material'
+import { AccessTime, Factory } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
-import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
-import { WorkOrderTableRow } from './WorkOrderTableRow'
+import { WorkOrderTableColsEnum, WorkOrderTableRow } from './WorkOrderTableRow'
 import { LookupsContext } from '../../../context/lookupsContext'
 
 export interface WorkOrderTableProps {
-  isDashboard?: boolean // On the session dash we need the session id and owner
   workOrders: WorkOrder[]
+  onRowClick?: (sessionId: string, orderId: string) => void
   isShare?: boolean
+  sessionActive?: boolean
+  disableContextMenu?: boolean
+  columns?: WorkOrderTableColsEnum[]
 }
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
@@ -63,11 +65,16 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   },
 })
 
-export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isShare, isDashboard }) => {
+export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
+  workOrders,
+  isShare,
+  columns,
+  onRowClick,
+  sessionActive,
+  disableContextMenu,
+}) => {
   const theme = useTheme()
-  const { session } = React.useContext(SessionContext)
-  const isActive = session?.state === SessionStateEnum.Active
-  const styles = stylesThunk(theme, Boolean(isActive || isShare))
+  const styles = stylesThunk(theme, Boolean(sessionActive || isShare))
   const dataStore = React.useContext(LookupsContext)
 
   // NOTE: Order is REALLY important here
@@ -112,6 +119,17 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
     calcWorkOrders()
   }, [dataStore, workOrders])
 
+  const totalCols = columns ? columns.length - 1 : Object.keys(WorkOrderTableColsEnum).length
+  let footerColSpan = totalCols
+  if (!columns) footerColSpan -= 6
+  else {
+    if (columns.includes(WorkOrderTableColsEnum.Gross)) footerColSpan--
+    if (columns.includes(WorkOrderTableColsEnum.Net)) footerColSpan--
+    if (columns.includes(WorkOrderTableColsEnum.Sold)) footerColSpan--
+    if (columns.includes(WorkOrderTableColsEnum.Paid)) footerColSpan--
+    if (columns.includes(WorkOrderTableColsEnum.FinishedTime)) footerColSpan--
+  }
+
   if (!dataStore.ready) return <div>Loading...</div>
   if (!summaries) return null
   return (
@@ -119,21 +137,40 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow sx={styles.tableHead}>
-            {isDashboard && <TableCell>Session</TableCell>}
-            <TableCell align="center">Type</TableCell>
-            <TableCell>Order Id</TableCell>
-            <TableCell align="center">Shares</TableCell>
-            <TableCell>Ores</TableCell>
-            <TableCell align="right">Amount</TableCell>
-            <TableCell align="right">Gross</TableCell>
-            <TableCell align="right">Net</TableCell>
-            <TableCell align="left">
-              <Tooltip title="Finished At / Time left">
-                <AccessTime />
-              </Tooltip>
-            </TableCell>
-            {!isShare && <TableCell align="center">Sold</TableCell>}
-            {!isShare && <TableCell align="center">Paid</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Session)) && <TableCell>Session</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Activity)) && (
+              <TableCell align="center">Type</TableCell>
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Refinery)) && (
+              <TableCell align="left">
+                <Tooltip title="Refinery">
+                  <Factory />
+                </Tooltip>
+              </TableCell>
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.OrderId)) && <TableCell>Order Id</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Shares)) && (
+              <TableCell align="center">Shares</TableCell>
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Ores)) && <TableCell>Ores</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Volume)) && (
+              <TableCell align="right">Amount</TableCell>
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && <TableCell align="right">Gross</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Net)) && <TableCell align="right">Net</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.FinishedTime)) && (
+              <TableCell align="left">
+                <Tooltip title="Finished At / Time left">
+                  <AccessTime />
+                </Tooltip>
+              </TableCell>
+            )}
+            {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Sold)) && (
+              <TableCell align="center">Sold</TableCell>
+            )}
+            {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Paid)) && (
+              <TableCell align="center">Paid</TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -144,30 +181,42 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({ workOrders, isSh
               <WorkOrderTableRow
                 key={`wo-${workOrder.orderId}`}
                 workOrder={workOrder}
+                onRowClick={onRowClick}
+                disableContextMenu={disableContextMenu}
                 isShare={isShare}
-                isDashboard={isDashboard}
                 summary={summaries[workOrder.orderId]}
+                columns={columns}
               />
             )
           })}
         </TableBody>
         <TableFooter sx={styles.footer}>
           <TableRow>
-            <TableCell colSpan={isDashboard ? 5 : 4}>Totals</TableCell>
-            <TableCell align="right">
-              <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
-            </TableCell>
-            <Tooltip title={<>Gross Profit: {MValueFormatter(grossAmount, MValueFormat.currency)}</>}>
+            <TableCell colSpan={footerColSpan}>Totals</TableCell>
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Volume)) && (
               <TableCell align="right">
-                <MValue value={grossAmount} format={MValueFormat.currency_sm} />
+                <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
               </TableCell>
-            </Tooltip>
-            <Tooltip title={<>Net Profit: {MValueFormatter(shareAmount, MValueFormat.currency)}</>}>
-              <TableCell align="right">
-                <MValue value={shareAmount} format={MValueFormat.currency_sm} />
-              </TableCell>
-            </Tooltip>
-            <TableCell align="right" colSpan={isShare ? 1 : 3} />
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && (
+              <Tooltip title={<>Gross Profit: {MValueFormatter(grossAmount, MValueFormat.currency)}</>}>
+                <TableCell align="right">
+                  <MValue value={grossAmount} format={MValueFormat.currency_sm} />
+                </TableCell>
+              </Tooltip>
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Net)) && (
+              <Tooltip title={<>Net Profit: {MValueFormatter(shareAmount, MValueFormat.currency)}</>}>
+                <TableCell align="right">
+                  <MValue value={shareAmount} format={MValueFormat.currency_sm} />
+                </TableCell>
+              </Tooltip>
+            )}
+            {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.FinishedTime)) && (
+              <TableCell align="right" />
+            )}
+            {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Sold)) && <TableCell align="right" />}
+            {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Paid)) && <TableCell align="right" />}
           </TableRow>
         </TableFooter>
       </Table>

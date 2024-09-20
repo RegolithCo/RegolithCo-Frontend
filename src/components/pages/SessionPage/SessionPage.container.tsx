@@ -292,9 +292,7 @@ export const SessionPageContainer: React.FC = () => {
           failWorkOrder: modalWorkOrderQry.failWorkOrder,
           createWorkOrder,
           updateModalWorkOrder,
-          updateAnyWorkOrder: modalWorkOrderQry.updateAnyWorkOrder,
           deleteWorkOrder: modalWorkOrderQry.deleteWorkOrder,
-          deleteAnyWorkOrder: modalWorkOrderQry.deleteAnyWorkOrder,
           setWorkOrderShareId: (shareId) => {
             setShareWorkOrderId(shareId)
             setActiveModal(DialogEnum.SHARE_SESSION)

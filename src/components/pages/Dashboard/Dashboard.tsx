@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Session, SessionStateEnum, UserProfile } from '@regolithco/common'
+import { Session, SessionStateEnum, UserProfile, WorkOrder } from '@regolithco/common'
 import { Paper, Tab, Tabs, useTheme } from '@mui/material'
 import { Insights } from '@mui/icons-material'
 import { Container } from '@mui/system'
@@ -19,6 +19,7 @@ export interface DashboardProps {
   preset: DatePresetsEnum
   mySessions: Session[]
   joinedSessions: Session[]
+  deliverWorkOrders: (orders: WorkOrder[]) => Promise<void>
   fetchMoreSessions: () => void
   paginationDate: number
   setPaginationDate: (date: number) => void

@@ -10,18 +10,22 @@ import {
   WorkOrder,
   WorkOrderStateEnum,
 } from '@regolithco/common'
-import { Alert, AlertTitle, Button, Chip, Divider, Typography, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Button, Chip, Divider, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { WorkOrderTable } from '../SessionPage/WorkOrderTable'
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
-import { DoneAll } from '@mui/icons-material'
+import { DoneAll, OpenInNew } from '@mui/icons-material'
 import { DashboardProps } from './Dashboard'
 import log from 'loglevel'
 import { AppContext } from '../../../context/app.context'
 import { useShipOreColors } from '../../../hooks/useShipOreColors'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
+import { RefineryIcon } from '../../fields/RefineryIcon'
+import dayjs from 'dayjs'
+import { WorkOrderTableColsEnum } from '../SessionPage/WorkOrderTableRow'
+import { PageLoader } from '../PageLoader'
 
 export const TabWorkOrders: React.FC<DashboardProps> = ({
   userProfile,
@@ -29,12 +33,13 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
   joinedSessions,
   allLoaded,
   loading,
+  deliverWorkOrders,
   navigate,
 }) => {
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
   const sortedShipRowColors = useShipOreColors()
-  const workOrders: WorkOrder[] = React.useMemo(() => {
+  const { workOrders, workOrdersByDate } = React.useMemo(() => {
     const workOrders = [
       ...joinedSessions.reduce(
         (acc, session) =>
@@ -56,10 +61,32 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
           ),
         [] as WorkOrder[]
       ),
-    ]
+    ].filter((wo) => (wo.sellerscName && wo.sellerscName === userProfile.scName) || wo.ownerId === userProfile.userId)
     // sort by date descending
     workOrders.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
-    return workOrders
+
+    const today = dayjs()
+    const woByDate: WorkOrder[][] = []
+    let currYear = today.year()
+    let currMonth = today.month()
+    let yearMonthArr: WorkOrder[] = []
+
+    workOrders.forEach((workOrder) => {
+      const woDate = dayjs(workOrder.createdAt)
+      const woYear = woDate.year()
+      const woMonth = woDate.month()
+      const woDay = woDate.date()
+      if (woYear === currYear && woMonth === currMonth) {
+        yearMonthArr.push(workOrder)
+      } else {
+        woByDate.push(yearMonthArr)
+        yearMonthArr = []
+        currYear = woYear
+        currMonth = woMonth
+      }
+    })
+
+    return { workOrders, workOrdersByDate: woByDate }
   }, [joinedSessions, mySessions])
   const undeliveredWorkOrders: Record<RefineryEnum, ShipMiningOrder[]> = React.useMemo(() => {
     const orders = workOrders
@@ -114,13 +141,35 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
         </Alert>
       </Stack>
 
-      <Box>
-        <Typography variant="h5" component="h3" gutterBottom>
+      <Box
+        sx={{
+          p: 3,
+          pb: 5,
+          my: 5,
+          borderRadius: 7,
+          // backgroundColor: '#282828',
+          display: 'flex',
+          flexDirection: 'column',
+          border: `5px solid ${theme.palette.primary.main}`,
+        }}
+      >
+        <Typography
+          variant="h5"
+          component="h3"
+          gutterBottom
+          sx={{
+            fontFamily: fontFamilies.robotoMono,
+            fontWeight: 'bold',
+            color: theme.palette.secondary.dark,
+          }}
+        >
           Undelivered Work Orders (Grouped by refinery)
         </Typography>
         <Typography variant="body1" component="div" gutterBottom>
-          These work orders have had their refinery timers run out and are ready to be delivered to market. Note: You
-          must use the refinery timer in order to see orders in this list
+          These work orders have had their refinery timers run out and are ready to be delivered to market.
+        </Typography>
+        <Typography variant="body1" component="div" gutterBottom fontStyle={'italic'}>
+          Note: You must use the refinery timer in order to see orders in this list
         </Typography>
         <Divider />
         <Box sx={{ minHeight: 100, minWidth: 250 }}>
@@ -131,6 +180,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
           ) : (
             <SimpleTreeView>
               {Object.entries(undeliveredWorkOrders).map(([refinery, orders]) => {
+                const uniqueSessions = Array.from(new Set(orders.map((wo) => wo.sessionId))).length
                 const totalSCU: number = orders.reduce(
                   (acc, wo) =>
                     acc +
@@ -145,11 +195,40 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                     key={refinery}
                     itemId={refinery}
                     label={
-                      <Stack justifyContent="space-between" alignItems="center" direction={'row'}>
-                        <Typography variant="h6">
-                          {getRefineryName(refinery as RefineryEnum)} ({orders.length} orders, {totalSCU} SCU)
+                      <Stack alignItems="center" direction={'row'} spacing={2}>
+                        <Box sx={{ flex: '0 0' }}>
+                          <RefineryIcon shortName={refinery} />
+                        </Box>
+                        <Typography
+                          sx={{
+                            flex: '1 1 30%',
+                            fontFamily: fontFamilies.robotoMono,
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {getRefineryName(refinery as RefineryEnum)}
                         </Typography>
-                        <Button variant="contained" size="small" color="success" startIcon={<DoneAll />}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            flex: '1 1 30%',
+                            fontFamily: fontFamilies.robotoMono,
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {totalSCU} SCU from {orders.length} order(s) in {uniqueSessions} session(s)
+                        </Typography>
+                        <Box sx={{ flexGrow: 1 }} />
+                        <Button
+                          variant="contained"
+                          size="small"
+                          color="success"
+                          disabled={loading}
+                          startIcon={<DoneAll />}
+                          onClick={() => {
+                            deliverWorkOrders(orders)
+                          }}
+                        >
                           Mark All Delivered
                         </Button>
                       </Stack>
@@ -161,11 +240,25 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                           key={order.orderId}
                           itemId={order.orderId}
                           label={
-                            <Stack direction={'row'} spacing={1}>
+                            <Stack direction={'row'} spacing={1} alignItems={'center'}>
+                              <Tooltip title="Jump to session in new tab" placement="top">
+                                <IconButton
+                                  color="primary"
+                                  href={`/session/${order.sessionId}/dash/w/${order.orderId}`}
+                                  target="_blank"
+                                >
+                                  <OpenInNew />
+                                </IconButton>
+                              </Tooltip>
                               <Typography variant="subtitle1">
                                 {makeHumanIds(getSafeName(order.sellerscName || order.owner?.scName), order.orderId)}
                               </Typography>
                               <Grid2 sx={{ flex: '0 1 60%' }} container spacing={1}>
+                                {totalSCU === 0 && (
+                                  <Typography variant="caption" color="error">
+                                    No Ore Listed
+                                  </Typography>
+                                )}
                                 {sortedShipRowColors.map((color) => {
                                   const ore = order.shipOres.find((ore) => ore.ore === color.ore)
                                   if (!ore || ore.amt <= 0) return null
@@ -189,7 +282,14 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                 })}
                               </Grid2>
                               <Box sx={{ flexGrow: 1 }} />
-                              <Button variant="contained" size="small" color="success" startIcon={<DoneAll />}>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                color="success"
+                                disabled={loading}
+                                startIcon={<DoneAll />}
+                                onClick={() => deliverWorkOrders([order])}
+                              >
                                 Mark Delivered
                               </Button>
                             </Stack>
@@ -206,10 +306,67 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
       </Box>
       <Box>
         <Typography variant="h5" component="h3" gutterBottom>
-          All Work Orders (Grouped by month)
+          All My Work Orders (Grouped by month)
         </Typography>
-        <WorkOrderTable workOrders={workOrders} isDashboard />
+
+        {workOrdersByDate.map((yearMonthArr, idx) => {
+          return <WorkOrderListMonth key={`yearMonth-${idx}`} yearMonthArr={yearMonthArr} activeOnly={false} />
+        })}
+        <PageLoader title="Loading..." loading={loading} small />
       </Box>
     </>
+  )
+}
+
+export interface WorkOrderListMonthProps {
+  yearMonthArr: WorkOrder[]
+  activeOnly?: boolean
+}
+
+export const WorkOrderListMonth: React.FC<WorkOrderListMonthProps> = ({ yearMonthArr, activeOnly }) => {
+  const theme = useTheme()
+
+  if (yearMonthArr.length === 0) return
+  const currHeading = dayjs(yearMonthArr[0].createdAt).format('YYYY - MMMM')
+
+  return (
+    <Box sx={{ margin: '0 auto' }}>
+      <Typography
+        variant="h5"
+        sx={{
+          // background: alpha(theme.palette.background.paper, 0.5),
+          p: 1,
+          fontFamily: fontFamilies.robotoMono,
+          borderBottom: `2px solid ${theme.palette.primary.main}`,
+          color: theme.palette.primary.main,
+          textShadow: '1px 1px 1px #000000aa',
+          textAlign: 'left',
+        }}
+      >
+        {currHeading}
+      </Typography>
+      <WorkOrderTable
+        disableContextMenu
+        workOrders={yearMonthArr}
+        onRowClick={(sessionId, orderId) => {
+          const url = `/session/${sessionId}/dash/w/${orderId}`
+          window.open(url, '_blank')
+        }}
+        columns={[
+          WorkOrderTableColsEnum.Session,
+          WorkOrderTableColsEnum.Activity,
+          WorkOrderTableColsEnum.Refinery,
+          WorkOrderTableColsEnum.OrderId,
+          // WorkOrderTableColsEnum.Shares,
+          WorkOrderTableColsEnum.Ores,
+          WorkOrderTableColsEnum.Volume,
+          WorkOrderTableColsEnum.Gross,
+          // WorkOrderTableColsEnum.Net,
+          WorkOrderTableColsEnum.FinishedTime,
+          // WorkOrderTableColsEnum.Sold,
+          // WorkOrderTableColsEnum.Paid,
+        ]}
+      />
+    </Box>
   )
 }

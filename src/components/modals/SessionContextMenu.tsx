@@ -133,7 +133,9 @@ export const SessionContextMenu: React.FC<SessionContextMenuProps> = ({
   )
 }
 
-export const useSessionContextMenu = (menuProps: UseContextMenuProps) => {
+export const useSessionContextMenu = (menuProps: UseContextMenuProps | (() => UseContextMenuProps)) => {
+  const finalMenuProps = typeof menuProps === 'function' ? menuProps() : menuProps
+
   const [menuPosXY, setContextMenu] = React.useState<[number, number] | null>(null)
 
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -154,7 +156,7 @@ export const useSessionContextMenu = (menuProps: UseContextMenuProps) => {
     handleClose,
     contextMenuNode: (
       <SessionContextMenu
-        {...menuProps}
+        {...finalMenuProps}
         menuPosXY={menuPosXY || undefined}
         open={menuPosXY !== null}
         onClose={handleClose}

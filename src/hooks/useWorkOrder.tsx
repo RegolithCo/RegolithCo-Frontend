@@ -31,10 +31,8 @@ type useSessionsReturn = {
   querying: boolean
   mutating: boolean
   updateWorkOrder: (newWorkOrder: WorkOrder) => void
-  updateAnyWorkOrder: (newWorkOrder: WorkOrder, anyOrderId: string) => void
   failWorkOrder: (reason?: string) => void
   deleteWorkOrder: () => void
-  deleteAnyWorkOrder: (anyOrderId: string, __typename: WorkOrderTypenames) => void
   deleteCrewShare: (scName: string) => void
 }
 
@@ -175,8 +173,6 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
     loading: querying || mutating,
     mutating,
     updateWorkOrder: (newWorkOrder: WorkOrder) => updateWorkOrderArbitrary(newWorkOrder, orderId),
-    updateAnyWorkOrder: (newWorkOrder: WorkOrder, anyOrderId: string) =>
-      updateWorkOrderArbitrary(newWorkOrder, anyOrderId),
     failWorkOrder: (reason?: string) => {
       const fail = reason && reason.trim().length > 0
       failWorkOrderMutation[0]({
@@ -198,30 +194,6 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         },
       })
     },
-    deleteAnyWorkOrder: (anyOrderId: string, __typename: WorkOrderTypenames) =>
-      deleteWorkOrderMutation[0]({
-        variables: {
-          sessionId,
-          orderId: anyOrderId,
-        },
-        onCompleted: () => {
-          enqueueSnackbar('Work Order Deleted', { variant: 'success' })
-          if (window.location.pathname.includes(orderId)) navigate(`/session/${sessionId}`)
-        },
-        update: (cache) => {
-          // need to identify this from anyOrderId NOT workOrderQry.data?.workOrder
-          cache.evict({ id: cache.identify({ sessionId, orderId: anyOrderId, __typename }) })
-          cache.gc()
-        },
-        optimisticResponse: () => ({
-          __typename: 'Mutation',
-          deleteWorkOrder: {
-            sessionId,
-            orderId: anyOrderId,
-            __typename,
-          },
-        }),
-      }),
     deleteWorkOrder: () =>
       deleteWorkOrderMutation[0]({
         variables: {

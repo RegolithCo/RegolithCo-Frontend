@@ -1,4 +1,13 @@
-import { calculateWorkOrder, ObjectValues, Session, UserProfile, WorkOrder, WorkOrderSummary } from '@regolithco/common'
+import {
+  calculateWorkOrder,
+  ObjectValues,
+  Session,
+  UpdateWorkOrderMutation,
+  UserProfile,
+  WorkOrder,
+  WorkOrderStateEnum,
+  WorkOrderSummary,
+} from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Dashboard } from './Dashboard'
@@ -8,6 +17,7 @@ import { LookupsContext } from '../../../context/lookupsContext'
 
 import log from 'loglevel'
 import { DatePresetsEnum } from './TabStats/StatsDatePicker'
+import { useUpdateWorkOrderMutation } from '../../../schema'
 
 export const SessionDashTabsEnum = {
   sessions: 'sessions',
@@ -26,6 +36,44 @@ export const DashboardContainer: React.FC = () => {
   const dataStore = React.useContext(LookupsContext)
   const [workOrderSummaries, setWorkOrderSummaries] = React.useState<WorkOrderSummaryLookup>({})
   const { tab, preset } = useParams()
+
+  const updateWorkOrderMutation = useUpdateWorkOrderMutation()
+  const deliverWorkOrders = (orders: WorkOrder[]) => {
+    return Promise.all(
+      orders.map(({ orderId, sessionId, ...rest }) => {
+        return updateWorkOrderMutation[0]({
+          variables: {
+            orderId,
+            sessionId,
+            workOrder: {
+              isSold: true,
+            },
+          },
+          optimisticResponse: () => {
+            // Get it from cache
+            const optimisticresponse: UpdateWorkOrderMutation = {
+              __typename: 'Mutation',
+              updateWorkOrder: {
+                ...rest,
+                orderId,
+                sessionId,
+                state: WorkOrderStateEnum.Done,
+              },
+            }
+            return optimisticresponse
+          },
+        })
+          .then((res) => {
+            // log.info('Delivered work order', res)
+          })
+          .catch((e) => {
+            // log.error('Failed to deliver work order', e)
+          })
+      })
+    ).then(() => {
+      // log.debug('Delivered all work orders')
+    })
+  }
 
   // Call calculateWorkOrder for each session and all of its work orders and store the results in state
   React.useEffect(() => {
@@ -46,20 +94,24 @@ export const DashboardContainer: React.FC = () => {
     calcWorkOrders()
   }, [dataStore, userQueries.userProfile, useSessionListQueries.joinedSessions, useSessionListQueries.mySessions])
 
-  log.debug('DashboardContainer', { workOrderSummaries })
-
   return (
     <Dashboard
       activeTab={tab as SessionDashTabsEnum}
       preset={preset as DatePresetsEnum}
       workOrderSummaries={workOrderSummaries}
+      deliverWorkOrders={deliverWorkOrders}
       paginationDate={useSessionListQueries.paginationDate}
       setPaginationDate={useSessionListQueries.setPaginationDate}
       userProfile={userQueries.userProfile as UserProfile}
       joinedSessions={(useSessionListQueries.joinedSessions?.items || []) as Session[]}
       mySessions={(useSessionListQueries.mySessions?.items || []) as Session[]}
       fetchMoreSessions={useSessionListQueries.fetchMoreSessions}
-      loading={userQueries.loading || useSessionListQueries.loading || userQueries.mutating}
+      loading={
+        userQueries.loading ||
+        useSessionListQueries.loading ||
+        userQueries.mutating ||
+        updateWorkOrderMutation[1].loading
+      }
       allLoaded={useSessionListQueries.allLoaded}
       navigate={navigate}
       onCreateNewSession={useSessionListQueries.createSession}

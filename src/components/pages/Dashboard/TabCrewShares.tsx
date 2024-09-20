@@ -4,11 +4,8 @@ import { Alert, AlertTitle, List, Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
-import { CrewShare, User, WorkOrder } from '@regolithco/common'
-import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
-import { TreeItem } from '@mui/x-tree-view/TreeItem'
+import { CrewShare, WorkOrder } from '@regolithco/common'
 import log from 'loglevel'
-import { MValueFormatter } from '../../fields/MValue'
 import { OwingListItem } from '../../fields/OwingListItem'
 
 type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
@@ -81,18 +78,26 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   const { iOweShares, oweMeShares } = React.useMemo(() => {
     // Filter to only unpaid shares
     const unpaidShares = relevantCrewShares.filter((cs) => !cs[0].state)
-    const iOweShares: Record<string, { amt: number; shares: [CrewShare, number][] }> = {}
-    const oweMeShares: Record<string, { amt: number; shares: [CrewShare, number][] }> = {}
+    const iOweShares: Record<string, { amt: number; shares: [CrewShare, number][]; workOrders: WorkOrder[] }> = {}
+    const oweMeShares: Record<string, { amt: number; shares: [CrewShare, number][]; workOrders: WorkOrder[] }> = {}
 
     unpaidShares.forEach((csArr) => {
       const cs = csArr[0]
+      const wo = workOrderLookups[cs.sessionId][cs.orderId]
+      const foundSession = [...mySessions, ...joinedSessions].find((s) => s.sessionId === cs.sessionId)
+      if (foundSession) {
+        const { workOrders, ...rest } = foundSession
+        wo.session = rest
+      }
       if (cs.payeeScName === userProfile.scName) {
-        if (!oweMeShares[cs.payeeScName]) oweMeShares[cs.payeeScName] = { amt: 0, shares: [] }
+        if (!oweMeShares[cs.payeeScName]) oweMeShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
         oweMeShares[cs.payeeScName].shares.push(csArr)
+        oweMeShares[cs.payeeScName].workOrders.push(wo)
         oweMeShares[cs.payeeScName].amt += csArr[1]
       } else {
-        if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0, shares: [] }
+        if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
         iOweShares[cs.payeeScName].shares.push(csArr)
+        iOweShares[cs.payeeScName].workOrders.push(wo)
         iOweShares[cs.payeeScName].amt += csArr[1]
       }
     })
@@ -140,18 +145,9 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         </Typography>
         <Box>
           <List>
-            {Object.entries(iOweShares).map(([scName, { amt, shares }]) => {
-              const workOrders = shares.map(([cs]) => {
-                const wo = workOrderLookups[cs.sessionId][cs.orderId]
-                const foundSession = [...mySessions, ...joinedSessions].find((s) => s.sessionId === cs.sessionId)
-                if (foundSession) {
-                  const { workOrders, ...rest } = foundSession
-                  wo.session = rest
-                }
-                return wo
-              })
+            {Object.entries(iOweShares).map(([scName, { amt, shares, workOrders }]) => {
               // Find the first user in any session that has the same scName
-              const sessionUser = [...mySessions, ...joinedSessions]
+              const payeeUser = [...mySessions, ...joinedSessions]
                 .flatMap(({ activeMembers }) => activeMembers?.items || [])
                 .find((u) => u.owner?.scName === scName)
               return (
@@ -165,7 +161,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                   meUser={userProfile}
                   mutating={false}
                   crossSession
-                  payeeUser={sessionUser}
+                  payeeUser={payeeUser}
                   onRowClick={(sessionId, orderId) => {
                     const url = `/session/${sessionId}/dash/w/${orderId}`
                     window.open(url, '_blank')
@@ -185,7 +181,37 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           Unpaid Crew Shares Owed to You:
         </Typography>
         <Box>
-          <SimpleTreeView>
+          <List>
+            {Object.entries(oweMeShares).map(([scName, { amt, shares, workOrders }]) => {
+              // Find the first user in any session that has the same scName
+              const payerUser = [...mySessions, ...joinedSessions]
+                .flatMap(({ activeMembers }) => activeMembers?.items || [])
+                .find((u) => u.owner?.scName === scName)
+              return (
+                <OwingListItem
+                  payeeSCName={userProfile.scName}
+                  payerSCName={scName}
+                  payerUser={userProfile}
+                  amt={amt}
+                  workOrders={workOrders}
+                  isPaid={false}
+                  meUser={userProfile}
+                  mutating={false}
+                  crossSession
+                  payeeUser={payerUser}
+                  onRowClick={(sessionId, orderId) => {
+                    const url = `/session/${sessionId}/dash/w/${orderId}`
+                    window.open(url, '_blank')
+                  }}
+                  isShare={false}
+                  setPayConfirm={() => {
+                    console.log('setPayConfirm')
+                  }}
+                />
+              )
+            })}
+          </List>
+          {/* <SimpleTreeView>
             {Object.entries(oweMeShares).map(([scName, { amt, shares }]) => {
               const uniqueSessions = Array.from(new Set(shares.map(([cs]) => cs.sessionId))).length
               const uniqueOrderIds = Array.from(new Set(shares.map(([cs]) => cs.orderId))).length
@@ -212,7 +238,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 </TreeItem>
               )
             })}
-          </SimpleTreeView>
+          </SimpleTreeView> */}
         </Box>
       </Box>
       <Box>
