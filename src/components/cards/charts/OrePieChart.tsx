@@ -15,7 +15,10 @@ export interface OrePieChartProps {
     | RegolithStatsSummary['vehicleOres']
     | RegolithStatsSummary['salvageOres']
     | RegolithStatsSummary['refineryMethod']
-  activityTypes?: RegolithStatsSummary['workOrderTypes']
+  activityTypes?:
+    | RegolithStatsSummary['workOrderTypes']
+    | RegolithStatsSummary['refineryMethod']
+    | RegolithStatsSummary['refineries']
   loading: boolean
 }
 /**

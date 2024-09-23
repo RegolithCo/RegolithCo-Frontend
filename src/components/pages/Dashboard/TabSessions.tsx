@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { UserProfile, Session, SessionStateEnum } from '@regolithco/common'
-import { Alert, AlertTitle, FormControlLabel, Switch, Typography, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Box, FormControlLabel, Switch, Typography, useTheme } from '@mui/material'
 import { SessionList } from '../../fields/SessionList'
 import { Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
@@ -42,12 +42,12 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
     <>
       <Stack
         spacing={2}
-        sx={{ my: 2, borderBottom: `2px solid ${theme.palette.secondary.dark}` }}
+        sx={{ my: 2, mb: 4, borderBottom: `4px solid ${theme.palette.secondary.dark}` }}
         direction={{ xs: 'column', sm: 'row' }}
       >
         <Typography
-          variant="h4"
-          component="h2"
+          variant="h3"
+          component="h3"
           gutterBottom
           sx={{
             color: 'secondary.dark',
@@ -55,9 +55,9 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
             fontWeight: 'bold',
           }}
         >
-          My Sessions
+          My Session Timeline
         </Typography>
-        <div style={{ flex: 1 }} />
+        <Box sx={{ flex: 1 }} />
         <FormControlLabel
           control={<Switch checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} />}
           label="Only active"
@@ -65,15 +65,13 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
         />
       </Stack>
 
-      <Stack spacing={2} sx={{ my: 2 }} direction={{ xs: 'column', sm: 'row' }}>
-        <Alert elevation={6} variant="outlined" severity="info" sx={{ my: 2, flex: '1 1 50%' }}>
-          <AlertTitle>Sessions close automatically</AlertTitle>
-          <Typography>
-            Sessions end after 12 hours of inactivity. Ended sessions cannot be re-opened, however you can still mark
-            shares as paid.{' '}
-          </Typography>
-        </Alert>
-      </Stack>
+      <Alert elevation={1} variant="standard" severity="info" sx={{ my: 2, flex: 1 }}>
+        <AlertTitle>Sessions close automatically</AlertTitle>
+        <Typography>
+          Sessions end after 12 hours of inactivity. Ended sessions cannot be re-opened, however you can still mark
+          shares as paid.{' '}
+        </Typography>
+      </Alert>
 
       <SessionList
         sessions={allSessionsSorted}

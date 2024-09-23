@@ -11,11 +11,22 @@ import {
 } from '@regolithco/common'
 import dayjs from 'dayjs'
 import { getActivityName, WorkOrderSummary } from '@regolithco/common'
-import { alpha, Checkbox, Chip, Link, TableCell, TableRow, Tooltip, Typography, useTheme } from '@mui/material'
+import {
+  alpha,
+  Checkbox,
+  Chip,
+  IconButton,
+  Link,
+  Stack,
+  TableCell,
+  TableRow,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import { MValue, MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
-import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
-import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
+import { OpenInNew } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
@@ -95,16 +106,18 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
 
   const workOrderGrossShareAmt = isFailed ? 0 : summary.grossValue || 0
   const workOrderNetShareAmt = summary.shareAmount
-
+  const hasHover = handleContextMenu || onRowClick
   return (
     <TableRow
       key={workOrder.orderId}
       onContextMenu={handleContextMenu}
       sx={{
-        cursor: handleContextMenu ? 'pointer' : 'context-menu',
-        '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.1),
-        },
+        cursor: handleContextMenu ? 'context-menu' : onRowClick ? 'pointer' : 'default',
+        '&:hover': hasHover
+          ? {
+              backgroundColor: alpha(theme.palette.primary.main, 0.1),
+            }
+          : {},
         backgroundColor: isFailed ? alpha(theme.palette.error.dark, 0.1) : undefined,
         fontFamily: fontFamilies.robotoMono,
         fontWeight: 'bold',
@@ -123,21 +136,32 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
             maxWidth: 250,
           }}
         >
-          <Tooltip title={session?.name}>
-            <Link href={`/session/${workOrder.sessionId}`} underline="hover">
-              <Typography
-                sx={{
-                  fontFamily: fontFamilies.robotoMono,
-                  fontSize: '0.8rem',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
+          <Typography
+            component="div"
+            sx={{
+              fontFamily: fontFamilies.robotoMono,
+              fontSize: '0.8rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            <Tooltip title={`Open this session in a new tab`}>
+              <IconButton
+                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                target="_blank"
+                size="small"
+                color="primary"
               >
+                <OpenInNew />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={`Go to session: "${workOrder.session?.name || workOrder.sessionId}`}>
+              <Link href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`} underline="hover">
                 {workOrder.session?.name || workOrder.sessionId}
-              </Typography>
-            </Link>
-          </Tooltip>
+              </Link>
+            </Tooltip>
+          </Typography>
         </TableCell>
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.Activity)) && (

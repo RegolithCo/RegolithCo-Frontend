@@ -7,12 +7,14 @@ import { DashboardProps } from './Dashboard'
 import { CrewShare, WorkOrder } from '@regolithco/common'
 import log from 'loglevel'
 import { OwingListItem } from '../../fields/OwingListItem'
+import { FetchMoreWithDate } from './FetchMoreSessionLoader'
 
 type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
 
 export const TabCrewShares: React.FC<DashboardProps> = ({
   userProfile,
   mySessions,
+  paginationDate,
   workOrderSummaries,
   fetchMoreSessions,
   markCrewSharesPaid,
@@ -120,15 +122,15 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   log.debug('crewShares', { relevantCrewShares, iOweShares, oweMeShares })
 
   return (
-    <>
+    <Box>
       <Stack
         spacing={2}
-        sx={{ my: 2, borderBottom: `2px solid ${theme.palette.secondary.dark}` }}
+        sx={{ my: 2, mb: 4, borderBottom: `4px solid ${theme.palette.secondary.dark}` }}
         direction={{ xs: 'column', sm: 'row' }}
       >
         <Typography
-          variant="h4"
-          component="h2"
+          variant="h3"
+          component="h3"
           gutterBottom
           sx={{
             color: 'secondary.dark',
@@ -136,16 +138,8 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
             fontWeight: 'bold',
           }}
         >
-          My Crew Shares
+          Unpaid Crew Shares
         </Typography>
-      </Stack>
-      <Stack spacing={2} sx={{ my: 2 }} direction={{ xs: 'column', sm: 'row' }}>
-        <Alert elevation={6} variant="outlined" severity="info" sx={{ my: 2, flex: '1 1 50%' }}>
-          <AlertTitle>Work orders from all your sessions</AlertTitle>
-          <Typography>
-            All work orders inside all your joined sessions that you either own or have been marked as the seller.
-          </Typography>
-        </Alert>
       </Stack>
       <Box
         sx={{
@@ -156,7 +150,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           // backgroundColor: '#282828',
           display: 'flex',
           flexDirection: 'column',
-          border: `5px solid ${theme.palette.primary.main}`,
+          border: `8px solid ${theme.palette.primary.main}`,
         }}
       >
         <Typography
@@ -167,13 +161,23 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
             fontFamily: fontFamilies.robotoMono,
             fontWeight: 'bold',
             color: theme.palette.secondary.dark,
+            borderBottom: `1px solid ${theme.palette.secondary.dark}`,
           }}
         >
           Unpaid Crew Shares
         </Typography>
         <Box>
-          <Typography variant="h5" component="h3" gutterBottom>
-            You Owe:
+          <Typography
+            variant="subtitle2"
+            component="h5"
+            gutterBottom
+            sx={{
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+              color: theme.palette.secondary.dark,
+            }}
+          >
+            You owe:
           </Typography>
           <Box>
             <List>
@@ -215,8 +219,17 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           </Box>
         </Box>
         <Box>
-          <Typography variant="h5" component="h3" gutterBottom>
-            Owed to You:
+          <Typography
+            variant="subtitle2"
+            component="h5"
+            gutterBottom
+            sx={{
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+              color: theme.palette.secondary.dark,
+            }}
+          >
+            You are owed:
           </Typography>
           <Box>
             <List>
@@ -255,42 +268,23 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 )
               })}
             </List>
-            {/* <SimpleTreeView>
-            {Object.entries(oweMeShares).map(([scName, { amt, shares }]) => {
-              const uniqueSessions = Array.from(new Set(shares.map(([cs]) => cs.sessionId))).length
-              const uniqueOrderIds = Array.from(new Set(shares.map(([cs]) => cs.orderId))).length
-              return (
-                <TreeItem
-                  itemId={`iOwer_${scName}`}
-                  label={
-                    <Typography variant="body1">
-                      {scName} owes you {MValueFormatter(amt, 'currency')} from {uniqueOrderIds} orders in{' '}
-                      {uniqueSessions} sessions
-                    </Typography>
-                  }
-                >
-                  {shares.map(([cs, amt]) => (
-                    <TreeItem
-                      itemId={`${cs.sessionId}_${cs.orderId}_${cs.payeeScName}`}
-                      label={
-                        <Typography variant="body1">
-                          {cs.payeeScName} owes you {MValueFormatter(amt, 'currency')}
-                        </Typography>
-                      }
-                    />
-                  ))}
-                </TreeItem>
-              )
-            })}
-          </SimpleTreeView> */}
           </Box>
         </Box>
+        <FetchMoreWithDate
+          sx={{ textAlign: 'right', mt: 4 }}
+          loading={loading}
+          allLoaded={allLoaded}
+          fetchMoreSessions={fetchMoreSessions}
+          paginationDate={paginationDate}
+        />
       </Box>
-      <Box>
-        <Typography variant="h5" component="h3" gutterBottom>
-          All Crew Shares:
+      <Alert elevation={1} variant="standard" severity="info" sx={{ my: 2, flex: 1 }}>
+        <AlertTitle>Unpaid crew shares from all your workorders and sessions</AlertTitle>
+        <Typography>
+          This is a list of all the crew shares that are owed to you or that you owe to others. You can click on the
+          work order to see more details.
         </Typography>
-      </Box>
-    </>
+      </Alert>
+    </Box>
   )
 }

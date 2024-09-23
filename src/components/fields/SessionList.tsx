@@ -32,6 +32,7 @@ import { MValueFormat, MValueFormatter } from './MValue'
 import { fontFamilies, theme } from '../../theme'
 import { AppContext } from '../../context/app.context'
 import { RouterLink } from './RouterLink'
+import { FetchMoreSessionLoader } from '../pages/Dashboard/FetchMoreSessionLoader'
 
 export interface SessionListProps {
   sessions: Session[]
@@ -194,18 +195,7 @@ export const SessionList: React.FC<SessionListProps> = ({
         </Paper>
       )}
       {/* Now have an element where viewing it triggers a fetch of the next page */}
-      <Box ref={fetchMoreSessionsRef}>
-        {loading && (
-          <Typography variant="h5" sx={{ textAlign: 'center', ...loadingPulse }} component="div" color="secondary.dark">
-            <em>Loading More Sessions...</em>
-          </Typography>
-        )}
-        {!loading && allLoaded && (
-          <Typography variant="h5" sx={{ textAlign: 'center' }} component="div" color="text.secondary">
-            <em>No sessions to display</em>
-          </Typography>
-        )}
-      </Box>
+      <FetchMoreSessionLoader loading={loading} allLoaded={allLoaded} fetchMoreSessions={fetchMoreSessions} />
     </Box>
   )
 }

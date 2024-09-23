@@ -6,10 +6,12 @@ import { fontFamilies } from '../../../../theme'
 import { DashboardProps } from '../Dashboard'
 import { DatePresetsEnum, StatsDatePicker } from './StatsDatePicker'
 import {
+  ActivityEnum,
   CrewShare,
   formatCardNumber,
   RegolithStatsSummary,
   SalvageOreEnum,
+  ShipMiningOrder,
   ShipOreEnum,
   VehicleOreEnum,
   WorkOrder,
@@ -79,13 +81,29 @@ export const TabStats: React.FC<DashboardProps> = ({
     return { sessionsFiltered, workOrdersFiltered, crewSharesFiltered }
   }, [mySessions, joinedSessions, fromDate, toDate])
 
-  const { totalRevenue, myIncome, sharedIncome } = React.useMemo(() => {
+  const { totalRevenue, myIncome, sharedIncome, refineries, refiningProcesses } = React.useMemo(() => {
+    const refineries: Partial<RegolithStatsSummary['refineries']> = {}
+    const refiningProcesses: Partial<RegolithStatsSummary['refineryMethod']> = {}
+
     // Total Revenue is easy. It's just all the aUEC summed from all sessions
     const totalRevenue = sessionsFiltered.reduce((acc, session) => acc + (session.summary?.aUEC || 0), 0)
 
-    const myIncome = workOrdersFiltered.reduce((acc, { crewShares, sessionId, orderId }) => {
+    const myIncome = workOrdersFiltered.reduce((acc, wo) => {
+      const { crewShares, sessionId, orderId, orderType } = wo
       const myIndex = (crewShares || []).findIndex((cs) => cs.payeeScName === userProfile.scName)
       if (myIndex < 0 || !workOrderSummaries[sessionId] || !workOrderSummaries[sessionId][orderId]) return acc
+
+      if (orderType === ActivityEnum.ShipMining) {
+        const shipOrder = wo as ShipMiningOrder
+        if (shipOrder.refinery) {
+          if (!refineries[shipOrder.refinery]) refineries[shipOrder.refinery] = 0
+          refineries[shipOrder.refinery] = (refineries[shipOrder.refinery] || 0) + 1
+        }
+        if (shipOrder.method) {
+          if (!refiningProcesses[shipOrder.method]) refiningProcesses[shipOrder.method] = 0
+          refiningProcesses[shipOrder.method] = (refiningProcesses[shipOrder.method] || 0) + 1
+        }
+      }
 
       const woSumm = workOrderSummaries[sessionId][orderId].crewShareSummary
       if (!woSumm) return acc
@@ -105,6 +123,8 @@ export const TabStats: React.FC<DashboardProps> = ({
       totalRevenue: formatCardNumber(totalRevenue),
       myIncome: formatCardNumber(myIncome),
       sharedIncome: formatCardNumber(sharedIncome),
+      refineries,
+      refiningProcesses,
     }
   }, [sessionsFiltered, workOrdersFiltered, crewSharesFiltered, workOrderSummaries])
 
@@ -182,6 +202,7 @@ export const TabStats: React.FC<DashboardProps> = ({
       const shipOres = Object.values(ShipOreEnum)
       const vehicleOres = Object.values(VehicleOreEnum)
       const salvageOres = Object.values(SalvageOreEnum)
+
       Object.entries(summ.oreSummary || {}).forEach(([key, value]) => {
         if (key === '__typename') return
         const refinedVal = value.collected
@@ -204,7 +225,7 @@ export const TabStats: React.FC<DashboardProps> = ({
   }, [workOrdersFiltered, workOrderSummaries])
 
   return (
-    <>
+    <Box>
       <StatsDatePicker
         preset={preset}
         fromDate={fromDate}
@@ -221,15 +242,17 @@ export const TabStats: React.FC<DashboardProps> = ({
           navigate?.(`/dashboard/stats/${preset ? preset : ''}`)
         }}
       />
+
       <Stack
         spacing={2}
+        alignItems={'flex-end'}
         sx={{ my: 2, borderBottom: `2px solid ${theme.palette.secondary.dark}` }}
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"
       >
         <Typography
-          variant="h4"
-          component="h2"
+          variant="h3"
+          component="h3"
           gutterBottom
           sx={{
             color: 'secondary.dark',
@@ -310,12 +333,12 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )} */}
           {!loading && (
-            <Grid xs={12} sm={6} md={6}>
+            <Grid xs={12} sm={6} md={4}>
               <OrePieChart title="Activity Types" activityTypes={activityPie} loading={Boolean(loading)} />
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={6}>
+            <Grid xs={12} sm={6} md={4}>
               <OrePieChart
                 title="Ship Ores"
                 groupThreshold={0.04}
@@ -325,7 +348,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={6}>
+            <Grid xs={12} sm={6} md={4}>
               <OrePieChart
                 title="Vehicle Ores"
                 ores={vehicleOrePie as RegolithStatsSummary['vehicleOres']}
@@ -334,7 +357,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={6}>
+            <Grid xs={12} sm={6} md={4}>
               <OrePieChart
                 title="Salvage Ores"
                 ores={salvageOrePie as RegolithStatsSummary['salvageOres']}
@@ -342,8 +365,26 @@ export const TabStats: React.FC<DashboardProps> = ({
               />
             </Grid>
           )}
+          {!loading && (
+            <Grid xs={12} sm={6} md={4}>
+              <OrePieChart
+                title="Refining Processes"
+                activityTypes={refiningProcesses as RegolithStatsSummary['refineryMethod']}
+                loading={Boolean(loading)}
+              />
+            </Grid>
+          )}
+          {!loading && (
+            <Grid xs={12} sm={6} md={4}>
+              <OrePieChart
+                title="Refineries"
+                activityTypes={refineries as RegolithStatsSummary['refineries']}
+                loading={Boolean(loading)}
+              />
+            </Grid>
+          )}
         </Grid>
       </Box>
-    </>
+    </Box>
   )
 }

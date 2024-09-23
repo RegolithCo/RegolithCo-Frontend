@@ -263,7 +263,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                         payoutSummary[cs.payeeScName][1] + (remainder || 0),
                         0,
                       ]
-                    : payoutSummary[cs.payeeScName]
+                    : payoutSummary[cs.payeeScName] || [0, 0, 0]
                   log.debug('finalPayout', { workOrders, workOrderCalcs, finalPayout })
                   return (
                     <TableRow

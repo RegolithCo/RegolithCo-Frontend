@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker as MUIDatePicker } from '@mui/x-date-pickers/DatePicker'
 import { ObjectValues } from '@regolithco/common'
-import { Box, MenuItem, Select, Stack } from '@mui/material'
+import { Box, FormControl, InputLabel, MenuItem, Select, Stack } from '@mui/material'
 
 // These values double as the url sl
 export const DatePresetsEnum = {
@@ -89,21 +89,26 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Select
-          value={preset || 'CUSTOM'}
-          fullWidth
-          onChange={(e) => {
-            if (e.target.value === 'CUSTOM') onPresetChange(null)
-            else onPresetChange(e.target.value as DatePresetsEnum)
-          }}
-        >
-          <MenuItem value={'CUSTOM'}>Custom</MenuItem>
-          {Object.values(DatePresetsEnum).map((presetEnumVal) => (
-            <MenuItem key={presetEnumVal} value={presetEnumVal}>
-              {DatePresetStrings[presetEnumVal]}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl fullWidth>
+          <InputLabel id="date-preset-select">Date Preset</InputLabel>
+          <Select
+            value={preset || 'CUSTOM'}
+            fullWidth
+            labelId="date-preset-select"
+            label="Date Preset"
+            onChange={(e) => {
+              if (e.target.value === 'CUSTOM') onPresetChange(null)
+              else onPresetChange(e.target.value as DatePresetsEnum)
+            }}
+          >
+            <MenuItem value={'CUSTOM'}>Custom</MenuItem>
+            {Object.values(DatePresetsEnum).map((presetEnumVal) => (
+              <MenuItem key={presetEnumVal} value={presetEnumVal}>
+                {DatePresetStrings[presetEnumVal]}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <MUIDatePicker
           slotProps={{ field: { sx: { width: '100%' } } }}

@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Button, ButtonGroup, FormControl, FormLabel, MenuItem, Select, Stack, useTheme } from '@mui/material'
+import { Button, ButtonGroup, MenuItem, Select, Stack, Typography, useTheme } from '@mui/material'
 import { AddCircle, RocketLaunch } from '@mui/icons-material'
 import { Session } from '@regolithco/common'
 import { ConfirmModal } from '../../modals/ConfirmModal'
@@ -21,106 +21,104 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({ sessions, 
 
   let sessCtl: React.ReactNode = null
 
+  React.useEffect(() => {
+    //  If the sessions change then always choose the first one
+    if (sessions.length > 0) {
+      setCurrentSelection(sessions[0].sessionId)
+    }
+  }, [sessions])
+
   if (sessions.length < 1) {
     sessCtl = (
-      <Button fullWidth variant="contained" disabled size="large">
+      <Button variant="contained" disabled size="large">
         No Currently Active Sessions
       </Button>
     )
   } else if (sessions.length === 1) {
     sessCtl = (
-      <FormControl fullWidth>
-        <FormLabel>Enter Active Session:</FormLabel>
-
-        <Button
-          fullWidth
-          variant="contained"
-          size="large"
-          color="info"
-          onClick={() => navigate && navigate(`/session/${sessions[0].sessionId}`)}
-          startIcon={<RocketLaunch />}
-        >
-          {sessions[0].name}
-        </Button>
-      </FormControl>
+      <Button
+        variant="contained"
+        size="medium"
+        color="info"
+        href={`/session/${sessions[0].sessionId}`}
+        startIcon={<RocketLaunch />}
+      >
+        Active Session: {sessions[0].name}
+      </Button>
     )
   } else {
     sessCtl = (
-      <FormControl fullWidth>
-        <FormLabel>{sessions.length} Active Sessions:</FormLabel>
-        <ButtonGroup size="small">
-          <Select
-            placeholder="Join an existing session (2 available)"
-            size="small"
-            value={currentSelection}
-            onChange={(e) => setCurrentSelection(e.target.value)}
-            fullWidth
-            disabled={sessions.length < 2}
-          >
-            {sessions.map(({ sessionId, name }) => (
-              <MenuItem value={sessionId}>{name}</MenuItem>
-            ))}
-            {sessions.length < 1 && (
-              <MenuItem disabled value="NOPE">
-                No Sessions available
-              </MenuItem>
-            )}
-          </Select>
-          <Button
-            color="secondary"
-            size="medium"
-            fullWidth
-            disabled={!currentSelection}
-            startIcon={<RocketLaunch />}
-            variant="contained"
-            onClick={() => {
-              if (currentSelection) {
-                navigate && navigate(`/session/${currentSelection}`)
-              }
-            }}
-          >
-            Go
-          </Button>
-        </ButtonGroup>
-      </FormControl>
+      <ButtonGroup size="medium" variant="contained">
+        <Select
+          placeholder="Join an existing session (2 available)"
+          size="small"
+          // fullWidth
+          value={currentSelection || 'NOPE'}
+          onChange={(e) => setCurrentSelection(e.target.value)}
+          disabled={sessions.length < 2}
+        >
+          {sessions.map(({ sessionId, name }) => (
+            <MenuItem value={sessionId}>{name}</MenuItem>
+          ))}
+          {sessions.length < 1 && (
+            <MenuItem disabled value={'NOPE'}>
+              No Sessions available
+            </MenuItem>
+          )}
+        </Select>
+        <Button
+          color="secondary"
+          size="medium"
+          disabled={!currentSelection}
+          startIcon={<RocketLaunch />}
+          variant="contained"
+          href={currentSelection ? `/session/${currentSelection}` : undefined}
+        >
+          Go
+        </Button>
+      </ButtonGroup>
     )
   }
   return (
-    <Box
+    <Stack
+      spacing={2}
+      width={'100%'}
+      direction={{ xs: 'column', sm: 'row' }}
+      alignItems={'center'}
       sx={{
-        p: 3,
-        borderRadius: 7,
-        // backgroundColor: '#282828',
-        display: 'flex',
-        flexDirection: 'column',
-        border: `5px solid ${theme.palette.primary.main}`,
+        mb: 4,
+        // p: 3,
+        // borderRadius: 7,
+        // // backgroundColor: '#282828',
+        // display: 'flex',
+        // flexDirection: 'column',
+        // border: `5px solid ${theme.palette.primary.main}`,
       }}
     >
-      <Stack direction={'row'} spacing={2} alignItems={'end'} justifyContent={'center'}>
-        {sessCtl}
-        <FormControl fullWidth>
-          <FormLabel>Create a new session:</FormLabel>
-          <Button
-            sx={{ flex: '1 1 40%' }}
-            size="large"
-            fullWidth
-            startIcon={<AddCircle />}
-            variant="contained"
-            onClick={sessions.length > 0 ? () => setConfirmModalOpen(true) : onCreateNewSession}
-          >
-            Create a new Session
-          </Button>
-        </FormControl>
-        <ConfirmModal
-          title={`You already have ${sessions.length} active session${sessions.length > 1 ? 's' : ''}`}
-          message="Create another one?"
-          cancelBtnText="No"
-          confirmBtnText="Yes"
-          open={confirmModalOpen}
-          onClose={() => setConfirmModalOpen(false)}
-          onConfirm={() => onCreateNewSession}
-        />
-      </Stack>
-    </Box>
+      <Typography variant="overline" component="div">
+        Active Sessions:
+      </Typography>
+      {/* <ButtonGroup size="large" variant="contained"> */}
+      {sessCtl}
+      <Box sx={{ flex: 1 }} />
+      <Button
+        size="medium"
+        startIcon={<AddCircle />}
+        variant="outlined"
+        onClick={sessions.length > 0 ? () => setConfirmModalOpen(true) : onCreateNewSession}
+      >
+        Create a new Session
+      </Button>
+      {/* </ButtonGroup> */}
+      <ConfirmModal
+        title={`You already have ${sessions.length} active session${sessions.length > 1 ? 's' : ''}`}
+        message="Create another one?"
+        cancelBtnText="No"
+        confirmBtnText="Yes"
+        open={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={() => onCreateNewSession}
+      />
+    </Stack>
   )
 }

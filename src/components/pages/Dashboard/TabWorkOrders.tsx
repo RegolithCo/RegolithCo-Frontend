@@ -16,7 +16,7 @@ import { fontFamilies } from '../../../theme'
 import { WorkOrderTable } from '../SessionPage/WorkOrderTable'
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
-import { DoneAll, OpenInNew } from '@mui/icons-material'
+import { DoneAll, OpenInNew, Refresh } from '@mui/icons-material'
 import { DashboardProps } from './Dashboard'
 import log from 'loglevel'
 import { AppContext } from '../../../context/app.context'
@@ -26,6 +26,7 @@ import { RefineryIcon } from '../../fields/RefineryIcon'
 import dayjs from 'dayjs'
 import { WorkOrderTableColsEnum } from '../SessionPage/WorkOrderTableRow'
 import { PageLoader } from '../PageLoader'
+import { FetchMoreSessionLoader, FetchMoreWithDate } from './FetchMoreSessionLoader'
 
 export const TabWorkOrders: React.FC<DashboardProps> = ({
   userProfile,
@@ -33,6 +34,8 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
   joinedSessions,
   allLoaded,
   loading,
+  paginationDate,
+  fetchMoreSessions,
   deliverWorkOrders,
   navigate,
 }) => {
@@ -116,12 +119,12 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
     <>
       <Stack
         spacing={2}
-        sx={{ my: 2, borderBottom: `2px solid ${theme.palette.secondary.dark}` }}
+        sx={{ my: 2, mb: 4, borderBottom: `4px solid ${theme.palette.secondary.dark}` }}
         direction={{ xs: 'column', sm: 'row' }}
       >
         <Typography
-          variant="h4"
-          component="h2"
+          variant="h3"
+          component="h3"
           gutterBottom
           sx={{
             color: 'secondary.dark',
@@ -132,25 +135,17 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
           My Work Orders
         </Typography>
       </Stack>
-      <Stack spacing={2} sx={{ my: 2 }} direction={{ xs: 'column', sm: 'row' }}>
-        <Alert elevation={6} variant="outlined" severity="info" sx={{ my: 2, flex: '1 1 50%' }}>
-          <AlertTitle>Work orders from all your sessions</AlertTitle>
-          <Typography>
-            All work orders inside all your joined sessions that you either own or have been marked as the seller.
-          </Typography>
-        </Alert>
-      </Stack>
 
       <Box
         sx={{
           p: 3,
-          pb: 5,
+          pb: 2,
           my: 5,
           borderRadius: 7,
           // backgroundColor: '#282828',
           display: 'flex',
           flexDirection: 'column',
-          border: `5px solid ${theme.palette.primary.main}`,
+          border: `8px solid ${theme.palette.primary.main}`,
         }}
       >
         <Typography
@@ -163,12 +158,12 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
             color: theme.palette.secondary.dark,
           }}
         >
-          Undelivered Work Orders (Grouped by refinery)
+          Unsold Work Orders
         </Typography>
-        <Typography variant="body1" component="div" gutterBottom>
+        <Typography variant="body1" color="text.secondary" component="div" gutterBottom>
           These work orders have had their refinery timers run out and are ready to be delivered to market.
         </Typography>
-        <Typography variant="body1" component="div" gutterBottom fontStyle={'italic'}>
+        <Typography variant="body1" color="text.secondary" component="div" gutterBottom fontStyle={'italic'}>
           Note: You must use the refinery timer in order to see orders in this list
         </Typography>
         <Divider />
@@ -178,7 +173,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
               No undelivered work orders
             </Typography>
           ) : (
-            <SimpleTreeView>
+            <SimpleTreeView sx={{ my: 2 }} selectedItems={''}>
               {Object.entries(undeliveredWorkOrders).map(([refinery, orders]) => {
                 const uniqueSessions = Array.from(new Set(orders.map((wo) => wo.sessionId))).length
                 const totalSCU: number = orders.reduce(
@@ -241,7 +236,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                           itemId={order.orderId}
                           label={
                             <Stack direction={'row'} spacing={1} alignItems={'center'}>
-                              <Tooltip title="Jump to session in new tab" placement="top">
+                              <Tooltip title="Open this work order in a new tab" placement="top">
                                 <IconButton
                                   color="primary"
                                   href={`/session/${order.sessionId}/dash/w/${order.orderId}`}
@@ -303,16 +298,40 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
             </SimpleTreeView>
           )}
         </Box>
+        <FetchMoreWithDate
+          sx={{ textAlign: 'right', mt: 4 }}
+          loading={loading}
+          allLoaded={allLoaded}
+          fetchMoreSessions={fetchMoreSessions}
+          paginationDate={paginationDate}
+        />
       </Box>
       <Box>
-        <Typography variant="h5" component="h3" gutterBottom>
-          All My Work Orders (Grouped by month)
+        <Typography
+          variant="h5"
+          component="h5"
+          gutterBottom
+          sx={{
+            color: 'secondary.dark',
+            fontFamily: fontFamilies.robotoMono,
+            borderBottom: `4px solid ${theme.palette.secondary.dark}`,
+            fontWeight: 'bold',
+          }}
+        >
+          Work Order timeline
         </Typography>
+        <Alert elevation={1} variant="standard" severity="info" sx={{ my: 2, flex: 1 }}>
+          <AlertTitle>Work orders from all your sessions</AlertTitle>
+          <Typography>
+            All work orders inside all your joined sessions that you either own or have been marked as the seller.
+          </Typography>
+        </Alert>
 
         {workOrdersByDate.map((yearMonthArr, idx) => {
           return <WorkOrderListMonth key={`yearMonth-${idx}`} yearMonthArr={yearMonthArr} activeOnly={false} />
         })}
         <PageLoader title="Loading..." loading={loading} small />
+        <FetchMoreSessionLoader loading={loading} allLoaded={allLoaded} fetchMoreSessions={fetchMoreSessions} />
       </Box>
     </>
   )
@@ -330,28 +349,29 @@ export const WorkOrderListMonth: React.FC<WorkOrderListMonthProps> = ({ yearMont
   const currHeading = dayjs(yearMonthArr[0].createdAt).format('YYYY - MMMM')
 
   return (
-    <Box sx={{ margin: '0 auto' }}>
+    <Box sx={{ mb: 5, border: '1px solid transparent', borderRadius: 3, overflow: 'hidden' }}>
       <Typography
         variant="h5"
         sx={{
-          // background: alpha(theme.palette.background.paper, 0.5),
-          p: 1,
-          fontFamily: fontFamilies.robotoMono,
-          borderBottom: `2px solid ${theme.palette.primary.main}`,
-          color: theme.palette.primary.main,
-          textShadow: '1px 1px 1px #000000aa',
           textAlign: 'left',
+          // background: alpha(theme.palette.background.paper, 0.5),
+          p: 2,
+          fontWeight: 'bold',
+          backgroundColor: theme.palette.secondary.dark,
+          fontFamily: fontFamilies.robotoMono,
+          color: theme.palette.secondary.contrastText,
         }}
       >
         {currHeading}
       </Typography>
       <WorkOrderTable
         disableContextMenu
+        sessionActive
         workOrders={yearMonthArr}
-        onRowClick={(sessionId, orderId) => {
-          const url = `/session/${sessionId}/dash/w/${orderId}`
-          window.open(url, '_blank')
-        }}
+        // onRowClick={(sessionId, orderId) => {
+        //   const url = `/session/${sessionId}/dash/w/${orderId}`
+        //   window.open(url, '_blank')
+        // }}
         columns={[
           WorkOrderTableColsEnum.Session,
           WorkOrderTableColsEnum.Activity,
