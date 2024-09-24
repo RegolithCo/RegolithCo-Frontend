@@ -11,12 +11,13 @@ import { SessionDashTabsEnum, WorkOrderSummaryLookup } from './Dashboard.contain
 import { DatePresetsEnum } from './TabStats/StatsDatePicker'
 import { JoinSessionButton } from './JoinSessionButton'
 import { fontFamilies } from '../../../theme'
+import { Dayjs } from 'dayjs'
 
 export interface DashboardProps {
   userProfile: UserProfile
   workOrderSummaries: WorkOrderSummaryLookup
   activeTab: SessionDashTabsEnum
-  preset: DatePresetsEnum
+  defaultStatsPreset: { preset: DatePresetsEnum; from: Dayjs | null; to: Dayjs | null }
   mySessions: Session[]
   joinedSessions: Session[]
   deliverWorkOrders: (orders: WorkOrder[]) => Promise<void>

@@ -4,7 +4,7 @@ import { Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../../theme'
 import { DashboardProps } from '../Dashboard'
-import { DatePresetsEnum, StatsDatePicker } from './StatsDatePicker'
+import { DatePresetsEnum, DatePresetStrings, StatsDatePicker } from './StatsDatePicker'
 import {
   ActivityEnum,
   CrewShare,
@@ -30,11 +30,12 @@ export const TabStats: React.FC<DashboardProps> = ({
   allLoaded,
   loading,
   navigate,
-  preset,
+  defaultStatsPreset,
 }) => {
   const theme = useTheme()
-  const [fromDate, setFromDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'))
-  const [toDate, setToDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'))
+  // These dates are what we use to filter the data
+  const [fromDate, setFromDate] = React.useState<Dayjs | null>(defaultStatsPreset.from || dayjs('2022-04-17'))
+  const [toDate, setToDate] = React.useState<Dayjs | null>(defaultStatsPreset.to || dayjs('2022-04-17'))
 
   const [firstDate, setFirstDate] = React.useState<Dayjs | null>(null)
   const [lastDate, setLastDate] = React.useState<Dayjs | null>(null)
@@ -168,10 +169,10 @@ export const TabStats: React.FC<DashboardProps> = ({
   const dateStr = React.useMemo(() => {
     if (!toDate || !fromDate) return ''
     // First handle preset weirdness
-    if (preset === DatePresetsEnum.THISMONTH) {
+    if (defaultStatsPreset.preset === DatePresetsEnum.THISMONTH) {
       return toDate?.format('MMMM, YYYY') + ' (so far)'
     }
-    if (preset === DatePresetsEnum.LASTMONTH) {
+    if (defaultStatsPreset.preset === DatePresetsEnum.LASTMONTH) {
       return toDate?.format('MMMM, YYYY')
     }
     // If they are on the same day then
@@ -187,7 +188,7 @@ export const TabStats: React.FC<DashboardProps> = ({
       return `${fromDate?.format('MMMM, D')} - ${toDate?.format('MMMM, D, YYYY')}`
     }
     return `${fromDate?.format('LL')} - ${toDate?.format('LL')}`
-  }, [firstDate, lastDate, preset])
+  }, [firstDate, lastDate, defaultStatsPreset])
 
   const { shipOrePie, vehicleOrePie, salvageOrePie, expenses } = React.useMemo(() => {
     const shipOrePie: Partial<RegolithStatsSummary['shipOres']> = {}
@@ -227,19 +228,31 @@ export const TabStats: React.FC<DashboardProps> = ({
   return (
     <Box>
       <StatsDatePicker
-        preset={preset}
+        preset={defaultStatsPreset.preset || DatePresetsEnum.THISMONTH}
         fromDate={fromDate}
         toDate={toDate}
         setFromDate={(date) => {
           setFirstDate(null)
           setFromDate(date)
+          navigate?.(
+            `/dashboard/stats/${DatePresetsEnum.CUSTOM}?from=${date?.format('YYYY-MM-DD')}&to=${toDate?.format('YYYY-MM-DD')}`
+          )
         }}
         setToDate={(date) => {
           setLastDate(null)
           setToDate(date)
+          navigate?.(
+            `/dashboard/stats/${DatePresetsEnum.CUSTOM}?from=${fromDate?.format('YYYY-MM-DD')}&to=${date?.format('YYYY-MM-DD')}`
+          )
         }}
         onPresetChange={(preset) => {
-          navigate?.(`/dashboard/stats/${preset ? preset : ''}`)
+          if (preset === DatePresetsEnum.CUSTOM) {
+            navigate?.(
+              `/dashboard/stats/${DatePresetsEnum.CUSTOM}?from=${fromDate?.format('YYYY-MM-DD')}&to=${toDate?.format('YYYY-MM-DD')}`
+            )
+          } else {
+            navigate?.(`/dashboard/stats/${preset}`)
+          }
         }}
       />
 
@@ -260,7 +273,9 @@ export const TabStats: React.FC<DashboardProps> = ({
             fontWeight: 'bold',
           }}
         >
-          My Stats
+          {defaultStatsPreset.preset === DatePresetsEnum.CUSTOM
+            ? 'My Statistics'
+            : DatePresetStrings[defaultStatsPreset.preset || DatePresetsEnum.THISMONTH]}
         </Typography>
         <Typography
           variant="h5"

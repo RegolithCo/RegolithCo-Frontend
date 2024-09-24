@@ -206,7 +206,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                     })
                 }}
                 sx={{ opacity: payerSCName !== normalizedMeUSer?.scName ? 0.1 : 1 }}
-                disabled={payerSCName !== normalizedMeUSer?.scName}
+                disabled={payerSCName !== normalizedMeUSer?.scName || mutating}
                 startIcon={<PriceCheck />}
                 variant="contained"
                 color={mutating ? 'secondary' : 'success'}

@@ -4,10 +4,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker as MUIDatePicker } from '@mui/x-date-pickers/DatePicker'
 import { ObjectValues } from '@regolithco/common'
-import { Box, FormControl, InputLabel, MenuItem, Select, Stack } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select, Stack } from '@mui/material'
 
 // These values double as the url sl
 export const DatePresetsEnum = {
+  CUSTOM: 'range',
   TODAY: 'today',
   YESTERDAY: 'yesterday',
   LAST7: 'last7',
@@ -20,6 +21,7 @@ export const DatePresetsEnum = {
 export type DatePresetsEnum = ObjectValues<typeof DatePresetsEnum>
 
 export const DatePresetStrings: Record<DatePresetsEnum, string> = {
+  [DatePresetsEnum.CUSTOM]: 'Custom',
   [DatePresetsEnum.TODAY]: 'Today',
   [DatePresetsEnum.YESTERDAY]: 'Yesterday',
   [DatePresetsEnum.LAST7]: 'Last 7 Days',
@@ -36,7 +38,7 @@ export interface StatsDatePickerProps {
   toDate: Dayjs | null
   setFromDate: (date: Dayjs | null) => void
   setToDate: (date: Dayjs | null) => void
-  onPresetChange: (preset: DatePresetsEnum | null) => void
+  onPresetChange: (preset: DatePresetsEnum) => void
 }
 
 export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
@@ -92,16 +94,14 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
         <FormControl fullWidth>
           <InputLabel id="date-preset-select">Date Preset</InputLabel>
           <Select
-            value={preset || 'CUSTOM'}
+            value={preset}
             fullWidth
             labelId="date-preset-select"
             label="Date Preset"
             onChange={(e) => {
-              if (e.target.value === 'CUSTOM') onPresetChange(null)
-              else onPresetChange(e.target.value as DatePresetsEnum)
+              onPresetChange(e.target.value as DatePresetsEnum)
             }}
           >
-            <MenuItem value={'CUSTOM'}>Custom</MenuItem>
             {Object.values(DatePresetsEnum).map((presetEnumVal) => (
               <MenuItem key={presetEnumVal} value={presetEnumVal}>
                 {DatePresetStrings[presetEnumVal]}
@@ -114,7 +114,7 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
           slotProps={{ field: { sx: { width: '100%' } } }}
           minDate={dayjs('2023-03-01')}
           disableFuture
-          disabled={Boolean(preset)}
+          disabled={preset !== DatePresetsEnum.CUSTOM}
           label="From Date"
           value={fromDate}
           onChange={(newValue) => setFromDate(newValue)}
@@ -123,7 +123,7 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
           minDate={dayjs('2023-03-01')}
           disableFuture
           slotProps={{ field: { sx: { width: '100%' } } }}
-          disabled={Boolean(preset)}
+          disabled={preset !== DatePresetsEnum.CUSTOM}
           label="To Date"
           value={toDate}
           onChange={(newValue) => setToDate(newValue)}

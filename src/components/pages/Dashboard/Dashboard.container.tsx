@@ -11,7 +11,7 @@ import {
   WorkOrderSummary,
 } from '@regolithco/common'
 import * as React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { Dashboard } from './Dashboard'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { useSessionList } from '../../../hooks/useSessionList'
@@ -20,6 +20,7 @@ import { LookupsContext } from '../../../context/lookupsContext'
 import log from 'loglevel'
 import { DatePresetsEnum } from './TabStats/StatsDatePicker'
 import { useMarkCrewSharePaidMutation, useUpdateWorkOrderMutation } from '../../../schema'
+import dayjs from 'dayjs'
 
 export const SessionDashTabsEnum = {
   sessions: 'sessions',
@@ -38,6 +39,29 @@ export const DashboardContainer: React.FC = () => {
   const dataStore = React.useContext(LookupsContext)
   const [workOrderSummaries, setWorkOrderSummaries] = React.useState<WorkOrderSummaryLookup>({})
   const { tab, preset } = useParams()
+  // Get query params from url
+  const { search } = useLocation()
+
+  // Parse query parameters
+  const queryParams = new URLSearchParams(search)
+  const parsedFrom = queryParams.get('from')
+  const parsedTo = queryParams.get('to')
+
+  const defaultDates = localStorage.getItem('dashboard_stats_range')
+  const defaultFrom = defaultDates?.split('::')[0] || null
+  const defaultTo = defaultDates?.split('::')[1] || null
+
+  const finalPreset = preset || DatePresetsEnum.THISMONTH
+  React.useEffect(() => {
+    if (tab !== SessionDashTabsEnum.stats) return
+    console.log('finalPreset set', { finalPreset, parsedFrom, parsedTo })
+    localStorage.setItem('dashboard_stats_preset', finalPreset)
+    if (finalPreset === DatePresetsEnum.CUSTOM && parsedFrom && parsedTo) {
+      const dateStr = `${parsedFrom || ''}::${parsedTo || ''}`
+      localStorage.setItem('dashboard_stats_range', dateStr)
+    }
+  }, [finalPreset, parsedFrom, parsedTo])
+  console.log('finalPreset PASS', { preset, finalPreset, parsedFrom, parsedTo, defaultDates })
 
   const updateWorkOrderMutation = useUpdateWorkOrderMutation()
   const deliverWorkOrders = (orders: WorkOrder[]) => {
@@ -133,7 +157,11 @@ export const DashboardContainer: React.FC = () => {
   return (
     <Dashboard
       activeTab={tab as SessionDashTabsEnum}
-      preset={preset as DatePresetsEnum}
+      defaultStatsPreset={{
+        preset: finalPreset as DatePresetsEnum,
+        from: defaultFrom ? dayjs(defaultFrom) : null,
+        to: defaultTo ? dayjs(defaultTo) : null,
+      }}
       workOrderSummaries={workOrderSummaries}
       deliverWorkOrders={deliverWorkOrders}
       markCrewSharesPaid={markCrewSharesPaid}
