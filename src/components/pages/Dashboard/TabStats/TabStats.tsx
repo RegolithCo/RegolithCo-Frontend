@@ -1,7 +1,7 @@
 import * as React from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 import { Typography, useTheme } from '@mui/material'
-import { Box, Stack } from '@mui/system'
+import { alpha, Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../../theme'
 import { DashboardProps } from '../Dashboard'
 import { DatePresetsEnum, DatePresetStrings, StatsDatePicker } from './StatsDatePicker'
@@ -20,25 +20,90 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SiteStatsCard } from '../../../cards/SiteStats'
 import { OrePieChart } from '../../../cards/charts/OrePieChart'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
+import { PageLoader } from '../../PageLoader'
+import { SessionDashTabsEnum, tabUrl } from '../Dashboard.container'
+
+export type StatsFilters = {
+  preset: DatePresetsEnum
+  fromDateCustom: Dayjs | null
+  toDateCustom: Dayjs | null
+  defaultFrom?: Dayjs | null
+  defaultTo?: Dayjs | null
+}
 
 export const TabStats: React.FC<DashboardProps> = ({
   userProfile,
   mySessions,
   workOrderSummaries,
   fetchMoreSessions,
+  paginationDate,
+  setPaginationDate,
   joinedSessions,
   allLoaded,
   loading,
   navigate,
-  defaultStatsPreset,
+  statsFilters,
 }) => {
   const theme = useTheme()
-  // These dates are what we use to filter the data
-  const [fromDate, setFromDate] = React.useState<Dayjs | null>(defaultStatsPreset.from || dayjs('2022-04-17'))
-  const [toDate, setToDate] = React.useState<Dayjs | null>(defaultStatsPreset.to || dayjs('2022-04-17'))
-
+  const { fromDateCustom, toDateCustom, preset } = statsFilters
+  // First and last dates are set to the first and last dates of the data within the range from toDate and fromDate
   const [firstDate, setFirstDate] = React.useState<Dayjs | null>(null)
   const [lastDate, setLastDate] = React.useState<Dayjs | null>(null)
+
+  // If the preset is not CUSTOM then the from and to date are presentational only
+  const { fromDate, toDate } = React.useMemo(() => {
+    let fromDate: Dayjs | null = null
+    let toDate: Dayjs | null = null
+    switch (preset) {
+      case DatePresetsEnum.CUSTOM:
+        fromDate = fromDateCustom
+        toDate = toDateCustom
+        break
+      case DatePresetsEnum.TODAY:
+        fromDate = dayjs().startOf('day')
+        toDate = dayjs().endOf('day')
+        break
+      case DatePresetsEnum.YESTERDAY:
+        fromDate = dayjs().subtract(1, 'day').startOf('day')
+        toDate = dayjs().subtract(1, 'day').endOf('day')
+        break
+      case DatePresetsEnum.LAST7:
+        fromDate = dayjs().subtract(7, 'day').startOf('day')
+        toDate = dayjs()
+        break
+      case DatePresetsEnum.LAST30:
+        fromDate = dayjs().subtract(30, 'day').startOf('day')
+        toDate = dayjs()
+        break
+      case DatePresetsEnum.THISMONTH:
+        fromDate = dayjs().startOf('month')
+        toDate = dayjs()
+        break
+      case DatePresetsEnum.LASTMONTH:
+        fromDate = dayjs().subtract(1, 'month').startOf('month')
+        toDate = dayjs().subtract(1, 'month').endOf('month')
+        break
+      case DatePresetsEnum.YTD:
+        fromDate = dayjs().startOf('year')
+        toDate = dayjs()
+        break
+      case DatePresetsEnum.ALLTIME:
+        fromDate = dayjs('2023-03-01').startOf('day')
+        toDate = dayjs()
+        break
+      default:
+        break
+    }
+    return { fromDate, toDate }
+  }, [preset])
+
+  React.useEffect(() => {
+    if (allLoaded || loading) return
+    // If the fromDate is before the pagination date then we need to trigger a fetch
+    if (fromDate && fromDate.isBefore(dayjs(paginationDate))) {
+      fetchMoreSessions()
+    }
+  }, [fromDate, paginationDate, loading])
 
   const { sessionsFiltered, workOrdersFiltered, crewSharesFiltered } = React.useMemo(() => {
     const sessions = [...joinedSessions, ...mySessions]
@@ -166,13 +231,14 @@ export const TabStats: React.FC<DashboardProps> = ({
     }
   }, [sessionsFiltered])
 
+  // The titlebar needs to show the date range
   const dateStr = React.useMemo(() => {
     if (!toDate || !fromDate) return ''
     // First handle preset weirdness
-    if (defaultStatsPreset.preset === DatePresetsEnum.THISMONTH) {
+    if (preset === DatePresetsEnum.THISMONTH) {
       return toDate?.format('MMMM, YYYY') + ' (so far)'
     }
-    if (defaultStatsPreset.preset === DatePresetsEnum.LASTMONTH) {
+    if (preset === DatePresetsEnum.LASTMONTH) {
       return toDate?.format('MMMM, YYYY')
     }
     // If they are on the same day then
@@ -188,7 +254,7 @@ export const TabStats: React.FC<DashboardProps> = ({
       return `${fromDate?.format('MMMM, D')} - ${toDate?.format('MMMM, D, YYYY')}`
     }
     return `${fromDate?.format('LL')} - ${toDate?.format('LL')}`
-  }, [firstDate, lastDate, defaultStatsPreset])
+  }, [toDate, fromDate, preset])
 
   const { shipOrePie, vehicleOrePie, salvageOrePie, expenses } = React.useMemo(() => {
     const shipOrePie: Partial<RegolithStatsSummary['shipOres']> = {}
@@ -225,33 +291,28 @@ export const TabStats: React.FC<DashboardProps> = ({
     }
   }, [workOrdersFiltered, workOrderSummaries])
 
+  // console.log('finalPreset TabStats', { preset })
+
   return (
     <Box>
       <StatsDatePicker
-        preset={defaultStatsPreset.preset || DatePresetsEnum.THISMONTH}
+        preset={preset}
         fromDate={fromDate}
         toDate={toDate}
         setFromDate={(date) => {
           setFirstDate(null)
-          setFromDate(date)
-          navigate?.(
-            `/dashboard/stats/${DatePresetsEnum.CUSTOM}?from=${date?.format('YYYY-MM-DD')}&to=${toDate?.format('YYYY-MM-DD')}`
-          )
+          navigate && navigate(tabUrl(SessionDashTabsEnum.stats, DatePresetsEnum.CUSTOM, date, toDate))
         }}
         setToDate={(date) => {
           setLastDate(null)
-          setToDate(date)
-          navigate?.(
-            `/dashboard/stats/${DatePresetsEnum.CUSTOM}?from=${fromDate?.format('YYYY-MM-DD')}&to=${date?.format('YYYY-MM-DD')}`
-          )
+          navigate && navigate(tabUrl(SessionDashTabsEnum.stats, DatePresetsEnum.CUSTOM, fromDate, date))
         }}
-        onPresetChange={(preset) => {
-          if (preset === DatePresetsEnum.CUSTOM) {
-            navigate?.(
-              `/dashboard/stats/${DatePresetsEnum.CUSTOM}?from=${fromDate?.format('YYYY-MM-DD')}&to=${toDate?.format('YYYY-MM-DD')}`
-            )
+        onPresetChange={(newPreset) => {
+          console.log('finalPreset: Setting preset', newPreset)
+          if (newPreset === DatePresetsEnum.CUSTOM) {
+            navigate && navigate(tabUrl(SessionDashTabsEnum.stats, newPreset, fromDate, toDate))
           } else {
-            navigate?.(`/dashboard/stats/${preset}`)
+            navigate && navigate(tabUrl(SessionDashTabsEnum.stats, newPreset))
           }
         }}
       />
@@ -273,9 +334,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             fontWeight: 'bold',
           }}
         >
-          {defaultStatsPreset.preset === DatePresetsEnum.CUSTOM
-            ? 'My Statistics'
-            : DatePresetStrings[defaultStatsPreset.preset || DatePresetsEnum.THISMONTH]}
+          {preset === DatePresetsEnum.CUSTOM ? 'My Statistics' : DatePresetStrings[preset || DatePresetsEnum.THISMONTH]}
         </Typography>
         <Typography
           variant="h5"
@@ -291,7 +350,24 @@ export const TabStats: React.FC<DashboardProps> = ({
         </Typography>
       </Stack>
 
-      <Box>
+      <Box sx={{ position: 'relative', minHeight: 500 }}>
+        {/* LOADER */}
+        {loading && (
+          <Box
+            sx={{
+              height: '100%',
+              width: '100%',
+              position: 'absolute',
+              zIndex: 1000,
+              backgroundColor: alpha(theme.palette.background.paper, 0.4),
+              // blur background
+              backdropFilter: 'blur(4px)',
+            }}
+          >
+            <PageLoader title="Loading Data..." subtitle={dateStr} loading={true} />
+          </Box>
+        )}
+
         <Grid spacing={2} my={3} container sx={{ width: '100%' }}>
           <SiteStatsCard
             value={totalRevenue[0]}

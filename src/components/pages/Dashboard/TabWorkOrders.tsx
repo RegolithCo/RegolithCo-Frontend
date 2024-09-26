@@ -129,26 +129,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
 
   log.debug('workOrders', workOrders, undeliveredWorkOrders)
   return (
-    <>
-      {/* <Stack
-        spacing={2}
-        sx={{ my: 2, mb: 4, borderBottom: `4px solid ${theme.palette.secondary.dark}` }}
-        direction={{ xs: 'column', sm: 'row' }}
-      >
-        <Typography
-          variant="h3"
-          component="h3"
-          gutterBottom
-          sx={{
-            color: 'secondary.dark',
-            fontFamily: fontFamilies.robotoMono,
-            fontWeight: 'bold',
-          }}
-        >
-          My Work Orders
-        </Typography>
-      </Stack> */}
-
+    <Box>
       <Card
         elevation={6}
         sx={{
@@ -398,7 +379,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
         <PageLoader title="Loading..." loading={loading} small />
         <FetchMoreSessionLoader loading={loading} allLoaded={allLoaded} fetchMoreSessions={fetchMoreSessions} />
       </Box>
-    </>
+    </Box>
   )
 }
 

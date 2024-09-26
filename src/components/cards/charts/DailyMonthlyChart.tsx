@@ -395,7 +395,7 @@ const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] =>
       legend: 'Fleet Week 2954 (3.23)',
     },
     {
-      // citizen con Oct 21 - 22, 2023
+      // 3.24 cargo refactor
       value: dayjs('2024-08-29').startOf(rounding).toDate(),
       legend: '3.24',
     },

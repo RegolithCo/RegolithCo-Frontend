@@ -34,8 +34,8 @@ export const DatePresetStrings: Record<DatePresetsEnum, string> = {
 
 export interface StatsDatePickerProps {
   preset?: DatePresetsEnum
-  fromDate: Dayjs | null
-  toDate: Dayjs | null
+  fromDate: Dayjs | null // This is the actual state
+  toDate: Dayjs | null // This is the actual state
   setFromDate: (date: Dayjs | null) => void
   setToDate: (date: Dayjs | null) => void
   onPresetChange: (preset: DatePresetsEnum) => void
@@ -49,44 +49,7 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
   setToDate,
   onPresetChange,
 }) => {
-  React.useEffect(() => {
-    switch (preset) {
-      case DatePresetsEnum.TODAY:
-        setFromDate(dayjs().startOf('day'))
-        setToDate(dayjs().endOf('day'))
-        break
-      case DatePresetsEnum.YESTERDAY:
-        setFromDate(dayjs().subtract(1, 'day').startOf('day'))
-        setToDate(dayjs().subtract(1, 'day').endOf('day'))
-        break
-      case DatePresetsEnum.LAST7:
-        setFromDate(dayjs().subtract(7, 'day').startOf('day'))
-        setToDate(dayjs().endOf('day'))
-        break
-      case DatePresetsEnum.LAST30:
-        setFromDate(dayjs().subtract(30, 'day').startOf('day'))
-        setToDate(dayjs().endOf('day'))
-        break
-      case DatePresetsEnum.THISMONTH:
-        setFromDate(dayjs().startOf('month'))
-        setToDate(dayjs().endOf('month'))
-        break
-      case DatePresetsEnum.LASTMONTH:
-        setFromDate(dayjs().subtract(1, 'month').startOf('month'))
-        setToDate(dayjs().subtract(1, 'month').endOf('month'))
-        break
-      case DatePresetsEnum.YTD:
-        setFromDate(dayjs().startOf('year'))
-        setToDate(dayjs().endOf('day'))
-        break
-      case DatePresetsEnum.ALLTIME:
-        setFromDate(dayjs('2023-03-01').startOf('day'))
-        setToDate(dayjs().endOf('day'))
-        break
-      default:
-        break
-    }
-  }, [preset])
+  console.log('finalPreset DatePicker', { preset })
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -94,7 +57,7 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
         <FormControl fullWidth>
           <InputLabel id="date-preset-select">Date Preset</InputLabel>
           <Select
-            value={preset}
+            value={preset || DatePresetsEnum.CUSTOM}
             fullWidth
             labelId="date-preset-select"
             label="Date Preset"
@@ -117,7 +80,9 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
           disabled={preset !== DatePresetsEnum.CUSTOM}
           label="From Date"
           value={fromDate}
-          onChange={(newValue) => setFromDate(newValue)}
+          onChange={(newValue) => {
+            if (preset === DatePresetsEnum.CUSTOM) setFromDate(newValue)
+          }}
         />
         <MUIDatePicker
           minDate={dayjs('2023-03-01')}
@@ -126,7 +91,9 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
           disabled={preset !== DatePresetsEnum.CUSTOM}
           label="To Date"
           value={toDate}
-          onChange={(newValue) => setToDate(newValue)}
+          onChange={(newValue) => {
+            if (preset === DatePresetsEnum.CUSTOM) setToDate(newValue)
+          }}
         />
       </Stack>
     </LocalizationProvider>

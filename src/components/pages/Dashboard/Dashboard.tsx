@@ -5,19 +5,17 @@ import { Box, Container, Paper, Tab, Tabs, useTheme } from '@mui/material'
 import { Insights, ViewTimeline } from '@mui/icons-material'
 import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
-import { TabStats } from './TabStats/TabStats'
+import { StatsFilters, TabStats } from './TabStats/TabStats'
 import { TabCrewShares } from './TabCrewShares'
 import { SessionDashTabsEnum, WorkOrderSummaryLookup } from './Dashboard.container'
-import { DatePresetsEnum } from './TabStats/StatsDatePicker'
 import { JoinSessionButton } from './JoinSessionButton'
 import { fontFamilies } from '../../../theme'
-import { Dayjs } from 'dayjs'
 
 export interface DashboardProps {
   userProfile: UserProfile
   workOrderSummaries: WorkOrderSummaryLookup
   activeTab: SessionDashTabsEnum
-  defaultStatsPreset: { preset: DatePresetsEnum; from: Dayjs | null; to: Dayjs | null }
+  statsFilters: StatsFilters
   mySessions: Session[]
   joinedSessions: Session[]
   deliverWorkOrders: (orders: WorkOrder[]) => Promise<void>
