@@ -9,6 +9,7 @@ import {
   ShipMiningOrder,
   WorkOrder,
   WorkOrderStateEnum,
+  WorkOrderSummary,
 } from '@regolithco/common'
 import {
   Alert,
@@ -29,7 +30,7 @@ import { fontFamilies } from '../../../theme'
 import { WorkOrderTable } from '../SessionPage/WorkOrderTable'
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
-import { DoneAll, OpenInNew } from '@mui/icons-material'
+import { Done, DoneAll, OpenInNew } from '@mui/icons-material'
 import { DashboardProps } from './Dashboard'
 import log from 'loglevel'
 import { AppContext } from '../../../context/app.context'
@@ -40,6 +41,7 @@ import dayjs from 'dayjs'
 import { WorkOrderTableColsEnum } from '../SessionPage/WorkOrderTableRow'
 import { PageLoader } from '../PageLoader'
 import { FetchMoreSessionLoader, FetchMoreWithDate } from './FetchMoreSessionLoader'
+import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 
 export const TabWorkOrders: React.FC<DashboardProps> = ({
   userProfile,
@@ -48,9 +50,9 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
   allLoaded,
   loading,
   paginationDate,
+  workOrderSummaries,
   fetchMoreSessions,
   deliverWorkOrders,
-  navigate,
 }) => {
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
@@ -111,7 +113,6 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
           wo.orderType === ActivityEnum.ShipMining &&
           (wo as ShipMiningOrder).refinery &&
           wo.state !== WorkOrderStateEnum.Failed &&
-          wo.state !== WorkOrderStateEnum.RefiningStarted &&
           !wo.isSold
       )
       .map((wo) => wo as ShipMiningOrder)
@@ -156,14 +157,14 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
             fontWeight: 'bold',
           }}
         >
-          Unsold Work Orders
+          Refineries with undelivered work orders
         </Typography>
         <CardContent>
           <Typography variant="body1" color="text.secondary" component="div" gutterBottom>
             These work orders have had their refinery timers run out and are ready to be delivered to market.
           </Typography>
           <Typography variant="body1" color="text.secondary" component="div" gutterBottom fontStyle={'italic'}>
-            Note: You must use the refinery timer in order to see orders in this list
+            Note: If you don't use the refinery timer feature the work order will show here as soon as it's created.
           </Typography>
           <Divider />
           <Box sx={{ minHeight: 100, minWidth: 250 }}>
@@ -184,6 +185,17 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                       }, 0),
                     0
                   )
+                  const deliverableWorkOrders = orders.filter((wo) => {
+                    try {
+                      const woLookup = workOrderSummaries[wo.sessionId][wo.orderId]
+                      return !woLookup.completionTime || woLookup.completionTime < Date.now()
+                    } catch (e) {
+                      console.log(e)
+                      return false
+                    }
+                  })
+                  console.log('deliverableWorkOrders', deliverableWorkOrders)
+
                   return (
                     <TreeItem
                       key={refinery}
@@ -233,26 +245,46 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                             <span style={{ color: theme.palette.secondary.dark }}>{uniqueSessions}</span> session(s)
                           </Typography>
                           <Box sx={{ flexGrow: 1 }} />
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color="success"
-                            disabled={loading}
-                            startIcon={<DoneAll />}
-                            onClick={() => {
-                              deliverWorkOrders(orders)
-                            }}
+                          <Tooltip
+                            title={`Mark ${deliverableWorkOrders.length} / ${orders.length} deliverable work orders as SOLD`}
+                            placement="top"
                           >
-                            Mark All Delivered
-                          </Button>
+                            <span>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                color="success"
+                                disabled={loading || deliverableWorkOrders.length === 0}
+                                startIcon={<DoneAll />}
+                                onClick={() => {
+                                  deliverWorkOrders(deliverableWorkOrders)
+                                }}
+                              >
+                                Mark All SOLD
+                              </Button>
+                            </span>
+                          </Tooltip>
                         </Stack>
                       }
                     >
                       {orders.map((order) => {
+                        let lookupVal: WorkOrderSummary | null = null
+                        try {
+                          lookupVal = workOrderSummaries[order.sessionId][order.orderId]
+                        } catch {
+                          console.log('Error looking up order summary')
+                        }
+                        const completionTime = lookupVal?.completionTime || 0
+                        const isProcessing = completionTime && completionTime > Date.now()
+
                         return (
                           <TreeItem
                             key={order.orderId}
                             itemId={order.orderId}
+                            sx={{
+                              opacity: isProcessing ? 0.5 : 1,
+                              backgroundColor: isProcessing ? alpha(theme.palette.warning.dark, 0.2) : 'transparent',
+                            }}
                             label={
                               <Stack direction={'row'} spacing={1} alignItems={'center'}>
                                 <Tooltip title="Open this work order in a new tab" placement="top">
@@ -316,16 +348,28 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                   })}
                                 </Grid2>
                                 <Box sx={{ flexGrow: 1 }} />
-                                <Tooltip title="Mark this work order as delivered" placement="top">
-                                  <IconButton
-                                    size="small"
-                                    color="success"
-                                    disabled={loading}
-                                    onClick={() => deliverWorkOrders([order])}
-                                  >
-                                    <DoneAll />
-                                  </IconButton>
-                                </Tooltip>
+                                {isProcessing ? (
+                                  <CountdownTimer
+                                    startTime={order.processStartTime as number}
+                                    totalTime={(order.processDurationS || 0) * 1000}
+                                    useMValue
+                                  />
+                                ) : (
+                                  <Tooltip title="Mark this work order as SOLD" placement="top">
+                                    <span>
+                                      <Button
+                                        variant="contained"
+                                        size="small"
+                                        color="success"
+                                        startIcon={<Done />}
+                                        disabled={loading}
+                                        onClick={() => deliverWorkOrders([order])}
+                                      >
+                                        Mark Sold
+                                      </Button>
+                                    </span>
+                                  </Tooltip>
+                                )}
                               </Stack>
                             }
                           />

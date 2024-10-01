@@ -19,7 +19,7 @@ import { LookupsContext } from '../../../context/lookupsContext'
 
 import log from 'loglevel'
 import { DatePresetsEnum } from './TabStats/StatsDatePicker'
-import { useMarkCrewSharePaidMutation, useUpdateWorkOrderMutation } from '../../../schema'
+import { useDeliverWorkOrderMutation, useMarkCrewSharePaidMutation } from '../../../schema'
 import dayjs, { Dayjs } from 'dayjs'
 
 export const tabUrl = (
@@ -139,17 +139,15 @@ export const DashboardContainer: React.FC = () => {
   }, [presetStr, parsedFrom, parsedTo])
   // console.log('finalPreset Container', { presetStr })
 
-  const updateWorkOrderMutation = useUpdateWorkOrderMutation()
+  const deliverWorkOrder = useDeliverWorkOrderMutation()
   const deliverWorkOrders = (orders: WorkOrder[]) => {
     return Promise.all(
       orders.map(({ orderId, sessionId, ...rest }) => {
-        return updateWorkOrderMutation[0]({
+        return deliverWorkOrder[0]({
           variables: {
             orderId,
             sessionId,
-            workOrder: {
-              isSold: true,
-            },
+            isSold: true,
           },
           optimisticResponse: () => {
             // Get it from cache
@@ -160,6 +158,7 @@ export const DashboardContainer: React.FC = () => {
                 orderId,
                 sessionId,
                 state: WorkOrderStateEnum.Done,
+                isSold: true,
               },
             }
             return optimisticresponse
@@ -251,7 +250,7 @@ export const DashboardContainer: React.FC = () => {
         userQueries.loading ||
         useSessionListQueries.loading ||
         userQueries.mutating ||
-        updateWorkOrderMutation[1].loading ||
+        deliverWorkOrder[1].loading ||
         markCrewSharePaidMutation[1].loading
       }
       allLoaded={useSessionListQueries.allLoaded}

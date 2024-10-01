@@ -1,7 +1,17 @@
 import * as React from 'react'
 
-import { CrewShare, Session, SessionStateEnum, UserProfile, WorkOrder } from '@regolithco/common'
-import { Box, Container, Paper, Tab, Tabs, useTheme } from '@mui/material'
+import {
+  ActivityEnum,
+  CrewShare,
+  RefineryEnum,
+  Session,
+  SessionStateEnum,
+  ShipMiningOrder,
+  UserProfile,
+  WorkOrder,
+  WorkOrderStateEnum,
+} from '@regolithco/common'
+import { Badge, Box, Container, Paper, Tab, Tabs, Tooltip, useTheme } from '@mui/material'
 import { Insights, ViewTimeline } from '@mui/icons-material'
 import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
@@ -10,6 +20,8 @@ import { TabCrewShares } from './TabCrewShares'
 import { SessionDashTabsEnum, WorkOrderSummaryLookup } from './Dashboard.container'
 import { JoinSessionButton } from './JoinSessionButton'
 import { fontFamilies } from '../../../theme'
+
+export type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
 
 export interface DashboardProps {
   userProfile: UserProfile
@@ -59,10 +71,112 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
     },
   }
 
-  const activeSessions = React.useMemo(() => {
-    const activeSessions = props.mySessions.filter((session) => session.state === SessionStateEnum.Active)
-    return activeSessions
-  }, [props.mySessions])
+  const { iOweShareNum } = React.useMemo(() => {
+    const myCrewShares = [...props.joinedSessions, ...props.mySessions].reduce(
+      (acc, session) => {
+        // NOTE: We need to filter out crewshares that don't involve us
+        return acc.concat(
+          (session.workOrders?.items || []).reduce(
+            (acc, wo) => {
+              try {
+                const csSumm = props.workOrderSummaries[wo.sessionId][wo.orderId].crewShareSummary || []
+                const csReturns = (wo.crewShares || []).map<[CrewShare, number]>((cs, idcs) => {
+                  const amts = csSumm[idcs] || [0, 0, 0]
+                  const amt = wo.includeTransferFee ? amts[1] : amts[0]
+                  return [cs, amt]
+                })
+                return acc.concat(csReturns)
+              } catch (e) {
+                return acc
+              }
+            },
+            [] as [CrewShare, number][]
+          )
+        )
+      },
+      [] as [CrewShare, number][]
+    )
+    const relevantCrewShares = myCrewShares.filter((csArr) => {
+      const cs = csArr[0]
+      // Any share where the payer is not also the payee
+      return (
+        props.workOrderSummaries[cs.sessionId][cs.orderId].sellerScName !== cs.payeeScName &&
+        // Any share where the payer or the payee is me
+        (cs.payeeScName === props.userProfile.scName ||
+          props.workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === props.userProfile.scName)
+      )
+    })
+    // Filter to only unpaid shares
+    const unpaidShares = relevantCrewShares.filter((cs) => !cs[0].state)
+    const iOweShares: string[] = []
+
+    unpaidShares.forEach((csArr) => {
+      const cs = csArr[0]
+      if (
+        cs.payeeScName !== props.userProfile.scName &&
+        props.workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === props.userProfile.scName
+      ) {
+        if (!iOweShares.includes(cs.payeeScName)) iOweShares.push(cs.payeeScName)
+      }
+    })
+
+    return {
+      iOweShareNum: iOweShares.length,
+    }
+  }, [props.joinedSessions, props.mySessions, props.workOrderSummaries])
+
+  const activeSessions = React.useMemo(
+    () => props.mySessions.filter((session) => session.state === SessionStateEnum.Active),
+    [props.mySessions]
+  )
+
+  const { refineriesWithUndelivered } = React.useMemo(() => {
+    const refineriesWithUndeliveredObj = [
+      ...props.joinedSessions.reduce(
+        (acc, session) =>
+          acc.concat(
+            session.workOrders?.items.map((wo) => {
+              const { workOrders, ...rest } = session
+              return { ...wo, session: rest }
+            }) || []
+          ),
+        [] as WorkOrder[]
+      ),
+      ...props.mySessions.reduce(
+        (acc, session) =>
+          acc.concat(
+            session.workOrders?.items.map((wo) => {
+              const { workOrders, ...rest } = session
+              return { ...wo, session: rest }
+            }) || []
+          ),
+        [] as WorkOrder[]
+      ),
+    ]
+      .filter(
+        (wo) =>
+          (wo.sellerscName && wo.sellerscName === props.userProfile.scName) || wo.ownerId === props.userProfile.userId
+      )
+      .filter(
+        (wo) =>
+          wo.orderType === ActivityEnum.ShipMining &&
+          (wo as ShipMiningOrder).refinery &&
+          wo.state !== WorkOrderStateEnum.Failed &&
+          !wo.isSold
+      )
+      .map((wo) => wo as ShipMiningOrder)
+      .reduce(
+        (acc, wo) => {
+          const refinery = wo.refinery as RefineryEnum
+          if (!acc[refinery]) acc[refinery] = []
+          acc[refinery].push(wo)
+          return acc
+        },
+        {} as Record<RefineryEnum, ShipMiningOrder[]>
+      )
+
+    return { refineriesWithUndelivered: Object.keys(refineriesWithUndeliveredObj).length }
+  }, [props.joinedSessions, props.mySessions])
 
   return (
     <Container maxWidth="lg" sx={styles.container}>
@@ -96,9 +210,32 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
             },
           }}
         >
-          <Tab label="Sessions" icon={<ViewTimeline />} iconPosition="start" value={SessionDashTabsEnum.sessions} />
-          <Tab label="Work Orders" value={SessionDashTabsEnum.workOrders} />
-          <Tab label="Crew Shares" value={SessionDashTabsEnum.crewShares} />
+          <Tab
+            label={
+              <Badge badgeContent={activeSessions.length} color="error">
+                Sessions
+              </Badge>
+            }
+            icon={<ViewTimeline />}
+            iconPosition="start"
+            value={SessionDashTabsEnum.sessions}
+          />
+          <Tab
+            label={
+              <Badge badgeContent={refineriesWithUndelivered} color="error">
+                Work Orders
+              </Badge>
+            }
+            value={SessionDashTabsEnum.workOrders}
+          />
+          <Tab
+            label={
+              <Badge badgeContent={iOweShareNum} color="error">
+                Crew Shares
+              </Badge>
+            }
+            value={SessionDashTabsEnum.crewShares}
+          />
           <Tab label="Stats" icon={<Insights />} iconPosition="start" value={SessionDashTabsEnum.stats} />
         </Tabs>
         <Box sx={styles.innerContainer}>

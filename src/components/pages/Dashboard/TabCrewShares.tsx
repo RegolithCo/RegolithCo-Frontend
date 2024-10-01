@@ -9,7 +9,7 @@ import log from 'loglevel'
 import { OwingListItem } from '../../fields/OwingListItem'
 import { FetchMoreWithDate } from './FetchMoreSessionLoader'
 
-type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
+export type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
 
 export const TabCrewShares: React.FC<DashboardProps> = ({
   userProfile,
