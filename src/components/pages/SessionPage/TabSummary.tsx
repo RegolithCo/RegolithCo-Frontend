@@ -1,16 +1,8 @@
 import * as React from 'react'
 
-import {
-  Session,
-  SessionBreakdown,
-  sessionReduce,
-  SessionStateEnum,
-  SessionUser,
-  ShareTypeEnum,
-} from '@regolithco/common'
+import { Session, SessionBreakdown, sessionReduce, SessionStateEnum, SessionUser } from '@regolithco/common'
 import { Box, List, SxProps, Theme, Typography, useTheme } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { Toll as TollIcon, PieChart as PieChartIcon, Percent } from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'

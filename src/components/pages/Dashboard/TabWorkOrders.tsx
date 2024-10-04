@@ -156,7 +156,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
             fontWeight: 'bold',
           }}
         >
-          {Object.values(undeliveredWorkOrders).reduce((acc, orders) => acc + orders.length, 0)} work orders in{' '}
+          {Object.values(undeliveredWorkOrders).reduce((acc, orders) => acc + orders.length, 0)} active work orders in{' '}
           {Object.keys(undeliveredWorkOrders).length} Refineries
         </Typography>
         <CardContent>
@@ -167,7 +167,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                 No undelivered work orders
               </Typography>
             ) : (
-              <SimpleTreeView sx={{ my: 2 }} disabledItemsFocusable>
+              <SimpleTreeView sx={{ my: 2 }} disabledItemsFocusable disableSelection>
                 {Object.entries(undeliveredWorkOrders).map(([refinery, orders]) => {
                   const uniqueSessions = Array.from(new Set(orders.map((wo) => wo.sessionId))).length
                   const totalSCU: number = orders.reduce(
@@ -195,13 +195,15 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                       key={refinery}
                       itemId={refinery}
                       sx={{
+                        borderBottom: `2px solid tramsparent`,
+
                         // zebra stripe
                         '&:nth-child(odd)': {
                           backgroundColor: alpha(theme.palette.background.default, 0.5),
                         },
                         // Expanded items get a border
                         '&>.Mui-expanded': {
-                          // borderBottom: `2px solid black`,
+                          borderBottom: `2px solid ${theme.palette.primary.main}`,
                         },
                         '& .MuiCollapse-wrapperInner': {
                           pb: 3,
@@ -249,7 +251,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                               <Button
                                 variant="contained"
                                 size="small"
-                                color="success"
+                                color="secondary"
                                 disabled={loading || deliverableWorkOrders.length === 0}
                                 startIcon={<DoneAll />}
                                 onClick={() => {
@@ -330,9 +332,10 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                               borderRadius: 1.5,
                                               minWidth: 110,
                                               color: color.fg,
+                                              border: `1px solid ${color.fg}`,
                                               width: '100%',
                                               fontSize: '0.75rem',
-                                              backgroundColor: color.bg,
+                                              backgroundColor: alpha(color.bg, 0.8),
                                               textTransform: 'uppercase',
                                               fontFamily: fontFamilies.robotoMono,
                                               fontWeight: 'bold',
@@ -345,18 +348,38 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                 </Grid2>
                                 <Box sx={{ flexGrow: 1 }} />
                                 {isProcessing ? (
-                                  <CountdownTimer
-                                    startTime={order.processStartTime as number}
-                                    totalTime={(order.processDurationS || 0) * 1000}
-                                    useMValue
-                                  />
+                                  <Stack alignItems={'center'}>
+                                    <Typography
+                                      variant="caption"
+                                      color="warning"
+                                      sx={{
+                                        fontFamily: fontFamilies.robotoMono,
+                                        fontWeight: 'bold',
+                                      }}
+                                    >
+                                      Refinining
+                                    </Typography>
+                                    <CountdownTimer
+                                      typoProps={{
+                                        variant: 'caption',
+                                        color: 'warning',
+                                        sx: {
+                                          fontFamily: fontFamilies.robotoMono,
+                                          fontWeight: 'bold',
+                                        },
+                                      }}
+                                      startTime={order.processStartTime as number}
+                                      totalTime={(order.processDurationS || 0) * 1000}
+                                      useMValue
+                                    />
+                                  </Stack>
                                 ) : (
-                                  <Tooltip title="Mark this work order as SOLD" placement="top">
+                                  <Tooltip title="Mark only THIS ONE work order as SOLD" placement="top">
                                     <span>
                                       <Button
                                         variant="contained"
                                         size="small"
-                                        color="success"
+                                        color="secondary"
                                         startIcon={<Done />}
                                         disabled={loading}
                                         onClick={() => deliverWorkOrders([order])}
@@ -455,10 +478,6 @@ export const WorkOrderListMonth: React.FC<WorkOrderListMonthProps> = ({ yearMont
         disableContextMenu
         sessionActive
         workOrders={yearMonthArr}
-        // onRowClick={(sessionId, orderId) => {
-        //   const url = `/session/${sessionId}/dash/w/${orderId}`
-        //   window.open(url, '_blank')
-        // }}
         columns={[
           WorkOrderTableColsEnum.Session,
           WorkOrderTableColsEnum.Activity,

@@ -148,7 +148,8 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
           >
             <Tooltip title={`Open this session in a new tab`}>
               <IconButton
-                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                // href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                href={`/session/${workOrder.sessionId}/dash`}
                 target="_blank"
                 size="small"
                 color="primary"
@@ -157,7 +158,8 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
               </IconButton>
             </Tooltip>
             <Tooltip title={`Go to session: "${workOrder.session?.name || workOrder.sessionId}`}>
-              <Link href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`} underline="hover">
+              {/* <Link href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`} underline="hover"> */}
+              <Link href={`/session/${workOrder.sessionId}/dash`} underline="hover">
                 {workOrder.session?.name || workOrder.sessionId}
               </Link>
             </Tooltip>
@@ -182,10 +184,31 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.OrderId)) && (
         <TableCell onClick={onRowClickInner}>
-          <MValue
-            value={makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
-            format={MValueFormat.string}
-          />
+          {!onRowClick && (
+            <Tooltip title={`Open this work order in a new tab`}>
+              <IconButton
+                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                target="_blank"
+                size="small"
+                color="primary"
+              >
+                <OpenInNew />
+              </IconButton>
+            </Tooltip>
+          )}
+          {!onRowClick ? (
+            <Link href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`} underline="hover">
+              <MValue
+                value={makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
+                format={MValueFormat.string}
+              />
+            </Link>
+          ) : (
+            <MValue
+              value={makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
+              format={MValueFormat.string}
+            />
+          )}
         </TableCell>
       )}
 

@@ -220,13 +220,25 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
         </ListItemText>
       </ListItemButton>
       <Collapse in={isExpanded} key={'row-collapse'} timeout="auto" unmountOnExit>
-        <Box sx={{ p: 2 }}>
-          <TableContainer sx={{ border: '1px solid', borderRadius: 4 }}>
+        <Box sx={{ p: 2, px: 4 }}>
+          <TableContainer
+            sx={{
+              border: `2px solid ${theme.palette.primary.dark}`,
+              borderRadius: 4,
+            }}
+          >
             <Table size="small">
-              <TableHead>
+              <TableHead
+                sx={{
+                  '& .MuiTableCell-root': {
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                  },
+                }}
+              >
                 <TableRow>
-                  {(crossSession || uniqueSessions > 0) && <TableCell>Date</TableCell>}
-                  {(crossSession || uniqueSessions > 0) && <TableCell>Session</TableCell>}
+                  {crossSession && <TableCell>Date</TableCell>}
+                  {crossSession && <TableCell>Session</TableCell>}
                   <TableCell>Work Order</TableCell>
                   <TableCell> </TableCell>
                   <TableCell>Share</TableCell>
@@ -278,7 +290,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                         },
                       }}
                     >
-                      {(crossSession || uniqueSessions > 0) && (
+                      {crossSession && (
                         <TableCell
                           sx={{
                             whiteSpace: 'nowrap',
@@ -289,7 +301,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                           {smartDate(workOrder.createdAt)}
                         </TableCell>
                       )}
-                      {(crossSession || uniqueSessions > 0) && (
+                      {crossSession && (
                         <TableCell
                           sx={{
                             maxWidth: '300px',
@@ -304,11 +316,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                             }}
                           >
                             <Tooltip title="Open this session in a new tab" placement="top">
-                              <IconButton
-                                color="primary"
-                                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
-                                target="_blank"
-                              >
+                              <IconButton color="primary" href={`/session/${workOrder.sessionId}/dash`} target="_blank">
                                 <OpenInNew />
                               </IconButton>
                             </Tooltip>
@@ -317,7 +325,7 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                               placement="top"
                             >
                               <Link
-                                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                                href={`/session/${workOrder.sessionId}/dash`}
                                 sx={{
                                   flex: '1 1 80%',
                                   fontFamily: fontFamilies.robotoMono,
@@ -340,18 +348,25 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                           textOverflow: 'ellipsis',
                         }}
                       >
-                        <Tooltip title="Open this session in a new tab" placement="top">
-                          <IconButton
-                            color="primary"
-                            href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
-                            target="_blank"
-                          >
-                            <OpenInNew />
-                          </IconButton>
+                        {crossSession && (
+                          <Tooltip title="Open this work order in a new tab" placement="top">
+                            <IconButton
+                              color="primary"
+                              href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                              target="_blank"
+                            >
+                              <OpenInNew />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        <Tooltip
+                          title={`Go to work order: ${workOrder.session?.name || workOrder.sessionId}`}
+                          placement="top"
+                        >
+                          <Link href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}>
+                            {makeHumanIds(getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName), cs.orderId)}
+                          </Link>
                         </Tooltip>
-                        <Link>
-                          {makeHumanIds(getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName), cs.orderId)}
-                        </Link>
                       </TableCell>
                       <Tooltip title={`Share type: ${cs.shareType}`}>
                         <TableCell>{crewShareTypeIcons[cs.shareType as ShareTypeEnum]}</TableCell>

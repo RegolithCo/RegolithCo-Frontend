@@ -11,7 +11,7 @@ import {
   WorkOrder,
   WorkOrderStateEnum,
 } from '@regolithco/common'
-import { Badge, Box, Container, Paper, Tab, Tabs, Tooltip, useTheme } from '@mui/material'
+import { Badge, Box, Container, darken, Paper, Tab, Tabs, Tooltip, useTheme } from '@mui/material'
 import { Insights, ViewTimeline } from '@mui/icons-material'
 import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
@@ -55,6 +55,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
       },
     },
     paper: {
+      // p: 2,
       // blur the background
       backdropFilter: 'blur(7px)',
       backgroundColor: '#000000ee',
@@ -198,12 +199,17 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
               fontFamily: fontFamilies.robotoMono,
               textAlignment: 'Left',
               background: 'black',
+              borderTop: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
+              borderLeft: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
+              borderRight: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              backgroundColor: darken(theme.palette.primary.dark, 0.7),
+              mr: 2,
             },
             '& .MuiTab-root.Mui-selected': {
               color: theme.palette.primary.contrastText,
               backgroundColor: theme.palette.primary.main,
-              borderTopLeftRadius: 5,
-              borderTopRightRadius: 5,
             },
             '& .MuiTabs-indicator': {
               // backgroundColor: 'black',

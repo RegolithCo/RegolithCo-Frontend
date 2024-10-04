@@ -171,10 +171,24 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 },
               }}
             >
-              <Typography variant="h5">You owe:</Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: theme.palette.secondary.contrastText,
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                }}
+              >
+                You owe:
+              </Typography>
               <MValue
                 typoProps={{
                   variant: 'h5',
+                  sx: {
+                    color: theme.palette.secondary.contrastText,
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
+                  },
                 }}
                 value={Object.values(iOweShares).reduce((acc, { amt }) => acc + amt, 0)}
                 format={MValueFormat.currency}
@@ -230,10 +244,24 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 },
               }}
             >
-              <Typography variant="h5">You are owed:</Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: theme.palette.secondary.contrastText,
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                }}
+              >
+                You are owed:
+              </Typography>
               <MValue
                 typoProps={{
                   variant: 'h5',
+                  sx: {
+                    color: theme.palette.secondary.contrastText,
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
+                  },
                 }}
                 value={Object.values(oweMeShares).reduce((acc, { amt }) => acc + amt, 0)}
                 format={MValueFormat.currency}
