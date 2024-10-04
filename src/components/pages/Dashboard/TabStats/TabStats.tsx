@@ -22,6 +22,8 @@ import { OrePieChart } from '../../../cards/charts/OrePieChart'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { PageLoader } from '../../PageLoader'
 import { SessionDashTabsEnum, tabUrl } from '../Dashboard.container'
+import { ChartTypesEnum } from '../../../cards/charts/DailyMonthlyChart'
+import { MyDashboardStatsChart } from '../../../cards/charts/MyDashboardStatsChart'
 
 export type StatsFilters = {
   preset: DatePresetsEnum
@@ -34,11 +36,11 @@ export type StatsFilters = {
 export const TabStats: React.FC<DashboardProps> = ({
   userProfile,
   mySessions,
+  joinedSessions,
   workOrderSummaries,
   fetchMoreSessions,
   paginationDate,
   setPaginationDate,
-  joinedSessions,
   allLoaded,
   loading,
   navigate,
@@ -51,7 +53,7 @@ export const TabStats: React.FC<DashboardProps> = ({
   const [lastDate, setLastDate] = React.useState<Dayjs | null>(null)
 
   // If the preset is not CUSTOM then the from and to date are presentational only
-  const { fromDate, toDate } = React.useMemo(() => {
+  const { fromDate, toDate, numDays } = React.useMemo(() => {
     let fromDate: Dayjs | null = null
     let toDate: Dayjs | null = null
     switch (preset) {
@@ -94,7 +96,8 @@ export const TabStats: React.FC<DashboardProps> = ({
       default:
         break
     }
-    return { fromDate, toDate }
+    const numDays = fromDate && toDate ? toDate.diff(fromDate, 'day') : 0
+    return { fromDate, toDate, numDays }
   }, [preset])
 
   React.useEffect(() => {
@@ -418,11 +421,6 @@ export const TabStats: React.FC<DashboardProps> = ({
           <SiteStatsCard value={scoutedRocks[0]} scale={scoutedRocks[1]} subText="Rocks Scouted" loading={loading} />
         </Grid>
         <Grid spacing={3} container sx={{ width: '100%' }}>
-          {/* {!loading && stats.daily && stats.monthly && (
-            <Grid xs={12} my={3}>
-              <DailyMonthlyChart stats={stats} statsLoading={loading} />
-            </Grid>
-          )} */}
           {!loading && (
             <Grid xs={12} sm={6} md={4}>
               <OrePieChart title="Activity Types" activityTypes={activityPie} loading={Boolean(loading)} />
@@ -470,6 +468,17 @@ export const TabStats: React.FC<DashboardProps> = ({
               <OrePieChart
                 title="Refineries"
                 activityTypes={refineries as RegolithStatsSummary['refineries']}
+                loading={Boolean(loading)}
+              />
+            </Grid>
+          )}
+          {!loading && (
+            <Grid xs={12} my={3}>
+              <MyDashboardStatsChart
+                sessions={[...mySessions, ...joinedSessions]}
+                workOrderSummaries={workOrderSummaries}
+                fromDate={fromDate}
+                toDate={toDate}
                 loading={Boolean(loading)}
               />
             </Grid>

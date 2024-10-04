@@ -18,6 +18,7 @@ import {
   Button,
   Collapse,
   Divider,
+  IconButton,
   Link,
   ListItemButton,
   ListItemText,
@@ -44,6 +45,7 @@ import {
   Toll as TollIcon,
   PieChart as PieChartIcon,
   Percent,
+  OpenInNew,
 } from '@mui/icons-material'
 import numeral from 'numeral'
 import { fontFamilies } from '../../theme'
@@ -223,10 +225,10 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  {(crossSession || uniqueSessions > 0) && <TableCell>Session</TableCell>}
                   {(crossSession || uniqueSessions > 0) && <TableCell>Date</TableCell>}
+                  {(crossSession || uniqueSessions > 0) && <TableCell>Session</TableCell>}
                   <TableCell>Work Order</TableCell>
-                  <TableCell>Share Type</TableCell>
+                  <TableCell> </TableCell>
                   <TableCell>Share</TableCell>
                   <TableCell align="right">Amount</TableCell>
                   <TableCell>Note</TableCell>
@@ -270,17 +272,83 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                       key={`wo-${idx}`}
                       onClick={() => onRowClick && onRowClick(cs.sessionId, cs.orderId)}
                       sx={{
-                        cursor: 'pointer',
+                        cursor: onRowClick ? 'pointer' : 'default',
                         '&:hover': {
-                          backgroundColor: '#FFFFFF33',
+                          backgroundColor: onRowClick ? '#FFFFFF33' : 'transparent',
                         },
                       }}
                     >
                       {(crossSession || uniqueSessions > 0) && (
-                        <TableCell>{workOrder.session?.name || workOrder.sessionId}</TableCell>
+                        <TableCell
+                          sx={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {smartDate(workOrder.createdAt)}
+                        </TableCell>
                       )}
-                      {(crossSession || uniqueSessions > 0) && <TableCell>{smartDate(workOrder.createdAt)}</TableCell>}
-                      <TableCell>
+                      {(crossSession || uniqueSessions > 0) && (
+                        <TableCell
+                          sx={{
+                            maxWidth: '300px',
+                          }}
+                        >
+                          <Stack
+                            direction={'row'}
+                            spacing={1}
+                            alignItems={'center'}
+                            sx={{
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <Tooltip title="Open this session in a new tab" placement="top">
+                              <IconButton
+                                color="primary"
+                                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                                target="_blank"
+                              >
+                                <OpenInNew />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                              title={`Go to session: ${workOrder.session?.name || workOrder.sessionId}`}
+                              placement="top"
+                            >
+                              <Link
+                                href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                                sx={{
+                                  flex: '1 1 80%',
+                                  fontFamily: fontFamilies.robotoMono,
+                                  fontWeight: 'bold',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}
+                              >
+                                <Typography>{workOrder.session?.name || workOrder.sessionId}</Typography>
+                              </Link>
+                            </Tooltip>
+                          </Stack>
+                        </TableCell>
+                      )}
+                      <TableCell
+                        sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        <Tooltip title="Open this session in a new tab" placement="top">
+                          <IconButton
+                            color="primary"
+                            href={`/session/${workOrder.sessionId}/dash/w/${workOrder.orderId}`}
+                            target="_blank"
+                          >
+                            <OpenInNew />
+                          </IconButton>
+                        </Tooltip>
                         <Link>
                           {makeHumanIds(getSafeName(workOrder?.sellerscName || workOrder?.owner?.scName), cs.orderId)}
                         </Link>
@@ -293,9 +361,26 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                         ? formatPayout(theme, finalPayout, false)
                         : formatPayout(theme, finalPayout, Boolean(workOrder?.includeTransferFee))}
                       {hasNote ? (
-                        <Tooltip title={`NOTE: ${cs.note}`}>
+                        <Tooltip
+                          title={
+                            <Box
+                              sx={{
+                                p: 4,
+                              }}
+                            >
+                              <Typography component={'div'} variant="overline" sx={{}}>
+                                Crew Share Note:
+                              </Typography>
+                              <Typography component={'div'} sx={{}}>
+                                {cs.note}
+                              </Typography>
+                            </Box>
+                          }
+                          placement="top-end"
+                          arrow
+                        >
                           <TableCell>
-                            <Description color="primary" />
+                            <Description color="info" />
                           </TableCell>
                         </Tooltip>
                       ) : (

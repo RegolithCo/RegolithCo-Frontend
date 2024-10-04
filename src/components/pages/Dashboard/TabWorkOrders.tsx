@@ -32,7 +32,6 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import { Done, DoneAll, OpenInNew } from '@mui/icons-material'
 import { DashboardProps } from './Dashboard'
-import log from 'loglevel'
 import { AppContext } from '../../../context/app.context'
 import { useShipOreColors } from '../../../hooks/useShipOreColors'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
@@ -106,6 +105,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
 
     return { workOrders, workOrdersByDate: woByDate }
   }, [joinedSessions, mySessions])
+
   const undeliveredWorkOrders: Record<RefineryEnum, ShipMiningOrder[]> = React.useMemo(() => {
     const orders = workOrders
       .filter(
@@ -128,7 +128,6 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
     return grouped
   }, [workOrders])
 
-  log.debug('workOrders', workOrders, undeliveredWorkOrders)
   return (
     <Box>
       <Card
@@ -157,15 +156,10 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
             fontWeight: 'bold',
           }}
         >
-          Refineries with undelivered work orders
+          {Object.values(undeliveredWorkOrders).reduce((acc, orders) => acc + orders.length, 0)} work orders in{' '}
+          {Object.keys(undeliveredWorkOrders).length} Refineries
         </Typography>
         <CardContent>
-          <Typography variant="body1" color="text.secondary" component="div" gutterBottom>
-            These work orders have had their refinery timers run out and are ready to be delivered to market.
-          </Typography>
-          <Typography variant="body1" color="text.secondary" component="div" gutterBottom fontStyle={'italic'}>
-            Note: If you don't use the refinery timer feature the work order will show here as soon as it's created.
-          </Typography>
           <Divider />
           <Box sx={{ minHeight: 100, minWidth: 250 }}>
             {Object.keys(undeliveredWorkOrders).length === 0 ? (
@@ -238,11 +232,13 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                               flex: '1 1 30%',
                               fontFamily: fontFamilies.robotoMono,
                               fontWeight: 'bold',
+                              '& span': {
+                                color: theme.palette.secondary.dark,
+                              },
                             }}
                           >
-                            <span style={{ color: theme.palette.secondary.dark }}>{totalSCU}</span> SCU from{' '}
-                            <span style={{ color: theme.palette.secondary.dark }}>{orders.length}</span> order(s) in{' '}
-                            <span style={{ color: theme.palette.secondary.dark }}>{uniqueSessions}</span> session(s)
+                            <span>{totalSCU}</span> SCU from <span>{orders.length}</span> order(s) in{' '}
+                            <span>{uniqueSessions}</span> session(s)
                           </Typography>
                           <Box sx={{ flexGrow: 1 }} />
                           <Tooltip
@@ -413,7 +409,8 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
         <Alert elevation={1} variant="standard" severity="info" sx={{ my: 2, flex: 1 }}>
           <AlertTitle>Work orders from all your sessions</AlertTitle>
           <Typography>
-            All work orders inside all your joined sessions that you either own or have been marked as the seller.
+            All work orders inside all your joined sessions that you either <strong>own</strong> or have been marked as
+            the <strong>seller</strong>.
           </Typography>
         </Alert>
 

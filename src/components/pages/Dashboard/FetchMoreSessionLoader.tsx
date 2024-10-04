@@ -72,7 +72,9 @@ export const FetchMoreWithDate: React.FC<
         From {dayjs(paginationDate).format('ll')} to now{' '}
         {!allLoaded ? (
           <Button
+            sx={{ ml: 2 }}
             startIcon={<Refresh />}
+            variant="outlined"
             disabled={loading}
             onClick={() => {
               fetchMoreSessions()

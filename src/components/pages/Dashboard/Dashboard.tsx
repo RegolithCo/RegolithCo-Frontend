@@ -98,13 +98,14 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
     )
     const relevantCrewShares = myCrewShares.filter((csArr) => {
       const cs = csArr[0]
+      const amt = csArr[1]
+      if (amt <= 0) return false
       // Any share where the payer is not also the payee
-      return (
-        props.workOrderSummaries[cs.sessionId][cs.orderId].sellerScName !== cs.payeeScName &&
-        // Any share where the payer or the payee is me
-        (cs.payeeScName === props.userProfile.scName ||
-          props.workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === props.userProfile.scName)
-      )
+      const sellerScName = props.workOrderSummaries[cs.sessionId][cs.orderId].sellerScName
+      // Any share where the payer IS the payee is considered paid
+      if (!sellerScName || sellerScName === cs.payeeScName) return false
+      if (sellerScName === props.userProfile.scName || cs.payeeScName === props.userProfile.scName) return true
+      return false
     })
     // Filter to only unpaid shares
     const unpaidShares = relevantCrewShares.filter((cs) => !cs[0].state)

@@ -39,6 +39,20 @@ export const AboutPageFAQ: React.FC = () => {
     >
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
+          Login isn't working for me!
+        </Typography>
+        <Typography gutterBottom>
+          A small number of users seem to have trouble logging in. If you're one of them, try the following:
+        </Typography>
+        <Typography gutterBottom component={'div'}>
+          <ul>
+            <li>If you use Avast Antitrack you may need to add regolith.rocks to the allowed website list.</li>
+            <li>Try disabling your ad-blockers or making an exception for regolith.rocks</li>
+          </ul>
+        </Typography>
+      </Paper>
+      <Paper elevation={5} sx={styles.innerPaper}>
+        <Typography variant="h5" gutterBottom>
           "What is this site/app? Where did it come from?"
         </Typography>
         <Typography gutterBottom>

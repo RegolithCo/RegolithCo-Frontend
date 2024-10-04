@@ -1,39 +1,33 @@
 import * as React from 'react'
 
 import {
-  CrewShare,
   Session,
   SessionBreakdown,
   sessionReduce,
   SessionStateEnum,
   SessionUser,
-  ShareAmtArr,
   ShareTypeEnum,
-  User,
 } from '@regolithco/common'
-import { Box, List, Stack, SxProps, TableCell, Theme, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, List, SxProps, Theme, Typography, useTheme } from '@mui/material'
 import { fontFamilies } from '../../../theme'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent } from '@mui/icons-material'
-import { MValue, MValueFormat } from '../../fields/MValue'
-import { UserAvatar } from '../../UserAvatar'
-import numeral from 'numeral'
-import { ConfirmModal } from '../../modals/ConfirmModal'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
+import { PayConfirmModal } from '../../modals/PayConfirmModal'
 
 export interface TabSummaryProps {
   propA?: string
 }
 
-const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
-  [ShareTypeEnum.Amount]: <TollIcon sx={{ fontSize: '1em' }} />,
-  [ShareTypeEnum.Percent]: <Percent sx={{ fontSize: '1em' }} />,
-  [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: '1em' }} />,
-}
+// const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
+//   [ShareTypeEnum.Amount]: <TollIcon sx={{ fontSize: '1em' }} />,
+//   [ShareTypeEnum.Percent]: <Percent sx={{ fontSize: '1em' }} />,
+//   [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: '1em' }} />,
+// }
 
 const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Theme>> => ({
   gridContainer: {
@@ -130,38 +124,9 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
         sessionSummary={sessionSummary}
         sessionUser={mySessionUser}
       />
-      <ConfirmModal
-        open={Boolean(payConfirm)}
-        title="Mark Paid?"
-        message={
-          <>
-            <Typography variant="body1" component="div" paragraph>
-              Are you sure you want to mark all {payConfirm?.crewShares.length} shares to{' '}
-              <strong>{getSafeName(payConfirm?.payeeUserSCName)}</strong> as paid?
-            </Typography>
-            <Stack spacing={1} direction="row" alignItems="center">
-              <Box sx={{ display: 'flex' }}>
-                <UserAvatar user={payConfirm?.payeeUser as User} size="small" privacy={hideNames} />
-                <Typography sx={{ ...styles.username, px: 1, pt: 0.5, fontSize: '1.1rem' }}>
-                  {getSafeName(payConfirm?.payeeUserSCName)}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex' }} />
-              <MValue
-                value={payConfirm?.amt}
-                format={MValueFormat.currency}
-                typoProps={{
-                  px: 2,
-                  fontSize: '1.1rem',
-                  lineHeight: '2rem',
-                }}
-              />
-            </Stack>
-          </>
-        }
+      <PayConfirmModal
+        payConfirm={payConfirm}
         onClose={() => setPayConfirm(undefined)}
-        cancelBtnText="No"
-        confirmBtnText="Yes!"
         onConfirm={() => {
           if (payConfirm) {
             payConfirm.crewShares.forEach((cs) => markCrewSharePaid && markCrewSharePaid(cs, true))

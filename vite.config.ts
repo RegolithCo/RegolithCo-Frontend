@@ -6,8 +6,10 @@ export default defineConfig(({ mode }) => ({
   plugins: [react()],
   build: {
     outDir: 'build',
+    sourcemap: true,
   },
   server: {
     port: 3000,
   },
+  logLevel: 'info', // Enable detailed logging
 }))

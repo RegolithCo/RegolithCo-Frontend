@@ -1,13 +1,15 @@
 import * as React from 'react'
 
-import { Alert, AlertTitle, Card, CardContent, List, Typography, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Card, List, Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
 import { CrewShare, WorkOrder } from '@regolithco/common'
 import log from 'loglevel'
-import { OwingListItem } from '../../fields/OwingListItem'
+import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 import { FetchMoreWithDate } from './FetchMoreSessionLoader'
+import { PayConfirmModal } from '../../modals/PayConfirmModal'
+import { MValue, MValueFormat } from '../../fields/MValue'
 
 export type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
 
@@ -24,16 +26,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   navigate,
 }) => {
   const theme = useTheme()
-  const workOrderLookups = [...mySessions, ...joinedSessions].reduce((acc, session) => {
-    acc[session.sessionId] = (session.workOrders?.items || []).reduce(
-      (acc, wo) => {
-        acc[wo.orderId] = wo
-        return acc
-      },
-      {} as Record<string, WorkOrder>
-    )
-    return acc
-  }, {} as WorkOrderLookup)
+  const [payConfirmState, setPayConfirmModal] = React.useState<ConfirmModalState | undefined>()
 
   // This is unfiltered. We shouldn't use these directly
   const { relevantCrewShares } = React.useMemo(() => {
@@ -64,18 +57,19 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
 
     const relevantCrewShares = myCrewShares.filter((csArr) => {
       const cs = csArr[0]
+      const amt = csArr[1]
+      if (amt <= 0) return false
       // Any share where the payer is not also the payee
-      return (
-        workOrderSummaries[cs.sessionId][cs.orderId].sellerScName !== cs.payeeScName &&
-        // Any share where the payer or the payee is me
-        (cs.payeeScName === userProfile.scName ||
-          workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === userProfile.scName)
-      )
+      const sellerScName = workOrderSummaries[cs.sessionId][cs.orderId].sellerScName
+      // Any share where the payer IS the payee is considered paid
+      if (!sellerScName || sellerScName === cs.payeeScName) return false
+      if (sellerScName === userProfile.scName || cs.payeeScName === userProfile.scName) return true
+      return false
     })
     myCrewShares.sort((a, b) => a[0].createdAt - b[0].createdAt)
 
     return { relevantCrewShares }
-  }, [mySessions, joinedSessions])
+  }, [mySessions, joinedSessions, workOrderSummaries])
 
   // Now let's make a more refined version of the crewShares
   const { iOweShares, oweMeShares } = React.useMemo(() => {
@@ -84,24 +78,33 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
     const iOweShares: Record<string, { amt: number; shares: [CrewShare, number][]; workOrders: WorkOrder[] }> = {}
     const oweMeShares: Record<string, { amt: number; shares: [CrewShare, number][]; workOrders: WorkOrder[] }> = {}
 
+    const workOrderLookups = [...mySessions, ...joinedSessions].reduce((acc, session) => {
+      acc[session.sessionId] = (session.workOrders?.items || []).reduce(
+        (acc, wo) => {
+          acc[wo.orderId] = wo
+          return acc
+        },
+        {} as Record<string, WorkOrder>
+      )
+      return acc
+    }, {} as WorkOrderLookup)
+
     unpaidShares.forEach((csArr) => {
       const cs = csArr[0]
+      const amt = csArr[1]
       const wo = workOrderLookups[cs.sessionId][cs.orderId]
       const foundSession = [...mySessions, ...joinedSessions].find((s) => s.sessionId === cs.sessionId)
       if (foundSession) {
         const { workOrders, ...rest } = foundSession
         wo.session = rest
       }
+      const sellerName = workOrderSummaries[cs.sessionId][cs.orderId].sellerScName
 
-      if (
-        cs.payeeScName === userProfile.scName &&
-        workOrderSummaries[cs.sessionId][cs.orderId].sellerScName !== userProfile.scName
-      ) {
-        if (cs.payeeScName === userProfile.scName) return
-        if (!oweMeShares[cs.payeeScName]) oweMeShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
-        oweMeShares[cs.payeeScName].shares.push(csArr)
-        oweMeShares[cs.payeeScName].workOrders.push(wo)
-        oweMeShares[cs.payeeScName].amt += csArr[1]
+      if (cs.payeeScName === userProfile.scName && sellerName !== userProfile.scName) {
+        if (!oweMeShares[sellerName]) oweMeShares[sellerName] = { amt: 0, shares: [], workOrders: [] }
+        oweMeShares[sellerName].shares.push(csArr)
+        oweMeShares[sellerName].workOrders.push(wo)
+        oweMeShares[sellerName].amt += amt
       } else if (
         cs.payeeScName !== userProfile.scName &&
         workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === userProfile.scName
@@ -109,7 +112,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
         iOweShares[cs.payeeScName].shares.push(csArr)
         iOweShares[cs.payeeScName].workOrders.push(wo)
-        iOweShares[cs.payeeScName].amt += csArr[1]
+        iOweShares[cs.payeeScName].amt += amt
       }
     })
 
@@ -123,24 +126,6 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
 
   return (
     <Box>
-      {/* <Stack
-        spacing={2}
-        sx={{ my: 2, mb: 4, borderBottom: `4px solid ${theme.palette.secondary.dark}` }}
-        direction={{ xs: 'column', sm: 'row' }}
-      >
-        <Typography
-          variant="h3"
-          component="h3"
-          gutterBottom
-          sx={{
-            color: 'secondary.dark',
-            fontFamily: fontFamilies.robotoMono,
-            fontWeight: 'bold',
-          }}
-        >
-          Unpaid Crew Shares
-        </Typography>
-      </Stack> */}
       <Card
         elevation={6}
         sx={{
@@ -155,9 +140,8 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         }}
       >
         <Typography
-          variant="h5"
+          variant="h4"
           component="h3"
-          gutterBottom
           sx={{
             px: 3,
             py: 2,
@@ -169,21 +153,34 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         >
           Unpaid Crew Shares
         </Typography>
-        <CardContent>
+        <Box>
           <Box>
-            <Typography
-              variant="h5"
-              component="h5"
-              gutterBottom
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems={'center'}
+              justifyContent={'space-between'}
               sx={{
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-                color: theme.palette.secondary.dark,
+                px: 3,
+                py: 2,
+                background: theme.palette.secondary.main,
+                '& *': {
+                  color: theme.palette.secondary.contrastText,
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                },
               }}
             >
-              You owe:
-            </Typography>
-            <Box>
+              <Typography variant="h5">You owe:</Typography>
+              <MValue
+                typoProps={{
+                  variant: 'h5',
+                }}
+                value={Object.values(iOweShares).reduce((acc, { amt }) => acc + amt, 0)}
+                format={MValueFormat.currency}
+              />
+            </Stack>
+            <Box sx={{ mb: 3 }}>
               <List>
                 {Object.keys(iOweShares).length === 0 && (
                   <Alert severity="info">
@@ -201,21 +198,15 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                       payeeSCName={scName}
                       payerSCName={userProfile.scName}
                       payerUser={userProfile}
+                      payeeUser={payeeUser}
                       amt={amt}
                       workOrders={workOrders}
                       isPaid={false}
                       meUser={userProfile}
                       mutating={loading}
                       crossSession
-                      payeeUser={payeeUser}
-                      onRowClick={(sessionId, orderId) => {
-                        const url = `/session/${sessionId}/dash/w/${orderId}`
-                        window.open(url, '_blank')
-                      }}
                       isShare={false}
-                      setPayConfirm={() => {
-                        markCrewSharesPaid(shares.map(([cs]) => cs))
-                      }}
+                      setPayConfirm={(state) => setPayConfirmModal(state)}
                     />
                   )
                 })}
@@ -223,18 +214,31 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
             </Box>
           </Box>
           <Box>
-            <Typography
-              variant="h5"
-              component="h5"
-              gutterBottom
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems={'center'}
+              justifyContent={'space-between'}
               sx={{
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-                color: theme.palette.secondary.dark,
+                px: 3,
+                py: 2,
+                background: theme.palette.secondary.main,
+                '& *': {
+                  color: theme.palette.secondary.contrastText,
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                },
               }}
             >
-              You are owed:
-            </Typography>
+              <Typography variant="h5">You are owed:</Typography>
+              <MValue
+                typoProps={{
+                  variant: 'h5',
+                }}
+                value={Object.values(oweMeShares).reduce((acc, { amt }) => acc + amt, 0)}
+                format={MValueFormat.currency}
+              />
+            </Stack>
             <Box>
               <List>
                 {Object.keys(oweMeShares).length === 0 && (
@@ -260,21 +264,24 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                       mutating={loading}
                       crossSession
                       payeeUser={payerUser}
-                      onRowClick={(sessionId, orderId) => {
-                        const url = `/session/${sessionId}/dash/w/${orderId}`
-                        window.open(url, '_blank')
-                      }}
                       isShare={false}
-                      setPayConfirm={() => {
-                        markCrewSharesPaid(shares.map(([cs]) => cs))
-                      }}
                     />
                   )
                 })}
               </List>
             </Box>
           </Box>
-        </CardContent>
+          <PayConfirmModal
+            payConfirm={payConfirmState}
+            onClose={() => setPayConfirmModal(undefined)}
+            onConfirm={() => {
+              if (payConfirmState) {
+                markCrewSharesPaid(payConfirmState.crewShares)
+              }
+              setPayConfirmModal(undefined)
+            }}
+          />
+        </Box>
         <FetchMoreWithDate
           sx={{
             background: theme.palette.background.default,

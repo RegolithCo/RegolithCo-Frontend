@@ -211,6 +211,8 @@ export const DashboardContainer: React.FC = () => {
   }
 
   // Call calculateWorkOrder for each session and all of its work orders and store the results in state
+  // Set to keep track of processed work orders. We only want to calculate new ones
+  const processedOrders = React.useRef<Set<string>>(new Set())
   React.useEffect(() => {
     if (!userQueries.userProfile || !useSessionListQueries.joinedSessions || !useSessionListQueries.mySessions) return
     const sessions = [...useSessionListQueries.joinedSessions.items, ...useSessionListQueries.mySessions.items]
@@ -219,12 +221,31 @@ export const DashboardContainer: React.FC = () => {
     }, [] as WorkOrder[])
 
     const calcWorkOrders = async () => {
-      const summaries: Record<string, Record<string, WorkOrderSummary>> = {}
+      const newSummaries: Record<string, Record<string, WorkOrderSummary>> = {}
+      const newProcessedOrders = new Set<string>()
+
       for (const workOrder of workOrders) {
-        summaries[workOrder.sessionId] = summaries[workOrder.sessionId] || {}
-        summaries[workOrder.sessionId][workOrder.orderId] = await calculateWorkOrder(dataStore, workOrder)
+        if (!processedOrders.current.has(workOrder.orderId)) {
+          if (!newSummaries[workOrder.sessionId]) newSummaries[workOrder.sessionId] = {}
+          newSummaries[workOrder.sessionId][workOrder.orderId] = await calculateWorkOrder(dataStore, workOrder)
+          newProcessedOrders.add(workOrder.orderId) // Mark as processed
+        }
       }
-      setWorkOrderSummaries(summaries)
+
+      // Merge new summaries with existing summaries
+      setWorkOrderSummaries((prevSummaries) => {
+        const mergedSummaries = { ...prevSummaries }
+        for (const sessionId in newSummaries) {
+          mergedSummaries[sessionId] = {
+            ...mergedSummaries[sessionId],
+            ...newSummaries[sessionId],
+          }
+        }
+        return mergedSummaries
+      })
+
+      // Update the set of processed orders
+      processedOrders.current = new Set([...processedOrders.current, ...newProcessedOrders])
     }
     calcWorkOrders()
   }, [dataStore, userQueries.userProfile, useSessionListQueries.joinedSessions, useSessionListQueries.mySessions])

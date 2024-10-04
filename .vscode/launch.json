@@ -9,7 +9,10 @@
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}/src"
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true, // Ensure source maps are enabled
+      "trace": true, // Optional: Enable tracing for debugging issues
+      "skipFiles": ["<node_internals>/**"]
     }, 
     {
       "name": "📖 Storybook Debug",
