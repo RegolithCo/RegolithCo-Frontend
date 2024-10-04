@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router-dom'
 import { ApolloError } from '@apollo/client'
 import { useEffect } from 'react'
 import { useLogin } from './useOAuth2'
-import LogRocket from 'logrocket'
+// import LogRocket from 'logrocket'
 
 type useSessionsReturn = {
   userProfile?: UserProfile
@@ -57,15 +57,15 @@ export const useUserProfile = (): useSessionsReturn => {
   useEffect(() => {
     // Logrocket only runs when not in production since we only get the free plan
     if (import.meta.env.MODE !== 'production') {
-      const logrocketname = userProfileQry.data?.profile?.scName || 'UNAUTHENTICATED'
-      const logRocketObj: Record<string, string | number | boolean> = userProfileQry.data
-        ? {
-            scName: userProfileQry.data?.profile?.scName as string,
-            avatar: userProfileQry.data?.profile?.avatarUrl as string,
-            userId: userProfileQry.data?.profile?.userId as string,
-          }
-        : {}
-      LogRocket.identify(logrocketname, logRocketObj)
+      // const logrocketname = userProfileQry.data?.profile?.scName || 'UNAUTHENTICATED'
+      // const logRocketObj: Record<string, string | number | boolean> = userProfileQry.data
+      //   ? {
+      //       scName: userProfileQry.data?.profile?.scName as string,
+      //       avatar: userProfileQry.data?.profile?.avatarUrl as string,
+      //       userId: userProfileQry.data?.profile?.userId as string,
+      //     }
+      //   : {}
+      // LogRocket.identify(logrocketname, logRocketObj)
     }
   }, [userProfileQry.data?.profile?.userId])
 

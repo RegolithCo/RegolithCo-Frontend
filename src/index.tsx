@@ -9,7 +9,7 @@ import { APIProvider } from './hooks/useLogin'
 import App from './App'
 import { SnackbarProvider } from 'notistack'
 import { MyAuthProvider } from './hooks/useOAuth2'
-import LogRocket from 'logrocket'
+// import LogRocket from 'logrocket'
 import { AppContextWrapper } from './context/app.context'
 import { ErrorBoundary } from './Error'
 import { LookupsContextWrapper } from './context/lookupsContext'
@@ -19,7 +19,7 @@ if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
   log.enableAll()
   log.debug('Logging is set to enable all')
-  LogRocket.init('xiwxu9/regolith')
+  // LogRocket.init('xiwxu9/regolith')
   log.debug(`Logging is set to all for stage ${config.stage}`)
 } else {
   log.setLevel('info')

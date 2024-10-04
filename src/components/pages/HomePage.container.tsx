@@ -39,10 +39,20 @@ export const HomePageContainer: React.FC = () => {
     Promise.all([
       axios
         .get(`/stats/last30.json?cachebust=${dateSuffix}`)
-        .then((response) => setLast30Days(response.data))
+        .then((response) => {
+          if (response.headers.contentType && response.headers.contentType.includes('application/json')) {
+            setLast30Days(response.data)
+          } else {
+            log.error('Invalid content type', response.headers.contentType)
+          }
+        })
         .catch((error) => log.error(error)),
       axios.get(`/stats/alltime.json?cachebust=${dateSuffix}`).then((response) => {
-        setAllTime(response.data)
+        if (response.headers.contentType && response.headers.contentType.includes('application/json')) {
+          setAllTime(response.data)
+        } else {
+          log.error('Invalid content type', response.headers.contentType)
+        }
       }),
     ])
   }, [])
