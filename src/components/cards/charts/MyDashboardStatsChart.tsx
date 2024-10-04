@@ -295,8 +295,6 @@ export function formatChartData(
     })
   }
 
-  log.debug('MARZIPAN', { buckets, activityDict, financeDict })
-
   return {
     activityData: Object.values(activityDict),
     financeData: Object.values(financeDict),

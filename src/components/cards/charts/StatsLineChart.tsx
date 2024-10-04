@@ -193,8 +193,6 @@ const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] =>
   const endDate: dayjs.Dayjs = dayjs()
   const rounding = chartType === ChartTypesEnum.MONTH ? 'month' : 'day'
 
-  console.log('getMarkers', { startDate, endDate, today: dayjs() })
-
   const markerStyle: Omit<CartesianMarkerProps, 'legend' | 'value'> = {
     axis: 'x',
     lineStyle: { stroke: 'white', strokeWidth: 1 },
@@ -257,6 +255,11 @@ const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] =>
       // 3.24 cargo refactor
       value: dayjs('2024-08-29').startOf(rounding).toDate(),
       legend: '3.24',
+    },
+    {
+      // 3.24.1 cargo refactor
+      value: dayjs('2024-09-14').startOf(rounding).toDate(),
+      legend: '3.24.1',
     },
   ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
 

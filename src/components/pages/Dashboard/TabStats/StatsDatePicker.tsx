@@ -49,8 +49,6 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
   setToDate,
   onPresetChange,
 }) => {
-  console.log('finalPreset DatePicker', { preset })
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>

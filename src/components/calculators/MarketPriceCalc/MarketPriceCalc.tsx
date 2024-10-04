@@ -445,7 +445,6 @@ interface OreChooserListProps {
 // Define the throttled function outside of the component
 const throttledFindAllStoreChoices = throttle(
   async (theme, dataStore, oreSummary, setStoreEls) => {
-    console.log('fire')
     const newStoresGrouped = await findAllStoreChoices(dataStore, oreSummary, true)
     const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
     const bgColors = new Gradient()

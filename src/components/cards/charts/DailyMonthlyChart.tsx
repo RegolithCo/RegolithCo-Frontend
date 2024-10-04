@@ -38,22 +38,19 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({
   const [chartResolution, setChartResolution] = React.useState<ChartResolutionsEnum>(resolution || ChartTypesEnum.MONTH)
 
   const { chartData } = React.useMemo(() => {
-    const chartformat = '%Y-%m-%d'
-    if (!last30Days && !allTime) return { chartData: [], chartformat }
+    if (!last30Days && !allTime) return { chartData: [] }
     switch (chartResolution) {
       case ChartTypesEnum.DAY:
-        if (statsLoading || !last30Days?.days)
-          return { chartData: formatChartData({}, chartResolution, chartType), chartformat }
+        if (statsLoading || !last30Days?.days) return { chartData: formatChartData({}, chartResolution, chartType) }
         return { chartData: formatChartData(last30Days?.days, chartResolution, chartType, 30), chartformat: '%m-%d' }
       case ChartTypesEnum.MONTH:
-        if (statsLoading || !allTime) return { chartData: formatChartData({}, chartResolution, chartType), chartformat }
+        if (statsLoading || !allTime) return { chartData: formatChartData({}, chartResolution, chartType) }
         return { chartData: formatChartData(allTime, chartResolution, chartType), chartformat: '%Y-%m' }
       // case ChartTypesEnum.YEAR:
       //   return formatChartData(stats?.yearly)
       default:
-        if (statsLoading || !last30Days?.days)
-          return { chartData: formatChartData({}, chartResolution, chartType), chartformat }
-        return { chartData: formatChartData(last30Days?.days, chartResolution, chartType, 30), chartformat: '%m' }
+        if (statsLoading || !last30Days?.days) return { chartData: formatChartData({}, chartResolution, chartType) }
+        return { chartData: formatChartData(last30Days?.days, chartResolution, chartType, 30) }
     }
   }, [chartResolution, last30Days, allTime])
 

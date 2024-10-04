@@ -294,8 +294,6 @@ export const TabStats: React.FC<DashboardProps> = ({
     }
   }, [workOrdersFiltered, workOrderSummaries])
 
-  // console.log('finalPreset TabStats', { preset })
-
   return (
     <Box>
       <StatsDatePicker
@@ -311,7 +309,6 @@ export const TabStats: React.FC<DashboardProps> = ({
           navigate && navigate(tabUrl(SessionDashTabsEnum.stats, DatePresetsEnum.CUSTOM, fromDate, date))
         }}
         onPresetChange={(newPreset) => {
-          console.log('finalPreset: Setting preset', newPreset)
           if (newPreset === DatePresetsEnum.CUSTOM) {
             navigate && navigate(tabUrl(SessionDashTabsEnum.stats, newPreset, fromDate, toDate))
           } else {

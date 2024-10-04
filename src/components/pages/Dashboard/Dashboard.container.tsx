@@ -120,7 +120,6 @@ export const DashboardContainer: React.FC = () => {
     // Make sure not to set anything aggregious in local storage
     if (presetStrValid) {
       if (presetStr !== storedPreset) {
-        console.log('finalPreset: Setting preset', { presetStr })
         localStorage.setItem('dashboard_stats_preset', presetStr)
       }
       if (presetStr === DatePresetsEnum.CUSTOM && parsedFrom && parsedTo) {
@@ -137,7 +136,6 @@ export const DashboardContainer: React.FC = () => {
       }
     }
   }, [presetStr, parsedFrom, parsedTo])
-  // console.log('finalPreset Container', { presetStr })
 
   const deliverWorkOrder = useDeliverWorkOrderMutation()
   const deliverWorkOrders = (orders: WorkOrder[]) => {
