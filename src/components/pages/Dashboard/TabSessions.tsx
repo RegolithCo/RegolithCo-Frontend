@@ -81,7 +81,7 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
         activeOnly={activeOnly}
         onClickSession={(sessionId) => navigate?.(`/session/${sessionId}`)}
       />
-      <PageLoader title="Loading..." loading={loading} small />
+      {/* <PageLoader title="Loading..." loading={loading} small /> */}
     </>
   )
 }

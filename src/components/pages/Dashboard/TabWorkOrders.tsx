@@ -18,6 +18,7 @@ import {
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   Divider,
   IconButton,
   Link,
@@ -143,22 +144,38 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
           border: `8px solid ${theme.palette.primary.main}`,
         }}
       >
-        <Typography
-          variant="h5"
-          component="h3"
-          gutterBottom
+        <Stack
+          direction={'row'}
+          justifyContent={'space-between'}
+          alignItems={'center'}
           sx={{
             px: 3,
             py: 2,
             backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            fontFamily: fontFamilies.robotoMono,
-            fontWeight: 'bold',
           }}
         >
-          {Object.values(undeliveredWorkOrders).reduce((acc, orders) => acc + orders.length, 0)} active work orders in{' '}
-          {Object.keys(undeliveredWorkOrders).length} Refineries
-        </Typography>
+          <Typography
+            variant="h5"
+            component="h3"
+            gutterBottom
+            sx={{
+              color: theme.palette.primary.contrastText,
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+            }}
+          >
+            {Object.values(undeliveredWorkOrders).reduce((acc, orders) => acc + orders.length, 0)} active work orders in{' '}
+            {Object.keys(undeliveredWorkOrders).length} Refineries
+          </Typography>
+          {loading && (
+            <Stack direction={'row'} spacing={2} alignItems={'center'}>
+              <CircularProgress color="error" size={24} />
+              <Typography variant="overline" sx={{ color: theme.palette.primary.contrastText }}>
+                Loading...
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
         <CardContent>
           <Divider />
           <Box sx={{ minHeight: 100, minWidth: 250 }}>
@@ -440,7 +457,6 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
         {workOrdersByDate.map((yearMonthArr, idx) => {
           return <WorkOrderListMonth key={`yearMonth-${idx}`} yearMonthArr={yearMonthArr} activeOnly={false} />
         })}
-        <PageLoader title="Loading..." loading={loading} small />
         <FetchMoreSessionLoader loading={loading} allLoaded={allLoaded} fetchMoreSessions={fetchMoreSessions} />
       </Box>
     </Box>

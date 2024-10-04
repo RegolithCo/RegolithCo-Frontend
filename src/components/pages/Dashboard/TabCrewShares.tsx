@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Alert, AlertTitle, Card, List, Typography, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Card, CircularProgress, List, Typography, useTheme } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
@@ -138,20 +138,38 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           border: `8px solid ${theme.palette.primary.main}`,
         }}
       >
-        <Typography
-          variant="h4"
-          component="h3"
+        <Stack
+          direction={'row'}
+          justifyContent={'space-between'}
+          alignItems={'center'}
           sx={{
             px: 3,
             py: 2,
             backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            fontFamily: fontFamilies.robotoMono,
-            fontWeight: 'bold',
           }}
         >
-          Unpaid Crew Shares
-        </Typography>
+          <Typography
+            variant="h4"
+            component="h3"
+            sx={{
+              color: theme.palette.primary.contrastText,
+              fontFamily: fontFamilies.robotoMono,
+              fontWeight: 'bold',
+            }}
+          >
+            Unpaid Crew Shares
+          </Typography>
+
+          {loading && (
+            <Stack direction={'row'} spacing={2} alignItems={'center'}>
+              <CircularProgress color="error" size={24} />
+              <Typography variant="overline" sx={{ color: theme.palette.primary.contrastText }}>
+                Loading...
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
+
         <Box>
           <Box>
             <Stack
