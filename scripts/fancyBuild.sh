@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 # Build everything
 yarn build:gql
-yarn vite build
+yarn vite build --mode $CDK_STAGE
 
 # get the current version and commit hash
 version=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')

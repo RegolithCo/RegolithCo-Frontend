@@ -19,7 +19,7 @@ switch (import.meta.env.MODE) {
   default:
     throw new Error('Unknown mode')
 }
-log.debug('REDIRECT URL', redirectUri)
+log.debug(`REDIRECT URL: ${redirectUri} for mode ${import.meta.env.MODE}`)
 
 const discordConfig: TAuthConfig = {
   clientId: '1067082442877440050',
