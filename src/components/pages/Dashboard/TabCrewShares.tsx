@@ -5,7 +5,6 @@ import { Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
 import { CrewShare, WorkOrder } from '@regolithco/common'
-import log from 'loglevel'
 import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 import { FetchMoreWithDate } from './FetchMoreSessionLoader'
 import { PayConfirmModal } from '../../modals/PayConfirmModal'
@@ -92,7 +91,9 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
     unpaidShares.forEach((csArr) => {
       const cs = csArr[0]
       const amt = csArr[1]
-      const wo = workOrderLookups[cs.sessionId][cs.orderId]
+      const foundWo = workOrderLookups[cs.sessionId][cs.orderId]
+      if (!foundWo) return
+      const wo = { ...foundWo }
       const foundSession = [...mySessions, ...joinedSessions].find((s) => s.sessionId === cs.sessionId)
       if (foundSession) {
         const { workOrders, ...rest } = foundSession
@@ -121,8 +122,6 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
       oweMeShares,
     }
   }, [relevantCrewShares, workOrderSummaries])
-
-  log.debug('crewShares', { relevantCrewShares, iOweShares, oweMeShares })
 
   return (
     <Box>
