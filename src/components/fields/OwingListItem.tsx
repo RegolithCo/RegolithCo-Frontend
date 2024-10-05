@@ -7,7 +7,6 @@ import {
   SessionUser,
   ShareAmtArr,
   ShareTypeEnum,
-  smartDate,
   User,
   UserProfile,
   WorkOrder,
@@ -48,6 +47,7 @@ import {
   OpenInNew,
 } from '@mui/icons-material'
 import numeral from 'numeral'
+import dayjs from 'dayjs'
 import { fontFamilies } from '../../theme'
 import { UserAvatar } from '../UserAvatar'
 import { MValue, MValueFormat } from './MValue'
@@ -298,7 +298,18 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                             textOverflow: 'ellipsis',
                           }}
                         >
-                          {smartDate(workOrder.createdAt)}
+                          <Tooltip title={dayjs(workOrder.createdAt).format('LLL')} placement="top">
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontFamily: fontFamilies.robotoMono,
+                                fontWeight: 'bold',
+                              }}
+                            >
+                              {/* In the format: May 14 */}
+                              {dayjs(workOrder.createdAt).format('MMM D')}
+                            </Typography>
+                          </Tooltip>
                         </TableCell>
                       )}
                       {crossSession && (

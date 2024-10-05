@@ -302,6 +302,19 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                             }}
                             label={
                               <Stack direction={'row'} spacing={1} alignItems={'center'}>
+                                <Tooltip title={dayjs(order.createdAt).format('LLL')} placement="top">
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      fontFamily: fontFamilies.robotoMono,
+                                      fontWeight: 'bold',
+                                    }}
+                                  >
+                                    {/* In the format: May 14 */}
+                                    {dayjs(order.createdAt).format('MMM D')}
+                                  </Typography>
+                                </Tooltip>
+
                                 <Tooltip title="Open this work order in a new tab" placement="top">
                                   <IconButton
                                     color="primary"
