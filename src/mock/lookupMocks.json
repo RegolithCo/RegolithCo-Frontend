@@ -3291,22 +3291,6 @@
           {
             "system": "ST",
             "planet": "CRU",
-            "satellite": "",
-            "code": "DDPOL",
-            "city": "",
-            "name": "Dumper's Depot - Port Olisar",
-            "name_short": "Dumper's Depot PO",
-            "refinery": false,
-            "prices": {
-              "oreRaw": {},
-              "oreRefined": {},
-              "gems": {},
-              "salvage": {}
-            }
-          },
-          {
-            "system": "ST",
-            "planet": "CRU",
             "satellite": "YELA",
             "code": "DEAKI",
             "city": null,
@@ -5035,7 +5019,6 @@
               "ARCL4",
               "MICL1",
               "TAMM",
-              "DDPO",
               "SINB"
             ]
           },
@@ -5092,7 +5075,6 @@
               "CRUL1",
               "MICL5",
               "TAMM",
-              "DDPO",
               "DDA18",
               "SINB"
             ]
@@ -5124,7 +5106,6 @@
               "MICL1",
               "MICL2",
               "TAMM",
-              "DDPO",
               "DDGH",
               "SINB"
             ]
@@ -5223,7 +5204,6 @@
               "ARCL4",
               "MICL5",
               "TAMM",
-              "DDPO",
               "DDGH",
               "DDA18",
               "SINB"
@@ -5283,7 +5263,6 @@
               "MICL1",
               "MICL2",
               "TAMM",
-              "DDPO",
               "DDGH",
               "DDA18",
               "SINB"
@@ -5376,7 +5355,6 @@
               "CRUL1",
               "ARCL1",
               "TAMM",
-              "DDPO",
               "SINB"
             ],
             "active": true,
@@ -5410,7 +5388,6 @@
               "MICL1",
               "MICL2",
               "MICL5",
-              "DDPO",
               "SINB"
             ],
             "active": true,
@@ -5507,7 +5484,6 @@
               "MICL1",
               "MICL2",
               "MICL5",
-              "DDPO",
               "SINB"
             ],
             "active": true,
@@ -5569,7 +5545,6 @@
               "ARCL2",
               "MICL2",
               "TAMM",
-              "DDPO",
               "SINB"
             ],
             "active": true,
@@ -5884,7 +5859,6 @@
               "ARCL4",
               "MICL1",
               "MICL2",
-              "DDPO",
               "DDA18"
             ],
             "active": false,
@@ -5973,7 +5947,6 @@
               "ARCL4",
               "MICL1",
               "MICL2",
-              "DDPO",
               "DDGH",
               "DDA18",
               "SINB"
@@ -6034,7 +6007,6 @@
               "MICL1",
               "MICL2",
               "MICL5",
-              "DDPO",
               "DDA18"
             ],
             "active": false,
@@ -6063,7 +6035,6 @@
               "ARCL2",
               "MICL1",
               "MICL5",
-              "DDPO",
               "DDGH",
               "DDA18",
               "SINB"
@@ -6095,7 +6066,6 @@
               "ARCL2",
               "ARCL4",
               "MICL5",
-              "DDPO",
               "DDGH",
               "DDA18",
               "SINB"
@@ -6214,7 +6184,6 @@
               "MICL2",
               "MICL5",
               "TAMM",
-              "DDPO",
               "DDGH",
               "SINB"
             ],
@@ -6273,7 +6242,6 @@
               "MICL2",
               "MICL5",
               "TAMM",
-              "DDPO",
               "DDGH"
             ],
             "category": "G",
@@ -6300,7 +6268,6 @@
               "MICL2",
               "MICL5",
               "TAMM",
-              "DDPO",
               "DDGH"
             ],
             "category": "G",
