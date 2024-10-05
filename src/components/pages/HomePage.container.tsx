@@ -40,20 +40,24 @@ export const HomePageContainer: React.FC = () => {
       axios
         .get(`/stats/last30.json?cachebust=${dateSuffix}`)
         .then((response) => {
-          const contentType = response.headers['content-type']
-          if (contentType && contentType.includes('application/json')) {
+          try {
+            if (!response.data.days || !response.data.summary) {
+              throw new Error('Invalid last30.json response')
+            }
             setLast30Days(response.data)
-          } else {
-            log.error('Invalid content type', response.headers.contentType)
+          } catch (error) {
+            log.error('Error loading last30.json', error)
           }
         })
         .catch((error) => log.error(error)),
       axios.get(`/stats/alltime.json?cachebust=${dateSuffix}`).then((response) => {
-        const contentType = response.headers['content-type']
-        if (contentType && contentType.includes('application/json')) {
+        try {
+          if (!response.data || !Array.isArray(Object.keys(response.data))) {
+            throw new Error('Invalid alltime.json response')
+          }
           setAllTime(response.data)
-        } else {
-          log.error('Invalid content type', response.headers.contentType)
+        } catch (error) {
+          log.error('Error loading alltime.json', error)
         }
       }),
     ])
