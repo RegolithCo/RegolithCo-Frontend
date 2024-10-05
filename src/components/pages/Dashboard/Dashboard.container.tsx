@@ -265,9 +265,11 @@ export const DashboardContainer: React.FC = () => {
       joinedSessions={(useSessionListQueries.joinedSessions?.items || []) as Session[]}
       mySessions={(useSessionListQueries.mySessions?.items || []) as Session[]}
       fetchMoreSessions={useSessionListQueries.fetchMoreSessions}
+      creatingSession={useSessionListQueries.mutating}
       loading={
         userQueries.loading ||
         useSessionListQueries.loading ||
+        useSessionListQueries.mutating ||
         userQueries.mutating ||
         deliverWorkOrder[1].loading ||
         markCrewSharePaidMutation[1].loading

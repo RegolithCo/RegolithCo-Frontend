@@ -36,6 +36,7 @@ export interface DashboardProps {
   paginationDate: number
   setPaginationDate: (date: number) => void
   loading?: boolean
+  creatingSession?: boolean
   allLoaded?: boolean
   navigate?: (path: string) => void
   onCreateNewSession?: () => void
@@ -247,7 +248,12 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
         </Tabs>
         <Box sx={styles.innerContainer}>
           {activeTab === SessionDashTabsEnum.sessions && (
-            <JoinSessionButton sessions={activeSessions} onCreateNewSession={onCreateNewSession} navigate={navigate} />
+            <JoinSessionButton
+              loading={props.creatingSession}
+              sessions={activeSessions}
+              onCreateNewSession={onCreateNewSession}
+              navigate={navigate}
+            />
           )}
           {activeTab === SessionDashTabsEnum.sessions && <TabSessions {...props} />}
           {activeTab === SessionDashTabsEnum.workOrders && <TabWorkOrders {...props} />}

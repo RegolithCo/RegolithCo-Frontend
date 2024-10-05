@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Button, ButtonGroup, MenuItem, Select, Stack, Typography, useTheme } from '@mui/material'
+import { Button, ButtonGroup, CircularProgress, MenuItem, Select, Stack, Typography, useTheme } from '@mui/material'
 import { AddCircle, RocketLaunch } from '@mui/icons-material'
 import { Session } from '@regolithco/common'
 import { ConfirmModal } from '../../modals/ConfirmModal'
@@ -9,10 +9,16 @@ import { Box } from '@mui/system'
 export interface JoinSessionButtonProps {
   sessions: Session[]
   navigate?: (path: string) => void
+  loading?: boolean
   onCreateNewSession?: () => void
 }
 
-export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({ sessions, navigate, onCreateNewSession }) => {
+export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({
+  sessions,
+  navigate,
+  loading,
+  onCreateNewSession,
+}) => {
   const theme = useTheme()
   const [currentSelection, setCurrentSelection] = React.useState<string | null>(
     sessions.length > 0 ? sessions[0].sessionId : null
@@ -40,6 +46,7 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({ sessions, 
         variant="contained"
         size="medium"
         color="info"
+        disabled={loading}
         href={`/session/${sessions[0].sessionId}`}
         startIcon={<RocketLaunch />}
       >
@@ -55,7 +62,7 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({ sessions, 
           // fullWidth
           value={currentSelection || 'NOPE'}
           onChange={(e) => setCurrentSelection(e.target.value)}
-          disabled={sessions.length < 2}
+          disabled={sessions.length < 2 || loading}
         >
           {sessions.map(({ sessionId, name }) => (
             <MenuItem value={sessionId}>{name}</MenuItem>
@@ -69,7 +76,7 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({ sessions, 
         <Button
           color="secondary"
           size="medium"
-          disabled={!currentSelection}
+          disabled={!currentSelection || loading}
           startIcon={<RocketLaunch />}
           variant="contained"
           href={currentSelection ? `/session/${currentSelection}` : undefined}
@@ -98,18 +105,17 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({ sessions, 
       <Typography variant="overline" component="div">
         Active Sessions:
       </Typography>
-      {/* <ButtonGroup size="large" variant="contained"> */}
       {sessCtl}
       <Box sx={{ flex: 1 }} />
       <Button
         size="medium"
-        startIcon={<AddCircle />}
+        startIcon={loading ? <CircularProgress size={20} /> : <AddCircle />}
         variant="outlined"
-        onClick={sessions.length > 0 ? () => setConfirmModalOpen(true) : onCreateNewSession}
+        disabled={loading}
+        onClick={loading ? undefined : sessions.length > 0 ? () => setConfirmModalOpen(true) : onCreateNewSession}
       >
-        Create a new Session
+        {loading ? 'Creating new Session...' : 'Create a new Session'}
       </Button>
-      {/* </ButtonGroup> */}
       <ConfirmModal
         title={`You already have ${sessions.length} active session${sessions.length > 1 ? 's' : ''}`}
         message="Create another one?"

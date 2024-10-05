@@ -5,7 +5,6 @@ import { Alert, AlertTitle, Box, FormControlLabel, Switch, Typography, useTheme 
 import { SessionList } from '../../fields/SessionList'
 import { Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
-import { PageLoader } from '../PageLoader'
 
 export interface TabSessionsProps {
   userProfile: UserProfile
@@ -81,7 +80,6 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
         activeOnly={activeOnly}
         onClickSession={(sessionId) => navigate?.(`/session/${sessionId}`)}
       />
-      {/* <PageLoader title="Loading..." loading={loading} small /> */}
     </>
   )
 }
