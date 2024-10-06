@@ -45,7 +45,7 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({
         return { chartData: formatChartData(last30Days?.days, chartResolution, chartType, 30), chartformat: '%m-%d' }
       case ChartTypesEnum.MONTH:
         if (statsLoading || !allTime) return { chartData: formatChartData({}, chartResolution, chartType) }
-        return { chartData: formatChartData(allTime, chartResolution, chartType), chartformat: '%Y-%m' }
+        return { chartData: formatChartData(allTime.months, chartResolution, chartType), chartformat: '%Y-%m' }
       // case ChartTypesEnum.YEAR:
       //   return formatChartData(stats?.yearly)
       default:
@@ -92,14 +92,15 @@ export const DailyMonthlyChart: React.FC<DailyMonthlyChartProps> = ({
 
 type WorkOrderKeys = keyof Pick<
   RegolithStatsSummary,
-  'users' | 'workOrders' | 'sessions' | 'grossProfitaUEC' | 'lossaUEC'
+  'users' | 'workOrders' | 'sessions' | 'grossProfitaUEC'
+  // | 'lossaUEC'
   // | 'rawOreSCU'
 >
 type ScoutingKeys = keyof RegolithStatsSummary['scouting']
 
 const WORK_ORDER_LINES: Record<WorkOrderKeys, { label: string; color: string }> = {
   grossProfitaUEC: { label: 'Gross Profit (aUEC)', color: 'hsl(132, 92%, 50%)' },
-  lossaUEC: { label: 'Loss (aUEC)', color: 'hsl(0, 0%, 51%)' },
+  // lossaUEC: { label: 'Loss (aUEC)', color: 'hsl(0, 0%, 51%)' },
   workOrders: { label: 'Work Orders', color: 'hsl(295, 70%, 50%)' },
   sessions: { label: 'Mining Sessions', color: 'hsl(88, 70%, 50%)' },
   users: { label: 'Active Users', color: 'hsl(237, 70%, 50%)' },

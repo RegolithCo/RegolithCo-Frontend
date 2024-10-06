@@ -24,15 +24,15 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
   // const theme = useTheme()
   // const matches = useMediaQuery(theme.breakpoints.up('md'))
 
-  const usersFormatted = formatCardNumber(last30Days?.summary?.users || 0)
-  const aUECFormatted = formatCardNumber(last30Days?.summary?.grossProfitaUEC || 0)
-  const lossFormatted = formatCardNumber(last30Days?.summary?.lossaUEC || 0)
-  const rawOreSCUFormatted = formatCardNumber(last30Days?.summary?.rawOreSCU || 0)
-  const totalSessionsFormatted = formatCardNumber(last30Days?.summary?.sessions || 0)
-  const workOrdersFormatted = formatCardNumber(last30Days?.summary?.workOrders || 0)
-  const rocksScoutedFormatted = formatCardNumber(last30Days?.summary?.scouting?.rocks || 0)
-  const wrecksScoutedFormatted = formatCardNumber(last30Days?.summary?.scouting?.wrecks || 0)
-  const gemsScoutedFormatted = formatCardNumber(last30Days?.summary?.scouting?.gems || 0)
+  const usersFormatted = formatCardNumber(allTime?.summary?.users || 0)
+  const aUECFormatted = formatCardNumber(allTime?.summary?.grossProfitaUEC || 0)
+  const lossFormatted = formatCardNumber(allTime?.summary?.lossaUEC || 0)
+  const rawOreSCUFormatted = formatCardNumber(allTime?.summary?.rawOreSCU || 0)
+  const totalSessionsFormatted = formatCardNumber(allTime?.summary?.sessions || 0)
+  const workOrdersFormatted = formatCardNumber(allTime?.summary?.workOrders || 0)
+  const rocksScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.rocks || 0)
+  const wrecksScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.wrecks || 0)
+  const gemsScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.gems || 0)
 
   return (
     <>
@@ -48,7 +48,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           value={aUECFormatted[0]}
           scale={aUECFormatted[1]}
           subText="aUEC Earned"
-          tooltip={`${MValueFormatter(last30Days?.summary?.grossProfitaUEC || 0, MValueFormat.number)} aUEC Earned by users`}
+          tooltip={`${MValueFormatter(allTime?.summary?.grossProfitaUEC || 0, MValueFormat.number)} aUEC Earned by users`}
           loading={statsLoading}
         />
         <SiteStatsCard
@@ -56,7 +56,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           scale={lossFormatted[1]}
           subText="aUEC Lost"
           tooltip={`${MValueFormatter(
-            last30Days?.summary?.grossProfitaUEC || 0,
+            allTime?.summary?.grossProfitaUEC || 0,
             MValueFormat.number
           )} aUEC Lost due to crashes, piracy etc.`}
           loading={statsLoading}
@@ -66,7 +66,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           scale={rawOreSCUFormatted[1]}
           subText="Raw Ore (SCU)"
           tooltip={`${MValueFormatter(
-            last30Days?.summary?.rawOreSCU || 0,
+            allTime?.summary?.rawOreSCU || 0,
             MValueFormat.number
           )} SCU of raw material mined, collected or salvaged`}
           loading={statsLoading}
@@ -128,7 +128,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           <Grid xs={12} sm={6} md={6}>
             <OrePieChart
               title="Activity Types"
-              activityTypes={last30Days?.summary?.workOrderTypes}
+              activityTypes={allTime?.summary?.workOrderTypes}
               loading={statsLoading}
             />
           </Grid>
@@ -138,7 +138,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
             <OrePieChart
               title="Ship Ores"
               groupThreshold={0.04}
-              ores={last30Days?.summary?.shipOres}
+              ores={allTime?.summary?.shipOres}
               loading={statsLoading}
             />
           </Grid>
@@ -148,24 +148,24 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
             <OrePieChart
               title="Refining Methods"
               groupThreshold={0.04}
-              ores={last30Days?.summary?.refineryMethod}
+              ores={allTime?.summary?.refineryMethod}
               loading={statsLoading}
             />
           </Grid>
         )}
         {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Vehicle Ores" ores={last30Days?.summary?.vehicleOres} loading={statsLoading} />
+            <OrePieChart title="Vehicle Ores" ores={allTime?.summary?.vehicleOres} loading={statsLoading} />
           </Grid>
         )}
         {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Salvage Ores" ores={last30Days?.summary?.salvageOres} loading={statsLoading} />
+            <OrePieChart title="Salvage Ores" ores={allTime?.summary?.salvageOres} loading={statsLoading} />
           </Grid>
         )}
         {!statsLoading && (
           <Grid xs={12} sm={6} md={6}>
-            <OrePieChart title="Failure Reasons" ores={last30Days?.summary?.failReasons} loading={statsLoading} />
+            <OrePieChart title="Failure Reasons" ores={allTime?.summary?.failReasons} loading={statsLoading} />
           </Grid>
         )}
       </Grid>
