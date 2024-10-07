@@ -1,10 +1,17 @@
 ### September 20, 2024
-## 1.0.53 - The Space Accountant Patch
+## 1.1.0 - The Space Accountant Patch
 
-- Chart libraries updated.
+### New Features:
+
+- Personal Dashbooard stats! Now you can see statistics from all your sessions in one place.
+- Work Order and Crew Share tabs: Manage your work orders across all your sessions.
 - New helper control for when sharing unrefined values.
 - Added new control for estimating the RMC, CMAT and aUEC of salvage wrecks.
-- Reduced the frequency of some UEX Synch calls to reduce our burden on that service. Prices will still synch hourly but ships, planets, companies etc. will synch daily.
+
+### Fixes and Maintenance:
+
+- Chart libraries updated.
+- Reduced the frequency of some UEX Synch calls to lighten our burden on that service. Prices will still synch hourly but ships, planets, companies etc. will synch daily.
 - Many performance tweaks.
 
 
