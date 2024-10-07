@@ -79,9 +79,10 @@ export const makeLogLink = (logFn: (...args: unknown[]) => void): ApolloLink =>
 export type ErrorLinkThunk = (args: {
   setMaintenanceMode?: (msg: string) => void
   setAPIWorking?: (working: boolean) => void
+  logOut?: () => void
 }) => ApolloLink
 
-export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorking }) =>
+export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorking, logOut }) =>
   onError(({ graphQLErrors, networkError, forward, operation }) => {
     if (graphQLErrors) {
       // Wer handle this in useGQLErrors instead
@@ -96,6 +97,12 @@ export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorki
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((result as Record<string, any>).extensions.code === ErrorCode.MAINENANCE_MODE) {
           setMaintenanceMode && setMaintenanceMode((result as Record<string, string>).message)
+          localStorage.removeItem('LookupData:Data')
+          localStorage.removeItem('LookupData:lastUpdate')
+          localStorage.removeItem('LookupData:version')
+          logOut && logOut()
+          console.error(`🔧 [Maintenance mode]: ${(result as Record<string, string>).message}`)
+          return
         }
       } catch {
         console.error('Error parsing network error', networkError)

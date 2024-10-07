@@ -12,7 +12,7 @@ import { AuthGate } from './components/pages/AuthGate'
 import { DashboardContainer, SessionDashTabsEnum } from './components/pages/Dashboard/Dashboard.container'
 import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage'
 import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
-import { useLogin } from './hooks/useOAuth2'
+import { LoginContext, useLogin } from './hooks/useOAuth2'
 import { StagingWarning } from './components/modals/StagingWarning'
 import { LoadoutPageContainer } from './components/pages/LoadoutPage.container'
 import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
@@ -25,6 +25,7 @@ const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 
 export const App: React.FC = () => {
   const { isAuthenticated, isInitialized, loading, error } = useLogin()
+  const { maintenanceMode } = React.useContext(LoginContext)
   const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
@@ -74,145 +75,153 @@ export const App: React.FC = () => {
           <Route path="/" element={<HomePageContainer />} errorElement={<ErrorPage />} />
 
           {/* about uses urls for tabs */}
-          <Route path="/about/" element={<Navigate to="/about/general" replace />} />
-          <Route path="/about/:tab" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
+          {!maintenanceMode && (
+            <>
+              <Route path="/about/" element={<Navigate to="/about/general" replace />} />
+              <Route path="/about/:tab" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
 
-          <Route path="/terms" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
-          <Route path="/privacy" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
+              <Route path="/terms" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
+              <Route path="/privacy" element={<AboutPageContainer />} errorElement={<ErrorPage />} />
 
-          <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<ErrorPage />} />
-          <Route path="/market-price" element={<MarketPriceCalcPage />} errorElement={<ErrorPage />} />
-          <Route
-            path="/verify"
-            element={
-              <AuthGate allowNoInit>
-                <InitializeUserContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          {/* Standalone calc */}
-          <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<ErrorPage />} />
-          {/* Tables uses urls for tabs */}
-          <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
-          <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<ErrorPage />} />
+              <Route path="/cluster" element={<ClusterCalcPage />} errorElement={<ErrorPage />} />
+              <Route path="/market-price" element={<MarketPriceCalcPage />} errorElement={<ErrorPage />} />
+              <Route
+                path="/verify"
+                element={
+                  <AuthGate allowNoInit>
+                    <InitializeUserContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              {/* Standalone calc */}
+              <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<ErrorPage />} />
+              {/* Tables uses urls for tabs */}
+              <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
+              <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<ErrorPage />} />
 
-          <Route path="/loadouts/" element={<Navigate to="/loadouts/calculator" replace />} />
-          <Route path="/loadouts/:tab" element={<LoadoutPageContainer />} errorElement={<ErrorPage />} />
-          <Route path="/loadouts/:tab/:activeLoadout" element={<LoadoutPageContainer />} errorElement={<ErrorPage />} />
+              <Route path="/loadouts/" element={<Navigate to="/loadouts/calculator" replace />} />
+              <Route path="/loadouts/:tab" element={<LoadoutPageContainer />} errorElement={<ErrorPage />} />
+              <Route
+                path="/loadouts/:tab/:activeLoadout"
+                element={<LoadoutPageContainer />}
+                errorElement={<ErrorPage />}
+              />
 
-          {/**
-           * This is the authentication section. Everything below here needs the AuthGate
-           */}
+              {/**
+               * This is the authentication section. Everything below here needs the AuthGate
+               */}
 
-          {/* User's profile page */}
-          <Route
-            path={`/${ProfileTabsEnum.PROFILE}`}
-            element={
-              <AuthGate>
-                <ProfilePageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path={`/${ProfileTabsEnum.FRIENDS}`}
-            element={
-              <AuthGate>
-                <ProfilePageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path={`/${ProfileTabsEnum.SESSION_DEFAULTS}`}
-            element={
-              <AuthGate>
-                <ProfilePageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path={`/${ProfileTabsEnum.API}`}
-            element={
-              <AuthGate>
-                <ProfilePageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          {/* Session page has 3 ways into it*/}
-          <Route
-            path="/session"
-            element={
-              <AuthGate>
-                <RedirectToDashboardTab />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <AuthGate>
-                <RedirectToDashboardTab />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path="/dashboard/:tab/:preset?"
-            element={
-              <AuthGate>
-                <DashboardContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path="/session/:sessionId"
-            element={
-              <AuthGate>
-                <RedirectToSessionTab />
-              </AuthGate>
-            }
-          />
-          <Route
-            path="/join/:joinId"
-            element={
-              <AuthGate>
-                <SessionJoinContainer />
-              </AuthGate>
-            }
-          />
-          <Route
-            path="/session/:sessionId/:tab"
-            element={
-              <AuthGate>
-                <SessionPageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path="/session/:sessionId/:tab/w/:orderId"
-            element={
-              <AuthGate>
-                <SessionPageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
-          <Route
-            path="/session/:sessionId/:tab/s/:scoutingFindId"
-            element={
-              <AuthGate>
-                <SessionPageContainer />
-              </AuthGate>
-            }
-            errorElement={<ErrorPage />}
-          />
+              {/* User's profile page */}
+              <Route
+                path={`/${ProfileTabsEnum.PROFILE}`}
+                element={
+                  <AuthGate>
+                    <ProfilePageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path={`/${ProfileTabsEnum.FRIENDS}`}
+                element={
+                  <AuthGate>
+                    <ProfilePageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path={`/${ProfileTabsEnum.SESSION_DEFAULTS}`}
+                element={
+                  <AuthGate>
+                    <ProfilePageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path={`/${ProfileTabsEnum.API}`}
+                element={
+                  <AuthGate>
+                    <ProfilePageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              {/* Session page has 3 ways into it*/}
+              <Route
+                path="/session"
+                element={
+                  <AuthGate>
+                    <RedirectToDashboardTab />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthGate>
+                    <RedirectToDashboardTab />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path="/dashboard/:tab/:preset?"
+                element={
+                  <AuthGate>
+                    <DashboardContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path="/session/:sessionId"
+                element={
+                  <AuthGate>
+                    <RedirectToSessionTab />
+                  </AuthGate>
+                }
+              />
+              <Route
+                path="/join/:joinId"
+                element={
+                  <AuthGate>
+                    <SessionJoinContainer />
+                  </AuthGate>
+                }
+              />
+              <Route
+                path="/session/:sessionId/:tab"
+                element={
+                  <AuthGate>
+                    <SessionPageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path="/session/:sessionId/:tab/w/:orderId"
+                element={
+                  <AuthGate>
+                    <SessionPageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path="/session/:sessionId/:tab/s/:scoutingFindId"
+                element={
+                  <AuthGate>
+                    <SessionPageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+            </>
+          )}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <div style={{ flex: '1 1' }} />

@@ -36,7 +36,7 @@ import {
   Verified,
 } from '@mui/icons-material'
 import { RockIcon } from '../icons'
-import { LoginContextObj } from '../hooks/useOAuth2'
+import { LoginContext, LoginContextObj } from '../hooks/useOAuth2'
 import { UserAvatar } from './UserAvatar'
 import { ModuleIcon } from '../icons/Module'
 import { TopBarMenu, TopBarMenuItem } from './TopBarMenu'
@@ -102,6 +102,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { hideNames, setHideNames } = React.useContext(AppContext)
+  const { maintenanceMode } = React.useContext(LoginContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
   const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {
@@ -115,7 +116,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
 
   const topBarMenu: MenuItemType[] = [
     //
-    { path: '/dashboard', name: 'Dashboard', icon: <Dashboard /> },
+    { path: '/dashboard', name: 'Dashboard', icon: <Dashboard />, disabled: Boolean(maintenanceMode) },
     {
       name: 'Calculators',
       icon: <Calculate />,
@@ -207,43 +208,45 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
             <MenuIcon />
           </IconButton>
           {/* THis is the mobile menu */}
-          <Menu
-            id="menu-appbar"
-            anchorEl={openMenu?.el ? openMenu.el : undefined}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            open={Boolean(openMenu && openMenu.name === 'mobile')}
-            onClick={handleCloseMenu}
-            onClose={handleCloseMenu}
-            sx={{
-              display: { xs: 'block', md: 'none' },
-              '& .MuiPaper-root': {
-                background: yellow[700],
-                color: theme.palette.secondary.contrastText,
-              },
-            }}
-          >
-            {topBarMenu.reduce((acc, item, idx) => {
-              if (item.isDivider || item.show === false) return acc
-              else
-                return [
-                  ...acc,
-                  <TopBarMenuItem isMobile key={`menuItem-${idx}`} item={item} />,
-                  (item.children || [])
-                    .filter(({ isDivider }) => !isDivider)
-                    .map((child, idy) => (
-                      <TopBarMenuItem isMobile isSubMenu key={`menuItem-${idx}-${idy}`} item={child} />
-                    )),
-                ]
-            }, [] as React.ReactNode[])}
-          </Menu>
+          {!maintenanceMode && (
+            <Menu
+              id="menu-appbar"
+              anchorEl={openMenu?.el ? openMenu.el : undefined}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(openMenu && openMenu.name === 'mobile')}
+              onClick={handleCloseMenu}
+              onClose={handleCloseMenu}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+                '& .MuiPaper-root': {
+                  background: yellow[700],
+                  color: theme.palette.secondary.contrastText,
+                },
+              }}
+            >
+              {topBarMenu.reduce((acc, item, idx) => {
+                if (item.isDivider || item.show === false) return acc
+                else
+                  return [
+                    ...acc,
+                    <TopBarMenuItem isMobile key={`menuItem-${idx}`} item={item} />,
+                    (item.children || [])
+                      .filter(({ isDivider }) => !isDivider)
+                      .map((child, idy) => (
+                        <TopBarMenuItem isMobile isSubMenu key={`menuItem-${idx}-${idy}`} item={child} />
+                      )),
+                  ]
+              }, [] as React.ReactNode[])}
+            </Menu>
+          )}
         </Box>
         {/* This is our mini menu for mobile */}
         <RockIcon sx={styles.siteIcon} />
@@ -252,54 +255,59 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         </Typography>
         {/* This is the login Menu for non-mobile */}
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-          {topBarMenu
-            // .filter(({ isDivider }) => !isDivider)
-            .map(
-              ({ path, name, icon, isDivider, disabled, show, children }, idx) =>
-                !isDivider &&
-                show !== false && (
-                  <Button
-                    key={`menuItem-${idx}`}
-                    startIcon={icon}
-                    endIcon={
-                      children ? (
-                        openMenu && openMenu.name === name ? (
-                          <KeyboardArrowDown />
-                        ) : (
-                          <KeyboardArrowUp />
-                        )
-                      ) : undefined
-                    }
-                    disabled={disabled}
-                    onMouseOver={children && handleOpenMenu(name as string)}
-                    component={Link}
-                    to={path || '/'}
-                    sx={{
-                      background: openMenu && openMenu.name === name ? theme.palette.secondary.contrastText : undefined,
-                      color: openMenu && openMenu.name === name ? theme.palette.secondary.light : 'inherit',
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                    }}
-                  >
-                    {name}
-                  </Button>
-                )
-            )}
-          {topBarMenu
-            .filter(({ disabled, show, children, isDivider }) => !disabled && show !== false && children && !isDivider)
-            .map(({ name, children }, idx) => {
-              return (
-                <TopBarMenu
-                  open={Boolean(openMenu && openMenu.name === name)}
-                  name={name}
-                  anchorWidth={openMenu && openMenu.width}
-                  onClose={handleCloseMenu}
-                  key={`menu-${idx}`}
-                  anchorEl={openMenu?.el ? openMenu.el : undefined}
-                  menu={children || []}
-                />
+          {!maintenanceMode &&
+            topBarMenu
+              // .filter(({ isDivider }) => !isDivider)
+              .map(
+                ({ path, name, icon, isDivider, disabled, show, children }, idx) =>
+                  !isDivider &&
+                  show !== false && (
+                    <Button
+                      key={`menuItem-${idx}`}
+                      startIcon={icon}
+                      endIcon={
+                        children ? (
+                          openMenu && openMenu.name === name ? (
+                            <KeyboardArrowDown />
+                          ) : (
+                            <KeyboardArrowUp />
+                          )
+                        ) : undefined
+                      }
+                      disabled={disabled}
+                      onMouseOver={children && handleOpenMenu(name as string)}
+                      component={Link}
+                      to={path || '/'}
+                      sx={{
+                        background:
+                          openMenu && openMenu.name === name ? theme.palette.secondary.contrastText : undefined,
+                        color: openMenu && openMenu.name === name ? theme.palette.secondary.light : 'inherit',
+                        borderBottomLeftRadius: 0,
+                        borderBottomRightRadius: 0,
+                      }}
+                    >
+                      {name}
+                    </Button>
+                  )
+              )}
+          {!maintenanceMode &&
+            topBarMenu
+              .filter(
+                ({ disabled, show, children, isDivider }) => !disabled && show !== false && children && !isDivider
               )
-            })}
+              .map(({ name, children }, idx) => {
+                return (
+                  <TopBarMenu
+                    open={Boolean(openMenu && openMenu.name === name)}
+                    name={name}
+                    anchorWidth={openMenu && openMenu.width}
+                    onClose={handleCloseMenu}
+                    key={`menu-${idx}`}
+                    anchorEl={openMenu?.el ? openMenu.el : undefined}
+                    menu={children || []}
+                  />
+                )
+              })}
         </Box>
         {/* Debugger for oauth token expiry */}
         {/* Profile icon, username and badge */}
@@ -355,7 +363,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
               />
             </>
           )}
-          {!userCtx.isAuthenticated && (
+          {!maintenanceMode && !userCtx.isAuthenticated && (
             <Button color="inherit" onClick={() => userCtx.openPopup()} startIcon={<Login />}>
               Login
             </Button>

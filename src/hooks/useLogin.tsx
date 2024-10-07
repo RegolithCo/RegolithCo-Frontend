@@ -95,8 +95,7 @@ export const ApolloErrorContext = React.createContext<ApolloErrorDialogContext>(
  * @returns
  */
 export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { token, loginInProgress, authType } = useOAuth2()
-  // const [_googleToken, _setGoogleToken] = useLocalStorage<string>('ROCP_GooToken', '')
+  const { token, loginInProgress, authType, logOut } = useOAuth2()
   const [APIWorking, setAPIWorking] = useState(true)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
   const [errorDialog, setErrorDialog] = useState<ApolloErrorDialog | null>(null)
@@ -116,7 +115,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
 
     return new ApolloClient({
       link: from([
-        errorLinkThunk({ setAPIWorking, setMaintenanceMode }),
+        errorLinkThunk({ setAPIWorking, setMaintenanceMode, logOut }),
         retryLink,
         makeLogLink(log.debug),
         authLink,

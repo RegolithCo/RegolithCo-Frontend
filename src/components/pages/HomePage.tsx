@@ -1,10 +1,23 @@
-import { Card, CardContent, CardMedia, Divider, Link, Paper, Stack, Typography, useTheme } from '@mui/material'
+import {
+  Alert,
+  AlertTitle,
+  Card,
+  CardContent,
+  CardMedia,
+  Divider,
+  Link,
+  Paper,
+  Stack,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { alpha } from '@mui/system'
 import * as React from 'react'
 
 import { PageWrapper } from '../PageWrapper'
-import { LoginContextObj } from '../../hooks/useOAuth2'
+import { LoginContext, LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
 import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import { fontFamilies, theme } from '../../theme'
@@ -27,14 +40,15 @@ const HomeCard: React.FC<{
   focus?: boolean
   description: React.ReactNode | string
   imgageUrl: string
+  disabled?: boolean
   actions?: React.ReactNode | React.ReactNode[] | string
   url?: string
   onClick?: () => void
-}> = ({ title, focus, description, imgageUrl, url, onClick }) => {
+}> = ({ title, focus, description, imgageUrl, url, onClick, disabled }) => {
   const theme = useTheme()
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return url ? <RouterLink to={url}>{children}</RouterLink> : <>{children}</>
+    return url ? <RouterLink to={!disabled ? url : ''}>{children}</RouterLink> : <>{children}</>
   }
 
   return (
@@ -43,54 +57,58 @@ const HomeCard: React.FC<{
       sm={6}
       md={4}
       sx={{
-        cursor: 'pointer',
+        cursor: disabled ? 'default' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}
     >
-      <Card
-        elevation={focus ? 10 : 1}
-        sx={{
-          border: focus ? `1px solid ${theme.palette.primary.main}` : undefined,
-          height: '100%',
-          '& .MuiCardMedia-root': {
-            opacity: focus ? 0.8 : 0.5,
-          },
-          '&:hover': {
+      <Tooltip title={disabled ? 'DOWN FOR MAINTENANCE' : undefined}>
+        <Card
+          elevation={focus ? 10 : 1}
+          sx={{
+            border: focus ? `1px solid ${theme.palette.primary.main}` : undefined,
+            height: '100%',
             '& .MuiCardMedia-root': {
-              opacity: 1,
+              opacity: focus ? 0.8 : 0.5,
             },
-            backgroundColor: alpha(theme.palette.secondary.main, 0.2),
-          },
-        }}
-        onClick={onClick}
-      >
-        <Wrapper>
-          <CardMedia sx={{ height: 140 }} image={`/${imgageUrl}`} title={title} />
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                fontSize: '0.8rem',
-                fontWeight: 'bold',
-                color: theme.palette.primary.main,
-                fontFamily: fontFamilies.robotoMono,
-              }}
-            >
-              {title}
-            </Typography>
-            <Typography variant="body2">{description}</Typography>
-          </CardContent>
-          {/* <CardActions>{actions}</CardActions> */}
-        </Wrapper>
-      </Card>
+            '&:hover': {
+              '& .MuiCardMedia-root': {
+                opacity: !disabled ? 1 : undefined,
+              },
+              backgroundColor: !disabled ? alpha(theme.palette.secondary.main, 0.2) : undefined,
+            },
+          }}
+          onClick={!disabled ? onClick : undefined}
+        >
+          <Wrapper>
+            <CardMedia sx={{ height: 140 }} image={`/${imgageUrl}`} title={title} />
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="overline"
+                sx={{
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold',
+                  color: theme.palette.primary.main,
+                  fontFamily: fontFamilies.robotoMono,
+                }}
+              >
+                {title}
+              </Typography>
+              <Typography variant="body2">{description}</Typography>
+            </CardContent>
+            {/* <CardActions>{actions}</CardActions> */}
+          </Wrapper>
+        </Card>
+      </Tooltip>
     </Grid>
   )
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Days, allTime, alerts, statsLoading }) => {
+  const { maintenanceMode } = React.useContext(LoginContext)
   // const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   // const nowDate = new Date()
   return (
@@ -112,10 +130,17 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
           ))}
         </Stack>
       )}
+      {maintenanceMode && (
+        <Alert severity="error" sx={{ my: 2 }} variant="filled">
+          <AlertTitle>Site Maintenance</AlertTitle>
+          <Typography>Regolith Co. is currently undergoing maintenance. Please check back later.</Typography>
+        </Alert>
+      )}
       <Grid container spacing={4} mb={4}>
         <HomeCard
           title={`Session Dashboard ${userCtx.isInitialized ? '' : '(Login)'}`}
           focus
+          disabled={Boolean(maintenanceMode)}
           description="Organize your multi-crew, multi-ship mining adventure! Supports hand, vehicle and ship mining as well as scouting and salvaging."
           imgageUrl="images/sm/dashboard.jpg"
           url={userCtx.isAuthenticated ? (userCtx.isInitialized ? '/session' : '/verify') : undefined}
@@ -125,30 +150,35 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
         />
         <HomeCard
           title="Mining Loadouts"
+          disabled={Boolean(maintenanceMode)}
           description="Plan and tweak your mining ship loadouts using the right components for the right kind of ores."
           imgageUrl="images/sm/workshop.jpg"
           url="/loadouts"
         />
         <HomeCard
           title="Work Order Calculator"
+          disabled={Boolean(maintenanceMode)}
           description="Standalone calculator for refinery calculation and aUEC Sharing."
           imgageUrl="images/sm/refinery.jpg"
           url="/workorder"
         />
         <HomeCard
           title="Cluster Calculator"
+          disabled={Boolean(maintenanceMode)}
           description="Standalone calculator for figuring out the value of a rock or cluster."
           imgageUrl="images/sm/cluster.jpg"
           url="/cluster"
         />
         <HomeCard
           title="Market Finder"
+          disabled={Boolean(maintenanceMode)}
           description="Find the best place to sell your hard-mined ore."
           imgageUrl="images/sm/market1.jpg"
           url="/market-price"
         />
         <HomeCard
           title="Refinery Data"
+          disabled={Boolean(maintenanceMode)}
           description="Data tables to compare refineries."
           imgageUrl="images/sm/market.jpg"
           url="/tables/ore"
