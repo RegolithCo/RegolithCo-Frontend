@@ -216,6 +216,12 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
         } as SalvageWreck)
   )
 
+  React.useEffect(() => {
+    if (open && wreck) {
+      setNewWreck(wreck)
+    }
+  }, [open, wreck])
+
   const setNewWreck = React.useCallback(
     async (newWreck: SalvageWreck) => {
       if (!newWreck || !dataStore.ready) return

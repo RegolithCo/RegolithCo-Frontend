@@ -156,7 +156,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
                   setAddScanModalOpen({
                     __typename: 'SalvageWreck',
                     state: RockStateEnum.Ready,
-                    isShip: true,
+                    isShip: false,
                     salvageOres: Object.keys(SalvageOreEnum).map(
                       (ore) =>
                         ({
@@ -174,8 +174,8 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
         </Grid>
       </Box>
       <SalvageWreckEntryModal
-        open={addScanModalOpen !== false || editScanModalOpen[1] !== false}
-        isNew={addScanModalOpen !== false}
+        open={Boolean(addScanModalOpen) || Boolean(editScanModalOpen[1])}
+        isNew={Boolean(addScanModalOpen)}
         onClose={() => {
           addScanModalOpen !== false && setAddScanModalOpen(false)
           editScanModalOpen[1] !== false && setEditScanModalOpen([-1, false])
@@ -211,7 +211,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
             setEditScanModalOpen([-1, false])
           }
         }}
-        wreck={addScanModalOpen !== false ? addScanModalOpen : (editScanModalOpen[1] as SalvageWreck)}
+        wreck={addScanModalOpen ? addScanModalOpen : (editScanModalOpen[1] as SalvageWreck)}
       />
     </Grid>
   )

@@ -3,7 +3,7 @@
 
 ### New Features:
 
-- Personal Dashbooard stats! Now you can see statistics from all your sessions in one place.
+- Personal Dashboard stats! Now you can see statistics from all your sessions in one place.
 - Work Order and Crew Share tabs: Manage your work orders across all your sessions.
 - New helper control for when sharing unrefined values.
 - Added new control for estimating the RMC, CMAT and aUEC of salvage wrecks.
