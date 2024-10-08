@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import { useOAuth2 } from './useOAuth2'
 import { AuthTypeEnum, MyDiscordGuild } from '@regolithco/common'
+import log from 'loglevel'
 
 export const useDiscordGuilds = () => {
   const { authType, token } = useOAuth2()
@@ -21,11 +22,21 @@ export const useDiscordGuilds = () => {
         if (cachedData && cachedTime && Date.now() - Number(cachedTime) < 5 * 60 * 1000) {
           setMyGuilds(JSON.parse(cachedData))
         } else {
-          const response = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          log.debug('Fetching guilds')
+          const response = await axios
+            .get('https://discord.com/api/v10/users/@me/guilds', {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+            .catch((error) => {
+              log.error('Error fetching Discord guilds', error)
+              if (error.response?.status === 401) {
+                localStorage.removeItem('myGuilds')
+                localStorage.removeItem('myGuildsTime')
+              }
+              throw error
+            })
           const guilds = response.data.map((guild: Record<string, string>) => ({
             id: guild.id,
             name: guild.name,
