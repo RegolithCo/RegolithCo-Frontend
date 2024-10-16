@@ -442,14 +442,14 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                         if (rawValue < 0) return
                         if (rawValue > 5000) return
 
-                        const newOres = newWreck.salvageOres?.map((o) => {
-                          let retVal = o.scu
+                        const newOres = newWreck.salvageOres?.map((ore) => {
+                          let retVal = ore.scu
                           if (retVal < 0) retVal = 0
                           if (retVal > 1) retVal = 1
-                          if (o.ore === oreName) {
-                            return { ...o, scu: rawValue }
+                          if (ore.ore === oreName) {
+                            return { ...ore, scu: rawValue }
                           }
-                          return o
+                          return ore
                         })
                         // setActiveOrePercentText([idx, parseNum(event.target.value, 2, 2)])
                         setNewWreck({ ...newWreck, salvageOres: newOres })
@@ -551,8 +551,8 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
         </DialogActions>
       </Dialog>
       <DeleteModal
-        title="Delete Rock Scan"
-        message="Are you sure you want to delete this rock?"
+        title="Delete Wreck Scan"
+        message="Are you sure you want to delete this wreck?"
         open={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={() => {

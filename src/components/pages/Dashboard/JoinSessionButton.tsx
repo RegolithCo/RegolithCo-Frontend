@@ -19,7 +19,6 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({
   loading,
   onCreateNewSession,
 }) => {
-  const theme = useTheme()
   const [currentSelection, setCurrentSelection] = React.useState<string | null>(
     sessions.length > 0 ? sessions[0].sessionId : null
   )
@@ -64,8 +63,10 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({
           onChange={(e) => setCurrentSelection(e.target.value)}
           disabled={sessions.length < 2 || loading}
         >
-          {sessions.map(({ sessionId, name }) => (
-            <MenuItem value={sessionId}>{name}</MenuItem>
+          {sessions.map(({ sessionId, name }, idx) => (
+            <MenuItem key={`btn-${idx}`} value={sessionId}>
+              {name}
+            </MenuItem>
           ))}
           {sessions.length < 1 && (
             <MenuItem disabled value={'NOPE'}>
@@ -123,7 +124,7 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({
         confirmBtnText="Yes"
         open={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}
-        onConfirm={() => onCreateNewSession}
+        onConfirm={() => onCreateNewSession && onCreateNewSession()}
       />
     </Stack>
   )

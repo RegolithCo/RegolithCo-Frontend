@@ -12,6 +12,7 @@ import {
   Theme,
   ToggleButtonGroup,
   ToggleButton,
+  Tooltip,
 } from '@mui/material'
 import { WreckStateEnum, SalvageWreck, ShipLookups } from '@regolithco/common'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
@@ -227,32 +228,36 @@ export const SalvageWreckCard: React.FC<SalvageWreckCardProps> = ({
 
         <List dense sx={{ ...styles.oreList, cursor: onClickAction ? 'pointer' : 'default' }} onClick={onClickAction}>
           {wreck.salvageOres &&
-            wreck.salvageOres.map(({ ore, scu }, idx) => (
-              <ListItem
-                disableGutters
-                disablePadding
-                key={ore}
-                sx={{ backgroundColor: idx % 2 === 0 ? '#000000aa' : 'transparent' }}
-              >
-                <Typography component="div" sx={styles.oreName}>
-                  {ore}
-                </Typography>
-                <Typography component="div" sx={styles.orePercent}>
-                  {scu ? MValueFormatter(scu, MValueFormat.volSCU, 0) : '??SCU'}
-                </Typography>
-              </ListItem>
-            ))}
+            wreck.salvageOres
+              .filter((ore) => ore.scu && ore.scu > 0)
+              .map(({ ore, scu }, idx) => (
+                <ListItem
+                  disableGutters
+                  disablePadding
+                  key={ore}
+                  sx={{ backgroundColor: idx % 2 === 0 ? '#000000aa' : 'transparent' }}
+                >
+                  <Typography component="div" sx={styles.oreName}>
+                    {ore}
+                  </Typography>
+                  <Typography component="div" sx={styles.orePercent}>
+                    {MValueFormatter(scu || 0, MValueFormat.volSCU, 0)}
+                  </Typography>
+                </ListItem>
+              ))}
           {wreck.sellableAUEC && (
             <ListItem
               disableGutters
               disablePadding
               sx={{ backgroundColor: (wreck.salvageOres.length + 1) % 2 === 0 ? '#000000aa' : 'transparent' }}
             >
-              <Typography component="div" sx={styles.oreName}>
-                Cargo + Components
-              </Typography>
+              <Tooltip title="Cargo & Components" placement="right">
+                <Typography component="div" sx={styles.oreName}>
+                  CGO & CMP
+                </Typography>
+              </Tooltip>
               <Typography component="div" sx={styles.orePercent}>
-                {wreck.sellableAUEC ? MValueFormatter(wreck.sellableAUEC, MValueFormat.currency_sm, 0) : '??aUEC'}
+                {MValueFormatter(wreck.sellableAUEC, MValueFormat.currency_sm, 0)}
               </Typography>
             </ListItem>
           )}

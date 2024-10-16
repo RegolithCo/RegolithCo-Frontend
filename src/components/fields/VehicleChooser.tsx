@@ -77,10 +77,11 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
       value={currVal}
       disabled={disabled}
       renderOption={(props, ship) => {
+        const { key, ...rest } = props
         const shipSCUVAl = ship.miningHold || ship.cargo || 0
         return (
           <MenuItem
-            {...props}
+            {...rest}
             value={ship.UEXID}
             sx={{
               color: shipColorLookup(theme)[ship.role as VehicleRoleEnum] || 'inherit',

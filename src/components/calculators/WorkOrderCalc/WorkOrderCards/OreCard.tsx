@@ -15,6 +15,8 @@ import {
   keyframes,
   SxProps,
   Theme,
+  Alert,
+  AlertTitle,
 } from '@mui/material'
 import {
   ActivityEnum,
@@ -48,6 +50,7 @@ import { fontFamilies } from '../../../../theme'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
 import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
 import { LookupsContext } from '../../../../context/lookupsContext'
+import { TableView } from '@mui/icons-material'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -467,6 +470,15 @@ export const OreCard: React.FC<OreCardProps> = ({
           </TableBody>
         </Table>
         <Box sx={{ flexGrow: 1 }} />
+        {workOrder.orderType === ActivityEnum.Salvage && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            <AlertTitle>Cargo & Component Salvage?</AlertTitle>
+            <Typography variant="caption" sx={{ fontFamily: fontFamilies.robotoMono }}>
+              Use the composite add tool <TableView /> to add component and cargo sales to the{' '}
+              <strong>Final Sell Price</strong> of this order.
+            </Typography>
+          </Alert>
+        )}
         {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && isShare && (
           <RefineryProgressShare
             startTime={shipOrder.processStartTime as number}

@@ -157,7 +157,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
                     __typename: 'SalvageWreck',
                     state: RockStateEnum.Ready,
                     isShip: false,
-                    salvageOres: Object.keys(SalvageOreEnum).map(
+                    salvageOres: Object.values(SalvageOreEnum).map(
                       (ore) =>
                         ({
                           ore,

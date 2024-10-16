@@ -29,7 +29,6 @@ import {
   CrewShare,
   ShareTypeEnum,
   StoreChoice,
-  UserSuggest,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
