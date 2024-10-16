@@ -118,6 +118,9 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
                   placement="right"
                   title={
                     <>
+                      <Typography variant="overline" gutterBottom>
+                        Share Refined Value
+                      </Typography>
                       <Typography variant="body1" gutterBottom>
                         If this is off you will share only what you get from the refinery direct sale kiosk. and you
                         will keep the remainder.
@@ -153,6 +156,9 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
             placement="right"
             title={
               <>
+                <Typography variant="overline" gutterBottom>
+                  Subtract Transfer Fee
+                </Typography>
                 <Typography variant="body1" gutterBottom>
                   Subtract the moTrader transfer fee from the total value.
                 </Typography>
@@ -226,8 +232,12 @@ export const DetailsCard: React.FC<DetailsCardProps> = ({
             placement="right"
             title={
               <>
+                <Typography variant="overline" gutterBottom>
+                  Alternate Seller
+                </Typography>
                 <Typography variant="body1" gutterBottom>
-                  If you are creating this work order on behalf of someone else select this option and choose them.
+                  If you are creating this work order on behalf of someone else select this option and then choose or
+                  type their name.
                 </Typography>
               </>
             }

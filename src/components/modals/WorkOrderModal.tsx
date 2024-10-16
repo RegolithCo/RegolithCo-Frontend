@@ -335,8 +335,12 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           {allowEdit && isEditing && (
             <Tooltip title={isNew ? 'Save & Create this work order' : 'Save these edits'} placement="top">
               <Button
-                color="secondary"
+                color={isNew ? 'info' : 'success'}
                 variant="contained"
+                sx={{
+                  boxShadow: `2 2 5px white; 0 0 10px white`,
+                  border: `2px solid black`,
+                }}
                 size="large"
                 startIcon={isNew ? <Create /> : <Save />}
                 onClick={() => {
@@ -344,7 +348,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                   isEditing && setIsEditing(false)
                 }}
               >
-                {isNew ? 'Create' : 'Save'}
+                {isNew ? 'Save New Order' : 'Save'}
               </Button>
             </Tooltip>
           )}

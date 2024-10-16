@@ -55,9 +55,9 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
     <>
       <Stack
         direction="row"
-        alignItems="center"
         alignContent={'space-between'}
         justifyContent="center"
+        alignItems={'center'}
         mb={2}
         spacing={3}
         sx={{ width: '100%' }}
@@ -66,20 +66,30 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
         <Button
           color={'info'}
           size="large"
-          startIcon={<DownloadForOffline />}
+          startIcon={
+            <DownloadForOffline
+              sx={{
+                width: 40,
+                height: 40,
+              }}
+            />
+          }
           variant="contained"
           onClick={captureComponent}
           sx={{
+            height: 60,
+            width: 400,
+            fontSize: '1.5rem',
             animation: `${pulse} 1.5s infinite`,
           }}
         >
-          Download
+          Download .PNG
         </Button>
       </Stack>
       <Box
         //
         sx={{
-          width: `${widthPx}px`,
+          width: `${widthPx + 10}px`,
           position: 'relative',
         }}
       >
@@ -91,8 +101,8 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
         >
           <Box
             sx={{
-              color: theme.palette.info.contrastText,
-              backgroundColor: theme.palette.error.light,
+              color: theme.palette.error.contrastText,
+              backgroundColor: theme.palette.error.main,
               position: 'absolute',
               py: 0.5,
               px: 1,
@@ -104,16 +114,16 @@ export const ImageDownloadComponent: React.FC<ImageDownloadComponentProps> = ({
               transform: 'translateY(-100%)',
             }}
           >
-            Preview
+            PNG Preview
           </Box>
           <Box
             sx={{
-              border: '3px solid transparent',
+              border: '5px solid transparent',
               // Deny all interaction
               background: `repeating-linear-gradient(
       -45deg,
-      ${theme.palette.error.light} 0px,
-      ${theme.palette.error.light} 10px,
+      ${theme.palette.error.main} 0px,
+      ${theme.palette.error.main} 10px,
       ${theme.palette.background.default} 10px,
       ${theme.palette.background.default} 20px
     )`,

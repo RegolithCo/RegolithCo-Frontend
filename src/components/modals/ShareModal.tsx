@@ -119,7 +119,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
     <Dialog
       open={open}
       onClose={handleClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       fullScreen={isSmall}
       sx={{
@@ -180,50 +180,53 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
         </Stack>
       </DialogTitle>
       <DialogContent>
+        <Alert severity="info" variant="filled" sx={{ mb: 2, color: 'white' }}>
+          <Typography variant="body1" paragraph>
+            You can download an image snapshot of all or part of this session to share on social media, Discord etc. If
+            you want to collaborate and invite people to your session use the invite icon (<Diversity3 />) instead.
+          </Typography>
+        </Alert>
         {/* Tabs to choose: Session, work order or scouting */}
-        <Stack spacing={2} alignItems="left" justifyContent="center">
-          <ToggleButtonGroup
-            value={activeTab}
-            color="primary"
-            exclusive
-            onChange={(e, activity) => {
-              if (!activity) return
-              setActiveTab(activity)
-            }}
-          >
-            <ToggleButton value={ShareTypeEnum.SESSION} aria-label="left aligned">
-              Entire Session
-            </ToggleButton>
-            <ToggleButton
-              value={ShareTypeEnum.WORK_ORDER}
-              aria-label="centered"
-              disabled={sortedWorkOrders.length === 0}
+        <Stack spacing={2} mb={2} alignItems="center" justifyContent="space-between" direction={'row'}>
+          <Stack spacing={2} alignItems="center" direction={'row'}>
+            <Typography variant="h6">Select what to share:</Typography>
+            <ToggleButtonGroup
+              value={activeTab}
+              color="primary"
+              exclusive
+              onChange={(e, activity) => {
+                if (!activity) return
+                setActiveTab(activity)
+              }}
             >
-              Single Work Order
-            </ToggleButton>
-            <ToggleButton
-              value={ShareTypeEnum.CLUSTER}
-              aria-label="right aligned"
-              disabled={sortedScoutingFinds.length === 0}
-            >
-              Single Scouting Find
-            </ToggleButton>
-          </ToggleButtonGroup>
+              <ToggleButton value={ShareTypeEnum.SESSION} aria-label="left aligned">
+                Entire Session
+              </ToggleButton>
+              <ToggleButton
+                value={ShareTypeEnum.WORK_ORDER}
+                aria-label="centered"
+                disabled={sortedWorkOrders.length === 0}
+              >
+                Single Work Order
+              </ToggleButton>
+              <ToggleButton
+                value={ShareTypeEnum.CLUSTER}
+                aria-label="right aligned"
+                disabled={sortedScoutingFinds.length === 0}
+              >
+                Single Scouting Find
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Stack>
           <FormControlLabel
             checked={hideNames}
             control={<Switch onChange={(e) => setHideNames(e.target.checked)} />}
             label="Hide names and avatars."
           />
         </Stack>
-        <Alert severity="info" sx={{ mb: 2 }}>
-          <Typography variant="body1" paragraph>
-            You can download an image snapshot of all or part of this session to share on social media, Discord etc. If
-            you want to collaborate and invite people to your session use the invite icon (<Diversity3 />) instead.
-          </Typography>
-        </Alert>
 
         {activeTab === ShareTypeEnum.SESSION && (
-          <Stack spacing={2} alignItems="left" justifyContent="center">
+          <Stack spacing={2} alignItems="center" justifyContent="center">
             <ImageDownloadComponent fileName={`Regolith-Session-${urlFriendlySessionName}`} widthPx={800}>
               <SessionShare session={session as Session} />
             </ImageDownloadComponent>
@@ -238,7 +241,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
                   getSafeName(activeWorkOrder.owner?.scName),
                   activeWorkOrder.orderId
                 )}`}
-                widthPx={1000}
+                widthPx={800}
                 leftContent={
                   <Box sx={{ flex: 1, pt: 2 }}>
                     <FormControl fullWidth>

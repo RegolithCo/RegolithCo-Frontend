@@ -141,7 +141,7 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
           {workOrder.sellerscName && (
             <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
               {' '}
-              Seller: {workOrder.sellerscName}
+              Seller: {getSafeName(workOrder.sellerscName)}
             </Typography>
           )}
           <Typography
