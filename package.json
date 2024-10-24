@@ -29,12 +29,12 @@
     "numeral": "^2.0.6",
     "qrcode.react": "^3.1.0",
     "react": "^18.3.1",
-    "react-camera-pro": "^1.4.0",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "react-oauth2-code-pkce": "^1.20.1",
     "react-router-dom": "^6.26.0",
     "react-textfit": "^1.1.1",
+    "react-webcam": "^7.2.0",
     "react-window": "^1.8.10",
     "styled-components": "^6.1.13",
     "web-vitals": "^4.2.3"

@@ -20,7 +20,7 @@ import * as React from 'react'
 import { PageWrapper } from '../PageWrapper'
 import { LoginContext, LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
-import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
+import { RegolithMonthStats, RegolithAllTimeStats, ShipRock, ShipMiningOrder } from '@regolithco/common'
 import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
@@ -128,7 +128,17 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
       <Button onClick={() => setOpen(true)} variant="contained" color="primary" sx={{ my: 2 }}>
         CAMERA
       </Button>
-      {open && <CameraControl onClose={() => setOpen(false)} />}
+      {open && (
+        <CameraControl
+          onClose={() => setOpen(false)}
+          captureType="REFINERY_ORDER"
+          onCapture={<T extends ShipRock | ShipMiningOrder>(retVal: T): T => {
+            console.log('Captured data:', retVal)
+            // Perform any additional processing here
+            return retVal
+          }}
+        />
+      )}
       <Divider sx={{ my: 2 }} />
       {alerts && alerts.length > 0 && (
         <Stack spacing={2} mb={2}>
