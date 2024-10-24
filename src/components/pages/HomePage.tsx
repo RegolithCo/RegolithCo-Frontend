@@ -1,6 +1,7 @@
 import {
   Alert,
   AlertTitle,
+  Button,
   Card,
   CardContent,
   CardMedia,
@@ -24,6 +25,7 @@ import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
+import { CameraControl } from '../ocr/CameraControl'
 
 export interface HomePageProps {
   userCtx: LoginContextObj
@@ -109,6 +111,7 @@ const HomeCard: React.FC<{
 
 export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Days, allTime, alerts, statsLoading }) => {
   const { maintenanceMode } = React.useContext(LoginContext)
+  const [open, setOpen] = React.useState(false)
   // const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   // const nowDate = new Date()
   return (
@@ -122,6 +125,10 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
         Regolith Co. is a fansite dedicated to helping{' '}
         <Link href="https://robertsspaceindustries.com/">Star Citizen</Link> Miners organize, share, and scout together.
       </Typography>
+      <Button onClick={() => setOpen(true)} variant="contained" color="primary" sx={{ my: 2 }}>
+        CAMERA
+      </Button>
+      {open && <CameraControl onClose={() => setOpen(false)} />}
       <Divider sx={{ my: 2 }} />
       {alerts && alerts.length > 0 && (
         <Stack spacing={2} mb={2}>

@@ -242,6 +242,18 @@ export const SessionUserFragmentFragmentDoc = gql`
 }
     ${UserFragmentFragmentDoc}
 ${MiningLoadoutFragmentFragmentDoc}`;
+export const ShipRockFragmentFragmentDoc = gql`
+    fragment ShipRockFragment on ShipRock {
+  mass
+  inst
+  res
+  state
+  ores {
+    ore
+    percent
+  }
+}
+    `;
 export const ScoutingFindFragmentFragmentDoc = gql`
     fragment ScoutingFindFragment on ScoutingFindInterface {
   sessionId
@@ -262,14 +274,7 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   }
   ... on ShipClusterFind {
     shipRocks {
-      mass
-      inst
-      res
-      state
-      ores {
-        ore
-        percent
-      }
+      ...ShipRockFragment
     }
   }
   ... on VehicleClusterFind {
@@ -297,7 +302,8 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   }
 }
     ${UserFragmentFragmentDoc}
-${SessionUserFragmentFragmentDoc}`;
+${SessionUserFragmentFragmentDoc}
+${ShipRockFragmentFragmentDoc}`;
 export const CrewShareFragmentFragmentDoc = gql`
     fragment CrewShareFragment on CrewShare {
   sessionId
@@ -1906,8 +1912,8 @@ export function useGetUserProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>(GetUserProfileDocument, options);
         }
-export function useGetUserProfileSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetUserProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetUserProfileQuery, types.GetUserProfileQueryVariables>(GetUserProfileDocument, options);
         }
 export type GetUserProfileQueryHookResult = ReturnType<typeof useGetUserProfileQuery>;
@@ -1945,8 +1951,8 @@ export function useGetLoadoutsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>(GetLoadoutsDocument, options);
         }
-export function useGetLoadoutsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetLoadoutsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetLoadoutsQuery, types.GetLoadoutsQueryVariables>(GetLoadoutsDocument, options);
         }
 export type GetLoadoutsQueryHookResult = ReturnType<typeof useGetLoadoutsQuery>;
@@ -1985,8 +1991,8 @@ export function useGetSessionUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>(GetSessionUserDocument, options);
         }
-export function useGetSessionUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionUserQuery, types.GetSessionUserQueryVariables>(GetSessionUserDocument, options);
         }
 export type GetSessionUserQueryHookResult = ReturnType<typeof useGetSessionUserQuery>;
@@ -2031,8 +2037,8 @@ export function useGetMyUserSessionsLazyQuery(baseOptions?: Apollo.LazyQueryHook
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>(GetMyUserSessionsDocument, options);
         }
-export function useGetMyUserSessionsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetMyUserSessionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetMyUserSessionsQuery, types.GetMyUserSessionsQueryVariables>(GetMyUserSessionsDocument, options);
         }
 export type GetMyUserSessionsQueryHookResult = ReturnType<typeof useGetMyUserSessionsQuery>;
@@ -2077,8 +2083,8 @@ export function useGetJoinedUserSessionsLazyQuery(baseOptions?: Apollo.LazyQuery
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>(GetJoinedUserSessionsDocument, options);
         }
-export function useGetJoinedUserSessionsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetJoinedUserSessionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetJoinedUserSessionsQuery, types.GetJoinedUserSessionsQueryVariables>(GetJoinedUserSessionsDocument, options);
         }
 export type GetJoinedUserSessionsQueryHookResult = ReturnType<typeof useGetJoinedUserSessionsQuery>;
@@ -2117,8 +2123,8 @@ export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ty
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetUserQuery, types.GetUserQueryVariables>(GetUserDocument, options);
         }
-export function useGetUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetUserQuery, types.GetUserQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetUserQuery, types.GetUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetUserQuery, types.GetUserQueryVariables>(GetUserDocument, options);
         }
 export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
@@ -2157,8 +2163,8 @@ export function useGetSessionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionQuery, types.GetSessionQueryVariables>(GetSessionDocument, options);
         }
-export function useGetSessionSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionQuery, types.GetSessionQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionQuery, types.GetSessionQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionQuery, types.GetSessionQueryVariables>(GetSessionDocument, options);
         }
 export type GetSessionQueryHookResult = ReturnType<typeof useGetSessionQuery>;
@@ -2202,8 +2208,8 @@ export function useGetSessionUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHook
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
         }
-export function useGetSessionUpdatedSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionUpdatedSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
         }
 export type GetSessionUpdatedQueryHookResult = ReturnType<typeof useGetSessionUpdatedQuery>;
@@ -2242,8 +2248,8 @@ export function useGetSessionShareLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
         }
-export function useGetSessionShareSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionShareSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionShareQuery, types.GetSessionShareQueryVariables>(GetSessionShareDocument, options);
         }
 export type GetSessionShareQueryHookResult = ReturnType<typeof useGetSessionShareQuery>;
@@ -2282,8 +2288,8 @@ export function useGetSessionStubLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>(GetSessionStubDocument, options);
         }
-export function useGetSessionStubSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionStubSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionStubQuery, types.GetSessionStubQueryVariables>(GetSessionStubDocument, options);
         }
 export type GetSessionStubQueryHookResult = ReturnType<typeof useGetSessionStubQuery>;
@@ -2323,8 +2329,8 @@ export function useGetSessionScoutingLazyQuery(baseOptions?: Apollo.LazyQueryHoo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>(GetSessionScoutingDocument, options);
         }
-export function useGetSessionScoutingSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionScoutingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionScoutingQuery, types.GetSessionScoutingQueryVariables>(GetSessionScoutingDocument, options);
         }
 export type GetSessionScoutingQueryHookResult = ReturnType<typeof useGetSessionScoutingQuery>;
@@ -2364,8 +2370,8 @@ export function useGetSessionActiveMembersLazyQuery(baseOptions?: Apollo.LazyQue
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>(GetSessionActiveMembersDocument, options);
         }
-export function useGetSessionActiveMembersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionActiveMembersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionActiveMembersQuery, types.GetSessionActiveMembersQueryVariables>(GetSessionActiveMembersDocument, options);
         }
 export type GetSessionActiveMembersQueryHookResult = ReturnType<typeof useGetSessionActiveMembersQuery>;
@@ -2405,8 +2411,8 @@ export function useGetSessionWorkOrdersLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>(GetSessionWorkOrdersDocument, options);
         }
-export function useGetSessionWorkOrdersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetSessionWorkOrdersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetSessionWorkOrdersQuery, types.GetSessionWorkOrdersQueryVariables>(GetSessionWorkOrdersDocument, options);
         }
 export type GetSessionWorkOrdersQueryHookResult = ReturnType<typeof useGetSessionWorkOrdersQuery>;
@@ -2446,8 +2452,8 @@ export function useGetWorkOrderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>(GetWorkOrderDocument, options);
         }
-export function useGetWorkOrderSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetWorkOrderSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetWorkOrderQuery, types.GetWorkOrderQueryVariables>(GetWorkOrderDocument, options);
         }
 export type GetWorkOrderQueryHookResult = ReturnType<typeof useGetWorkOrderQuery>;
@@ -2487,8 +2493,8 @@ export function useGetScoutingFindLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>(GetScoutingFindDocument, options);
         }
-export function useGetScoutingFindSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetScoutingFindSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetScoutingFindQuery, types.GetScoutingFindQueryVariables>(GetScoutingFindDocument, options);
         }
 export type GetScoutingFindQueryHookResult = ReturnType<typeof useGetScoutingFindQuery>;
@@ -2532,14 +2538,94 @@ export function useGetCrewSharesLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>(GetCrewSharesDocument, options);
         }
-export function useGetCrewSharesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetCrewSharesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>(GetCrewSharesDocument, options);
         }
 export type GetCrewSharesQueryHookResult = ReturnType<typeof useGetCrewSharesQuery>;
 export type GetCrewSharesLazyQueryHookResult = ReturnType<typeof useGetCrewSharesLazyQuery>;
 export type GetCrewSharesSuspenseQueryHookResult = ReturnType<typeof useGetCrewSharesSuspenseQuery>;
 export type GetCrewSharesQueryResult = Apollo.QueryResult<types.GetCrewSharesQuery, types.GetCrewSharesQueryVariables>;
+export const CaptureShipRockScanDocument = gql`
+    query captureShipRockScan($imgUrl: String!) {
+  captureShipRockScan(imgUrl: $imgUrl) {
+    ...ShipRockFragment
+  }
+}
+    ${ShipRockFragmentFragmentDoc}`;
+
+/**
+ * __useCaptureShipRockScanQuery__
+ *
+ * To run a query within a React component, call `useCaptureShipRockScanQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCaptureShipRockScanQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCaptureShipRockScanQuery({
+ *   variables: {
+ *      imgUrl: // value for 'imgUrl'
+ *   },
+ * });
+ */
+export function useCaptureShipRockScanQuery(baseOptions: Apollo.QueryHookOptions<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables> & ({ variables: types.CaptureShipRockScanQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables>(CaptureShipRockScanDocument, options);
+      }
+export function useCaptureShipRockScanLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables>(CaptureShipRockScanDocument, options);
+        }
+export function useCaptureShipRockScanSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables>(CaptureShipRockScanDocument, options);
+        }
+export type CaptureShipRockScanQueryHookResult = ReturnType<typeof useCaptureShipRockScanQuery>;
+export type CaptureShipRockScanLazyQueryHookResult = ReturnType<typeof useCaptureShipRockScanLazyQuery>;
+export type CaptureShipRockScanSuspenseQueryHookResult = ReturnType<typeof useCaptureShipRockScanSuspenseQuery>;
+export type CaptureShipRockScanQueryResult = Apollo.QueryResult<types.CaptureShipRockScanQuery, types.CaptureShipRockScanQueryVariables>;
+export const CaptureRefineryOrderDocument = gql`
+    query captureRefineryOrder($imgUrl: String!) {
+  captureRefineryOrder(imgUrl: $imgUrl) {
+    ...WorkOrderFragment
+  }
+}
+    ${WorkOrderFragmentFragmentDoc}`;
+
+/**
+ * __useCaptureRefineryOrderQuery__
+ *
+ * To run a query within a React component, call `useCaptureRefineryOrderQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCaptureRefineryOrderQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCaptureRefineryOrderQuery({
+ *   variables: {
+ *      imgUrl: // value for 'imgUrl'
+ *   },
+ * });
+ */
+export function useCaptureRefineryOrderQuery(baseOptions: Apollo.QueryHookOptions<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables> & ({ variables: types.CaptureRefineryOrderQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>(CaptureRefineryOrderDocument, options);
+      }
+export function useCaptureRefineryOrderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>(CaptureRefineryOrderDocument, options);
+        }
+export function useCaptureRefineryOrderSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>(CaptureRefineryOrderDocument, options);
+        }
+export type CaptureRefineryOrderQueryHookResult = ReturnType<typeof useCaptureRefineryOrderQuery>;
+export type CaptureRefineryOrderLazyQueryHookResult = ReturnType<typeof useCaptureRefineryOrderLazyQuery>;
+export type CaptureRefineryOrderSuspenseQueryHookResult = ReturnType<typeof useCaptureRefineryOrderSuspenseQuery>;
+export type CaptureRefineryOrderQueryResult = Apollo.QueryResult<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>;
 export const GetPublicLookupsDocument = gql`
     query getPublicLookups {
   lookups {
@@ -2583,8 +2669,8 @@ export function useGetPublicLookupsLazyQuery(baseOptions?: Apollo.LazyQueryHookO
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>(GetPublicLookupsDocument, options);
         }
-export function useGetPublicLookupsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
+export function useGetPublicLookupsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>(GetPublicLookupsDocument, options);
         }
 export type GetPublicLookupsQueryHookResult = ReturnType<typeof useGetPublicLookupsQuery>;
