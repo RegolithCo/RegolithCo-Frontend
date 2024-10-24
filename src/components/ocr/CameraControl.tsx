@@ -36,12 +36,18 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose }) => {
     input.click()
   }
 
+  const guideUrl = mode === true ? '/images/capture/ScoutCaptureGuide.svg' : '/images/capture/RefineryCaptureGuide.svg'
+
   return (
     <Dialog open={true} fullScreen fullWidth>
       <Stack
         spacing={2}
         direction="row"
         sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
           zIndex: 2000,
           backgroundColor: 'black',
         }}
@@ -99,11 +105,36 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose }) => {
         )}
       </Stack>
       <Box>
+        {!image && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              width: '100%',
+              zIndex: 1000,
+              border: '10px solid red',
+              position: 'absolute',
+            }}
+          >
+            <img
+              src={guideUrl}
+              alt="Capture Guide"
+              style={{
+                height: '100%',
+                width: '100%',
+                opacity: 0.4,
+                objectFit: 'contain',
+              }}
+            />
+          </Box>
+        )}
         {!image ? (
           <Camera
             // facingMode="environment"
             ref={camera}
-            // aspectRatio={4 / 3}
+            aspectRatio={3 / 4}
             errorMessages={{
               canvas: 'Canvas is not supported',
               noCameraAccessible: 'No camera device accessible',
