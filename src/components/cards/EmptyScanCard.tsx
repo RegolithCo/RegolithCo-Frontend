@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Card, useTheme, SxProps, Theme, IconButton, Box, Tooltip } from '@mui/material'
+import { Card, useTheme, SxProps, Theme, IconButton, Box, Tooltip, Typography } from '@mui/material'
 import { Add, Cancel, SvgIconComponent } from '@mui/icons-material'
 
 export interface EmptyScanCardProps {
@@ -77,6 +77,9 @@ export const EmptyScanCard: React.FC<EmptyScanCardProps> = ({ onClick, Icon, onD
           <IconButton sx={styles.iconButton}>
             <Add />
           </IconButton>
+          <Typography variant="caption" sx={{ textAlign: 'center', mt: 2 }} component={'div'}>
+            Click to Add Scan
+          </Typography>
         </Card>
       </Tooltip>
     </Box>

@@ -1,75 +1,68 @@
 import * as React from 'react'
-import { Fab, Tooltip, useMediaQuery, useTheme } from '@mui/material'
-import { Coffee } from '@mui/icons-material'
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material'
 import { alpha, keyframes } from '@mui/system'
 
 export type AnnoyingCoffeeProps = {
   show?: boolean
-  navigate?: () => void
 }
 
-export const AnnoyingCoffee: React.FC<AnnoyingCoffeeProps> = ({ show, navigate }) => {
+export const AnnoyingCoffee: React.FC<AnnoyingCoffeeProps> = ({ show }) => {
   const theme = useTheme()
   const mediumDown = useMediaQuery(theme.breakpoints.down('md'))
 
   const pulse = keyframes`
-  0% { 
-    box-shadow: 0 0 0 0 transparent; 
-  }
-  50% { 
-    box-shadow: 0 0 5px 5px ${alpha(theme.palette.primary.dark, 0.5)}; 
-  }
-  100% { 
-    box-shadow: 0 0 0 0 transparent; 
-  }
+  0%   { box-shadow: 0 0 0 0 transparent; }
+  50%  { box-shadow: 0 0 5px 5px ${alpha(theme.palette.error.light, 0.5)}; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+  `
+  const rotate = keyframes`
+  0%   {  transform: rotate(0deg);  }
+  20%  { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
   `
 
-  const rotate = keyframes`
-    0% { 
-      transform: rotate(0deg); 
-    }
-    20% { 
-      transform: rotate(0deg); 
-    }
-    100% { 
-      transform: rotate(360deg); 
-    }
-    `
   const gradient = keyframes`
-      0% { 
-        background-position: 0% 50%; 
-      }
-      50% { 
-        background-position: 100% 50%; 
-      }
-      100% { 
-        background-position: 0% 50%; 
-      }
-      `
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+  `
 
-  if (!show || !navigate || mediumDown) return null
+  if (!show) return null
+
   return (
-    <Tooltip title="Help with server costs!" placement="left">
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={navigate}
+    <Box
+      sx={{
+        position: mediumDown ? 'initial' : 'fixed',
+        bottom: theme.spacing(3),
+        right: theme.spacing(2),
+        zIndex: 100,
+      }}
+    >
+      <Button
+        href="https://ko-fi.com/D1D4I6VJV"
+        target="_blank"
+        variant="contained"
+        size="large"
         sx={{
-          border: `3px solid black`,
-          position: 'fixed',
+          backgroundColor: theme.palette.secondary.dark,
+          borderRadius: 50,
           animation: `${pulse} 1.5s infinite, ${gradient} 3s ease infinite`,
-          bottom: theme.spacing(3),
-          right: theme.spacing(2),
-          background: `linear-gradient(270deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
-          backgroundSize: '200% 200%',
         }}
+        startIcon={
+          <Box
+            sx={{
+              mr: 0.5,
+              height: 24,
+              width: 24,
+              animation: `${rotate} 5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite`,
+            }}
+          >
+            <img height="24" style={{}} src="/images/icons/kofi_symbol_sm.png" alt="Buy Me a Coffee" />
+          </Box>
+        }
       >
-        <Coffee
-          sx={{
-            animation: `${rotate} 10s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite`,
-          }}
-        />
-      </Fab>
-    </Tooltip>
+        Support Us!
+      </Button>
+    </Box>
   )
 }

@@ -7,6 +7,9 @@ export const PatreonButton = () => {
     script.src = 'https://c6.patreon.com/becomePatronButton.bundle.js'
     script.async = true
     document.body.appendChild(script)
+    return () => {
+      document.body.removeChild(script)
+    }
   }, [])
 
   return (

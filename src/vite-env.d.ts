@@ -14,3 +14,10 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+interface Window {
+  kofiwidget2?: {
+    init: (title: string, color: string, id: string) => void
+    draw: () => void
+  }
+}

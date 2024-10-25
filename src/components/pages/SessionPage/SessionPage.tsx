@@ -145,7 +145,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               sx={styles.sessionTabs}
               aria-label="basic tabs example"
             >
-              <Tab label="Dashboard" icon={<Dashboard />} value={SessionTabs.DASHBOARD} iconPosition="start" />
+              <Tab label="Activity" icon={<Dashboard />} value={SessionTabs.DASHBOARD} iconPosition="start" />
               {/* <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} /> */}
               {/* <Tab label="Scouting" value={SessionTabs.SCOUTING} /> */}
               <Tab label="Summary" icon={<Summarize />} value={SessionTabs.SUMMARY} iconPosition="start" />

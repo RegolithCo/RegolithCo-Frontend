@@ -14,8 +14,27 @@ import {
 } from '@mui/material'
 
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
-import { ActivityEnum, CrewShare, makeHumanIds, WorkOrder, WorkOrderStateEnum } from '@regolithco/common'
-import { AccountBalance, BackHand, Cancel, Create, Delete, Edit, Save, SvgIconComponent } from '@mui/icons-material'
+import {
+  ActivityEnum,
+  CrewShare,
+  makeHumanIds,
+  ShipMiningOrder,
+  ShipRock,
+  WorkOrder,
+  WorkOrderStateEnum,
+} from '@regolithco/common'
+import {
+  AccountBalance,
+  BackHand,
+  Camera,
+  Cancel,
+  Create,
+  Delete,
+  DocumentScanner,
+  Edit,
+  Save,
+  SvgIconComponent,
+} from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { keyframes, Theme } from '@mui/system'
@@ -24,6 +43,7 @@ import { ConfirmModal } from './ConfirmModal'
 import { AppContext } from '../../context/app.context'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
+import { CameraControl, CameraControlProps } from '../ocr/CameraControl'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -122,8 +142,11 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
+  const [camScanModal, setCamScanModal] = React.useState<CameraControlProps['mode'] | null>(null)
   const styles = styleThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
+  const isShipMining = workOrder.orderType === ActivityEnum.ShipMining
 
   // We need to make sure newWorkOrder is always up to date with the workOrder
   React.useEffect(() => {
@@ -186,6 +209,11 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     </div>
   )
 
+  const handleCapture = <T extends ShipRock | ShipMiningOrder>(data: T): void => {
+    const capturedOrder = data as ShipMiningOrder
+    console.log(capturedOrder)
+  }
+
   // const maxWidth = 500
   return (
     <Dialog
@@ -204,6 +232,14 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
         },
       }}
     >
+      {camScanModal && (
+        <CameraControl
+          captureType="REFINERY_ORDER"
+          mode={camScanModal}
+          onClose={() => setCamScanModal(null)}
+          onCapture={handleCapture}
+        />
+      )}
       <WorkIcon color="inherit" fontSize="large" sx={styles.icon} />
       <Box sx={styles.containerBox}>
         <Toolbar
@@ -309,8 +345,8 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
             <Button
               color="error"
               variant="contained"
-              size="large"
-              startIcon={<Cancel />}
+              size={isSmall ? 'small' : 'large'}
+              startIcon={!isSmall && <Cancel />}
               onClick={() => {
                 if (isEditing && !isNew) setIsEditing(false)
                 handleConfirmClose()
@@ -324,6 +360,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
             <Tooltip title={'PERMANENTLY Delete this work order'} placement="top">
               <Button
                 variant="contained"
+                size={isSmall ? 'small' : 'large'}
                 startIcon={<Delete />}
                 onClick={() => setDeleteConfirmModal(true)}
                 color="error"
@@ -332,6 +369,43 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               </Button>
             </Tooltip>
           )}
+          {isShipMining && (
+            <>
+              {!isSmall && (
+                <Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, fontWeight: 700 }}>
+                  Import:
+                </Typography>
+              )}
+              <Tooltip title="Import a work order using your device's camera." placement="top">
+                <Button
+                  size={isSmall ? 'small' : 'large'}
+                  startIcon={<Camera />}
+                  color="inherit"
+                  variant="contained"
+                  onClick={() => {
+                    setCamScanModal('Camera')
+                  }}
+                >
+                  {isSmall ? 'Cam' : 'Camera'}
+                </Button>
+              </Tooltip>
+              <Tooltip title="Import a work order using a game screenshot." placement="top">
+                <Button
+                  size={isSmall ? 'small' : 'large'}
+                  startIcon={<DocumentScanner />}
+                  color="inherit"
+                  variant="contained"
+                  onClick={() => {
+                    setCamScanModal('File')
+                  }}
+                >
+                  {isSmall ? 'Screenshot' : 'Screenshot'}
+                </Button>
+              </Tooltip>
+              <div style={{ flexGrow: 1 }} />
+            </>
+          )}
+
           {allowEdit && isEditing && (
             <Tooltip title={isNew ? 'Save & Create this work order' : 'Save these edits'} placement="top">
               <Button
@@ -341,14 +415,14 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                   boxShadow: `2 2 5px white; 0 0 10px white`,
                   border: `2px solid black`,
                 }}
-                size="large"
-                startIcon={isNew ? <Create /> : <Save />}
+                size={isSmall ? 'small' : 'large'}
+                startIcon={isSmall ? undefined : isNew ? <Create /> : <Save />}
                 onClick={() => {
                   onUpdate(newWorkOrder)
                   isEditing && setIsEditing(false)
                 }}
               >
-                {isNew ? 'Save New Order' : 'Save'}
+                {isNew ? (isSmall ? 'Save' : 'Save New Order') : 'Save'}
               </Button>
             </Tooltip>
           )}

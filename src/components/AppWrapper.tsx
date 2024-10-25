@@ -113,20 +113,14 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bg
         },
       }}
     >
-      <Box sx={styles.overlay}>{children}</Box>
-      {mediumUp && (
-        <>
-          <Box sx={{ position: 'absolute', bottom: 5, right: 5 }}>
-            <Copyright />
-          </Box>
-        </>
-      )}
-      <AnnoyingCoffee
-        show={showCoffee}
-        navigate={() => {
-          window.open('https://regolith.rocks/about/support-us', '_blank')
-        }}
-      />
+      <Box sx={styles.overlay}>
+        {children}
+
+        <Box sx={mediumUp ? { position: 'absolute', bottom: 5, right: 5 } : {}}>
+          <Copyright />
+        </Box>
+        <AnnoyingCoffee show={showCoffee} />
+      </Box>
     </Box>
   )
 }

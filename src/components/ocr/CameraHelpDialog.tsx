@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import { CaptureTypeEnum, CaptureTypeTitle } from './CameraControl'
-import { AddPhotoAlternate, Camera, UploadFile } from '@mui/icons-material'
+import { AddPhotoAlternate, Camera } from '@mui/icons-material'
 
 // export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
 
@@ -15,7 +15,7 @@ export const CameraHelpDialog: React.FC<CameraHelpDialogProps> = ({ onClose, cap
   return (
     <Dialog
       open={true}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       onClose={onClose}
       slotProps={{
