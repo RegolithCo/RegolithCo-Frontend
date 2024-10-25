@@ -131,7 +131,8 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
       {open && (
         <CameraControl
           onClose={() => setOpen(false)}
-          captureType="REFINERY_ORDER"
+          // captureType="REFINERY_ORDER"
+          captureType="SHIP_ROCK"
           onCapture={<T extends ShipRock | ShipMiningOrder>(retVal: T): T => {
             console.log('Captured data:', retVal)
             // Perform any additional processing here
