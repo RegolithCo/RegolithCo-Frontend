@@ -1,25 +1,15 @@
-import {
-  Box,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Fab,
-  IconButton,
-  PaletteColor,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material'
 import React, { useState, useRef, useEffect } from 'react'
+import { Box, Dialog, DialogTitle, Fab, IconButton, PaletteColor, Tooltip, Typography, useTheme } from '@mui/material'
 import Webcam from 'react-webcam'
 import { useCaptureRefineryOrderLazyQuery, useCaptureShipRockScanLazyQuery } from '../../schema'
 import { alpha, keyframes, Stack } from '@mui/system'
-import { ShipMiningOrder, ShipRock } from '@regolithco/common'
+import { ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
 import { ObjectValues } from '@regolithco/common/dist/types'
-import { AddPhotoAlternate, Camera, Check, Clear, Publish, Replay, TipsAndUpdatesOutlined } from '@mui/icons-material'
+import { AddPhotoAlternate, Camera, Cameraswitch, Clear, TipsAndUpdatesOutlined } from '@mui/icons-material'
 import { CameraHelpDialog } from './CameraHelpDialog'
 import { DeviceTypeEnum, useDeviceType } from '../../hooks/useDeviceType'
+import { fontFamilies } from '../../theme'
+import log from 'loglevel'
 
 export const CaptureTypeEnum = {
   SHIP_ROCK: 'SHIP_ROCK',
@@ -29,7 +19,6 @@ export type CaptureTypeEnum = ObjectValues<typeof CaptureTypeEnum>
 
 export const CaptureStepEnum = {
   CAPTURE: 'CAPTURE',
-  SUBMIT: 'SUBMIT',
   APPROVE: 'APPROVE',
 } as const
 export type CaptureStepEnum = ObjectValues<typeof CaptureStepEnum>
@@ -39,17 +28,12 @@ export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
   REFINERY_ORDER: 'Capture Refinery Order',
 }
 
-const Steps: Record<CaptureStepEnum, [React.ReactNode, string]> = {
-  CAPTURE: [<Camera />, 'Capture'],
-  SUBMIT: [<Publish />, 'Submit'],
-  APPROVE: [<Check />, 'Approve'],
-}
-const StepOrder: CaptureStepEnum[] = ['CAPTURE', 'SUBMIT', 'APPROVE']
+const StepOrder: CaptureStepEnum[] = ['CAPTURE', 'APPROVE']
 
 export interface CameraControlProps {
   onClose: () => void
   mode: 'Camera' | 'File'
-  onCapture: <T extends ShipRock | ShipMiningOrder>(retVal: T) => void
+  onCapture: <T extends ShipRockCapture | ShipMiningOrderCapture>(retVal: T) => void
   captureType: CaptureTypeEnum
 }
 
@@ -57,41 +41,68 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
   const camera = useRef<Webcam & HTMLVideoElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const [image, setImage] = useState<string | null>(null)
+  const [deviceReady, setDeviceReady] = useState<boolean>(false)
+  const [dimensions, setDimensions] = useState({ width: 512, height: 512 })
   const [showError, setShowError] = useState<string | null>(null)
   const [helpOpen, setHelpOpen] = useState(false)
   const [step, setStep] = useState(0)
   const theme = useTheme()
+
   // I need a media query to detect if this is a mobile device or a desktop
   const isPhone = useDeviceType() === DeviceTypeEnum.PHONE
 
   const [currDevice, setCurrDevice] = React.useState<MediaDeviceInfo>()
   const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([])
 
-  const cameraReady = !!camera.current && !!camera.current.state.hasUserMedia
+  // Get the list of devices and populate our chooser
+  useEffect(() => {
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      const videoDevices = devices.filter((device) => device.kind === 'videoinput')
+      setDevices(videoDevices)
+      if (!currDevice && videoDevices.length > 0) {
+        setCurrDevice(videoDevices[0])
+      }
+    })
+  }, [navigator.mediaDevices])
+
+  log.info('MARZIPAN Camera Ready', deviceReady, camera.current)
+  /**
+   * Detect the frame size and adjust the preview window accordingly
+   */
+  useEffect(() => {
+    const handleResize = (entries: ResizeObserverEntry[]) => {
+      for (const entry of entries) {
+        if (entry.target === frameRef.current) {
+          const { width, height } = entry.contentRect
+          setDimensions({ width, height })
+        }
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(handleResize)
+    if (frameRef.current) {
+      resizeObserver.observe(frameRef.current)
+    }
+
+    return () => {
+      if (frameRef.current) {
+        resizeObserver.unobserve(frameRef.current)
+      }
+    }
+  }, [frameRef.current])
 
   const { previeWith, previewHeight, imgWidth, imgHeight } = React.useMemo(() => {
-    const { width, height } = frameRef.current?.getBoundingClientRect() || { width: 512, height: 512 }
+    const { width } = frameRef.current?.getBoundingClientRect() || { width: 512, height: 512 }
     const previeWith = width
     const previewHeight = width * (4 / 3)
     const imgWidth = 1024
     const imgHeight = 1024 * (4 / 3)
     return { previeWith, previewHeight, imgWidth, imgHeight }
-  }, [frameRef.current])
+  }, [dimensions])
 
-  // const handleDevices = React.useCallback(
-  //   (mediaDevices: MediaDeviceInfo[]) => {
-  //     setDevices(mediaDevices.filter(({ kind }) => kind === 'videoinput'))
-  //     if (!currDevice && mediaDevices.length > 0) {
-  //       setCurrDevice(mediaDevices[0])
-  //     }
-  //   },
-  //   [setDevices]
-  // )
-
-  // React.useEffect(() => {
-  //   navigator.mediaDevices.enumerateDevices().then(handleDevices)
-  // }, [handleDevices])
-
+  /**
+   * Capture an image
+   */
   const capture = React.useCallback(() => {
     if (camera.current) {
       const imageSrc = camera.current.getScreenshot({
@@ -149,25 +160,31 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
     input.click()
   }
 
+  // If we're in file mode, open the file dialog
   useEffect(() => {
     if (mode === 'File') {
       handleFileDialogClick()
     }
   }, [mode])
+
+  // If we have a capture, close the dialog
   useEffect(() => {
     if (refineryOrderData) {
       const refineryOrder = refineryOrderData.captureRefineryOrder
       onClose()
-      onCapture(refineryOrder as ShipMiningOrder)
+      onCapture(refineryOrder as ShipMiningOrderCapture)
     }
   }, [refineryOrderData])
+  // If we have a capture, close the dialog
   useEffect(() => {
     if (shipRockScanData) {
       const shipRock = shipRockScanData.captureShipRockScan
       onClose()
-      onCapture(shipRock as ShipRock)
+      onCapture(shipRock as ShipRockCapture)
     }
   }, [shipRockScanData])
+
+  // If we have an error, show it
   useEffect(() => {
     if (refineryOrderError || shipRockScanError) {
       setShowError(refineryOrderError?.message || shipRockScanError?.message || 'Unknown Error')
@@ -219,14 +236,12 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent
+      <Box
         sx={{
-          position: 'relative',
           minHeight: 500,
           display: 'flex',
           flexGrow: 1,
           overflow: 'hidden',
-          border: '4px solid green',
         }}
       >
         {mode === 'Camera' && StepOrder[step] === CaptureStepEnum.CAPTURE && (
@@ -234,41 +249,76 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
             ref={frameRef}
             sx={{
               flexGrow: 1,
-              position: 'relative',
+              width: '100%',
               display: 'flex',
+              // border: '4px solid white',
+              position: 'relative',
               justifyContent: 'center',
               alignItems: 'center',
               overflow: 'hidden',
             }}
           >
             <Typography
-              variant="h6"
+              variant="caption"
               sx={{
+                zIndex: 5,
                 position: 'absolute',
                 top: '20px',
                 left: '50%',
+                width: '90%',
+                // Make it no overflow with an ellipse
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+                textShadow: '0 0 10px black',
+                textOverflow: 'ellipsis',
                 transform: 'translateX(-50%)',
               }}
             >
-              {currDevice ? currDevice.label : 'No Camera Found'}
+              {currDevice ? 'Camera: ' + currDevice.label : 'No Camera Found'}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                zIndex: 100,
+                borderRadius: 2,
+                position: 'absolute',
+                // width: '90%',
+                px: 2,
+                whiteSpace: 'nowrap',
+                top: '80%',
+                left: '50%',
+                textTransform: 'uppercase',
+                backgroundColor: '#00000088',
+                color: 'red',
+                textAlign: 'center',
+                // Make it no overflow with an ellipse
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+                // I want a super dark black outline that is 2 pixels wide then a glowing white outline that is 10 pixels wide
+                // textShadow: '0 0 2px white, 0 0 10px white',
+                transform: 'translateX(-50%) translateY(-50%)',
+              }}
+            >
+              Line up the guide with your monitor
             </Typography>
             <Box
               sx={{
-                height: '90%',
-                width: '90%',
+                height: previewHeight,
+                width: previeWith,
                 position: 'absolute',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                border: '10px solid red',
               }}
             >
               <img
                 src={guideUrl}
                 style={{
-                  height: '100%',
-                  width: '100%',
-                  opacity: 0.4,
+                  height: 'auto',
+                  width: '90%',
+                  opacity: 0.8,
                 }}
               />
             </Box>
@@ -278,7 +328,14 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
               height={previewHeight}
               width={previeWith}
               screenshotFormat="image/jpeg"
-              screenshotQuality={0.2}
+              screenshotQuality={0.5}
+              onUserMedia={() => {
+                setDeviceReady(true)
+              }}
+              onUserMediaError={(e) => {
+                log.error('MARZIPAN Camera Error', e)
+                setDeviceReady(false)
+              }}
               videoConstraints={{
                 deviceId: currDevice?.deviceId,
                 facingMode: 'environment',
@@ -286,23 +343,44 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                 height: imgHeight,
               }}
             />
+            {devices && devices.length > 1 && (
+              <Fab
+                color="error"
+                disabled={loading}
+                onClick={() => {
+                  // Cycle through the devices
+                  const currIndex = devices.findIndex((d) => d.deviceId === currDevice?.deviceId)
+                  const nextIndex = (currIndex + 1) % devices.length
+                  setCurrDevice(devices[nextIndex])
+                }}
+                sx={{
+                  border: '2px solid white',
+                  borderRadius: 20,
+                  position: 'absolute',
+                  bottom: '20px',
+                  left: '20px',
+                }}
+              >
+                <Cameraswitch />
+              </Fab>
+            )}
             <Fab
               color="success"
               variant="extended"
-              disabled={loading}
+              disabled={loading || !deviceReady}
               onClick={() => capture()}
               sx={{
                 // Give it
                 boxShadow: `0 0 10px 10px  ${theme.palette.primary.light}44`,
-                backgroundColor: theme.palette.primary.main,
-                animation: `${pulse(theme.palette.primary)} 1.5s infinite`,
+                backgroundColor: deviceReady ? theme.palette.primary.main : theme.palette.primary.dark,
+                animation: deviceReady ? `${pulse(theme.palette.primary)} 1.5s infinite` : 'none',
                 position: 'absolute',
                 bottom: '20px',
                 right: '50%',
                 transform: 'translateX(50%)',
               }}
             >
-              {Steps.CAPTURE[0]} {Steps.CAPTURE[1]}
+              <Camera /> Capture
             </Fab>
           </Box>
         )}
@@ -349,7 +427,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
             </Fab>
           </Box>
         )}
-        {StepOrder[step] === CaptureStepEnum.SUBMIT && (
+        {/* {StepOrder[step] === CaptureStepEnum.SUBMIT && (
           <Box
             sx={{
               flexGrow: 1,
@@ -421,9 +499,9 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
               <Replay /> Try again
             </Fab>
           </Box>
-        )}
-        {StepOrder[step] === CaptureStepEnum.APPROVE && <Box sx={{ flexGrow: 1 }}>APPROVE</Box>}
-      </DialogContent>
+        )} */}
+        {/* {StepOrder[step] === CaptureStepEnum.APPROVE && <Box sx={{ flexGrow: 1 }}>APPROVE</Box>} */}
+      </Box>
     </Dialog>
   )
 }

@@ -19,7 +19,9 @@ import {
   CrewShare,
   makeHumanIds,
   ShipMiningOrder,
+  ShipMiningOrderCapture,
   ShipRock,
+  ShipRockCapture,
   WorkOrder,
   WorkOrderStateEnum,
 } from '@regolithco/common'
@@ -209,8 +211,8 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     </div>
   )
 
-  const handleCapture = <T extends ShipRock | ShipMiningOrder>(data: T): void => {
-    const capturedOrder = data as ShipMiningOrder
+  const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
+    const capturedOrder = data as ShipMiningOrderCapture
     console.log(capturedOrder)
   }
 

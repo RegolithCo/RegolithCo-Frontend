@@ -7,7 +7,8 @@ import {
   ScoutingFindStateEnum,
   FindClusterSummary,
   ShipRock,
-  ShipMiningOrder,
+  ShipRockCapture,
+  ShipMiningOrderCapture,
 } from '@regolithco/common'
 import { RockIcon } from '../../../icons'
 import { AddCircle, Camera, DocumentScanner } from '@mui/icons-material'
@@ -86,8 +87,8 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
   const placeholderItems: unknown[] =
     clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
 
-  const handleCapture = <T extends ShipRock | ShipMiningOrder>(data: T): void => {
-    const capturedRock = data as ShipRock
+  const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
+    const capturedRock = data as ShipRockCapture
     log.info('MARZIPAN Captured Ship Rock', capturedRock)
     console.log(capturedRock)
   }
