@@ -29,7 +29,6 @@ import { CameraHelpDialog } from './CameraHelpDialog'
 import { DeviceTypeEnum, useDeviceType } from '../../hooks/useDeviceType'
 import { fontFamilies } from '../../theme'
 import log from 'loglevel'
-import { over } from 'lodash'
 import { ConfirmModal } from '../modals/ConfirmModal'
 import { PreviewScoutingRockCapture } from './PreviewScoutingRockCapture'
 import { PreviewWorkOrderCapture } from './PreviewWorkOrderCapture'
@@ -122,11 +121,11 @@ export const CameraControl: React.FC<CameraControlProps> = ({
   }, [frameRef.current])
 
   const { previeWith, previewHeight, imgWidth, imgHeight } = React.useMemo(() => {
-    const { width } = frameRef.current?.getBoundingClientRect() || { width: 512, height: 512 }
+    const { width, height } = frameRef.current?.getBoundingClientRect() || { width: 512, height: 512 }
     const previeWith = width
-    const previewHeight = width * (4 / 3)
-    const imgWidth = 1024
-    const imgHeight = 1024 * (4 / 3)
+    const previewHeight = height
+    const imgWidth = Math.max(1024, height)
+    const imgHeight = imgWidth * (previewHeight / previeWith)
     return { previeWith, previewHeight, imgWidth, imgHeight }
   }, [dimensions])
 
@@ -363,7 +362,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 style={{
                   height: 'auto',
                   width: '90%',
-                  opacity: 0.8,
+                  opacity: 0.5,
                 }}
               />
             </Box>
@@ -517,14 +516,14 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 </Typography>
               </Box>
             )}
-            {!loading && refineryOrderData && (
+            {!loading && refineryOrderData && refineryOrderData.captureRefineryOrder && (
               <PreviewWorkOrderCapture order={refineryOrderData.captureRefineryOrder as ShipMiningOrderCapture} />
             )}
-            {!loading && shipRockScanData && (
+            {!loading && shipRockScanData && shipRockScanData.captureShipRockScan && (
               <PreviewScoutingRockCapture shipRock={shipRockScanData.captureShipRockScan as ShipRockCapture} />
             )}
             <Box>
-              {!loading && !refineryOrderData && !shipRockScanData && (
+              {!loading && !refineryOrderData?.captureRefineryOrder && !shipRockScanData?.captureShipRockScan && (
                 <Typography variant="h5">Capture not recognized</Typography>
               )}
               {showError && <Box sx={{ color: 'red' }}>{showError}</Box>}

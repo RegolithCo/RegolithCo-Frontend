@@ -187,11 +187,17 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             //
             backgroundColor: theme.palette.background.default,
             flex: '0 0',
-            px: 3,
+            justifyContent: 'space-between',
             borderTop: `2px solid ${theme.palette.primary.main}`,
           }}
         >
-          <Button color="error" variant="text" size="small" startIcon={<Cancel />} onClick={handleConfirmClose}>
+          <Button
+            color="error"
+            variant="text"
+            size={isSmall ? 'small' : 'large'}
+            startIcon={!isSmall && <Cancel />}
+            onClick={handleConfirmClose}
+          >
             {isNew ? 'Cancel' : 'Close'}
           </Button>
           <div style={{ flexGrow: 1 }} />
@@ -203,7 +209,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
           {allowEdit && (
             <Tooltip title="Import a rock scan using your device's camera." placement="top">
               <Button
-                size={'small'}
+                size={isSmall ? 'small' : 'large'}
                 startIcon={<Camera />}
                 color="inherit"
                 variant="contained"
@@ -218,7 +224,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
           {allowEdit && (
             <Tooltip title="Import a rock scan using a game screenshot." placement="top">
               <Button
-                size={'small'}
+                size={isSmall ? 'small' : 'large'}
                 startIcon={<DocumentScanner />}
                 color="inherit"
                 variant="contained"
@@ -234,7 +240,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
           {allowDelete && onDelete && (
             <Button
               variant="outlined"
-              size="small"
+              size={isSmall ? 'small' : 'large'}
               startIcon={<Delete />}
               onClick={() => setDeleteConfirmModal(true)}
               color="error"
@@ -246,8 +252,8 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             <Button
               color="secondary"
               variant="contained"
-              size="small"
-              startIcon={isNew ? <Create /> : <Save />}
+              size={isSmall ? 'small' : 'large'}
+              startIcon={isSmall ? undefined : isNew ? <Create /> : <Save />}
               onClick={() => {
                 onChange(newScoutingFind)
                 onClose()

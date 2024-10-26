@@ -116,7 +116,15 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bg
       <Box sx={styles.overlay}>
         {children}
 
-        <Box sx={mediumUp ? { position: 'absolute', bottom: 5, right: 5 } : {}}>
+        <Box
+          sx={
+            mediumUp
+              ? { position: 'absolute', bottom: 5, right: 5 }
+              : {
+                  display: showCoffee ? undefined : 'none',
+                }
+          }
+        >
           <Copyright />
         </Box>
         <AnnoyingCoffee show={showCoffee} />

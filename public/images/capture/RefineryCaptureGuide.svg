@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="100%" height="100%" viewBox="0 0 643 762" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
-    <rect x="287.149" y="86.32" width="344.877" height="662.606" style="fill:rgb(230,0,202);fill-opacity:0;stroke:rgb(237,0,0);stroke-width:5px;"/>
-    <rect x="13.059" y="86.32" width="261.802" height="216.768" style="fill:rgb(230,0,202);fill-opacity:0;stroke:rgb(237,0,0);stroke-width:5px;"/>
+    <path d="M632.026,115.106C632.026,99.219 619.127,86.32 603.24,86.32L315.934,86.32C300.047,86.32 287.149,99.219 287.149,115.106L287.149,720.141C287.149,736.028 300.047,748.927 315.934,748.927L603.24,748.927C619.127,748.927 632.026,736.028 632.026,720.141L632.026,115.106Z" style="fill:rgb(230,0,202);fill-opacity:0;stroke:rgb(237,0,0);stroke-width:5px;"/>
+    <path d="M274.861,103.964C274.861,94.226 266.955,86.32 257.217,86.32L30.703,86.32C20.965,86.32 13.059,94.226 13.059,103.964L13.059,285.444C13.059,295.182 20.965,303.088 30.703,303.088L257.217,303.088C266.955,303.088 274.861,295.182 274.861,285.444L274.861,103.964Z" style="fill:rgb(230,0,202);fill-opacity:0;stroke:rgb(237,0,0);stroke-width:5px;"/>
     <g transform="matrix(0.594852,0,0,0.144478,286.012,692.892)">
         <rect x="13.059" y="86.32" width="261.802" height="216.768" style="fill:rgb(230,0,202);fill-opacity:0;stroke:rgb(237,0,0);stroke-width:11.55px;"/>
     </g>
@@ -60,9 +60,24 @@
     <rect x="13.059" y="730.682" width="235.25" height="31.318" style="fill:rgb(235,235,235);"/>
     <rect x="13.059" y="532.718" width="251.297" height="40.731" style="fill:rgb(235,235,235);"/>
     <g transform="matrix(1,0,0,1,-9.62978,17.7234)">
-        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:rgb(255,30,30);">XXX-LX STATION NAME</text>
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:rgb(235,235,235);stroke:black;stroke-width:1.5px;stroke-linecap:butt;stroke-miterlimit:2;">REFINERY NAME</text>
     </g>
     <g transform="matrix(1,0,0,1,512.836,83.8345)">
-        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:rgb(255,30,30);">SETUP</text>
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:white;stroke:black;stroke-width:2px;stroke-linecap:butt;stroke-miterlimit:2;">SETUP</text>
+    </g>
+    <g transform="matrix(1,0,0,1,271.073,260.867)">
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:white;stroke:black;stroke-width:2px;stroke-linecap:butt;stroke-miterlimit:2;">METHOD</text>
+    </g>
+    <g transform="matrix(1,0,0,1,346.584,450.554)">
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:72px;fill:white;stroke:black;stroke-width:2px;stroke-linecap:butt;stroke-miterlimit:2;">ORES</text>
+    </g>
+    <g transform="matrix(1,0,0,1,512.983,604.808)">
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:white;stroke:black;stroke-width:2px;stroke-linecap:butt;stroke-miterlimit:2;">COST</text>
+    </g>
+    <g transform="matrix(1,0,0,1,513.744,653.21)">
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:white;stroke:black;stroke-width:2px;stroke-linecap:butt;stroke-miterlimit:2;">TIME</text>
+    </g>
+    <g transform="matrix(1,0,0,1,457.81,697.855)">
+        <text x="22.25px" y="32.519px" style="font-family:'RobotoMono-Bold', 'Roboto Mono', monospace;font-size:30px;fill:white;stroke:black;stroke-width:2px;stroke-linecap:butt;stroke-miterlimit:2;">CONFIRM</text>
     </g>
 </svg>

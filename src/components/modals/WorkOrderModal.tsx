@@ -184,19 +184,19 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
   if (!workOrder) return null
   switch (workOrder.orderType) {
     case ActivityEnum.Salvage:
-      title = 'Salvage Work Order'
+      title = mediumUp ? 'Salvage Work Order' : 'Order'
       WorkIcon = ClawIcon
       break
     case ActivityEnum.ShipMining:
-      title = 'Ship Mining Work Order'
+      title = mediumUp ? 'Ship Mining Work Order' : 'Order'
       WorkIcon = RockIcon
       break
     case ActivityEnum.VehicleMining:
-      title = 'Vehicle Mining Work Order'
+      title = mediumUp ? 'Vehicle Mining Work Order' : 'Order'
       WorkIcon = GemIcon
       break
     case ActivityEnum.Other:
-      title = 'Share aUEC Work Order'
+      title = mediumUp ? 'Share aUEC Work Order' : 'Order'
       WorkIcon = AccountBalance
       break
     default:
@@ -303,28 +303,35 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               {title}
               {mediumUp && workOrder?.state === WorkOrderStateEnum.Failed ? ' <FAILED>' : ''}
             </Typography>
-            <Typography component="div" sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}>
-              <Box sx={styles.headerMeta}>
-                ID: {makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
-              </Box>
-              <Box sx={styles.headerMeta}> Created By: {getSafeName(workOrder.owner?.scName) || 'NEW'}</Box>
-              {workOrder.sellerscName && (
-                <Box sx={styles.headerMeta}> Seller: {getSafeName(workOrder.sellerscName)}</Box>
-              )}
-            </Typography>
+            {mediumUp && (
+              <Typography
+                component="div"
+                sx={{ py: 0, pl: 5, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
+              >
+                <Box sx={styles.headerMeta}>
+                  ID: {makeHumanIds(getSafeName(workOrder.sellerscName || workOrder.owner?.scName), workOrder.orderId)}
+                </Box>
+                <Box sx={styles.headerMeta}> Created By: {getSafeName(workOrder.owner?.scName) || 'NEW'}</Box>
+                {workOrder.sellerscName && (
+                  <Box sx={styles.headerMeta}> Seller: {getSafeName(workOrder.sellerscName)}</Box>
+                )}
+              </Typography>
+            )}
           </Box>
           <Box sx={{ flexGrow: 1 }} />
 
-          <Typography
-            sx={{
-              fontFamily: fontFamilies.robotoMono,
-              fontWeight: 'bold',
-              fontSize: '2rem',
-              ...pulseCssThunk(isEditing),
-            }}
-          >
-            {isEditing ? 'Editing...' : ' '}
-          </Typography>
+          {mediumUp && (
+            <Typography
+              sx={{
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+                fontSize: '2rem',
+                ...pulseCssThunk(isEditing),
+              }}
+            >
+              {isEditing ? 'Editing...' : ' '}
+            </Typography>
+          )}
           {!isEditing && !isNew && setWorkOrderShareId && (
             <Tooltip title="Share this work order" placement="top">
               <IconButton color="inherit" onClick={() => setWorkOrderShareId(workOrder.orderId)}>
@@ -380,7 +387,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               color="error"
               variant="contained"
               size={isSmall ? 'small' : 'large'}
-              startIcon={!isSmall && <Cancel />}
+              startIcon={<Cancel />}
               onClick={() => {
                 if (isEditing && !isNew) setIsEditing(false)
                 handleConfirmClose()
@@ -390,9 +397,9 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
             </Button>
           </Tooltip>
           <div style={{ flexGrow: 1 }} />
-          {isShipMining && (
+          {isEditing && isShipMining && (
             <>
-              {!isSmall && (
+              {mediumUp && (
                 <Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, fontWeight: 700 }}>
                   Import:
                 </Typography>
@@ -400,7 +407,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               <Tooltip title="Import a work order using your device's camera." placement="top">
                 <Button
                   size={isSmall ? 'small' : 'large'}
-                  startIcon={<Camera />}
+                  startIcon={!isSmall && <Camera />}
                   color="inherit"
                   variant="contained"
                   onClick={() => {
@@ -410,6 +417,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                   {isSmall ? 'Cam' : 'Camera'}
                 </Button>
               </Tooltip>
+
               <Tooltip title="Import a work order using a game screenshot." placement="top">
                 <Button
                   size={isSmall ? 'small' : 'large'}
