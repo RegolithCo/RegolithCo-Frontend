@@ -194,6 +194,12 @@ export type RefineryRowFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
 	yield?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type RefineryRowCaptureKeySpecifier = ('amt' | 'ore' | 'yield' | RefineryRowCaptureKeySpecifier)[];
+export type RefineryRowCaptureFieldPolicy = {
+	amt?: FieldPolicy<any> | FieldReadFunction<any>,
+	ore?: FieldPolicy<any> | FieldReadFunction<any>,
+	yield?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type SalvageFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'note' | 'owner' | 'ownerId' | 'scoutingFindId' | 'sessionId' | 'state' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
 export type SalvageFindFieldPolicy = {
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -681,6 +687,10 @@ export type StrictTypedTypePolicies = {
 	RefineryRow?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | RefineryRowKeySpecifier | (() => undefined | RefineryRowKeySpecifier),
 		fields?: RefineryRowFieldPolicy,
+	},
+	RefineryRowCapture?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RefineryRowCaptureKeySpecifier | (() => undefined | RefineryRowCaptureKeySpecifier),
+		fields?: RefineryRowCaptureFieldPolicy,
 	},
 	SalvageFind?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SalvageFindKeySpecifier | (() => undefined | SalvageFindKeySpecifier),

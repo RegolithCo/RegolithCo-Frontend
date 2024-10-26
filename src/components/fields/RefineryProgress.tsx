@@ -13,14 +13,14 @@ interface RefineryProgressProps {
 
 type InputValueType = [string, string[], number]
 
-function reverseFormat(invalue?: number): string {
+function reverseFormatRefiningTime(invalue?: number): string {
   if (!invalue) return '0:0'
   const hours = Math.floor(invalue / (60 * 60))
   const minutes = Math.floor((invalue % (60 * 60)) / 60)
   return `${hours}:${minutes}`
 }
 
-function formatValue(inputValue: string): InputValueType {
+function formatRefiningTimeValue(inputValue: string): InputValueType {
   // Remove any non-digit characters from the input and remove any leading zeros
   const cleanedValue = inputValue.replace(/[^\d]/g, '').replace(/^0+/, '')
 
@@ -59,7 +59,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
   const [isEditing, setIsEditing] = React.useState(false)
   const { isFinished, isStarted, remainingTime } = useCountdown(startTime, (totalTimeS || 0) * 1000)
   const [[stringValue, segments, numValS], setValue] = React.useState<[string, string[], number]>(
-    formatValue(reverseFormat(totalTimeS))
+    formatRefiningTimeValue(reverseFormatRefiningTime(totalTimeS))
   )
   const theme = useTheme()
 
@@ -67,7 +67,7 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
     if (!editable) return
 
     const inputValue = event.target.value
-    const formattedValue = formatValue(inputValue)
+    const formattedValue = formatRefiningTimeValue(inputValue)
     // We cap to 5 characters because values above 999H  are ridiculous
     if (formattedValue[0].length > 6) {
       return
@@ -93,13 +93,13 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
         borderBottom: `2px solid ${theme.palette.primary.light}`,
       }}
     >
-      {!isEditing && (
+      {!isEditing ? (
         <Typography
           variant="body2"
           component="div"
           onClick={() => {
             if (!editable) return
-            if (remainingTime > 0) setValue(formatValue(reverseFormat(remainingTime / 1000)))
+            if (remainingTime > 0) setValue(formatRefiningTimeValue(reverseFormatRefiningTime(remainingTime / 1000)))
             setIsEditing(true)
           }}
           sx={{
@@ -129,10 +129,9 @@ export const RefineryProgress: React.FC<RefineryProgressProps> = ({ startTime, e
           {!isStarted && (totalTimeS || 0) > 0
             ? MValueFormatter((totalTimeS || 0) * 1000, MValueFormat.durationS)
             : null}
-          {!isFinished && !isStarted && '00:00:00'}
+          {!isStarted && (totalTimeS || 0) === 0 ? '00:00:00' : null}
         </Typography>
-      )}
-      {isEditing && (
+      ) : (
         <Tooltip
           open
           // arrow

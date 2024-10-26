@@ -9,17 +9,28 @@ import {
   Theme,
   ThemeProvider,
   Tooltip,
+  Typography,
   useMediaQuery,
 } from '@mui/material'
 
-import { ScoutingFind, ScoutingFindStateEnum } from '@regolithco/common'
+import {
+  RockStateEnum,
+  ScoutingFind,
+  ScoutingFindStateEnum,
+  ShipClusterFind,
+  ShipMiningOrderCapture,
+  ShipRock,
+  ShipRockCapture,
+} from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
-import { BackHand, Cancel, Create, Delete, Save } from '@mui/icons-material'
+import { BackHand, Camera, Cancel, Create, Delete, DocumentScanner, Save } from '@mui/icons-material'
 import { ScoutingFindContext } from '../../context/scoutingFind.context'
 import { ConfirmModal } from './ConfirmModal'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteScoutingFindModal } from './DeleteScoutingFindModal'
+import { CameraControl, CameraControlProps } from '../ocr/CameraControl'
+import log from 'loglevel'
 
 export interface ScoutingFindModalProps {
   open: boolean
@@ -64,9 +75,12 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
   const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
+  const [camScanModal, setCamScanModal] = React.useState<CameraControlProps['mode'] | null>(null)
+
   const [theme, setTheme] = React.useState<Theme>(
     scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
   )
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   React.useEffect(() => {
     setNewScoutingFind(scoutingFind)
@@ -82,6 +96,31 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
     } else {
       onClose()
     }
+  }
+
+  const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
+    const capturedRock = data as ShipRockCapture
+    log.info('MARZIPAN Captured Ship Rock', capturedRock)
+    if (newScoutingFind.clusterType !== 'SHIP') return
+    const shipFind = newScoutingFind as ShipClusterFind
+    // Add this rock to the list
+    const newRock = {
+      mass: capturedRock.mass || 0,
+      inst: capturedRock.inst || 0,
+      res: capturedRock.res || 0,
+      ores: capturedRock.ores.map((ore) => ({
+        ore: ore.ore,
+        percent: ore.percent,
+        __typename: 'ShipRockOre',
+      })),
+      state: RockStateEnum.Ready,
+      __typename: 'ShipRock',
+    } as ShipRock
+    const newRocks = [...shipFind.shipRocks, newRock]
+    setNewScoutingFind({
+      ...newScoutingFind,
+      shipRocks: newRocks,
+    } as ShipClusterFind)
   }
 
   if (!scoutingFind) return null
@@ -105,6 +144,14 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
           },
         }}
       >
+        {camScanModal && (
+          <CameraControl
+            captureType="SHIP_ROCK"
+            mode={camScanModal}
+            onClose={() => setCamScanModal(null)}
+            onCapture={handleCapture}
+          />
+        )}
         <Box sx={styles.boxContainer}>
           {/* SHARE BUTTON */}
           {!isNew && setShareScoutingFindId && (
@@ -148,6 +195,42 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             {isNew ? 'Cancel' : 'Close'}
           </Button>
           <div style={{ flexGrow: 1 }} />
+          {!isSmall && allowEdit && (
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 700 }}>
+              Auto Add Rock:
+            </Typography>
+          )}
+          {allowEdit && (
+            <Tooltip title="Import a rock scan using your device's camera." placement="top">
+              <Button
+                size={'small'}
+                startIcon={<Camera />}
+                color="inherit"
+                variant="contained"
+                onClick={() => {
+                  setCamScanModal('Camera')
+                }}
+              >
+                {isSmall ? 'Cam' : 'Camera'}
+              </Button>
+            </Tooltip>
+          )}
+          {allowEdit && (
+            <Tooltip title="Import a rock scan using a game screenshot." placement="top">
+              <Button
+                size={'small'}
+                startIcon={<DocumentScanner />}
+                color="inherit"
+                variant="contained"
+                onClick={() => {
+                  setCamScanModal('File')
+                }}
+              >
+                {isSmall ? 'Screenshot' : 'Screenshot'}
+              </Button>
+            </Tooltip>
+          )}
+          <div style={{ flexGrow: 1 }} />
           {allowDelete && onDelete && (
             <Button
               variant="outlined"
@@ -159,7 +242,6 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
               Delete
             </Button>
           )}
-          <div style={{ flexGrow: 1 }} />
           {isNew && (
             <Button
               color="secondary"

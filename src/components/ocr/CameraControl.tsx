@@ -1,15 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Box, Dialog, DialogTitle, Fab, IconButton, PaletteColor, Tooltip, Typography, useTheme } from '@mui/material'
+import {
+  Box,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  Fab,
+  IconButton,
+  PaletteColor,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import Webcam from 'react-webcam'
 import { useCaptureRefineryOrderLazyQuery, useCaptureShipRockScanLazyQuery } from '../../schema'
 import { alpha, keyframes, Stack } from '@mui/system'
 import { ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
 import { ObjectValues } from '@regolithco/common/dist/types'
-import { AddPhotoAlternate, Camera, Cameraswitch, Clear, TipsAndUpdatesOutlined } from '@mui/icons-material'
+import {
+  AddPhotoAlternate,
+  Camera,
+  Cameraswitch,
+  Check,
+  Clear,
+  Replay,
+  TipsAndUpdatesOutlined,
+} from '@mui/icons-material'
 import { CameraHelpDialog } from './CameraHelpDialog'
 import { DeviceTypeEnum, useDeviceType } from '../../hooks/useDeviceType'
 import { fontFamilies } from '../../theme'
 import log from 'loglevel'
+import { over } from 'lodash'
+import { ConfirmModal } from '../modals/ConfirmModal'
+import { PreviewScoutingRockCapture } from './PreviewScoutingRockCapture'
+import { PreviewWorkOrderCapture } from './PreviewWorkOrderCapture'
 
 export const CaptureTypeEnum = {
   SHIP_ROCK: 'SHIP_ROCK',
@@ -32,18 +55,26 @@ const StepOrder: CaptureStepEnum[] = ['CAPTURE', 'APPROVE']
 
 export interface CameraControlProps {
   onClose: () => void
+  confirmOverwrite?: boolean
   mode: 'Camera' | 'File'
   onCapture: <T extends ShipRockCapture | ShipMiningOrderCapture>(retVal: T) => void
   captureType: CaptureTypeEnum
 }
 
-export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureType, onCapture, mode }) => {
+export const CameraControl: React.FC<CameraControlProps> = ({
+  onClose,
+  captureType,
+  confirmOverwrite,
+  onCapture,
+  mode,
+}) => {
   const camera = useRef<Webcam & HTMLVideoElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const [image, setImage] = useState<string | null>(null)
   const [deviceReady, setDeviceReady] = useState<boolean>(false)
   const [dimensions, setDimensions] = useState({ width: 512, height: 512 })
   const [showError, setShowError] = useState<string | null>(null)
+  const [overwriteConfirmOpen, setOverwriteConfirmOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
   const [step, setStep] = useState(0)
   const theme = useTheme()
@@ -65,7 +96,6 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
     })
   }, [navigator.mediaDevices])
 
-  log.info('MARZIPAN Camera Ready', deviceReady, camera.current)
   /**
    * Detect the frame size and adjust the preview window accordingly
    */
@@ -100,23 +130,13 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
     return { previeWith, previewHeight, imgWidth, imgHeight }
   }, [dimensions])
 
-  /**
-   * Capture an image
-   */
-  const capture = React.useCallback(() => {
-    if (camera.current) {
-      const imageSrc = camera.current.getScreenshot({
-        width: imgWidth,
-        height: imgHeight,
-      })
-      setImage(imageSrc)
-      setStep(1)
-    }
-  }, [camera, imgWidth, imgHeight])
-
   useEffect(() => {
     if (image) {
-      qryFn({ variables: { imgUrl: image } })
+      qryFn({
+        variables: { imgUrl: image },
+        // Comment this out for testing
+        fetchPolicy: 'no-cache',
+      })
     }
   }, [image])
 
@@ -140,6 +160,20 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
 
   const loading = refineryOrderLoading || shipRockScanLoading
 
+  /**
+   * Capture an image from the camera
+   */
+  const capture = React.useCallback(() => {
+    if (camera.current) {
+      const imageSrc = camera.current.getScreenshot({
+        width: imgWidth,
+        height: imgHeight,
+      })
+      setImage(imageSrc)
+      setStep(1)
+    }
+  }, [camera, imgWidth, imgHeight])
+
   const handleFileChange = (e: Event) => {
     const target = e.target as HTMLInputElement
     const file = target.files?.[0]
@@ -147,9 +181,21 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
       const reader = new FileReader()
       reader.onload = (e) => {
         setImage(e.target?.result as string)
+        setStep(1)
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  const handleOnCapture = () => {
+    if (captureType === CaptureTypeEnum.SHIP_ROCK) {
+      if (!shipRockScanData?.captureShipRockScan) return
+      onCapture(shipRockScanData?.captureShipRockScan as ShipRockCapture)
+    } else if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
+      if (!refineryOrderData?.captureRefineryOrder) return
+      onCapture(refineryOrderData?.captureRefineryOrder as ShipMiningOrderCapture)
+    }
+    onClose()
   }
 
   const handleFileDialogClick = () => {
@@ -161,28 +207,12 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
   }
 
   // If we're in file mode, open the file dialog
-  useEffect(() => {
-    if (mode === 'File') {
-      handleFileDialogClick()
-    }
-  }, [mode])
-
-  // If we have a capture, close the dialog
-  useEffect(() => {
-    if (refineryOrderData) {
-      const refineryOrder = refineryOrderData.captureRefineryOrder
-      onClose()
-      onCapture(refineryOrder as ShipMiningOrderCapture)
-    }
-  }, [refineryOrderData])
-  // If we have a capture, close the dialog
-  useEffect(() => {
-    if (shipRockScanData) {
-      const shipRock = shipRockScanData.captureShipRockScan
-      onClose()
-      onCapture(shipRock as ShipRockCapture)
-    }
-  }, [shipRockScanData])
+  // useEffect(() => {
+  //   if (mode === 'File' && !hasMounted.current) {
+  //     hasMounted.current = true
+  //     handleFileDialogClick()
+  //   }
+  // }, [])
 
   // If we have an error, show it
   useEffect(() => {
@@ -210,6 +240,21 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
       }}
     >
       {helpOpen && <CameraHelpDialog onClose={() => setHelpOpen(false)} captureType={captureType} />}
+      {overwriteConfirmOpen && (
+        <ConfirmModal
+          open
+          title="Overwrite with capture?"
+          cancelBtnText="Cancel"
+          confirmBtnText="Overwrite"
+          message="Are you sure you want to overwrite the current data with this captured data?"
+          onClose={() => setOverwriteConfirmOpen(false)}
+          onConfirm={() => {
+            setOverwriteConfirmOpen(false)
+            handleOnCapture()
+            onClose()
+          }}
+        />
+      )}
       <DialogTitle
         sx={{
           color: theme.palette.primary.contrastText,
@@ -390,6 +435,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
               spacing={1}
               sx={{
                 pt: 3,
+                px: 4,
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
@@ -398,81 +444,124 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                 overflow: 'hidden',
               }}
             >
-              <Typography variant="body1">Screenshot Tips and Tricks:</Typography>
+              <Typography variant="h5">Screenshot Upload Tips and Tricks:</Typography>
               <Typography variant="body2" paragraph>
-                <b>Crop Screenshots</b> - If you're uploading a screenshot, crop it to just the UI you're trying to
+                <b>1. Crop Screenshots</b> - If you're uploading a screenshot, crop it to just the UI you're trying to
                 scan.
               </Typography>
               <Typography variant="body2" paragraph>
-                <b>Avoid Skew</b> - Try to take the photo directly facing the screen. Perspective skew can make
+                <b>2. Avoid Skew</b> - Try to take the photo directly facing the screen. Perspective skew can make
                 detection harder.
               </Typography>
               <Typography variant="body2" paragraph>
-                <b>Turn off Chromatic Aberation</b> - This is a major cause of blurry numbers in Star Citizen.
+                <b>3. Turn off Chromatic Aberation</b> - This is a major cause of blurry numbers in Star Citizen.
+              </Typography>
+              <Typography variant="body2">
+                <b>4. Create Contrast</b> - Try to move your ship/character so that it creates the maximum contrast for
+                the interface and reduces fog, glare, and droplets on your visor.
               </Typography>
             </Stack>
-            <Fab
-              color="secondary"
-              variant="extended"
-              disabled={loading}
-              onClick={handleFileDialogClick}
+            <Box
               sx={{
-                position: 'absolute',
-                top: '50%',
-                right: '50%',
-                transform: 'translate(50%, -50%)',
+                pt: 5,
+                textAlign: 'center',
               }}
             >
-              <AddPhotoAlternate /> Choose screenshot
-            </Fab>
+              <Fab
+                color="secondary"
+                variant="extended"
+                size="large"
+                disabled={loading}
+                onClick={handleFileDialogClick}
+                sx={{}}
+              >
+                <AddPhotoAlternate /> Choose File
+              </Fab>
+            </Box>
           </Box>
         )}
-        {/* {StepOrder[step] === CaptureStepEnum.SUBMIT && (
+        {StepOrder[step] === CaptureStepEnum.APPROVE && (
           <Box
             sx={{
               flexGrow: 1,
+              pt: 3,
+              flexDirection: 'column',
               position: 'relative',
               display: 'flex',
-              justifyContent: 'center',
               alignItems: 'center',
               overflow: 'hidden',
             }}
           >
-            <Box
-              sx={{
-                position: 'absolute',
-                zIndex: 5,
-              }}
-            >
-              <CircularProgress size={100} thickness={10} sx={{}} />
-              <Typography
-                color={theme.palette.primary.contrastText}
-                variant="h6"
-                sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-              >
-                Submitting...
-              </Typography>
-            </Box>
-            {showError && <Box sx={{ color: 'red', position: 'absolute', zIndex: 10 }}>{showError}</Box>}
-            {image && (
-              <img
-                src={image}
-                alt="Taken photo"
-                style={{
-                  zIndex: 1,
-                  height: '100%',
-                  width: 'auto',
-                  objectFit: 'contain', // Ensure the image maintains its aspect ratio
-                  backgroundColor: 'black', // Ensure the background is black
+            {loading && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  zIndex: 5,
                 }}
-              />
+              >
+                <CircularProgress size={100} thickness={10} sx={{}} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
+                    color: 'white',
+                    textShadow: '0 0 10px black; 0 0 10px black',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  Submitting...
+                </Typography>
+              </Box>
+            )}
+            {!loading && refineryOrderData && (
+              <PreviewWorkOrderCapture order={refineryOrderData.captureRefineryOrder as ShipMiningOrderCapture} />
+            )}
+            {!loading && shipRockScanData && (
+              <PreviewScoutingRockCapture shipRock={shipRockScanData.captureShipRockScan as ShipRockCapture} />
+            )}
+            <Box>
+              {!loading && !refineryOrderData && !shipRockScanData && (
+                <Typography variant="h5">Capture not recognized</Typography>
+              )}
+              {showError && <Box sx={{ color: 'red' }}>{showError}</Box>}
+            </Box>
+            {image && loading && (
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <img
+                  src={image}
+                  alt="Taken photo"
+                  style={{
+                    zIndex: 1,
+                    width: '100%',
+                    height: 'auto',
+                    objectFit: 'contain', // Ensure the image maintains its aspect ratio
+                    backgroundColor: 'black', // Ensure the background is black
+                  }}
+                />
+              </Box>
             )}
             <Fab
               color="success"
               variant="extended"
               disabled={loading || !image}
               onClick={() => {
-                qryFn({ variables: { imgUrl: image as string } })
+                if (confirmOverwrite) {
+                  setOverwriteConfirmOpen(true)
+                } else {
+                  handleOnCapture()
+                }
               }}
               sx={{
                 position: 'absolute',
@@ -480,12 +569,16 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                 right: '20px',
               }}
             >
-              <Check /> Submit
+              <Check /> Use
             </Fab>
             <Fab
               color="secondary"
               onClick={() => {
                 setImage(null)
+                if (mode === 'File') {
+                  // click the button
+                  handleFileDialogClick()
+                }
                 setStep(0)
               }}
               variant="extended"
@@ -499,8 +592,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
               <Replay /> Try again
             </Fab>
           </Box>
-        )} */}
-        {/* {StepOrder[step] === CaptureStepEnum.APPROVE && <Box sx={{ flexGrow: 1 }}>APPROVE</Box>} */}
+        )}
       </Box>
     </Dialog>
   )

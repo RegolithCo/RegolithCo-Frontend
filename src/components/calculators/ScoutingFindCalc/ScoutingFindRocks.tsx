@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, SxProps, Theme, Box, Button, useMediaQuery, Tooltip } from '@mui/material'
+import { Typography, SxProps, Theme, Box, Button } from '@mui/material'
 import {
   ScoutingFind,
   ShipClusterFind,
@@ -7,11 +7,9 @@ import {
   ScoutingFindStateEnum,
   FindClusterSummary,
   ShipRock,
-  ShipRockCapture,
-  ShipMiningOrderCapture,
 } from '@regolithco/common'
 import { RockIcon } from '../../../icons'
-import { AddCircle, Camera, DocumentScanner } from '@mui/icons-material'
+import { AddCircle } from '@mui/icons-material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
 import { scoutingFindStateThemes } from '../../../theme'
@@ -19,9 +17,6 @@ import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
-import { CameraControl, CameraControlProps } from '../../ocr/CameraControl'
-import { Stack } from '@mui/system'
-import log from 'loglevel'
 
 dayjs.extend(relativeTime)
 
@@ -69,8 +64,6 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
 }) => {
   const theme = scoutingFindStateThemes[shipFind.state || ScoutingFindStateEnum.Discovered]
   const styles = stylesThunk(theme)
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
-  const [camScanModal, setCamScanModal] = React.useState<CameraControlProps['mode'] | null>(null)
 
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
   const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
@@ -87,71 +80,13 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
   const placeholderItems: unknown[] =
     clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
 
-  const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
-    const capturedRock = data as ShipRockCapture
-    log.info('MARZIPAN Captured Ship Rock', capturedRock)
-    console.log(capturedRock)
-  }
-
   return (
     <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
-      {camScanModal && (
-        <CameraControl
-          captureType="SHIP_ROCK"
-          mode={camScanModal}
-          onClose={() => setCamScanModal(null)}
-          onCapture={handleCapture}
-        />
-      )}
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex' }}>
           <Typography variant="overline" component="div">
             Rocks Scanned: {shipFind.shipRocks?.length}/{shipFind.clusterCount || 0}
           </Typography>
-          <div style={{ flexGrow: 1 }} />
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              alignItems: 'center',
-            }}
-          >
-            {!isSmall && allowEdit && (
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 700 }}>
-                Import Scan:
-              </Typography>
-            )}
-            {allowEdit && (
-              <Tooltip title="Import a rock scan using your device's camera." placement="top">
-                <Button
-                  size={'small'}
-                  startIcon={<Camera />}
-                  color="inherit"
-                  variant="contained"
-                  onClick={() => {
-                    setCamScanModal('Camera')
-                  }}
-                >
-                  {isSmall ? 'Cam' : 'Camera'}
-                </Button>
-              </Tooltip>
-            )}
-            {allowEdit && (
-              <Tooltip title="Import a rock scan using a game screenshot." placement="top">
-                <Button
-                  size={'small'}
-                  startIcon={<DocumentScanner />}
-                  color="inherit"
-                  variant="contained"
-                  onClick={() => {
-                    setCamScanModal('File')
-                  }}
-                >
-                  {isSmall ? 'Screenshot' : 'Screenshot'}
-                </Button>
-              </Tooltip>
-            )}
-          </Stack>
           <div style={{ flexGrow: 1 }} />
           {allowEdit && (
             <Button

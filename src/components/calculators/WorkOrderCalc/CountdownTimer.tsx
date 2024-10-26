@@ -8,6 +8,7 @@ export interface CountdownTimerProps {
   totalTime?: number
   endTime?: number
   useMValue?: boolean
+  paused?: boolean
   typoProps?: TypographyProps & {
     sx?: SxProps<Theme>
     component?: unknown
@@ -18,12 +19,13 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   startTime,
   totalTime,
   endTime,
+  paused,
   useMValue,
   typoProps,
 }) => {
   const startTimeFinal = startTime || Date.now()
   const totalTimeFinal = totalTime || (endTime ? endTime - startTimeFinal : 0)
-  const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTimeFinal, totalTimeFinal)
+  const { isFinished, isStarted, hasTime, remainingTime } = useCountdown(startTimeFinal, totalTimeFinal, paused)
 
   let finalVal: React.ReactNode = ''
   if (hasTime && isFinished) finalVal = 'COMPLETED'

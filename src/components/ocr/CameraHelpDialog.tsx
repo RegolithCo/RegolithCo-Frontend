@@ -46,11 +46,17 @@ export const CameraHelpDialog: React.FC<CameraHelpDialogProps> = ({ onClose, cap
           {captureType === CaptureTypeEnum.REFINERY_ORDER && (
             <>
               <Typography variant="body2">
-                <b>Don't hit submit!</b> - You must be on the confirmation screen BEFORE hitting submit to capture a
-                work order. This is so we can capture the refinery cost and refinining time.
+                <b>Refinery: Don't hit SUBMIT!</b> - You must be on the confirmation screen BEFORE hitting submit to
+                capture a work order. This is so we can capture the refinery cost and refinining time.
+              </Typography>
+              <Typography variant="body2">
+                <b>Turret CARGO Capture</b> - If you want to create a work order from the UI of your Mole or Prospector
+                you can but it won't be able to find the refinery, processing method, refining time etc. All you get is
+                the ore numbers.
               </Typography>
               <Typography variant="body2">
                 <b>Line up the guide</b> - Line up the red guide so that the refinery submission is inside the red box.
+                (if you're capturing from your ship UI just center the ores in your camera window and ignore the guide)
               </Typography>
             </>
           )}

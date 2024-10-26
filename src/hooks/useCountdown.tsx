@@ -7,7 +7,7 @@ type UseCountDownReturn = {
   remainingTime: number
 }
 
-export const useCountdown = (startTime?: number, totalTimeMs?: number): UseCountDownReturn => {
+export const useCountdown = (startTime?: number, totalTimeMs?: number, paused?: boolean): UseCountDownReturn => {
   const [remainingTime, setRemainingTime] = React.useState<number>(0)
   const timerRef = React.useRef<NodeJS.Timeout>()
 
@@ -32,15 +32,17 @@ export const useCountdown = (startTime?: number, totalTimeMs?: number): UseCount
       return
     }
     setRemainingTime(endTime - nowDate)
-    timerRef.current = setInterval(() => {
-      setRemainingTime((t) => {
-        if (t < 0) {
-          timerRef.current && clearInterval(timerRef.current)
-          return 0
-        } else return t - 1000
-      })
-    }, 1000)
-    return () => timerRef.current && clearInterval(timerRef.current)
+    if (!paused) {
+      timerRef.current = setInterval(() => {
+        setRemainingTime((t) => {
+          if (t < 0) {
+            timerRef.current && clearInterval(timerRef.current)
+            return 0
+          } else return t - 1000
+        })
+      }, 1000)
+      return () => timerRef.current && clearInterval(timerRef.current)
+    }
   }, [startTime, totalTimeMs])
 
   return {

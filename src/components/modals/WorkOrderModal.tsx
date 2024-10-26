@@ -18,12 +18,16 @@ import {
   ActivityEnum,
   CrewShare,
   makeHumanIds,
+  oreAmtCalc,
+  RefineryEnum,
+  RefineryMethodEnum,
+  RefineryRow,
   ShipMiningOrder,
   ShipMiningOrderCapture,
-  ShipRock,
   ShipRockCapture,
   WorkOrder,
   WorkOrderStateEnum,
+  yieldCalc,
 } from '@regolithco/common'
 import {
   AccountBalance,
@@ -46,6 +50,7 @@ import { AppContext } from '../../context/app.context'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
 import { CameraControl, CameraControlProps } from '../ocr/CameraControl'
+import { LookupsContext } from '../../context/lookupsContext'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -140,6 +145,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     // forceTemplate,
     userSuggest,
   } = React.useContext(WorkOrderContext)
+  const dataStore = React.useContext(LookupsContext)
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>(workOrder)
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
@@ -211,8 +217,33 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     </div>
   )
 
-  const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
+  const handleCapture = async <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): Promise<void> => {
     const capturedOrder = data as ShipMiningOrderCapture
+    if (newWorkOrder.orderType !== ActivityEnum.ShipMining || !dataStore.ready) return
+    const shipOrder = newWorkOrder as ShipMiningOrder
+    const refinery = capturedOrder.refinery || shipOrder.refinery || RefineryEnum.Arcl1
+    const method = capturedOrder.method || shipOrder.method || RefineryMethodEnum.DinyxSolventation
+
+    const newOres: RefineryRow[] = await Promise.all(
+      capturedOrder.shipOres.map(async (ore) => ({
+        ore: ore.ore,
+        amt: ore.amt || ore.yield ? await oreAmtCalc(dataStore, ore.yield as number, ore.ore, refinery, method) : 0,
+        yield: ore.yield || ore.amt ? await yieldCalc(dataStore, ore.amt as number, ore.ore, refinery, method) : 0,
+        __typename: 'RefineryRow',
+      }))
+    )
+    const expenses = [...(shipOrder.expenses || []), ...(capturedOrder.expenses || [])].filter(
+      ({ amount, name }, i, arr) => !(name.toLowerCase().includes('refinery') && amount === 0)
+    )
+
+    setNewWorkOrder({
+      ...shipOrder,
+      refinery,
+      method,
+      expenses,
+      processDurationS: capturedOrder.processDurationS || 0,
+      shipOres: newOres,
+    })
     console.log(capturedOrder)
   }
 
@@ -237,6 +268,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       {camScanModal && (
         <CameraControl
           captureType="REFINERY_ORDER"
+          confirmOverwrite
           mode={camScanModal}
           onClose={() => setCamScanModal(null)}
           onCapture={handleCapture}
@@ -358,19 +390,6 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
             </Button>
           </Tooltip>
           <div style={{ flexGrow: 1 }} />
-          {allowEdit && deleteWorkOrder && (
-            <Tooltip title={'PERMANENTLY Delete this work order'} placement="top">
-              <Button
-                variant="contained"
-                size={isSmall ? 'small' : 'large'}
-                startIcon={<Delete />}
-                onClick={() => setDeleteConfirmModal(true)}
-                color="error"
-              >
-                Delete
-              </Button>
-            </Tooltip>
-          )}
           {isShipMining && (
             <>
               {!isSmall && (
@@ -406,6 +425,19 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               </Tooltip>
               <div style={{ flexGrow: 1 }} />
             </>
+          )}
+          {allowEdit && deleteWorkOrder && (
+            <Tooltip title={'PERMANENTLY Delete this work order'} placement="top">
+              <Button
+                variant="contained"
+                size={isSmall ? 'small' : 'large'}
+                startIcon={<Delete />}
+                onClick={() => setDeleteConfirmModal(true)}
+                color="error"
+              >
+                Delete
+              </Button>
+            </Tooltip>
           )}
 
           {allowEdit && isEditing && (
