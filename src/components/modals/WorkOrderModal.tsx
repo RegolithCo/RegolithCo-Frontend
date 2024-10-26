@@ -387,7 +387,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               color="error"
               variant="contained"
               size={isSmall ? 'small' : 'large'}
-              startIcon={<Cancel />}
+              startIcon={!isSmall && <Cancel />}
               onClick={() => {
                 if (isEditing && !isNew) setIsEditing(false)
                 handleConfirmClose()
@@ -407,7 +407,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
               <Tooltip title="Import a work order using your device's camera." placement="top">
                 <Button
                   size={isSmall ? 'small' : 'large'}
-                  startIcon={!isSmall && <Camera />}
+                  startIcon={<Camera />}
                   color="inherit"
                   variant="contained"
                   onClick={() => {
