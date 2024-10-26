@@ -416,6 +416,14 @@ export type ShipMiningOrderFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type ShipMiningOrderCaptureKeySpecifier = ('expenses' | 'method' | 'processDurationS' | 'refinery' | 'shipOres' | ShipMiningOrderCaptureKeySpecifier)[];
+export type ShipMiningOrderCaptureFieldPolicy = {
+	expenses?: FieldPolicy<any> | FieldReadFunction<any>,
+	method?: FieldPolicy<any> | FieldReadFunction<any>,
+	processDurationS?: FieldPolicy<any> | FieldReadFunction<any>,
+	refinery?: FieldPolicy<any> | FieldReadFunction<any>,
+	shipOres?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type ShipRockKeySpecifier = ('inst' | 'mass' | 'ores' | 'res' | 'state' | ShipRockKeySpecifier)[];
 export type ShipRockFieldPolicy = {
 	inst?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -423,6 +431,13 @@ export type ShipRockFieldPolicy = {
 	ores?: FieldPolicy<any> | FieldReadFunction<any>,
 	res?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type ShipRockCaptureKeySpecifier = ('inst' | 'mass' | 'ores' | 'res' | ShipRockCaptureKeySpecifier)[];
+export type ShipRockCaptureFieldPolicy = {
+	inst?: FieldPolicy<any> | FieldReadFunction<any>,
+	mass?: FieldPolicy<any> | FieldReadFunction<any>,
+	ores?: FieldPolicy<any> | FieldReadFunction<any>,
+	res?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ShipRockOreKeySpecifier = ('ore' | 'percent' | ShipRockOreKeySpecifier)[];
 export type ShipRockOreFieldPolicy = {
@@ -731,9 +746,17 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | ShipMiningOrderKeySpecifier | (() => undefined | ShipMiningOrderKeySpecifier),
 		fields?: ShipMiningOrderFieldPolicy,
 	},
+	ShipMiningOrderCapture?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ShipMiningOrderCaptureKeySpecifier | (() => undefined | ShipMiningOrderCaptureKeySpecifier),
+		fields?: ShipMiningOrderCaptureFieldPolicy,
+	},
 	ShipRock?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ShipRockKeySpecifier | (() => undefined | ShipRockKeySpecifier),
 		fields?: ShipRockFieldPolicy,
+	},
+	ShipRockCapture?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ShipRockCaptureKeySpecifier | (() => undefined | ShipRockCaptureKeySpecifier),
+		fields?: ShipRockCaptureFieldPolicy,
 	},
 	ShipRockOre?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ShipRockOreKeySpecifier | (() => undefined | ShipRockOreKeySpecifier),

@@ -2549,10 +2549,16 @@ export type GetCrewSharesQueryResult = Apollo.QueryResult<types.GetCrewSharesQue
 export const CaptureShipRockScanDocument = gql`
     query captureShipRockScan($imgUrl: String!) {
   captureShipRockScan(imgUrl: $imgUrl) {
-    ...ShipRockFragment
+    mass
+    inst
+    res
+    ores {
+      ore
+      percent
+    }
   }
 }
-    ${ShipRockFragmentFragmentDoc}`;
+    `;
 
 /**
  * __useCaptureShipRockScanQuery__
@@ -2589,10 +2595,21 @@ export type CaptureShipRockScanQueryResult = Apollo.QueryResult<types.CaptureShi
 export const CaptureRefineryOrderDocument = gql`
     query captureRefineryOrder($imgUrl: String!) {
   captureRefineryOrder(imgUrl: $imgUrl) {
-    ...WorkOrderFragment
+    expenses {
+      amount
+      name
+    }
+    processDurationS
+    refinery
+    method
+    shipOres {
+      amt
+      ore
+      yield
+    }
   }
 }
-    ${WorkOrderFragmentFragmentDoc}`;
+    `;
 
 /**
  * __useCaptureRefineryOrderQuery__
