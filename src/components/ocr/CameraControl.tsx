@@ -84,6 +84,11 @@ export const CameraControl: React.FC<CameraControlProps> = ({
   const [currDevice, setCurrDevice] = React.useState<MediaDeviceInfo>()
   const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([])
 
+  console.log('MARZIPAN', {
+    deviceReady,
+    dimensions,
+  })
+
   // Get the list of devices and populate our chooser
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -125,7 +130,8 @@ export const CameraControl: React.FC<CameraControlProps> = ({
     const previeWith = width
     const previewHeight = height
     const imgWidth = Math.max(1024, height)
-    const imgHeight = imgWidth * (previewHeight / previeWith)
+    const imgHeight = Math.round(imgWidth * (previewHeight / previeWith))
+    console.log('MARZIPAN resize', { previeWith, previewHeight, imgWidth, imgHeight })
     return { previeWith, previewHeight, imgWidth, imgHeight }
   }, [dimensions])
 
@@ -351,6 +357,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
               sx={{
                 height: previewHeight,
                 width: previeWith,
+                overflow: 'hidden',
                 position: 'absolute',
                 display: 'flex',
                 justifyContent: 'center',
@@ -362,15 +369,23 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 style={{
                   height: 'auto',
                   width: '90%',
-                  opacity: 0.5,
+                  opacity: 0.6,
                 }}
               />
             </Box>
             <Webcam
               ref={camera}
+              style={{
+                border: '4px solid white',
+                height: previewHeight,
+                width: previeWith,
+                position: 'absolute',
+                overflow: 'hidden',
+                objectFit: 'cover',
+              }}
               audio={false}
-              height={previewHeight}
-              width={previeWith}
+              // height={previewHeight}
+              // width={previeWith}
               screenshotFormat="image/jpeg"
               screenshotQuality={0.5}
               onUserMedia={() => {
@@ -383,8 +398,8 @@ export const CameraControl: React.FC<CameraControlProps> = ({
               videoConstraints={{
                 deviceId: currDevice?.deviceId,
                 facingMode: 'environment',
-                width: imgWidth,
-                height: imgHeight,
+                // width: imgWidth,
+                // height: imgHeight,
               }}
             />
             {devices && devices.length > 1 && (
@@ -398,7 +413,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                   setCurrDevice(devices[nextIndex])
                 }}
                 sx={{
-                  border: '2px solid white',
+                  // border: '2px solid white',
                   borderRadius: 20,
                   position: 'absolute',
                   bottom: '20px',
@@ -542,6 +557,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                   src={image}
                   alt="Taken photo"
                   style={{
+                    border: '4px solid red',
                     zIndex: 1,
                     width: '100%',
                     height: 'auto',
@@ -554,7 +570,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
             <Fab
               color="success"
               variant="extended"
-              disabled={loading || !image}
+              disabled={loading || (!refineryOrderData?.captureRefineryOrder && !shipRockScanData?.captureShipRockScan)}
               onClick={() => {
                 if (confirmOverwrite) {
                   setOverwriteConfirmOpen(true)

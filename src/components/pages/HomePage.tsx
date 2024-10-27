@@ -124,6 +124,18 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
         Regolith Co. is a fansite dedicated to helping{' '}
         <Link href="https://robertsspaceindustries.com/">Star Citizen</Link> Miners organize, share, and scout together.
       </Typography>
+      <CameraControl
+        captureType="REFINERY_ORDER"
+        mode="Camera"
+        onCapture={(data) => {
+          console.log(data)
+        }}
+        onClose={() => {
+          //
+          console.log('closed')
+        }}
+        confirmOverwrite
+      />
       <Divider sx={{ my: 2 }} />
       {alerts && alerts.length > 0 && (
         <Stack spacing={2} mb={2}>
