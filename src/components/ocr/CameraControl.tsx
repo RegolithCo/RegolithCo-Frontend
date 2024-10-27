@@ -470,11 +470,14 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 <b>2. Avoid Skew</b> - Try to take the photo directly facing the screen. Perspective skew can make
                 detection harder.
               </Typography>
+              <Typography variant="body2">
+                <b>3. Turn off CHAT and r_DisplayInfo</b> - Any extra text on the screen can throw off the recognition.
+              </Typography>
               <Typography variant="body2" paragraph>
-                <b>3. Turn off Chromatic Aberation</b> - This is a major cause of blurry numbers in Star Citizen.
+                <b>4. Turn off Chromatic Aberation</b> - This is a major cause of blurry numbers in Star Citizen.
               </Typography>
               <Typography variant="body2">
-                <b>4. Create Contrast</b> - Try to move your ship/character so that it creates the maximum contrast for
+                <b>5. Create Contrast</b> - Try to move your ship/character so that it creates the maximum contrast for
                 the interface and reduces fog, glare, and droplets on your visor.
               </Typography>
             </Stack>

@@ -55,6 +55,9 @@ export const CameraHelpDialog: React.FC<CameraHelpDialogProps> = ({ onClose, cap
                 the ore numbers.
               </Typography>
               <Typography variant="body2">
+                <b>Turn off CHAT and r_DisplayInfo</b> - Any extra text on the screen can throw off the recognition.
+              </Typography>
+              <Typography variant="body2">
                 <b>Line up the guide</b> - Line up the red guide so that the refinery submission is inside the red box.
                 (if you're capturing from your ship UI just center the ores in your camera window and ignore the guide)
               </Typography>
