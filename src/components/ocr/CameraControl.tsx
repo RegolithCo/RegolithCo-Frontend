@@ -548,6 +548,8 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 sx={{
                   width: '100%',
                   height: '100%',
+                  maxWidth: '100vh',
+                  maxHeight: '100vh',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
