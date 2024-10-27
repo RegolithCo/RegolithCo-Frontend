@@ -84,11 +84,6 @@ export const CameraControl: React.FC<CameraControlProps> = ({
   const [currDevice, setCurrDevice] = React.useState<MediaDeviceInfo>()
   const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([])
 
-  console.log('MARZIPAN', {
-    deviceReady,
-    dimensions,
-  })
-
   // Get the list of devices and populate our chooser
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -131,7 +126,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
     const previewHeight = height
     const imgWidth = Math.max(1024, height)
     const imgHeight = Math.round(imgWidth * (previewHeight / previeWith))
-    console.log('MARZIPAN resize', { previeWith, previewHeight, imgWidth, imgHeight })
+
     return { previeWith, previewHeight, imgWidth, imgHeight }
   }, [dimensions])
 
@@ -389,12 +384,12 @@ export const CameraControl: React.FC<CameraControlProps> = ({
               // height={previewHeight}
               // width={previeWith}
               screenshotFormat="image/jpeg"
-              screenshotQuality={0.5}
+              screenshotQuality={0.8}
               onUserMedia={() => {
                 setDeviceReady(true)
               }}
               onUserMediaError={(e) => {
-                log.error('MARZIPAN Camera Error', e)
+                // log.error('MARZIPAN Camera Error', e)
                 setDeviceReady(false)
               }}
               videoConstraints={{

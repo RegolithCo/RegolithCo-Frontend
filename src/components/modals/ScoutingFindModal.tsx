@@ -100,7 +100,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
 
   const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
     const capturedRock = data as ShipRockCapture
-    log.info('MARZIPAN Captured Ship Rock', capturedRock)
+
     if (newScoutingFind.clusterType !== 'SHIP') return
     const shipFind = newScoutingFind as ShipClusterFind
     // Add this rock to the list
