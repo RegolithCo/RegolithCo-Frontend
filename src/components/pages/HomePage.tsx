@@ -1,7 +1,6 @@
 import {
   Alert,
   AlertTitle,
-  Button,
   Card,
   CardContent,
   CardMedia,
@@ -20,12 +19,11 @@ import * as React from 'react'
 import { PageWrapper } from '../PageWrapper'
 import { LoginContext, LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
-import { RegolithMonthStats, RegolithAllTimeStats, ShipRock, ShipMiningOrder } from '@regolithco/common'
+import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
-import { CameraControl } from '../ocr/CameraControl'
 
 export interface HomePageProps {
   userCtx: LoginContextObj
@@ -124,18 +122,6 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
         Regolith Co. is a fansite dedicated to helping{' '}
         <Link href="https://robertsspaceindustries.com/">Star Citizen</Link> Miners organize, share, and scout together.
       </Typography>
-      <CameraControl
-        captureType="REFINERY_ORDER"
-        mode="Camera"
-        onCapture={(data) => {
-          console.log(data)
-        }}
-        onClose={() => {
-          //
-          console.log('closed')
-        }}
-        confirmOverwrite
-      />
       <Divider sx={{ my: 2 }} />
       {alerts && alerts.length > 0 && (
         <Stack spacing={2} mb={2}>
