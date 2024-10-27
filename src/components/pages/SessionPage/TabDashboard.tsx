@@ -15,6 +15,7 @@ import {
   useTheme,
   Zoom,
   Popper,
+  useMediaQuery,
 } from '@mui/material'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
@@ -37,7 +38,6 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    mb: 4,
   },
   sectionTitle: {
     flex: '0 0',
@@ -89,7 +89,8 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
   const { session, createNewWorkOrder, createNewScoutingFind, openWorkOrderModal } = React.useContext(SessionContext)
-  const [[topExpanded, bottomExpanded], setExpanded] = React.useState([true, true])
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
+  const [[topExpanded, bottomExpanded], setExpanded] = React.useState([true, mediumUp])
 
   // Handlers for the SpeedDials
   const workOrderAccordionRef = React.useRef<HTMLElement>(null)
@@ -132,7 +133,11 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         direction="row"
         alignItems="center"
         sx={styles.sectionTitle}
-        onClick={() => setExpanded([!topExpanded, bottomExpanded])}
+        onClick={() => {
+          // IF this is mediumUp the accordions work independently. Otherwise they are linked
+          if (mediumUp) setExpanded(([oldTop, OldBottom]) => [!oldTop, OldBottom])
+          else setExpanded(([oldTop]) => [!oldTop, oldTop])
+        }}
       >
         <IconButton color="inherit">
           <ExpandMore
@@ -208,7 +213,10 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         direction="row"
         alignItems="center"
         sx={styles.sectionTitle}
-        onClick={() => setExpanded([topExpanded, !bottomExpanded])}
+        onClick={() => {
+          if (mediumUp) setExpanded(([oldTop, OldBottom]) => [oldTop, !OldBottom])
+          else setExpanded(([, OldBottom]) => [OldBottom, !OldBottom])
+        }}
       >
         <IconButton color="inherit">
           <ExpandMore

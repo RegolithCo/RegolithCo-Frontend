@@ -11,8 +11,8 @@ import {
   WorkOrder,
   WorkOrderStateEnum,
 } from '@regolithco/common'
-import { Badge, Box, Container, darken, Paper, Tab, Tabs, Tooltip, useTheme } from '@mui/material'
-import { Insights, ViewTimeline } from '@mui/icons-material'
+import { Badge, Box, Container, darken, Paper, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material'
+import { Engineering, Insights, Savings, ViewTimeline } from '@mui/icons-material'
 import { TabSessions } from './TabSessions'
 import { TabWorkOrders } from './TabWorkOrders'
 import { StatsFilters, TabStats } from './TabStats/TabStats'
@@ -45,6 +45,7 @@ export interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = (props) => {
   const theme = useTheme()
   const { activeTab, navigate, onCreateNewSession } = props
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
   const styles = {
     container: {
@@ -52,6 +53,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
         md: 4,
       },
       border: {
+        // sm: '10px solid red',
         // md: '1px solid #444444',
       },
     },
@@ -184,68 +186,70 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
   return (
     <Container maxWidth="lg" sx={styles.container}>
       <Paper elevation={4} sx={styles.paper}>
-        <Tabs
-          value={activeTab}
-          variant="fullWidth"
-          onChange={(event: React.SyntheticEvent, newValue: SessionDashTabsEnum) => {
-            navigate && navigate(`/dashboard/${newValue}`)
-          }}
-          sx={{
-            borderBottom: `3px solid ${theme.palette.primary.main}`,
-            // Make the active tab stand out
-            mb: 4,
-            '& .MuiTab-root': {
-              fontSize: '1.25rem',
-              fontWeight: 'bold',
-              fontFamily: fontFamilies.robotoMono,
-              textAlignment: 'Left',
-              background: 'black',
-              borderTop: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
-              borderLeft: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
-              borderRight: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-              backgroundColor: darken(theme.palette.primary.dark, 0.7),
-              mr: 2,
-            },
-            '& .MuiTab-root.Mui-selected': {
-              color: theme.palette.primary.contrastText,
-              backgroundColor: theme.palette.primary.main,
-            },
-            '& .MuiTabs-indicator': {
-              // backgroundColor: 'black',
-              // height: 5,
-            },
-          }}
-        >
-          <Tab
-            label={
-              <Badge badgeContent={activeSessions.length} color="error">
-                Sessions
-              </Badge>
-            }
-            icon={<ViewTimeline />}
-            iconPosition="start"
-            value={SessionDashTabsEnum.sessions}
-          />
-          <Tab
-            label={
-              <Badge badgeContent={refineriesWithUndelivered} color="error">
-                Work Orders
-              </Badge>
-            }
-            value={SessionDashTabsEnum.workOrders}
-          />
-          <Tab
-            label={
-              <Badge badgeContent={iOweShareNum} color="error">
-                Crew Shares
-              </Badge>
-            }
-            value={SessionDashTabsEnum.crewShares}
-          />
-          <Tab label="Stats" icon={<Insights />} iconPosition="start" value={SessionDashTabsEnum.stats} />
-        </Tabs>
+        {mediumUp && (
+          <Tabs
+            value={activeTab}
+            variant="fullWidth"
+            onChange={(event: React.SyntheticEvent, newValue: SessionDashTabsEnum) => {
+              navigate && navigate(`/dashboard/${newValue}`)
+            }}
+            sx={{
+              borderBottom: `3px solid ${theme.palette.primary.main}`,
+              // Make the active tab stand out
+              mb: 4,
+              '& .MuiTab-root': {
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                fontFamily: fontFamilies.robotoMono,
+                textAlignment: 'Left',
+                background: 'black',
+                borderTop: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
+                borderLeft: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
+                borderRight: `1px solid ${darken(theme.palette.primary.dark, 0.3)}`,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+                backgroundColor: darken(theme.palette.primary.dark, 0.7),
+                mr: 2,
+              },
+              '& .MuiTab-root.Mui-selected': {
+                color: theme.palette.primary.contrastText,
+                backgroundColor: theme.palette.primary.main,
+              },
+              '& .MuiTabs-indicator': {
+                // backgroundColor: 'black',
+                // height: 5,
+              },
+            }}
+          >
+            <Tab
+              label={
+                <Badge badgeContent={activeSessions.length} color="error">
+                  Sessions
+                </Badge>
+              }
+              icon={<ViewTimeline />}
+              iconPosition="start"
+              value={SessionDashTabsEnum.sessions}
+            />
+            <Tab
+              label={
+                <Badge badgeContent={refineriesWithUndelivered} color="error">
+                  Work Orders
+                </Badge>
+              }
+              value={SessionDashTabsEnum.workOrders}
+            />
+            <Tab
+              label={
+                <Badge badgeContent={iOweShareNum} color="error">
+                  Crew Shares
+                </Badge>
+              }
+              value={SessionDashTabsEnum.crewShares}
+            />
+            <Tab label="Stats" icon={<Insights />} iconPosition="start" value={SessionDashTabsEnum.stats} />
+          </Tabs>
+        )}
         <Box sx={styles.innerContainer}>
           {activeTab === SessionDashTabsEnum.sessions && (
             <JoinSessionButton
@@ -261,6 +265,65 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
           {activeTab === SessionDashTabsEnum.stats && <TabStats {...props} />}
         </Box>
       </Paper>
+      {/* Mobile-only menu */}
+      {!mediumUp && (
+        <Tabs
+          variant="scrollable"
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            borderTop: '2px solid',
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            '& .MuiTab-root': {
+              color: theme.palette.primary.contrastText,
+            },
+            '& .Mui-selected': {
+              backgroundColor: theme.palette.secondary.main,
+              // color: theme.palette.primary.light,
+              // textShadow: '0 0 2px #FFF',
+            },
+          }}
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          value={activeTab}
+          onChange={(event: React.SyntheticEvent, newValue: SessionDashTabsEnum) => {
+            navigate && navigate(`/dashboard/${newValue}`)
+          }}
+          aria-label="basic tabs example"
+        >
+          <Tab
+            label={'Sessions'}
+            icon={
+              <Badge badgeContent={activeSessions.length} color="error">
+                <ViewTimeline />
+              </Badge>
+            }
+            value={SessionDashTabsEnum.sessions}
+          />
+          <Tab
+            label={'Work Orders'}
+            icon={
+              <Badge badgeContent={refineriesWithUndelivered} color="error">
+                <Engineering />
+              </Badge>
+            }
+            value={SessionDashTabsEnum.workOrders}
+          />
+          <Tab
+            label={'Crew Shares'}
+            icon={
+              <Badge badgeContent={iOweShareNum} color="error">
+                <Savings />
+              </Badge>
+            }
+            value={SessionDashTabsEnum.crewShares}
+          />
+          <Tab label="Stats" icon={<Insights />} value={SessionDashTabsEnum.stats} />
+        </Tabs>
+      )}
     </Container>
   )
 }

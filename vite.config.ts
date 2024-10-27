@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: true,
   },
   server: {
-    // host: true, // Listen on all network interfaces (0.0.0.0)
+    host: true, // Listen on all network interfaces (0.0.0.0)
     port: 3000,
   },
   logLevel: 'info', // Enable detailed logging

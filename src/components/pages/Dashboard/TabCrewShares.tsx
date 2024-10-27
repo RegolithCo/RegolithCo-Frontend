@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { Alert, AlertTitle, Card, CircularProgress, List, Typography, useTheme } from '@mui/material'
-import { Box, Stack } from '@mui/system'
+import { Box, Stack, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { DashboardProps } from './Dashboard'
 import { CrewShare, WorkOrder } from '@regolithco/common'
@@ -26,6 +26,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
 }) => {
   const theme = useTheme()
   const [payConfirmState, setPayConfirmModal] = React.useState<ConfirmModalState | undefined>()
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
   // This is unfiltered. We shouldn't use these directly
   const { relevantCrewShares } = React.useMemo(() => {
@@ -131,11 +132,11 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           // p: 3,
           // pb: 2,
           mb: 5,
-          borderRadius: 7,
+          borderRadius: mediumUp ? 7 : 0,
           // backgroundColor: '#282828',
           display: 'flex',
           flexDirection: 'column',
-          border: `8px solid ${theme.palette.primary.main}`,
+          border: mediumUp ? `8px solid ${theme.palette.primary.main}` : 'none',
         }}
       >
         <Stack
@@ -149,7 +150,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
           }}
         >
           <Typography
-            variant="h4"
+            variant={mediumUp ? 'h4' : 'h5'}
             component="h3"
             sx={{
               color: theme.palette.primary.contrastText,

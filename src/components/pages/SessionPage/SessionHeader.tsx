@@ -11,7 +11,7 @@ import {
   SessionStateEnum,
 } from '@regolithco/common'
 import { Box, Button, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
-import { SxProps } from '@mui/system'
+import { SxProps, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SessionState } from '../../SessionState'
@@ -89,7 +89,8 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
   const styles = stylesThunk(theme)
   const { hideNames } = React.useContext(AppContext)
   const { session, setActiveModal } = React.useContext(SessionContext)
-  const [collapsed, setCollapsed] = React.useState(false)
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
+  const [collapsed, setCollapsed] = React.useState(!mediumUp)
 
   // If there isn't a session don't even try to render anything
   if (!session) return null
@@ -165,107 +166,109 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
           </Box>
         </Grid>
         {/* Start and end date box */}
-        <Grid xs={12} sm={12} md={4} sx={styles.gridInsideDates}>
-          <Box sx={{ display: 'flex' }}>
-            {/* SHARE BUTTON */}
-            <div style={{ flex: '1 1' }} />
-            <SessionState sessionState={session.state} size="large" />
-            <Tooltip title="Download Session" placement="top">
-              <IconButton
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setActiveModal(DialogEnum.DOWNLOAD_SESSION)
-                }}
-                color="secondary"
-              >
-                <DownloadJSONIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Export an image for social media or discord." placement="top">
-              <IconButton
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setActiveModal(DialogEnum.SHARE_SESSION)
-                }}
-                color="secondary"
-              >
-                <ExportImageIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Invite others to join." placement="top">
-              <IconButton
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setActiveModal(DialogEnum.COLLABORATE)
-                }}
-                color="secondary"
-              >
-                <CollaborateLinkIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          {!collapsed ? (
-            <>
-              <Typography
-                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                component="div"
-                gutterBottom
-                variant="overline"
-              >
-                Started: <strong>{smartDate(session.createdAt)}</strong>
-              </Typography>
-
-              {session.state === SessionStateEnum.Active && (
+        {(mediumUp || !collapsed) && (
+          <Grid xs={12} sm={12} md={4} sx={styles.gridInsideDates}>
+            <Box sx={{ display: 'flex' }}>
+              {/* SHARE BUTTON */}
+              <div style={{ flex: '1 1' }} />
+              <SessionState sessionState={session.state} size="large" />
+              <Tooltip title="Download Session" placement="top">
+                <IconButton
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setActiveModal(DialogEnum.DOWNLOAD_SESSION)
+                  }}
+                  color="secondary"
+                >
+                  <DownloadJSONIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Export an image for social media or discord." placement="top">
+                <IconButton
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setActiveModal(DialogEnum.SHARE_SESSION)
+                  }}
+                  color="secondary"
+                >
+                  <ExportImageIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Invite others to join." placement="top">
+                <IconButton
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setActiveModal(DialogEnum.COLLABORATE)
+                  }}
+                  color="secondary"
+                >
+                  <CollaborateLinkIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            {!collapsed ? (
+              <>
                 <Typography
                   sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
                   component="div"
                   gutterBottom
                   variant="overline"
                 >
-                  EXPIRES: <strong>{smartDate(session.updatedAt + TwelveHoursMs)}</strong>
+                  Started: <strong>{smartDate(session.createdAt)}</strong>
                 </Typography>
-              )}
-              {session.state === SessionStateEnum.Closed && session.finishedAt && (
+
+                {session.state === SessionStateEnum.Active && (
+                  <Typography
+                    sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+                    component="div"
+                    gutterBottom
+                    variant="overline"
+                  >
+                    EXPIRES: <strong>{smartDate(session.updatedAt + TwelveHoursMs)}</strong>
+                  </Typography>
+                )}
+                {session.state === SessionStateEnum.Closed && session.finishedAt && (
+                  <Typography
+                    sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+                    component="div"
+                    gutterBottom
+                    variant="overline"
+                  >
+                    Ended: <strong>{smartDate(session.finishedAt)}</strong>
+                  </Typography>
+                )}
+
                 <Typography
                   sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
                   component="div"
                   gutterBottom
+                  color="text.secondary"
                   variant="overline"
                 >
-                  Ended: <strong>{smartDate(session.finishedAt)}</strong>
+                  Require Verification: <strong>{!session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
                 </Typography>
-              )}
 
-              <Typography
-                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                component="div"
-                gutterBottom
-                color="text.secondary"
-                variant="overline"
-              >
-                Require Verification: <strong>{!session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
-              </Typography>
-
-              <Typography
-                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                component="div"
-                gutterBottom
-                color="text.secondary"
-                variant="overline"
-              >
-                Require Mention: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
-              </Typography>
-            </>
-          ) : (
-            <>
-              <Box flexGrow={1} />
-              <Button color="inherit">(Expand...)</Button>
-            </>
-          )}
-        </Grid>
+                <Typography
+                  sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+                  component="div"
+                  gutterBottom
+                  color="text.secondary"
+                  variant="overline"
+                >
+                  Require Mention: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Box flexGrow={1} />
+                <Button color="inherit">(Expand...)</Button>
+              </>
+            )}
+          </Grid>
+        )}
       </Grid>
     </Box>
   )

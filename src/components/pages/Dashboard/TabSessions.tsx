@@ -3,7 +3,7 @@ import * as React from 'react'
 import { UserProfile, Session, SessionStateEnum } from '@regolithco/common'
 import { Alert, AlertTitle, Box, FormControlLabel, Switch, Typography, useTheme } from '@mui/material'
 import { SessionList } from '../../fields/SessionList'
-import { Stack } from '@mui/system'
+import { Stack, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 
 export interface TabSessionsProps {
@@ -27,6 +27,7 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
 }) => {
   const theme = useTheme()
   const [activeOnly, setActiveOnly] = React.useState(false)
+  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
 
   // Make our buckets: bucket 1: [year-month] bucket 2: day
   const allSessionsSorted: Session[] = React.useMemo(() => {
@@ -45,7 +46,7 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
         direction={{ xs: 'column', sm: 'row' }}
       >
         <Typography
-          variant="h3"
+          variant={mediumUp ? 'h3' : 'h5'}
           component="h3"
           gutterBottom
           sx={{

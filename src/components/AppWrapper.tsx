@@ -88,7 +88,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
   const hideCoffee = pathname.match(/^\/session\/[0-9a-f-]+/)
 
   return (
-    <AppWrapper bgImage={bgImage} showCoffee={!hideCoffee}>
+    <AppWrapper bgImage={bgImage} showCoffee={!hideCoffee} rootPath={allMatches[0]}>
       {children}
     </AppWrapper>
   )
@@ -96,14 +96,16 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
 
 export interface AppWrapperProps {
   bgImage?: BGImagesEnum
+  rootPath?: string
   showCoffee?: boolean
   children: React.ReactNode
 }
 
-export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bgImage }) => {
+export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bgImage, rootPath }) => {
   const theme = useTheme()
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const bgImageFinal = bgImage ? bgImage : BGImagesEnum.DEFAULT
+  const isHome = rootPath === '/'
   return (
     <Box
       sx={{
@@ -116,18 +118,20 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, bg
       <Box sx={styles.overlay}>
         {children}
 
-        <Box
-          sx={
-            mediumUp
-              ? { position: 'absolute', bottom: 5, right: 5 }
-              : {
-                  display: showCoffee ? undefined : 'none',
-                }
-          }
-        >
-          <Copyright />
-        </Box>
-        <AnnoyingCoffee show={showCoffee} />
+        {(mediumUp || isHome) && (
+          <Box
+            sx={
+              mediumUp
+                ? { position: 'absolute', bottom: 5, right: 5 }
+                : {
+                    display: showCoffee ? undefined : 'none',
+                  }
+            }
+          >
+            <Copyright />
+          </Box>
+        )}
+        <AnnoyingCoffee show={showCoffee && (mediumUp || isHome)} />
       </Box>
     </Box>
   )
