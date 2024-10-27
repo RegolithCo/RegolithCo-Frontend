@@ -331,7 +331,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
             <Typography
               variant="caption"
               sx={{
-                zIndex: 100,
+                zIndex: 120,
                 borderRadius: 2,
                 position: 'absolute',
                 // width: '90%',
@@ -355,11 +355,12 @@ export const CameraControl: React.FC<CameraControlProps> = ({
             </Typography>
             <Box
               sx={{
-                height: previewHeight,
-                width: previeWith,
+                // height: previewHeight,
+                // width: previeWith,
                 overflow: 'hidden',
                 position: 'absolute',
                 display: 'flex',
+                border: '4px solid orange',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
@@ -367,6 +368,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
               <img
                 src={guideUrl}
                 style={{
+                  zIndex: 100,
                   height: 'auto',
                   width: '90%',
                   opacity: 0.6,
@@ -376,9 +378,9 @@ export const CameraControl: React.FC<CameraControlProps> = ({
             <Webcam
               ref={camera}
               style={{
-                border: '4px solid white',
                 height: previewHeight,
                 width: previeWith,
+                zIndex: 1,
                 position: 'absolute',
                 overflow: 'hidden',
                 objectFit: 'cover',
@@ -402,6 +404,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 // height: imgHeight,
               }}
             />
+
             {devices && devices.length > 1 && (
               <Fab
                 color="error"
