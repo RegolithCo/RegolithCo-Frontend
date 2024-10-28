@@ -122,7 +122,6 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
   const isVerifyStage = !!data && !showError
   const isError = !!showError
 
-  log.info('MARZIPAN error', isError, showError, data)
   return (
     <Dialog
       open={true}
@@ -274,7 +273,6 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                         },
                         onCompleted: (data) => {
                           if (data.captureRefineryOrder) {
-                            log.info('MARZIPAN Capture completed', data)
                             setData(data.captureRefineryOrder)
                             if (rawImageUrl) setRawImageUrl(null)
                             setSubmittedImageUrl(null)
@@ -291,7 +289,6 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                         },
                         onCompleted: (data) => {
                           if (data.captureShipRockScan) {
-                            log.info('MARZIPAN Capture completed', data)
                             setData(data.captureShipRockScan || null)
                             if (rawImageUrl) setRawImageUrl(null)
                             setSubmittedImageUrl(null)
