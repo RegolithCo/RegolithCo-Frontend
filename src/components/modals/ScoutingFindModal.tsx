@@ -205,7 +205,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
                 variant="contained"
                 onClick={() => setCamScanModal(true)}
               >
-                Capture
+                Add from Capture
               </Button>
             </Tooltip>
           )}

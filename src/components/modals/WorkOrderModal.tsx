@@ -32,7 +32,6 @@ import {
 import {
   AccountBalance,
   BackHand,
-  Camera,
   Cancel,
   Create,
   Delete,
@@ -49,7 +48,7 @@ import { ConfirmModal } from './ConfirmModal'
 import { AppContext } from '../../context/app.context'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
-import { CameraControl, CameraControlProps } from '../ocr/CameraControl'
+import { CameraControl } from '../ocr/CameraControl'
 import { LookupsContext } from '../../context/lookupsContext'
 
 export interface WorkOrderModalProps {
@@ -408,7 +407,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                       variant="contained"
                       onClick={() => setCamScanModal(true)}
                     >
-                      Capture
+                      Import from Capture
                     </Button>
                   </Tooltip>
                   <div style={{ flexGrow: 1 }} />

@@ -17,6 +17,7 @@ import { Stack } from '@mui/system'
 import { PrivacyDialog } from './PrivacyDialog'
 import { ScreenshareContext } from '../../context/screenshare.context'
 import { CaptureTypeEnum } from './types'
+import { KeyShortcut } from '../fields/KeyShortcut'
 
 // export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
 
@@ -99,8 +100,13 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             <ContentPaste />
           </ListItemIcon>
           <ListItemText
-            primary="3. Paste Screenshot"
-            secondary="Use Ctrl+V Strg-V to paste a screenshot into this window"
+            primary="3. Paste a Screenshot / Image"
+            secondary={
+              <>
+                Use <KeyShortcut keyStr="Ctrl + V" />
+                or <KeyShortcut keyStr="Strg + V" /> to paste a screenshot into this window
+              </>
+            }
           />
         </ListItem>
       </List>

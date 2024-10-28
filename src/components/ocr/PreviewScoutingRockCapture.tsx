@@ -74,6 +74,10 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
           </TableBody>
         </Table>
       </TableContainer>
+      <Typography variant="caption" color="primary">
+        If this looks to be basically correct you can click "Use" to import this data or "Retry" with a different image
+        or crop.
+      </Typography>
     </Box>
   )
 }

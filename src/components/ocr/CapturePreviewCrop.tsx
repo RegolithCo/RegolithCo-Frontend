@@ -1,12 +1,19 @@
-import { Box, Button, Chip, DialogActions, Typography, useTheme } from '@mui/material'
-import React, { RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Box, Button, Chip, DialogActions, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import ReactCrop, { Crop } from 'react-image-crop'
 import { ScreenshareContext } from '../../context/screenshare.context'
 
 // Crop needs some very particular CSS that is not included in the MUI theme
 import 'react-image-crop/dist/ReactCrop.css'
 import useLocalStorage from '../../hooks/useLocalStorage'
-import { Clear, Crop as CropIcon, DocumentScanner, ScreenShare, StopScreenShare } from '@mui/icons-material'
+import {
+  AddPhotoAlternate,
+  Clear,
+  Crop as CropIcon,
+  DocumentScanner,
+  ScreenShare,
+  StopScreenShare,
+} from '@mui/icons-material'
 import { CaptureTypeEnum } from './types'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
@@ -15,6 +22,7 @@ interface CapturePreviewCropProps {
   imageUrl?: string | null // This is the URL-encoded image
   captureType: CaptureTypeEnum
   clearImage: () => void
+  chooseFileClick: () => void
   onSubmit: (image: string | null) => void
 }
 
@@ -44,6 +52,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
   captureType,
   imageUrl,
   onSubmit,
+  chooseFileClick,
   clearImage,
 }) => {
   const theme = useTheme()
@@ -61,9 +70,10 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
   // If the image changes then we reset the crop. Hopefully this isn't too annoying
   useEffect(() => {
     setCrop(storedVal[captureType] || defaultCrops[captureType])
-  }, [imageUrl, videoRef?.current])
+  }, [imageUrl, videoRef?.current, isScreenSharing])
 
   useEffect(() => {
+    if (imageUrl) return
     if (isScreenSharing) {
       startPreview(videoRef)
     } else {
@@ -72,7 +82,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     return () => {
       stopPreview(videoRef)
     }
-  }, [isScreenSharing])
+  }, [isScreenSharing, imageUrl])
 
   const onSubmitClick = useCallback(async () => {
     // First we need to choose if the image is coming from the imageUrl or from the screen share
@@ -213,9 +223,12 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
       <DialogActions>
         {imageUrl && (
           <Button variant="contained" color="error" startIcon={<Clear />} onClick={clearImage}>
-            Discard Image
+            Clear
           </Button>
         )}
+        <Button variant="contained" color="info" startIcon={<AddPhotoAlternate />} onClick={chooseFileClick}>
+          Choose File
+        </Button>
         <Button
           disabled={!isDifferentCrop}
           variant="text"
@@ -229,27 +242,33 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
           Reset Crop to defaults
         </Button>
         <Box sx={{ flexGrow: 1 }} />
-        {isScreenSharing && (
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<ScreenShare />}
-            onClick={() => {
-              stopScreenCapture()
-              startScreenCapture()
-            }}
-          >
-            Choose Window
-          </Button>
+        {isScreenSharing && !imageUrl && (
+          <>
+            <Typography variant="overline" color="white">
+              Screen Sharing:
+            </Typography>
+            <Tooltip title="Stop Screen Sharing">
+              <IconButton
+                color="secondary"
+                onClick={() => {
+                  stopScreenCapture()
+                  startScreenCapture()
+                }}
+              >
+                <ScreenShare />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Stop Screen Sharing">
+              <IconButton color="error" onClick={stopScreenCapture}>
+                <StopScreenShare />
+              </IconButton>
+            </Tooltip>
+          </>
         )}
-        {isScreenSharing && (
-          <Button variant="outlined" color="error" startIcon={<StopScreenShare />} onClick={stopScreenCapture}>
-            Stop Sharing
-          </Button>
-        )}
+        <Box sx={{ flexGrow: 1 }} />
 
         <Button variant="contained" color="success" startIcon={<DocumentScanner />} onClick={onSubmitClick}>
-          Submit Scan
+          Submit
         </Button>
       </DialogActions>
     </>

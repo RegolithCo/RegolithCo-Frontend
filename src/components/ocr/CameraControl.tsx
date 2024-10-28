@@ -260,16 +260,21 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
             {isCropStage && (
               <CapturePreviewCrop
                 imageUrl={rawImageUrl}
-                clearImage={() => setRawImageUrl(null)}
+                clearImage={() => {
+                  if (rawImageUrl) setRawImageUrl(null)
+                  if (showError) setShowError(null)
+                  if (submittedImageUrl) setSubmittedImageUrl(null)
+                }}
+                chooseFileClick={handleFileDialogClick}
                 captureType={captureType}
-                onSubmit={(submittedImageUrl) => {
+                onSubmit={(newUrl) => {
                   // TODO: Implement onSubmit
-                  if (submittedImageUrl) {
-                    setSubmittedImageUrl(rawImageUrl)
+                  if (newUrl) {
+                    setSubmittedImageUrl(newUrl)
                     if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
                       qryRefineryOrder({
                         variables: {
-                          imgUrl: submittedImageUrl,
+                          imgUrl: newUrl,
                         },
                         onCompleted: (data) => {
                           if (data.captureRefineryOrder) {
@@ -280,12 +285,12 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                             setShowError('Scan Could not be captured')
                           }
                         },
-                        nextFetchPolicy: 'no-cache',
+                        fetchPolicy: 'no-cache',
                       })
                     } else if (captureType === CaptureTypeEnum.SHIP_ROCK) {
                       qryShipRockScan({
                         variables: {
-                          imgUrl: submittedImageUrl,
+                          imgUrl: newUrl,
                         },
                         onCompleted: (data) => {
                           if (data.captureShipRockScan) {
@@ -296,7 +301,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                             setShowError('Scan Could not be captured')
                           }
                         },
-                        nextFetchPolicy: 'no-cache',
+                        fetchPolicy: 'no-cache',
                       })
                     }
                   }
@@ -342,7 +347,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                     if (data) setData(null)
                   }}
                 >
-                  Start Again
+                  Retry
                 </Button>
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
