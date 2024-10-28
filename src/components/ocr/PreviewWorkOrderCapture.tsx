@@ -16,6 +16,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
     <Box
       sx={{
         width: '100%',
+        maxWidth: 500,
         px: 2,
         '& *': {
           fontFamily: fontFamilies.robotoMono,

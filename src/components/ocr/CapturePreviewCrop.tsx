@@ -48,18 +48,31 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
 }) => {
   const theme = useTheme()
   const cropRef = React.useRef<ReactCrop>(null)
+  const videoRef = React.useRef<HTMLVideoElement>(null)
   const [storedVal, setStoredVal] = useLocalStorage<CropLookups>('crops', defaultCrops)
   // Do a deep compare of storedCrops to the defaultCrops using lodash and detect if there's difference
   const isDifferentCrop = useMemo(() => !isEqual(storedVal, defaultCrops), [storedVal])
 
   const [crop, setCrop] = useState<Crop>(storedVal[captureType] || defaultCrops[captureType])
-  const { videoRef, isScreenSharing, stopScreenCapture, startScreenCapture } = useContext(ScreenshareContext)
+  const { startPreview, stopPreview, isScreenSharing, stopScreenCapture, startScreenCapture } =
+    useContext(ScreenshareContext)
   const isSelectingAll = crop.width === 0 && crop.height === 0
 
   // If the image changes then we reset the crop. Hopefully this isn't too annoying
   useEffect(() => {
     setCrop(storedVal[captureType] || defaultCrops[captureType])
   }, [imageUrl, videoRef?.current])
+
+  useEffect(() => {
+    if (isScreenSharing) {
+      startPreview(videoRef)
+    } else {
+      stopPreview(videoRef)
+    }
+    return () => {
+      stopPreview(videoRef)
+    }
+  }, [isScreenSharing])
 
   const onSubmitClick = useCallback(async () => {
     // First we need to choose if the image is coming from the imageUrl or from the screen share

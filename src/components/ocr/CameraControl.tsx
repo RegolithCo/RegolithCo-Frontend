@@ -15,7 +15,7 @@ import {
 import { useCaptureRefineryOrderLazyQuery, useCaptureShipRockScanLazyQuery } from '../../schema'
 import { Stack } from '@mui/system'
 import { ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
-import { Clear, TipsAndUpdatesOutlined } from '@mui/icons-material'
+import { Check, Clear, Replay, TipsAndUpdatesOutlined } from '@mui/icons-material'
 import { CameraHelpDialog } from './CameraHelpDialog'
 import { DeviceTypeEnum, useDeviceType } from '../../hooks/useDeviceType'
 import { ConfirmModal } from '../modals/ConfirmModal'
@@ -29,6 +29,7 @@ import { fontFamilies } from '../../theme'
 import { PreviewWorkOrderCapture } from './PreviewWorkOrderCapture'
 import { PreviewScoutingRockCapture } from './PreviewScoutingRockCapture'
 import { RockIcon } from '../../icons'
+import { set } from 'lodash'
 
 export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
   SHIP_ROCK: 'Capture Rock Scan',
@@ -100,11 +101,9 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
 
   const handleOnCapture = () => {
     if (captureType === CaptureTypeEnum.SHIP_ROCK) {
-      if (!shipRockScanData?.captureShipRockScan) return
-      onCapture(shipRockScanData?.captureShipRockScan as ShipRockCapture)
+      onCapture(data as ShipRockCapture)
     } else if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
-      if (!refineryOrderData?.captureRefineryOrder) return
-      onCapture(refineryOrderData?.captureRefineryOrder as ShipMiningOrderCapture)
+      onCapture(data as ShipMiningOrderCapture)
     }
     onClose()
   }
@@ -112,16 +111,18 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
   // If we have an error, show it
   useEffect(() => {
     if (refineryOrderError || shipRockScanError) {
-      setShowError(refineryOrderError?.message || shipRockScanError?.message || 'Unknown Error')
+      setShowError(refineryOrderError?.message || shipRockScanError?.message || 'Scan Could not be captured')
     } else {
       setShowError(null)
     }
   }, [refineryOrderError, shipRockScanError])
 
-  const isCaptureStage = !rawImageUrl && !isScreenSharing && !refineryOrderData && !shipRockScanData
-  const isCropStage = (!!rawImageUrl || isScreenSharing) && !refineryOrderData && !shipRockScanData
-  const isVerifyStage = refineryOrderData || shipRockScanData
+  const isCaptureStage = !rawImageUrl && !isScreenSharing && !data && !showError
+  const isCropStage = (!!rawImageUrl || isScreenSharing) && !data && !showError
+  const isVerifyStage = !!data && !showError
+  const isError = !!showError
 
+  log.info('MARZIPAN error', isError, showError, data)
   return (
     <Dialog
       open={true}
@@ -182,55 +183,74 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
         </Stack>
       </DialogTitle>
       <DialogContent sx={{ overflowY: 'auto' }}>
+        {isError && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 200,
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <Stack>
+              <Typography variant="h6" color="error" align="center">
+                ERROR: {showError}
+              </Typography>
+              <Typography variant="caption" color="error" align="center">
+                Scan could not be captured. Please try again.
+              </Typography>
+            </Stack>
+          </Box>
+        )}
         {loading ? (
           <Box
             sx={{
-              position: 'absolute',
-              zIndex: 5,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 200,
+              width: '100%',
+              height: '100%',
             }}
           >
             {submittedImageUrl && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  zIndex: 5,
+              <img
+                src={submittedImageUrl}
+                alt="Capture"
+                style={{
                   width: '100%',
-                  height: '100%',
-                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  filter: 'blur(5px)',
                 }}
-              >
-                <img
-                  src={submittedImageUrl}
-                  alt="Capture"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    filter: 'blur(5px)',
-                  }}
-                />
-              </Box>
+              />
             )}
-            <CircularProgress size={100} thickness={10} sx={{}} />
-            <Typography
-              variant="h6"
+
+            <Box
               sx={{
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-                color: 'white',
-                textShadow: '0 0 10px black; 0 0 10px black',
                 position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
+                zIndex: 5,
               }}
             >
-              Submitting...
-            </Typography>
+              <CircularProgress size={100} thickness={10} sx={{}} />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                  color: 'white',
+                  textShadow: '0 0 10px black; 0 0 10px black',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                Submitting...
+              </Typography>
+            </Box>
           </Box>
         ) : (
           <>
@@ -243,33 +263,41 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
                 imageUrl={rawImageUrl}
                 clearImage={() => setRawImageUrl(null)}
                 captureType={captureType}
-                onSubmit={() => {
+                onSubmit={(submittedImageUrl) => {
                   // TODO: Implement onSubmit
-                  if (rawImageUrl) {
+                  if (submittedImageUrl) {
                     setSubmittedImageUrl(rawImageUrl)
                     if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
                       qryRefineryOrder({
                         variables: {
-                          imgUrl: rawImageUrl,
+                          imgUrl: submittedImageUrl,
                         },
                         onCompleted: (data) => {
-                          log.info('MARZIPAN Capture completed', data)
-                          setData(data.captureRefineryOrder || null)
-                          if (rawImageUrl) setRawImageUrl(null)
-                          setSubmittedImageUrl(null)
+                          if (data.captureRefineryOrder) {
+                            log.info('MARZIPAN Capture completed', data)
+                            setData(data.captureRefineryOrder)
+                            if (rawImageUrl) setRawImageUrl(null)
+                            setSubmittedImageUrl(null)
+                          } else {
+                            setShowError('Scan Could not be captured')
+                          }
                         },
                         nextFetchPolicy: 'no-cache',
                       })
                     } else if (captureType === CaptureTypeEnum.SHIP_ROCK) {
                       qryShipRockScan({
                         variables: {
-                          imgUrl: rawImageUrl,
+                          imgUrl: submittedImageUrl,
                         },
                         onCompleted: (data) => {
-                          log.info('MARZIPAN Capture completed', data)
-                          setData(data.captureShipRockScan || null)
-                          if (rawImageUrl) setRawImageUrl(null)
-                          setSubmittedImageUrl(null)
+                          if (data.captureShipRockScan) {
+                            log.info('MARZIPAN Capture completed', data)
+                            setData(data.captureShipRockScan || null)
+                            if (rawImageUrl) setRawImageUrl(null)
+                            setSubmittedImageUrl(null)
+                          } else {
+                            setShowError('Scan Could not be captured')
+                          }
                         },
                         nextFetchPolicy: 'no-cache',
                       })
@@ -279,25 +307,80 @@ export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureTy
               />
             )}
 
-            {refineryOrderData && refineryOrderData.captureRefineryOrder && (
-              <PreviewWorkOrderCapture order={refineryOrderData.captureRefineryOrder as ShipMiningOrderCapture} />
+            {data && data.__typename === 'ShipMiningOrderCapture' && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <PreviewWorkOrderCapture order={data as ShipMiningOrderCapture} />
+              </Box>
             )}
-            {shipRockScanData && shipRockScanData.captureShipRockScan && (
-              <PreviewScoutingRockCapture shipRock={shipRockScanData.captureShipRockScan as ShipRockCapture} />
+            {data && data.__typename === 'ShipRockCapture' && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <PreviewScoutingRockCapture shipRock={data as ShipRockCapture} />
+              </Box>
             )}
             {isVerifyStage && (
               <DialogActions>
                 <Button
                   disabled={loading}
-                  startIcon={<Clear />}
+                  color="error"
+                  startIcon={<Replay />}
                   onClick={() => {
                     if (rawImageUrl) setRawImageUrl(null)
-                    if (isScreenSharing) stopScreenCapture()
+                    // if (isScreenSharing) stopScreenCapture()
+                    if (showError) setShowError(null)
                     if (submittedImageUrl) setSubmittedImageUrl(null)
                     if (data) setData(null)
                   }}
                 >
-                  Reset
+                  Start Again
+                </Button>
+                <Box sx={{ flexGrow: 1 }} />
+                <Button
+                  color="success"
+                  variant="contained"
+                  disabled={loading || !data || isError}
+                  startIcon={<Check />}
+                  onClick={() => {
+                    if (confirmOverwrite) {
+                      setOverwriteConfirmOpen(true)
+                    } else {
+                      handleOnCapture()
+                      onClose()
+                    }
+                  }}
+                >
+                  Use
+                </Button>
+              </DialogActions>
+            )}
+            {isError && (
+              <DialogActions>
+                <Button
+                  disabled={loading}
+                  color="error"
+                  startIcon={<Replay />}
+                  onClick={() => {
+                    if (rawImageUrl) setRawImageUrl(null)
+                    // if (isScreenSharing) stopScreenCapture()
+                    if (submittedImageUrl) setSubmittedImageUrl(null)
+                    if (showError) setShowError(null)
+                    if (data) setData(null)
+                  }}
+                >
+                  Try Again
                 </Button>
               </DialogActions>
             )}

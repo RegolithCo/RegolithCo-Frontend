@@ -14,6 +14,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
     <Box
       sx={{
         width: '90%',
+        maxWidth: 400,
         px: 2,
         '& *': {
           fontFamily: fontFamilies.robotoMono,

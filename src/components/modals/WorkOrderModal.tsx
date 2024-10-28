@@ -150,7 +150,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
-  const [camScanModal, setCamScanModal] = React.useState<CameraControlProps['mode'] | null>(null)
+  const [camScanModal, setCamScanModal] = React.useState<boolean>(false)
   const styles = styleThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
@@ -269,8 +269,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
         <CameraControl
           captureType="REFINERY_ORDER"
           confirmOverwrite
-          mode={camScanModal}
-          onClose={() => setCamScanModal(null)}
+          onClose={() => setCamScanModal(false)}
           onCapture={handleCapture}
         />
       )}
@@ -400,38 +399,21 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           {isEditing && isShipMining && (
             <>
               {mediumUp && (
-                <Typography variant="body2" sx={{ color: theme.palette.primary.contrastText, fontWeight: 700 }}>
-                  Import:
-                </Typography>
+                <>
+                  <Tooltip title="Import a work order using a game screenshot." placement="top">
+                    <Button
+                      size={isSmall ? 'small' : 'large'}
+                      startIcon={<DocumentScanner />}
+                      color="inherit"
+                      variant="contained"
+                      onClick={() => setCamScanModal(true)}
+                    >
+                      Capture
+                    </Button>
+                  </Tooltip>
+                  <div style={{ flexGrow: 1 }} />
+                </>
               )}
-              <Tooltip title="Import a work order using your device's camera." placement="top">
-                <Button
-                  size={isSmall ? 'small' : 'large'}
-                  startIcon={<Camera />}
-                  color="inherit"
-                  variant="contained"
-                  onClick={() => {
-                    setCamScanModal('Camera')
-                  }}
-                >
-                  {isSmall ? 'Cam' : 'Camera'}
-                </Button>
-              </Tooltip>
-
-              <Tooltip title="Import a work order using a game screenshot." placement="top">
-                <Button
-                  size={isSmall ? 'small' : 'large'}
-                  startIcon={<DocumentScanner />}
-                  color="inherit"
-                  variant="contained"
-                  onClick={() => {
-                    setCamScanModal('File')
-                  }}
-                >
-                  {isSmall ? 'Screenshot' : 'Screenshot'}
-                </Button>
-              </Tooltip>
-              <div style={{ flexGrow: 1 }} />
             </>
           )}
           {allowEdit && deleteWorkOrder && (

@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useRef, PropsWithChildren } from 'react'
+import React, { createContext, useState, PropsWithChildren } from 'react'
 
 export interface ScreenshareContextType {
   stream: MediaStream | null
-  videoRef?: React.RefObject<HTMLVideoElement>
   startScreenCapture: () => Promise<void>
   stopScreenCapture: () => void
+  startPreview: (videoRef: React.RefObject<HTMLVideoElement>) => void
+  stopPreview: (videoRef: React.RefObject<HTMLVideoElement>) => void
   isScreenSharing: boolean
 }
 
@@ -16,12 +17,17 @@ export const ScreenshareContext = createContext<ScreenshareContextType>({
   stopScreenCapture: () => {
     throw new Error('ScreenshareProvider not found')
   },
+  startPreview: () => {
+    throw new Error('ScreenshareProvider not found')
+  },
+  stopPreview: () => {
+    throw new Error('ScreenshareProvider not found')
+  },
   isScreenSharing: false,
 })
 
 export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [stream, setStream] = useState<MediaStream | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
 
   const startScreenCapture = async () => {
     try {
@@ -50,20 +56,25 @@ export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) =
       setStream(null)
 
       // Clean up the video element if necessary
-      if (videoRef.current) {
-        videoRef.current.srcObject = null
-      }
+      // if (videoRef.current) {
+      //   videoRef.current.srcObject = null
+      // }
     }
   }
 
-  useEffect(() => {
+  const startPreview = async (videoRef: React.RefObject<HTMLVideoElement>) => {
     if (stream && videoRef.current) {
       videoRef.current.srcObject = stream
       videoRef.current.play()
     }
-  }, [stream])
+  }
+  const stopPreview = (videoRef: React.RefObject<HTMLVideoElement>) => {
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+    }
+  }
 
-  const isScreenSharing = stream?.getTracks().some((track) => track.readyState === 'live') ?? false
+  const isScreenSharing: boolean = !!stream?.active
 
   return (
     <ScreenshareContext.Provider
@@ -73,7 +84,8 @@ export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) =
         startScreenCapture,
         stopScreenCapture,
         isScreenSharing,
-        videoRef,
+        startPreview,
+        stopPreview,
       }}
     >
       {children}
