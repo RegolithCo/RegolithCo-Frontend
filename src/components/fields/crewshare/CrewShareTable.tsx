@@ -92,14 +92,9 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             <TableCell align="left" colSpan={2} padding="none">
               Share
             </TableCell>
-            <Tooltip
-              title="The payout is the amount of aUEC that the user will receive from the work order."
-              placement="top"
-            >
-              <TableCell align="right" sx={{ color: theme.palette.primary.light }} padding="none">
-                aUEC
-              </TableCell>
-            </Tooltip>
+            <TableCell align="right" sx={{ color: theme.palette.primary.light }} padding="none">
+              aUEC
+            </TableCell>
             {/* The delete button only shows if we are editing */}
             {!isShare && (
               <TableCell align="left" colSpan={isEditing ? 3 : 2}>

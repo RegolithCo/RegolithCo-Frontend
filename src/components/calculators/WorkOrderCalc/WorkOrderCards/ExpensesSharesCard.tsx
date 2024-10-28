@@ -18,7 +18,8 @@ import {
   ListItemText,
   Button,
   Link,
-  Icon,
+  Menu,
+  MenuItem,
 } from '@mui/material'
 import Numeral from 'numeral'
 import {
@@ -34,6 +35,7 @@ import {
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import {
+  ArrowDropDown,
   CheckBox,
   CheckBoxOutlineBlank,
   ExpandMore,
@@ -56,6 +58,7 @@ import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
 import { LookupsContext } from '../../../../context/lookupsContext'
+import { SessionContext } from '../../../../context/session.context'
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -79,6 +82,10 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 }) => {
   const theme = useTheme()
   const dataStore = React.useContext(LookupsContext)
+  const { captains, crewHierarchy, session } = React.useContext(SessionContext)
+  const [addCrewMenuOpen, setAddCrewMenuOpen] = useState<boolean>(false)
+  const addCrewMenuRef = React.useRef<HTMLButtonElement>(null)
+
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
   const [confirmPriceReset, setConfirmPriceReset] = useState<boolean>(false)
@@ -410,115 +417,161 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             {isEditing && (
               <>
                 {!isCalculator && userSuggest && (
-                  <Tooltip title="Add ALL session users">
-                    <Button
-                      size="small"
-                      color="primary"
-                      startIcon={<GroupAddTwoTone />}
-                      onClick={() => {
-                        const newShares: string[] = Object.entries(userSuggest)
-                          .reduce((acc, [scName, entry]) => {
-                            if (entry.named || entry.session) {
-                              acc.push(scName)
-                            }
-                            return acc
-                          }, [] as string[])
-                          .filter((scName) => {
-                            return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
-                          })
-
-                        // Make sure we have something to add
-                        if (newShares.length === 0) return
-                        onChange({
-                          ...workOrder,
-                          crewShares: [
-                            ...(workOrder.crewShares || []),
-                            ...newShares.map((payeeScName) => {
-                              return {
-                                payeeScName,
-                                payeeUserId: userSuggest[payeeScName].userId,
-                                shareType: ShareTypeEnum.Share,
-                                share: 1,
-                                note: null,
-                                createdAt: Date.now(),
-                                orderId: workOrder.orderId,
-                                sessionId: workOrder.sessionId,
-                                updatedAt: Date.now(),
-                                state: false,
-                                __typename: 'CrewShare',
-                              } as CrewShare
-                            }),
-                          ],
-                        })
-                      }}
-                    >
-                      All
-                    </Button>
-                  </Tooltip>
-                )}
-                {!isCalculator && userSuggest && (
-                  <Tooltip title="Add ALL Crew users">
-                    <Button
-                      size="small"
-                      color="secondary"
-                      startIcon={<GroupAdd />}
-                      onClick={() => {
-                        const newShares: string[] = Object.entries(userSuggest)
-                          .reduce((acc, [scName, { crew }]) => {
-                            if (crew) {
-                              acc.push(scName)
-                            }
-                            return acc
-                          }, [] as string[])
-                          .filter((scName) => {
-                            return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
-                          })
-
-                        // Make sure we have something to add
-                        if (newShares.length === 0) return
-                        onChange({
-                          ...workOrder,
-                          crewShares: [
-                            ...(workOrder.crewShares || []),
-                            ...newShares.map(
-                              (payeeScName) =>
-                                ({
-                                  payeeScName,
-                                  payeeUserId: userSuggest[payeeScName].userId,
-                                  shareType: ShareTypeEnum.Share,
-                                  share: 1,
-                                  note: null,
-                                  createdAt: Date.now(),
-                                  orderId: workOrder.orderId,
-                                  sessionId: workOrder.sessionId,
-                                  updatedAt: Date.now(),
-                                  state: false,
-                                  __typename: 'CrewShare',
-                                }) as CrewShare
-                            ),
-                          ],
-                        })
-                      }}
-                    >
-                      Crew
-                    </Button>
-                  </Tooltip>
-                )}
-                <Tooltip title="Clear all crew shares (except owner)">
                   <Button
                     size="small"
-                    color="error"
+                    color="primary"
+                    startIcon={<GroupAddTwoTone />}
                     onClick={() => {
-                      const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
+                      const newShares: string[] = Object.entries(userSuggest)
+                        .reduce((acc, [scName, entry]) => {
+                          if (entry.named || entry.session) {
+                            acc.push(scName)
+                          }
+                          return acc
+                        }, [] as string[])
+                        .filter((scName) => {
+                          return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
+                        })
+
+                      // Make sure we have something to add
+                      if (newShares.length === 0) return
                       onChange({
                         ...workOrder,
-                        crewShares: workOrder.crewShares?.filter((cs) => cs.payeeScName === ownerSCName) || [],
+                        crewShares: [
+                          ...(workOrder.crewShares || []),
+                          ...newShares.map((payeeScName) => {
+                            return {
+                              payeeScName,
+                              payeeUserId: userSuggest[payeeScName].userId,
+                              shareType: ShareTypeEnum.Share,
+                              share: 1,
+                              note: null,
+                              createdAt: Date.now(),
+                              orderId: workOrder.orderId,
+                              sessionId: workOrder.sessionId,
+                              updatedAt: Date.now(),
+                              state: false,
+                              __typename: 'CrewShare',
+                            } as CrewShare
+                          }),
+                        ],
                       })
                     }}
                   >
-                    Clear
+                    All
                   </Button>
-                </Tooltip>
+                )}
+                {!isCalculator && userSuggest && (
+                  <Button
+                    size="small"
+                    disabled={!captains.length}
+                    color="secondary"
+                    ref={addCrewMenuRef}
+                    // down arrow on the end
+                    endIcon={<ArrowDropDown />}
+                    startIcon={<GroupAdd />}
+                    onClick={() => setAddCrewMenuOpen(true)}
+                  >
+                    Crew
+                  </Button>
+                )}
+                {!isCalculator && userSuggest && (
+                  <Menu
+                    anchorEl={addCrewMenuRef.current}
+                    open={addCrewMenuOpen}
+                    onClose={() => setAddCrewMenuOpen(false)}
+                    slotProps={{
+                      paper: {
+                        style: {
+                          backgroundColor: theme.palette.primary.main,
+                          color: theme.palette.primary.contrastText,
+                        },
+                      },
+                    }}
+                  >
+                    {captains.map((captain) => {
+                      const captainId = captain.ownerId
+                      const captainScNAme = captain.owner?.scName as string
+                      return (
+                        <MenuItem
+                          key={captainId}
+                          sx={{
+                            '&:hover': {
+                              backgroundColor: theme.palette.primary.dark,
+                              color: theme.palette.primary.contrastText,
+                            },
+                          }}
+                          onClick={() => {
+                            const { activeIds, innactiveSCNames } = crewHierarchy[captainId]
+                            const userIdMap = activeIds.reduce((acc, activeId) => {
+                              const crewMemeber = session?.activeMembers?.items.find((m) => m.ownerId === activeId)
+                              if (!crewMemeber) return acc
+                              return {
+                                ...acc,
+                                [crewMemeber?.ownerId as string]: crewMemeber?.owner?.scName,
+                              }
+                            }, {})
+                            const crewNames: string[] = [
+                              captainScNAme,
+                              ...innactiveSCNames,
+                              ...activeIds.map(
+                                (id) =>
+                                  session?.activeMembers?.items.find((m) => m.ownerId === id)?.owner?.scName as string
+                              ),
+                            ]
+                              .filter((scName) => scName)
+                              .filter((scName) => {
+                                return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
+                              })
+
+                            // Make sure we have something to add
+                            if (crewNames.length === 0) return
+                            onChange({
+                              ...workOrder,
+                              crewShares: [
+                                ...(workOrder.crewShares || []),
+                                ...crewNames.map(
+                                  (payeeScName) =>
+                                    ({
+                                      payeeScName,
+                                      payeeUserId: userIdMap[payeeScName],
+                                      shareType: ShareTypeEnum.Share,
+                                      share: 1,
+                                      note: null,
+                                      createdAt: Date.now(),
+                                      orderId: workOrder.orderId,
+                                      sessionId: workOrder.sessionId,
+                                      updatedAt: Date.now(),
+                                      state: false,
+                                      __typename: 'CrewShare',
+                                    }) as CrewShare
+                                ),
+                              ],
+                            })
+
+                            // Make sure to close the menu
+                            setAddCrewMenuOpen(false)
+                          }}
+                        >
+                          Add <strong style={{ marginLeft: '10px' }}>{captainScNAme}</strong>'s crew
+                        </MenuItem>
+                      )
+                    })}
+                  </Menu>
+                )}
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={() => {
+                    const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
+                    onChange({
+                      ...workOrder,
+                      crewShares: workOrder.crewShares?.filter((cs) => cs.payeeScName === ownerSCName) || [],
+                    })
+                  }}
+                >
+                  Clear
+                </Button>
               </>
             )}
           </Stack>

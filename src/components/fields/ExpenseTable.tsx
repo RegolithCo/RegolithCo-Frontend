@@ -99,125 +99,121 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
           {expenses.map(({ name, amount, idx }) => {
             const isMoTraderRow = hasTransferFee && idx === -1
             return (
-              <Tooltip
-                enterDelay={700}
+              <TableRow
                 key={`expensesRows-${idx}`}
-                title={isMoTraderRow ? 'Automatic Row (turn off using settings)' : 'Custom Row. Click to edit.'}
-                placement="top-start"
+                sx={{
+                  background: isMoTraderRow ? '#44444477' : 'transparent',
+                }}
+                onClick={() => {
+                  if (!isEditing || isMoTraderRow) return
+                  setEditingRow(idx)
+                }}
               >
-                <TableRow
-                  key={`expensesRows-${idx}`}
-                  sx={{
-                    background: isMoTraderRow ? '#44444477' : 'transparent',
-                  }}
-                  onClick={() => {
-                    if (!isEditing || isMoTraderRow) return
-                    setEditingRow(idx)
-                  }}
-                >
-                  <TableCell scope="row">
-                    <ExpenseRowName
-                      name={name}
-                      isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
-                      onCancel={() => setEditingRow(null)}
-                      onChange={(val) => {
-                        const newExpenses = [...(workOrder.expenses || [])]
-                        newExpenses[idx] = { ...newExpenses[idx], name: val } // Create a new object
-                        onChange({
-                          ...workOrder,
-                          expenses: newExpenses,
-                        })
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell scope="row" sx={{ textAlign: 'right' }}>
-                    <ExpenseRowAmount
-                      amount={amount}
-                      isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
-                      onCancel={() => setEditingRow(null)}
-                      onChange={(val) => {
-                        const newExpenses = [...(workOrder.expenses || [])]
-                        newExpenses[idx] = { ...newExpenses[idx], amount: val } // Create a new object
-                        onChange({
-                          ...workOrder,
-                          expenses: newExpenses,
-                        })
-                      }}
-                    />
-                  </TableCell>
-                  {isEditing && (
-                    <>
-                      {!isMoTraderRow ? (
-                        <TableCell padding="none">
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              e.preventDefault()
-                              const newExpenses = [...(workOrder.expenses || [])]
-                              newExpenses.splice(idx, 1)
-                              onChange({
-                                ...workOrder,
-                                expenses: newExpenses,
-                              })
-                            }}
-                          >
-                            <Cancel />
-                          </IconButton>
-                        </TableCell>
-                      ) : (
-                        <Tooltip title="Automatic. Remove using the settings radio buttons">
-                          <TableCell padding="none">
-                            <IconButton size="small" color="error" disabled>
-                              <Cancel />
-                            </IconButton>
-                          </TableCell>
-                        </Tooltip>
-                      )}
-                    </>
-                  )}
-                </TableRow>
-              </Tooltip>
-            )
-          })}
-          {isEditing && (
-            <TableRow>
-              <Tooltip
-                title={
-                  workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
-                    ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
-                    : 'Add a custom expense'
-                }
-              >
-                <TableCell component="th" scope="row" sx={{ textAlign: 'right' }} colSpan={3}>
-                  <Button
-                    size="small"
-                    endIcon={<AddCircle />}
-                    color="secondary"
-                    sx={{
-                      fontSize: 10,
-                    }}
-                    disabled={Boolean(workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES)}
-                    onClick={() => {
-                      const newExpenses: WorkOrderExpense[] = [
-                        ...(workOrder.expenses || []),
-                        {
-                          name: '',
-                          amount: 0,
-                          __typename: 'WorkOrderExpense',
-                        },
-                      ]
+                <TableCell scope="row">
+                  <ExpenseRowName
+                    name={name}
+                    isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
+                    onCancel={() => setEditingRow(null)}
+                    onChange={(val) => {
+                      const newExpenses = [...(workOrder.expenses || [])]
+                      newExpenses[idx] = { ...newExpenses[idx], name: val } // Create a new object
                       onChange({
                         ...workOrder,
                         expenses: newExpenses,
                       })
                     }}
-                  >
-                    Add Expense
-                  </Button>
+                  />
                 </TableCell>
-              </Tooltip>
+                <TableCell scope="row" sx={{ textAlign: 'right' }}>
+                  <ExpenseRowAmount
+                    amount={amount}
+                    isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
+                    onCancel={() => setEditingRow(null)}
+                    onChange={(val) => {
+                      const newExpenses = [...(workOrder.expenses || [])]
+                      newExpenses[idx] = { ...newExpenses[idx], amount: val } // Create a new object
+                      onChange({
+                        ...workOrder,
+                        expenses: newExpenses,
+                      })
+                    }}
+                  />
+                </TableCell>
+                {isEditing && (
+                  <>
+                    {!isMoTraderRow ? (
+                      <TableCell padding="none">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            e.preventDefault()
+                            const newExpenses = [...(workOrder.expenses || [])]
+                            newExpenses.splice(idx, 1)
+                            onChange({
+                              ...workOrder,
+                              expenses: newExpenses,
+                            })
+                          }}
+                        >
+                          <Cancel />
+                        </IconButton>
+                      </TableCell>
+                    ) : (
+                      <Tooltip title="Automatic. Remove using the settings radio buttons">
+                        <TableCell padding="none">
+                          <IconButton size="small" color="error" disabled>
+                            <Cancel />
+                          </IconButton>
+                        </TableCell>
+                      </Tooltip>
+                    )}
+                  </>
+                )}
+              </TableRow>
+            )
+          })}
+          {isEditing && (
+            <TableRow>
+              <TableCell component="th" scope="row" sx={{ textAlign: 'right' }} colSpan={3}>
+                <Tooltip
+                  placement="left"
+                  title={
+                    workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
+                      ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
+                      : 'Add a custom expense'
+                  }
+                >
+                  <span>
+                    <Button
+                      size="small"
+                      endIcon={<AddCircle />}
+                      color="secondary"
+                      sx={{
+                        fontSize: 10,
+                      }}
+                      disabled={Boolean(workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES)}
+                      onClick={() => {
+                        const newExpenses: WorkOrderExpense[] = [
+                          ...(workOrder.expenses || []),
+                          {
+                            name: '',
+                            amount: 0,
+                            __typename: 'WorkOrderExpense',
+                          },
+                        ]
+                        onChange({
+                          ...workOrder,
+                          expenses: newExpenses,
+                        })
+                      }}
+                    >
+                      Add Expense
+                    </Button>
+                  </span>
+                </Tooltip>
+              </TableCell>
             </TableRow>
           )}
           {expenses.length > 1 && (
