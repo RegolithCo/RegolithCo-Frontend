@@ -25,6 +25,7 @@ import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
 import { CameraControl } from '../ocr/CameraControl'
+import { ScreenshareProvider } from '../../context/screenshare.context'
 
 export interface HomePageProps {
   userCtx: LoginContextObj
@@ -131,17 +132,19 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
           ))}
         </Stack>
       )}
-      {/* <CameraControl
-        captureType="SHIP_ROCK"
-        mode="Camera"
-        onCapture={(data) => {
-          console.log('Captured data:', data)
-        }}
-        onClose={() => {
-          console.log('Camera closed')
-        }}
-        confirmOverwrite
-      /> */}
+      <ScreenshareProvider>
+        <CameraControl
+          captureType="SHIP_ROCK"
+          mode="Camera"
+          onCapture={(data) => {
+            console.log('Captured data:', data)
+          }}
+          onClose={() => {
+            console.log('Camera closed')
+          }}
+          confirmOverwrite
+        />
+      </ScreenshareProvider>
       {maintenanceMode && (
         <Alert severity="error" sx={{ my: 2 }} variant="filled">
           <AlertTitle>Site Maintenance</AlertTitle>
