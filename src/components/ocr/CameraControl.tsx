@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   Box,
   Button,
@@ -28,7 +28,7 @@ import { CaptureTypeEnum } from './types'
 import { fontFamilies } from '../../theme'
 import { PreviewWorkOrderCapture } from './PreviewWorkOrderCapture'
 import { PreviewScoutingRockCapture } from './PreviewScoutingRockCapture'
-import { set } from 'lodash'
+import { RockIcon } from '../../icons'
 
 export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
   SHIP_ROCK: 'Capture Rock Scan',
@@ -38,26 +38,19 @@ export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
 export interface CameraControlProps {
   onClose: () => void
   confirmOverwrite?: boolean
-  mode: 'Camera' | 'File'
   onCapture: <T extends ShipRockCapture | ShipMiningOrderCapture>(retVal: T) => void
   captureType: CaptureTypeEnum
 }
 
-export const CameraControl: React.FC<CameraControlProps> = ({
-  onClose,
-  captureType,
-  confirmOverwrite,
-  onCapture,
-  mode,
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [image, setImage] = useState<string | null>(null)
+export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureType, confirmOverwrite, onCapture }) => {
+  const [rawImageUrl, setRawImageUrl] = useState<string | null>(null)
+  const [submittedImageUrl, setSubmittedImageUrl] = useState<string | null>(null)
   const [showError, setShowError] = useState<string | null>(null)
   const [overwriteConfirmOpen, setOverwriteConfirmOpen] = useState(false)
   const [data, setData] = useState<ShipRockCapture | ShipMiningOrderCapture | null>(null)
 
   const [helpOpen, setHelpOpen] = useState(false)
-  useImagePaste(setImage, containerRef)
+  useImagePaste(setRawImageUrl)
   const { isScreenSharing, stopScreenCapture } = useContext(ScreenshareContext)
   const theme = useTheme()
 
@@ -84,7 +77,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
     if (file) {
       const reader = new FileReader()
       reader.onload = (e) => {
-        setImage(e.target?.result as string)
+        setRawImageUrl(e.target?.result as string)
       }
       reader.readAsDataURL(file)
     }
@@ -125,9 +118,8 @@ export const CameraControl: React.FC<CameraControlProps> = ({
     }
   }, [refineryOrderError, shipRockScanError])
 
-  log.info('MARZIPAN isScreensharing', isScreenSharing)
-  const isCaptureStage = !image && !isScreenSharing && !refineryOrderData && !shipRockScanData
-  const isCropStage = (!!image || isScreenSharing) && !refineryOrderData && !shipRockScanData
+  const isCaptureStage = !rawImageUrl && !isScreenSharing && !refineryOrderData && !shipRockScanData
+  const isCropStage = (!!rawImageUrl || isScreenSharing) && !refineryOrderData && !shipRockScanData
   const isVerifyStage = refineryOrderData || shipRockScanData
 
   return (
@@ -176,6 +168,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
             width: '100%',
           }}
         >
+          <RockIcon />
           <Typography variant="h6">{CaptureTypeTitle[captureType]}</Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title="Capture tips and tricks" placement="top">
@@ -188,7 +181,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent ref={containerRef} sx={{ overflowY: 'auto' }}>
+      <DialogContent sx={{ overflowY: 'auto' }}>
         {loading ? (
           <Box
             sx={{
@@ -196,7 +189,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
               zIndex: 5,
             }}
           >
-            {image && (
+            {submittedImageUrl && (
               <Box
                 sx={{
                   position: 'absolute',
@@ -207,7 +200,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                 }}
               >
                 <img
-                  src={image}
+                  src={submittedImageUrl}
                   alt="Capture"
                   style={{
                     width: '100%',
@@ -247,31 +240,36 @@ export const CameraControl: React.FC<CameraControlProps> = ({
 
             {isCropStage && (
               <CapturePreviewCrop
-                image={image}
-                clearImage={() => setImage(null)}
+                imageUrl={rawImageUrl}
+                clearImage={() => setRawImageUrl(null)}
                 captureType={captureType}
                 onSubmit={() => {
                   // TODO: Implement onSubmit
-                  if (image) {
+                  if (rawImageUrl) {
+                    setSubmittedImageUrl(rawImageUrl)
                     if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
                       qryRefineryOrder({
                         variables: {
-                          imgUrl: image,
+                          imgUrl: rawImageUrl,
                         },
                         onCompleted: (data) => {
                           log.info('MARZIPAN Capture completed', data)
                           setData(data.captureRefineryOrder || null)
+                          if (rawImageUrl) setRawImageUrl(null)
+                          setSubmittedImageUrl(null)
                         },
                         nextFetchPolicy: 'no-cache',
                       })
                     } else if (captureType === CaptureTypeEnum.SHIP_ROCK) {
                       qryShipRockScan({
                         variables: {
-                          imgUrl: image,
+                          imgUrl: rawImageUrl,
                         },
                         onCompleted: (data) => {
                           log.info('MARZIPAN Capture completed', data)
                           setData(data.captureShipRockScan || null)
+                          if (rawImageUrl) setRawImageUrl(null)
+                          setSubmittedImageUrl(null)
                         },
                         nextFetchPolicy: 'no-cache',
                       })
@@ -293,7 +291,9 @@ export const CameraControl: React.FC<CameraControlProps> = ({
                   disabled={loading}
                   startIcon={<Clear />}
                   onClick={() => {
-                    if (image) setImage(null)
+                    if (rawImageUrl) setRawImageUrl(null)
+                    if (isScreenSharing) stopScreenCapture()
+                    if (submittedImageUrl) setSubmittedImageUrl(null)
                     if (data) setData(null)
                   }}
                 >

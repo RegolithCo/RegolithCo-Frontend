@@ -55,13 +55,6 @@ export const CameraHelpDialog: React.FC<CameraHelpDialogProps> = ({ onClose, cap
                 you can but it won't be able to find the refinery, processing method, refining time etc. All you get is
                 the ore numbers.
               </Typography>
-              <Typography variant="body2">
-                <b>Turn off CHAT and r_DisplayInfo</b> - Any extra text on the screen can throw off the recognition.
-              </Typography>
-              <Typography variant="body2">
-                <b>Line up the guide</b> - Line up the red guide so that the refinery submission is inside the red box.
-                (if you're capturing from your ship UI just center the ores in your camera window and ignore the guide)
-              </Typography>
             </>
           )}
           {captureType === CaptureTypeEnum.SHIP_ROCK && (
@@ -71,28 +64,8 @@ export const CameraHelpDialog: React.FC<CameraHelpDialogProps> = ({ onClose, cap
             </Typography>
           )}
           <Typography variant="body2">
-            <b>Snap OR Upload</b> - You can{' '}
-            <Camera
-              sx={{
-                height: 16,
-                width: 16,
-              }}
-            />{' '}
-            Capture a photo or{' '}
-            <AddPhotoAlternate
-              sx={{
-                height: 16,
-                width: 16,
-              }}
-            />{' '}
-            Upload a screenshot.
-          </Typography>
-          <Typography variant="body2">
-            <b>Crop Screenshots</b> - If you're uploading a screenshot, crop it to just the UI you're trying to scan.
-          </Typography>
-          <Typography variant="body2">
-            <b>Avoid Skew</b> - Try to take the photo directly facing the screen. Perspective skew can make detection
-            harder.
+            <b>Turn off CHAT and r_DisplayInfo</b> - Any extra text on the screen that overlaps the thing being captured
+            can throw off the recognition.
           </Typography>
           <Typography variant="body2">
             <b>Turn off Chromatic Aberation</b> - This is a major cause of blurry numbers in Star Citizen.

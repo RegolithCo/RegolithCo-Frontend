@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-export const useImagePaste = (onImage: (image: string) => void, containerRef: React.RefObject<HTMLElement>) => {
+export const useImagePaste = (onImage: (image: string) => void) => {
   // Handle the paste event
   const handlePaste = (event) => {
     const clipboardItems = event.clipboardData.items
@@ -28,11 +28,9 @@ export const useImagePaste = (onImage: (image: string) => void, containerRef: Re
 
   // Now set up a watcher for the containerRef if it exists
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.addEventListener('paste', handlePaste)
-      return () => {
-        if (containerRef.current) containerRef.current.removeEventListener('paste', handlePaste)
-      }
+    document.addEventListener('paste', handlePaste)
+    return () => {
+      document.removeEventListener('paste', handlePaste)
     }
-  }, [containerRef])
+  }, [])
 }

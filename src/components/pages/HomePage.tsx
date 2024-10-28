@@ -132,19 +132,6 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
           ))}
         </Stack>
       )}
-      <ScreenshareProvider>
-        <CameraControl
-          captureType="SHIP_ROCK"
-          mode="Camera"
-          onCapture={(data) => {
-            console.log('Captured data:', data)
-          }}
-          onClose={() => {
-            console.log('Camera closed')
-          }}
-          confirmOverwrite
-        />
-      </ScreenshareProvider>
       {maintenanceMode && (
         <Alert severity="error" sx={{ my: 2 }} variant="filled">
           <AlertTitle>Site Maintenance</AlertTitle>
