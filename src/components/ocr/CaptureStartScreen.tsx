@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemButton,
@@ -11,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material'
 import React, { useContext } from 'react'
-import { CaptureTypeTitle } from './CameraControl'
+import { CaptureTypeTitle } from './CaptureControl'
 import { AddPhotoAlternate, ContentPaste, PrivacyTip, ScreenShare, StopScreenShare } from '@mui/icons-material'
 import { Stack } from '@mui/system'
 import { PrivacyDialog } from './PrivacyDialog'
@@ -37,12 +38,12 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
       {/* There are 3 ways to capture data from Star citizen into regolith: Screen sharing, Uploading a screenshot or pasting into this window */}
 
       <Typography variant="body1" paragraph>
-        Regolith cam capture and interpret screenshot data so that you can automatically{' '}
+        Regolith can interpret screenshots so that you can automatically{' '}
         <strong>{CaptureTypeTitle[captureType]}</strong> data into Regolith. There are 3 ways to capture data from Star
         Citizen into Regolith:
       </Typography>
       <List>
-        <ListItem>
+        <ListItem alignItems="flex-start">
           <ListItemIcon>
             <ScreenShare />
           </ListItemIcon>
@@ -51,8 +52,8 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             secondary={
               <Stack spacing={1}>
                 <Typography variant="body2">
-                  This is the best way to capture data. It allows Regolith to see the game screen and extract the data
-                  it needs. You will need to give permission to share your screen. When asked, select to share your Star
+                  This is the most convenient way. It allows Regolith to see the game screen and extract the data it
+                  needs. You will need to give permission to share your screen. When asked, select to share your Star
                   Citizen game window.
                 </Typography>
                 <Stack direction="row" spacing={1}>
@@ -79,14 +80,46 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             }
           />
         </ListItem>
-        <ListItemButton onClick={onFileChooseClick}>
+        <ListItem alignItems="flex-start">
+          <ListItemIcon>
+            <ContentPaste />
+          </ListItemIcon>
+          <ListItemText
+            primary="2. Paste a Screenshot / Image"
+            secondary={
+              <Stack spacing={1}>
+                <Typography variant="body2" paragraph>
+                  Inside Star citizen use <KeyShortcut keyStr="Alt + PrintScreen" /> to copy a screenshot to your
+                  clipboard. Then in Regolith use <KeyShortcut keyStr="Ctrl + V" />
+                  or <KeyShortcut keyStr="Strg + V" /> to paste a screenshot into this window.{' '}
+                  <Link
+                    href="https://support.microsoft.com/en-us/office/copy-the-window-or-screen-contents-98c41969-51e5-45e1-be36-fb9381b32bb7#:~:text=Copy%20only%20the%20image%20of%20the%20active%20window&text=Press%20ALT%2BPRINT%20SCREEN.,Office%20program%20or%20other%20application."
+                    target="_blank"
+                  >
+                    Read more about the Print Screen Key here
+                  </Link>
+                </Typography>
+                <Typography
+                  variant="caption"
+                  paragraph
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Pro tip: Pasting screenshots works from anywhere inside an active session
+                </Typography>
+              </Stack>
+            }
+          />
+        </ListItem>
+        <ListItemButton onClick={onFileChooseClick} alignItems="flex-start">
           <ListItemIcon>
             <IconButton>
               <AddPhotoAlternate />
             </IconButton>
           </ListItemIcon>
           <ListItemText
-            primary="2. Upload a Screenshot Image"
+            primary="3. Upload a Screenshot Image"
             // secondary="Upload a screenshot of the game window. You will be able to crop it before submitting."
             secondary={
               <Stack spacing={1}>
@@ -95,20 +128,6 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             }
           />
         </ListItemButton>
-        <ListItem>
-          <ListItemIcon>
-            <ContentPaste />
-          </ListItemIcon>
-          <ListItemText
-            primary="3. Paste a Screenshot / Image"
-            secondary={
-              <>
-                Use <KeyShortcut keyStr="Ctrl + V" />
-                or <KeyShortcut keyStr="Strg + V" /> to paste a screenshot into this window
-              </>
-            }
-          />
-        </ListItem>
       </List>
       <Typography variant="body1" color="text.secondary">
         <em>Note: In all 3 cases you will be able to crop it before submitting.</em>

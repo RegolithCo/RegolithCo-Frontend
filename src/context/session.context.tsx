@@ -35,6 +35,7 @@ export const DialogEnum = {
   ADD_FRIEND: 'ADD_FRIEND',
   USER_STATUS: 'USER_STATUS',
   DISBAND_CREW: 'DISBAND_CREW',
+  PASTE_DETECTED: 'PASTE_DETECTED',
 } as const
 export type DialogEnum = ObjectValues<typeof DialogEnum>
 

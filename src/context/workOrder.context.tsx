@@ -16,6 +16,8 @@ export interface WorkOrderContextType {
   forceTemplate?: boolean
   userSuggest?: UserSuggest
   isNew?: boolean
+  pastedImgUrl?: string | null
+  setPastedImgUrl?: (imgUrl: string | null) => void
 }
 
 const notAvailable = (name: string) => () => {

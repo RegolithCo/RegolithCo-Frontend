@@ -48,8 +48,10 @@ import { ConfirmModal } from './ConfirmModal'
 import { AppContext } from '../../context/app.context'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
-import { CameraControl } from '../ocr/CameraControl'
+import { CaptureControl } from '../ocr/CaptureControl'
 import { LookupsContext } from '../../context/lookupsContext'
+import log from 'loglevel'
+import { useImagePaste } from '../../hooks/useImagePaste'
 
 export interface WorkOrderModalProps {
   open: boolean
@@ -141,6 +143,8 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     isMine,
     templateJob,
     failWorkOrder,
+    pastedImgUrl,
+    setPastedImgUrl,
     // forceTemplate,
     userSuggest,
   } = React.useContext(WorkOrderContext)
@@ -149,7 +153,9 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
-  const [camScanModal, setCamScanModal] = React.useState<boolean>(false)
+
+  const [camScanModal, setCamScanModal] = React.useState<boolean>(!!pastedImgUrl)
+
   const styles = styleThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
@@ -177,6 +183,13 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       onClose()
     }
   }
+
+  // Detect paste events and handle them as long as no modals are open
+  useImagePaste((image) => {
+    setPastedImgUrl && setPastedImgUrl(image)
+    if (!isEditing) setIsEditing(true)
+    setCamScanModal(true)
+  }, !setPastedImgUrl || camScanModal)
 
   let WorkIcon: SvgIconComponent
   let title = ''
@@ -265,9 +278,10 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       }}
     >
       {camScanModal && (
-        <CameraControl
+        <CaptureControl
           captureType="REFINERY_ORDER"
           confirmOverwrite
+          initialImageUrl={pastedImgUrl || null}
           onClose={() => setCamScanModal(false)}
           onCapture={handleCapture}
         />
@@ -395,7 +409,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
             </Button>
           </Tooltip>
           <div style={{ flexGrow: 1 }} />
-          {isEditing && isShipMining && (
+          {allowEdit && isShipMining && (
             <>
               {mediumUp && (
                 <>
@@ -405,7 +419,10 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                       startIcon={<DocumentScanner />}
                       color="inherit"
                       variant="contained"
-                      onClick={() => setCamScanModal(true)}
+                      onClick={() => {
+                        if (!isEditing) setIsEditing(true)
+                        setCamScanModal(true)
+                      }}
                     >
                       Import from Capture
                     </Button>

@@ -46,6 +46,9 @@ import config from '../../../config'
 import { SessionNotFound } from './SessionNotFound'
 import { ScreenshareProvider } from '../../../context/screenshare.context'
 import { DownloadModalContainer } from '../../modals/DownloadModalWrapper'
+import { useImagePaste } from '../../../hooks/useImagePaste'
+import { PasteDetectedModal } from '../../modals/PasteDetectedModal'
+import log from 'loglevel'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -59,6 +62,9 @@ export const SessionPageContainer: React.FC = () => {
   const [activeLoadout, setActiveLoadout] = React.useState<MiningLoadout | null>(null)
   const [activeUserModalId, setActiveUserModalId] = React.useState<string | null>(null)
   const [pendingUserModalScName, setPendingUserModalScName] = React.useState<string | null>(null)
+
+  // We keep a pasted buffer state for the user to paste into
+  const [pastedImgUrl, setPastedImgUrl] = React.useState<string | null>(null)
 
   const [shareWorkOrderId, setShareWorkOrderId] = React.useState<string | null>(null)
   const [shareScoutingFindId, setShareScoutingFindId] = React.useState<string | null>(null)
@@ -228,6 +234,16 @@ export const SessionPageContainer: React.FC = () => {
     )
   }, [sessionQueries.session?.scouting?.items, modalScoutingFindId])
 
+  // Detect paste events and handle them as long as no modals are open
+  const pasteDisabled = React.useMemo(
+    () => !!activeModal || !!modalWorkOrder || !!modalScoutingFind || !!newWorkOrder || !!newScoutingFind,
+    [activeModal, modalWorkOrder, modalScoutingFind, newWorkOrder, newScoutingFind]
+  )
+  useImagePaste((image) => {
+    setPastedImgUrl(image)
+    setActiveModal(DialogEnum.PASTE_DETECTED)
+  }, pasteDisabled)
+
   // NO HOOKS BELOW HERE PLEASE
   if (sessionQueries.loading && !sessionQueries.session) return <PageLoader title="loading session..." loading />
 
@@ -332,6 +348,8 @@ export const SessionPageContainer: React.FC = () => {
                   deleteWorkOrder: () => modalWorkOrderQry.deleteWorkOrder(),
                   failWorkOrder: modalWorkOrderQry.failWorkOrder,
                   isSessionActive: isActive,
+                  pastedImgUrl,
+                  setPastedImgUrl,
                   allowEdit:
                     myUserProfile?.userId === modalWorkOrder?.ownerId ||
                     amISessionOwner ||
@@ -347,6 +365,8 @@ export const SessionPageContainer: React.FC = () => {
                   onClose={() => {
                     setActiveModal(null)
                     returnToSession()
+                    // Make sure to clear the pasted buffer to clean up the memory for that
+                    if (pastedImgUrl) setPastedImgUrl(null)
                   }}
                 />
               </WorkOrderContext.Provider>
@@ -373,9 +393,19 @@ export const SessionPageContainer: React.FC = () => {
                 markCrewSharePaid: sessionQueries.markCrewSharePaid,
                 templateJob: session.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
                 workOrder: newWorkOrder as WorkOrder,
+                pastedImgUrl,
+                setPastedImgUrl,
               }}
             >
-              <WorkOrderModal open={activeModal === DialogEnum.ADD_WORKORDER} onClose={() => setActiveModal(null)} />
+              <WorkOrderModal
+                open={activeModal === DialogEnum.ADD_WORKORDER}
+                onClose={() => {
+                  setActiveModal(null)
+                  if (newWorkOrder) setNewWorkOrder(null)
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
+                }}
+              />
             </WorkOrderContext.Provider>
           )}
 
@@ -404,12 +434,17 @@ export const SessionPageContainer: React.FC = () => {
                   sessionQueries.createScoutingFind(newScouting)
                   setNewScoutingFind(null)
                 },
+                pastedImgUrl,
+                setPastedImgUrl,
               }}
             >
               <ScoutingFindModal
                 open={activeModal === DialogEnum.ADD_SCOUTING}
                 onClose={() => {
                   setActiveModal(null)
+                  if (newScoutingFind) setNewScoutingFind(null)
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
                 }}
               />
             </ScoutingFindContext.Provider>
@@ -436,11 +471,17 @@ export const SessionPageContainer: React.FC = () => {
                   modalScoutingFindQry.updateScoutingFind(newScouting)
                   setNewScoutingFind(null)
                 },
+                pastedImgUrl,
+                setPastedImgUrl,
               }}
             >
               <ScoutingFindModal
                 open={Boolean(modalScoutingFind)}
-                onClose={() => returnToSession()}
+                onClose={() => {
+                  returnToSession()
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
+                }}
                 setShareScoutingFindId={(shareId) => {
                   setShareScoutingFindId(shareId)
                   setActiveModal(DialogEnum.SHARE_SESSION)
@@ -448,6 +489,24 @@ export const SessionPageContainer: React.FC = () => {
               />
             </ScoutingFindContext.Provider>
           )}
+
+          {/* Paste Detected Modal */}
+          <PasteDetectedModal
+            open={activeModal === DialogEnum.PASTE_DETECTED}
+            onClose={() => {
+              setActiveModal(null)
+              // Make sure to clear the pasted buffer
+              if (pastedImgUrl) setPastedImgUrl(null)
+            }}
+            onNewWorkOrderFromPaste={() => {
+              setActiveModal(null)
+              createNewWorkOrder(ActivityEnum.ShipMining)
+            }}
+            onNewRockClusterFromPaste={() => {
+              setActiveModal(null)
+              createNewScoutingFind(ScoutingFindTypeEnum.Ship)
+            }}
+          />
 
           {/* Delete Session Modal */}
           <DeleteModal

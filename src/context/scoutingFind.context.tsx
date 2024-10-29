@@ -12,6 +12,8 @@ export interface ScoutingFindContextType {
   allowEdit?: boolean
   allowDelete?: boolean
   isNew?: boolean
+  pastedImgUrl?: string | null
+  setPastedImgUrl?: (imgUrl: string | null) => void
 }
 
 const notAvailable = (name: string) => () => {

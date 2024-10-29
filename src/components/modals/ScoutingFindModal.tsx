@@ -29,8 +29,9 @@ import { ScoutingFindContext } from '../../context/scoutingFind.context'
 import { ConfirmModal } from './ConfirmModal'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteScoutingFindModal } from './DeleteScoutingFindModal'
-import { CameraControl, CameraControlProps } from '../ocr/CameraControl'
+import { CaptureControl, CaptureControlProps } from '../ocr/CaptureControl'
 import log from 'loglevel'
+import { useImagePaste } from '../../hooks/useImagePaste'
 
 export interface ScoutingFindModalProps {
   open: boolean
@@ -71,11 +72,13 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
     leaveScoutingFind,
     meUser,
     allowEdit,
+    pastedImgUrl,
+    setPastedImgUrl,
   } = React.useContext(ScoutingFindContext)
   const [confirmCloseModal, setConfirmCloseModal] = React.useState<boolean>(false)
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
-  const [camScanModal, setCamScanModal] = React.useState<boolean>(false)
+  const [camScanModal, setCamScanModal] = React.useState<boolean>(!!pastedImgUrl)
 
   const [theme, setTheme] = React.useState<Theme>(
     scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
@@ -97,6 +100,12 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
       onClose()
     }
   }
+
+  // Detect paste events and handle them as long as no modals are open
+  useImagePaste((image) => {
+    setPastedImgUrl && setPastedImgUrl(image)
+    setCamScanModal(true)
+  }, !setPastedImgUrl || camScanModal)
 
   const handleCapture = <T extends ShipRockCapture | ShipMiningOrderCapture>(data: T): void => {
     const capturedRock = data as ShipRockCapture
@@ -145,7 +154,12 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
         }}
       >
         {camScanModal && (
-          <CameraControl captureType="SHIP_ROCK" onClose={() => setCamScanModal(false)} onCapture={handleCapture} />
+          <CaptureControl
+            captureType="SHIP_ROCK"
+            onClose={() => setCamScanModal(false)}
+            onCapture={handleCapture}
+            initialImageUrl={pastedImgUrl}
+          />
         )}
         <Box sx={styles.boxContainer}>
           {/* SHARE BUTTON */}

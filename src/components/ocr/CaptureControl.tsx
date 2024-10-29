@@ -29,22 +29,28 @@ import { fontFamilies } from '../../theme'
 import { PreviewWorkOrderCapture } from './PreviewWorkOrderCapture'
 import { PreviewScoutingRockCapture } from './PreviewScoutingRockCapture'
 import { RockIcon } from '../../icons'
-import { set } from 'lodash'
 
 export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
   SHIP_ROCK: 'Capture Rock Scan',
   REFINERY_ORDER: 'Capture Refinery Order',
 }
 
-export interface CameraControlProps {
+export interface CaptureControlProps {
   onClose: () => void
   confirmOverwrite?: boolean
+  initialImageUrl?: string | null
   onCapture: <T extends ShipRockCapture | ShipMiningOrderCapture>(retVal: T) => void
   captureType: CaptureTypeEnum
 }
 
-export const CameraControl: React.FC<CameraControlProps> = ({ onClose, captureType, confirmOverwrite, onCapture }) => {
-  const [rawImageUrl, setRawImageUrl] = useState<string | null>(null)
+export const CaptureControl: React.FC<CaptureControlProps> = ({
+  onClose,
+  captureType,
+  confirmOverwrite,
+  onCapture,
+  initialImageUrl,
+}) => {
+  const [rawImageUrl, setRawImageUrl] = useState<string | null>(initialImageUrl || null)
   const [submittedImageUrl, setSubmittedImageUrl] = useState<string | null>(null)
   const [showError, setShowError] = useState<string | null>(null)
   const [overwriteConfirmOpen, setOverwriteConfirmOpen] = useState(false)

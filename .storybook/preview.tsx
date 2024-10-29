@@ -24,7 +24,6 @@ const preview: Preview = {
       return (
         <ThemeProvider theme={theme}>
           <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
-
             <CssBaseline />
             <AppContextWrapper>
               <LookupsContextWrapper>

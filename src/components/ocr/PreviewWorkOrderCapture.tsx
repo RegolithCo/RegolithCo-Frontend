@@ -16,7 +16,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
     <Box
       sx={{
         width: '100%',
-        maxWidth: 500,
+        maxWidth: 450,
         px: 2,
         '& *': {
           fontFamily: fontFamilies.robotoMono,
@@ -36,82 +36,102 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
       >
         Capture Results
       </Typography>
-      <TableContainer>
-        <Table size="small">
-          <TableBody>
-            <PreviewRow heading="Refinery" value={order.refinery ? getRefineryName(order.refinery) : <NotFound />} />
-            <PreviewRow heading="Method" value={order.method ? getRefineryMethodName(order.method) : <NotFound />} />
-            <PreviewRow
-              heading="Cost"
-              value={
-                order.expenses && order.expenses.length > 0 ? (
-                  MValueFormatter(order.expenses[0].amount, MValueFormat.currency)
-                ) : (
-                  <NotFound />
-                )
-              }
-            />
-            <PreviewRow
-              heading="Time"
-              value={
-                order.processDurationS && order.processDurationS > 0 ? (
-                  <CountdownTimer
-                    startTime={Date.now()}
-                    totalTime={order.processDurationS * 1000 + 20}
-                    paused
-                    useMValue
-                  />
-                ) : (
-                  <NotFound />
-                )
-              }
-            />
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <TableContainer
+      <Box
         sx={{
-          mt: 5,
+          width: '100%',
+          display: 'flex',
+          pb: 2,
+          flexDirection: 'column',
+          // centerd horizontally
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <Table size="small">
-          <TableHead>
-            <TableRow
-              sx={{
-                borderBottom: '3px solid',
-              }}
-            >
-              <TableCell>Ore</TableCell>
-              <TableCell>Raw</TableCell>
-              <TableCell>Yield</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {order.shipOres.map(({ amt, ore, yield: yieldVal }, i) => (
-              <TableRow key={i}>
-                <TableCell
-                  sx={{
-                    fontFamily: fontFamilies.robotoMono,
-                    fontWeight: 'bold',
-                    color: 'text.secondary',
-                  }}
-                >
-                  {getOreName(ore)}
-                </TableCell>
-                <TableCell>
-                  {!yieldVal && !amt && <NotFound />}
-                  {amt ? MValueFormatter(amt, MValueFormat.volcSCU, 0) : <NotRelevant />}
-                </TableCell>
-                <TableCell>
-                  {!yieldVal && !amt && <NotFound />}
-                  {yieldVal ? MValueFormatter(yieldVal, MValueFormat.volcSCU, 0) : <NotRelevant />}
-                </TableCell>
+        <TableContainer sx={{ maxWidth: 450 }}>
+          <Table size="small">
+            <TableBody>
+              <PreviewRow heading="Refinery" value={order.refinery ? getRefineryName(order.refinery) : <NotFound />} />
+              <PreviewRow heading="Method" value={order.method ? getRefineryMethodName(order.method) : <NotFound />} />
+              <PreviewRow
+                heading="Cost"
+                value={
+                  order.expenses && order.expenses.length > 0 ? (
+                    MValueFormatter(order.expenses[0].amount, MValueFormat.currency)
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <PreviewRow
+                heading="Time"
+                value={
+                  order.processDurationS && order.processDurationS > 0 ? (
+                    <CountdownTimer
+                      startTime={Date.now()}
+                      totalTime={order.processDurationS * 1000 + 20}
+                      paused
+                      useMValue
+                    />
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <TableContainer
+          sx={{
+            maxWidth: 300,
+            mt: 5,
+          }}
+        >
+          <Table size="small">
+            <TableHead>
+              <TableRow
+                sx={{
+                  borderBottom: '3px solid',
+                }}
+              >
+                <TableCell>Ore</TableCell>
+                <TableCell>Raw</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>Yield</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {order.shipOres.map(({ amt, ore, yield: yieldVal }, i) => (
+                <TableRow key={i}>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    {getOreName(ore)}
+                  </TableCell>
+                  <TableCell>
+                    {!yieldVal && !amt && <NotFound />}
+                    {amt ? MValueFormatter(amt, MValueFormat.volcSCU, 0) : <NotRelevant />}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      textAlign: 'right',
+                      color: theme.palette.secondary.dark,
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {!yieldVal && !amt && <NotFound />}
+                    {yieldVal ? MValueFormatter(yieldVal, MValueFormat.volcSCU, 0) : <NotRelevant />}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
       <Typography variant="caption" color="primary">
         If this looks to be basically correct you can click "Use" to import this data or "Retry" with a different image
         or crop.
@@ -121,6 +141,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
 }
 
 const PreviewRow: React.FC<{ heading: React.ReactNode; value: React.ReactNode }> = ({ heading, value }) => {
+  const theme = useTheme()
   return (
     <TableRow>
       <TableCell
@@ -132,7 +153,16 @@ const PreviewRow: React.FC<{ heading: React.ReactNode; value: React.ReactNode }>
       >
         {heading}
       </TableCell>
-      <TableCell>{value}</TableCell>
+      <TableCell
+        sx={{
+          textAlign: 'right',
+          color: theme.palette.secondary.dark,
+          fontFamily: fontFamilies.robotoMono,
+          fontWeight: 'bold',
+        }}
+      >
+        {value}
+      </TableCell>
     </TableRow>
   )
 }

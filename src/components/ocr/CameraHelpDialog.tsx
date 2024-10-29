@@ -1,7 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { CaptureTypeTitle } from './CameraControl'
-import { AddPhotoAlternate, Camera } from '@mui/icons-material'
+import { CaptureTypeTitle } from './CaptureControl'
 import { CaptureTypeEnum } from './types'
 
 // export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {

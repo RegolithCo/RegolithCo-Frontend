@@ -125,10 +125,15 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     const scaleX = ghostImage.naturalWidth / cropBox.width
     const scaleY = ghostImage.naturalHeight / cropBox.height
 
-    const cropX = crop.x * scaleX
-    const cropY = crop.y * scaleY
-    const cropWidth = crop.width * scaleX
-    const cropHeight = crop.height * scaleY
+    const finalWidth = crop.width === 0 ? ghostImage.naturalWidth : crop.width
+    const finalHeight = crop.height === 0 ? ghostImage.naturalHeight : crop.height
+    const finalX = crop.width === 0 ? 0 : crop.x
+    const finalY = crop.height === 0 ? 0 : crop.y
+
+    const cropX = finalX * scaleX
+    const cropY = finalY * scaleY
+    const cropWidth = finalWidth * scaleX
+    const cropHeight = finalHeight * scaleY
 
     const offscreen = new OffscreenCanvas(cropWidth, cropHeight)
     const ctx = offscreen.getContext('2d')
@@ -247,7 +252,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
             <Typography variant="overline" color="white">
               Screen Sharing:
             </Typography>
-            <Tooltip title="Stop Screen Sharing">
+            <Tooltip title="Share a different window">
               <IconButton
                 color="secondary"
                 onClick={() => {

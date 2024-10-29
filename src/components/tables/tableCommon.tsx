@@ -53,14 +53,17 @@ export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> =
   },
   longHeaders: {
     p: 0,
-    position: 'relative',
     pt: 15,
+    position: 'relative',
+    overflowX: 'visible',
+    overflowY: 'clip',
     '& .MuiTypography-root': {
       width: 250,
       pl: 5,
       pt: 0,
       borderTop: `1px solid ${theme.palette.divider}`,
       position: 'absolute',
+      textAlign: 'left',
       transform: 'rotate(-30deg)',
       transformOrigin: '0% 0%',
       whiteSpace: 'nowrap',

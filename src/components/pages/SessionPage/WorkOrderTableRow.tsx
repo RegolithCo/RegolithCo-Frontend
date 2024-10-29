@@ -171,9 +171,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
           {isFailed ? (
             <Chip label="FAILED" color="error" size="small" />
           ) : (
-            <Tooltip title={getActivityName(workOrder.orderType)}>
-              <OrderIcon orderType={workOrder.orderType} />
-            </Tooltip>
+            <OrderIcon orderType={workOrder.orderType} />
           )}
         </TableCell>
       )}
