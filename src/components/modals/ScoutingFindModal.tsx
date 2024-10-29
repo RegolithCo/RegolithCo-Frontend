@@ -126,10 +126,14 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
       __typename: 'ShipRock',
     } as ShipRock
     const newRocks = [...shipFind.shipRocks, newRock]
-    setNewScoutingFind({
+    const newFind = {
       ...newScoutingFind,
+      clusterCount: (shipFind.clusterCount || 0) < newRocks.length ? newRocks.length : shipFind.clusterCount,
       shipRocks: newRocks,
-    } as ShipClusterFind)
+    } as ShipClusterFind
+
+    if (isNew) setNewScoutingFind(newFind)
+    else onChange(newFind)
   }
 
   if (!scoutingFind) return null

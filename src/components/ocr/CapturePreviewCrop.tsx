@@ -276,7 +276,6 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
           Reset Crop to defaults
         </Button>
         <Button
-          disabled={!isDifferentCrop}
           variant="text"
           color="primary"
           startIcon={<SelectAll />}
