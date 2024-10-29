@@ -187,7 +187,12 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent sx={{ overflowY: 'auto' }}>
+      <DialogContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {isError && (
           <Box
             sx={{
@@ -212,34 +217,26 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({
         {loading ? (
           <Box
             sx={{
+              flex: 1,
+              overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: 200,
-              width: '100%',
-              height: '100%',
+              position: 'relative',
+              minHeight: 500,
+              backgroundImage: submittedImageUrl ? `url(${submittedImageUrl})` : undefined,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              backgroundSize: 'contain',
             }}
           >
-            {submittedImageUrl && (
-              <img
-                src={submittedImageUrl}
-                alt="Capture"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  objectFit: 'contain',
-                  filter: 'blur(5px)',
-                }}
-              />
-            )}
-
             <Box
               sx={{
                 position: 'absolute',
                 zIndex: 5,
               }}
             >
-              <CircularProgress size={100} thickness={10} sx={{}} />
+              <CircularProgress size={100} thickness={10} color="secondary" />
               <Typography
                 variant="h6"
                 sx={{
@@ -274,7 +271,6 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({
                 chooseFileClick={handleFileDialogClick}
                 captureType={captureType}
                 onSubmit={(newUrl) => {
-                  // TODO: Implement onSubmit
                   if (newUrl) {
                     setSubmittedImageUrl(newUrl)
                     if (captureType === CaptureTypeEnum.REFINERY_ORDER) {

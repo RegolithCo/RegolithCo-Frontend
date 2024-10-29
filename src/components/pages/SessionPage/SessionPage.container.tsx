@@ -335,6 +335,8 @@ export const SessionPageContainer: React.FC = () => {
                   onUpdate: (newOrder) => {
                     setActiveModal(null)
                     updateModalWorkOrder(newOrder)
+                    // Make sure to clear the pasted buffer to clean up the memory for that
+                    if (pastedImgUrl) setPastedImgUrl(null)
                   },
                   markCrewSharePaid: sessionQueries.markCrewSharePaid,
                   workOrder: modalWorkOrder as WorkOrder,
@@ -382,6 +384,8 @@ export const SessionPageContainer: React.FC = () => {
                   setActiveModal(null)
                   createWorkOrder(newOrder)
                   setNewWorkOrder(null)
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
                 },
                 isMine: true,
                 allowEdit: isActive,
@@ -433,6 +437,8 @@ export const SessionPageContainer: React.FC = () => {
                   setActiveModal(null)
                   sessionQueries.createScoutingFind(newScouting)
                   setNewScoutingFind(null)
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
                 },
                 pastedImgUrl,
                 setPastedImgUrl,
@@ -466,10 +472,14 @@ export const SessionPageContainer: React.FC = () => {
                     modalScoutingFind.__typename
                   )
                   setActiveModal(null)
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
                 },
                 onChange: (newScouting) => {
                   modalScoutingFindQry.updateScoutingFind(newScouting)
                   setNewScoutingFind(null)
+                  // Make sure to clear the pasted buffer to clean up the memory for that
+                  if (pastedImgUrl) setPastedImgUrl(null)
                 },
                 pastedImgUrl,
                 setPastedImgUrl,

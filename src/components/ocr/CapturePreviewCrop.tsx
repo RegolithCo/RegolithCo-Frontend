@@ -12,6 +12,7 @@ import {
   Crop as CropIcon,
   DocumentScanner,
   ScreenShare,
+  SelectAll,
   StopScreenShare,
 } from '@mui/icons-material'
 import { CaptureTypeEnum } from './types'
@@ -67,6 +68,18 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     useContext(ScreenshareContext)
   const isSelectingAll = crop.width === 0 && crop.height === 0
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        onSubmitClick()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   // If the image changes then we reset the crop. Hopefully this isn't too annoying
   useEffect(() => {
     setCrop(storedVal[captureType] || defaultCrops[captureType])
@@ -120,20 +133,35 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
       ghostImage.onload = resolve
       ghostImage.onerror = reject
     })
+    if (crop.height === 0 && crop.width === 0) {
+      // Submit the image as is
+      return onSubmit(processImg)
+    }
+    let cropX = 0
+    let cropY = 0
+    let cropWidth = 0
+    let cropHeight = 0
 
-    const cropBox = cropRef.current?.getBox()
-    const scaleX = ghostImage.naturalWidth / cropBox.width
-    const scaleY = ghostImage.naturalHeight / cropBox.height
+    if (crop.unit === 'px') {
+      const cropBox = cropRef.current?.getBox()
+      const scaleX = ghostImage.naturalWidth / cropBox.width
+      const scaleY = ghostImage.naturalHeight / cropBox.height
 
-    const finalWidth = crop.width === 0 ? ghostImage.naturalWidth : crop.width
-    const finalHeight = crop.height === 0 ? ghostImage.naturalHeight : crop.height
-    const finalX = crop.width === 0 ? 0 : crop.x
-    const finalY = crop.height === 0 ? 0 : crop.y
+      const finalWidth = crop.width === 0 ? ghostImage.naturalWidth : crop.width
+      const finalHeight = crop.height === 0 ? ghostImage.naturalHeight : crop.height
+      const finalX = crop.width === 0 ? 0 : crop.x
+      const finalY = crop.height === 0 ? 0 : crop.y
 
-    const cropX = finalX * scaleX
-    const cropY = finalY * scaleY
-    const cropWidth = finalWidth * scaleX
-    const cropHeight = finalHeight * scaleY
+      cropX = finalX * scaleX
+      cropY = finalY * scaleY
+      cropWidth = finalWidth * scaleX
+      cropHeight = finalHeight * scaleY
+    } else if (crop.unit === '%') {
+      cropX = (crop.x * ghostImage.naturalWidth) / 100
+      cropY = (crop.y * ghostImage.naturalHeight) / 100
+      cropWidth = (crop.width * ghostImage.naturalWidth) / 100
+      cropHeight = (crop.height * ghostImage.naturalHeight) / 100
+    }
 
     const offscreen = new OffscreenCanvas(cropWidth, cropHeight)
     const ctx = offscreen.getContext('2d')
@@ -141,6 +169,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
       throw new Error('No 2d context')
     }
     ctx.drawImage(ghostImage, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight)
+
     // You might want { type: "image/jpeg", quality: <0 to 1> } to reduce image size.
     const blobUrl = await offscreen
       .convertToBlob({
@@ -171,7 +200,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
           position: 'relative',
           maxHeight: 'calc(100vh - 200px)',
           maxWidth: 'calc(100vw - 100px)',
-          overflow: 'auto',
+          overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -245,6 +274,24 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
           }}
         >
           Reset Crop to defaults
+        </Button>
+        <Button
+          disabled={!isDifferentCrop}
+          variant="text"
+          color="primary"
+          startIcon={<SelectAll />}
+          onClick={() => {
+            setCrop({
+              unit: 'px',
+              width: 0,
+              height: 0,
+              x: 0,
+              y: 0,
+            })
+            setStoredVal({ ...(storedVal || defaultCrops), [captureType]: defaultCrops[captureType] })
+          }}
+        >
+          No Crop
         </Button>
         <Box sx={{ flexGrow: 1 }} />
         {isScreenSharing && !imageUrl && (
