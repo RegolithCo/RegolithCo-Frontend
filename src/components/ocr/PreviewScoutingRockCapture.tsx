@@ -3,6 +3,8 @@ import React from 'react'
 import { getOreName, ShipRockCapture } from '@regolithco/common'
 import { Box } from '@mui/system'
 import { fontFamilies } from '../../theme'
+import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { number } from 'prop-types'
 
 export interface PreviewScoutingRockCaptureProps {
   shipRock: ShipRockCapture
@@ -52,9 +54,24 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
         >
           <Table size="small">
             <TableBody>
-              <PreviewRow heading="Mass" value={shipRock.mass ? shipRock.mass : <NotFound />} />
-              <PreviewRow heading="Resistance" value={shipRock.res ? `${shipRock.res * 100}%` : <NotFound />} />
-              <PreviewRow heading="Instability" value={shipRock.inst ? shipRock.inst : <NotFound />} />
+              <PreviewRow
+                heading="Mass"
+                value={shipRock.mass !== undefined && shipRock.mass !== null ? shipRock.mass.toFixed(0) : <NotFound />}
+              />
+              <PreviewRow
+                heading="Resistance"
+                value={
+                  shipRock.res !== undefined && shipRock.res !== null ? (
+                    MValueFormatter(shipRock.res || 0, MValueFormat.percent)
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <PreviewRow
+                heading="Instability"
+                value={shipRock.inst !== undefined && shipRock.inst !== null ? shipRock.inst?.toFixed(2) : <NotFound />}
+              />
             </TableBody>
           </Table>
         </TableContainer>
@@ -96,7 +113,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                       textAlign: 'center',
                     }}
                   >
-                    {percent ? `${percent * 100}%` : <NotFound />}
+                    {percent !== undefined ? MValueFormatter(percent || 0, MValueFormat.percent, 2) : <NotFound />}
                   </TableCell>
                 </TableRow>
               ))}

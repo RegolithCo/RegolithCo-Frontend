@@ -113,7 +113,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                   </TableCell>
                   <TableCell>
                     {!yieldVal && !amt && <NotFound />}
-                    {amt ? MValueFormatter(amt, MValueFormat.volcSCU, 0) : <NotRelevant />}
+                    {amt !== undefined ? MValueFormatter(amt, MValueFormat.volcSCU, 0) : <NotRelevant />}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -124,7 +124,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                     }}
                   >
                     {!yieldVal && !amt && <NotFound />}
-                    {yieldVal ? MValueFormatter(yieldVal, MValueFormat.volcSCU, 0) : <NotRelevant />}
+                    {yieldVal !== undefined ? MValueFormatter(yieldVal, MValueFormat.volcSCU, 0) : <NotRelevant />}
                   </TableCell>
                 </TableRow>
               ))}
