@@ -5,12 +5,21 @@ import { MUIRouterLink } from '../RouterLink'
 
 export type DownloadModalProps = {
   open?: boolean
-  downloadCSV?: () => void
+  downloadWorkOrderCSV?: () => void
+  downloadCrewShareCSV?: () => void
+  downloadMembersCSV?: () => void
   downloadJSON?: () => void
   onClose: () => void
 }
 
-export const DownloadModal: React.FC<DownloadModalProps> = ({ open, downloadCSV, downloadJSON, onClose }) => {
+export const DownloadModal: React.FC<DownloadModalProps> = ({
+  open,
+  downloadWorkOrderCSV,
+  downloadCrewShareCSV,
+  downloadMembersCSV,
+  downloadJSON,
+  onClose,
+}) => {
   const theme = useTheme()
   // const navigate = useNavigate()
 
@@ -41,23 +50,9 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ open, downloadCSV,
         <Typography id="modal-modal-title" variant="body1" component="div" paragraph>
           Download the session data as a JSON file.
         </Typography>
-        {downloadCSV && (
-          <Button
-            variant="contained"
-            startIcon={<BorderAll />}
-            sx={{
-              my: 2,
-            }}
-            onClick={() => {
-              onClose()
-              downloadCSV()
-            }}
-            size="large"
-            fullWidth
-          >
-            CSV
-          </Button>
-        )}
+        <Typography variant="overline" component="div">
+          JSON
+        </Typography>
         {downloadJSON && (
           <Button
             variant="contained"
@@ -75,6 +70,70 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ open, downloadCSV,
             Download JSON
           </Button>
         )}
+        <Typography variant="overline" component="div">
+          CSV
+        </Typography>
+        <Typography variant="caption" component="div" fontStyle={'italic'} color="text.secondary">
+          NOTE: CSV files are really finicky to create and these are DEFINITELY not perfect. They need to be re-done but
+          for now they are here for your use. We recommend strongly that you use the API or the JSON download for any
+          computational scripts or third-party development.
+        </Typography>
+
+        {downloadWorkOrderCSV && (
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<BorderAll />}
+            sx={{
+              my: 2,
+            }}
+            onClick={() => {
+              onClose()
+              downloadWorkOrderCSV()
+            }}
+            size="large"
+            fullWidth
+          >
+            Work Orders CSV
+          </Button>
+        )}
+        {downloadCrewShareCSV && (
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<BorderAll />}
+            sx={{
+              my: 2,
+            }}
+            onClick={() => {
+              onClose()
+              downloadCrewShareCSV()
+            }}
+            size="large"
+            fullWidth
+          >
+            Crew Shares CSV
+          </Button>
+        )}
+        {downloadMembersCSV && (
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<BorderAll />}
+            sx={{
+              my: 2,
+            }}
+            onClick={() => {
+              onClose()
+              downloadMembersCSV()
+            }}
+            size="large"
+            fullWidth
+          >
+            Session Members CSV
+          </Button>
+        )}
+
         <Typography variant="caption" component="div" paragraph>
           Regolith is now <MUIRouterLink localUrl="/profile/api">API enabled</MUIRouterLink>. If you'd rather fetch data
           programmatically, you can use the API to get the data you need.

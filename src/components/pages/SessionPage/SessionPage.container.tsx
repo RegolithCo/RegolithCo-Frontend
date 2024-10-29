@@ -5,7 +5,6 @@ import { PageLoader } from '../PageLoader'
 import { useSessions } from '../../../hooks/useSessions'
 import {
   ActivityEnum,
-  createSafeFileName,
   createUserSuggest,
   crewHierarchyCalc,
   CrewShareInput,
@@ -13,7 +12,6 @@ import {
   MiningLoadout,
   ScoutingFind,
   ScoutingFindTypeEnum,
-  session2Json,
   SessionStateEnum,
   SessionUser,
   UserProfile,
@@ -37,8 +35,6 @@ import { DeleteModal } from '../../modals/DeleteModal'
 import { DialogContentText, Typography } from '@mui/material'
 import { CollaborateModal } from '../../modals/CollaborateModal'
 import { ConfirmModal } from '../../modals/ConfirmModal'
-import { DownloadModal } from '../../modals/DownloadModal'
-import { downloadFile } from '../../../lib/utils'
 import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
 import { ActivePopupMe } from '../../modals/ActiveUserPopup/ActivePopupMe'
 import { ActivePopupUser } from '../../modals/ActiveUserPopup/ActivePopupUser'
@@ -49,6 +45,7 @@ import { ShareModal } from '../../modals/ShareModal'
 import config from '../../../config'
 import { SessionNotFound } from './SessionNotFound'
 import { ScreenshareProvider } from '../../../context/screenshare.context'
+import { DownloadModalContainer } from '../../modals/DownloadModalWrapper'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -539,18 +536,9 @@ export const SessionPageContainer: React.FC = () => {
           />
 
           {/* Download Data Modal */}
-          <DownloadModal
+          <DownloadModalContainer
             open={activeModal === DialogEnum.DOWNLOAD_SESSION}
             onClose={() => setActiveModal(null)}
-            downloadJSON={() => {
-              if (!session) return
-              const jsonObj = JSON.stringify(session2Json(session), null, 2)
-              downloadFile(
-                jsonObj,
-                createSafeFileName(session.name || 'Session', session.sessionId) + '.json',
-                'application/json'
-              )
-            }}
           />
 
           <AddPendingUsersModal open={activeModal === DialogEnum.ADD_FRIEND} onClose={() => setActiveModal(null)} />
