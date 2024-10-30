@@ -47,6 +47,7 @@ import { SessionNotFound } from './SessionNotFound'
 import { DownloadModalContainer } from '../../modals/DownloadModalWrapper'
 import { useImagePaste } from '../../../hooks/useImagePaste'
 import { PasteDetectedModal } from '../../modals/PasteDetectedModal'
+import { ScreenshareContext } from '../../../context/screenshare.context'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -60,6 +61,14 @@ export const SessionPageContainer: React.FC = () => {
   const [activeLoadout, setActiveLoadout] = React.useState<MiningLoadout | null>(null)
   const [activeUserModalId, setActiveUserModalId] = React.useState<string | null>(null)
   const [pendingUserModalScName, setPendingUserModalScName] = React.useState<string | null>(null)
+  const { stopScreenCapture, stream } = React.useContext(ScreenshareContext)
+
+  // Clean up the stream when you leave a session page
+  React.useEffect(() => {
+    return () => {
+      stopScreenCapture()
+    }
+  }, [stream])
 
   // We keep a pasted buffer state for the user to paste into
   const [pastedImgUrl, setPastedImgUrl] = React.useState<string | null>(null)

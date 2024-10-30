@@ -47,7 +47,10 @@ export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) =
   useEffect(() => {
     return () => {
       if (stream) {
-        stream.getTracks().forEach((track) => track.stop())
+        stream.getTracks().forEach((track) => {
+          track.stop()
+          track.enabled = false // Ensure the track is disabled
+        })
       }
     }
   }, [stream])
@@ -62,11 +65,6 @@ export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) =
 
       // Release the stream
       setStream(null)
-
-      // Clean up the video element if necessary
-      // if (videoRef.current) {
-      //   videoRef.current.srcObject = null
-      // }
     }
   }
 
