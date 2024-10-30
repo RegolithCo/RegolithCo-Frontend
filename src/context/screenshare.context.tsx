@@ -1,4 +1,4 @@
-import React, { createContext, useState, PropsWithChildren } from 'react'
+import React, { createContext, useState, PropsWithChildren, useEffect } from 'react'
 
 export interface ScreenshareContextType {
   stream: MediaStream | null
@@ -28,7 +28,6 @@ export const ScreenshareContext = createContext<ScreenshareContextType>({
 
 export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [stream, setStream] = useState<MediaStream | null>(null)
-
   const startScreenCapture = async () => {
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -43,6 +42,15 @@ export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) =
       console.error('Error: Unable to capture screen', err)
     }
   }
+
+  // Clean up the stream when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop())
+      }
+    }
+  }, [stream])
 
   const stopScreenCapture = () => {
     if (stream) {

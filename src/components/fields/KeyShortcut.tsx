@@ -12,9 +12,11 @@ export const KeyShortcut: React.FC<KeyShortcutProps> = ({ keyStr }) => {
     <Chip
       label={keyStr}
       sx={{
-        px: 0.1,
-        py: 0.1,
+        px: 0,
+        py: 0,
+        my: 0.2,
         mx: 0.5,
+        height: '1.2rem',
         fontFamily: fontFamilies.robotoMono,
         backgroundColor: theme.palette.primary.contrastText,
         color: theme.palette.primary.main,

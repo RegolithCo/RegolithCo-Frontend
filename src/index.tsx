@@ -14,6 +14,7 @@ import { AppContextWrapper } from './context/app.context'
 import { ErrorBoundary } from './Error'
 import { LookupsContextWrapper } from './context/lookupsContext'
 import config from './config'
+import { ScreenshareProvider } from './context/screenshare.context'
 
 if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -37,9 +38,11 @@ root.render(
           <MyAuthProvider>
             <APIProvider>
               <AppContextWrapper>
-                <LookupsContextWrapper>
-                  <App />
-                </LookupsContextWrapper>
+                <ScreenshareProvider>
+                  <LookupsContextWrapper>
+                    <App />
+                  </LookupsContextWrapper>
+                </ScreenshareProvider>
               </AppContextWrapper>
             </APIProvider>
           </MyAuthProvider>

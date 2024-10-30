@@ -44,11 +44,9 @@ import { DisbandModal } from '../../modals/DisbandCrew'
 import { ShareModal } from '../../modals/ShareModal'
 import config from '../../../config'
 import { SessionNotFound } from './SessionNotFound'
-import { ScreenshareProvider } from '../../../context/screenshare.context'
 import { DownloadModalContainer } from '../../modals/DownloadModalWrapper'
 import { useImagePaste } from '../../../hooks/useImagePaste'
 import { PasteDetectedModal } from '../../modals/PasteDetectedModal'
-import log from 'loglevel'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -255,388 +253,383 @@ export const SessionPageContainer: React.FC = () => {
 
   return (
     <>
-      <ScreenshareProvider>
-        <SessionContext.Provider
-          value={{
-            session,
-            navigate: navigate,
-            loading: sessionQueries.loading,
-            mutating: sessionQueries.mutating,
-            // User
-            myUserProfile,
-            // A bit redundant but we need it
-            mySessionUser,
-            addFriend: userQry.addFriend,
-            removeFriend: userQry.removeFriend,
-            userSuggest,
+      <SessionContext.Provider
+        value={{
+          session,
+          navigate: navigate,
+          loading: sessionQueries.loading,
+          mutating: sessionQueries.mutating,
+          // User
+          myUserProfile,
+          // A bit redundant but we need it
+          mySessionUser,
+          addFriend: userQry.addFriend,
+          removeFriend: userQry.removeFriend,
+          userSuggest,
 
-            crewHierarchy,
-            singleActives,
-            captains,
-            singleInnactives,
-            scoutingAttendanceMap,
+          crewHierarchy,
+          singleActives,
+          captains,
+          singleInnactives,
+          scoutingAttendanceMap,
 
-            createNewWorkOrder,
-            createNewScoutingFind,
-            // Session stuff
-            onCloseSession: sessionQueries.closeSession,
-            onUpdateSession: sessionQueries.onUpdateSession,
-            resetDefaultSystemSettings: sessionQueries.resetDefaultSystemSettings,
-            resetDefaultUserSettings: sessionQueries.resetDefaultUserSettings,
-            addSessionMentions: sessionQueries.addSessionMentions,
-            removeSessionMentions: sessionQueries.removeSessionMentions,
-            removeSessionCrew: sessionQueries.removeSessionCrew,
-            leaveSession: sessionQueries.leaveSession,
-            deleteSession: sessionQueries.deleteSession,
-            // Session User Stuff
-            setActiveModal,
-            updateMySessionUser: sessionQueries.updateMySessionUser,
-            updateSessionUserCaptain: sessionQueries.updateSessionUserCaptain,
-            updatePendingUserCaptain: sessionQueries.updatePendingUserCaptain,
+          createNewWorkOrder,
+          createNewScoutingFind,
+          // Session stuff
+          onCloseSession: sessionQueries.closeSession,
+          onUpdateSession: sessionQueries.onUpdateSession,
+          resetDefaultSystemSettings: sessionQueries.resetDefaultSystemSettings,
+          resetDefaultUserSettings: sessionQueries.resetDefaultUserSettings,
+          addSessionMentions: sessionQueries.addSessionMentions,
+          removeSessionMentions: sessionQueries.removeSessionMentions,
+          removeSessionCrew: sessionQueries.removeSessionCrew,
+          leaveSession: sessionQueries.leaveSession,
+          deleteSession: sessionQueries.deleteSession,
+          // Session User Stuff
+          setActiveModal,
+          updateMySessionUser: sessionQueries.updateMySessionUser,
+          updateSessionUserCaptain: sessionQueries.updateSessionUserCaptain,
+          updatePendingUserCaptain: sessionQueries.updatePendingUserCaptain,
 
-            openActiveUserModal,
-            openPendingUserModal,
-            openLoadoutModal,
-            openScoutingModal,
-            openWorkOrderModal,
-            // CrewShares
-            markCrewSharePaid: sessionQueries.markCrewSharePaid,
-            // Work orders
-            activeTab: tab as SessionTabs,
-            setActiveTab,
-            failWorkOrder: modalWorkOrderQry.failWorkOrder,
-            createWorkOrder,
-            updateModalWorkOrder,
-            deleteWorkOrder: modalWorkOrderQry.deleteWorkOrder,
-            setWorkOrderShareId: (shareId) => {
-              setShareWorkOrderId(shareId)
-              setActiveModal(DialogEnum.SHARE_SESSION)
-            },
-            createScoutingFind: sessionQueries.createScoutingFind,
-            // Scouting finds
-            updateScoutingFind: modalScoutingFindQry.updateScoutingFind,
-            deleteScoutingFind: modalScoutingFindQry.deleteScoutingFind,
-            joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
-            setScoutingFindShareId: (shareId) => {
-              setShareScoutingFindId(shareId)
-              setActiveModal(DialogEnum.SHARE_SESSION)
-            },
-            leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
-            verifiedMentionedUsers: {},
-          }}
-        >
-          <SessionPage />
+          openActiveUserModal,
+          openPendingUserModal,
+          openLoadoutModal,
+          openScoutingModal,
+          openWorkOrderModal,
+          // CrewShares
+          markCrewSharePaid: sessionQueries.markCrewSharePaid,
+          // Work orders
+          activeTab: tab as SessionTabs,
+          setActiveTab,
+          failWorkOrder: modalWorkOrderQry.failWorkOrder,
+          createWorkOrder,
+          updateModalWorkOrder,
+          deleteWorkOrder: modalWorkOrderQry.deleteWorkOrder,
+          setWorkOrderShareId: (shareId) => {
+            setShareWorkOrderId(shareId)
+            setActiveModal(DialogEnum.SHARE_SESSION)
+          },
+          createScoutingFind: sessionQueries.createScoutingFind,
+          // Scouting finds
+          updateScoutingFind: modalScoutingFindQry.updateScoutingFind,
+          deleteScoutingFind: modalScoutingFindQry.deleteScoutingFind,
+          joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
+          setScoutingFindShareId: (shareId) => {
+            setShareScoutingFindId(shareId)
+            setActiveModal(DialogEnum.SHARE_SESSION)
+          },
+          leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
+          verifiedMentionedUsers: {},
+        }}
+      >
+        <SessionPage />
 
-          {/* Workorder Modal: EDITING */}
-          {modalWorkOrder && (
-            <ThemeProvider theme={workOrderStateThemes[modalWorkOrder.state]}>
-              <WorkOrderContext.Provider
-                value={{
-                  onUpdate: (newOrder) => {
-                    setActiveModal(null)
-                    updateModalWorkOrder(newOrder)
-                    // Make sure to clear the pasted buffer to clean up the memory for that
-                    if (pastedImgUrl) setPastedImgUrl(null)
-                  },
-                  markCrewSharePaid: sessionQueries.markCrewSharePaid,
-                  workOrder: modalWorkOrder as WorkOrder,
-                  templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
-                  userSuggest,
-                  isMine: modalWorkOrder.ownerId === myUserProfile?.userId,
-                  allowPay:
-                    amISessionOwner ||
-                    modalWorkOrder.ownerId === myUserProfile?.userId ||
-                    (Boolean(modalWorkOrder.sellerscName) && modalWorkOrder.sellerscName === myUserProfile?.scName),
-                  deleteWorkOrder: () => modalWorkOrderQry.deleteWorkOrder(),
-                  failWorkOrder: modalWorkOrderQry.failWorkOrder,
-                  isSessionActive: isActive,
-                  pastedImgUrl,
-                  setPastedImgUrl,
-                  allowEdit:
-                    myUserProfile?.userId === modalWorkOrder?.ownerId ||
-                    amISessionOwner ||
-                    modalWorkOrder.sellerscName === myUserProfile?.scName,
-                }}
-              >
-                <WorkOrderModal
-                  open={Boolean(modalWorkOrder)}
-                  setWorkOrderShareId={(shareId) => {
-                    setShareWorkOrderId(shareId)
-                    setActiveModal(DialogEnum.SHARE_SESSION)
-                  }}
-                  onClose={() => {
-                    setActiveModal(null)
-                    returnToSession()
-                    // Make sure to clear the pasted buffer to clean up the memory for that
-                    if (pastedImgUrl) setPastedImgUrl(null)
-                  }}
-                />
-              </WorkOrderContext.Provider>
-            </ThemeProvider>
-          )}
-
-          {/* Workorder Modal: NEW */}
-          {isActive && newWorkOrder && (
-            // NEW WORK ORDER
+        {/* Workorder Modal: EDITING */}
+        {modalWorkOrder && (
+          <ThemeProvider theme={workOrderStateThemes[modalWorkOrder.state]}>
             <WorkOrderContext.Provider
               value={{
                 onUpdate: (newOrder) => {
                   setActiveModal(null)
-                  createWorkOrder(newOrder)
-                  setNewWorkOrder(null)
+                  updateModalWorkOrder(newOrder)
                   // Make sure to clear the pasted buffer to clean up the memory for that
                   if (pastedImgUrl) setPastedImgUrl(null)
                 },
-                isMine: true,
-                allowEdit: isActive,
-                allowPay: true,
-                isSessionActive: isActive,
-                forceTemplate: true,
-                userSuggest: userSuggest,
-                isNew: true,
                 markCrewSharePaid: sessionQueries.markCrewSharePaid,
-                templateJob: session.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
-                workOrder: newWorkOrder as WorkOrder,
+                workOrder: modalWorkOrder as WorkOrder,
+                templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
+                userSuggest,
+                isMine: modalWorkOrder.ownerId === myUserProfile?.userId,
+                allowPay:
+                  amISessionOwner ||
+                  modalWorkOrder.ownerId === myUserProfile?.userId ||
+                  (Boolean(modalWorkOrder.sellerscName) && modalWorkOrder.sellerscName === myUserProfile?.scName),
+                deleteWorkOrder: () => modalWorkOrderQry.deleteWorkOrder(),
+                failWorkOrder: modalWorkOrderQry.failWorkOrder,
+                isSessionActive: isActive,
                 pastedImgUrl,
                 setPastedImgUrl,
+                allowEdit:
+                  myUserProfile?.userId === modalWorkOrder?.ownerId ||
+                  amISessionOwner ||
+                  modalWorkOrder.sellerscName === myUserProfile?.scName,
               }}
             >
               <WorkOrderModal
-                open={activeModal === DialogEnum.ADD_WORKORDER}
+                open={Boolean(modalWorkOrder)}
+                setWorkOrderShareId={(shareId) => {
+                  setShareWorkOrderId(shareId)
+                  setActiveModal(DialogEnum.SHARE_SESSION)
+                }}
                 onClose={() => {
                   setActiveModal(null)
-                  if (newWorkOrder) setNewWorkOrder(null)
+                  returnToSession()
                   // Make sure to clear the pasted buffer to clean up the memory for that
                   if (pastedImgUrl) setPastedImgUrl(null)
                 }}
               />
             </WorkOrderContext.Provider>
-          )}
+          </ThemeProvider>
+        )}
 
-          {/* LOADOUT Modal */}
-          {activeLoadout && (
-            <LoadoutCalc
-              isModal
-              readonly
-              onClose={() => setActiveModal(null)}
-              open={activeModal === DialogEnum.LOADOUT_MODAL}
-              miningLoadout={activeLoadout}
-            />
-          )}
-
-          {/* ScoutingFind Modal: NEW */}
-          {isActive && newScoutingFind && (
-            <ScoutingFindContext.Provider
-              value={{
-                meUser: mySessionUser,
-                allowEdit: isActive,
-                allowDelete: true,
-                scoutingFind: newScoutingFind as ScoutingFind,
-                isNew: true,
-                onChange: (newScouting) => {
-                  setActiveModal(null)
-                  sessionQueries.createScoutingFind(newScouting)
-                  setNewScoutingFind(null)
-                  // Make sure to clear the pasted buffer to clean up the memory for that
-                  if (pastedImgUrl) setPastedImgUrl(null)
-                },
-                pastedImgUrl,
-                setPastedImgUrl,
-              }}
-            >
-              <ScoutingFindModal
-                open={activeModal === DialogEnum.ADD_SCOUTING}
-                onClose={() => {
-                  setActiveModal(null)
-                  if (newScoutingFind) setNewScoutingFind(null)
-                  // Make sure to clear the pasted buffer to clean up the memory for that
-                  if (pastedImgUrl) setPastedImgUrl(null)
-                }}
-              />
-            </ScoutingFindContext.Provider>
-          )}
-
-          {/* ScoutingFind Modal: EDITING */}
-          {modalScoutingFind && (
-            <ScoutingFindContext.Provider
-              value={{
-                meUser: mySessionUser,
-                allowEdit: true, // anyone in the sessionc an edit this
-                allowDelete: amISessionOwner || modalScoutingFind.ownerId === myUserProfile?.userId,
-                scoutingFind: modalScoutingFind,
-                joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
-                leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
-                onDelete: () => {
-                  modalScoutingFindQry.deleteScoutingFind(
-                    modalScoutingFind.scoutingFindId,
-                    modalScoutingFind.__typename
-                  )
-                  setActiveModal(null)
-                  // Make sure to clear the pasted buffer to clean up the memory for that
-                  if (pastedImgUrl) setPastedImgUrl(null)
-                },
-                onChange: (newScouting) => {
-                  modalScoutingFindQry.updateScoutingFind(newScouting)
-                  setNewScoutingFind(null)
-                  // Make sure to clear the pasted buffer to clean up the memory for that
-                  if (pastedImgUrl) setPastedImgUrl(null)
-                },
-                pastedImgUrl,
-                setPastedImgUrl,
-              }}
-            >
-              <ScoutingFindModal
-                open={Boolean(modalScoutingFind)}
-                onClose={() => {
-                  returnToSession()
-                  // Make sure to clear the pasted buffer to clean up the memory for that
-                  if (pastedImgUrl) setPastedImgUrl(null)
-                }}
-                setShareScoutingFindId={(shareId) => {
-                  setShareScoutingFindId(shareId)
-                  setActiveModal(DialogEnum.SHARE_SESSION)
-                }}
-              />
-            </ScoutingFindContext.Provider>
-          )}
-
-          {/* Paste Detected Modal */}
-          <PasteDetectedModal
-            open={activeModal === DialogEnum.PASTE_DETECTED}
-            onClose={() => {
-              setActiveModal(null)
-              // Make sure to clear the pasted buffer
-              if (pastedImgUrl) setPastedImgUrl(null)
-            }}
-            onNewWorkOrderFromPaste={() => {
-              setActiveModal(null)
-              createNewWorkOrder(ActivityEnum.ShipMining)
-            }}
-            onNewRockClusterFromPaste={() => {
-              setActiveModal(null)
-              createNewScoutingFind(ScoutingFindTypeEnum.Ship)
-            }}
-          />
-
-          {/* Delete Session Modal */}
-          <DeleteModal
-            title={'Permanently DELETE session?'}
-            confirmBtnText={'Yes, Delete Session!'}
-            cancelBtnText="No, keep session"
-            message={
-              <DialogContentText id="alert-dialog-description">
-                Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lost.
-                THIS IS A PERMANENT ACTION. Are you sure you want to delete this session?
-              </DialogContentText>
-            }
-            open={activeModal === DialogEnum.DELETE_SESSION}
-            onClose={() => setActiveModal(null)}
-            onConfirm={() => {
-              sessionQueries.deleteSession()
-              setActiveModal(null)
-            }}
-          />
-
-          {/* End Session Modal */}
-          <DeleteModal
-            title={'Permanently end this session?'}
-            confirmBtnText={'YES! End my session!'}
-            cancelBtnText="Cancel"
-            message={
-              <DialogContentText id="alert-dialog-description" component={'div'}>
-                <Typography paragraph>
-                  Closing a session will lock it permanently. Crew shares can still be marked paid but new jobs or
-                  scouting finds CANNOT be added and no new users can join.
-                </Typography>
-                <Typography paragraph>
-                  <strong>THIS IS A PERMANENT ACTION</strong>. Are you sure you want to close this session?
-                </Typography>
-              </DialogContentText>
-            }
-            open={activeModal === DialogEnum.CLOSE_SESSION}
-            onClose={() => setActiveModal(null)}
-            onConfirm={() => {
-              sessionQueries.closeSession()
-              setActiveModal(null)
-            }}
-          />
-
-          {/* Collaborate Session Modal */}
-          <CollaborateModal
-            open={Boolean(shareUrl && activeModal === DialogEnum.COLLABORATE)}
-            warn={!session?.sessionSettings.specifyUsers}
-            url={shareUrl as string}
-            onClose={() => setActiveModal(null)}
-          />
-
-          {/* Share Session Modal */}
-          {activeModal === DialogEnum.SHARE_SESSION && (
-            <ShareModal
-              open
-              initScoutingFindId={shareScoutingFindId}
-              initWorkOrderId={shareWorkOrderId}
-              onClose={() => {
-                setShareWorkOrderId(null)
-                setShareScoutingFindId(null)
+        {/* Workorder Modal: NEW */}
+        {isActive && newWorkOrder && (
+          // NEW WORK ORDER
+          <WorkOrderContext.Provider
+            value={{
+              onUpdate: (newOrder) => {
                 setActiveModal(null)
+                createWorkOrder(newOrder)
+                setNewWorkOrder(null)
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
+              },
+              isMine: true,
+              allowEdit: isActive,
+              allowPay: true,
+              isSessionActive: isActive,
+              forceTemplate: true,
+              userSuggest: userSuggest,
+              isNew: true,
+              markCrewSharePaid: sessionQueries.markCrewSharePaid,
+              templateJob: session.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
+              workOrder: newWorkOrder as WorkOrder,
+              pastedImgUrl,
+              setPastedImgUrl,
+            }}
+          >
+            <WorkOrderModal
+              open={activeModal === DialogEnum.ADD_WORKORDER}
+              onClose={() => {
+                setActiveModal(null)
+                if (newWorkOrder) setNewWorkOrder(null)
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
               }}
             />
-          )}
+          </WorkOrderContext.Provider>
+        )}
 
-          {/* Leave Session Modal */}
-          <ConfirmModal
-            title="Leave the session? Are you sure?"
-            message={
-              <>
-                <Typography paragraph>
-                  In general <strong>DO NOT LEAVE SESSIONS</strong> unless you don't want to participate anymore.
-                </Typography>
-                <Typography paragraph color="error">
-                  If you leave this session it will be <strong>REMOVED</strong> from your session history and you will
-                  not see work order payment updates or be able to join again without another invite.
-                </Typography>
-              </>
-            }
+        {/* LOADOUT Modal */}
+        {activeLoadout && (
+          <LoadoutCalc
+            isModal
+            readonly
             onClose={() => setActiveModal(null)}
-            open={activeModal === DialogEnum.LEAVE_SESSION}
-            onConfirm={sessionQueries.leaveSession}
-            cancelBtnText="No, Cancel!"
-            confirmBtnText="Yes, Leave"
+            open={activeModal === DialogEnum.LOADOUT_MODAL}
+            miningLoadout={activeLoadout}
           />
+        )}
 
-          {/* Download Data Modal */}
-          <DownloadModalContainer
-            open={activeModal === DialogEnum.DOWNLOAD_SESSION}
+        {/* ScoutingFind Modal: NEW */}
+        {isActive && newScoutingFind && (
+          <ScoutingFindContext.Provider
+            value={{
+              meUser: mySessionUser,
+              allowEdit: isActive,
+              allowDelete: true,
+              scoutingFind: newScoutingFind as ScoutingFind,
+              isNew: true,
+              onChange: (newScouting) => {
+                setActiveModal(null)
+                sessionQueries.createScoutingFind(newScouting)
+                setNewScoutingFind(null)
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
+              },
+              pastedImgUrl,
+              setPastedImgUrl,
+            }}
+          >
+            <ScoutingFindModal
+              open={activeModal === DialogEnum.ADD_SCOUTING}
+              onClose={() => {
+                setActiveModal(null)
+                if (newScoutingFind) setNewScoutingFind(null)
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
+              }}
+            />
+          </ScoutingFindContext.Provider>
+        )}
+
+        {/* ScoutingFind Modal: EDITING */}
+        {modalScoutingFind && (
+          <ScoutingFindContext.Provider
+            value={{
+              meUser: mySessionUser,
+              allowEdit: true, // anyone in the sessionc an edit this
+              allowDelete: amISessionOwner || modalScoutingFind.ownerId === myUserProfile?.userId,
+              scoutingFind: modalScoutingFind,
+              joinScoutingFind: modalScoutingFindQry.joinScoutingFind,
+              leaveScoutingFind: modalScoutingFindQry.leaveScoutingFind,
+              onDelete: () => {
+                modalScoutingFindQry.deleteScoutingFind(modalScoutingFind.scoutingFindId, modalScoutingFind.__typename)
+                setActiveModal(null)
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
+              },
+              onChange: (newScouting) => {
+                modalScoutingFindQry.updateScoutingFind(newScouting)
+                setNewScoutingFind(null)
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
+              },
+              pastedImgUrl,
+              setPastedImgUrl,
+            }}
+          >
+            <ScoutingFindModal
+              open={Boolean(modalScoutingFind)}
+              onClose={() => {
+                returnToSession()
+                // Make sure to clear the pasted buffer to clean up the memory for that
+                if (pastedImgUrl) setPastedImgUrl(null)
+              }}
+              setShareScoutingFindId={(shareId) => {
+                setShareScoutingFindId(shareId)
+                setActiveModal(DialogEnum.SHARE_SESSION)
+              }}
+            />
+          </ScoutingFindContext.Provider>
+        )}
+
+        {/* Paste Detected Modal */}
+        <PasteDetectedModal
+          open={activeModal === DialogEnum.PASTE_DETECTED}
+          onClose={() => {
+            setActiveModal(null)
+            // Make sure to clear the pasted buffer
+            if (pastedImgUrl) setPastedImgUrl(null)
+          }}
+          onNewWorkOrderFromPaste={() => {
+            setActiveModal(null)
+            createNewWorkOrder(ActivityEnum.ShipMining)
+          }}
+          onNewRockClusterFromPaste={() => {
+            setActiveModal(null)
+            createNewScoutingFind(ScoutingFindTypeEnum.Ship)
+          }}
+        />
+
+        {/* Delete Session Modal */}
+        <DeleteModal
+          title={'Permanently DELETE session?'}
+          confirmBtnText={'Yes, Delete Session!'}
+          cancelBtnText="No, keep session"
+          message={
+            <DialogContentText id="alert-dialog-description">
+              Deleting a session will remove it permanently. Work orders and crew shares will be irrecoverably lost.
+              THIS IS A PERMANENT ACTION. Are you sure you want to delete this session?
+            </DialogContentText>
+          }
+          open={activeModal === DialogEnum.DELETE_SESSION}
+          onClose={() => setActiveModal(null)}
+          onConfirm={() => {
+            sessionQueries.deleteSession()
+            setActiveModal(null)
+          }}
+        />
+
+        {/* End Session Modal */}
+        <DeleteModal
+          title={'Permanently end this session?'}
+          confirmBtnText={'YES! End my session!'}
+          cancelBtnText="Cancel"
+          message={
+            <DialogContentText id="alert-dialog-description" component={'div'}>
+              <Typography paragraph>
+                Closing a session will lock it permanently. Crew shares can still be marked paid but new jobs or
+                scouting finds CANNOT be added and no new users can join.
+              </Typography>
+              <Typography paragraph>
+                <strong>THIS IS A PERMANENT ACTION</strong>. Are you sure you want to close this session?
+              </Typography>
+            </DialogContentText>
+          }
+          open={activeModal === DialogEnum.CLOSE_SESSION}
+          onClose={() => setActiveModal(null)}
+          onConfirm={() => {
+            sessionQueries.closeSession()
+            setActiveModal(null)
+          }}
+        />
+
+        {/* Collaborate Session Modal */}
+        <CollaborateModal
+          open={Boolean(shareUrl && activeModal === DialogEnum.COLLABORATE)}
+          warn={!session?.sessionSettings.specifyUsers}
+          url={shareUrl as string}
+          onClose={() => setActiveModal(null)}
+        />
+
+        {/* Share Session Modal */}
+        {activeModal === DialogEnum.SHARE_SESSION && (
+          <ShareModal
+            open
+            initScoutingFindId={shareScoutingFindId}
+            initWorkOrderId={shareWorkOrderId}
+            onClose={() => {
+              setShareWorkOrderId(null)
+              setShareScoutingFindId(null)
+              setActiveModal(null)
+            }}
+          />
+        )}
+
+        {/* Leave Session Modal */}
+        <ConfirmModal
+          title="Leave the session? Are you sure?"
+          message={
+            <>
+              <Typography paragraph>
+                In general <strong>DO NOT LEAVE SESSIONS</strong> unless you don't want to participate anymore.
+              </Typography>
+              <Typography paragraph color="error">
+                If you leave this session it will be <strong>REMOVED</strong> from your session history and you will not
+                see work order payment updates or be able to join again without another invite.
+              </Typography>
+            </>
+          }
+          onClose={() => setActiveModal(null)}
+          open={activeModal === DialogEnum.LEAVE_SESSION}
+          onConfirm={sessionQueries.leaveSession}
+          cancelBtnText="No, Cancel!"
+          confirmBtnText="Yes, Leave"
+        />
+
+        {/* Download Data Modal */}
+        <DownloadModalContainer
+          open={activeModal === DialogEnum.DOWNLOAD_SESSION}
+          onClose={() => setActiveModal(null)}
+        />
+
+        <AddPendingUsersModal open={activeModal === DialogEnum.ADD_FRIEND} onClose={() => setActiveModal(null)} />
+        <DisbandModal open={activeModal === DialogEnum.DISBAND_CREW} onClose={() => setActiveModal(null)} />
+
+        {/* Active User Popup Modal: ME */}
+        {sessionUserModalSessionUser && sessionUserModalSessionUser.ownerId === mySessionUser.ownerId && (
+          <ActivePopupMe open={activeModal === DialogEnum.USER_STATUS} onClose={() => setActiveModal(null)} />
+        )}
+
+        {/* Active User Popup Modal: Active User */}
+        {sessionUserModalSessionUser && mySessionUser.owner?.userId !== sessionUserModalSessionUser.ownerId && (
+          <ActivePopupUser
+            open={activeModal === DialogEnum.USER_STATUS}
             onClose={() => setActiveModal(null)}
+            sessionUser={sessionUserModalSessionUser}
           />
+        )}
 
-          <AddPendingUsersModal open={activeModal === DialogEnum.ADD_FRIEND} onClose={() => setActiveModal(null)} />
-          <DisbandModal open={activeModal === DialogEnum.DISBAND_CREW} onClose={() => setActiveModal(null)} />
-
-          {/* Active User Popup Modal: ME */}
-          {sessionUserModalSessionUser && sessionUserModalSessionUser.ownerId === mySessionUser.ownerId && (
-            <ActivePopupMe open={activeModal === DialogEnum.USER_STATUS} onClose={() => setActiveModal(null)} />
-          )}
-
-          {/* Active User Popup Modal: Active User */}
-          {sessionUserModalSessionUser && mySessionUser.owner?.userId !== sessionUserModalSessionUser.ownerId && (
-            <ActivePopupUser
-              open={activeModal === DialogEnum.USER_STATUS}
-              onClose={() => setActiveModal(null)}
-              sessionUser={sessionUserModalSessionUser}
-            />
-          )}
-
-          {/* Pending User Popup Modal */}
-          {sessionUserModalPendingUser && (
-            <PendingUserPopup
-              open={activeModal === DialogEnum.USER_STATUS}
-              onClose={() => setActiveModal(null)}
-              pendingUser={sessionUserModalPendingUser}
-            />
-          )}
-        </SessionContext.Provider>
-      </ScreenshareProvider>
+        {/* Pending User Popup Modal */}
+        {sessionUserModalPendingUser && (
+          <PendingUserPopup
+            open={activeModal === DialogEnum.USER_STATUS}
+            onClose={() => setActiveModal(null)}
+            pendingUser={sessionUserModalPendingUser}
+          />
+        )}
+      </SessionContext.Provider>
     </>
   )
 }

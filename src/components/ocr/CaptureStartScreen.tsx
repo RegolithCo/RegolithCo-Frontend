@@ -42,7 +42,15 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
         <strong>{CaptureTypeTitle[captureType]}</strong> data into Regolith. There are 3 ways to capture data from Star
         Citizen into Regolith:
       </Typography>
-      <List>
+      <List
+        sx={{
+          // Get the primary text elements
+          '& .MuiListItemText-primary': {
+            color: theme.palette.primary.main,
+            fontSize: '1.2rem',
+          },
+        }}
+      >
         <ListItem alignItems="flex-start">
           <ListItemIcon>
             <ScreenShare />
@@ -55,6 +63,10 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
                   This is the most convenient way. It allows Regolith to see the game screen and extract the data it
                   needs. You will need to give permission to share your screen. When asked, select to share your Star
                   Citizen game window.
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Note: Screen sharing persists until you turn it off. This is so you can easily take multiple data
+                  points without needing to re-share your screen.
                 </Typography>
                 <Stack direction="row" spacing={1}>
                   {!isScreenSharing ? (
@@ -85,7 +97,7 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             <ContentPaste />
           </ListItemIcon>
           <ListItemText
-            primary="2. Paste a Screenshot / Image"
+            primary="2. Copy & Paste a Screenshot / Image"
             secondary={
               <Stack spacing={1}>
                 <Typography variant="body2" paragraph>
@@ -99,13 +111,7 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
                     Read more about the Print Screen Key here
                   </Link>
                 </Typography>
-                <Typography
-                  variant="caption"
-                  paragraph
-                  sx={{
-                    fontWeight: 'bold',
-                  }}
-                >
+                <Typography variant="body2" color="secondary">
                   Pro tip: Pasting screenshots works from anywhere inside an active session
                 </Typography>
               </Stack>

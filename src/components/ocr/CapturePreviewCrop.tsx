@@ -273,7 +273,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
             setStoredVal({ ...(storedVal || defaultCrops), [captureType]: defaultCrops[captureType] })
           }}
         >
-          Reset Crop to defaults
+          Reset Crop
         </Button>
         <Button
           variant="text"

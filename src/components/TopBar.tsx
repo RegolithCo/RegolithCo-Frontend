@@ -8,12 +8,11 @@ import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
 import { yellow } from '@mui/material/colors'
-import { CircularProgress, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
+import { alpha, CircularProgress, keyframes, PaletteColor, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
 import { fontFamilies } from '../theme'
 import {
   AccountCircle,
   Calculate,
-  CalendarMonth,
   Celebration,
   Coffee,
   Dashboard,
@@ -30,6 +29,7 @@ import {
   Person,
   QuestionAnswer,
   Settings,
+  StopScreenShare,
   Store,
   Storefront,
   TableChart,
@@ -44,6 +44,7 @@ import { LaserIcon } from '../icons/Laser'
 import { AppContext } from '../context/app.context'
 import { ProfileTabsEnum } from './pages/ProfilePage'
 import { Link } from 'react-router-dom'
+import { ScreenshareContext } from '../context/screenshare.context'
 
 export type MenuItemType = {
   path?: string
@@ -99,10 +100,12 @@ export interface TopBarProps {
 
 export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
   const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement; width: number }>(null)
+  const [openShareMenu, setShareOpen] = React.useState<HTMLElement | null>(null)
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { hideNames, setHideNames } = React.useContext(AppContext)
   const { maintenanceMode } = React.useContext(LoginContext)
+  const { isScreenSharing, stopScreenCapture, startScreenCapture } = React.useContext(ScreenshareContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
   const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {
@@ -114,6 +117,20 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
     setMenuOpen(null)
   }
 
+  const pulse = (color: PaletteColor) => keyframes`
+    0% { 
+      box-shadow: 0 0 0 0 transparent; 
+      background-color: ${color.dark} 
+    }
+    50% { 
+      box-shadow: 0 0 5px 5px ${alpha(color.light, 0.5)}; 
+      background-color: ${color.light} 
+    }
+    100% { 
+      box-shadow: 0 0 0 0 transparent; 
+      background-color:  ${color.dark}
+    }
+  `
   const topBarMenu: MenuItemType[] = [
     //
     { path: '/dashboard', name: 'Dashboard', icon: <Dashboard />, disabled: Boolean(maintenanceMode) },
@@ -313,6 +330,21 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         {/* Profile icon, username and badge */}
         <div style={{ flexGrow: 1 }} />
         {IS_STAGING && '[TEST SERVER]'}
+        {isScreenSharing && (
+          <Tooltip title="Stop sharing screens with Regolith">
+            <IconButton
+              color="inherit"
+              onClick={() => stopScreenCapture()}
+              sx={{
+                position: 'relative',
+                backgroundColor: alpha(theme.palette.error.dark, 0.5),
+                animation: `${pulse(theme.palette.error)} 1.5s infinite`,
+              }}
+            >
+              <StopScreenShare />
+            </IconButton>
+          </Tooltip>
+        )}
         <Box sx={{ flexGrow: 0 }}>
           {userCtx.isAuthenticated && hideNames && (
             <Tooltip title={`names disabled for streaming`}>
