@@ -174,7 +174,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     const blobUrl = await offscreen
       .convertToBlob({
         type: 'image/jpeg',
-        quality: 0.8,
+        quality: 0.6,
       })
       .then((blob) => {
         const reader = new FileReader()

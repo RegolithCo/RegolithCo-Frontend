@@ -1,3 +1,24 @@
+### October 30, 2024
+## 1.1.2 - The 
+
+#### Holy 🐄 you guys, OCR is in!
+
+Ever since I started Regolith I've wanted a better way to capture work orders and rocks scans. Typing all those numbers is tedious and there has to be a better way. Well, now there is!
+
+Now you can capture your work orders and scan rocks in 3 new exciting ways:
+
+1. **Screen Sharing**: Share your screen with Regolith and you can capture work orders and rock scans directly from the game.
+2. `ALT + Print Screen` puts a screenshot in the clipboard then `CTRL+V` to paste it directly into your session.
+3. **Screenshot Upload**: Load a screenshot of a rock scan or a refinery window and Regolith will read the data directly from the image.
+
+#### Also a few new features that folks were asking for:
+
+- **CSV Downloading** of sessions is back. It's a little jankey but it's there.
+- You can now **add *any* team** to a work order's crew shares, not just your own. 
+- Several sneaky little bugs that were causing issues with the new features have been squashed.
+- The mobile experience has gotten very slightly better. Still a long way to go though.
+
+
 ### September 20, 2024
 ## 1.1.0 - The Space Accountant Patch
 
