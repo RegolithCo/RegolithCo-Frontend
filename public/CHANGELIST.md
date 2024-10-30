@@ -17,6 +17,7 @@ Now you can capture your work orders and scan rocks in 3 new exciting ways:
 - You can now **add *any* team** to a work order's crew shares, not just your own. 
 - Several sneaky little bugs that were causing issues with the new features have been squashed.
 - The mobile experience has gotten very slightly better. Still a long way to go though.
+- Increased the RAM available to certain backend processes. This should significantly reduce load times on the front end.
 
 
 ### September 20, 2024

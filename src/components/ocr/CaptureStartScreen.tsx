@@ -65,8 +65,8 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
                   Citizen game window.
                 </Typography>
                 <Typography variant="body2" color="secondary">
-                  Note: Screen sharing persists until you turn it off. This is so you can easily take multiple data
-                  points without needing to re-share your screen.
+                  Note: Screen sharing persists until you turn it off or leave the session. This is so you can easily
+                  take multiple data points without needing to re-share your screen.
                 </Typography>
                 <Stack direction="row" spacing={1}>
                   {!isScreenSharing ? (

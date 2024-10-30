@@ -88,7 +88,8 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
       <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
         NOTE: This is a standalone calculator. If you want to work on more than one cluster, store consecutive clusters
         or share your clusters with friends then consider logging in and creating/joining a <strong>session</strong>{' '}
-        from the <Link href="/dashboard">dashboard</Link>.
+        from the <Link href="/dashboard">dashboard</Link>. Scouted rocks inside Sessions can be captured automatically
+        from the game or by uploading screenshots using OCR.
       </Alert>
     </PageWrapper>
   )

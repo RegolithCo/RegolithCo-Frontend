@@ -128,7 +128,8 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
       <Alert severity="info" sx={{ m: 2, flex: '1 1 50%', [theme.breakpoints.down('sm')]: { display: 'none' } }}>
         NOTE: This is a standalone calculator. If you want to work on more than one order, store consecutive orders or
         share your work orders with friends then consider logging in and creating/joining a <strong>session</strong>{' '}
-        from the <Link href="/dashboard">dashboard</Link>.
+        from the <Link href="/dashboard">dashboard</Link>. Work orders inside Sessions can be captured automatically
+        from the game or by uploading screenshots using OCR.
       </Alert>
     </PageWrapper>
   )
