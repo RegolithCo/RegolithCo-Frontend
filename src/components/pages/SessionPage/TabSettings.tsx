@@ -56,6 +56,7 @@ import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
 import { isEqual } from 'lodash'
 import { useDiscordGuilds } from '../../../hooks/useDiscordGuilds'
 import { DiscordServerControl } from '../../fields/DiscordServerControl'
+import { GravityWellChooser } from '../../fields/GravityWellChooser'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -325,6 +326,12 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   Session Location
                 </Typography>
                 <Box sx={styles.sectionBody}>
+                  <GravityWellChooser
+                    onClick={(choice) => {
+                      //
+                    }}
+                    planetValue="test"
+                  />
                   <Stack direction={mediumUp ? 'row' : 'column'} spacing={2} sx={{ mb: 2 }}>
                     <Autocomplete
                       id="combo-box-demo"
