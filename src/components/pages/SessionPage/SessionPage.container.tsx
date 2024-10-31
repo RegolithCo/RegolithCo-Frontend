@@ -243,7 +243,13 @@ export const SessionPageContainer: React.FC = () => {
 
   // Detect paste events and handle them as long as no modals are open
   const pasteDisabled = React.useMemo(
-    () => !!activeModal || !!modalWorkOrder || !!modalScoutingFind || !!newWorkOrder || !!newScoutingFind,
+    () =>
+      !!activeModal ||
+      !!modalWorkOrder ||
+      !!modalScoutingFind ||
+      !!newWorkOrder ||
+      !!newScoutingFind ||
+      session?.state === SessionStateEnum.Closed,
     [activeModal, modalWorkOrder, modalScoutingFind, newWorkOrder, newScoutingFind]
   )
   useImagePaste((image) => {

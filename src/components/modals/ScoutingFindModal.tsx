@@ -9,7 +9,6 @@ import {
   Theme,
   ThemeProvider,
   Tooltip,
-  Typography,
   useMediaQuery,
 } from '@mui/material'
 
@@ -24,13 +23,12 @@ import {
 } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
-import { BackHand, Camera, Cancel, Create, Delete, DocumentScanner, Save } from '@mui/icons-material'
+import { BackHand, Cancel, Create, Delete, DocumentScanner, Save } from '@mui/icons-material'
 import { ScoutingFindContext } from '../../context/scoutingFind.context'
 import { ConfirmModal } from './ConfirmModal'
 import { ExportImageIcon } from '../../icons/badges'
 import { DeleteScoutingFindModal } from './DeleteScoutingFindModal'
-import { CaptureControl, CaptureControlProps } from '../ocr/CaptureControl'
-import log from 'loglevel'
+import { CaptureControl } from '../ocr/CaptureControl'
 import { useImagePaste } from '../../hooks/useImagePaste'
 
 export interface ScoutingFindModalProps {
