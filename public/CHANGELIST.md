@@ -1,5 +1,5 @@
 ### October 30, 2024
-## 1.1.2 - The 
+## 1.1.2 - The Magic Patch!
 
 #### Holy 🐄 you guys, OCR is in!
 
