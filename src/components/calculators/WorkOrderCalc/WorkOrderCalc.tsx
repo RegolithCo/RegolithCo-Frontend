@@ -84,6 +84,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   }, [props.workOrder, dataStore.ready])
 
   const { workOrder } = props
+  console.log('MARZIPAN', { workOrder, summary })
   if (!summary || !dataStore.ready) return <div>Loading...</div>
   return (
     <>
