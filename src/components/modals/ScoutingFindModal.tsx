@@ -77,6 +77,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
   const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind>(scoutingFind)
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
   const [camScanModal, setCamScanModal] = React.useState<boolean>(!!pastedImgUrl)
+  const [openCapture, setOpenCapture] = React.useState<number>()
 
   const [theme, setTheme] = React.useState<Theme>(
     scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
@@ -129,6 +130,8 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
       clusterCount: (shipFind.clusterCount || 0) < newRocks.length ? newRocks.length : shipFind.clusterCount,
       shipRocks: newRocks,
     } as ShipClusterFind
+    // Open the modal immediately
+    setOpenCapture(newFind.shipRocks.length - 1)
 
     if (isNew) setNewScoutingFind(newFind)
     else onChange(newFind)
@@ -184,6 +187,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             scoutingFind={isNew ? newScoutingFind : scoutingFind}
             isNew={isNew}
             allowEdit={allowEdit}
+            openCapture={openCapture}
             joinScoutingFind={joinScoutingFind}
             leaveScoutingFind={leaveScoutingFind}
             me={meUser}

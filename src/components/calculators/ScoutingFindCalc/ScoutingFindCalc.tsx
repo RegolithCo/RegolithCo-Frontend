@@ -40,6 +40,8 @@ import {
   makeHumanIds,
   ShipOreEnum,
   FindClusterSummary,
+  SalvageWreck,
+  ShipRock,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -56,6 +58,8 @@ import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { ScoutingFindRocks } from './ScoutingFindRocks'
 import { ScoutingFindWrecks } from './ScoutingFindWrecks'
+import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
+import { SalvageWreckEntryModal } from '../../modals/SalvageWreckEntryModal'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -75,6 +79,7 @@ export interface ScoutingFindCalcProps {
   standalone?: boolean
   isNew?: boolean
   isShare?: boolean
+  openCapture?: number // This is the index of the newest capture. when it changes we open the modal
   joinScoutingFind?: (findId: string, enRoute: boolean) => void
   leaveScoutingFind?: (findId: string) => void
   onChange?: (scoutingFind: ScoutingFind) => void
@@ -290,6 +295,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   standalone,
   joinScoutingFind,
   leaveScoutingFind,
+  openCapture,
   onChange,
 }) => {
   const theme = scoutingFindStateThemes[scoutingFind.state || ScoutingFindStateEnum.Discovered]
@@ -299,6 +305,20 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [summary, setSummary] = React.useState<FindClusterSummary>()
   const { getSafeName } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
+
+  const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | SalvageWreck | false>(false)
+  const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | SalvageWreck | false]>([
+    -1,
+    false,
+  ])
+
+  React.useEffect(() => {
+    if (openCapture !== undefined) {
+      if (scoutingFind.clusterType === ScoutingFindTypeEnum.Ship) {
+        setEditScanModalOpen([openCapture, (scoutingFind as ShipClusterFind).shipRocks[openCapture]])
+      }
+    }
+  }, [openCapture])
 
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
@@ -704,6 +724,10 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             allowEdit={allowEdit}
             isShare={isShare}
             onChange={onChange}
+            setAddScanModalOpen={setAddScanModalOpen}
+            setEditScanModalOpen={setEditScanModalOpen}
+            addScanModalOpen={addScanModalOpen}
+            editScanModalOpen={editScanModalOpen}
           />
         )}
         {/* Salvage scans */}
@@ -714,9 +738,100 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             allowEdit={allowEdit}
             isShare={isShare}
             onChange={onChange}
+            setAddScanModalOpen={setAddScanModalOpen}
+            setEditScanModalOpen={setEditScanModalOpen}
+            addScanModalOpen={addScanModalOpen}
+            editScanModalOpen={editScanModalOpen}
           />
         )}
       </Grid>
+
+      {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&
+        (addScanModalOpen !== false || editScanModalOpen[1] !== false) && (
+          <ShipRockEntryModal
+            open
+            isNew={addScanModalOpen !== false}
+            onClose={() => {
+              if (editScanModalOpen[1] !== false) setEditScanModalOpen([-1, false])
+              if (addScanModalOpen !== false) setAddScanModalOpen(false)
+            }}
+            onDelete={() => {
+              // Just discard. No harm, no foul
+              addScanModalOpen !== false && setAddScanModalOpen(false)
+              // Actually remove the rock from the list
+              if (editScanModalOpen[1] !== false) {
+                onChange &&
+                  onChange({
+                    ...(shipFind || {}),
+                    shipRocks: (shipFind?.shipRocks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
+                  })
+                setEditScanModalOpen([-1, false])
+              }
+            }}
+            onSubmit={(rock) => {
+              if (addScanModalOpen !== false) {
+                onChange &&
+                  onChange({
+                    ...(shipFind || {}),
+                    clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
+                    shipRocks: [...(shipFind?.shipRocks || []), rock],
+                  })
+                setAddScanModalOpen(false)
+              } else if (editScanModalOpen[1] !== false) {
+                onChange &&
+                  onChange({
+                    ...(shipFind || {}),
+                    shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
+                  })
+                setEditScanModalOpen([-1, false])
+              }
+            }}
+            shipRock={editScanModalOpen[1] as ShipRock}
+          />
+        )}
+      {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage &&
+        (Boolean(addScanModalOpen) || Boolean(editScanModalOpen[1])) && (
+          <SalvageWreckEntryModal
+            open
+            isNew={Boolean(addScanModalOpen)}
+            onClose={() => {
+              if (editScanModalOpen[1] !== false) setEditScanModalOpen([-1, false])
+              if (addScanModalOpen !== false) setAddScanModalOpen(false)
+            }}
+            onDelete={() => {
+              // Just discard. No harm, no foul
+              addScanModalOpen !== false && setAddScanModalOpen(false)
+              // Actually remove the rock from the list
+              if (editScanModalOpen[1] !== false) {
+                onChange &&
+                  onChange({
+                    ...(salvageFind || {}),
+                    wrecks: (salvageFind?.wrecks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
+                  })
+                setEditScanModalOpen([-1, false])
+              }
+            }}
+            onSubmit={(wreck) => {
+              if (addScanModalOpen !== false) {
+                onChange &&
+                  onChange({
+                    ...(salvageFind || {}),
+                    clusterCount: Math.max(salvageFind?.clusterCount || 0, salvageFind?.wrecks.length + 1),
+                    wrecks: [...(salvageFind?.wrecks || []), wreck],
+                  })
+                setAddScanModalOpen(false)
+              } else if (editScanModalOpen[1] !== false) {
+                onChange &&
+                  onChange({
+                    ...(salvageFind || {}),
+                    wrecks: (salvageFind?.wrecks || []).map((r, idx) => (idx === editScanModalOpen[0] ? wreck : r)),
+                  })
+                setEditScanModalOpen([-1, false])
+              }
+            }}
+            wreck={editScanModalOpen[1] as SalvageWreck}
+          />
+        )}
 
       <ScoutingClusterCountModal
         open={editCountModalOpen}

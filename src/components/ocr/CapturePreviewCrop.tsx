@@ -82,7 +82,18 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
 
   // If the image changes then we reset the crop. Hopefully this isn't too annoying
   useEffect(() => {
-    setCrop(storedVal[captureType] || defaultCrops[captureType])
+    if (!cropRef.current) return
+    if (storedVal[captureType]) {
+      // Check to make sure the crop isn't off the image
+      const box = cropRef.current.getBox()
+      if (crop.x > box.width || crop.y > box.height) {
+        setCrop(defaultCrops[captureType])
+      } else {
+        setCrop(storedVal[captureType])
+      }
+    } else {
+      setCrop(storedVal[captureType] || defaultCrops[captureType])
+    }
   }, [imageUrl, videoRef?.current, isScreenSharing])
 
   useEffect(() => {

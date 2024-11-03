@@ -9,6 +9,7 @@ import {
   SalvageFind,
   SalvageOreEnum,
   SalvageWreckOre,
+  ShipRock,
 } from '@regolithco/common'
 import { ClawIcon } from '../../../icons'
 import { AddCircle } from '@mui/icons-material'
@@ -18,12 +19,15 @@ import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { SalvageWreckCard } from '../../cards/SalvageWreckCard'
-import { SalvageWreckEntryModal } from '../../modals/SalvageWreckEntryModal'
 dayjs.extend(relativeTime)
 
 export interface ScoutingFindWrecksProps {
   salvageFind: SalvageFind
   summary: FindClusterSummary
+  addScanModalOpen?: false | ShipRock | SalvageWreck
+  editScanModalOpen?: [number, false | ShipRock | SalvageWreck]
+  setAddScanModalOpen: (scan: SalvageWreck | false) => void
+  setEditScanModalOpen: (scan: [number, SalvageWreck | false]) => void
   allowEdit?: boolean
   isShare?: boolean
   onChange?: (scoutingFind: ScoutingFind) => void
@@ -61,12 +65,14 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
   summary,
   isShare,
   allowEdit,
+  addScanModalOpen,
+  editScanModalOpen,
+  setAddScanModalOpen,
+  setEditScanModalOpen,
   onChange,
 }) => {
   const theme = scoutingFindStateThemes[salvageFind.state || ScoutingFindStateEnum.Discovered]
   const styles = stylesThunk(theme)
-  const [addScanModalOpen, setAddScanModalOpen] = React.useState<SalvageWreck | false>(false)
-  const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, SalvageWreck | false]>([-1, false])
 
   // Some convenience variables
   // let scanComplete = false
@@ -173,46 +179,6 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
           ))}
         </Grid>
       </Box>
-      <SalvageWreckEntryModal
-        open={Boolean(addScanModalOpen) || Boolean(editScanModalOpen[1])}
-        isNew={Boolean(addScanModalOpen)}
-        onClose={() => {
-          addScanModalOpen !== false && setAddScanModalOpen(false)
-          editScanModalOpen[1] !== false && setEditScanModalOpen([-1, false])
-        }}
-        onDelete={() => {
-          // Just discard. No harm, no foul
-          addScanModalOpen !== false && setAddScanModalOpen(false)
-          // Actually remove the rock from the list
-          if (editScanModalOpen[1] !== false) {
-            onChange &&
-              onChange({
-                ...(salvageFind || {}),
-                wrecks: (salvageFind?.wrecks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
-              })
-            setEditScanModalOpen([-1, false])
-          }
-        }}
-        onSubmit={(wreck) => {
-          if (addScanModalOpen !== false) {
-            onChange &&
-              onChange({
-                ...(salvageFind || {}),
-                clusterCount: Math.max(salvageFind?.clusterCount || 0, salvageFind?.wrecks.length + 1),
-                wrecks: [...(salvageFind?.wrecks || []), wreck],
-              })
-            setAddScanModalOpen(false)
-          } else if (editScanModalOpen[1] !== false) {
-            onChange &&
-              onChange({
-                ...(salvageFind || {}),
-                wrecks: (salvageFind?.wrecks || []).map((r, idx) => (idx === editScanModalOpen[0] ? wreck : r)),
-              })
-            setEditScanModalOpen([-1, false])
-          }
-        }}
-        wreck={addScanModalOpen ? addScanModalOpen : (editScanModalOpen[1] as SalvageWreck)}
-      />
     </Grid>
   )
 }

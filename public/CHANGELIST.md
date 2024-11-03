@@ -1,3 +1,12 @@
+### November 2, 2024
+## 1.1.3 - Minor fixes
+
+- Reworked a lot of the capture settings. Can now capture SETUP, PROCESSING and COMPLETE work orders as well as turret cargo manifests and scouted rocks (but only from the prospector. Capturing the scanning MFD is still not done).
+- On scouting capture OCR the rock now pops up so you can edit it if you need to. 
+- Removed the somewhat redundant confirmation dialog for capturing and overwriting work orders from a capture.
+- Re-did a few of the background images as they were getting kind of dated.
+
+
 ### October 30, 2024
 ## 1.1.2 - The Magic Patch!
 

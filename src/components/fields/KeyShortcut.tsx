@@ -10,6 +10,7 @@ export const KeyShortcut: React.FC<KeyShortcutProps> = ({ keyStr }) => {
   const theme = useTheme()
   return (
     <Chip
+      component={'span'}
       label={keyStr}
       sx={{
         px: 0,

@@ -56,6 +56,8 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             <ScreenShare />
           </ListItemIcon>
           <ListItemText
+            primaryTypographyProps={{ component: 'div' }}
+            secondaryTypographyProps={{ component: 'div' }}
             primary="1. Screen Sharing"
             secondary={
               <Stack spacing={1}>
@@ -97,10 +99,12 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             <ContentPaste />
           </ListItemIcon>
           <ListItemText
+            primaryTypographyProps={{ component: 'div' }}
+            secondaryTypographyProps={{ component: 'div' }}
             primary="2. Copy & Paste a Screenshot / Image"
             secondary={
               <Stack spacing={1}>
-                <Typography variant="body2" paragraph>
+                <Typography variant="body2" paragraph component="div">
                   Inside Star citizen use <KeyShortcut keyStr="Alt + PrintScreen" /> to copy a screenshot to your
                   clipboard. Then in Regolith use <KeyShortcut keyStr="Ctrl + V" />
                   or <KeyShortcut keyStr="Strg + V" /> to paste a screenshot into this window.{' '}
@@ -125,6 +129,8 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             </IconButton>
           </ListItemIcon>
           <ListItemText
+            primaryTypographyProps={{ component: 'div' }}
+            secondaryTypographyProps={{ component: 'div' }}
             primary="3. Upload a Screenshot Image"
             // secondary="Upload a screenshot of the game window. You will be able to crop it before submitting."
             secondary={

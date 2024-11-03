@@ -37,19 +37,12 @@ export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
 
 export interface CaptureControlProps {
   onClose: () => void
-  confirmOverwrite?: boolean
   initialImageUrl?: string | null
   onCapture: <T extends ShipRockCapture | ShipMiningOrderCapture>(retVal: T) => void
   captureType: CaptureTypeEnum
 }
 
-export const CaptureControl: React.FC<CaptureControlProps> = ({
-  onClose,
-  captureType,
-  confirmOverwrite,
-  onCapture,
-  initialImageUrl,
-}) => {
+export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, captureType, onCapture, initialImageUrl }) => {
   const [rawImageUrl, setRawImageUrl] = useState<string | null>(initialImageUrl || null)
   const [submittedImageUrl, setSubmittedImageUrl] = useState<string | null>(null)
   const [showError, setShowError] = useState<string | null>(null)
@@ -358,12 +351,8 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({
                   disabled={loading || !data || isError}
                   startIcon={<Check />}
                   onClick={() => {
-                    if (confirmOverwrite) {
-                      setOverwriteConfirmOpen(true)
-                    } else {
-                      handleOnCapture()
-                      onClose()
-                    }
+                    handleOnCapture()
+                    onClose()
                   }}
                 >
                   Use

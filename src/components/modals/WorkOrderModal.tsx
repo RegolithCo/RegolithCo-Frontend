@@ -280,7 +280,6 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       {camScanModal && (
         <CaptureControl
           captureType="REFINERY_ORDER"
-          confirmOverwrite
           initialImageUrl={pastedImgUrl || null}
           onClose={() => setCamScanModal(false)}
           onCapture={handleCapture}

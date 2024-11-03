@@ -7,6 +7,7 @@ import {
   ScoutingFindStateEnum,
   FindClusterSummary,
   ShipRock,
+  SalvageWreck,
 } from '@regolithco/common'
 import { RockIcon } from '../../../icons'
 import { AddCircle } from '@mui/icons-material'
@@ -16,7 +17,6 @@ import { scoutingFindStateThemes } from '../../../theme'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
-import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 
 dayjs.extend(relativeTime)
 
@@ -25,6 +25,10 @@ export interface ScoutingFindRocksProps {
   summary: FindClusterSummary
   allowEdit?: boolean
   isShare?: boolean
+  addScanModalOpen: false | ShipRock | SalvageWreck
+  editScanModalOpen: [number, false | ShipRock | SalvageWreck]
+  setAddScanModalOpen: (scan: ShipRock | false) => void
+  setEditScanModalOpen: (scan: [number, ShipRock | false]) => void
   onChange?: (scoutingFind: ScoutingFind) => void
 }
 
@@ -60,13 +64,14 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
   summary,
   isShare,
   allowEdit,
+  addScanModalOpen,
+  editScanModalOpen,
+  setAddScanModalOpen,
+  setEditScanModalOpen,
   onChange,
 }) => {
   const theme = scoutingFindStateThemes[shipFind.state || ScoutingFindStateEnum.Discovered]
   const styles = stylesThunk(theme)
-
-  const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | false>(false)
-  const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | false]>([-1, false])
 
   // Some convenience variables
   // let scanComplete = false
@@ -173,46 +178,6 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
           ))}
         </Grid>
       </Box>
-      <ShipRockEntryModal
-        open={addScanModalOpen !== false || editScanModalOpen[1] !== false}
-        isNew={addScanModalOpen !== false}
-        onClose={() => {
-          addScanModalOpen !== false && setAddScanModalOpen(false)
-          editScanModalOpen[1] !== false && setEditScanModalOpen([-1, false])
-        }}
-        onDelete={() => {
-          // Just discard. No harm, no foul
-          addScanModalOpen !== false && setAddScanModalOpen(false)
-          // Actually remove the rock from the list
-          if (editScanModalOpen[1] !== false) {
-            onChange &&
-              onChange({
-                ...(shipFind || {}),
-                shipRocks: (shipFind?.shipRocks || []).filter((rock, idx) => idx !== editScanModalOpen[0]),
-              })
-            setEditScanModalOpen([-1, false])
-          }
-        }}
-        onSubmit={(rock) => {
-          if (addScanModalOpen !== false) {
-            onChange &&
-              onChange({
-                ...(shipFind || {}),
-                clusterCount: Math.max(shipFind?.clusterCount || 0, shipFind?.shipRocks.length + 1),
-                shipRocks: [...(shipFind?.shipRocks || []), rock],
-              })
-            setAddScanModalOpen(false)
-          } else if (editScanModalOpen[1] !== false) {
-            onChange &&
-              onChange({
-                ...(shipFind || {}),
-                shipRocks: (shipFind?.shipRocks || []).map((r, idx) => (idx === editScanModalOpen[0] ? rock : r)),
-              })
-            setEditScanModalOpen([-1, false])
-          }
-        }}
-        shipRock={addScanModalOpen !== false ? addScanModalOpen : (editScanModalOpen[1] as ShipRock)}
-      />
     </Grid>
   )
 }
