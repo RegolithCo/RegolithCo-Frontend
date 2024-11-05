@@ -174,7 +174,7 @@ export type PendingUserFieldPolicy = {
 	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
 	scName?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('captureRefineryOrder' | 'captureShipRockScan' | 'crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('captureRefineryOrder' | 'captureShipRockScan' | 'crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	captureRefineryOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	captureShipRockScan?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -184,6 +184,7 @@ export type QueryFieldPolicy = {
 	scoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	session?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionShare?: FieldPolicy<any> | FieldReadFunction<any>,
+	sessionUpdates?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrder?: FieldPolicy<any> | FieldReadFunction<any>
@@ -359,6 +360,13 @@ export type SessionSummaryWorkOrderFieldPolicy = {
 	orderType?: FieldPolicy<any> | FieldReadFunction<any>,
 	paidShares?: FieldPolicy<any> | FieldReadFunction<any>,
 	unpaidShares?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SessionUpdateKeySpecifier = ('data' | 'eventDate' | 'eventName' | 'sessionId' | SessionUpdateKeySpecifier)[];
+export type SessionUpdateFieldPolicy = {
+	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	eventDate?: FieldPolicy<any> | FieldReadFunction<any>,
+	eventName?: FieldPolicy<any> | FieldReadFunction<any>,
+	sessionId?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SessionUserKeySpecifier = ('captainId' | 'createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'sessionId' | 'shipName' | 'state' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
@@ -743,6 +751,10 @@ export type StrictTypedTypePolicies = {
 	SessionSummaryWorkOrder?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SessionSummaryWorkOrderKeySpecifier | (() => undefined | SessionSummaryWorkOrderKeySpecifier),
 		fields?: SessionSummaryWorkOrderFieldPolicy,
+	},
+	SessionUpdate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SessionUpdateKeySpecifier | (() => undefined | SessionUpdateKeySpecifier),
+		fields?: SessionUpdateFieldPolicy,
 	},
 	SessionUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SessionUserKeySpecifier | (() => undefined | SessionUserKeySpecifier),
