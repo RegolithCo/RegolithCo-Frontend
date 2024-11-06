@@ -10,14 +10,13 @@ import {
   WorkOrderStateEnum,
 } from '@regolithco/common'
 import dayjs from 'dayjs'
-import { getActivityName, WorkOrderSummary } from '@regolithco/common'
+import { WorkOrderSummary } from '@regolithco/common'
 import {
   alpha,
   Checkbox,
   Chip,
   IconButton,
   Link,
-  Stack,
   TableCell,
   TableRow,
   Tooltip,
@@ -41,6 +40,7 @@ export interface WorkOrderTableRowProps {
   onRowClick?: (sessionId: string, orderId: string) => void
   contextMenuNode?: React.ReactNode
   handleContextMenu?: (e: React.MouseEvent<HTMLTableRowElement>) => void
+  disableContextMenu?: boolean
   summary: WorkOrderSummary
   columns?: WorkOrderTableColsEnum[]
 }
@@ -68,6 +68,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
   columns,
   onRowClick,
   contextMenuNode,
+  disableContextMenu,
   handleContextMenu,
 }) => {
   const theme = useTheme()

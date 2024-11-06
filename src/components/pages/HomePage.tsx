@@ -24,8 +24,6 @@ import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
-import { CameraControl } from '../ocr/CameraControl'
-import { ScreenshareProvider } from '../../context/screenshare.context'
 
 export interface HomePageProps {
   userCtx: LoginContextObj

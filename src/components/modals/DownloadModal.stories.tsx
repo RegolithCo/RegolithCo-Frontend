@@ -20,8 +20,14 @@ DeleteProfileModal.args = {
   onClose: () => {
     console.log('Closed')
   },
-  downloadCSV() {
-    console.log('CSV')
+  downloadCrewShareCSV() {
+    console.log('Crew Share CSV')
+  },
+  downloadMembersCSV() {
+    console.log('Members CSV')
+  },
+  downloadWorkOrderCSV() {
+    console.log('Work Order CSV')
   },
   downloadJSON() {
     console.log('JSON')

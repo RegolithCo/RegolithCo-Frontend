@@ -200,6 +200,32 @@ export const SessionUpdateFragmentFragmentDoc = gql`
     ${UserFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}
 ${SessionSummaryFragmentFragmentDoc}`;
+export const SessionBaseFragmentFragmentDoc = gql`
+    fragment SessionBaseFragment on Session {
+  sessionId
+  joinId
+  name
+  onTheList
+  ownerId
+  owner {
+    ...UserFragment
+  }
+  createdAt
+  updatedAt
+  finishedAt
+  note
+  sessionSettings {
+    ...SessionSettingFragment
+  }
+  mentionedUsers {
+    scName
+    captainId
+  }
+  ...SessionSummaryFragment
+}
+    ${UserFragmentFragmentDoc}
+${SessionSettingFragmentFragmentDoc}
+${SessionSummaryFragmentFragmentDoc}`;
 export const MiningLoadoutFragmentFragmentDoc = gql`
     fragment MiningLoadoutFragment on MiningLoadout {
   loadoutId
@@ -222,8 +248,8 @@ export const MiningLoadoutFragmentFragmentDoc = gql`
   inventoryGadgets
 }
     `;
-export const SessionUserFragmentFragmentDoc = gql`
-    fragment SessionUserFragment on SessionUser {
+export const SessionUserBaseFragmentFragmentDoc = gql`
+    fragment SessionUserBaseFragment on SessionUser {
   sessionId
   ownerId
   owner {
@@ -238,10 +264,15 @@ export const SessionUserFragmentFragmentDoc = gql`
   loadout {
     ...MiningLoadoutFragment
   }
-  state
 }
     ${UserFragmentFragmentDoc}
 ${MiningLoadoutFragmentFragmentDoc}`;
+export const SessionUserFragmentFragmentDoc = gql`
+    fragment SessionUserFragment on SessionUser {
+  ...SessionUserBaseFragment
+  state
+}
+    ${SessionUserBaseFragmentFragmentDoc}`;
 export const ShipRockFragmentFragmentDoc = gql`
     fragment ShipRockFragment on ShipRock {
   mass
@@ -254,8 +285,8 @@ export const ShipRockFragmentFragmentDoc = gql`
   }
 }
     `;
-export const ScoutingFindFragmentFragmentDoc = gql`
-    fragment ScoutingFindFragment on ScoutingFindInterface {
+export const ScoutingFindBaseFragmentFragmentDoc = gql`
+    fragment ScoutingFindBaseFragment on ScoutingFindInterface {
   sessionId
   scoutingFindId
   createdAt
@@ -267,11 +298,7 @@ export const ScoutingFindFragmentFragmentDoc = gql`
     ...UserFragment
   }
   note
-  state
   attendanceIds
-  attendance {
-    ...SessionUserFragment
-  }
   ... on ShipClusterFind {
     shipRocks {
       ...ShipRockFragment
@@ -302,24 +329,19 @@ export const ScoutingFindFragmentFragmentDoc = gql`
   }
 }
     ${UserFragmentFragmentDoc}
-${SessionUserFragmentFragmentDoc}
 ${ShipRockFragmentFragmentDoc}`;
-export const CrewShareFragmentFragmentDoc = gql`
-    fragment CrewShareFragment on CrewShare {
-  sessionId
-  payeeScName
-  payeeUserId
-  orderId
-  shareType
-  share
-  note
+export const ScoutingFindFragmentFragmentDoc = gql`
+    fragment ScoutingFindFragment on ScoutingFindInterface {
+  ...ScoutingFindBaseFragment
   state
-  createdAt
-  updatedAt
+  attendance {
+    ...SessionUserFragment
+  }
 }
-    `;
-export const WorkOrderFragmentFragmentDoc = gql`
-    fragment WorkOrderFragment on WorkOrderInterface {
+    ${ScoutingFindBaseFragmentFragmentDoc}
+${SessionUserFragmentFragmentDoc}`;
+export const WorkOrderBaseFragmentFragmentDoc = gql`
+    fragment WorkOrderBaseFragment on WorkOrderInterface {
   orderId
   sessionId
   createdAt
@@ -334,7 +356,6 @@ export const WorkOrderFragmentFragmentDoc = gql`
   owner {
     ...UserFragment
   }
-  state
   failReason
   includeTransferFee
   orderType
@@ -346,9 +367,6 @@ export const WorkOrderFragmentFragmentDoc = gql`
     name
   }
   isSold
-  crewShares {
-    ...CrewShareFragment
-  }
   ... on ShipMiningOrder {
     isRefined
     shareRefinedValue
@@ -374,30 +392,40 @@ export const WorkOrderFragmentFragmentDoc = gql`
     }
   }
 }
-    ${UserFragmentFragmentDoc}
+    ${UserFragmentFragmentDoc}`;
+export const CrewShareBaseFragmentFragmentDoc = gql`
+    fragment CrewShareBaseFragment on CrewShare {
+  sessionId
+  payeeScName
+  payeeUserId
+  orderId
+  shareType
+  share
+  note
+  createdAt
+  updatedAt
+}
+    `;
+export const CrewShareFragmentFragmentDoc = gql`
+    fragment CrewShareFragment on CrewShare {
+  ...CrewShareBaseFragment
+  state
+}
+    ${CrewShareBaseFragmentFragmentDoc}`;
+export const WorkOrderFragmentFragmentDoc = gql`
+    fragment WorkOrderFragment on WorkOrderInterface {
+  ...WorkOrderBaseFragment
+  state
+  crewShares {
+    ...CrewShareFragment
+  }
+}
+    ${WorkOrderBaseFragmentFragmentDoc}
 ${CrewShareFragmentFragmentDoc}`;
 export const SessionFragmentFragmentDoc = gql`
     fragment SessionFragment on Session {
-  sessionId
-  joinId
-  name
-  onTheList
-  ownerId
-  owner {
-    ...UserFragment
-  }
-  createdAt
-  updatedAt
-  finishedAt
+  ...SessionBaseFragment
   state
-  note
-  sessionSettings {
-    ...SessionSettingFragment
-  }
-  mentionedUsers {
-    scName
-    captainId
-  }
   activeMemberIds
   activeMembers {
     items {
@@ -417,14 +445,11 @@ export const SessionFragmentFragmentDoc = gql`
     }
     nextToken
   }
-  ...SessionSummaryFragment
 }
-    ${UserFragmentFragmentDoc}
-${SessionSettingFragmentFragmentDoc}
+    ${SessionBaseFragmentFragmentDoc}
 ${SessionUserFragmentFragmentDoc}
 ${ScoutingFindFragmentFragmentDoc}
-${WorkOrderFragmentFragmentDoc}
-${SessionSummaryFragmentFragmentDoc}`;
+${WorkOrderFragmentFragmentDoc}`;
 export const SessionShareFragmentFragmentDoc = gql`
     fragment SessionShareFragment on SessionShare {
   sessionId
@@ -2171,51 +2196,77 @@ export type GetSessionQueryHookResult = ReturnType<typeof useGetSessionQuery>;
 export type GetSessionLazyQueryHookResult = ReturnType<typeof useGetSessionLazyQuery>;
 export type GetSessionSuspenseQueryHookResult = ReturnType<typeof useGetSessionSuspenseQuery>;
 export type GetSessionQueryResult = Apollo.QueryResult<types.GetSessionQuery, types.GetSessionQueryVariables>;
-export const GetSessionUpdatedDocument = gql`
-    query getSessionUpdated($sessionId: ID!) {
-  session(sessionId: $sessionId) {
+export const GetSessionUpdatesDocument = gql`
+    query getSessionUpdates($sessionId: ID!, $lastCheck: String!) {
+  sessionUpdates(sessionId: $sessionId, lastCheck: $lastCheck) {
     sessionId
-    createdAt
-    updatedAt
-    finishedAt
-    ownerId
-    state
+    eventName
+    eventDate
+    dataId
+    data {
+      ... on WorkOrderInterface {
+        ...WorkOrderBaseFragment
+        workOrderState: state
+      }
+      ... on ScoutingFindInterface {
+        ...ScoutingFindBaseFragment
+        scoutingState: state
+      }
+      ... on CrewShare {
+        ...CrewShareBaseFragment
+        crewShareState: state
+      }
+      ... on SessionUser {
+        ...SessionUserBaseFragment
+        sessionUserState: state
+      }
+      ... on Session {
+        ...SessionBaseFragment
+        sessionState: state
+      }
+      __typename
+    }
   }
 }
-    `;
+    ${WorkOrderBaseFragmentFragmentDoc}
+${ScoutingFindBaseFragmentFragmentDoc}
+${CrewShareBaseFragmentFragmentDoc}
+${SessionUserBaseFragmentFragmentDoc}
+${SessionBaseFragmentFragmentDoc}`;
 
 /**
- * __useGetSessionUpdatedQuery__
+ * __useGetSessionUpdatesQuery__
  *
- * To run a query within a React component, call `useGetSessionUpdatedQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSessionUpdatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetSessionUpdatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSessionUpdatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetSessionUpdatedQuery({
+ * const { data, loading, error } = useGetSessionUpdatesQuery({
  *   variables: {
  *      sessionId: // value for 'sessionId'
+ *      lastCheck: // value for 'lastCheck'
  *   },
  * });
  */
-export function useGetSessionUpdatedQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables> & ({ variables: types.GetSessionUpdatedQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetSessionUpdatesQuery(baseOptions: Apollo.QueryHookOptions<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables> & ({ variables: types.GetSessionUpdatesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
+        return Apollo.useQuery<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables>(GetSessionUpdatesDocument, options);
       }
-export function useGetSessionUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+export function useGetSessionUpdatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
+          return Apollo.useLazyQuery<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables>(GetSessionUpdatesDocument, options);
         }
-export function useGetSessionUpdatedSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>) {
+export function useGetSessionUpdatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>(GetSessionUpdatedDocument, options);
+          return Apollo.useSuspenseQuery<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables>(GetSessionUpdatesDocument, options);
         }
-export type GetSessionUpdatedQueryHookResult = ReturnType<typeof useGetSessionUpdatedQuery>;
-export type GetSessionUpdatedLazyQueryHookResult = ReturnType<typeof useGetSessionUpdatedLazyQuery>;
-export type GetSessionUpdatedSuspenseQueryHookResult = ReturnType<typeof useGetSessionUpdatedSuspenseQuery>;
-export type GetSessionUpdatedQueryResult = Apollo.QueryResult<types.GetSessionUpdatedQuery, types.GetSessionUpdatedQueryVariables>;
+export type GetSessionUpdatesQueryHookResult = ReturnType<typeof useGetSessionUpdatesQuery>;
+export type GetSessionUpdatesLazyQueryHookResult = ReturnType<typeof useGetSessionUpdatesLazyQuery>;
+export type GetSessionUpdatesSuspenseQueryHookResult = ReturnType<typeof useGetSessionUpdatesSuspenseQuery>;
+export type GetSessionUpdatesQueryResult = Apollo.QueryResult<types.GetSessionUpdatesQuery, types.GetSessionUpdatesQueryVariables>;
 export const GetSessionShareDocument = gql`
     query getSessionShare($joinId: ID!) {
   sessionShare(joinId: $joinId) {

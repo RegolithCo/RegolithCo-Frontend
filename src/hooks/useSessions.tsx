@@ -19,7 +19,7 @@ import {
   useMarkCrewSharePaidMutation,
   useUpdateSessionUserCaptainMutation,
   useUpdatePendingUserCaptainMutation,
-  useGetSessionUpdatedQuery,
+  GetSessionQueryResult,
 } from '../schema'
 import {
   CrewShare,
@@ -42,7 +42,6 @@ import {
   Session,
   SessionInput,
   SessionSettings,
-  SessionStateEnum,
   SessionSystemDefaults,
   SessionUser,
   SessionUserInput,
@@ -58,8 +57,8 @@ import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
 import { useLogin } from './useOAuth2'
 import log from 'loglevel'
-import { usePageVisibility } from './usePageVisibility'
 import { Reference, StoreObject } from '@apollo/client'
+import { useSessionPolling } from './useSessionPolling'
 
 type useSessionsReturn = {
   session?: Session
@@ -89,8 +88,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const [sessionError, setSessionError] = React.useState<ErrorCode>()
-  const [lastUpdated, setLastUpdated] = React.useState<number>(0)
-  const isPageVisible = usePageVisibility()
 
   const sessionUserQry = useGetSessionUserQuery({
     variables: {
@@ -98,53 +95,18 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     skip: !sessionId,
   })
+  useSessionPolling(sessionId, sessionUserQry?.data)
 
   const sessionQry = useGetSessionQuery({
     variables: {
       sessionId: sessionId as string,
     },
+    fetchPolicy: 'cache-only',
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
-  })
-
-  // This is the lightweight query that we use to update the session
-  // It should only contain: sesisoniD, timestamps for updatedAt and createdAt and the state
-  const sessionUpdatedQry = useGetSessionUpdatedQuery({
-    variables: {
-      sessionId: sessionId as string,
+    onCompleted: (data) => {
+      log.debug('MARZIPAN: FULL sessionUserQry.onCompleted', data)
     },
-    fetchPolicy: 'no-cache', // This has got to be fresh every time
-    skip: !sessionId,
   })
-
-  React.useEffect(() => {
-    if (!sessionUpdatedQry.data?.session?.updatedAt) return
-    const newUpdatedAt = sessionUpdatedQry.data?.session?.updatedAt
-    const needUpdate = newUpdatedAt !== lastUpdated
-    // If the updated date is newer than the session date then we need to update the full sessionQry
-    if (needUpdate) sessionQry.refetch()
-    setLastUpdated(newUpdatedAt)
-  }, [sessionUpdatedQry.data?.session?.updatedAt])
-
-  // TODO: This is our sloppy poll function we need to update to lower data costs
-  React.useEffect(() => {
-    // If we have a real session, poll every 10 seconds
-    if (isPageVisible && sessionUpdatedQry.data?.session) {
-      // If the last updated date is greater than 24 hours or if the state is not active, slow your poll
-      const oneDayMs = 86400000 // 24 hours in milliseconds
-      const pollTime =
-        Date.now() - oneDayMs > sessionUpdatedQry.data?.session.updatedAt ||
-        sessionUpdatedQry.data?.session.state !== SessionStateEnum.Active
-          ? 60000
-          : 10000 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
-      sessionUpdatedQry.startPolling(pollTime)
-    } else {
-      sessionUpdatedQry.stopPolling()
-    }
-    // Also stop all polling when when this component is unmounted
-    return () => {
-      sessionQry.stopPolling()
-    }
-  }, [sessionQry.data, isPageVisible])
 
   React.useEffect(() => {
     if (sessionQry.error) {
@@ -320,14 +282,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
   })
 
-  const queries = [
-    sessionQry,
-    sessionUserQry,
-    sessionActiveMemberQry,
-    sessionWorkOrdersQry,
-    sessionScoutingQry,
-    sessionUpdatedQry,
-  ]
+  const queries = [sessionQry, sessionUserQry, sessionActiveMemberQry, sessionWorkOrdersQry, sessionScoutingQry]
   const mutations = [
     updateSessionMutation,
     addSessionMentionsMutation,

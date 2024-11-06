@@ -251,6 +251,9 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
               },
             },
           },
+          // THis is not EVER cached so we don't need to worry about it
+          // SessionUpdate: {
+          // },
           // Some fields we don't normalize
           SessionSettings: {
             keyFields: false,
