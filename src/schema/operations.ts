@@ -2202,7 +2202,6 @@ export const GetSessionUpdatesDocument = gql`
     sessionId
     eventName
     eventDate
-    dataId
     data {
       ... on WorkOrderInterface {
         ...WorkOrderBaseFragment

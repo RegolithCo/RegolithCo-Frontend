@@ -8,6 +8,7 @@ import {
   NormalizedCacheObject,
   split,
   ApolloError,
+  defaultDataIdFromObject,
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
@@ -127,6 +128,24 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           WorkOrderInterface: ['VehicleMiningOrder', 'OtherOrder', 'SalvageOrder', 'ShipMiningOrder'],
           ScoutingFindInterface: ['ShipClusterFind', 'VehicleClusterFind', 'SalvageFind'],
           UserInterface: ['User', 'UserProfile'],
+        },
+        dataIdFromObject: (object) => {
+          const newId = defaultDataIdFromObject(object)
+          // switch (object.__typename) {
+          //   case 'VehicleMiningOrder':
+          //   case 'OtherOrder':
+          //   case 'SalvageOrder':
+          //   case 'ShipMiningOrder':
+          //     newId = defaultDataIdFromObject({ ...object, __typename: 'WorkOrderInterface' })
+          //     break
+          //   case 'ShipClusterFind':
+          //   case 'VehicleClusterFind':
+          //   case 'SalvageFind':
+          //     newId = defaultDataIdFromObject({ ...object, __typename: 'ScoutingFindInterface' })
+          //     break
+          // }
+          log.debug('MARZIPAN: ID TESTER', { newId, object })
+          return newId
         },
         typePolicies: {
           Query: {

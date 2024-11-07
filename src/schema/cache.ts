@@ -361,10 +361,9 @@ export type SessionSummaryWorkOrderFieldPolicy = {
 	paidShares?: FieldPolicy<any> | FieldReadFunction<any>,
 	unpaidShares?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionUpdateKeySpecifier = ('data' | 'dataId' | 'eventDate' | 'eventName' | 'sessionId' | SessionUpdateKeySpecifier)[];
+export type SessionUpdateKeySpecifier = ('data' | 'eventDate' | 'eventName' | 'sessionId' | SessionUpdateKeySpecifier)[];
 export type SessionUpdateFieldPolicy = {
 	data?: FieldPolicy<any> | FieldReadFunction<any>,
-	dataId?: FieldPolicy<any> | FieldReadFunction<any>,
 	eventDate?: FieldPolicy<any> | FieldReadFunction<any>,
 	eventName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>

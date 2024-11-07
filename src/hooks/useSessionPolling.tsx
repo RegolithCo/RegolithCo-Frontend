@@ -3,7 +3,6 @@ import {
   CrewShareFragmentFragmentDoc,
   GetSessionUserQueryResult,
   ScoutingFindFragmentFragmentDoc,
-  SessionBaseFragmentFragmentDoc,
   SessionFragmentFragmentDoc,
   SessionUserFragmentFragmentDoc,
   useGetSessionQuery,
@@ -85,24 +84,29 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
 
   let fragment
   let stateName
+  let __typename
   switch (dataType) {
     case 'Session':
       fragment = SessionFragmentFragmentDoc
       stateName = 'sessionState'
+      __typename = 'Session'
       break
     case 'SessionUser':
       fragment = SessionUserFragmentFragmentDoc
       stateName = 'sessionUserState'
+      __typename = 'SessionUser'
       break
     case 'CrewShare':
       fragment = CrewShareFragmentFragmentDoc
       stateName = 'crewShareState'
+      __typename = 'CrewShare'
       break
     case 'SalvageFind':
     case 'ShipClusterFind':
     case 'VehicleClusterFind':
       fragment = ScoutingFindFragmentFragmentDoc
       stateName = 'scoutingState'
+      __typename = 'ScoutingFindInterface'
       break
     case 'VehicleMiningOrder':
     case 'OtherOrder':
@@ -110,12 +114,13 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
     case 'ShipMiningOrder':
       fragment = WorkOrderFragmentFragmentDoc
       stateName = 'workOrderState'
+      __typename = 'WorkOrderInterface'
       break
     default:
       return
   }
   const fragmentName = fragment.definitions[0].name.value
-  const incomingDataId = client.cache.identify(data)
+  const incomingDataId = client.cache.identify({ ...data, __typename })
   log.debug('MARZIPAN: incomingDataId', incomingDataId)
   const existingItem = client.cache.readFragment({
     id: incomingDataId,
@@ -145,7 +150,9 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
         },
       })
     }
-  } else {
+  }
+  // If an item is CREATED then we need to add it to the session
+  else if (eventName !== EventNameEnum.Remove) {
     log.debug('MARZIPAN: Item not found in cache')
     const existingSession = client.cache.readFragment({
       id: sessionId,
