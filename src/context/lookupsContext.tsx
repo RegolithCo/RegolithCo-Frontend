@@ -13,6 +13,8 @@ export class ClientDataStore implements DataStore {
   public loading = false
   public ready = false
   public error: string | null = null
+  public isLocal = false
+  public localPath?: string | undefined
   private lookups: GetPublicLookupsQuery['lookups'] | undefined
 
   getLookup<K extends keyof Lookups>(key: K): Lookups[K] {
