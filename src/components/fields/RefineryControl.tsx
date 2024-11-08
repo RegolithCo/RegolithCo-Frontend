@@ -7,6 +7,7 @@ export interface RefineryControlProps {
   value?: RefineryEnum
   onChange: (refinery?: RefineryEnum) => void
   settingsScreen?: boolean
+  filterToSystem?: string
   disabled?: boolean
   allowNone?: boolean
 }

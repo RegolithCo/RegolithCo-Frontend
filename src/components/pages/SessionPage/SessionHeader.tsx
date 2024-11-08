@@ -4,7 +4,6 @@ import {
   Session,
   SessionSettings,
   getLocationName,
-  getPlanetName,
   defaultSessionName,
   getActivityName,
   smartDate,
@@ -31,8 +30,8 @@ export const sessionSubtitleArr = (session: Session, protect: boolean): string[]
   const sessionSettings: Partial<SessionSettings> = session.sessionSettings || {}
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
-  if (sessionSettings.gravityWell)
-    subtitleArr.push(protect ? 'UNDISCLOSED' : getPlanetName(sessionSettings.gravityWell))
+  // if (sessionSettings.gravityWell)
+  //   subtitleArr.push(protect ? 'UNDISCLOSED' : getPlanetName(sessionSettings.gravityWell))
   if (sessionSettings.location) subtitleArr.push(protect ? 'UNDISCLOSED' : getLocationName(sessionSettings.location))
   return subtitleArr
 }

@@ -31,8 +31,6 @@ import {
   destructureSettings,
   LocationEnum,
   getLocationName,
-  PlanetEnum,
-  getPlanetName,
   Session,
   SessionInput,
   SessionSettings,
@@ -136,11 +134,11 @@ const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<The
   },
 })
 
-const planetOptions: { label: string; id: PlanetEnum }[] = Object.values(PlanetEnum).map((value) => ({
-  label: getPlanetName(value),
-  id: value,
-}))
-planetOptions.sort((a, b) => a.label.localeCompare(b.label))
+// const planetOptions: { label: string; id: PlanetEnum }[] = Object.values(PlanetEnum).map((value) => ({
+//   label: getPlanetName(value),
+//   id: value,
+// }))
+// planetOptions.sort((a, b) => a.label.localeCompare(b.label))
 
 const locationTypeValues: LocationEnum[] = [
   LocationEnum.Space,
@@ -333,7 +331,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     planetValue="test"
                   />
                   <Stack direction={mediumUp ? 'row' : 'column'} spacing={2} sx={{ mb: 2 }}>
-                    <Autocomplete
+                    {/* <Autocomplete
                       id="combo-box-demo"
                       options={planetOptions}
                       fullWidth
@@ -351,7 +349,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                         })
                       }}
                       renderInput={(params) => <TextField {...params} label="Gravity Well" />}
-                    />
+                    /> */}
 
                     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
                       <InputLabel id="gwell">Location Type</InputLabel>
