@@ -11,7 +11,7 @@ import {
 } from '../schema'
 import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
-import { EventNameEnum, Session, SessionStateEnum, WorkOrder } from '@regolithco/common'
+import { EventNameEnum, Session, SessionStateEnum } from '@regolithco/common'
 import { ApolloClient, useApolloClient } from '@apollo/client'
 
 export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUserQueryResult['data']) => {
@@ -84,29 +84,25 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
 
   let fragment
   let stateName
-  let __typename
+  const __typename = dataType
   switch (dataType) {
     case 'Session':
       fragment = SessionFragmentFragmentDoc
       stateName = 'sessionState'
-      __typename = 'Session'
       break
     case 'SessionUser':
       fragment = SessionUserFragmentFragmentDoc
       stateName = 'sessionUserState'
-      __typename = 'SessionUser'
       break
     case 'CrewShare':
       fragment = CrewShareFragmentFragmentDoc
       stateName = 'crewShareState'
-      __typename = 'CrewShare'
       break
     case 'SalvageFind':
     case 'ShipClusterFind':
     case 'VehicleClusterFind':
       fragment = ScoutingFindFragmentFragmentDoc
       stateName = 'scoutingState'
-      __typename = 'ScoutingFindInterface'
       break
     case 'VehicleMiningOrder':
     case 'OtherOrder':
@@ -114,13 +110,13 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
     case 'ShipMiningOrder':
       fragment = WorkOrderFragmentFragmentDoc
       stateName = 'workOrderState'
-      __typename = 'WorkOrderInterface'
       break
     default:
       return
   }
   const fragmentName = fragment.definitions[0].name.value
   const incomingDataId = client.cache.identify({ ...data, __typename })
+
   log.debug('MARZIPAN: incomingDataId', incomingDataId)
   const existingItem = client.cache.readFragment({
     id: incomingDataId,
@@ -153,79 +149,111 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
     }
   }
   // If an item is CREATED then we need to add it to the session
-  else if (eventName !== EventNameEnum.Remove) {
-    log.debug('MARZIPAN: Item not found in cache')
-    const existingSession = client.cache.readFragment({
-      id: sessionId,
-      fragment: SessionFragmentFragmentDoc,
-      fragmentName: 'SessionFragment',
-    }) as Session
-    if (!existingSession) {
-      log.debug('MARZIPAN: Session not found in cache')
-      return
-    }
-    log.debug('MARZIPAN: Adding find to session')
+  // We should also check that the cached item is added to the session object
+  if (eventName !== EventNameEnum.Remove) {
+    console.debug('Item not found in cache')
     let fields = {}
-    switch (dataType) {
-      case 'Session':
-        fields = Object.entries(data).reduce((acc, [key, value]) => {
-          if (key === '__typename') return acc
-          acc[key] = value
-          return acc
-        }, {})
-        break
-      case 'SessionUser':
-        fields['activeMemberIds'] = (existingArray: Session['activeMemberIds']) => [
-          ...(existingArray || []),
-          data.userId,
-        ]
-        fields['activeMembers'] = (existingObj: Session['activeMembers']) => ({
-          ...existingObj,
-          items: [...(existingObj?.items || []), data],
-        })
-        break
-      case 'CrewShare':
-        fields['workOrders'] = (existingArray: WorkOrder[] = []) => {
-          return existingArray.map((order) => {
-            if (order.orderId === data.orderId) {
-              return {
-                ...order,
-                crewShares: [...(order.crewShares || []), data],
-              }
-            } else return order
-          })
+    let needsUpdate = false
+    if (dataType !== 'CrewShare') {
+      switch (dataType) {
+        case 'Session':
+          fields = Object.entries(data).reduce((acc, [key, value]) => {
+            if (key === '__typename') return acc
+            acc[key] = value
+            return acc
+          }, {})
+          needsUpdate = true
+          break
+        case 'SessionUser':
+          fields['activeMemberIds'] = (existingArray: Session['activeMemberIds']) => {
+            if (existingArray?.includes(data.userId)) return existingArray
+            console.debug('Adding userId to activeMemberIds', data)
+            return [...(existingArray || []), data.userId]
+          }
+          fields['activeMembers'] = (existingObj) => {
+            if (existingObj?.items.some((item) => item.__ref === incomingDataId)) return existingObj
+            console.debug('Adding sessionUser to session', data)
+            return {
+              ...existingObj,
+              items: [...(existingObj?.items || []), { __ref: incomingDataId }],
+            }
+          }
+          needsUpdate = true
+          break
+        case 'SalvageFind':
+        case 'ShipClusterFind':
+        case 'VehicleClusterFind':
+          fields['scoutingFinds'] = (existingObj) => {
+            if (existingObj?.items.some((item) => item.__ref === incomingDataId)) return existingObj
+            console.debug('Adding ScoutingFind to Session', data)
+            return {
+              ...existingObj,
+              items: [...(existingObj?.items || []), { __ref: incomingDataId }],
+            }
+          }
+          needsUpdate = true
+          break
+        case 'VehicleMiningOrder':
+        case 'OtherOrder':
+        case 'SalvageOrder':
+        case 'ShipMiningOrder':
+          fields['workOrders'] = (existingObj) => {
+            if (existingObj?.items.some((item) => item.__ref === incomingDataId)) return existingObj
+            console.debug('Adding WorkOrder to Session', data)
+            return {
+              ...existingObj,
+              items: [...(existingObj?.items || []), { __ref: incomingDataId }],
+            }
+          }
+          needsUpdate = true
+          break
+        default:
+          return
+      }
+      if (needsUpdate) {
+        const sessionCacheId = client.cache.identify({ __typename: 'Session', sessionId })
+        if (!sessionCacheId) {
+          log.error('MARZIPAN: sessionCacheId not found')
+          return
         }
-        break
-      case 'SalvageFind':
-      case 'ShipClusterFind':
-      case 'VehicleClusterFind':
-        fields['scoutingFinds'] = (existingArray = []) => [...existingArray, data]
-        break
-      case 'VehicleMiningOrder':
-      case 'OtherOrder':
-      case 'SalvageOrder':
-      case 'ShipMiningOrder':
-        fields['workOrders'] = (existingArray = []) => [...existingArray, data]
-        break
-      default:
-        return
+        client.cache.modify({
+          id: sessionCacheId,
+          fields,
+        })
+      }
     }
-    client.cache.modify({
-      id: incomingDataId,
-      fields: {
-        activeUserids: (existingArray = []) => {
-          return existingArray
+    // Crewsahres have to be handled different;y because they modify the workOrder object, not the session Object
+    else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sessFrag = SessionFragmentFragmentDoc as any
+      // First get the session
+      const sessionObj = client.cache.readFragment({
+        id: client.cache.identify({ __typename: 'Session', sessionId }),
+        fragment: sessFrag,
+        fragmentName: sessFrag.definitions[0].name.value,
+      }) as Session
+      if (!sessionObj) return
+      // NOTE: This is a little string-matchy and therefore kind of fragile.
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const foundCachedOrder: any = sessionObj['workOrders']?.items.find((order) => order.orderId === data.orderId)
+      if (!foundCachedOrder) return
+
+      // We have the exact apolloId. Load the object from foundOrder.__ref
+      if (foundCachedOrder.crewShares?.some((item) => item.payeeScName === data.payeeScName)) return
+      console.debug('Adding CrewShare to Session', data)
+      // Add the crewShare to the workOrder
+      client.cache.modify({
+        id: foundCachedOrder.__ref,
+        fields: {
+          crewShares: (existingObj) => {
+            return {
+              ...existingObj,
+              items: [...(existingObj?.items || []), data],
+            }
+          },
         },
-        activeusers: (existingArray = []) => {
-          return existingArray
-        },
-        workOrders: (existingArray = []) => {
-          return existingArray
-        },
-        scoutingFinds: (existingArray = []) => {
-          return [...existingArray, data]
-        },
-      },
-    })
+      })
+    }
   }
 }
