@@ -2,20 +2,19 @@ import React from 'react'
 import { DeleteForever } from '@mui/icons-material'
 import { useSessionContextMenu } from '../../modals/SessionContextMenu'
 import { useWorkOrders } from '../../../hooks/useWorkOrder'
-import { makeHumanIds } from '@regolithco/common'
+import { makeHumanIds, WorkOrder } from '@regolithco/common'
 import { AppContext } from '../../../context/app.context'
 import { OrderIcon } from './OrderIcon'
 
 export const useWorkOrderRowContextMenu = (
-  sessionId: string,
-  orderId: string,
+  order: WorkOrder,
   isPaid: boolean,
   allowEdit: boolean,
-  onGotoWorkOrder: (sessionId: string, orderId: string) => void,
-  onOpenDeleteConfirm: () => void
+  onGotoWorkOrder?: (sessionId: string, orderId: string) => void,
+  onOpenDeleteConfirm?: () => void
 ) => {
   const { getSafeName } = React.useContext(AppContext)
-  const { deleteWorkOrder, updateWorkOrder, workOrder } = useWorkOrders(sessionId, orderId)
+  const { deleteWorkOrder, updateWorkOrder, workOrder } = useWorkOrders(order.sessionId, order.orderId)
 
   const { contextMenuNode, handleContextMenu } = useSessionContextMenu(() =>
     workOrder
@@ -53,10 +52,10 @@ export const useWorkOrderRowContextMenu = (
             },
             {
               label: 'Delete work order',
-              disabled: !allowEdit,
+              disabled: !allowEdit || !onOpenDeleteConfirm,
               color: 'error',
               icon: <DeleteForever fontSize="small" color="error" />,
-              onClick: () => onOpenDeleteConfirm(),
+              onClick: onOpenDeleteConfirm ? () => onOpenDeleteConfirm() : undefined,
             },
           ],
         }

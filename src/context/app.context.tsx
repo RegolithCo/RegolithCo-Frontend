@@ -1,11 +1,14 @@
-import { obfuscateUserId } from '@regolithco/common'
+import { obfuscateUserId, UserProfile } from '@regolithco/common'
 import React, { createContext, PropsWithChildren } from 'react'
 import log from 'loglevel'
+import { useLogin } from '../hooks/useOAuth2'
+import { useGetUserProfileQuery } from '../schema'
 
 export interface AppContextType {
   hideNames: boolean
   setHideNames: (hideNames: boolean) => void
   getSafeName: (scName?: string) => string
+  myUserProfile?: UserProfile
 }
 
 const notAvailable =
@@ -25,6 +28,12 @@ export const AppContext = createContext<AppContextType>(appContextDefault)
 
 export const AppContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const [hideNames, setHideNames] = React.useState(false)
+  const ctx = useLogin()
+  const userProfileQry = useGetUserProfileQuery({
+    // returnPartialData: true,
+  })
+
+  const myUserProfile = userProfileQry.data?.profile as UserProfile
 
   const getSafeName = React.useCallback(
     (scName?: string) => {
@@ -40,6 +49,7 @@ export const AppContextWrapper: React.FC<PropsWithChildren> = ({ children }) => 
         hideNames,
         setHideNames,
         getSafeName,
+        myUserProfile,
       }}
     >
       {children}

@@ -33,14 +33,13 @@ import { DeleteWorkOrderModal } from '../../modals/DeleteWorkOrderModal'
 import { RefineryIcon } from '../../fields/RefineryIcon'
 import { useWorkOrders } from '../../../hooks/useWorkOrder'
 import { OrderIcon } from './OrderIcon'
+import { useWorkOrderRowContextMenu } from './useWorkOrderRowContextMenu'
 
 export interface WorkOrderTableRowProps {
   workOrder: WorkOrder
   isShare?: boolean
-  onRowClick?: (sessionId: string, orderId: string) => void
-  contextMenuNode?: React.ReactNode
-  handleContextMenu?: (e: React.MouseEvent<HTMLTableRowElement>) => void
   disableContextMenu?: boolean
+  onRowClick?: (sessionId: string, orderId: string) => void
   summary: WorkOrderSummary
   columns?: WorkOrderTableColsEnum[]
 }
@@ -66,10 +65,8 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
   isShare,
   summary,
   columns,
-  onRowClick,
-  contextMenuNode,
   disableContextMenu,
-  handleContextMenu,
+  onRowClick,
 }) => {
   const theme = useTheme()
   const { deleteWorkOrder, updateWorkOrder } = useWorkOrders(workOrder.sessionId, workOrder.orderId)
@@ -79,16 +76,28 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
   // myUserProfile can get this from userQry
   const { session, myUserProfile } = React.useContext(SessionContext)
 
+  // TODO: How do we get this???
+  const amISessionOwner = myUserProfile && session?.ownerId === myUserProfile.userId
+  const canEdit =
+    myUserProfile?.userId === workOrder?.ownerId || amISessionOwner || workOrder.sellerscName === myUserProfile?.scName
+
   const { orderType, crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
-  const amISessionOwner = session?.ownerId === myUserProfile.userId
 
   // let stateIcon: React.ReactNode
   const volumeVal = Object.entries(summary.oreSummary).reduce((acc, [, { collected }]) => acc + collected / 100, 0)
 
-  const isPaid = crewShares?.every(({ state }) => state === true)
+  const isPaid = !!crewShares?.every(({ state }) => state === true)
   const numPaid = crewShares?.filter(({ state }) => state === true).length || 0
   const numCrewShares = (workOrder.crewShares || []).length
+
+  const { handleContextMenu, contextMenuNode } = useWorkOrderRowContextMenu(
+    workOrder,
+    isPaid,
+    !!canEdit,
+    onRowClick,
+    () => setDeleteConfirmModal(true)
+  )
 
   const allowEdit =
     myUserProfile?.userId === workOrder?.ownerId || amISessionOwner || workOrder.sellerscName === myUserProfile?.scName
@@ -107,13 +116,13 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
 
   const workOrderGrossShareAmt = isFailed ? 0 : summary.grossValue || 0
   const workOrderNetShareAmt = summary.shareAmount
-  const hasHover = handleContextMenu || onRowClick
+  const hasHover = canEdit || onRowClick
   return (
     <TableRow
       key={workOrder.orderId}
       onContextMenu={handleContextMenu}
       sx={{
-        cursor: handleContextMenu ? 'context-menu' : onRowClick ? 'pointer' : 'default',
+        cursor: canEdit ? 'context-menu' : onRowClick ? 'pointer' : 'default',
         '&:hover': hasHover
           ? {
               backgroundColor: alpha(theme.palette.primary.main, 0.1),
@@ -129,7 +138,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
         },
       }}
     >
-      {handleContextMenu && contextMenuNode}
+      {canEdit && contextMenuNode}
       {(!columns || columns.includes(WorkOrderTableColsEnum.Session)) && (
         <TableCell
           align="left"

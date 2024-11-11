@@ -27,7 +27,6 @@ export interface WorkOrderTableProps {
   onRowClick?: (sessionId: string, orderId: string) => void
   isShare?: boolean
   sessionActive?: boolean
-  disableContextMenu?: boolean
   columns?: WorkOrderTableColsEnum[]
 }
 
@@ -71,7 +70,6 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
   columns,
   onRowClick,
   sessionActive,
-  disableContextMenu,
 }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme, Boolean(sessionActive || isShare))
@@ -182,7 +180,6 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
                 key={`wo-${workOrder.orderId}`}
                 workOrder={workOrder}
                 onRowClick={onRowClick}
-                disableContextMenu={disableContextMenu}
                 isShare={isShare}
                 summary={summaries[workOrder.orderId]}
                 columns={columns}

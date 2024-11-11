@@ -86,7 +86,9 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 
   // // NO HOOKS BELOW HERE
 
-  const planetName = cityStores.planet ? planetLookups['ST'][cityStores.planet].name : ''
+  const planetName = cityStores.planet
+    ? planetLookups['ST'] && planetLookups['ST'][cityStores.planet] && planetLookups['ST'][cityStores.planet].name
+    : ''
   const satellite = cityStores.satellite
     ? planetLookups['ST'][cityStores.planet].satellites[cityStores.satellite]
     : undefined

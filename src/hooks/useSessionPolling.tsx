@@ -130,8 +130,9 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
   log.debug('MARZIPAN: existingItem', incomingDataId)
 
   if (existingItem) {
+    // We don't need to update if the item is already up to date. This should
+    // prevent us from committing and re-rendering changes WE already made
     if (existingItem.updatedAt >= data.updatedAt) {
-      // log.debug('MARZIPAN: Item is up to date')
       return
     }
     log.debug('MARZIPAN: Updating item in cache', eventName)
