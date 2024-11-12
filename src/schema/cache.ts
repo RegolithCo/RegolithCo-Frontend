@@ -169,10 +169,12 @@ export type PaginatedWorkOrdersFieldPolicy = {
 	items?: FieldPolicy<any> | FieldReadFunction<any>,
 	nextToken?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PendingUserKeySpecifier = ('captainId' | 'scName' | PendingUserKeySpecifier)[];
+export type PendingUserKeySpecifier = ('captainId' | 'scName' | 'sessionRole' | 'shipRole' | PendingUserKeySpecifier)[];
 export type PendingUserFieldPolicy = {
 	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
-	scName?: FieldPolicy<any> | FieldReadFunction<any>
+	scName?: FieldPolicy<any> | FieldReadFunction<any>,
+	sessionRole?: FieldPolicy<any> | FieldReadFunction<any>,
+	shipRole?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type QueryKeySpecifier = ('captureRefineryOrder' | 'captureShipRockScan' | 'crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
@@ -368,7 +370,7 @@ export type SessionUpdateFieldPolicy = {
 	eventName?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionUserKeySpecifier = ('captainId' | 'createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'sessionId' | 'shipName' | 'state' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
+export type SessionUserKeySpecifier = ('captainId' | 'createdAt' | 'isPilot' | 'loadout' | 'owner' | 'ownerId' | 'sessionId' | 'sessionRole' | 'shipName' | 'shipRole' | 'state' | 'updatedAt' | 'vehicleCode' | SessionUserKeySpecifier)[];
 export type SessionUserFieldPolicy = {
 	captainId?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -377,7 +379,9 @@ export type SessionUserFieldPolicy = {
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	ownerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
+	sessionRole?: FieldPolicy<any> | FieldReadFunction<any>,
 	shipName?: FieldPolicy<any> | FieldReadFunction<any>,
+	shipRole?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicleCode?: FieldPolicy<any> | FieldReadFunction<any>

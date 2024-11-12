@@ -77,6 +77,8 @@ export const SessionUsersFragmentFragmentDoc = gql`
     items {
       ownerId
       sessionId
+      sessionRole
+      shipRole
       owner {
         userId
         scName
@@ -220,6 +222,8 @@ export const SessionBaseFragmentFragmentDoc = gql`
   mentionedUsers {
     scName
     captainId
+    sessionRole
+    shipRole
   }
   ...SessionSummaryFragment
 }
@@ -252,6 +256,8 @@ export const SessionUserBaseFragmentFragmentDoc = gql`
     fragment SessionUserBaseFragment on SessionUser {
   sessionId
   ownerId
+  sessionRole
+  shipRole
   owner {
     ...UserFragment
   }

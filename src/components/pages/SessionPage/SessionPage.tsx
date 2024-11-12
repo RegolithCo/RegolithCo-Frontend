@@ -3,7 +3,7 @@ import * as React from 'react'
 import { SessionStateEnum } from '@regolithco/common'
 import { Box, Button, Drawer, Stack, Tab, Tabs, Theme, Tooltip, useMediaQuery, useTheme } from '@mui/material'
 import { SxProps } from '@mui/system'
-import { ArrowBack, Dashboard, Group, Logout, Settings, Summarize } from '@mui/icons-material'
+import { AdminPanelSettings, ArrowBack, Dashboard, Group, Logout, Settings, Summarize } from '@mui/icons-material'
 import { SessionHeader } from './SessionHeader'
 import { fontFamilies } from '../../../theme'
 import { TabDashboard } from './TabDashboard'
@@ -14,6 +14,7 @@ import { TabUsers } from './TabUsers'
 import { TabSummary } from './TabSummary'
 import { DialogEnum, SessionContext, SessionTabs } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
+import { RolesTab } from './TabRoles'
 
 export interface SessionPageProps {
   noProps?: string
@@ -146,6 +147,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               aria-label="basic tabs example"
             >
               <Tab label="Activity" icon={<Dashboard />} value={SessionTabs.DASHBOARD} iconPosition="start" />
+              <Tab label="Roles" icon={<AdminPanelSettings />} value={SessionTabs.ROLES} iconPosition="start" />
               {/* <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} /> */}
               {/* <Tab label="Scouting" value={SessionTabs.SCOUTING} /> */}
               <Tab label="Summary" icon={<Summarize />} value={SessionTabs.SUMMARY} iconPosition="start" />
@@ -165,6 +167,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
         >
           {activeTab === SessionTabs.USERS && <TabUsers />}
           {activeTab === SessionTabs.DASHBOARD && <TabDashboard />}
+          {activeTab === SessionTabs.ROLES && <RolesTab />}
           {/* {activeTab === SessionTabs.WORK_ORDERS && <TabWorkOrders />} */}
           {/* {activeTab === SessionTabs.SCOUTING && <TabScouting />} */}
           {activeTab === SessionTabs.SUMMARY && <TabSummary />}
@@ -211,6 +214,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           >
             <Tab label="Users" value={SessionTabs.USERS} icon={<Group />} />
             <Tab label="Dash" value={SessionTabs.DASHBOARD} icon={<Dashboard />} />
+            <Tab label="Roles" value={SessionTabs.ROLES} icon={<AdminPanelSettings />} />
             {/* <Tab label="Orders" value={SessionTabs.WORK_ORDERS} icon={<TableView />} />
             <Tab label="Scout" value={SessionTabs.SCOUTING} icon={<TravelExplore />} /> */}
             <Tab label="Summary" value={SessionTabs.SUMMARY} icon={<Summarize />} />

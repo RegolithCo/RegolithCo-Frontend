@@ -46,6 +46,7 @@ export const SessionTabs = {
   SCOUTING: 'scout',
   SUMMARY: 'summary',
   SETTINGS: 'settings',
+  ROLES: 'roles',
 } as const
 export type SessionTabs = ObjectValues<typeof SessionTabs>
 
