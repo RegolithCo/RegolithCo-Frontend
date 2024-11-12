@@ -95,7 +95,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     skip: !sessionId,
   })
-  useSessionPolling(sessionId, sessionUserQry?.data)
+  const { sessionLoading } = useSessionPolling(sessionId, sessionUserQry?.data)
 
   const sessionQry = useGetSessionQuery({
     variables: {
@@ -298,7 +298,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
 
   useGQLErrors(queries, mutations)
 
-  const loading = queries.some((q) => q.loading)
+  const loading = queries.some((q) => q.loading) || sessionLoading
   const mutating = mutations.some((m) => m[1].loading)
 
   const addSessionMentions = (scNames: string[]) => {

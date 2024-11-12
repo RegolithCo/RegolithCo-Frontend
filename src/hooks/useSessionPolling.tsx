@@ -11,8 +11,8 @@ import {
 } from '../schema'
 import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
-import { EventNameEnum, Session, SessionStateEnum } from '@regolithco/common'
-import { ApolloClient, useApolloClient } from '@apollo/client'
+import { EventNameEnum, ScoutingFind, Session, SessionStateEnum, SessionUser, WorkOrder } from '@regolithco/common'
+import { ApolloClient, Reference, useApolloClient } from '@apollo/client'
 
 export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUserQueryResult['data']) => {
   const client = useApolloClient()
@@ -75,6 +75,20 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
       sessionUpdatedQry.stopPolling()
     }
   }, [sessionQry?.data?.session, isPageVisible])
+
+  return { sessionLoading: sessionUpdatedQry.loading, sessionError: sessionUpdatedQry.error }
+}
+
+type CachedSession = Omit<Session, 'workOrders' | 'scouting' | 'activeMembers'> & {
+  workOrders: {
+    items: Reference[]
+  }
+  scouting: {
+    items: Reference[]
+  }
+  activeMembers: {
+    items: Reference[]
+  }
 }
 
 const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate) => {
@@ -82,27 +96,47 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
   const dataType = data?.__typename
   if (!dataType || !session) return
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sessFrag = SessionFragmentFragmentDoc as any
+
+  // First get the session from the cache so we can figure out if the object exists inside it yet
+  const sessionObj = client.cache.readFragment<Session>({
+    id: client.cache.identify({ __typename: 'Session', sessionId }),
+    fragment: sessFrag,
+    fragmentName: sessFrag.definitions[0].name.value,
+  })
+  if (!sessionObj) {
+    log.error('MARZIPAN: sessionObj not found in cache. BAILING!', sessionId)
+    return
+  }
+
   let fragment
   let stateName
+  // If the item needs adding to the session. It might already be in the cache so this must be handled separately
+  let itemNeedsAdding = false
   const __typename = dataType
   switch (dataType) {
     case 'Session':
       fragment = SessionFragmentFragmentDoc
       stateName = 'sessionState'
+      itemNeedsAdding = false
       break
     case 'SessionUser':
       fragment = SessionUserFragmentFragmentDoc
       stateName = 'sessionUserState'
+      itemNeedsAdding = !sessionObj.activeMembers?.items.find((item) => item.ownerId === data.ownerId)
       break
     case 'CrewShare':
       fragment = CrewShareFragmentFragmentDoc
       stateName = 'crewShareState'
+      // NOTE: We do itemNeedsAdding below after we load the workOrder
       break
     case 'SalvageFind':
     case 'ShipClusterFind':
     case 'VehicleClusterFind':
       fragment = ScoutingFindFragmentFragmentDoc
       stateName = 'scoutingState'
+      itemNeedsAdding = !sessionObj.scouting?.items.find((item) => item.scoutingFindId === data.scoutingFindId)
       break
     case 'VehicleMiningOrder':
     case 'OtherOrder':
@@ -110,6 +144,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
     case 'ShipMiningOrder':
       fragment = WorkOrderFragmentFragmentDoc
       stateName = 'workOrderState'
+      itemNeedsAdding = !sessionObj.workOrders?.items.find((item) => item.orderId === data.orderId)
       break
     default:
       return
@@ -117,53 +152,58 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
   const fragmentName = fragment.definitions[0].name.value
   const incomingDataId = client.cache.identify({ ...data, __typename })
 
-  log.debug('MARZIPAN: incomingDataId', incomingDataId)
-  const existingItem = client.cache.readFragment({
+  const existingItem = client.cache.readFragment<Session | SessionUser | WorkOrder | ScoutingFind>({
     id: incomingDataId,
     fragment,
     fragmentName,
-  }) as Session
-  log.debug('MARZIPAN: existingItem', incomingDataId)
+  })
 
+  // NOTE: This needs to be here because we do not cache SessionPolling data. All data that is
+  // returned must be incorporated into the Cache manually
   if (existingItem) {
     // We don't need to update if the item is already up to date. This should
     // prevent us from committing and re-rendering changes WE already made
     if (existingItem.updatedAt >= data.updatedAt) {
-      return
+      return // Do nothing if the item is already up to date or the incoming item is behind
     }
-    log.debug('MARZIPAN: Updating item in cache', eventName)
     if (eventName === EventNameEnum.Remove) {
       log.debug('MARZIPAN: Deleting item from cache')
       client.cache.evict({ id: incomingDataId, fieldName: '__typename' })
-    } else {
-      client.cache.writeFragment({
-        id: incomingDataId,
-        fragment,
-        fragmentName,
-        data: {
-          ...existingItem,
-          ...data,
-          state: data[stateName] || existingItem.state,
-        },
-      })
+      return
     }
   }
+
+  log.debug('MARZIPAN: Writing item to the cache', incomingDataId)
+  client.cache.writeFragment({
+    id: incomingDataId,
+    fragment,
+    fragmentName,
+    data: {
+      ...existingItem,
+      ...data,
+      state: data[stateName],
+    },
+  })
+
   // If an item is CREATED then we need to add it to the session
   // We should also check that the cached item is added to the session object
-  if (eventName !== EventNameEnum.Remove) {
-    console.debug('Item not found in cache')
-    let fields = {}
+  if (itemNeedsAdding) {
+    console.debug('Item not found in cache: ', incomingDataId)
+    const fields = {}
     let needsUpdate = false
+
+    // SessionUser, ScoutingFind, WorkOrder get handled here
     if (dataType !== 'CrewShare') {
       switch (dataType) {
-        case 'Session':
-          fields = Object.entries(data).reduce((acc, [key, value]) => {
-            if (key === '__typename') return acc
-            acc[key] = value
-            return acc
-          }, {})
-          needsUpdate = true
-          break
+        // Session gets handled above just by updating its own cache object
+        // case 'Session':
+        //   fields = Object.entries(data).reduce((acc, [key, value]) => {
+        //     if (key === '__typename') return acc
+        //     acc[key] = () => value
+        //     return acc
+        //   }, {})
+        //   needsUpdate = true
+        //   break
         case 'SessionUser':
           fields['activeMemberIds'] = (existingArray: Session['activeMemberIds']) => {
             if (existingArray?.includes(data.userId)) return existingArray
@@ -183,8 +223,8 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
         case 'SalvageFind':
         case 'ShipClusterFind':
         case 'VehicleClusterFind':
-          fields['scoutingFinds'] = (existingObj) => {
-            if (existingObj?.items.some((item) => item.__ref === incomingDataId)) return existingObj
+          fields['scouting'] = (existingObj) => {
+            if (existingObj?.items.find((item) => item.__ref === incomingDataId)) return existingObj
             console.debug('Adding ScoutingFind to Session', data)
             return {
               ...existingObj,
@@ -208,6 +248,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
           needsUpdate = true
           break
         default:
+          log.error('MARZIPAN: Unknown dataType', dataType)
           return
       }
       if (needsUpdate) {
@@ -216,23 +257,26 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
           log.error('MARZIPAN: sessionCacheId not found')
           return
         }
-        client.cache.modify({
-          id: sessionCacheId,
-          fields,
-        })
+        try {
+          if (!sessionCacheId) {
+            log.error('MARZIPAN: sessionCacheId not found')
+            return
+          }
+          if (typeof client.cache.modify !== 'function') {
+            throw new Error('MARZIPAN: client.cache.modify is not a function')
+          }
+          client.cache.modify({
+            id: sessionCacheId,
+            fields,
+          })
+        } catch (e) {
+          log.error('MARZIPAN: Error modifying cache', e)
+        }
       }
     }
+
     // Crewsahres have to be handled different;y because they modify the workOrder object, not the session Object
     else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sessFrag = SessionFragmentFragmentDoc as any
-      // First get the session
-      const sessionObj = client.cache.readFragment({
-        id: client.cache.identify({ __typename: 'Session', sessionId }),
-        fragment: sessFrag,
-        fragmentName: sessFrag.definitions[0].name.value,
-      }) as Session
-      if (!sessionObj) return
       // NOTE: This is a little string-matchy and therefore kind of fragile.
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -242,6 +286,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
       // We have the exact apolloId. Load the object from foundOrder.__ref
       if (foundCachedOrder.crewShares?.some((item) => item.payeeScName === data.payeeScName)) return
       console.debug('Adding CrewShare to Session', data)
+
       // Add the crewShare to the workOrder
       client.cache.modify({
         id: foundCachedOrder.__ref,

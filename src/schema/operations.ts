@@ -1078,6 +1078,23 @@ export const CreateSessionDocument = gql`
   ) {
     ...SessionUpdateFragment
     activeMemberIds
+    joinId
+    mentionedUsers {
+      scName
+      captainId
+    }
+    scouting {
+      items {
+        ...ScoutingFindFragment
+      }
+      nextToken
+    }
+    workOrders {
+      items {
+        ...WorkOrderFragment
+      }
+      nextToken
+    }
     activeMembers {
       items {
         ...SessionUserFragment
@@ -1087,6 +1104,8 @@ export const CreateSessionDocument = gql`
   }
 }
     ${SessionUpdateFragmentFragmentDoc}
+${ScoutingFindFragmentFragmentDoc}
+${WorkOrderFragmentFragmentDoc}
 ${SessionUserFragmentFragmentDoc}`;
 export type CreateSessionMutationFn = Apollo.MutationFunction<types.CreateSessionMutation, types.CreateSessionMutationVariables>;
 

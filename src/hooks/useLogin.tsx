@@ -21,6 +21,7 @@ import {
   SessionUser,
   UserProfile,
   UserStateEnum,
+  StrictTypedTypePolicies,
 } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
@@ -265,7 +266,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           WorkOrderDefaults: {
             keyFields: false,
           },
-        },
+        } as StrictTypedTypePolicies,
       }),
     })
   }, [token, loginInProgress, authType])

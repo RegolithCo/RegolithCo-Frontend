@@ -106,7 +106,12 @@ export const useSessionList = (): useSessionsReturn => {
             ...newMySessions.profile,
             mySessions: {
               ...(newMySessions.profile?.mySessions || {}),
-              items: [...(newMySessions.profile?.mySessions?.items || []), data?.createSession],
+              items: [
+                ...(newMySessions.profile?.mySessions?.items || []),
+                {
+                  ...data?.createSession,
+                },
+              ],
             },
           },
         },
