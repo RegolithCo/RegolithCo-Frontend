@@ -2,13 +2,8 @@ import * as React from 'react'
 import {
   alpha,
   Box,
-  FormControl,
   FormControlLabel,
-  FormGroup,
-  FormLabel,
   List,
-  MenuItem,
-  Select,
   Stack,
   Switch,
   SxProps,
@@ -19,6 +14,7 @@ import {
   TableHead,
   TableRow,
   Theme,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
@@ -44,6 +40,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const {
     captains,
+
     crewHierarchy,
     removeSessionCrew,
     loading,
@@ -100,49 +97,11 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
     <Box sx={styles.tabContainerOuter}>
       {/* Here's our scrollbox */}
       <Box sx={styles.tabContainerInner}>
-        <Box
-          sx={{
-            border: `1px solid ${theme.palette.primary.main}`,
-            mx: 2,
-            my: 4,
-            p: 3,
-          }}
-        >
-          <FormControl component="fieldset" variant="standard">
-            <FormLabel component="legend">Session Controls</FormLabel>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={true}
-                    onChange={() => {
-                      //
-                    }}
-                    name="gilad"
-                  />
-                }
-                label="Users can self-assign session role"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={true}
-                    onChange={() => {
-                      //
-                    }}
-                    name="gilad"
-                  />
-                }
-                label="Users can self-assign ship role"
-              />
-            </FormGroup>
-          </FormControl>
-        </Box>
-        <TableContainer>
-          <Table size="small">
+        <TableContainer sx={{ maxHeight: '100%' }}>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell>
+                <TableCell width={'40%'}>
                   <Stack direction="row" spacing={1} justifyContent="space-between">
                     <FormControlLabel
                       control={
@@ -161,8 +120,12 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                     />
                   </Stack>
                 </TableCell>
-                <TableCell width={'30%'}>Session Role</TableCell>
-                <TableCell width={'30%'}>Ship Role</TableCell>
+                <TableCell width={'30%'}>
+                  <Typography variant="overline">Session Role</Typography>
+                </TableCell>
+                <TableCell width={'30%'}>
+                  <Typography variant="overline">Ship Role</Typography>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -171,6 +134,19 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                 const isPendingUser = !!(crew as PendingUser).scName
                 const isCaptain =
                   !isPendingUser && !!captains.find((su) => su.ownerId === (crew as SessionUser).ownerId)
+                const isMe = !isPendingUser && (crew as SessionUser).ownerId === mySessionUser?.ownerId
+                const iAmSessionOwner = session?.ownerId === mySessionUser?.ownerId
+                const iAmTheirCaptain = crew.captainId === mySessionUser?.ownerId
+                const canSelfAssignSessionRole = !session?.sessionSettings?.controlledSessionRole
+                const canSelfAssignShipRole = !session?.sessionSettings?.controlledShipRole
+
+                let sessionRoleDisabled = true
+                if (iAmSessionOwner) sessionRoleDisabled = false
+                else if (canSelfAssignSessionRole && isMe) sessionRoleDisabled = false
+
+                let shipRoleDisabled = true
+                if (iAmSessionOwner) shipRoleDisabled = false
+                else if (canSelfAssignShipRole && (isMe || iAmTheirCaptain)) shipRoleDisabled = false
 
                 return (
                   <TableRow
@@ -178,15 +154,16 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                       // Make the background a gradient from primary.main at 0 to transparent at 10%
                       background:
                         groupCrew && isCaptain
-                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 50%)`
+                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.5)} 0%, transparent 20%)`
                           : undefined,
                       borderTop: groupCrew && isCaptain ? `2px solid ${theme.palette.primary.main}` : undefined,
                     }}
                   >
                     <TableCell
                       padding="none"
+                      width={'40%'}
                       sx={{
-                        pl: isCrewDisplay ? 5 : 0,
+                        pl: isCrewDisplay ? 7 : 0,
                       }}
                     >
                       <List dense>
@@ -197,29 +174,19 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                         )}
                       </List>
                     </TableCell>
-                    <TableCell
-                      padding="checkbox"
-                      width={250}
-                      sx={{
-                        pl: isCrewDisplay ? 5 : 0,
-                      }}
-                    >
+                    <TableCell width={'30%'}>
                       <SessionRoleChooser
                         value=""
+                        disabled={sessionRoleDisabled}
                         onChange={(value) => {
                           // console.log('CAKE', value)
                         }}
                       />
                     </TableCell>
-                    <TableCell
-                      padding="checkbox"
-                      width={250}
-                      sx={{
-                        pl: isCrewDisplay ? 5 : 0,
-                      }}
-                    >
+                    <TableCell width={'30%'}>
                       <ShipRoleChooser
                         value=""
+                        disabled={shipRoleDisabled}
                         onChange={(value) => {
                           // console.log('CAKE', value)
                         }}
@@ -252,8 +219,6 @@ const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<The
   },
   tabContainerInner: {
     flexGrow: 1,
-    maxWidth: '700px',
-
     [theme.breakpoints.up('md')]: {
       overflowY: scroll ? 'auto' : undefined,
       overflowX: scroll ? 'hidden' : undefined,

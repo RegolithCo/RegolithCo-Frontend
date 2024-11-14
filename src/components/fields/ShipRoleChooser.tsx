@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { MenuItem, Select, Tooltip, Typography } from '@mui/material'
-import { ObjectValues, SessionInput } from '@regolithco/common'
+import { ObjectValues } from '@regolithco/common'
 import { Handyman, Inventory, RocketLaunch, Security, Support } from '@mui/icons-material'
 import { RoleChooserItem } from './SessionRoleChooser'
 
 export interface ShipRoleChooserProps {
-  value: SessionInput | ''
-  onChange: (value: SessionInput) => void
+  value: ShipRoleEnum | ''
+  disabled?: boolean
+  onChange: (value: ShipRoleEnum | null) => void
 }
 
 export const ShipRoleEnum = {
@@ -49,15 +50,32 @@ export const ShipRoleColors: Record<ShipRoleEnum, string> = {
   [ShipRoleEnum.Medic]: '#0ff',
   [ShipRoleEnum.Stevedore]: '#ccc',
 }
-export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, onChange }) => {
+export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disabled, onChange }) => {
+  if (disabled)
+    return value ? (
+      <RoleChooserItem
+        roleName={ShipRoleNames[value as ShipRoleEnum]}
+        icon={ShipRoleIcons[value as ShipRoleEnum]}
+        color={ShipRoleColors[value as ShipRoleEnum]}
+      />
+    ) : (
+      <RoleChooserItem />
+    )
   return (
     <Select
-      // value="None"
+      value={value || ''}
       size="small"
       fullWidth
       variant="outlined"
+      displayEmpty
+      disabled={disabled}
       renderValue={(value) => {
-        if (!value) return <Typography>Select a Role</Typography>
+        if (!value)
+          return (
+            <Typography variant="overline" color="text.secondary">
+              Select
+            </Typography>
+          )
         return (
           <RoleChooserItem
             roleName={ShipRoleNames[value as ShipRoleEnum]}
@@ -66,10 +84,10 @@ export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, onChang
           />
         )
       }}
-      // onChange={(e) => onChange(e.target.value as SessionInput)}
+      onChange={(e) => onChange(e.target.value ? (e.target.value as ShipRoleEnum) : null)}
     >
-      <MenuItem value="None">
-        <RoleChooserItem roleName="Select a Role" />
+      <MenuItem value="">
+        <RoleChooserItem />
       </MenuItem>
       {Object.values(ShipRoleEnum).map((role, idx) => (
         <MenuItem

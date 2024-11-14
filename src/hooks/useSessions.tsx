@@ -59,6 +59,7 @@ import { useLogin } from './useOAuth2'
 import log from 'loglevel'
 import { Reference, StoreObject } from '@apollo/client'
 import { useSessionPolling } from './useSessionPolling'
+import { SessionRoleEnum } from '../components/fields/SessionRoleChooser'
 
 type useSessionsReturn = {
   session?: Session
@@ -479,6 +480,29 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
             upsertSessionUser: {
               isPilot: typeof isPilot === 'boolean' ? isPilot : sessionUserQry.data?.sessionUser?.isPilot || true,
               state: state || sessionUserQry.data?.sessionUser?.state || SessionUserStateEnum.Unknown,
+              ...retVal,
+            },
+            __typename: 'Mutation',
+          }
+        },
+      })
+    },
+    updateSessionUserSessionRole: (userId: string, sessionRole: SessionRoleEnum | null) => {
+      upsertSessionUserMutation[0]({
+        variables: {
+          sessionId: sessionId as string,
+          workSessionUser: {
+            sessionRole,
+          },
+        },
+        optimisticResponse: () => {
+          const foundSessionUser = sessionQry.data?.session?.activeMembers?.items?.find(
+            (m) => m.ownerId === userId
+          ) as SessionUser
+          const { isPilot, ...retVal } = foundSessionUser
+          return {
+            upsertSessionUserMutation: {
+              sessionRole,
               ...retVal,
             },
             __typename: 'Mutation',

@@ -101,6 +101,8 @@ export const SessionSettingFragmentFragmentDoc = gql`
   allowUnverifiedUsers
   usersCanAddUsers
   usersCanInviteUsers
+  controlledSessionRole
+  controlledShipRole
   lockToDiscordGuild {
     iconUrl
     id

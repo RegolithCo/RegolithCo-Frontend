@@ -65,6 +65,8 @@ export function dummySession(owner: UserProfile): Session {
       // gravityWell
       // location
       lockedFields: [],
+      controlledSessionRole: false,
+      controlledShipRole: false,
       ...owner.sessionSettings,
     },
     mentionedUsers: [],

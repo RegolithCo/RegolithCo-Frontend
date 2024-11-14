@@ -27,6 +27,9 @@ export const useShipOreColors = (): SortedShipOreColors => {
       const newSorted = [...shipRowKeys].sort((a, b) => {
         const aPrice = prices[shipRowKeys.indexOf(a)]
         const bPrice = prices[shipRowKeys.indexOf(b)]
+        // Inert is always at the bottom:
+        if (a === ShipOreEnum.Inertmaterial) return 1
+        if (b === ShipOreEnum.Inertmaterial) return -1
         return bPrice - aPrice
       })
 
@@ -44,15 +47,15 @@ export const useShipOreColors = (): SortedShipOreColors => {
   }, [dataStore])
 
   return sortedShipRowKeys.map((shipOreKey, rowIdx) => {
-    let fgc = fgColors[rowIdx]
-    let bgc = bgColors[rowIdx]
+    let fgc = fgColors[rowIdx] || '#000'
+    let bgc = bgColors[rowIdx] || '#fff'
     if (shipOreKey === ShipOreEnum.Quantanium) {
-      fgc = quaColors[1]
-      bgc = quaColors[0]
+      fgc = quaColors[1] || '#000'
+      bgc = quaColors[0] || '#fff'
     }
     if (shipOreKey === ShipOreEnum.Inertmaterial) {
-      fgc = innertColors[1]
-      bgc = innertColors[0]
+      fgc = innertColors[1] || '#fff'
+      bgc = innertColors[0] || '#000'
     }
 
     return { ore: shipOreKey, fg: fgc, bg: bgc }

@@ -22,7 +22,8 @@ export const DiscordServerControl: React.FC<DiscordServerControlProps> = ({
     <Stack gap={2} direction="column">
       <FormControlLabel
         checked={Boolean(lockToDiscordGuild)}
-        disabled={!isDiscordEnabled || !hasOneValid}
+        // disabled={!isDiscordEnabled || !hasOneValid}
+        disabled={true}
         control={
           <Switch
             onChange={(e) => {

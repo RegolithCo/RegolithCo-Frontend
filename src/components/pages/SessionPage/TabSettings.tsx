@@ -7,6 +7,8 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  FormGroup,
+  FormLabel,
   InputLabel,
   keyframes,
   List,
@@ -563,6 +565,52 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   }
                   label={`Users can invite other users to the session.`}
                 /> */}
+              </Box>
+            </Box>
+
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                Roles
+              </Typography>
+              <Box sx={styles.sectionBody}>
+                <FormControl component="fieldset" variant="standard">
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={!newSettings.sessionSettings?.controlledSessionRole}
+                          onChange={(e) => {
+                            setNewSettings({
+                              ...newSettings,
+                              sessionSettings: {
+                                ...newSettings.sessionSettings,
+                                controlledSessionRole: !e.target.checked,
+                              },
+                            })
+                          }}
+                        />
+                      }
+                      label="Session roles: Allow self-assign"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={!newSettings.sessionSettings?.controlledShipRole}
+                          onChange={(e) => {
+                            setNewSettings({
+                              ...newSettings,
+                              sessionSettings: {
+                                ...newSettings.sessionSettings,
+                                controlledShipRole: !e.target.checked,
+                              },
+                            })
+                          }}
+                        />
+                      }
+                      label="Ship roles: Allow self-assign"
+                    />
+                  </FormGroup>
+                </FormControl>
               </Box>
             </Box>
 

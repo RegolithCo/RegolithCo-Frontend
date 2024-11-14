@@ -306,10 +306,12 @@ export type SessionFieldPolicy = {
 	version?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'gravityWell' | 'location' | 'lockToDiscordGuild' | 'lockedFields' | 'specifyUsers' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
+export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'controlledSessionRole' | 'controlledShipRole' | 'gravityWell' | 'location' | 'lockToDiscordGuild' | 'lockedFields' | 'specifyUsers' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
 export type SessionSettingsFieldPolicy = {
 	activity?: FieldPolicy<any> | FieldReadFunction<any>,
 	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
+	controlledSessionRole?: FieldPolicy<any> | FieldReadFunction<any>,
+	controlledShipRole?: FieldPolicy<any> | FieldReadFunction<any>,
 	gravityWell?: FieldPolicy<any> | FieldReadFunction<any>,
 	location?: FieldPolicy<any> | FieldReadFunction<any>,
 	lockToDiscordGuild?: FieldPolicy<any> | FieldReadFunction<any>,
