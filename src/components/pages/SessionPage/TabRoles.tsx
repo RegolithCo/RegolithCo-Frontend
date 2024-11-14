@@ -19,36 +19,16 @@ import {
   TableHead,
   TableRow,
   Theme,
-  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import {
-  DestructuredSettings,
-  ObjectValues,
-  PendingUser,
-  SessionInput,
-  SessionSettings,
-  SessionUser,
-} from '@regolithco/common'
+import { DestructuredSettings, PendingUser, SessionInput, SessionSettings, SessionUser } from '@regolithco/common'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { fontFamilies } from '../../../theme'
 import { PendingUserListItem } from '../../fields/SessionUserList/SessionUserListItems/PendingUserListItem'
 import { ActiveUserListItem } from '../../fields/SessionUserList/SessionUserListItems/ActiveUserListItem'
-import { group } from 'console'
-import {
-  Engineering,
-  Handyman,
-  HealthAndSafety,
-  Inventory,
-  LocalPolice,
-  LocalShipping,
-  ManageAccounts,
-  RocketLaunch,
-  Security,
-  Support,
-  TravelExplore,
-} from '@mui/icons-material'
+import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
+import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
 
 export interface RolesTabProps {
   // For the profile version we only have the sessionSettings
@@ -56,83 +36,6 @@ export interface RolesTabProps {
   onChangeSession?: (session: SessionInput, newSettings: DestructuredSettings) => void
   onChangeSettings?: (newSettings: DestructuredSettings) => void
   setActiveModal?: (modal: DialogEnum) => void
-}
-
-export const SessionRoleEnum = {
-  Manager: 'MANAGER',
-  Scout: 'SCOUT',
-  Medical: 'MEDICAL',
-  Security: 'SECURITY',
-  Logistics: 'LOGISTICS',
-  Transport: 'TRANSPORT',
-} as const
-export type SessionRoleEnum = ObjectValues<typeof SessionRoleEnum>
-
-export const SessionRoleNames: Record<SessionRoleEnum, string> = {
-  [SessionRoleEnum.Manager]: 'Manager',
-  [SessionRoleEnum.Scout]: 'Surveyor / Scout',
-  [SessionRoleEnum.Medical]: 'Medical & Rescue',
-  [SessionRoleEnum.Security]: 'Security',
-  [SessionRoleEnum.Logistics]: 'Logistics & Support',
-  [SessionRoleEnum.Transport]: 'Transport',
-}
-
-export const SessionRoleIcons: Record<SessionRoleEnum, React.ReactNode> = {
-  [SessionRoleEnum.Manager]: <ManageAccounts />,
-  [SessionRoleEnum.Scout]: <TravelExplore />,
-  [SessionRoleEnum.Medical]: <Support />,
-  [SessionRoleEnum.Security]: <LocalPolice />,
-  [SessionRoleEnum.Logistics]: <Engineering />,
-  [SessionRoleEnum.Transport]: <LocalShipping />,
-}
-export const SessionRoleColors: Record<SessionRoleEnum, string> = {
-  [SessionRoleEnum.Manager]: '#ff0',
-  [SessionRoleEnum.Scout]: '#0f0',
-  [SessionRoleEnum.Medical]: '#0ff',
-  [SessionRoleEnum.Security]: '#f00',
-  [SessionRoleEnum.Logistics]: '#ccc',
-  [SessionRoleEnum.Transport]: '#f0f',
-}
-
-export const ShipRoleEnum = {
-  Pilot: 'PILOT',
-  CoPilot: 'COPILOT',
-  Engineer: 'ENGINEER',
-  Turret: 'TURRET',
-  Security: 'SECURITY',
-  Medic: 'MEDIC',
-  Stevedore: 'STEVEDORE',
-} as const
-export type ShipRoleEnum = ObjectValues<typeof ShipRoleEnum>
-
-export const ShipRoleNames: Record<ShipRoleEnum, string> = {
-  [ShipRoleEnum.Pilot]: 'Pilot',
-  [ShipRoleEnum.CoPilot]: 'Co-Pilot',
-  [ShipRoleEnum.Engineer]: 'Engineer',
-  [ShipRoleEnum.Turret]: 'Turret',
-  [ShipRoleEnum.Security]: 'Security',
-  [ShipRoleEnum.Medic]: 'Medic',
-  [ShipRoleEnum.Stevedore]: 'Stevedore',
-}
-
-export const ShipRoleIcons: Record<ShipRoleEnum, React.ReactNode> = {
-  [ShipRoleEnum.Pilot]: <RocketLaunch />,
-  [ShipRoleEnum.CoPilot]: <RocketLaunch />,
-  [ShipRoleEnum.Engineer]: <Handyman />,
-  [ShipRoleEnum.Turret]: <Security />,
-  [ShipRoleEnum.Security]: <Security />,
-  [ShipRoleEnum.Medic]: <Support />,
-  [ShipRoleEnum.Stevedore]: <Inventory />,
-}
-
-export const ShipRoleColors: Record<ShipRoleEnum, string> = {
-  [ShipRoleEnum.Pilot]: '#ff0',
-  [ShipRoleEnum.CoPilot]: '#ff0',
-  [ShipRoleEnum.Engineer]: '#b26eff',
-  [ShipRoleEnum.Turret]: '#f00',
-  [ShipRoleEnum.Security]: '#f00',
-  [ShipRoleEnum.Medic]: '#0ff',
-  [ShipRoleEnum.Stevedore]: '#ccc',
 }
 
 export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSettings, setActiveModal }) => {
@@ -241,7 +144,6 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
               <TableRow>
                 <TableCell>
                   <Stack direction="row" spacing={1} justifyContent="space-between">
-                    <Typography variant="overline">User</Typography>
                     <FormControlLabel
                       control={
                         <Switch
@@ -259,8 +161,8 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                     />
                   </Stack>
                 </TableCell>
-                <TableCell>Session Role</TableCell>
-                <TableCell>Ship Role</TableCell>
+                <TableCell width={'30%'}>Session Role</TableCell>
+                <TableCell width={'30%'}>Ship Role</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -276,7 +178,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                       // Make the background a gradient from primary.main at 0 to transparent at 10%
                       background:
                         groupCrew && isCaptain
-                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 20%)`
+                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 50%)`
                           : undefined,
                       borderTop: groupCrew && isCaptain ? `2px solid ${theme.palette.primary.main}` : undefined,
                     }}
@@ -295,49 +197,33 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                         )}
                       </List>
                     </TableCell>
-                    <TableCell>
-                      <Select
-                        value={crew.sessionRole}
-                        size="small"
-                        placeholder="Session Role"
-                        fullWidth
-                        variant="outlined"
-                      >
-                        {Object.values(SessionRoleEnum).map((role, idx) => (
-                          <MenuItem
-                            value={role}
-                            key={idx}
-                            sx={{
-                              '& svg': {
-                                mr: 1,
-                              },
-                              color: SessionRoleColors[role as SessionRoleEnum],
-                            }}
-                          >
-                            {SessionRoleIcons[role as SessionRoleEnum]}
-                            {SessionRoleNames[role as SessionRoleEnum]}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                    <TableCell
+                      padding="checkbox"
+                      width={250}
+                      sx={{
+                        pl: isCrewDisplay ? 5 : 0,
+                      }}
+                    >
+                      <SessionRoleChooser
+                        value=""
+                        onChange={(value) => {
+                          // console.log('CAKE', value)
+                        }}
+                      />
                     </TableCell>
-                    <TableCell>
-                      <Select value="None" size="small" placeholder="Ship Role" fullWidth variant="outlined">
-                        <MenuItem value="None">None</MenuItem>
-                        {Object.values(ShipRoleEnum).map((role, idx) => (
-                          <MenuItem
-                            value={role}
-                            key={idx}
-                            sx={{
-                              '& svg': {
-                                mr: 1,
-                              },
-                              color: ShipRoleColors[role as ShipRoleEnum],
-                            }}
-                          >
-                            {ShipRoleIcons[role as ShipRoleEnum]} {ShipRoleNames[role as ShipRoleEnum]}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                    <TableCell
+                      padding="checkbox"
+                      width={250}
+                      sx={{
+                        pl: isCrewDisplay ? 5 : 0,
+                      }}
+                    >
+                      <ShipRoleChooser
+                        value=""
+                        onChange={(value) => {
+                          // console.log('CAKE', value)
+                        }}
+                      />
                     </TableCell>
                   </TableRow>
                 )
@@ -366,6 +252,8 @@ const stylesThunk = (theme: Theme, scroll?: boolean): Record<string, SxProps<The
   },
   tabContainerInner: {
     flexGrow: 1,
+    maxWidth: '700px',
+
     [theme.breakpoints.up('md')]: {
       overflowY: scroll ? 'auto' : undefined,
       overflowX: scroll ? 'hidden' : undefined,
