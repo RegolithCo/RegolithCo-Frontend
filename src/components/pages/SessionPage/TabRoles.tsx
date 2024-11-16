@@ -258,7 +258,10 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
             updatePromises.push(updatePendingUsers(pendingUsers))
 
             allCrew
-              .filter(([crew, sessionRoleDisabled, shipRoleDisabled]) => !sessionRoleDisabled && crew.sessionRole)
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !(crew as PendingUser).scName && !sessionRoleDisabled && crew.sessionRole
+              )
               .forEach(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
                 updatePromises.push(updateSessionRole((crew as SessionUser).ownerId, null))
               })

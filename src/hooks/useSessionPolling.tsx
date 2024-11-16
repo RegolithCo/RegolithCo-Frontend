@@ -14,6 +14,9 @@ import { usePageVisibility } from './usePageVisibility'
 import { EventNameEnum, ScoutingFind, Session, SessionStateEnum, SessionUser, WorkOrder } from '@regolithco/common'
 import { ApolloClient, Reference, useApolloClient } from '@apollo/client'
 
+const POLL_TIME = 5000
+const FULL_REFRESH_TIME = 120000
+
 export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUserQueryResult['data']) => {
   const client = useApolloClient()
   const [lastUpdated, setLastUpdated] = React.useState<number>(Date.now())
@@ -57,9 +60,16 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
         // This way we're sure not to miss anything if something happened while we were processing
         // the rest of the records. Also we subtract 1 second to make sure we don't miss anything.
         // This might cause a bit of over-querying but it's better than missing something
-        if (updatedDates.length > 0) setLastUpdated(Math.max(...updatedDates) - 1000)
+        if (updatedDates.length > 0) {
+          const maxDate = Math.max(...updatedDates)
+          if (maxDate > lastUpdated) setLastUpdated(Math.max(...updatedDates))
+        } else if (data.sessionUpdates?.length === 0) {
+          // Make sure this date keeps up and is never behind the lastFullQuery
+          if (lastUpdated < lastFullQuery) setLastUpdated(lastFullQuery)
+        }
+
+        // Now update the apollo cache
       }
-      // Now update the apollo cache
     },
   })
 
@@ -67,13 +77,11 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
   React.useEffect(() => {
     // If we have a real session, poll every 10 seconds
     if (isPageVisible && sessionQry?.data?.session) {
-      // If it's been > 5 minutes since lastFullQuery then we need to update the full sessionQry
-      if (Date.now() - lastFullQuery > 300000) sessionQry.refetch()
-
-      const pollTime = sessionQry?.data?.session.state !== SessionStateEnum.Active ? 60000 : 10000 // now that our sessionUpdatedQry is lightweight we can poll every 5 seconds
-      sessionUpdatedQry.startPolling(pollTime)
+      sessionUpdatedQry.startPolling(POLL_TIME)
+      sessionQry.startPolling(FULL_REFRESH_TIME)
     } else {
       sessionUpdatedQry.stopPolling()
+      sessionQry.stopPolling()
     }
   }, [sessionQry?.data?.session, isPageVisible])
 

@@ -502,7 +502,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           },
         },
         optimisticResponse: (data) => {
-          console.log('MAGPIE: optimisticResponse')
           const foundSessionUser = sessionQry.data?.session?.activeMembers?.items?.find(
             (m) => m.ownerId === userId
           ) as SessionUser
@@ -567,14 +566,17 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       }).then()
     },
     updatePendingUsers: (pendingUsers: PendingUserInput[]) => {
+      // Make sure to strip out the typename
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sanitizedUsers = (pendingUsers as any[]).map(({ __typename, ...rest }) => rest)
       return updatePendingUsersMutation[0]({
         variables: {
           sessionId: sessionId as string,
-          pendingUsers,
+          pendingUsers: sanitizedUsers,
         },
         optimisticResponse: () => {
           return {
-            updatePendingUser: {
+            updatePendingUsers: {
               ...(sessionQry.data?.session as Session),
               mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).map((m) => {
                 const found = pendingUsers.find((p) => p.scName === m.scName)

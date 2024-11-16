@@ -81,7 +81,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   const dataStore = React.useContext(LookupsContext)
 
   React.useEffect(() => {
-    if (!dataStore.ready) return
+    if (!dataStore.ready || !session?.workOrders?.items) return
     sessionReduce(dataStore, session?.workOrders?.items || []).then((res) => {
       setSessionSummary(res)
     })
