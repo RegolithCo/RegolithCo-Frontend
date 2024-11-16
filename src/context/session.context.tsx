@@ -15,6 +15,9 @@ import {
   VerifiedUserLookup,
   WorkOrder,
   UserSuggest,
+  SessionRoleEnum,
+  ShipRoleEnum,
+  PendingUserInput,
 } from '@regolithco/common'
 import { createContext } from 'react'
 import log from 'loglevel'
@@ -63,11 +66,11 @@ export interface SessionContextType {
 
   loading: boolean
   mutating: boolean
+  isSessionAdmin: boolean
 
-  // The
   verifiedMentionedUsers: VerifiedUserLookup
-  addFriend: (username: string) => void
-  removeFriend: (username: string) => void
+  addFriend: (username: string) => Promise<void>
+  removeFriend: (username: string) => Promise<void>
   userSuggest: UserSuggest
 
   crewHierarchy: CrewHierarchy
@@ -86,42 +89,44 @@ export interface SessionContextType {
   createNewScoutingFind: (scoutingType: ScoutingFindTypeEnum) => void
 
   // Session
-  onCloseSession: () => void
-  addSessionMentions: (scNames: string[]) => void
-  removeSessionMentions: (scNames: string[]) => void
-  removeSessionCrew: (scName: string) => void
-  onUpdateSession: (session: SessionInput, settings: DestructuredSettings) => void
-  resetDefaultSystemSettings: () => void
-  resetDefaultUserSettings: () => void
-  leaveSession: () => void
-  deleteSession: () => void
+  onCloseSession: () => Promise<unknown>
+  addSessionMentions: (scNames: string[]) => Promise<void>
+  removeSessionMentions: (scNames: string[]) => Promise<void>
+  removeSessionCrew: (scName: string) => Promise<void>
+  onUpdateSession: (session: SessionInput, settings: DestructuredSettings) => Promise<void>
+  resetDefaultSystemSettings: () => Promise<void>
+  resetDefaultUserSettings: () => Promise<void>
+  leaveSession: () => Promise<void>
+  deleteSession: () => Promise<void>
 
   // For the two modals that take us deeper
   openWorkOrderModal: (workOrderId: string) => void
   openScoutingModal: (scoutinfFindId: string) => void
 
   // Sessionuser
-  updateMySessionUser: (sessionUser: SessionUserInput) => void
-  updateSessionUserCaptain: (userId: string, newCaptainId: string | null) => void
-  updatePendingUserCaptain: (scName: string, newCaptainId: string | null) => void
+  updateMySessionUser: (sessionUser: SessionUserInput) => Promise<void>
+  updateSessionRole: (userId: string, sessionRole: SessionRoleEnum | null) => Promise<void>
+  updateShipRole: (userId: string, shipRole: ShipRoleEnum | null) => Promise<void>
+  updateSessionUserCaptain: (userId: string, newCaptainId: string | null) => Promise<void>
+  updatePendingUsers: (pendingUsers: PendingUserInput[]) => Promise<void>
 
   // CrewShares
-  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => void
+  markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => Promise<void>
 
   // Work orders
-  createWorkOrder: (workOrder: WorkOrder) => void
-  deleteWorkOrder: (workOrderId: string) => void
-  updateModalWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => void
+  createWorkOrder: (workOrder: WorkOrder) => Promise<void>
+  deleteWorkOrder: (workOrderId: string) => Promise<void>
+  updateModalWorkOrder: (newWorkOrder: WorkOrder, setFail?: boolean) => Promise<void>
   setWorkOrderShareId: (workOrderId: string) => void
-  failWorkOrder: (reason?: string) => void
+  failWorkOrder: (reason?: string) => Promise<void>
 
   // scouting
-  createScoutingFind: (scoutingFind: ScoutingFind) => void
-  updateScoutingFind: (scoutingFind: ScoutingFind) => void
-  deleteScoutingFind: (scoutingFindId: string, __typename: ScoutingFindTypenames) => void
-  joinScoutingFind: (findId: string, enRoute: boolean) => void
+  createScoutingFind: (scoutingFind: ScoutingFind) => Promise<void>
+  updateScoutingFind: (scoutingFind: ScoutingFind) => Promise<void>
+  deleteScoutingFind: (scoutingFindId: string, __typename: ScoutingFindTypenames) => Promise<void>
+  joinScoutingFind: (findId: string, enRoute: boolean) => Promise<void>
   setScoutingFindShareId: (findId: string) => void
-  leaveScoutingFind: (findId: string) => void
+  leaveScoutingFind: (findId: string) => Promise<void>
 }
 
 const notAvailable =
@@ -129,6 +134,13 @@ const notAvailable =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any) => {
     log.error(`${name} not available in session context`, args)
+  }
+const notAvailablePromise =
+  (name: string) =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (...args: any) => {
+    log.error(`${name} not available in session context`, args)
+    return Promise.resolve()
   }
 
 export const sessionContextDefault: SessionContextType = {
@@ -139,14 +151,15 @@ export const sessionContextDefault: SessionContextType = {
 
   loading: false,
   mutating: false,
+  isSessionAdmin: false,
 
   userSuggest: {},
 
   activeTab: SessionTabs.DASHBOARD,
   setActiveTab: notAvailable('setActiveTab'),
 
-  createNewWorkOrder: notAvailable('createNewWorkOrder'),
-  createNewScoutingFind: notAvailable('createNewScoutingFind'),
+  createNewWorkOrder: notAvailablePromise('createNewWorkOrder'),
+  createNewScoutingFind: notAvailablePromise('createNewScoutingFind'),
 
   verifiedMentionedUsers: {},
 
@@ -156,42 +169,44 @@ export const sessionContextDefault: SessionContextType = {
   singleInnactives: [],
   scoutingAttendanceMap: new Map(),
 
-  addFriend: notAvailable('addFriend'),
-  removeFriend: notAvailable('removeFriend'),
+  addFriend: notAvailablePromise('addFriend'),
+  removeFriend: notAvailablePromise('removeFriend'),
 
-  onCloseSession: notAvailable('onCloseSession'),
-  addSessionMentions: notAvailable('addSessionMentions'),
-  removeSessionMentions: notAvailable('removeSessionMentions'),
-  removeSessionCrew: notAvailable('removeSessionCrew'),
-  onUpdateSession: notAvailable('onUpdateSession'),
-  resetDefaultSystemSettings: notAvailable('resetDefaultSystemSettings'),
-  resetDefaultUserSettings: notAvailable('resetDefaultUserSettings'),
-  leaveSession: notAvailable('leaveSession'),
-  deleteSession: notAvailable('deleteSession'),
+  onCloseSession: notAvailablePromise('onCloseSession'),
+  addSessionMentions: notAvailablePromise('addSessionMentions'),
+  removeSessionMentions: notAvailablePromise('removeSessionMentions'),
+  removeSessionCrew: notAvailablePromise('removeSessionCrew'),
+  onUpdateSession: notAvailablePromise('onUpdateSession'),
+  resetDefaultSystemSettings: notAvailablePromise('resetDefaultSystemSettings'),
+  resetDefaultUserSettings: notAvailablePromise('resetDefaultUserSettings'),
+  leaveSession: notAvailablePromise('leaveSession'),
+  deleteSession: notAvailablePromise('deleteSession'),
 
   setActiveModal: notAvailable('setActiveModal'),
 
   openWorkOrderModal: notAvailable('openWorkOrderModal'),
   openScoutingModal: notAvailable('openScoutingModal'),
 
-  updateMySessionUser: notAvailable('updateSessionUser'),
-  updateSessionUserCaptain: notAvailable('updateSessionUserCaptain'),
-  updatePendingUserCaptain: notAvailable('updatePendingUserCaptain'),
+  updateMySessionUser: notAvailablePromise('updateSessionUser'),
+  updateSessionRole: notAvailablePromise('updateSessionRole'),
+  updateShipRole: notAvailablePromise('updateShipRole'),
+  updateSessionUserCaptain: notAvailablePromise('updateSessionUserCaptain'),
+  updatePendingUsers: notAvailablePromise('updatePendingUsers'),
 
-  markCrewSharePaid: notAvailable('markCrewSharePaid'),
+  markCrewSharePaid: notAvailablePromise('markCrewSharePaid'),
 
-  createWorkOrder: notAvailable('createWorkOrder'),
-  deleteWorkOrder: notAvailable('deleteWorkOrder'),
-  updateModalWorkOrder: notAvailable('updateWorkOrder'),
-  setWorkOrderShareId: notAvailable('setWorkOrderShareId'),
-  failWorkOrder: notAvailable('failWorkOrder'),
+  createWorkOrder: notAvailablePromise('createWorkOrder'),
+  deleteWorkOrder: notAvailablePromise('deleteWorkOrder'),
+  updateModalWorkOrder: notAvailablePromise('updateWorkOrder'),
+  setWorkOrderShareId: notAvailablePromise('setWorkOrderShareId'),
+  failWorkOrder: notAvailablePromise('failWorkOrder'),
 
-  createScoutingFind: notAvailable('createScoutingFind'),
-  updateScoutingFind: notAvailable('updateScoutingFind'),
-  deleteScoutingFind: notAvailable('deleteScoutingFind'),
-  setScoutingFindShareId: notAvailable('setScoutingFindShareId'),
-  joinScoutingFind: notAvailable('joinScoutingFind'),
-  leaveScoutingFind: notAvailable('leaveScoutingFind'),
+  createScoutingFind: notAvailablePromise('createScoutingFind'),
+  updateScoutingFind: notAvailablePromise('updateScoutingFind'),
+  deleteScoutingFind: notAvailablePromise('deleteScoutingFind'),
+  setScoutingFindShareId: notAvailablePromise('setScoutingFindShareId'),
+  joinScoutingFind: notAvailablePromise('joinScoutingFind'),
+  leaveScoutingFind: notAvailablePromise('leaveScoutingFind'),
 
   // For the session view
   openActiveUserModal: notAvailable('openUserModal'),

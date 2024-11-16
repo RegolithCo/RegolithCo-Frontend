@@ -38,12 +38,12 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
   const dataStore = React.useContext(LookupsContext)
   const {
     captains,
-    session,
+    isSessionAdmin,
     mySessionUser,
     myUserProfile,
     addFriend,
     removeFriend,
-    updatePendingUserCaptain,
+    updatePendingUsers,
     crewHierarchy,
   } = React.useContext(SessionContext)
 
@@ -56,8 +56,6 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
       : null
 
   // NO HOOKS BELOW HERe
-
-  const iOwnSession = session?.ownerId === myUserProfile.userId
 
   const theirCaptainId = pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : null
   const vehicleCode = theirCaptain?.vehicleCode
@@ -150,10 +148,12 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
               <Button
                 startIcon={<RocketLaunch />}
                 onClick={() => {
-                  if (meIsPotentialCaptain)
-                    updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
-                  else if (myCrewCaptainId)
-                    updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
+                  updatePendingUsers([
+                    {
+                      ...pendingUser,
+                      captainId: myCrewCaptainId || mySessionUser.ownerId,
+                    },
+                  ])
                 }}
               >
                 Add to my crew
@@ -164,7 +164,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                 color="error"
                 startIcon={<Logout />}
                 onClick={() => {
-                  updatePendingUserCaptain(pendingUser.scName, null)
+                  updatePendingUsers([{ ...pendingUser, captainId: null }])
                 }}
               >
                 Remove from {iAmTheirCaptain ? 'my' : getSafeName(theirCaptainScName) + "'s"} crew
@@ -190,7 +190,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                 Add to my friend List
               </Button>
             )}
-            {iOwnSession && (
+            {isSessionAdmin && (
               <Button
                 startIcon={<DeleteForever />}
                 onClick={() => {

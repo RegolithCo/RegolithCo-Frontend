@@ -55,8 +55,9 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
         })
         // Set the last update to the last updated date from the download queue
         // This way we're sure not to miss anything if something happened while we were processing
-        // the rest of the records
-        if (updatedDates.length > 0) setLastUpdated(Math.max(...updatedDates))
+        // the rest of the records. Also we subtract 1 second to make sure we don't miss anything.
+        // This might cause a bit of over-querying but it's better than missing something
+        if (updatedDates.length > 0) setLastUpdated(Math.max(...updatedDates) - 1000)
       }
       // Now update the apollo cache
     },

@@ -17,7 +17,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     crewHierarchy,
     mySessionUser,
     captains,
-    session,
+    isSessionAdmin,
     // leaveSession,
     setActiveModal,
     removeFriend,
@@ -26,7 +26,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     openActiveUserModal,
     openPendingUserModal,
     updateSessionUserCaptain,
-    updatePendingUserCaptain,
+    updatePendingUsers,
     openLoadoutModal,
   } = React.useContext(SessionContext)
   const { hideNames, getSafeName } = React.useContext(AppContext)
@@ -36,8 +36,6 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
   const isMe = sessionUser?.ownerId === myUserProfile.userId
   const isActiveUser = !!sessionUser
   const theirSCName = (sessionUser?.owner?.scName || pendingUser?.scName) as string
-
-  const iOwnSession = session?.ownerId === myUserProfile.userId
 
   const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]
   const theyIsPotentialCaptain = !sessionUser?.captainId || !crewHierarchy[sessionUser?.captainId]
@@ -96,7 +94,8 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
       icon: <RocketLaunch fontSize="small" />,
       onClick: () => {
         if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, myCrewCaptainId || mySessionUser.ownerId)
-        else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, myCrewCaptainId || mySessionUser.ownerId)
+        else if (pendingUser)
+          updatePendingUsers([{ ...pendingUser, captainId: myCrewCaptainId || mySessionUser.ownerId }])
       },
     })
   }
@@ -128,7 +127,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
       icon: <RocketLaunch fontSize="small" color="error" />,
       onClick: () => {
         if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, null)
-        else if (pendingUser) updatePendingUserCaptain(pendingUser.scName, null)
+        else if (pendingUser) updatePendingUsers([{ ...pendingUser, captainId: null }])
       },
     })
   }
@@ -165,7 +164,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     })
   }
 
-  if (!isMe && iOwnSession && pendingUser) {
+  if (!isMe && isSessionAdmin && pendingUser) {
     menuItems.push({
       label: `Delete ${pendingUser.scName} from session`,
       color: 'error',
@@ -176,7 +175,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     })
   }
 
-  if (!isMe && iOwnSession && sessionUser) {
+  if (!isMe && isSessionAdmin && sessionUser) {
     menuItems.push({
       label: `Delete ${sessionUser.owner?.scName} from session`,
       color: 'error',
@@ -187,7 +186,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     })
   }
 
-  if (isMe && !iOwnSession) {
+  if (isMe && !isSessionAdmin) {
     menuItems.push({
       label: `Leave Session`,
       color: 'error',

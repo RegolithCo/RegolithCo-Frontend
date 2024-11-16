@@ -6,6 +6,8 @@ class StorybookDataStore implements DataStore {
   public loading = false
   public error = null
   public ready = false
+  public isLocal = false
+  public localPath = undefined
 
   getLookup<K extends keyof Lookups>(key: K): Lookups[K] {
     switch (key) {

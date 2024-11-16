@@ -23,10 +23,10 @@ if (import.meta.env.MODE === 'development') {
    * @param authType
    */
   window.dev_user = (authId?: string, authType?: AuthTypeEnum) => {
-    if (!authId && DEV_HEADERS['dev_user']) {
+    if (!authId) {
       delete DEV_HEADERS['dev_user']
-      localStorage.setItem('DEV_HEADERS', JSON.stringify(DEV_HEADERS))
-      log.debug('DEV_USER: Switched user to', authId)
+      localStorage.removeItem('DEV_HEADERS')
+      log.debug('DEV_USER: Removing DEV Users')
     } else if (authId && authType && authId.length > 5) {
       DEV_HEADERS['dev_user'] = authId
       DEV_HEADERS['authType'] = authType

@@ -33,18 +33,18 @@ type useSessionsReturn = {
   verifyError?: ApolloError
   loading: boolean
   mutating: boolean
-  initializeUser: (scName: string) => void
-  requestVerify: () => void
-  verifyUser: () => void
-  deleteUser: () => void
-  updateUserProfile: (newUserProfile: UserProfileInput, settings?: DestructuredSettings) => void
-  deleteProfile: (leaveData: boolean) => void
-  resetDefaultSettings: () => void
-  addFriend: (friend: string) => void
-  refreshAvatar: (remove?: boolean) => void
-  removeFriend: (friend: string) => void
-  upsertAPIKey: () => void
-  deleteAPIKey: () => void
+  initializeUser: (scName: string) => Promise<void>
+  requestVerify: () => Promise<void>
+  verifyUser: () => Promise<void>
+  deleteUser: () => Promise<void>
+  updateUserProfile: (newUserProfile: UserProfileInput, settings?: DestructuredSettings) => Promise<void>
+  deleteProfile: (leaveData: boolean) => Promise<void>
+  resetDefaultSettings: () => Promise<void>
+  addFriend: (friend: string) => Promise<void>
+  refreshAvatar: (remove?: boolean) => Promise<void>
+  removeFriend: (friend: string) => Promise<void>
+  upsertAPIKey: () => Promise<void>
+  deleteAPIKey: () => Promise<void>
 }
 
 export const useUserProfile = (): useSessionsReturn => {
@@ -104,29 +104,29 @@ export const useUserProfile = (): useSessionsReturn => {
     mutating,
     verifyError: verifyUserMutation[1].error,
     initializeUser: (scName: string) => {
-      upsertUserMutation[0]({
+      return upsertUserMutation[0]({
         variables: {
           userProfile: {
             scName,
           },
         },
         refetchQueries: [GetUserProfileDocument],
-      })
+      }).then()
     },
     upsertAPIKey: () => {
-      upsertAPIKeyMutation[0]({
+      return upsertAPIKeyMutation[0]({
         refetchQueries: [GetUserProfileDocument],
-      })
+      }).then()
     },
     deleteAPIKey: () => {
-      deleteAPIKeyMutation[0]({
+      return deleteAPIKeyMutation[0]({
         refetchQueries: [GetUserProfileDocument],
-      })
+      }).then()
     },
     resetDefaultSettings: () => {
       const newSettings = SessionSystemDefaults()
       const reversed = reverseDestructured(newSettings)
-      upsertUserMutation[0]({
+      return upsertUserMutation[0]({
         variables: {
           userProfile: {},
           ...newSettings,
@@ -139,27 +139,29 @@ export const useUserProfile = (): useSessionsReturn => {
             __typename: 'UserProfile',
           },
         },
-      })
+      }).then()
     },
 
     requestVerify: () => {
-      requestAccountVerifyMutation[0]({
+      return requestAccountVerifyMutation[0]({
         refetchQueries: [GetUserProfileDocument],
-      })
+      }).then()
     },
     verifyUser: () => {
-      verifyUserMutation[0]({
+      return verifyUserMutation[0]({
         refetchQueries: [GetUserProfileDocument],
-      })
+      }).then()
     },
     deleteUser: () => {
-      deleteUserProfileMutation[0]({
+      return deleteUserProfileMutation[0]({
         refetchQueries: [GetUserProfileDocument],
-      }).then(() => {
-        ctx.logOut()
-        localStorage.clear()
-        navigate('/')
       })
+        .then(() => {
+          ctx.logOut()
+          localStorage.clear()
+          navigate('/')
+        })
+        .then()
     },
     updateUserProfile: (newUserProfile: UserProfileInput, newSettings?: DestructuredSettings) => {
       const oldSettings = userProfileQry.data?.profile?.sessionSettings || { __typename: 'SessionSettings' }
@@ -171,7 +173,7 @@ export const useUserProfile = (): useSessionsReturn => {
 
       const optimisticResponse = Object.assign({}, userProfileQry.data?.profile, newUserProfile)
 
-      upsertUserMutation[0]({
+      return upsertUserMutation[0]({
         variables: {
           userProfile: newUserProfile,
           ...newSessionSettingsForInputs,
@@ -182,7 +184,7 @@ export const useUserProfile = (): useSessionsReturn => {
           },
           __typename: 'Mutation',
         },
-      })
+      }).then()
     },
     deleteProfile: (leaveData) =>
       deleteUserProfileMutation[0]({
@@ -191,7 +193,7 @@ export const useUserProfile = (): useSessionsReturn => {
         },
       }).then(() => navigate('/')),
     addFriend: (friend: string) => {
-      addFriendsMutation[0]({
+      return addFriendsMutation[0]({
         variables: {
           friends: [friend],
         },
@@ -202,10 +204,10 @@ export const useUserProfile = (): useSessionsReturn => {
           },
           __typename: 'Mutation',
         },
-      })
+      }).then()
     },
     removeFriend: (friend: string) => {
-      removeFriendsMutation[0]({
+      return removeFriendsMutation[0]({
         variables: {
           friends: [friend],
         },
@@ -216,14 +218,14 @@ export const useUserProfile = (): useSessionsReturn => {
           },
           __typename: 'Mutation',
         },
-      })
+      }).then()
     },
     refreshAvatar: (remove?: boolean) => {
-      refreshAvatarMutation[0]({
+      return refreshAvatarMutation[0]({
         variables: {
           remove,
         },
-      })
+      }).then()
     },
   }
 }

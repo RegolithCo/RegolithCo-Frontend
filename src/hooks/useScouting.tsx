@@ -20,10 +20,10 @@ type useSessionsReturn = {
   loading: boolean
   querying: boolean
   mutating: boolean
-  updateScoutingFind: (newFind: ScoutingFind) => void
-  deleteScoutingFind: (findId: string, __typename: ScoutingFindTypenames) => void
-  joinScoutingFind: (findId: string, enRoute: boolean) => void
-  leaveScoutingFind: (findId: string) => void
+  updateScoutingFind: (newFind: ScoutingFind) => Promise<void>
+  deleteScoutingFind: (findId: string, __typename: ScoutingFindTypenames) => Promise<void>
+  joinScoutingFind: (findId: string, enRoute: boolean) => Promise<void>
+  leaveScoutingFind: (findId: string) => Promise<void>
 }
 
 export const useScoutingFind = (
@@ -87,7 +87,7 @@ export const useScoutingFind = (
     loading: querying || mutating,
     updateScoutingFind: (newFind: ScoutingFind) => {
       const { scoutingFind, shipRocks, vehicleRocks, wrecks } = scoutingFindDestructured(newFind)
-      updateScoutingFindMutation[0]({
+      return updateScoutingFindMutation[0]({
         variables: {
           sessionId,
           scoutingFindId: newFind.scoutingFindId,
@@ -103,7 +103,7 @@ export const useScoutingFind = (
             ...newFind,
           },
         },
-      })
+      }).then()
     },
     deleteScoutingFind: (findId: string, __typename: ScoutingFindTypenames) =>
       deleteScoutingFindMutation[0]({
@@ -130,9 +130,9 @@ export const useScoutingFind = (
             __typename,
           },
         }),
-      }),
+      }).then(),
     joinScoutingFind: (findId: string, enRoute: boolean) => {
-      joinScoutingFindMutation[0]({
+      return joinScoutingFindMutation[0]({
         variables: {
           scoutingFindId: findId,
           sessionId,
@@ -169,10 +169,10 @@ export const useScoutingFind = (
             },
           },
         ],
-      })
+      }).then()
     },
     leaveScoutingFind: (findId: string) => {
-      leaveScoutingFindMutation[0]({
+      return leaveScoutingFindMutation[0]({
         variables: {
           scoutingFindId: findId,
           sessionId,
@@ -203,7 +203,7 @@ export const useScoutingFind = (
             },
           },
         ],
-      })
+      }).then()
     },
   }
 }

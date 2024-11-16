@@ -43,7 +43,7 @@ export interface ClusterCardProps {
 
 export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
   const {
-    session,
+    isSessionAdmin,
     myUserProfile,
     mySessionUser,
     joinScoutingFind,
@@ -59,8 +59,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
 
   const ores = summary && summary.oreSort ? summary.oreSort : []
   const findType = scoutingFind.clusterType
-  const amISessionOwner = session?.ownerId === myUserProfile.userId
-  const allowDelete = amISessionOwner || scoutingFind.ownerId === myUserProfile?.userId
+  const allowDelete = isSessionAdmin || scoutingFind.ownerId === myUserProfile?.userId
   const { getSafeName } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
   const attendanceCount = (scoutingFind.attendance || []).filter((a) => a.state === SessionUserStateEnum.OnSite).length

@@ -3,6 +3,7 @@ import {
   alpha,
   Box,
   FormControlLabel,
+  IconButton,
   List,
   Stack,
   Switch,
@@ -18,13 +19,23 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { DestructuredSettings, PendingUser, SessionInput, SessionSettings, SessionUser } from '@regolithco/common'
+import {
+  DestructuredSettings,
+  PendingUser,
+  PendingUserInput,
+  SessionInput,
+  SessionSettings,
+  SessionUser,
+} from '@regolithco/common'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { fontFamilies } from '../../../theme'
 import { PendingUserListItem } from '../../fields/SessionUserList/SessionUserListItems/PendingUserListItem'
 import { ActiveUserListItem } from '../../fields/SessionUserList/SessionUserListItems/ActiveUserListItem'
 import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
 import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
+import { DeleteSweep } from '@mui/icons-material'
+import { DeleteModal } from '../../modals/DeleteModal'
+import log from 'loglevel'
 
 export interface RolesTabProps {
   // For the profile version we only have the sessionSettings
@@ -37,23 +48,14 @@ export interface RolesTabProps {
 export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSettings, setActiveModal }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme, true)
+  const [deleteSessionRolesOpen, setDeleteSessionRolesOpen] = React.useState(false)
+  const [deleteShipRolesOpen, setDeleteShipRolesOpen] = React.useState(false)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
-  const {
-    captains,
-
-    crewHierarchy,
-    removeSessionCrew,
-    loading,
-    mySessionUser,
-    myUserProfile,
-    removeSessionMentions,
-    singleActives,
-    singleInnactives,
-    session,
-  } = React.useContext(SessionContext)
+  const { isSessionAdmin, captains, updateSessionRole, updateShipRole, updatePendingUsers, mySessionUser, session } =
+    React.useContext(SessionContext)
   const [groupCrew, setGroupCrew] = React.useState<boolean>(true)
 
-  const allCrew = React.useMemo(() => {
+  const allCrew: [PendingUser | SessionUser, boolean, boolean][] = React.useMemo(() => {
     const crewArr: (PendingUser | SessionUser)[] = [
       ...(session?.activeMembers?.items || []),
       ...(session?.mentionedUsers || []),
@@ -89,8 +91,25 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
         }
       }
     })
-    return crewArr
-  }, [session, groupCrew])
+    return crewArr.map<[PendingUser | SessionUser, boolean, boolean]>((crew) => {
+      const isPendingUser = !!(crew as PendingUser).scName
+      const isMe = !isPendingUser && (crew as SessionUser).ownerId === mySessionUser?.ownerId
+      const iAmSessionOwner = session?.ownerId === mySessionUser?.ownerId
+      const iAmTheirCaptain = crew.captainId === mySessionUser?.ownerId
+      const canSelfAssignSessionRole = !session?.sessionSettings?.controlledSessionRole
+      const canSelfAssignShipRole = !session?.sessionSettings?.controlledShipRole
+
+      let sessionRoleDisabled = true
+      if (iAmSessionOwner) sessionRoleDisabled = false
+      else if (canSelfAssignSessionRole && isMe) sessionRoleDisabled = false
+
+      let shipRoleDisabled = true
+      if (iAmSessionOwner) shipRoleDisabled = false
+      else if (canSelfAssignShipRole && (isMe || iAmTheirCaptain)) shipRoleDisabled = false
+
+      return [crew, sessionRoleDisabled, shipRoleDisabled]
+    })
+  }, [session?.activeMembers, session?.mentionedUsers, groupCrew, mySessionUser, captains])
 
   // console.log('CAKE', allCrew, session)
   return (
@@ -121,35 +140,41 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                   </Stack>
                 </TableCell>
                 <TableCell width={'30%'}>
-                  <Typography variant="overline">Session Role</Typography>
+                  <Stack direction="row" spacing={1} justifyContent="space-between">
+                    <Typography variant="overline">Session Role</Typography>
+                    {isSessionAdmin && (
+                      <Stack direction="row" spacing={1}>
+                        <IconButton color="error" onClick={() => setDeleteSessionRolesOpen(true)}>
+                          <DeleteSweep />
+                        </IconButton>
+                      </Stack>
+                    )}
+                  </Stack>
                 </TableCell>
                 <TableCell width={'30%'}>
-                  <Typography variant="overline">Ship Role</Typography>
+                  <Stack direction="row" spacing={1} justifyContent="space-between">
+                    <Typography variant="overline">Ship Role</Typography>
+                    {isSessionAdmin && (
+                      <Stack direction="row" spacing={1}>
+                        <IconButton color="error" onClick={() => setDeleteShipRolesOpen(true)}>
+                          <DeleteSweep />
+                        </IconButton>
+                      </Stack>
+                    )}
+                  </Stack>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {allCrew.map((crew, idx) => {
+              {allCrew.map(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
                 const isCrewDisplay = Boolean(groupCrew && crew.captainId)
                 const isPendingUser = !!(crew as PendingUser).scName
                 const isCaptain =
                   !isPendingUser && !!captains.find((su) => su.ownerId === (crew as SessionUser).ownerId)
-                const isMe = !isPendingUser && (crew as SessionUser).ownerId === mySessionUser?.ownerId
-                const iAmSessionOwner = session?.ownerId === mySessionUser?.ownerId
-                const iAmTheirCaptain = crew.captainId === mySessionUser?.ownerId
-                const canSelfAssignSessionRole = !session?.sessionSettings?.controlledSessionRole
-                const canSelfAssignShipRole = !session?.sessionSettings?.controlledShipRole
-
-                let sessionRoleDisabled = true
-                if (iAmSessionOwner) sessionRoleDisabled = false
-                else if (canSelfAssignSessionRole && isMe) sessionRoleDisabled = false
-
-                let shipRoleDisabled = true
-                if (iAmSessionOwner) shipRoleDisabled = false
-                else if (canSelfAssignShipRole && (isMe || iAmTheirCaptain)) shipRoleDisabled = false
 
                 return (
                   <TableRow
+                    key={idx}
                     sx={{
                       // Make the background a gradient from primary.main at 0 to transparent at 10%
                       background:
@@ -176,19 +201,33 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                     </TableCell>
                     <TableCell width={'30%'}>
                       <SessionRoleChooser
-                        value=""
+                        value={crew.sessionRole}
                         disabled={sessionRoleDisabled}
                         onChange={(value) => {
-                          // console.log('CAKE', value)
+                          isPendingUser
+                            ? updatePendingUsers([
+                                {
+                                  ...crew,
+                                  sessionRole: value || null,
+                                } as PendingUserInput,
+                              ])
+                            : updateSessionRole((crew as SessionUser).ownerId, value || null)
                         }}
                       />
                     </TableCell>
                     <TableCell width={'30%'}>
                       <ShipRoleChooser
-                        value=""
+                        value={crew.shipRole}
                         disabled={shipRoleDisabled}
                         onChange={(value) => {
-                          // console.log('CAKE', value)
+                          isPendingUser
+                            ? updatePendingUsers([
+                                {
+                                  ...crew,
+                                  shipRole: value || null,
+                                } as PendingUserInput,
+                              ])
+                            : updateShipRole((crew as SessionUser).ownerId, value || null)
                         }}
                       />
                     </TableCell>
@@ -199,6 +238,68 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
           </Table>
         </TableContainer>
       </Box>
+      {deleteSessionRolesOpen && (
+        <DeleteModal
+          open
+          onClose={() => setDeleteSessionRolesOpen(false)}
+          onConfirm={() => {
+            const updatePromises: Promise<unknown>[] = []
+            const pendingUsers: PendingUserInput[] = allCrew
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !!(crew as PendingUser).scName && !sessionRoleDisabled && crew.sessionRole
+              )
+              .map(([crew, sessionRoleDisabled, shipRoleDisabled]) => {
+                return {
+                  ...crew,
+                  sessionRole: null,
+                } as PendingUserInput
+              })
+            updatePromises.push(updatePendingUsers(pendingUsers))
+
+            allCrew
+              .filter(([crew, sessionRoleDisabled, shipRoleDisabled]) => !sessionRoleDisabled && crew.sessionRole)
+              .forEach(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
+                updatePromises.push(updateSessionRole((crew as SessionUser).ownerId, null))
+              })
+
+            return Promise.all(updatePromises)
+          }}
+          title="Delete All Session Roles"
+          message="Are you sure you want to delete all Session roles?"
+        />
+      )}
+      {deleteShipRolesOpen && (
+        <DeleteModal
+          open
+          onClose={() => setDeleteShipRolesOpen(false)}
+          onConfirm={() => {
+            const updatePromises: Promise<unknown>[] = []
+            const pendingUsers: PendingUserInput[] = allCrew
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !!(crew as PendingUser).scName && !shipRoleDisabled && crew.shipRole
+              )
+              .map(([crew, sessionRoleDisabled, shipRoleDisabled]) => {
+                return {
+                  ...crew,
+                  shipRole: null,
+                } as PendingUserInput
+              })
+            updatePromises.push(updatePendingUsers(pendingUsers))
+
+            allCrew
+              .filter(([crew, sessionRoleDisabled, shipRoleDisabled]) => !shipRoleDisabled && crew.shipRole)
+              .forEach(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
+                updatePromises.push(updateShipRole((crew as SessionUser).ownerId, null))
+              })
+
+            return Promise.all(updatePromises)
+          }}
+          title="Delete All Ship Roles"
+          message="Are you sure you want to delete all Ship roles?"
+        />
+      )}
     </Box>
   )
 }

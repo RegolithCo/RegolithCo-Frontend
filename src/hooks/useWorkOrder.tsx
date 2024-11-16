@@ -30,10 +30,10 @@ type useSessionsReturn = {
   loading: boolean
   querying: boolean
   mutating: boolean
-  updateWorkOrder: (newWorkOrder: WorkOrder) => void
-  failWorkOrder: (reason?: string) => void
-  deleteWorkOrder: () => void
-  deleteCrewShare: (scName: string) => void
+  updateWorkOrder: (newWorkOrder: WorkOrder) => Promise<void>
+  failWorkOrder: (reason?: string) => Promise<void>
+  deleteWorkOrder: () => Promise<void>
+  deleteCrewShare: (scName: string) => Promise<void>
 }
 
 export const useWorkOrders = (sessionId: string, orderId: string): useSessionsReturn => {
@@ -105,7 +105,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
 
   useGQLErrors(queries, mutations)
 
-  const updateWorkOrderArbitrary = (newWorkOrder: WorkOrder, specificOrderId?: string) => {
+  const updateWorkOrderArbitrary = (newWorkOrder: WorkOrder, specificOrderId?: string): Promise<void> => {
     const {
       crewShares,
       isRefined,
@@ -129,7 +129,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
       .filter(({ name }) => name && name.trim().length > 0)
       .map(({ name, amount }) => ({ name, amount }))
 
-    updateWorkOrderMutation[0]({
+    return updateWorkOrderMutation[0]({
       variables: {
         sessionId,
         orderId: specificOrderId || orderId,
@@ -164,7 +164,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
         }
         return optimisticresponse
       },
-    })
+    }).then()
   }
 
   return {
@@ -175,7 +175,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
     updateWorkOrder: (newWorkOrder: WorkOrder) => updateWorkOrderArbitrary(newWorkOrder, orderId),
     failWorkOrder: (reason?: string) => {
       const fail = reason && reason.trim().length > 0
-      failWorkOrderMutation[0]({
+      return failWorkOrderMutation[0]({
         variables: {
           sessionId,
           orderId,
@@ -192,7 +192,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
           }
           return optimisticresponse
         },
-      })
+      }).then()
     },
     deleteWorkOrder: () =>
       deleteWorkOrderMutation[0]({
@@ -220,7 +220,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             __typename: workOrderQry.data?.workOrder?.__typename as WorkOrderTypenames,
           },
         }),
-      }),
+      }).then(),
     deleteCrewShare: (payeeScName: string) => {
       return deleteCrewShareMutation[0]({
         variables: {
@@ -237,7 +237,7 @@ export const useWorkOrders = (sessionId: string, orderId: string): useSessionsRe
             __typename: 'CrewShare',
           },
         }),
-      })
+      }).then()
     },
   }
 }

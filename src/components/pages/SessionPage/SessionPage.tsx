@@ -47,7 +47,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
     setActiveModal,
     onUpdateSession,
     session,
-    myUserProfile,
+    isSessionAdmin,
     resetDefaultSystemSettings,
     resetDefaultUserSettings,
     userSuggest,
@@ -56,8 +56,6 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
-
-  const isSessionOwner = session?.ownerId === myUserProfile.userId
 
   // USER Tab is not allowed on desktop
   React.useEffect(() => {
@@ -97,7 +95,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
                 Back to sessions
               </Button>
             </Tooltip>
-            {!isSessionOwner && (
+            {!isSessionAdmin && (
               <Tooltip title="Leave Session">
                 <Button
                   startIcon={<Logout />}
@@ -151,7 +149,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               {/* <Tab label="Work Orders" value={SessionTabs.WORK_ORDERS} /> */}
               {/* <Tab label="Scouting" value={SessionTabs.SCOUTING} /> */}
               <Tab label="Summary" icon={<Summarize />} value={SessionTabs.SUMMARY} iconPosition="start" />
-              {isSessionOwner && (
+              {isSessionAdmin && (
                 <Tab icon={<Settings />} label="Settings" value={SessionTabs.SETTINGS} iconPosition="start" />
               )}
             </Tabs>
@@ -218,7 +216,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
             {/* <Tab label="Orders" value={SessionTabs.WORK_ORDERS} icon={<TableView />} />
             <Tab label="Scout" value={SessionTabs.SCOUTING} icon={<TravelExplore />} /> */}
             <Tab label="Summary" value={SessionTabs.SUMMARY} icon={<Summarize />} />
-            {isSessionOwner && <Tab label="Settings" value={SessionTabs.SETTINGS} icon={<Settings />} />}
+            {isSessionAdmin && <Tab label="Settings" value={SessionTabs.SETTINGS} icon={<Settings />} />}
           </Tabs>
         )}
       </Box>

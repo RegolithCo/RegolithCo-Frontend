@@ -1375,84 +1375,79 @@ export function useUpsertSessionUserMutation(baseOptions?: Apollo.MutationHookOp
 export type UpsertSessionUserMutationHookResult = ReturnType<typeof useUpsertSessionUserMutation>;
 export type UpsertSessionUserMutationResult = Apollo.MutationResult<types.UpsertSessionUserMutation>;
 export type UpsertSessionUserMutationOptions = Apollo.BaseMutationOptions<types.UpsertSessionUserMutation, types.UpsertSessionUserMutationVariables>;
-export const UpdateSessionUserCaptainDocument = gql`
-    mutation updateSessionUserCaptain($sessionId: ID!, $userId: ID!, $newCaptainId: ID) {
-  updateSessionUserCaptain(
+export const UpdateSessionUserDocument = gql`
+    mutation updateSessionUser($sessionId: ID!, $userId: ID!, $sessionUser: SessionUserUpdate!) {
+  updateSessionUser(
     sessionId: $sessionId
     userId: $userId
-    newCaptainId: $newCaptainId
+    sessionUser: $sessionUser
   ) {
     ...SessionUserFragment
   }
 }
     ${SessionUserFragmentFragmentDoc}`;
-export type UpdateSessionUserCaptainMutationFn = Apollo.MutationFunction<types.UpdateSessionUserCaptainMutation, types.UpdateSessionUserCaptainMutationVariables>;
+export type UpdateSessionUserMutationFn = Apollo.MutationFunction<types.UpdateSessionUserMutation, types.UpdateSessionUserMutationVariables>;
 
 /**
- * __useUpdateSessionUserCaptainMutation__
+ * __useUpdateSessionUserMutation__
  *
- * To run a mutation, you first call `useUpdateSessionUserCaptainMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateSessionUserCaptainMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateSessionUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSessionUserMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateSessionUserCaptainMutation, { data, loading, error }] = useUpdateSessionUserCaptainMutation({
+ * const [updateSessionUserMutation, { data, loading, error }] = useUpdateSessionUserMutation({
  *   variables: {
  *      sessionId: // value for 'sessionId'
  *      userId: // value for 'userId'
- *      newCaptainId: // value for 'newCaptainId'
+ *      sessionUser: // value for 'sessionUser'
  *   },
  * });
  */
-export function useUpdateSessionUserCaptainMutation(baseOptions?: Apollo.MutationHookOptions<types.UpdateSessionUserCaptainMutation, types.UpdateSessionUserCaptainMutationVariables>) {
+export function useUpdateSessionUserMutation(baseOptions?: Apollo.MutationHookOptions<types.UpdateSessionUserMutation, types.UpdateSessionUserMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<types.UpdateSessionUserCaptainMutation, types.UpdateSessionUserCaptainMutationVariables>(UpdateSessionUserCaptainDocument, options);
+        return Apollo.useMutation<types.UpdateSessionUserMutation, types.UpdateSessionUserMutationVariables>(UpdateSessionUserDocument, options);
       }
-export type UpdateSessionUserCaptainMutationHookResult = ReturnType<typeof useUpdateSessionUserCaptainMutation>;
-export type UpdateSessionUserCaptainMutationResult = Apollo.MutationResult<types.UpdateSessionUserCaptainMutation>;
-export type UpdateSessionUserCaptainMutationOptions = Apollo.BaseMutationOptions<types.UpdateSessionUserCaptainMutation, types.UpdateSessionUserCaptainMutationVariables>;
-export const UpdatePendingUserCaptainDocument = gql`
-    mutation updatePendingUserCaptain($sessionId: ID!, $scName: ID!, $newCaptainId: ID) {
-  updatePendingUserCaptain(
-    sessionId: $sessionId
-    scName: $scName
-    newCaptainId: $newCaptainId
-  ) {
+export type UpdateSessionUserMutationHookResult = ReturnType<typeof useUpdateSessionUserMutation>;
+export type UpdateSessionUserMutationResult = Apollo.MutationResult<types.UpdateSessionUserMutation>;
+export type UpdateSessionUserMutationOptions = Apollo.BaseMutationOptions<types.UpdateSessionUserMutation, types.UpdateSessionUserMutationVariables>;
+export const UpdatePendingUsersDocument = gql`
+    mutation updatePendingUsers($sessionId: ID!, $pendingUsers: [PendingUserInput!]!) {
+  updatePendingUsers(sessionId: $sessionId, pendingUsers: $pendingUsers) {
     ...SessionFragment
   }
 }
     ${SessionFragmentFragmentDoc}`;
-export type UpdatePendingUserCaptainMutationFn = Apollo.MutationFunction<types.UpdatePendingUserCaptainMutation, types.UpdatePendingUserCaptainMutationVariables>;
+export type UpdatePendingUsersMutationFn = Apollo.MutationFunction<types.UpdatePendingUsersMutation, types.UpdatePendingUsersMutationVariables>;
 
 /**
- * __useUpdatePendingUserCaptainMutation__
+ * __useUpdatePendingUsersMutation__
  *
- * To run a mutation, you first call `useUpdatePendingUserCaptainMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdatePendingUserCaptainMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdatePendingUsersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePendingUsersMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updatePendingUserCaptainMutation, { data, loading, error }] = useUpdatePendingUserCaptainMutation({
+ * const [updatePendingUsersMutation, { data, loading, error }] = useUpdatePendingUsersMutation({
  *   variables: {
  *      sessionId: // value for 'sessionId'
- *      scName: // value for 'scName'
- *      newCaptainId: // value for 'newCaptainId'
+ *      pendingUsers: // value for 'pendingUsers'
  *   },
  * });
  */
-export function useUpdatePendingUserCaptainMutation(baseOptions?: Apollo.MutationHookOptions<types.UpdatePendingUserCaptainMutation, types.UpdatePendingUserCaptainMutationVariables>) {
+export function useUpdatePendingUsersMutation(baseOptions?: Apollo.MutationHookOptions<types.UpdatePendingUsersMutation, types.UpdatePendingUsersMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<types.UpdatePendingUserCaptainMutation, types.UpdatePendingUserCaptainMutationVariables>(UpdatePendingUserCaptainDocument, options);
+        return Apollo.useMutation<types.UpdatePendingUsersMutation, types.UpdatePendingUsersMutationVariables>(UpdatePendingUsersDocument, options);
       }
-export type UpdatePendingUserCaptainMutationHookResult = ReturnType<typeof useUpdatePendingUserCaptainMutation>;
-export type UpdatePendingUserCaptainMutationResult = Apollo.MutationResult<types.UpdatePendingUserCaptainMutation>;
-export type UpdatePendingUserCaptainMutationOptions = Apollo.BaseMutationOptions<types.UpdatePendingUserCaptainMutation, types.UpdatePendingUserCaptainMutationVariables>;
+export type UpdatePendingUsersMutationHookResult = ReturnType<typeof useUpdatePendingUsersMutation>;
+export type UpdatePendingUsersMutationResult = Apollo.MutationResult<types.UpdatePendingUsersMutation>;
+export type UpdatePendingUsersMutationOptions = Apollo.BaseMutationOptions<types.UpdatePendingUsersMutation, types.UpdatePendingUsersMutationVariables>;
 export const JoinSessionDocument = gql`
     mutation joinSession($joinId: ID!) {
   joinSession(joinId: $joinId) {

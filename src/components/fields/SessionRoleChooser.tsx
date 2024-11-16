@@ -1,58 +1,24 @@
 import * as React from 'react'
 import { MenuItem, Select, Tooltip, Typography } from '@mui/material'
-import { ObjectValues } from '@regolithco/common'
-import { Engineering, LocalPolice, LocalShipping, ManageAccounts, Support, TravelExplore } from '@mui/icons-material'
+import { SessionRoleEnum } from '@regolithco/common'
+import { QuestionMark } from '@mui/icons-material'
+import { SessionRoleColors, SessionRoleIcons, SessionRoleNames } from '../../lib/roles'
 
 export interface SessionRoleChooserProps {
-  value: SessionRoleEnum | ''
+  value?: string | null
   disabled?: boolean
   onChange: (value: SessionRoleEnum | null) => void
 }
 
-export const SessionRoleEnum = {
-  Manager: 'MANAGER',
-  Scout: 'SCOUT',
-  Medical: 'MEDICAL',
-  Security: 'SECURITY',
-  Logistics: 'LOGISTICS',
-  Transport: 'TRANSPORT',
-} as const
-export type SessionRoleEnum = ObjectValues<typeof SessionRoleEnum>
-
-export const SessionRoleNames: Record<SessionRoleEnum, string> = {
-  [SessionRoleEnum.Manager]: 'Manager',
-  [SessionRoleEnum.Scout]: 'Surveyor / Scout',
-  [SessionRoleEnum.Medical]: 'Medical & Rescue',
-  [SessionRoleEnum.Security]: 'Security',
-  [SessionRoleEnum.Logistics]: 'Logistics & Support',
-  [SessionRoleEnum.Transport]: 'Transport',
-}
-
-export const SessionRoleIcons: Record<SessionRoleEnum, React.ReactNode> = {
-  [SessionRoleEnum.Manager]: <ManageAccounts />,
-  [SessionRoleEnum.Scout]: <TravelExplore />,
-  [SessionRoleEnum.Medical]: <Support />,
-  [SessionRoleEnum.Security]: <LocalPolice />,
-  [SessionRoleEnum.Logistics]: <Engineering />,
-  [SessionRoleEnum.Transport]: <LocalShipping />,
-}
-export const SessionRoleColors: Record<SessionRoleEnum, string> = {
-  [SessionRoleEnum.Manager]: '#ff0',
-  [SessionRoleEnum.Scout]: '#0f0',
-  [SessionRoleEnum.Medical]: '#0ff',
-  [SessionRoleEnum.Security]: '#f00',
-  [SessionRoleEnum.Logistics]: '#ccc',
-  [SessionRoleEnum.Transport]: '#f0f',
-}
-
 export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, disabled, onChange }) => {
+  const found = value && Object.values(SessionRoleEnum).find((role) => role === value)
+  const roleName = found ? SessionRoleNames[found] : value
+  const icon = found ? SessionRoleIcons[found] : null
+  const color = found ? SessionRoleColors[found] : '#555555'
+
   if (disabled)
     return value ? (
-      <RoleChooserItem
-        roleName={SessionRoleNames[value as SessionRoleEnum]}
-        icon={SessionRoleIcons[value as SessionRoleEnum]}
-        color={SessionRoleColors[value as SessionRoleEnum]}
-      />
+      <RoleChooserItem roleName={roleName} icon={icon} color={SessionRoleColors[value as SessionRoleEnum]} />
     ) : (
       <RoleChooserItem />
     )
@@ -71,18 +37,12 @@ export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, d
               Select
             </Typography>
           )
-        return (
-          <RoleChooserItem
-            roleName={SessionRoleNames[value as SessionRoleEnum]}
-            icon={SessionRoleIcons[value as SessionRoleEnum]}
-            color={SessionRoleColors[value as SessionRoleEnum]}
-          />
-        )
+        return <RoleChooserItem roleName={roleName} icon={icon} color={SessionRoleColors[value as SessionRoleEnum]} />
       }}
       onChange={(e) => onChange(e.target.value ? (e.target.value as SessionRoleEnum) : null)}
     >
       <MenuItem value="">
-        <RoleChooserItem roleName="" />
+        <RoleChooserItem roleName="None" />
       </MenuItem>
       {Object.values(SessionRoleEnum).map((role, idx) => (
         <MenuItem
@@ -92,12 +52,12 @@ export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, d
             '& svg': {
               mr: 1,
             },
-            color: SessionRoleColors[role as SessionRoleEnum],
           }}
         >
           <RoleChooserItem
-            roleName={SessionRoleNames[role as SessionRoleEnum]}
-            icon={SessionRoleIcons[role as SessionRoleEnum]}
+            roleName={SessionRoleNames[role]}
+            icon={SessionRoleIcons[role]}
+            color={SessionRoleColors[role]}
           />
         </MenuItem>
       ))}
@@ -107,13 +67,13 @@ export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, d
 
 export const SessionRoleIconBadge: React.FC<{ role: SessionRoleEnum }> = ({ role }) => {
   return (
-    <Tooltip title={SessionRoleNames[role]}>
-      <>{SessionRoleIcons[role]}</>
+    <Tooltip title={SessionRoleNames[role] || role}>
+      <>{SessionRoleIcons[role] || <QuestionMark />}</>
     </Tooltip>
   )
 }
 
-export const RoleChooserItem: React.FC<{ roleName?: string; icon?: React.ReactNode; color?: string }> = ({
+export const RoleChooserItem: React.FC<{ roleName?: string | null; icon?: React.ReactNode; color?: string }> = ({
   roleName,
   icon,
   color,

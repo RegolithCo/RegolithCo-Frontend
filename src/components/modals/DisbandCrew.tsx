@@ -8,7 +8,7 @@ export interface DisbandModalProps {
 }
 
 export const DisbandModal: React.FC<DisbandModalProps> = ({ open, onClose }) => {
-  const { mySessionUser, crewHierarchy, updateSessionUserCaptain, updatePendingUserCaptain } =
+  const { mySessionUser, crewHierarchy, updateSessionUserCaptain, updatePendingUsers } =
     React.useContext(SessionContext)
   return (
     <DeleteModal
@@ -25,7 +25,7 @@ export const DisbandModal: React.FC<DisbandModalProps> = ({ open, onClose }) => 
         if (crewHierarchy[mySessionUser.ownerId] && crewHierarchy[mySessionUser.ownerId].innactiveSCNames) {
           Promise.allSettled(
             crewHierarchy[mySessionUser.ownerId].innactiveSCNames.map((scName) =>
-              updatePendingUserCaptain(scName, null)
+              updatePendingUsers([{ scName, captainId: null }])
             )
           ).then(onClose)
         }

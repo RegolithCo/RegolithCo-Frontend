@@ -274,6 +274,7 @@ export const SessionPageContainer: React.FC = () => {
           navigate: navigate,
           loading: sessionQueries.loading,
           mutating: sessionQueries.mutating,
+          isSessionAdmin: amISessionOwner,
           // User
           myUserProfile,
           // A bit redundant but we need it
@@ -303,8 +304,10 @@ export const SessionPageContainer: React.FC = () => {
           // Session User Stuff
           setActiveModal,
           updateMySessionUser: sessionQueries.updateMySessionUser,
+          updateSessionRole: sessionQueries.updateSessionRole,
+          updateShipRole: sessionQueries.updateShipRole,
           updateSessionUserCaptain: sessionQueries.updateSessionUserCaptain,
-          updatePendingUserCaptain: sessionQueries.updatePendingUserCaptain,
+          updatePendingUsers: sessionQueries.updatePendingUsers,
 
           openActiveUserModal,
           openPendingUserModal,

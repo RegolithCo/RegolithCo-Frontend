@@ -504,7 +504,6 @@ export const WorkOrderListMonth: React.FC<WorkOrderListMonthProps> = ({ yearMont
         {currHeading}
       </Typography>
       <WorkOrderTable
-        disableContextMenu
         sessionActive
         workOrders={yearMonthArr}
         columns={[

@@ -70,7 +70,7 @@ export type MiningLoadoutFieldPolicy = {
 	ship?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'deliverWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'mergeAccount' | 'mergeAccountAdmin' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'setUserPlan' | 'updateLoadout' | 'updatePendingUserCaptain' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUserCaptain' | 'updateUserProfile' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'userAPIKey' | 'verifyUserProfile' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('addFriends' | 'addScoutingFind' | 'addSessionMentions' | 'claimWorkOrder' | 'createLoadout' | 'createSession' | 'createWorkOrder' | 'deleteCrewShare' | 'deleteLoadout' | 'deleteScoutingFind' | 'deleteSession' | 'deleteUserProfile' | 'deleteWorkOrder' | 'deliverWorkOrder' | 'failWorkOrder' | 'joinScoutingFind' | 'joinSession' | 'leaveScoutingFind' | 'leaveSession' | 'markCrewSharePaid' | 'mergeAccount' | 'mergeAccountAdmin' | 'reanimateSession' | 'refreshAvatar' | 'removeFriends' | 'removeSessionCrew' | 'removeSessionMentions' | 'requestVerifyUserProfile' | 'rotateShareId' | 'setLookupData' | 'setUserPlan' | 'updateLoadout' | 'updatePendingUsers' | 'updateScoutingFind' | 'updateSession' | 'updateSessionUser' | 'updateUserProfile' | 'updateWorkOrder' | 'upsertCrewShare' | 'upsertSessionUser' | 'userAPIKey' | 'verifyUserProfile' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	addFriends?: FieldPolicy<any> | FieldReadFunction<any>,
 	addScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -104,10 +104,10 @@ export type MutationFieldPolicy = {
 	setLookupData?: FieldPolicy<any> | FieldReadFunction<any>,
 	setUserPlan?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateLoadout?: FieldPolicy<any> | FieldReadFunction<any>,
-	updatePendingUserCaptain?: FieldPolicy<any> | FieldReadFunction<any>,
+	updatePendingUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateScoutingFind?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateSession?: FieldPolicy<any> | FieldReadFunction<any>,
-	updateSessionUserCaptain?: FieldPolicy<any> | FieldReadFunction<any>,
+	updateSessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateUserProfile?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateWorkOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	upsertCrewShare?: FieldPolicy<any> | FieldReadFunction<any>,
