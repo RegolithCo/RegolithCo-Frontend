@@ -217,6 +217,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
           '&.MuiListItem-root': {},
         }}
       >
+        {expandButton}
         <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
         <ListItemAvatar>
           <UserAvatar
@@ -301,7 +302,6 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
           <IconButton color="default" onClick={handleContextMenu}>
             <MoreVert />
           </IconButton>
-          {expandButton}
         </ListItemSecondaryAction>
       </ListItem>
     </>

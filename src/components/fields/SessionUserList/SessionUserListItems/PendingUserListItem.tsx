@@ -71,7 +71,30 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({ pendin
             },
             //
           }}
-          primary={getSafeName(pendingUser.scName)}
+          primary={
+            <Stack direction="row" spacing={1}>
+              <Typography variant="body2">{getSafeName(pendingUser.scName)}</Typography>
+              {isCrewDisplay && (
+                <SessionRoleIconBadge
+                  role={pendingUser.sessionRole as SessionRoleEnum}
+                  sx={{
+                    fontSize: '1rem',
+                    mt: -0.5,
+                    mr: 1,
+                  }}
+                />
+              )}
+              {isCrewDisplay && (
+                <ShipRoleIconBadge
+                  role={pendingUser.shipRole as ShipRoleEnum}
+                  sx={{
+                    fontSize: '1rem',
+                    mt: -0.5,
+                  }}
+                />
+              )}
+            </Stack>
+          }
           secondaryTypographyProps={{
             component: 'div',
           }}

@@ -23,7 +23,7 @@ import { Cancel, CheckCircle, DeleteForever, GroupAdd, GroupRemove, Logout, Rock
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { SessionRoleChooser, SessionRoleRenderItem } from '../../fields/SessionRoleChooser'
+import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
 import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
 dayjs.extend(relativeTime)
 
@@ -137,56 +137,58 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
           </Typography>
         )}
 
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          justifyContent={'space-around'}
-          sx={{
-            border: '1px solid #555555',
-            pb: 2,
-            my: 2,
-          }}
-        >
-          {pendingUser.sessionRole && (
-            <Box>
-              <Typography variant="overline" color="primary" component="div">
-                Session Role
-              </Typography>
-              <SessionRoleChooser
-                onChange={(newRole) => {
-                  updatePendingUsers([
-                    {
-                      ...pendingUser,
-                      sessionRole: newRole || null,
-                    } as PendingUserInput,
-                  ])
-                }}
-                disabled={sessionRoleDisabled}
-                value={pendingUser.sessionRole}
-              />
-            </Box>
-          )}
-          {pendingUser.shipRole && (
-            <Box>
-              <Typography variant="overline" color="primary" component="div">
-                Ship Role
-              </Typography>
-              <ShipRoleChooser
-                onChange={(newRole) => {
-                  updatePendingUsers([
-                    {
-                      ...pendingUser,
-                      shipRole: newRole || null,
-                    } as PendingUserInput,
-                  ])
-                }}
-                disabled={shipRoleDisabled}
-                value={pendingUser.shipRole}
-              />
-            </Box>
-          )}
-        </Stack>
+        {(pendingUser.sessionRole || pendingUser.shipRole) && (
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent={'space-around'}
+            sx={{
+              border: '1px solid #555555',
+              pb: 2,
+              my: 2,
+            }}
+          >
+            {pendingUser.sessionRole && (
+              <Box>
+                <Typography variant="overline" color="primary" component="div">
+                  Session Role
+                </Typography>
+                <SessionRoleChooser
+                  onChange={(newRole) => {
+                    updatePendingUsers([
+                      {
+                        ...pendingUser,
+                        sessionRole: newRole || null,
+                      } as PendingUserInput,
+                    ])
+                  }}
+                  disabled={sessionRoleDisabled}
+                  value={pendingUser.sessionRole}
+                />
+              </Box>
+            )}
+            {pendingUser.shipRole && (
+              <Box>
+                <Typography variant="overline" color="primary" component="div">
+                  Ship Role
+                </Typography>
+                <ShipRoleChooser
+                  onChange={(newRole) => {
+                    updatePendingUsers([
+                      {
+                        ...pendingUser,
+                        shipRole: newRole || null,
+                      } as PendingUserInput,
+                    ])
+                  }}
+                  disabled={shipRoleDisabled}
+                  value={pendingUser.shipRole}
+                />
+              </Box>
+            )}
+          </Stack>
+        )}
 
         {vehicle && theirCaptain && (
           <Box>

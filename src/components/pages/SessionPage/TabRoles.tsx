@@ -177,23 +177,52 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                 const isCaptain =
                   !isPendingUser && !!captains.find((su) => su.ownerId === (crew as SessionUser).ownerId)
 
+                let isEndOfCrew =
+                  idx < allCrew.length - 1 &&
+                  idx > 0 &&
+                  allCrew[idx + 1][0].captainId !== crew.captainId &&
+                  allCrew[idx + 1][0].captainId !== (crew as SessionUser).ownerId
+                if (idx === allCrew.length - 1 && crew.captainId) isEndOfCrew = true
                 return (
                   <TableRow
                     key={idx}
                     sx={{
                       // Make the background a gradient from primary.main at 0 to transparent at 10%
-                      background:
-                        groupCrew && isCaptain
-                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 90%)`
-                          : undefined,
-                      borderTop: groupCrew && isCaptain ? `2px solid ${theme.palette.primary.main}` : undefined,
+                      '& .MuiTableCell-root': {
+                        borderTop: groupCrew && isCaptain ? `2px solid ${theme.palette.primary.main}` : undefined,
+                        borderBottom:
+                          groupCrew && isEndOfCrew ? `1px solid ${theme.palette.secondary.dark}` : undefined,
+                        background:
+                          groupCrew && isCaptain
+                            ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 90%)`
+                            : groupCrew && isEndOfCrew
+                              ? `linear-gradient(0deg, ${alpha(theme.palette.secondary.dark, 0.2)} 0%, transparent 90%)`
+                              : undefined,
+                      },
                     }}
                   >
                     <TableCell
                       padding="none"
                       width={'40%'}
                       sx={{
-                        pl: isCrewDisplay ? 7 : 0,
+                        pl: isCrewDisplay ? 5 : 0,
+                        position: 'relative',
+                        '&::before':
+                          groupCrew && isCaptain
+                            ? {
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                px: 0.5,
+                                borderBottomRightRadius: '5px',
+                                fontSize: '0.7rem',
+                                fontFamily: fontFamilies.robotoMono,
+                                fontWeight: 'bold',
+                                color: theme.palette.primary.contrastText,
+                                background: theme.palette.primary.main,
+                                content: '"CREW"',
+                              }
+                            : {},
                       }}
                     >
                       <List dense>

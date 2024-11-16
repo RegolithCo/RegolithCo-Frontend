@@ -147,46 +147,48 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
           )}
         </Typography>
 
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          justifyContent={'space-around'}
-          sx={{
-            border: '1px solid #555555',
-            pb: 2,
-            my: 2,
-          }}
-        >
-          {sessionUser.sessionRole && (
-            <Box>
-              <Typography variant="overline" color="primary" component="div">
-                Session Role
-              </Typography>
-              <SessionRoleChooser
-                onChange={(newRole) => {
-                  updateSessionRole(sessionUser.ownerId, newRole || null)
-                }}
-                disabled={sessionRoleDisabled}
-                value={sessionUser.sessionRole}
-              />
-            </Box>
-          )}
-          {sessionUser.shipRole && (
-            <Box>
-              <Typography variant="overline" color="primary" component="div">
-                Ship Role
-              </Typography>
-              <ShipRoleChooser
-                onChange={(newRole) => {
-                  updateShipRole(sessionUser.ownerId, newRole || null)
-                }}
-                disabled={shipRoleDisabled}
-                value={sessionUser.shipRole}
-              />
-            </Box>
-          )}
-        </Stack>
+        {(sessionUser.sessionRole || sessionUser.shipRole || !sessionRoleDisabled || !shipRoleDisabled) && (
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent={'space-around'}
+            sx={{
+              border: '1px solid #555555',
+              pb: 2,
+              my: 2,
+            }}
+          >
+            {(sessionUser.sessionRole || !sessionRoleDisabled) && (
+              <Box>
+                <Typography variant="overline" color="primary" component="div">
+                  Session Role
+                </Typography>
+                <SessionRoleChooser
+                  onChange={(newRole) => {
+                    updateSessionRole(sessionUser.ownerId, newRole || null)
+                  }}
+                  disabled={sessionRoleDisabled}
+                  value={sessionUser.sessionRole}
+                />
+              </Box>
+            )}
+            {(sessionUser.shipRole || !shipRoleDisabled) && (
+              <Box>
+                <Typography variant="overline" color="primary" component="div">
+                  Ship Role
+                </Typography>
+                <ShipRoleChooser
+                  onChange={(newRole) => {
+                    updateShipRole(sessionUser.ownerId, newRole || null)
+                  }}
+                  disabled={shipRoleDisabled}
+                  value={sessionUser.shipRole}
+                />
+              </Box>
+            )}
+          </Stack>
+        )}
 
         <Box>
           <Typography variant="overline" color="primary" component="div">

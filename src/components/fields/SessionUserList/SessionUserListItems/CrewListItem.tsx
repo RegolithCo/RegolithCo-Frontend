@@ -4,7 +4,7 @@ import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { PendingUserListItem } from './PendingUserListItem'
-import { Accordion, AccordionDetails, Divider, IconButton, List } from '@mui/material'
+import { Accordion, AccordionDetails, Divider, IconButton, List, Tooltip } from '@mui/material'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { stateColorsBGThunk } from './StateChip'
 
@@ -92,15 +92,20 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
           sessionUser={captain}
           isCrewDisplay
           expandButton={
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation()
-                setExpanded(!expanded)
-              }}
-            >
-              {expanded ? <ExpandMore /> : <ExpandLess />}
-            </IconButton>
+            <Tooltip title={expanded ? 'Collapse Crew' : 'Expand Crew'}>
+              <IconButton
+                sx={{
+                  ml: -2,
+                }}
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setExpanded(!expanded)
+                }}
+              >
+                {expanded ? <ExpandMore /> : <ExpandLess />}
+              </IconButton>
+            </Tooltip>
           }
         />
       </List>
