@@ -13,9 +13,11 @@ import {
 import {
   getSessionUserStateName,
   MiningLoadout,
+  SessionRoleEnum,
   SessionUser,
   SessionUserStateEnum,
   ShipLookups,
+  ShipRoleEnum,
   User,
   VehicleRoleEnum,
 } from '@regolithco/common'
@@ -30,6 +32,8 @@ import { shipColorLookup } from '../../VehicleChooser'
 import { AppContext } from '../../../../context/app.context'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
 import { LookupsContext } from '../../../../context/lookupsContext'
+import { SessionRoleIconBadge } from '../../SessionRoleChooser'
+import { ShipRoleIconBadge } from '../../ShipRoleChooser'
 
 export interface ActiveUserListItemProps {
   sessionUser: SessionUser
@@ -239,28 +243,45 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
             component: 'div',
           }}
           secondary={
-            (!isCrewDisplay || isCaptain) && (
-              <Stack direction="row" spacing={1}>
-                {secondaryText.length > 0 ? (
-                  secondaryText.map((it, idx) => (
-                    <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
-                      {it}
+            <Stack direction="row" spacing={1}>
+              <SessionRoleIconBadge
+                role={sessionUser.sessionRole as SessionRoleEnum}
+                sx={{
+                  fontSize: '1rem',
+                  mt: -0.5,
+                  mr: 1,
+                }}
+              />
+              <ShipRoleIconBadge
+                role={sessionUser.shipRole as ShipRoleEnum}
+                sx={{
+                  fontSize: '1rem',
+                  mt: -0.5,
+                }}
+              />
+              {(!isCrewDisplay || isCaptain) && (
+                <>
+                  {secondaryText.length > 0 ? (
+                    secondaryText.map((it, idx) => (
+                      <Typography key={`it-${idx}`} variant="caption" sx={{ fontSize: '0.65rem' }}>
+                        {it}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography
+                      sx={{
+                        fontFamily: fontFamilies.robotoMono,
+                        color: alpha(theme.palette.text.secondary, 0.3),
+                        fontWeight: 'bold',
+                        fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
+                      }}
+                    >
+                      Session User
                     </Typography>
-                  ))
-                ) : (
-                  <Typography
-                    sx={{
-                      fontFamily: fontFamilies.robotoMono,
-                      color: alpha(theme.palette.text.secondary, 0.3),
-                      fontWeight: 'bold',
-                      fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
-                    }}
-                  >
-                    Session User
-                  </Typography>
-                )}
-              </Stack>
-            )
+                  )}
+                </>
+              )}
+            </Stack>
           }
         />
         <ListItemSecondaryAction>

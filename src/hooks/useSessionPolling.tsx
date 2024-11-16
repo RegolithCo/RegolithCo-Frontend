@@ -11,7 +11,7 @@ import {
 } from '../schema'
 import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
-import { EventNameEnum, ScoutingFind, Session, SessionStateEnum, SessionUser, WorkOrder } from '@regolithco/common'
+import { EventNameEnum, ScoutingFind, Session, SessionUser, WorkOrder } from '@regolithco/common'
 import { ApolloClient, Reference, useApolloClient } from '@apollo/client'
 
 const POLL_TIME = 5000

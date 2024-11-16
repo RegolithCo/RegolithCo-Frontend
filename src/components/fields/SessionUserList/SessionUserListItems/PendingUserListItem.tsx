@@ -1,6 +1,14 @@
 import React, { useRef } from 'react'
-import { ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, IconButton, Typography } from '@mui/material'
-import { PendingUser } from '@regolithco/common'
+import {
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  Typography,
+  Stack,
+} from '@mui/material'
+import { PendingUser, SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
 import { MoreVert } from '@mui/icons-material'
 import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
@@ -8,6 +16,8 @@ import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
 import { AppContext } from '../../../../context/app.context'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
+import { SessionRoleIconBadge } from '../../SessionRoleChooser'
+import { ShipRoleIconBadge } from '../../ShipRoleChooser'
 
 export interface PendingUserListItemProps {
   pendingUser: PendingUser
@@ -67,16 +77,33 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({ pendin
           }}
           secondary={
             !isCrewDisplay && (
-              <Typography
-                sx={{
-                  fontFamily: fontFamilies.robotoMono,
-                  color: alpha(theme.palette.text.secondary, 0.3),
-                  fontWeight: 'bold',
-                  fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
-                }}
-              >
-                Pending User
-              </Typography>
+              <Stack direction="row" spacing={1}>
+                <SessionRoleIconBadge
+                  role={pendingUser.sessionRole as SessionRoleEnum}
+                  sx={{
+                    fontSize: '1rem',
+                    mt: -0.5,
+                    mr: 1,
+                  }}
+                />
+                <ShipRoleIconBadge
+                  role={pendingUser.shipRole as ShipRoleEnum}
+                  sx={{
+                    fontSize: '1rem',
+                    mt: -0.5,
+                  }}
+                />
+                <Typography
+                  sx={{
+                    fontFamily: fontFamilies.robotoMono,
+                    color: alpha(theme.palette.text.secondary, 0.3),
+                    fontWeight: 'bold',
+                    fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
+                  }}
+                >
+                  Pending User
+                </Typography>
+              </Stack>
             )
           }
         />

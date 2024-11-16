@@ -5,6 +5,9 @@ import {
   FormControlLabel,
   IconButton,
   List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Stack,
   Switch,
   SxProps,
@@ -20,6 +23,7 @@ import {
   useTheme,
 } from '@mui/material'
 import {
+  User,
   DestructuredSettings,
   PendingUser,
   PendingUserInput,
@@ -29,13 +33,12 @@ import {
 } from '@regolithco/common'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { fontFamilies } from '../../../theme'
-import { PendingUserListItem } from '../../fields/SessionUserList/SessionUserListItems/PendingUserListItem'
-import { ActiveUserListItem } from '../../fields/SessionUserList/SessionUserListItems/ActiveUserListItem'
 import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
 import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
 import { DeleteSweep } from '@mui/icons-material'
 import { DeleteModal } from '../../modals/DeleteModal'
-import log from 'loglevel'
+import { UserAvatar } from '../../UserAvatar'
+import { AppContext } from '../../../context/app.context'
 
 export interface RolesTabProps {
   // For the profile version we only have the sessionSettings
@@ -53,6 +56,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const { isSessionAdmin, captains, updateSessionRole, updateShipRole, updatePendingUsers, mySessionUser, session } =
     React.useContext(SessionContext)
+  const { getSafeName, hideNames } = React.useContext(AppContext)
   const [groupCrew, setGroupCrew] = React.useState<boolean>(true)
 
   const allCrew: [PendingUser | SessionUser, boolean, boolean][] = React.useMemo(() => {
@@ -169,6 +173,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
               {allCrew.map(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
                 const isCrewDisplay = Boolean(groupCrew && crew.captainId)
                 const isPendingUser = !!(crew as PendingUser).scName
+                const scName = (crew as PendingUser).scName || (crew as SessionUser).owner?.scName || ''
                 const isCaptain =
                   !isPendingUser && !!captains.find((su) => su.ownerId === (crew as SessionUser).ownerId)
 
@@ -179,7 +184,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                       // Make the background a gradient from primary.main at 0 to transparent at 10%
                       background:
                         groupCrew && isCaptain
-                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.5)} 0%, transparent 20%)`
+                          ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 90%)`
                           : undefined,
                       borderTop: groupCrew && isCaptain ? `2px solid ${theme.palette.primary.main}` : undefined,
                     }}
@@ -192,11 +197,45 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                       }}
                     >
                       <List dense>
-                        {isPendingUser ? (
-                          <PendingUserListItem pendingUser={crew as PendingUser} isCrewDisplay={isCrewDisplay} />
-                        ) : (
-                          <ActiveUserListItem sessionUser={crew as SessionUser} isCrewDisplay={isCrewDisplay} />
-                        )}
+                        <ListItem>
+                          <ListItemAvatar>
+                            {isPendingUser ? (
+                              <UserAvatar size={'medium'} pendingUser={crew as PendingUser} />
+                            ) : (
+                              <UserAvatar
+                                size={'medium'}
+                                user={(crew as SessionUser).owner as User}
+                                privacy={hideNames}
+                                sessionOwner={session?.ownerId === (crew as SessionUser).ownerId}
+                              />
+                            )}
+                          </ListItemAvatar>
+                          <ListItemText
+                            sx={{
+                              '& .MuiListItemText-secondary': {
+                                fontSize: '0.7rem',
+                              },
+                            }}
+                            primary={getSafeName(scName)}
+                            secondaryTypographyProps={{
+                              component: 'div',
+                            }}
+                            secondary={
+                              <Typography
+                                sx={{
+                                  fontFamily: fontFamilies.robotoMono,
+                                  color: alpha(theme.palette.text.secondary, 0.3),
+                                  fontWeight: 'bold',
+                                  fontSize: '0.7rem',
+                                }}
+                              >
+                                {isCaptain ? 'CAPTAIN: ' : ''}
+                                {isCrewDisplay ? 'CREW MEMBER: ' : ''}
+                                {isPendingUser ? 'Pending User' : 'Session User'}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
                       </List>
                     </TableCell>
                     <TableCell width={'30%'}>

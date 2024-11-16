@@ -23,14 +23,14 @@ export const ShipRoleNames: Record<ShipRoleEnum, string> = {
   [ShipRoleEnum.Stevedore]: 'Stevedore',
 }
 
-export const ShipRoleIcons: Record<ShipRoleEnum, React.ReactNode> = {
-  [ShipRoleEnum.Pilot]: <RocketLaunch />,
-  [ShipRoleEnum.Copilot]: <RocketLaunch />,
-  [ShipRoleEnum.Engineer]: <Handyman />,
-  [ShipRoleEnum.Turret]: <Security />,
-  [ShipRoleEnum.Security]: <Security />,
-  [ShipRoleEnum.Medic]: <Support />,
-  [ShipRoleEnum.Stevedore]: <Inventory />,
+export const ShipRoleIcons: Record<ShipRoleEnum, typeof RocketLaunch> = {
+  [ShipRoleEnum.Pilot]: RocketLaunch,
+  [ShipRoleEnum.Copilot]: RocketLaunch,
+  [ShipRoleEnum.Engineer]: Handyman,
+  [ShipRoleEnum.Turret]: Security,
+  [ShipRoleEnum.Security]: Security,
+  [ShipRoleEnum.Medic]: Support,
+  [ShipRoleEnum.Stevedore]: Inventory,
 }
 
 export const ShipRoleColors: Record<ShipRoleEnum, string> = {
@@ -52,13 +52,13 @@ export const SessionRoleNames: Record<SessionRoleEnum, string> = {
   [SessionRoleEnum.Transport]: 'Transport',
 }
 
-export const SessionRoleIcons: Record<SessionRoleEnum, React.ReactNode> = {
-  [SessionRoleEnum.Manager]: <ManageAccounts />,
-  [SessionRoleEnum.Scout]: <TravelExplore />,
-  [SessionRoleEnum.Medical]: <Support />,
-  [SessionRoleEnum.Security]: <LocalPolice />,
-  [SessionRoleEnum.Logistics]: <Engineering />,
-  [SessionRoleEnum.Transport]: <LocalShipping />,
+export const SessionRoleIcons: Record<SessionRoleEnum, typeof RocketLaunch> = {
+  [SessionRoleEnum.Manager]: ManageAccounts,
+  [SessionRoleEnum.Scout]: TravelExplore,
+  [SessionRoleEnum.Medical]: Support,
+  [SessionRoleEnum.Security]: LocalPolice,
+  [SessionRoleEnum.Logistics]: Engineering,
+  [SessionRoleEnum.Transport]: LocalShipping,
 }
 export const SessionRoleColors: Record<SessionRoleEnum, string> = {
   [SessionRoleEnum.Manager]: '#ff0',

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { MenuItem, Select, Tooltip, Typography } from '@mui/material'
+import { MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
 import { ShipRoleEnum } from '@regolithco/common'
 import { QuestionMark } from '@mui/icons-material'
 import { RoleChooserItem } from './SessionRoleChooser'
@@ -12,16 +12,13 @@ export interface ShipRoleChooserProps {
 }
 
 export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disabled, onChange }) => {
+  const found = value && Object.values(ShipRoleEnum).find((role) => role === value)
+  const roleName = found ? ShipRoleNames[found] : value
+  const Icon = found ? ShipRoleIcons[found] : QuestionMark
+  const color = found ? ShipRoleColors[found] : '#555555'
+
   if (disabled)
-    return value ? (
-      <RoleChooserItem
-        roleName={ShipRoleNames[value as ShipRoleEnum] || value}
-        icon={ShipRoleIcons[value as ShipRoleEnum]}
-        color={ShipRoleColors[value as ShipRoleEnum]}
-      />
-    ) : (
-      <RoleChooserItem />
-    )
+    return value ? <RoleChooserItem roleName={roleName} icon={<Icon />} color={color} /> : <RoleChooserItem />
   return (
     <Select
       value={value || ''}
@@ -37,44 +34,51 @@ export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disable
               Select
             </Typography>
           )
-        return (
-          <RoleChooserItem
-            roleName={ShipRoleNames[value as ShipRoleEnum] || value}
-            icon={ShipRoleIcons[value as ShipRoleEnum]}
-            color={ShipRoleColors[value as ShipRoleEnum]}
-          />
-        )
+        return <RoleChooserItem roleName={roleName} icon={<Icon />} color={color} />
       }}
       onChange={(e) => onChange(e.target.value ? (e.target.value as ShipRoleEnum) : null)}
     >
       <MenuItem value="">
         <RoleChooserItem />
       </MenuItem>
-      {Object.values(ShipRoleEnum).map((role, idx) => (
-        <MenuItem
-          value={role}
-          key={idx}
-          sx={{
-            '& svg': {
-              mr: 1,
-            },
-            color: ShipRoleColors[role as ShipRoleEnum],
-          }}
-        >
-          <RoleChooserItem
-            roleName={ShipRoleNames[role as ShipRoleEnum] || role}
-            icon={ShipRoleIcons[role as ShipRoleEnum]}
-          />
-        </MenuItem>
-      ))}
+      {Object.values(ShipRoleEnum).map((role, idx) => {
+        const RoleIcon = ShipRoleIcons[role]
+        return (
+          <MenuItem
+            value={role}
+            key={idx}
+            sx={{
+              '& svg': {
+                mr: 1,
+              },
+              color: ShipRoleColors[role as ShipRoleEnum],
+            }}
+          >
+            <RoleChooserItem
+              roleName={ShipRoleNames[role as ShipRoleEnum] || role}
+              icon={<RoleIcon />}
+              color={ShipRoleColors[role]}
+            />
+          </MenuItem>
+        )
+      })}
     </Select>
   )
 }
 
-export const SessionRoleIconBadge: React.FC<{ role: ShipRoleEnum }> = ({ role }) => {
+export const ShipRoleIconBadge: React.FC<{ role: ShipRoleEnum | string; sx?: SxProps<Theme> }> = ({ role, sx }) => {
+  if (!role) return null
+  const roleName = ShipRoleNames[role as ShipRoleEnum] || role
+  const Icon = ShipRoleIcons[role] || QuestionMark
+  const color = ShipRoleColors[role as ShipRoleEnum] || '#555555'
   return (
-    <Tooltip title={ShipRoleNames[role] || role}>
-      <>{ShipRoleIcons[role] || <QuestionMark />}</>
+    <Tooltip title={`Session Role: ${roleName}`}>
+      <Icon
+        sx={{
+          color: color,
+          ...(sx || {}),
+        }}
+      />
     </Tooltip>
   )
 }

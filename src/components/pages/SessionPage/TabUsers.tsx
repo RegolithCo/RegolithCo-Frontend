@@ -123,7 +123,7 @@ export const TabUsers: React.FC<TabUsersProps> = () => {
           <Accordion defaultExpanded={true} disableGutters>
             <AccordionSummary expandIcon={<ExpandMore />} sx={styles.drawerAccordionSummaryActive}>
               <Typography>
-                {singleActives.length + singleInnactives.length} Solo Pilots
+                {singleActives.length + singleInnactives.length} Solo Pilot
                 {singleActives.length + singleInnactives.length === 1 ? '' : 's'}
               </Typography>
               <Box sx={{ flexGrow: 1 }} />

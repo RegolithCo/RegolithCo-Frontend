@@ -22,6 +22,8 @@ import { ModuleIcon } from '../../../icons'
 import { GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
+import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
 
 dayjs.extend(relativeTime)
 
@@ -37,10 +39,14 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
   const dataStore = React.useContext(LookupsContext)
 
   const {
+    session,
     captains,
     mySessionUser,
     myUserProfile,
+    isSessionAdmin,
     openLoadoutModal,
+    updateSessionRole,
+    updateShipRole,
     updateSessionUserCaptain,
     addFriend,
     crewHierarchy,
@@ -56,6 +62,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
       ? captains.find((c) => c.ownerId === sessionUser.captainId) || null
       : null
 
+  const isMe = mySessionUser.ownerId === sessionUser.ownerId
   const vehicleCode = theirCaptain?.vehicleCode || sessionUser.vehicleCode
   const vehicle = vehicleCode ? shipLookups.find((s) => s.UEXID === vehicleCode) : null
 
@@ -72,6 +79,14 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
   const crewCount =
     crewHierarchy[sessionUser?.ownerId] &&
     crewHierarchy[sessionUser?.ownerId].activeIds.length + crewHierarchy[sessionUser?.ownerId].innactiveSCNames.length
+
+  let sessionRoleDisabled = true
+  if (isSessionAdmin) sessionRoleDisabled = false
+  else if (!session?.sessionSettings?.controlledSessionRole && isMe) sessionRoleDisabled = false
+
+  let shipRoleDisabled = true
+  if (isSessionAdmin) shipRoleDisabled = false
+  else if (!session?.sessionSettings?.controlledShipRole && (isMe || theyOnMyCrew)) shipRoleDisabled = false
 
   return (
     <Dialog
@@ -131,6 +146,47 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
             </span>
           )}
         </Typography>
+
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent={'space-around'}
+          sx={{
+            border: '1px solid #555555',
+            pb: 2,
+            my: 2,
+          }}
+        >
+          {sessionUser.sessionRole && (
+            <Box>
+              <Typography variant="overline" color="primary" component="div">
+                Session Role
+              </Typography>
+              <SessionRoleChooser
+                onChange={(newRole) => {
+                  updateSessionRole(sessionUser.ownerId, newRole || null)
+                }}
+                disabled={sessionRoleDisabled}
+                value={sessionUser.sessionRole}
+              />
+            </Box>
+          )}
+          {sessionUser.shipRole && (
+            <Box>
+              <Typography variant="overline" color="primary" component="div">
+                Ship Role
+              </Typography>
+              <ShipRoleChooser
+                onChange={(newRole) => {
+                  updateShipRole(sessionUser.ownerId, newRole || null)
+                }}
+                disabled={shipRoleDisabled}
+                value={sessionUser.shipRole}
+              />
+            </Box>
+          )}
+        </Stack>
 
         <Box>
           <Typography variant="overline" color="primary" component="div">

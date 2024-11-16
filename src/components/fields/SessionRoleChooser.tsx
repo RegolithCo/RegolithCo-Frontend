@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { MenuItem, Select, Tooltip, Typography } from '@mui/material'
-import { SessionRoleEnum } from '@regolithco/common'
+import { MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
+import { SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
 import { QuestionMark } from '@mui/icons-material'
 import { SessionRoleColors, SessionRoleIcons, SessionRoleNames } from '../../lib/roles'
 
@@ -13,15 +13,11 @@ export interface SessionRoleChooserProps {
 export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, disabled, onChange }) => {
   const found = value && Object.values(SessionRoleEnum).find((role) => role === value)
   const roleName = found ? SessionRoleNames[found] : value
-  const icon = found ? SessionRoleIcons[found] : null
+  const Icon = found ? SessionRoleIcons[found] : QuestionMark
   const color = found ? SessionRoleColors[found] : '#555555'
 
   if (disabled)
-    return value ? (
-      <RoleChooserItem roleName={roleName} icon={icon} color={SessionRoleColors[value as SessionRoleEnum]} />
-    ) : (
-      <RoleChooserItem />
-    )
+    return value ? <RoleChooserItem roleName={roleName} icon={<Icon />} color={color} /> : <RoleChooserItem />
   return (
     <Select
       value={value || ''}
@@ -37,39 +33,73 @@ export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, d
               Select
             </Typography>
           )
-        return <RoleChooserItem roleName={roleName} icon={icon} color={SessionRoleColors[value as SessionRoleEnum]} />
+        return <RoleChooserItem roleName={roleName} icon={<Icon />} color={color} />
       }}
       onChange={(e) => onChange(e.target.value ? (e.target.value as SessionRoleEnum) : null)}
     >
       <MenuItem value="">
         <RoleChooserItem roleName="None" />
       </MenuItem>
-      {Object.values(SessionRoleEnum).map((role, idx) => (
-        <MenuItem
-          value={role}
-          key={idx}
-          sx={{
-            '& svg': {
-              mr: 1,
-            },
-          }}
-        >
-          <RoleChooserItem
-            roleName={SessionRoleNames[role]}
-            icon={SessionRoleIcons[role]}
-            color={SessionRoleColors[role]}
-          />
-        </MenuItem>
-      ))}
+      {Object.values(SessionRoleEnum).map((role, idx) => {
+        const RoleIcon = SessionRoleIcons[role]
+        return (
+          <MenuItem
+            value={role}
+            key={idx}
+            sx={{
+              '& svg': {
+                mr: 1,
+              },
+            }}
+          >
+            <RoleChooserItem roleName={SessionRoleNames[role]} icon={<RoleIcon />} color={SessionRoleColors[role]} />
+          </MenuItem>
+        )
+      })}
     </Select>
   )
 }
 
-export const SessionRoleIconBadge: React.FC<{ role: SessionRoleEnum }> = ({ role }) => {
+export const SessionRoleIconBadge: React.FC<{ role: SessionRoleEnum | string; sx?: SxProps<Theme> }> = ({
+  role,
+  sx,
+}) => {
+  if (!role) return null
+  const roleName = SessionRoleNames[role as SessionRoleEnum] || role
+  const Icon = SessionRoleIcons[role] || QuestionMark
+  const color = SessionRoleColors[role as SessionRoleEnum] || '#555555'
   return (
-    <Tooltip title={SessionRoleNames[role] || role}>
-      <>{SessionRoleIcons[role] || <QuestionMark />}</>
+    <Tooltip title={`Session Role: ${roleName}`}>
+      <Icon
+        sx={{
+          color: color,
+          ...(sx || {}),
+        }}
+      />
     </Tooltip>
+  )
+}
+
+export const SessionRoleRenderItem: React.FC<{ role?: ShipRoleEnum | string }> = ({ role }) => {
+  if (!role) return null
+  const roleName = SessionRoleNames[role as SessionRoleEnum] || role
+  const Icon = SessionRoleIcons[role] || QuestionMark
+  const color = SessionRoleColors[role as SessionRoleEnum] || '#555555'
+  return (
+    <Typography
+      variant="overline"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        '& svg': {
+          mr: 1,
+        },
+        color: roleName && roleName.length > 0 ? color : '#555555',
+      }}
+    >
+      {<Icon />}
+      {roleName || 'None'}
+    </Typography>
   )
 }
 

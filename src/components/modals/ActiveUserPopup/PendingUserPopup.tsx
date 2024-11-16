@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { PendingUser, SessionUser, ShipLookups } from '@regolithco/common'
+import { PendingUser, PendingUserInput, SessionUser, ShipLookups } from '@regolithco/common'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
@@ -23,6 +23,8 @@ import { Cancel, CheckCircle, DeleteForever, GroupAdd, GroupRemove, Logout, Rock
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { SessionRoleChooser, SessionRoleRenderItem } from '../../fields/SessionRoleChooser'
+import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
 dayjs.extend(relativeTime)
 
 export interface PendingUserPopupProps {
@@ -37,6 +39,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
 
   const dataStore = React.useContext(LookupsContext)
   const {
+    session,
     captains,
     isSessionAdmin,
     mySessionUser,
@@ -72,6 +75,13 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
 
   const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
   const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === myCrewCaptainId)
+
+  let sessionRoleDisabled = true
+  if (isSessionAdmin || !session?.sessionSettings?.controlledSessionRole) sessionRoleDisabled = false
+
+  let shipRoleDisabled = true
+  if (isSessionAdmin) shipRoleDisabled = false
+  else if (!session?.sessionSettings?.controlledShipRole && iAmTheirCaptain) shipRoleDisabled = false
 
   return (
     <Dialog
@@ -126,6 +136,57 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             Status: not on a crew
           </Typography>
         )}
+
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent={'space-around'}
+          sx={{
+            border: '1px solid #555555',
+            pb: 2,
+            my: 2,
+          }}
+        >
+          {pendingUser.sessionRole && (
+            <Box>
+              <Typography variant="overline" color="primary" component="div">
+                Session Role
+              </Typography>
+              <SessionRoleChooser
+                onChange={(newRole) => {
+                  updatePendingUsers([
+                    {
+                      ...pendingUser,
+                      sessionRole: newRole || null,
+                    } as PendingUserInput,
+                  ])
+                }}
+                disabled={sessionRoleDisabled}
+                value={pendingUser.sessionRole}
+              />
+            </Box>
+          )}
+          {pendingUser.shipRole && (
+            <Box>
+              <Typography variant="overline" color="primary" component="div">
+                Ship Role
+              </Typography>
+              <ShipRoleChooser
+                onChange={(newRole) => {
+                  updatePendingUsers([
+                    {
+                      ...pendingUser,
+                      shipRole: newRole || null,
+                    } as PendingUserInput,
+                  ])
+                }}
+                disabled={shipRoleDisabled}
+                value={pendingUser.shipRole}
+              />
+            </Box>
+          )}
+        </Stack>
 
         {vehicle && theirCaptain && (
           <Box>

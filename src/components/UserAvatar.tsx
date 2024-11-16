@@ -143,7 +143,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
             <Avatar
               alt={scName}
               src={!privacy ? myAvatar : undefined}
-              imgProps={{ referrerPolicy: 'no-referrer' }}
               color="secondary"
               sx={{
                 ...avatarStyle,
