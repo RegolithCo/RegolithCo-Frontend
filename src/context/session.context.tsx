@@ -90,6 +90,7 @@ export interface SessionContextType {
 
   // Session
   onCloseSession: () => Promise<unknown>
+  onReOpenSession: () => Promise<unknown>
   addSessionMentions: (scNames: string[]) => Promise<void>
   removeSessionMentions: (scNames: string[]) => Promise<void>
   removeSessionCrew: (scName: string) => Promise<void>
@@ -173,6 +174,7 @@ export const sessionContextDefault: SessionContextType = {
   removeFriend: notAvailablePromise('removeFriend'),
 
   onCloseSession: notAvailablePromise('onCloseSession'),
+  onReOpenSession: notAvailablePromise('onReOpenSession'),
   addSessionMentions: notAvailablePromise('addSessionMentions'),
   removeSessionMentions: notAvailablePromise('removeSessionMentions'),
   removeSessionCrew: notAvailablePromise('removeSessionCrew'),

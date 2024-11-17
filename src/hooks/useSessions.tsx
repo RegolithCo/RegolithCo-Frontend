@@ -54,6 +54,7 @@ import {
   SessionRoleEnum,
   ShipRoleEnum,
   PendingUserInput,
+  SessionStateEnum,
 } from '@regolithco/common'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
@@ -71,6 +72,7 @@ type useSessionsReturn = {
   addSessionMentions: (scNames: string[]) => Promise<void>
   removeSessionMentions: (scName: string[]) => Promise<void>
   removeSessionCrew: (scName: string) => Promise<void>
+  reOpenSession: () => Promise<void>
   closeSession: () => Promise<void>
   leaveSession: () => Promise<void>
   onUpdateSession: (session: SessionInput, settings: DestructuredSettings) => Promise<void>
@@ -342,12 +344,22 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     sessionUser: sessionUserQry.data?.sessionUser as SessionUser,
     loading,
     mutating,
+    reOpenSession: () => {
+      return updateSessionMutation[0]({
+        variables: {
+          sessionId: sessionId as string,
+          session: {
+            state: SessionStateEnum.Active,
+          },
+        },
+      }).then()
+    },
     closeSession: () => {
       return updateSessionMutation[0]({
         variables: {
           sessionId: sessionId as string,
           session: {
-            closeSession: true,
+            state: SessionStateEnum.Closed,
           },
         },
       }).then()

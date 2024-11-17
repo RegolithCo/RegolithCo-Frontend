@@ -215,7 +215,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                     {
                       ...pendingUser,
                       captainId: myCrewCaptainId || mySessionUser.ownerId,
-                    },
+                    } as PendingUserInput,
                   ])
                 }}
               >
@@ -227,7 +227,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                 color="error"
                 startIcon={<Logout />}
                 onClick={() => {
-                  updatePendingUsers([{ ...pendingUser, captainId: null }])
+                  updatePendingUsers([{ ...pendingUser, captainId: null } as PendingUserInput])
                 }}
               >
                 Remove from {iAmTheirCaptain ? 'my' : getSafeName(theirCaptainScName) + "'s"} crew

@@ -293,6 +293,7 @@ export const SessionPageContainer: React.FC = () => {
           createNewScoutingFind,
           // Session stuff
           onCloseSession: sessionQueries.closeSession,
+          onReOpenSession: sessionQueries.reOpenSession,
           onUpdateSession: sessionQueries.onUpdateSession,
           resetDefaultSystemSettings: sessionQueries.resetDefaultSystemSettings,
           resetDefaultUserSettings: sessionQueries.resetDefaultUserSettings,
@@ -551,18 +552,16 @@ export const SessionPageContainer: React.FC = () => {
 
         {/* End Session Modal */}
         <DeleteModal
-          title={'Permanently end this session?'}
-          confirmBtnText={'YES! End my session!'}
+          title={'Close this session?'}
+          confirmBtnText={'YES! Close my session!'}
           cancelBtnText="Cancel"
           message={
             <DialogContentText id="alert-dialog-description" component={'div'}>
               <Typography paragraph>
-                Closing a session will lock it permanently. Crew shares can still be marked paid but new jobs or
-                scouting finds CANNOT be added and no new users can join.
+                Closing a session will lock it and prevent new objects. Crew shares can still be marked paid but new
+                jobs or scouting finds CANNOT be added and no new users can join.
               </Typography>
-              <Typography paragraph>
-                <strong>THIS IS A PERMANENT ACTION</strong>. Are you sure you want to close this session?
-              </Typography>
+              <Typography paragraph>Are you sure you want to close this session? You can always re-open it.</Typography>
             </DialogContentText>
           }
           open={activeModal === DialogEnum.CLOSE_SESSION}

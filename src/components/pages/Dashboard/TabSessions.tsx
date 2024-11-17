@@ -64,15 +64,6 @@ export const TabSessions: React.FC<TabSessionsProps> = ({
           labelPlacement="start"
         />
       </Stack>
-
-      <Alert elevation={1} variant="standard" severity="info" sx={{ my: 2, flex: 1 }}>
-        <AlertTitle>Sessions close automatically</AlertTitle>
-        <Typography>
-          Sessions end after 12 hours of inactivity. Ended sessions cannot be re-opened, however you can still mark
-          shares as paid.{' '}
-        </Typography>
-      </Alert>
-
       <SessionList
         sessions={allSessionsSorted}
         loading={loading}

@@ -8,7 +8,6 @@ export let DEV_HEADERS: Record<string, string> = {}
 declare global {
   interface Window {
     dev_user: (devUserId?: string) => void
-    reanimateSession: (sessionId: string) => Promise<void>
   }
 }
 
@@ -38,38 +37,4 @@ if (import.meta.env.MODE === 'development') {
   }
 } // End if (import.meta.env.MODE === 'development')
 
-export const devQueries = (headers: Record<string, string>) => {
-  /**
-   * Reanimate the session if it has ended: THIS ONLY WORKS IN DEVELOPMENT
-   * @param sessionId
-   * @returns
-   */
-  window.reanimateSession = async (sessionId: string) => {
-    return axios
-      .post(
-        config.apiUrl,
-        {
-          query: `
-            mutation {
-              reanimateSession(sessionId: "${sessionId}") {
-                sessionId
-                name
-                updatedAt
-              }
-            }
-          `,
-        },
-        {
-          headers,
-        }
-      )
-      .then((resp) => {
-        if (!resp || !resp.data || (resp.data.errors && resp.data.errors.length > 0))
-          throw new Error('ERROR:' + JSON.stringify(resp.data.errors))
-        log.info('SUCCESSFULLY REANIMATED SESSION. DO a hard refresh')
-      })
-      .catch((err) => {
-        log.error('Error reanimating session', err)
-      })
-  }
-}
+export const devQueries = (headers: Record<string, string>) => {}

@@ -46,6 +46,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
     setActiveTab,
     setActiveModal,
     onUpdateSession,
+    onReOpenSession,
     session,
     isSessionAdmin,
     resetDefaultSystemSettings,
@@ -177,6 +178,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               resetDefaultSystemSettings={resetDefaultSystemSettings}
               resetDefaultUserSettings={resetDefaultUserSettings}
               endSession={() => setActiveModal(DialogEnum.CLOSE_SESSION)}
+              reOpenSession={() => onReOpenSession()}
               deleteSession={() => setActiveModal(DialogEnum.DELETE_SESSION)}
               setActiveModal={setActiveModal}
               onChangeSession={(newSession, newSettings) => {

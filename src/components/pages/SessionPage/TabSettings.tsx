@@ -43,7 +43,7 @@ import {
 } from '@regolithco/common'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { Delete, Lock, LockOpen, Person, RestartAlt, Save, StopCircle } from '@mui/icons-material'
+import { Delete, Lock, LockOpen, Person, PlayArrow, RestartAlt, Save, Start, StopCircle } from '@mui/icons-material'
 import { RefineryControl } from '../../fields/RefineryControl'
 import { RefineryMethodControl } from '../../fields/RefiningMethodControl'
 import { ShipOreChooser } from '../../fields/ShipOreChooser'
@@ -67,6 +67,7 @@ export interface SessionSettingsTabProps {
   onChangeSession?: (session: SessionInput, newSettings: DestructuredSettings) => void
   onChangeSettings?: (newSettings: DestructuredSettings) => void
   endSession?: () => void
+  reOpenSession?: () => void
   deleteSession?: () => void
   resetDefaultUserSettings?: () => void
   resetDefaultSystemSettings?: () => void
@@ -163,6 +164,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   onChangeSession,
   onChangeSettings,
   endSession,
+  reOpenSession,
   deleteSession,
   setActiveModal,
   resetDefaultSystemSettings,
@@ -245,7 +247,21 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                           }}
                           color="secondary"
                         >
-                          End Session
+                          Close Session
+                        </Button>
+                      )}
+                      {session?.state === SessionStateEnum.Closed && (
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          disabled={!endSession}
+                          startIcon={<PlayArrow />}
+                          onClick={() => {
+                            reOpenSession && reOpenSession()
+                          }}
+                          color="success"
+                        >
+                          Re-open Session
                         </Button>
                       )}
                       {session && (
@@ -265,6 +281,10 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       )}
                     </Stack>
                   </Box>
+                  <Typography component="div" variant="caption" paragraph>
+                    Sessions close automatically after 48 hours but can be re-opened. You can still edit work orders on
+                    a closed session.
+                  </Typography>
                 </Box>
               )}
               {session && (
