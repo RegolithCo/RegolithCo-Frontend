@@ -553,15 +553,15 @@ export const SessionPageContainer: React.FC = () => {
         {/* End Session Modal */}
         <DeleteModal
           title={'Close this session?'}
-          confirmBtnText={'YES! Close my session!'}
+          confirmBtnText={'Close session!'}
           cancelBtnText="Cancel"
           message={
             <DialogContentText id="alert-dialog-description" component={'div'}>
               <Typography paragraph>
-                Closing a session will lock it and prevent new objects. Crew shares can still be marked paid but new
-                jobs or scouting finds CANNOT be added and no new users can join.
+                Closing a session will lock it and prevent new items or users from being added. Items can still be
+                edited and deleted though and Crew shares can still be marked paid.
               </Typography>
-              <Typography paragraph>Are you sure you want to close this session? You can always re-open it.</Typography>
+              <Typography paragraph>You can always re-open it.</Typography>
             </DialogContentText>
           }
           open={activeModal === DialogEnum.CLOSE_SESSION}

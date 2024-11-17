@@ -55,7 +55,7 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({ pendin
       >
         <ListItemAvatar>
           <UserAvatar
-            size={isCrewDisplay ? 'tiny' : 'small'}
+            size={isCrewDisplay ? 'small' : 'medium'}
             pendingUser={pendingUser}
             isFriend={myUserProfile.friends?.includes(pendingUser?.scName as string)}
           />

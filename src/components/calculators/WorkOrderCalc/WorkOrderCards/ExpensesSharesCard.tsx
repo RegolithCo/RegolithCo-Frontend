@@ -38,6 +38,7 @@ import {
   ArrowDropDown,
   CheckBox,
   CheckBoxOutlineBlank,
+  DeleteSweep,
   ExpandMore,
   GroupAdd,
   GroupAddTwoTone,
@@ -411,16 +412,19 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-              Crew Shares:
+              Shares:
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             {isEditing && (
               <>
+                <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="text">
+                  Add:
+                </Typography>
                 {!isCalculator && userSuggest && (
                   <Button
                     size="small"
                     color="primary"
-                    startIcon={<GroupAddTwoTone />}
+                    // startIcon={<GroupAddTwoTone />}
                     onClick={() => {
                       const newShares: string[] = Object.entries(userSuggest)
                         .reduce((acc, [scName, entry]) => {
@@ -469,10 +473,26 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     ref={addCrewMenuRef}
                     // down arrow on the end
                     endIcon={<ArrowDropDown />}
-                    startIcon={<GroupAdd />}
+                    // startIcon={<GroupAdd />}
                     onClick={() => setAddCrewMenuOpen(true)}
                   >
                     Crew
+                  </Button>
+                )}
+                {!isCalculator && userSuggest && (
+                  <Button
+                    size="small"
+                    disabled={!captains.length}
+                    color="info"
+                    ref={addCrewMenuRef}
+                    // down arrow on the end
+                    endIcon={<ArrowDropDown />}
+                    // startIcon={<GroupAdd />}
+                    onClick={() => {
+                      //
+                    }}
+                  >
+                    Role
                   </Button>
                 )}
                 {!isCalculator && userSuggest && (
@@ -562,6 +582,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                 <Button
                   size="small"
                   color="error"
+                  // startIcon={<DeleteSweep />}
                   onClick={() => {
                     const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
                     onChange({

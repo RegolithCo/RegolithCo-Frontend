@@ -25,7 +25,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
-import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer, Twitter } from '@mui/icons-material'
+import { Celebration, Coffee, HelpCenter, Info, NewReleases, QuestionAnswer } from '@mui/icons-material'
 import { DiscordIcon } from '../../icons/Discord'
 import { AppVersion } from '../fields/AppVersion'
 import { SCVersion } from '../fields/SCVersion'
@@ -398,10 +398,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
               Report Bugs / Get Help
             </Typography>
-            <Typography paragraph>
-              Join the Discord server for help, support, bugs, feature requests etc. There is also on twitter (but it is
-              checked less often).
-            </Typography>
+            <Typography paragraph>Join the Discord server for help, support, bugs, feature requests etc.</Typography>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
               divider={<Divider orientation="vertical" flexItem />}
@@ -412,14 +409,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 startIcon={<DiscordIcon />}
                 variant="contained"
                 color="primary"
-                fullWidth
+                // fullWidth
                 sx={{ fontSize: '1rem', p: 2 }}
                 href="https://discord.gg/6TKSYHNJha"
                 target="_blank"
               >
-                Discord Server
+                Join Discord Server
               </Button>
-              <Button
+              {/* <Button
                 startIcon={<Twitter />}
                 variant="contained"
                 color="info"
@@ -429,7 +426,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 target="_blank"
               >
                 @RegolithCo
-              </Button>
+              </Button> */}
             </Stack>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>

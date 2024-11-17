@@ -102,13 +102,13 @@ export const AboutPageFAQ: React.FC = () => {
             Discord Server
           </Button>
         </Box>
-        <Typography gutterBottom paragraph>
+        {/* <Typography gutterBottom paragraph>
           If you're not a discord user, you can also{' '}
           <Link href="https://twitter.com/RegolithCo" target="_blank">
             hit us up on twitter
           </Link>{' '}
           but we might respond more slowly because well... twitter.
-        </Typography>
+        </Typography> */}
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>

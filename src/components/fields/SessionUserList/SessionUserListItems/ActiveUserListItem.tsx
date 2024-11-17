@@ -122,7 +122,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
         <Typography
           sx={{
             // align all elements on the baseline
-            color: theme.palette.secondary.light,
+            color: theme.palette.text.primary,
             textTransform: 'uppercase',
             fontSize: '0.8rem',
             fontWeight: 'bold',
@@ -141,6 +141,33 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
           {totalCrew}
         </Typography>
       )
+  }
+  if (sessionUser.sessionRole) {
+    secondaryText.push(
+      <SessionRoleIconBadge
+        role={sessionUser.sessionRole as SessionRoleEnum}
+        sx={{
+          fontSize: '1rem',
+          position: 'relative',
+          right: theme.spacing(0.5),
+          top: theme.spacing(0.5),
+        }}
+      />
+    )
+  }
+
+  if (sessionUser.shipRole) {
+    secondaryText.push(
+      <ShipRoleIconBadge
+        role={sessionUser.shipRole as ShipRoleEnum}
+        sx={{
+          fontSize: '1rem',
+          position: 'relative',
+          right: theme.spacing(0.5),
+          top: theme.spacing(0.5),
+        }}
+      />
+    )
   }
 
   if (vehicle && (!isCrewDisplay || isCaptain)) {
@@ -221,7 +248,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
         <StateChip userState={sessionUser.state} scoutingFind={scoutingFind} />
         <ListItemAvatar>
           <UserAvatar
-            size={isCrewDisplay && !isCaptain ? 'tiny' : 'small'}
+            size={isCrewDisplay && !isCaptain ? 'small' : 'medium'}
             user={user}
             privacy={hideNames}
             sessionOwner={isOwner}
@@ -245,21 +272,6 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
           }}
           secondary={
             <Stack direction="row" spacing={1}>
-              <SessionRoleIconBadge
-                role={sessionUser.sessionRole as SessionRoleEnum}
-                sx={{
-                  fontSize: '1rem',
-                  mt: -0.5,
-                  mr: 1,
-                }}
-              />
-              <ShipRoleIconBadge
-                role={sessionUser.shipRole as ShipRoleEnum}
-                sx={{
-                  fontSize: '1rem',
-                  mt: -0.5,
-                }}
-              />
               {(!isCrewDisplay || isCaptain) && (
                 <>
                   {secondaryText.length > 0 ? (
