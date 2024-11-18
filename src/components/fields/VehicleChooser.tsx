@@ -81,6 +81,7 @@ export const VehicleChooser: React.FC<VehicleChooserProps> = ({
         const shipSCUVAl = ship.miningHold || ship.cargo || 0
         return (
           <MenuItem
+            key={key}
             {...rest}
             value={ship.UEXID}
             sx={{

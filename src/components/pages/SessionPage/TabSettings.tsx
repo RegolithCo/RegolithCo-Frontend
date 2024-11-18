@@ -1,14 +1,12 @@
 import * as React from 'react'
 import {
   alpha,
-  Autocomplete,
   Box,
   Button,
   Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
   InputLabel,
   keyframes,
   List,
@@ -43,7 +41,7 @@ import {
 } from '@regolithco/common'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { Delete, Lock, LockOpen, Person, PlayArrow, RestartAlt, Save, Start, StopCircle } from '@mui/icons-material'
+import { Delete, Lock, LockOpen, Person, PlayArrow, RestartAlt, Save, StopCircle } from '@mui/icons-material'
 import { RefineryControl } from '../../fields/RefineryControl'
 import { RefineryMethodControl } from '../../fields/RefiningMethodControl'
 import { ShipOreChooser } from '../../fields/ShipOreChooser'
@@ -348,9 +346,15 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                 <Box sx={styles.sectionBody}>
                   <GravityWellChooser
                     onClick={(choice) => {
-                      //
+                      setNewSettings({
+                        ...newSettings,
+                        sessionSettings: {
+                          ...newSettings.sessionSettings,
+                          gravityWell: choice,
+                        },
+                      })
                     }}
-                    planetValue="test"
+                    wellId={gravWell}
                   />
                   <Stack direction={mediumUp ? 'row' : 'column'} spacing={2} sx={{ mb: 2 }}>
                     {/* <Autocomplete

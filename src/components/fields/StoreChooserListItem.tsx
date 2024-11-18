@@ -86,12 +86,14 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 
   // // NO HOOKS BELOW HERE
 
-  const planetName = cityStores.planet
-    ? planetLookups['ST'] && planetLookups['ST'][cityStores.planet] && planetLookups['ST'][cityStores.planet].name
-    : ''
-  const satellite = cityStores.satellite
-    ? planetLookups['ST'][cityStores.planet].satellites[cityStores.satellite]
-    : undefined
+  const planetName =
+    cityStores && cityStores.planet
+      ? planetLookups['ST'] && planetLookups['ST'][cityStores.planet] && planetLookups['ST'][cityStores.planet].name
+      : ''
+  const satellite =
+    cityStores && cityStores.satellite
+      ? planetLookups['ST'][cityStores.planet]?.satellites[cityStores.satellite]
+      : undefined
   const city = cityStores.city || ''
   // Price is the sum of all the prices
 

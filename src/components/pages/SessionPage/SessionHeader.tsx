@@ -18,6 +18,7 @@ import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { CollaborateLinkIcon, DownloadJSONIcon, ExportImageIcon } from '../../../icons/badges'
 import { ExpandMore } from '@mui/icons-material'
+import { GravityWellNameRender } from '../../fields/GravityWellChooser'
 
 export interface SesionHeaderProps {
   propA?: string
@@ -25,13 +26,13 @@ export interface SesionHeaderProps {
 
 const TwelveHoursMs = 12 * 60 * 60 * 1000
 
-export const sessionSubtitleArr = (session: Session, protect: boolean): string[] => {
-  const subtitleArr: string[] = []
+export const sessionSubtitleArr = (session: Session, protect: boolean): (string | JSX.Element)[] => {
+  const subtitleArr: (string | JSX.Element)[] = []
   const sessionSettings: Partial<SessionSettings> = session.sessionSettings || {}
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
-  // if (sessionSettings.gravityWell)
-  //   subtitleArr.push(protect ? 'UNDISCLOSED' : getPlanetName(sessionSettings.gravityWell))
+  if (sessionSettings.gravityWell)
+    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameRender id={sessionSettings.gravityWell} />)
   if (sessionSettings.location) subtitleArr.push(protect ? 'UNDISCLOSED' : getLocationName(sessionSettings.location))
   return subtitleArr
 }
@@ -145,7 +146,12 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                   },
                 }}
               >
-                {subtitleArr.join(' // ')}
+                {subtitleArr.map((subtitle, i) => (
+                  <React.Fragment key={i}>
+                    {subtitle}
+                    {i < subtitleArr.length - 1 && ' // '}
+                  </React.Fragment>
+                ))}
               </Typography>
             )}
             {!collapsed && session.note && session.note.trim().length && (

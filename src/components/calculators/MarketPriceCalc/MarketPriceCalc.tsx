@@ -449,7 +449,7 @@ const throttledFindAllStoreChoices = throttle(
     const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
     const bgColors = new Gradient()
       .setColorGradient(...quaColors)
-      .setMidpoint(newStoresGrouped.length) // 100 is the number of colors to generate. Should be enough stops for our ores
+      .setMidpoint(newStoresGrouped.length || quaColors.length) // 100 is the number of colors to generate. Should be enough stops for our ores
       .getColors()
 
     const newStores = newStoresGrouped.map((cityStores, index) => (
