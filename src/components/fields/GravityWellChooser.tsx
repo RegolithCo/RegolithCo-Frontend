@@ -4,6 +4,7 @@ import { Autocomplete, MenuItem, SxProps, TextField, Theme, useTheme } from '@mu
 import { Lookups, SystemLookup } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
 import { Bedtime, Brightness5, GolfCourse, Language } from '@mui/icons-material'
+import { RockIcon } from '../../icons'
 
 export interface GravityWellChooserProps {
   wellId: string | null
@@ -22,27 +23,32 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 
 export const gravityWellName = (id: string, systemLookup: SystemLookup): string => {
   let finalRenderName = id
+
   //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
   Object.entries(systemLookup).forEach(([sysKey, sysObj], key) => {
     if (sysKey === id) {
       finalRenderName = sysObj.name
       return
     }
+    if (id === 'AARON_HALO') {
+      finalRenderName = `${sysObj.name} ▶ Aaron Halo`
+      return
+    }
     Object.entries(sysObj.planets).forEach(([plKey, plObj], idx) => {
       if (plKey === id) {
-        finalRenderName = `${sysKey} ▶ ${plObj.name}`
+        finalRenderName = `${sysObj.name} ▶ ${plObj.name}`
         return
       }
       Object.entries(plObj.satellites).forEach(([satKey, satName], idx) => {
         if (satKey === id) {
-          finalRenderName = `${sysKey} ▶ ${plObj.name} ▶ ${satName}`
+          finalRenderName = `${sysObj.name} ▶ ${plObj.name} ▶ ${satName}`
           return
         }
       })
       const lagrange = ['L1', 'L2', 'L3', 'L4', 'L5']
       lagrange.forEach((lagKey) => {
         if (`${plKey}-${lagKey}` === id) {
-          finalRenderName = `${sysKey} ▶ ${plObj.name} - ${lagKey}`
+          finalRenderName = `${sysObj.name} ▶ ${plObj.name} - ${lagKey}`
           return
         }
       })
@@ -85,6 +91,12 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
         type: 'system',
         id: sysKey,
       })
+      if (sysKey === 'ST')
+        acc.push({
+          label: `Aaron Halo`,
+          type: 'belt',
+          id: `AARON_HALO`,
+        })
       Object.entries(sysObj.planets).forEach(([plKey, plObj], idx) => {
         acc.push({
           label: plObj.name,
@@ -153,6 +165,14 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
               <Brightness5
                 sx={{
                   mr: 2,
+                }}
+              />
+            )}
+            {option.type === 'belt' && (
+              <RockIcon
+                sx={{
+                  mr: 2,
+                  ml: 3,
                 }}
               />
             )}

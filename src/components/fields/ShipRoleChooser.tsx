@@ -11,6 +11,31 @@ export interface ShipRoleChooserProps {
   onChange: (value: ShipRoleEnum | null) => void
 }
 
+export const shipRoleOptions = (onClick?: (value: string) => void): React.ReactNode[] => {
+  return Object.values(ShipRoleEnum).map((role, idx) => {
+    const RoleIcon = ShipRoleIcons[role]
+    return (
+      <MenuItem
+        value={role}
+        key={idx}
+        onClick={onClick ? () => onClick(role) : undefined}
+        sx={{
+          '& svg': {
+            mr: 1,
+          },
+          color: ShipRoleColors[role as ShipRoleEnum],
+        }}
+      >
+        <RoleChooserItem
+          roleName={ShipRoleNames[role as ShipRoleEnum] || role}
+          icon={<RoleIcon />}
+          color={ShipRoleColors[role]}
+        />
+      </MenuItem>
+    )
+  })
+}
+
 export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disabled, onChange }) => {
   const found = value && Object.values(ShipRoleEnum).find((role) => role === value)
   const roleName = found ? ShipRoleNames[found] : value
@@ -30,7 +55,7 @@ export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disable
       renderValue={(value) => {
         if (!value)
           return (
-            <Typography variant="overline" color="text.secondary">
+            <Typography variant="overline" color="text">
               Select
             </Typography>
           )
@@ -39,29 +64,9 @@ export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disable
       onChange={(e) => onChange(e.target.value ? (e.target.value as ShipRoleEnum) : null)}
     >
       <MenuItem value="">
-        <RoleChooserItem />
+        <RoleChooserItem roleName="None" />
       </MenuItem>
-      {Object.values(ShipRoleEnum).map((role, idx) => {
-        const RoleIcon = ShipRoleIcons[role]
-        return (
-          <MenuItem
-            value={role}
-            key={idx}
-            sx={{
-              '& svg': {
-                mr: 1,
-              },
-              color: ShipRoleColors[role as ShipRoleEnum],
-            }}
-          >
-            <RoleChooserItem
-              roleName={ShipRoleNames[role as ShipRoleEnum] || role}
-              icon={<RoleIcon />}
-              color={ShipRoleColors[role]}
-            />
-          </MenuItem>
-        )
-      })}
+      {shipRoleOptions()}
     </Select>
   )
 }

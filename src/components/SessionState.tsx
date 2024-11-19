@@ -14,13 +14,13 @@ export interface SessionStateProps {
 export const SessionState: React.FC<SessionStateProps> = ({ sessionState, size, hasTooltip }) => {
   const theme = useTheme()
   // const styles = stylesThunk(theme)
-
+  if (sessionState === SessionStateEnum.Active) return null
   return (
     <Tooltip
       arrow
       title={
         hasTooltip &&
-        (sessionState === SessionStateEnum.Active
+        (sessionState !== SessionStateEnum.Closed
           ? 'Session is currently active'
           : 'Session has ended. You can still edit work orders and pay shares but you cannot create new work orders or scouting finds')
       }
@@ -35,15 +35,15 @@ export const SessionState: React.FC<SessionStateProps> = ({ sessionState, size, 
           textAlign: 'center',
           borderRadius: 2,
           border: `2px solid ${
-            sessionState === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.grey[500]
+            sessionState !== SessionStateEnum.Closed ? theme.palette.success.main : theme.palette.grey[500]
           }`,
           textShadow: '1px 1px 4px #000',
-          color: sessionState === SessionStateEnum.Active ? theme.palette.success.main : theme.palette.grey[500],
+          color: sessionState !== SessionStateEnum.Closed ? theme.palette.success.main : theme.palette.grey[500],
           textTransform: 'uppercase',
           fontSize: '1rem',
         }}
       >
-        {sessionState === SessionStateEnum.Active ? 'Active' : 'Ended'}
+        {sessionState !== SessionStateEnum.Closed ? 'Active' : 'Closed'}
       </Typography>
     </Tooltip>
   )

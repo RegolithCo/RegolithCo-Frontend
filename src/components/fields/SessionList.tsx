@@ -394,7 +394,12 @@ export const SessionListMonth: React.FC<SessionListMonthProps> = ({ yearMonthArr
                                     fontSize={'0.5rem'}
                                     mb={1}
                                   >
-                                    {subtitleArr.join(' - ')}
+                                    {subtitleArr.map((subtitle, i) => (
+                                      <React.Fragment key={i}>
+                                        {subtitle}
+                                        {i < subtitleArr.length - 1 && ' // '}
+                                      </React.Fragment>
+                                    ))}
                                   </Typography>
                                 </Box>
                                 <Tooltip

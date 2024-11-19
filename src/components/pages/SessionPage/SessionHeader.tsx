@@ -225,7 +225,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                   Started: <strong>{smartDate(session.createdAt)}</strong>
                 </Typography>
 
-                {session.state === SessionStateEnum.Active && (
+                {/* {session.state === SessionStateEnum.Active && (
                   <Typography
                     sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
                     component="div"
@@ -234,7 +234,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                   >
                     EXPIRES: <strong>{smartDate(session.updatedAt + TwelveHoursMs)}</strong>
                   </Typography>
-                )}
+                )} */}
                 {session.state === SessionStateEnum.Closed && session.finishedAt && (
                   <Typography
                     sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}

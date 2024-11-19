@@ -189,9 +189,8 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                     sx={{
                       // Make the background a gradient from primary.main at 0 to transparent at 10%
                       '& .MuiTableCell-root': {
-                        borderTop: groupCrew && isCaptain ? `2px solid ${theme.palette.primary.main}` : undefined,
-                        borderBottom:
-                          groupCrew && isEndOfCrew ? `1px solid ${theme.palette.secondary.dark}` : undefined,
+                        borderTop: groupCrew && isCaptain ? `4px solid ${theme.palette.primary.main}` : undefined,
+                        borderBottom: groupCrew && isEndOfCrew ? `1px solid ${theme.palette.primary.main}` : undefined,
                         background:
                           groupCrew && isCaptain
                             ? `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 90%)`
@@ -207,6 +206,10 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                       sx={{
                         pl: isCrewDisplay ? 5 : 0,
                         position: 'relative',
+                        borderLeft:
+                          groupCrew && (isCaptain || crew.captainId)
+                            ? `2px solid ${theme.palette.primary.main}`
+                            : undefined,
                         '&::before':
                           groupCrew && isCaptain
                             ? {

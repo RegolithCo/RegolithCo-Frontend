@@ -60,6 +60,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
   // const stateColorsBg = stateColorsBGThunk(theme)
   const isMe = myUserProfile.userId === sessionUser.ownerId
   const secondaryText: React.ReactNode[] = []
+  const roleText: React.ReactNode[] = []
   const stateObjects: React.ReactNode[] = []
   const isOwner = sessionUser.ownerId === session?.ownerId
   const captain =
@@ -143,28 +144,22 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
       )
   }
   if (sessionUser.sessionRole) {
-    secondaryText.push(
+    roleText.push(
       <SessionRoleIconBadge
         role={sessionUser.sessionRole as SessionRoleEnum}
         sx={{
           fontSize: '1rem',
-          position: 'relative',
-          right: theme.spacing(0.5),
-          top: theme.spacing(0.5),
         }}
       />
     )
   }
 
   if (sessionUser.shipRole) {
-    secondaryText.push(
+    roleText.push(
       <ShipRoleIconBadge
         role={sessionUser.shipRole as ShipRoleEnum}
         sx={{
           fontSize: '1rem',
-          position: 'relative',
-          right: theme.spacing(0.5),
-          top: theme.spacing(0.5),
         }}
       />
     )
@@ -272,6 +267,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({ sessionU
           }}
           secondary={
             <Stack direction="row" spacing={1}>
+              {roleText}
               {(!isCrewDisplay || isCaptain) && (
                 <>
                   {secondaryText.length > 0 ? (

@@ -35,13 +35,13 @@ import {
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import {
+  AddCircle,
   ArrowDropDown,
   CheckBox,
   CheckBoxOutlineBlank,
+  ClearAll,
   DeleteSweep,
   ExpandMore,
-  GroupAdd,
-  GroupAddTwoTone,
   Help,
   Percent,
   PieChart,
@@ -60,6 +60,9 @@ import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
 import { LookupsContext } from '../../../../context/lookupsContext'
 import { SessionContext } from '../../../../context/session.context'
+import { shipRoleOptions } from '../../../fields/ShipRoleChooser'
+import { sessionRoleOptions } from '../../../fields/SessionRoleChooser'
+
 // import log from 'loglevel'
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
@@ -84,8 +87,9 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const theme = useTheme()
   const dataStore = React.useContext(LookupsContext)
   const { captains, crewHierarchy, session } = React.useContext(SessionContext)
-  const [addCrewMenuOpen, setAddCrewMenuOpen] = useState<boolean>(false)
-  const addCrewMenuRef = React.useRef<HTMLButtonElement>(null)
+
+  const [addMenuOpen, setAddMenuOpen] = useState<HTMLElement | null>(null)
+  const [addMenuOpen2, setAddMenuOpen2] = useState<(HTMLElement | null)[]>([null, null, null])
 
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
@@ -417,172 +421,205 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             <Box sx={{ flexGrow: 1 }} />
             {isEditing && (
               <>
-                <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="text">
-                  Add:
-                </Typography>
                 {!isCalculator && userSuggest && (
                   <Button
                     size="small"
                     color="primary"
-                    // startIcon={<GroupAddTwoTone />}
-                    onClick={() => {
-                      const newShares: string[] = Object.entries(userSuggest)
-                        .reduce((acc, [scName, entry]) => {
-                          if (entry.named || entry.session) {
-                            acc.push(scName)
-                          }
-                          return acc
-                        }, [] as string[])
-                        .filter((scName) => {
-                          return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
-                        })
-
-                      // Make sure we have something to add
-                      if (newShares.length === 0) return
-                      onChange({
-                        ...workOrder,
-                        crewShares: [
-                          ...(workOrder.crewShares || []),
-                          ...newShares.map((payeeScName) => {
-                            return {
-                              payeeScName,
-                              payeeUserId: userSuggest[payeeScName].userId,
-                              shareType: ShareTypeEnum.Share,
-                              share: 1,
-                              note: null,
-                              createdAt: Date.now(),
-                              orderId: workOrder.orderId,
-                              sessionId: workOrder.sessionId,
-                              updatedAt: Date.now(),
-                              state: false,
-                              __typename: 'CrewShare',
-                            } as CrewShare
-                          }),
-                        ],
-                      })
-                    }}
-                  >
-                    All
-                  </Button>
-                )}
-                {!isCalculator && userSuggest && (
-                  <Button
-                    size="small"
-                    disabled={!captains.length}
-                    color="secondary"
-                    ref={addCrewMenuRef}
-                    // down arrow on the end
                     endIcon={<ArrowDropDown />}
-                    // startIcon={<GroupAdd />}
-                    onClick={() => setAddCrewMenuOpen(true)}
+                    onClick={(e) => setAddMenuOpen(e.currentTarget)}
                   >
-                    Crew
+                    Add By
                   </Button>
                 )}
-                {!isCalculator && userSuggest && (
-                  <Button
-                    size="small"
-                    disabled={!captains.length}
-                    color="info"
-                    ref={addCrewMenuRef}
-                    // down arrow on the end
-                    endIcon={<ArrowDropDown />}
-                    // startIcon={<GroupAdd />}
-                    onClick={() => {
-                      //
-                    }}
-                  >
-                    Role
-                  </Button>
-                )}
-                {!isCalculator && userSuggest && (
+                {addMenuOpen && userSuggest && (
                   <Menu
-                    anchorEl={addCrewMenuRef.current}
-                    open={addCrewMenuOpen}
-                    onClose={() => setAddCrewMenuOpen(false)}
+                    anchorEl={addMenuOpen}
+                    open
+                    onClose={() => setAddMenuOpen(null)}
                     slotProps={{
                       paper: {
                         style: {
-                          backgroundColor: theme.palette.primary.main,
-                          color: theme.palette.primary.contrastText,
+                          // backgroundColor: theme.palette.primary.main,
+                          // color: theme.palette.primary.contrastText,
                         },
                       },
                     }}
                   >
-                    {captains.map((captain) => {
-                      const captainId = captain.ownerId
-                      const captainScNAme = captain.owner?.scName as string
-                      return (
-                        <MenuItem
-                          key={captainId}
-                          sx={{
-                            '&:hover': {
-                              backgroundColor: theme.palette.primary.dark,
-                              color: theme.palette.primary.contrastText,
-                            },
-                          }}
-                          onClick={() => {
-                            const { activeIds, innactiveSCNames } = crewHierarchy[captainId]
-                            const userIdMap = activeIds.reduce((acc, activeId) => {
-                              const crewMemeber = session?.activeMembers?.items.find((m) => m.ownerId === activeId)
-                              if (!crewMemeber) return acc
+                    <MenuItem
+                      onClick={() => {
+                        const newShares: string[] = Object.entries(userSuggest)
+                          .reduce((acc, [scName, entry]) => {
+                            if (entry.named || entry.session) {
+                              acc.push(scName)
+                            }
+                            return acc
+                          }, [] as string[])
+                          .filter((scName) => {
+                            return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
+                          })
+
+                        // Make sure we have something to add
+                        if (newShares.length === 0) return
+                        onChange({
+                          ...workOrder,
+                          crewShares: [
+                            ...(workOrder.crewShares || []),
+                            ...newShares.map((payeeScName) => {
                               return {
-                                ...acc,
-                                [crewMemeber?.ownerId as string]: crewMemeber?.owner?.scName,
-                              }
-                            }, {})
-                            const crewNames: string[] = [
-                              captainScNAme,
-                              ...innactiveSCNames,
-                              ...activeIds.map(
-                                (id) =>
-                                  session?.activeMembers?.items.find((m) => m.ownerId === id)?.owner?.scName as string
-                              ),
-                            ]
-                              .filter((scName) => scName)
-                              .filter((scName) => {
-                                return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
-                              })
+                                payeeScName,
+                                payeeUserId: userSuggest[payeeScName].userId,
+                                shareType: ShareTypeEnum.Share,
+                                share: 1,
+                                note: null,
+                                createdAt: Date.now(),
+                                orderId: workOrder.orderId,
+                                sessionId: workOrder.sessionId,
+                                updatedAt: Date.now(),
+                                state: false,
+                                __typename: 'CrewShare',
+                              } as CrewShare
+                            }),
+                          ],
+                        })
+                        setAddMenuOpen(null)
+                      }}
+                    >
+                      Add All
+                    </MenuItem>
+                    <MenuItem
+                      selected={!!addMenuOpen2[0]}
+                      onClick={(e) => {
+                        setAddMenuOpen2([e.currentTarget, null, null])
+                      }}
+                    >
+                      Add Crew
+                    </MenuItem>
+                    {addMenuOpen2[0] && (
+                      <Menu
+                        anchorEl={addMenuOpen2[0]}
+                        open
+                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        onClose={() => setAddMenuOpen2([null, null, null])}
+                      >
+                        {captains.map((captain) => {
+                          const captainId = captain.ownerId
+                          const captainScNAme = captain.owner?.scName as string
+                          return (
+                            <MenuItem
+                              key={captainId}
+                              sx={{
+                                '&:hover': {
+                                  backgroundColor: theme.palette.primary.dark,
+                                  color: theme.palette.primary.contrastText,
+                                },
+                              }}
+                              onClick={() => {
+                                const { activeIds, innactiveSCNames } = crewHierarchy[captainId]
+                                const userIdMap = activeIds.reduce((acc, activeId) => {
+                                  const crewMemeber = session?.activeMembers?.items.find((m) => m.ownerId === activeId)
+                                  if (!crewMemeber) return acc
+                                  return {
+                                    ...acc,
+                                    [crewMemeber?.ownerId as string]: crewMemeber?.owner?.scName,
+                                  }
+                                }, {})
+                                const crewNames: string[] = [
+                                  captainScNAme,
+                                  ...innactiveSCNames,
+                                  ...activeIds.map(
+                                    (id) =>
+                                      session?.activeMembers?.items.find((m) => m.ownerId === id)?.owner
+                                        ?.scName as string
+                                  ),
+                                ]
+                                  .filter((scName) => scName)
+                                  .filter((scName) => {
+                                    return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
+                                  })
 
-                            // Make sure we have something to add
-                            if (crewNames.length === 0) return
-                            onChange({
-                              ...workOrder,
-                              crewShares: [
-                                ...(workOrder.crewShares || []),
-                                ...crewNames.map(
-                                  (payeeScName) =>
-                                    ({
-                                      payeeScName,
-                                      payeeUserId: userIdMap[payeeScName],
-                                      shareType: ShareTypeEnum.Share,
-                                      share: 1,
-                                      note: null,
-                                      createdAt: Date.now(),
-                                      orderId: workOrder.orderId,
-                                      sessionId: workOrder.sessionId,
-                                      updatedAt: Date.now(),
-                                      state: false,
-                                      __typename: 'CrewShare',
-                                    }) as CrewShare
-                                ),
-                              ],
-                            })
+                                // Make sure we have something to add
+                                if (crewNames.length === 0) return
+                                onChange({
+                                  ...workOrder,
+                                  crewShares: [
+                                    ...(workOrder.crewShares || []),
+                                    ...crewNames.map(
+                                      (payeeScName) =>
+                                        ({
+                                          payeeScName,
+                                          payeeUserId: userIdMap[payeeScName],
+                                          shareType: ShareTypeEnum.Share,
+                                          share: 1,
+                                          note: null,
+                                          createdAt: Date.now(),
+                                          orderId: workOrder.orderId,
+                                          sessionId: workOrder.sessionId,
+                                          updatedAt: Date.now(),
+                                          state: false,
+                                          __typename: 'CrewShare',
+                                        }) as CrewShare
+                                    ),
+                                  ],
+                                })
 
-                            // Make sure to close the menu
-                            setAddCrewMenuOpen(false)
-                          }}
-                        >
-                          Add <strong style={{ marginLeft: '10px' }}>{captainScNAme}</strong>'s crew
-                        </MenuItem>
-                      )
-                    })}
+                                // Make sure to close the menu
+                                setAddMenuOpen(null)
+                                setAddMenuOpen2([null, null, null])
+                              }}
+                            >
+                              Add <strong style={{ marginLeft: '10px' }}>{captainScNAme}</strong>'s crew
+                            </MenuItem>
+                          )
+                        })}
+                      </Menu>
+                    )}
+                    <MenuItem
+                      selected={!!addMenuOpen2[1]}
+                      onClick={(e) => {
+                        setAddMenuOpen2([null, e.currentTarget, null])
+                      }}
+                    >
+                      Add Session Role
+                    </MenuItem>
+                    {addMenuOpen2[1] && (
+                      <Menu
+                        anchorEl={addMenuOpen2[1]}
+                        open
+                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        onClose={() => setAddMenuOpen2([null, null, null])}
+                      >
+                        {sessionRoleOptions()}
+                      </Menu>
+                    )}
+                    <MenuItem
+                      selected={!!addMenuOpen2[2]}
+                      onClick={(e) => {
+                        setAddMenuOpen2([null, null, e.currentTarget])
+                      }}
+                    >
+                      Add Ship Role
+                    </MenuItem>
+                    {addMenuOpen2[2] && (
+                      <Menu
+                        anchorEl={addMenuOpen2[2]}
+                        open
+                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        onClose={() => setAddMenuOpen2([null, null, null])}
+                      >
+                        {shipRoleOptions()}
+                      </Menu>
+                    )}
                   </Menu>
                 )}
+
                 <Button
                   size="small"
                   color="error"
-                  // startIcon={<DeleteSweep />}
+                  // down arrow on the end
+                  endIcon={<DeleteSweep />}
                   onClick={() => {
                     const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
                     onChange({

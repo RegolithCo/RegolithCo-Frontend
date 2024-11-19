@@ -10,6 +10,26 @@ export interface SessionRoleChooserProps {
   onChange: (value: SessionRoleEnum | null) => void
 }
 
+export const sessionRoleOptions = (onClick?: (value: string) => void): React.ReactNode[] => {
+  return Object.values(SessionRoleEnum).map((role, idx) => {
+    const RoleIcon = SessionRoleIcons[role]
+    return (
+      <MenuItem
+        value={role}
+        key={idx}
+        onClick={onClick ? () => onClick(role) : undefined}
+        sx={{
+          '& svg': {
+            mr: 1,
+          },
+        }}
+      >
+        <RoleChooserItem roleName={SessionRoleNames[role]} icon={<RoleIcon />} color={SessionRoleColors[role]} />
+      </MenuItem>
+    )
+  })
+}
+
 export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, disabled, onChange }) => {
   const found = value && Object.values(SessionRoleEnum).find((role) => role === value)
   const roleName = found ? SessionRoleNames[found] : value
@@ -40,22 +60,7 @@ export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, d
       <MenuItem value="">
         <RoleChooserItem roleName="None" />
       </MenuItem>
-      {Object.values(SessionRoleEnum).map((role, idx) => {
-        const RoleIcon = SessionRoleIcons[role]
-        return (
-          <MenuItem
-            value={role}
-            key={idx}
-            sx={{
-              '& svg': {
-                mr: 1,
-              },
-            }}
-          >
-            <RoleChooserItem roleName={SessionRoleNames[role]} icon={<RoleIcon />} color={SessionRoleColors[role]} />
-          </MenuItem>
-        )
-      })}
+      {sessionRoleOptions()}
     </Select>
   )
 }
