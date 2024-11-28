@@ -266,7 +266,7 @@ export const ActiveUserListItem: React.FC<ActiveUserListItemProps> = ({
                         fontFamily: fontFamilies.robotoMono,
                         color: alpha(theme.palette.text.secondary, 0.3),
                         fontWeight: 'bold',
-                        fontSize: isCrewDisplay ? '0.5rem' : '0.7rem',
+                        fontSize: isCrewDisplay && !isCaptain ? '0.5rem' : '0.7rem',
                       }}
                     >
                       Session User

@@ -36,7 +36,7 @@ export const SessionContextMenu: React.FC<SessionContextMenuProps> = ({
   menuPosXY = [100, 100],
 }) => {
   const theme = useTheme()
-
+  if (!open) return null
   return (
     <Menu
       open={open}
@@ -154,9 +154,13 @@ export const useSessionContextMenu = (menuProps: UseContextMenuProps | (() => Us
   return {
     handleContextMenu,
     handleClose,
-    contextMenuNode:
-      menuPosXY !== null ? (
-        <SessionContextMenu {...finalMenuProps} menuPosXY={menuPosXY || undefined} open onClose={handleClose} />
-      ) : null,
+    contextMenuNode: (
+      <SessionContextMenu
+        {...finalMenuProps}
+        menuPosXY={menuPosXY || undefined}
+        open={menuPosXY !== null}
+        onClose={handleClose}
+      />
+    ),
   }
 }

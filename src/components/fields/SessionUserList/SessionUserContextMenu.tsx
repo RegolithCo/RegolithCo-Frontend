@@ -30,7 +30,6 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     openLoadoutModal,
   } = React.useContext(SessionContext)
   const { hideNames, getSafeName } = React.useContext(AppContext)
-  const [menuItems, setMenuItems] = React.useState<MenuItemObj[]>([])
 
   const [deletePendingUserOpen, setDeletePendingUserOpen] = React.useState(false)
   const [deleteActiveUserOpen, setDeleteActiveUserOpen] = React.useState(false)
@@ -39,7 +38,6 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
   const theirSCName = (sessionUser?.owner?.scName || pendingUser?.scName) as string
 
   const meIsPotentialCaptain = !mySessionUser?.captainId || !crewHierarchy[mySessionUser?.captainId]
-  const theyIsPotentialCaptain = !sessionUser?.captainId || !crewHierarchy[sessionUser?.captainId]
   const meIsCaptain = meIsPotentialCaptain && crewHierarchy[mySessionUser?.ownerId]
   const iAmOnCrew = !!mySessionUser?.captainId && crewHierarchy[mySessionUser?.captainId]
   const myCrewCaptainId =
@@ -54,7 +52,7 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     (pendingUser?.captainId && crewHierarchy[pendingUser?.captainId] ? pendingUser?.captainId : undefined)
   const theirCaptainScName = captains.find((c) => c.ownerId === theirCaptainId)?.owner?.scName
   const theyOnAnyCrew = Boolean(theirCaptainId)
-  const theyIsCaptain = Boolean(theyIsPotentialCaptain && theyOnAnyCrew)
+  const theyIsCaptain = Boolean(!sessionUser?.captainId && captains.find((c) => c.ownerId === sessionUser?.ownerId))
   const theyIsMyCaptain = Boolean(
     sessionUser &&
       mySessionUser?.captainId &&
@@ -65,6 +63,151 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
   const theyOnMyCrew = Boolean(
     theyOnAnyCrew && (iAmTheirCaptain || (myCrewCaptainId && theirCaptainId === mySessionUser?.captainId))
   )
+
+  const menuItems: MenuItemObj[] = [
+    {
+      icon: <Person fontSize="small" />,
+      label: isMe ? 'Edit My Status' : 'User Details',
+      onClick: () => {
+        if (isActiveUser) openActiveUserModal(sessionUser?.owner?.userId as string)
+        else openPendingUserModal(pendingUser?.scName as string)
+      },
+    },
+  ]
+
+  if (sessionUser && sessionUser.loadout) {
+    menuItems.push({
+      label: sessionUser.loadout?.name ? `Loadout: ${sessionUser.loadout?.name}` : 'No Loadout Selected',
+      disabled: !sessionUser.loadout,
+      icon: <ModuleIcon fontSize="small" />,
+      onClick: () => {
+        openLoadoutModal(sessionUser.loadout as MiningLoadout)
+      },
+    })
+  }
+  menuItems.push({ divider: true, label: '' })
+
+  if (!isMe && (meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain) {
+    menuItems.push({
+      label: `Add to my crew`,
+      icon: <RocketLaunch fontSize="small" />,
+      onClick: () => {
+        if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, myCrewCaptainId || mySessionUser.ownerId)
+        else if (pendingUser)
+          updatePendingUsers([
+            {
+              ...pendingUser,
+              captainId: myCrewCaptainId || mySessionUser.ownerId,
+              sessionRole: pendingUser.sessionRole as SessionRoleEnum,
+              shipRole: pendingUser.shipRole as ShipRoleEnum,
+            },
+          ])
+      },
+    })
+  }
+  if (!isMe && !iAmOnCrew && !theyOnMyCrew && sessionUser) {
+    menuItems.push({
+      label: `Join ${sessionUser.owner?.scName}'s crew`,
+      icon: <RocketLaunch fontSize="small" />,
+      onClick: () => {
+        updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
+      },
+    })
+  }
+
+  if ((isMe && iAmOnCrew) || (!isMe && theyIsMyCaptain)) {
+    menuItems.push({
+      label: `Leave ${myCaptainScName || "UNKNOWN USER's"}'s crew`,
+      color: 'error',
+      icon: <GroupRemove fontSize="small" color="error" />,
+      onClick: () => {
+        updateSessionUserCaptain(mySessionUser.ownerId, null)
+      },
+    })
+  }
+
+  if (!isMe && theyOnMyCrew) {
+    menuItems.push({
+      label: `Remove from ${iAmTheirCaptain ? 'my' : theirCaptainScName} crew`,
+      color: 'error',
+      icon: <RocketLaunch fontSize="small" color="error" />,
+      onClick: () => {
+        if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, null)
+        else if (pendingUser)
+          updatePendingUsers([
+            {
+              ...pendingUser,
+              captainId: null,
+              sessionRole: pendingUser.sessionRole as SessionRoleEnum,
+              shipRole: pendingUser.shipRole as ShipRoleEnum,
+            },
+          ])
+      },
+    })
+  }
+
+  if (isMe && meIsCaptain) {
+    menuItems.push({
+      label: `Disband Crew`,
+      color: 'error',
+      icon: <Delete fontSize="small" color="error" />,
+      onClick: () => {
+        setActiveModal(DialogEnum.DISBAND_CREW)
+      },
+    })
+  }
+
+  if (!isMe && !isMyFriend) {
+    menuItems.push({
+      label: `Add Friend`,
+      icon: <GroupAdd fontSize="small" />,
+      onClick: () => {
+        addFriend(theirSCName)
+      },
+    })
+  }
+
+  if (!isMe && isMyFriend) {
+    menuItems.push({
+      label: `Remove Friend`,
+      color: 'error',
+      icon: <GroupRemove fontSize="small" color="error" />,
+      onClick: () => {
+        removeFriend(theirSCName)
+      },
+    })
+  }
+
+  if (!isMe && isSessionAdmin && pendingUser) {
+    menuItems.push({
+      label: `Delete ${pendingUser.scName} from session`,
+      color: 'error',
+      icon: <DeleteForever fontSize="small" color="error" />,
+      onClick: () => {
+        setDeletePendingUserOpen(true)
+      },
+    })
+  }
+
+  if (!isMe && isSessionAdmin && sessionUser) {
+    menuItems.push({
+      label: `Delete ${sessionUser.owner?.scName} from session`,
+      color: 'error',
+      icon: <DeleteForever fontSize="small" color="error" />,
+      onClick: () => {
+        setDeleteActiveUserOpen(true)
+      },
+    })
+  }
+
+  if (isMe && !isSessionAdmin) {
+    menuItems.push({
+      label: `Leave Session`,
+      color: 'error',
+      icon: <DeleteForever fontSize="small" color="error" />,
+      onClick: () => setActiveModal(DialogEnum.LEAVE_SESSION),
+    })
+  }
 
   const { contextMenuNode, handleContextMenu } = useSessionContextMenu({
     header: (
@@ -87,179 +230,6 @@ export const useSessionUserContextMenu = (sessionUser?: SessionUser, pendingUser
     ),
     menuItems,
   })
-
-  React.useEffect(() => {
-    if (!contextMenuNode) {
-      if (menuItems.length) {
-        setMenuItems([])
-      }
-      return
-    }
-    const newMenuItems: MenuItemObj[] = [
-      {
-        icon: <Person fontSize="small" />,
-        label: isMe ? 'Edit My Status' : 'User Details',
-        onClick: () => {
-          if (isActiveUser) openActiveUserModal(sessionUser?.owner?.userId as string)
-          else openPendingUserModal(pendingUser?.scName as string)
-        },
-      },
-    ]
-
-    if (sessionUser && sessionUser.loadout) {
-      newMenuItems.push({
-        label: sessionUser.loadout?.name ? `Loadout: ${sessionUser.loadout?.name}` : 'No Loadout Selected',
-        disabled: !sessionUser.loadout,
-        icon: <ModuleIcon fontSize="small" />,
-        onClick: () => {
-          openLoadoutModal(sessionUser.loadout as MiningLoadout)
-        },
-      })
-    }
-    newMenuItems.push({ divider: true, label: '' })
-
-    if (!isMe && (meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && !theyIsCaptain) {
-      newMenuItems.push({
-        label: `Add to my crew`,
-        icon: <RocketLaunch fontSize="small" />,
-        onClick: () => {
-          if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, myCrewCaptainId || mySessionUser.ownerId)
-          else if (pendingUser)
-            updatePendingUsers([
-              {
-                ...pendingUser,
-                captainId: myCrewCaptainId || mySessionUser.ownerId,
-                sessionRole: pendingUser.sessionRole as SessionRoleEnum,
-                shipRole: pendingUser.shipRole as ShipRoleEnum,
-              },
-            ])
-        },
-      })
-    }
-    if (!isMe && !iAmOnCrew && !theyOnMyCrew && sessionUser) {
-      newMenuItems.push({
-        label: `Join ${sessionUser.owner?.scName}'s crew`,
-        icon: <RocketLaunch fontSize="small" />,
-        onClick: () => {
-          updateSessionUserCaptain(mySessionUser.ownerId, sessionUser.ownerId)
-        },
-      })
-    }
-
-    if ((isMe && iAmOnCrew) || (!isMe && theyIsMyCaptain)) {
-      newMenuItems.push({
-        label: `Leave ${myCaptainScName || "UNKNOWN USER's"}'s crew`,
-        color: 'error',
-        icon: <GroupRemove fontSize="small" color="error" />,
-        onClick: () => {
-          updateSessionUserCaptain(mySessionUser.ownerId, null)
-        },
-      })
-    }
-
-    if (!isMe && theyOnMyCrew) {
-      newMenuItems.push({
-        label: `Remove from ${iAmTheirCaptain ? 'my' : theirCaptainScName} crew`,
-        color: 'error',
-        icon: <RocketLaunch fontSize="small" color="error" />,
-        onClick: () => {
-          if (sessionUser) updateSessionUserCaptain(sessionUser.ownerId, null)
-          else if (pendingUser)
-            updatePendingUsers([
-              {
-                ...pendingUser,
-                captainId: null,
-                sessionRole: pendingUser.sessionRole as SessionRoleEnum,
-                shipRole: pendingUser.shipRole as ShipRoleEnum,
-              },
-            ])
-        },
-      })
-    }
-
-    if (isMe && meIsCaptain) {
-      newMenuItems.push({
-        label: `Disband Crew`,
-        color: 'error',
-        icon: <Delete fontSize="small" color="error" />,
-        onClick: () => {
-          setActiveModal(DialogEnum.DISBAND_CREW)
-        },
-      })
-    }
-
-    if (!isMe && !isMyFriend) {
-      newMenuItems.push({
-        label: `Add Friend`,
-        icon: <GroupAdd fontSize="small" />,
-        onClick: () => {
-          addFriend(theirSCName)
-        },
-      })
-    }
-
-    if (!isMe && isMyFriend) {
-      menuItems.push({
-        label: `Remove Friend`,
-        color: 'error',
-        icon: <GroupRemove fontSize="small" color="error" />,
-        onClick: () => {
-          removeFriend(theirSCName)
-        },
-      })
-    }
-
-    if (!isMe && isSessionAdmin && pendingUser) {
-      newMenuItems.push({
-        label: `Delete ${pendingUser.scName} from session`,
-        color: 'error',
-        icon: <DeleteForever fontSize="small" color="error" />,
-        onClick: () => {
-          setDeletePendingUserOpen(true)
-        },
-      })
-    }
-
-    if (!isMe && isSessionAdmin && sessionUser) {
-      newMenuItems.push({
-        label: `Delete ${sessionUser.owner?.scName} from session`,
-        color: 'error',
-        icon: <DeleteForever fontSize="small" color="error" />,
-        onClick: () => {
-          setDeleteActiveUserOpen(true)
-        },
-      })
-    }
-
-    if (isMe && !isSessionAdmin) {
-      newMenuItems.push({
-        label: `Leave Session`,
-        color: 'error',
-        icon: <DeleteForever fontSize="small" color="error" />,
-        onClick: () => setActiveModal(DialogEnum.LEAVE_SESSION),
-      })
-    }
-
-    setMenuItems(newMenuItems)
-  }, [
-    contextMenuNode,
-    sessionUser,
-    pendingUser,
-    isMe,
-    isActiveUser,
-    theirSCName,
-    isMyFriend,
-    theirCaptainId,
-    theyIsCaptain,
-    theyIsMyCaptain,
-    iAmTheirCaptain,
-    theyOnMyCrew,
-    meIsPotentialCaptain,
-    iAmOnCrew,
-    myCrewCaptainId,
-    myCaptainScName,
-    isSessionAdmin,
-  ])
 
   return {
     handleContextMenu,
