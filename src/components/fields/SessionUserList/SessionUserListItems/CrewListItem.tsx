@@ -4,9 +4,10 @@ import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { PendingUserListItem } from './PendingUserListItem'
-import { Accordion, AccordionDetails, Divider, IconButton, List, Tooltip } from '@mui/material'
-import { ExpandLess, ExpandMore } from '@mui/icons-material'
+import { Accordion, AccordionDetails, Avatar, Box, Divider, IconButton, List, Tooltip, Typography } from '@mui/material'
+import { ExpandLess, ExpandMore, Group } from '@mui/icons-material'
 import { stateColorsBGThunk } from './StateChip'
+import { fontFamilies } from '../../../../theme'
 
 export interface CrewListItemProps {
   captain: SessionUser
@@ -24,6 +25,8 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
 
   const stateColorsBg = stateColorsBGThunk(theme)
   const stateColorBg = stateColorsBg[captain.state] || undefined
+
+  const totalCrew = theCrew.activeIds.length + theCrew.innactiveSCNames.length + 1
 
   // Create a mapping of scName to Active and Innactive users so we can sort them by scName
   const scNameList: SortedUserList = React.useMemo(() => {
@@ -83,6 +86,7 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
       <List
         disablePadding
         sx={{
+          postion: 'relative',
           width: '100%',
           // background: stateColorBg && alpha(stateColorBg, 0.05)
         }}
@@ -91,10 +95,17 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
         <ActiveUserListItem
           sessionUser={captain}
           isCrewDisplay
+          expanded={expanded}
           expandButton={
-            <Tooltip title={expanded ? 'Collapse Crew' : 'Expand Crew'}>
+            <Tooltip
+              placement="top"
+              title={`
+              ${captain?.owner?.scName} + ${totalCrew - 1} crew 
+            `}
+            >
               <IconButton
                 sx={{
+                  position: 'relative',
                   ml: -2,
                 }}
                 size="small"
@@ -103,6 +114,23 @@ export const CrewListItem: React.FC<CrewListItemProps> = ({ captain }) => {
                   setExpanded(!expanded)
                 }}
               >
+                <Avatar
+                  variant="circular"
+                  sx={{
+                    height: 16,
+                    width: 16,
+                    // border: `1px solid ${theme.palette.primary.main}`,
+                    color: theme.palette.text.primary,
+                    background: 'transparent',
+                    position: 'absolute',
+                    top: -5,
+                    left: '50%',
+                    fontSize: '0.8rem',
+                    transform: 'translateX(-50%)',
+                  }}
+                >
+                  {totalCrew}
+                </Avatar>
                 {expanded ? <ExpandMore /> : <ExpandLess />}
               </IconButton>
             </Tooltip>

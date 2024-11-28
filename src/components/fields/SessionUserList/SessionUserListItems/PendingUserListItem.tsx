@@ -1,15 +1,6 @@
 import React, { useRef } from 'react'
-import {
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Typography,
-  Stack,
-} from '@mui/material'
+import { ListItem, ListItemAvatar, ListItemText, Typography, Stack } from '@mui/material'
 import { PendingUser, SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
-import { MoreVert } from '@mui/icons-material'
 import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
@@ -18,6 +9,7 @@ import { AppContext } from '../../../../context/app.context'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
 import { SessionRoleIconBadge } from '../../SessionRoleChooser'
 import { ShipRoleIconBadge } from '../../ShipRoleChooser'
+import { UserListItemRoleIcons } from './ActiveUserListItem'
 
 export interface PendingUserListItemProps {
   pendingUser: PendingUser
@@ -71,51 +63,13 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({ pendin
             },
             //
           }}
-          primary={
-            <Stack direction="row" spacing={1}>
-              <Typography variant="body2">{getSafeName(pendingUser.scName)}</Typography>
-              {isCrewDisplay && (
-                <SessionRoleIconBadge
-                  role={pendingUser.sessionRole as SessionRoleEnum}
-                  sx={{
-                    fontSize: '1rem',
-                    mt: -0.5,
-                    mr: 1,
-                  }}
-                />
-              )}
-              {isCrewDisplay && (
-                <ShipRoleIconBadge
-                  role={pendingUser.shipRole as ShipRoleEnum}
-                  sx={{
-                    fontSize: '1rem',
-                    mt: -0.5,
-                  }}
-                />
-              )}
-            </Stack>
-          }
+          primary={<Typography variant="body2">{getSafeName(pendingUser.scName)}</Typography>}
           secondaryTypographyProps={{
             component: 'div',
           }}
           secondary={
             !isCrewDisplay && (
               <Stack direction="row" spacing={1}>
-                <SessionRoleIconBadge
-                  role={pendingUser.sessionRole as SessionRoleEnum}
-                  sx={{
-                    fontSize: '1rem',
-                    mt: -0.5,
-                    mr: 1,
-                  }}
-                />
-                <ShipRoleIconBadge
-                  role={pendingUser.shipRole as ShipRoleEnum}
-                  sx={{
-                    fontSize: '1rem',
-                    mt: -0.5,
-                  }}
-                />
                 <Typography
                   sx={{
                     fontFamily: fontFamilies.robotoMono,
@@ -130,11 +84,13 @@ export const PendingUserListItem: React.FC<PendingUserListItemProps> = ({ pendin
             )
           }
         />
-        <ListItemSecondaryAction>
+
+        <UserListItemRoleIcons user={pendingUser} />
+        {/* <ListItemSecondaryAction>
           <IconButton color="default" onClick={handleContextMenu}>
             <MoreVert />
           </IconButton>
-        </ListItemSecondaryAction>
+        </ListItemSecondaryAction> */}
       </ListItem>
     </>
   )

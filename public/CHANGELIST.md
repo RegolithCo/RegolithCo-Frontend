@@ -1,4 +1,4 @@
-### November 18, 2024
+### December 1, 2024
 ## 1.1.4 - The Organizer's Patch
 
 - Closed sessions can now be re-opened!
@@ -6,6 +6,7 @@
 - Much better state synching means session changes appear much faster on all clients and take way less server resources.
 - Roles
 - A few little system changes to pave the way for 4.0
+- Percentage and share values can now have up to 2 decimal places.
 - Many little bug fixes.
 - Temporarily disabled the "Users must be a member of a discord server to join this session." until a fix can be found. Hopefully this will be back soon.
 

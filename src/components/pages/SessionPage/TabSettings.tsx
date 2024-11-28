@@ -7,6 +7,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   InputLabel,
   keyframes,
   List,
@@ -598,24 +599,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
               </Typography>
               <Box sx={styles.sectionBody}>
                 <FormControl component="fieldset" variant="standard">
+                  <FormLabel component="legend">Allow users to self-assign roles:</FormLabel>
                   <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={!newSettings.sessionSettings?.controlledSessionRole}
-                          onChange={(e) => {
-                            setNewSettings({
-                              ...newSettings,
-                              sessionSettings: {
-                                ...newSettings.sessionSettings,
-                                controlledSessionRole: !e.target.checked,
-                              },
-                            })
-                          }}
-                        />
-                      }
-                      label="Session roles: Allow self-assign"
-                    />
                     <FormControlLabel
                       control={
                         <Switch
@@ -631,7 +616,24 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                           }}
                         />
                       }
-                      label="Ship roles: Allow self-assign"
+                      label="Ship roles"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={!newSettings.sessionSettings?.controlledSessionRole}
+                          onChange={(e) => {
+                            setNewSettings({
+                              ...newSettings,
+                              sessionSettings: {
+                                ...newSettings.sessionSettings,
+                                controlledSessionRole: !e.target.checked,
+                              },
+                            })
+                          }}
+                        />
+                      }
+                      label="Session roles"
                     />
                   </FormGroup>
                 </FormControl>
@@ -647,7 +649,14 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                 defaults on a per-workorder basis unless you click the adjacent lock switch.
               </Typography>
               <Box sx={styles.sectionBody}>
-                <List dense>
+                <List
+                  dense
+                  sx={{
+                    '& .MuiListItem-root': {
+                      pl: 0,
+                    },
+                  }}
+                >
                   <ListItem>
                     <FormControlLabel
                       checked={Boolean(newSettings.workOrderDefaults?.includeTransferFee)}

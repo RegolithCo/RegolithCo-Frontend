@@ -76,7 +76,9 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell align="left">Username</TableCell>
+            <TableCell align="left" colSpan={3}>
+              Username
+            </TableCell>
             <TableCell align="left" colSpan={2} padding="none">
               Share
             </TableCell>
@@ -85,8 +87,8 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
             </TableCell>
             {/* The delete button only shows if we are editing */}
             {!isShare && (
-              <TableCell align="left" colSpan={isEditing ? 3 : 2}>
-                Paid
+              <TableCell align="left" colSpan={isEditing ? 3 : 2} padding="checkbox">
+                {!isEditing ? 'Paid' : 'Note'}
               </TableCell>
             )}
           </TableRow>
@@ -98,6 +100,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               crewShare={crewShare}
               isMe={crewShare.payeeScName === workOrder.owner?.scName}
               isShare={isShare}
+              userSuggest={userSuggest}
               isSeller={
                 workOrder.sellerscName
                   ? crewShare.payeeScName === workOrder.sellerscName

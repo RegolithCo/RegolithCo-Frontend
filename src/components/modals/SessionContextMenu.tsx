@@ -154,13 +154,9 @@ export const useSessionContextMenu = (menuProps: UseContextMenuProps | (() => Us
   return {
     handleContextMenu,
     handleClose,
-    contextMenuNode: (
-      <SessionContextMenu
-        {...finalMenuProps}
-        menuPosXY={menuPosXY || undefined}
-        open={menuPosXY !== null}
-        onClose={handleClose}
-      />
-    ),
+    contextMenuNode:
+      menuPosXY !== null ? (
+        <SessionContextMenu {...finalMenuProps} menuPosXY={menuPosXY || undefined} open onClose={handleClose} />
+      ) : null,
   }
 }

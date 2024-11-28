@@ -11,8 +11,17 @@ import {
   MenuItem,
   useTheme,
   alpha,
+  Typography,
 } from '@mui/material'
-import { ShareAmtArr, UserSuggest, CrewShare, ShareTypeEnum, ShareTypeToolTip } from '@regolithco/common'
+import {
+  ShareAmtArr,
+  UserSuggest,
+  CrewShare,
+  ShareTypeEnum,
+  ShareTypeToolTip,
+  SessionRoleEnum,
+  ShipRoleEnum,
+} from '@regolithco/common'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Cancel, Description, NoteAdd } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
 import numeral from 'numeral'
@@ -20,6 +29,9 @@ import { fontFamilies } from '../../../theme'
 import log from 'loglevel'
 import { NoteAddDialog } from '../../modals/NoteAddDialog'
 import { AppContext } from '../../../context/app.context'
+import { SessionRoleIconBadge } from '../SessionRoleChooser'
+import { ShipRoleIconBadge } from '../ShipRoleChooser'
+import { debounce } from 'lodash'
 
 export type CrewShareTableRowProps = {
   crewShare: CrewShare
@@ -55,6 +67,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   isSessionRow,
   numSharesTotal,
   includeTransferFee,
+  userSuggest,
   onChange,
   markCrewSharePaid,
   onDelete,
@@ -79,6 +92,8 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
       : ''
   // : `This fee is ${crewShare?.state ? 'Paid' : 'Unpaid'}`
 
+  const userWithRoles = userSuggest && userSuggest[crewShare.payeeScName]
+
   // const fgColor = isMe ? 'inherit' : isMandatory ? '#db5ae9' : isSessionRow ? '#69c9e1' : 'inherit'
   const backgroundColor = isSeller ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
   const hasNote = crewShare.note && crewShare.note.length > 0
@@ -91,22 +106,39 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     <>
       <Tooltip title={tooltip} arrow placement="left" enterDelay={1000}>
         <TableRow sx={{ background: backgroundColor }}>
-          {isSeller && <TableCell>{getSafeName(crewShare.payeeScName)}</TableCell>}
-          {!isSeller && <TableCell>{getSafeName(crewShare.payeeScName)}</TableCell>}
+          <TableCell>{isSeller ? getSafeName(crewShare.payeeScName) : getSafeName(crewShare.payeeScName)}</TableCell>
+          <TableCell padding="none">
+            <ShipRoleIconBadge
+              key="sessionRole"
+              role={userWithRoles?.shipRole as ShipRoleEnum}
+              sx={{
+                fontSize: '1rem',
+              }}
+            />
+          </TableCell>
+          <TableCell padding="none">
+            <SessionRoleIconBadge
+              key="sessionRole"
+              role={userWithRoles?.sessionRole as SessionRoleEnum}
+              sx={{
+                fontSize: '1rem',
+              }}
+            />
+          </TableCell>
 
           {isEditing && !isMandatory ? formatCrewShareTypeEdit(crewShare, onChange) : formatCrewShareType(crewShare)}
           {formatCrewShare(crewShare, onChange, Boolean(isEditing && !isMandatory), editingShare, setEditingShare)}
 
           {isSeller ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
 
-          {!isShare && (
+          {!isShare && !isEditing && (
             <Tooltip placement="top" arrow enterDelay={2000} title={!isEditing ? paidToolTip : ''}>
               <TableCell align="center" padding="none" width={30}>
                 <Checkbox
                   checked={paid}
                   disabled={isSeller || !allowPay}
                   onChange={(e) => {
-                    markCrewSharePaid && markCrewSharePaid(crewShare, e.target.checked)
+                    if (markCrewSharePaid) markCrewSharePaid(crewShare, e.target.checked)
                   }}
                 />
               </TableCell>
@@ -176,6 +208,8 @@ const formatCrewShareTypeEdit = (
   crewShare: CrewShare,
   onChange: (newCrewShare: CrewShare) => void
 ): React.ReactElement => {
+  const theme = useTheme()
+
   return (
     <TableCell align="right" valign="middle" padding="none">
       <Select
@@ -197,14 +231,26 @@ const formatCrewShareTypeEdit = (
           }
         }}
       >
+        <Typography
+          variant="overline"
+          component="div"
+          sx={{
+            px: 2,
+            fontWeight: 'bold',
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+          }}
+        >
+          Share Type
+        </Typography>
         <MenuItem value={ShareTypeEnum.Share}>
-          <PieChartIcon sx={{ my: 2 }} /> Equal Share
+          <PieChartIcon sx={{ my: 1, mr: 2 }} /> Equal Share
         </MenuItem>
         <MenuItem value={ShareTypeEnum.Amount}>
-          <TollIcon sx={{ my: 2 }} /> Flat Rate
+          <TollIcon sx={{ my: 1, mr: 2 }} /> Flat Rate
         </MenuItem>
         <MenuItem value={ShareTypeEnum.Percent}>
-          <Percent sx={{ my: 2 }} /> Percentage
+          <Percent sx={{ my: 1, mr: 2 }} /> Percentage
         </MenuItem>
       </Select>
     </TableCell>
@@ -230,22 +276,31 @@ export const formatCrewShare = (
   setEditingField: (editing: boolean) => void
 ): React.ReactElement => {
   const theme = useTheme()
+  const [valError, setValError] = React.useState<boolean>(false)
   let shareVal: React.ReactElement
   switch (crewShare.shareType) {
     case ShareTypeEnum.Amount:
-      shareVal = <MValue value={crewShare.share} format={MValueFormat.number_sm} />
+      shareVal = <MValue value={crewShare.share} format={MValueFormat.number_sm} decimals={0} />
       break
     case ShareTypeEnum.Percent:
-      shareVal = <MValue value={crewShare.share} format={MValueFormat.percent} />
+      shareVal = <MValue value={crewShare.share} format={MValueFormat.percent} maxDecimals={2} />
       break
     case ShareTypeEnum.Share:
-      shareVal = <MValue value={crewShare.share} format={MValueFormat.number} decimals={0} />
+      shareVal = <MValue value={crewShare.share} format={MValueFormat.number} maxDecimals={2} />
       break
     default:
       shareVal = <MValue value={crewShare.share} format={MValueFormat.number} />
       break
   }
 
+  const onTextChangeDebounced = React.useCallback(
+    (newCrewShare: CrewShare) => {
+      debounce(onChange, 500)(newCrewShare)
+    },
+    [onChange]
+  )
+
+  const defaultVal = crewShare.shareType === ShareTypeEnum.Percent ? 100 * (crewShare.share || 0) : crewShare.share
   return (
     <TableCell
       align="right"
@@ -268,8 +323,9 @@ export const formatCrewShare = (
       {editingField && (
         <TextField
           autoFocus
-          defaultValue={crewShare.shareType === ShareTypeEnum.Percent ? 100 * (crewShare.share || 0) : crewShare.share}
+          defaultValue={defaultVal}
           size="small"
+          error={valError}
           onFocus={(event) => {
             event.target.select()
           }}
@@ -279,15 +335,35 @@ export const formatCrewShare = (
               newTargetVal = '0'
             }
             try {
-              const tValParsed = parseFloat(newTargetVal)
-              if (crewShare.shareType === ShareTypeEnum.Amount && tValParsed >= 0) {
-                onChange({ ...crewShare, share: Math.round(tValParsed) })
-              } else if (crewShare.shareType === ShareTypeEnum.Percent && tValParsed >= 0 && tValParsed <= 100) {
-                onChange({ ...crewShare, share: Math.round(tValParsed) / 100 })
-              } else if (crewShare.shareType === ShareTypeEnum.Share && tValParsed >= 0) {
-                onChange({ ...crewShare, share: Math.round(tValParsed) })
+              let tValParsed = parseFloat(newTargetVal)
+              // Round to 2 decimal places
+              tValParsed = Math.round(tValParsed * 100) / 100
+
+              if (crewShare.shareType === ShareTypeEnum.Amount) {
+                // Verify that the value is >0 and an integer
+                if (tValParsed >= 0 && Number.isInteger(tValParsed)) {
+                  if (valError) setValError(false)
+                  onTextChangeDebounced({ ...crewShare, share: Math.round(tValParsed) })
+                } else {
+                  setValError(true)
+                }
+              } else if (crewShare.shareType === ShareTypeEnum.Percent) {
+                if (tValParsed >= 0 && tValParsed <= 100) {
+                  if (valError) setValError(false)
+                  onTextChangeDebounced({ ...crewShare, share: tValParsed / 100 })
+                } else {
+                  setValError(true)
+                }
+              } else if (crewShare.shareType === ShareTypeEnum.Share) {
+                if (tValParsed >= 0) {
+                  if (valError) setValError(false)
+                  onTextChangeDebounced({ ...crewShare, share: tValParsed })
+                } else {
+                  setValError(true)
+                }
               }
             } catch (e) {
+              setValError(true)
               log.error(e)
             }
           }}
@@ -306,7 +382,7 @@ export const formatCrewShare = (
               setEditingField(false)
             }
             // handle any punctuation keys like *().,;'"" but allow escape keys like enter
-            else if (event.key.length === 1 && !event.key.match(/[0-9]/)) {
+            else if (event.key.length === 1 && !event.key.match(/[0-9.]/)) {
               event.preventDefault()
             }
           }}

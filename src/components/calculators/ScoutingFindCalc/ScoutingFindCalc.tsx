@@ -45,7 +45,7 @@ import {
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
-import { MValueFormat, MValueFormatter, findDecimals } from '../../fields/MValue'
+import { MValueFormat, MValueFormatter, findDecimalsSm } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModal'
 import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
@@ -524,11 +524,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                               {MValueFormatter(
                                 volumeUnitted,
                                 MValueFormat.number_sm,
-                                findDecimals(volumeUnitted, true)
+                                findDecimalsSm(volumeUnitted, true)
                               )}
                             </TableCell>
                             <TableCell align="right">
-                              {MValueFormatter(value, MValueFormat.number_sm, findDecimals(value))}
+                              {MValueFormatter(value, MValueFormat.number_sm, findDecimalsSm(value))}
                             </TableCell>
                           </TableRow>
                         )
@@ -538,7 +538,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       <TableCell>Cargo + Components</TableCell>
                       <TableCell align="right"></TableCell>
                       <TableCell align="right">
-                        {MValueFormatter(salvageAUECSUmmary, MValueFormat.number_sm, findDecimals(salvageAUECSUmmary))}
+                        {MValueFormatter(
+                          salvageAUECSUmmary,
+                          MValueFormat.number_sm,
+                          findDecimalsSm(salvageAUECSUmmary)
+                        )}
                       </TableCell>
                     </TableRow>
                   )}
@@ -547,11 +551,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   <TableRow sx={styles.totalRow}>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">
-                      {MValueFormatter(summaryVolume, MValueFormat.number_sm, findDecimals(summaryVolume, true))}
+                      {MValueFormatter(summaryVolume, MValueFormat.number_sm, findDecimalsSm(summaryVolume, true))}
                     </TableCell>
                     <TableCell align="right">
                       {/* {profitSymbol} */}
-                      {MValueFormatter(summary.value, MValueFormat.number_sm, findDecimals(summary.value))}
+                      {MValueFormatter(summary.value, MValueFormat.number_sm, findDecimalsSm(summary.value))}
                     </TableCell>
                   </TableRow>
                 </TableFooter>

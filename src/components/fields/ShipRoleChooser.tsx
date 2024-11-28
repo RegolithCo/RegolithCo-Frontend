@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
 import { ShipRoleEnum } from '@regolithco/common'
-import { QuestionMark } from '@mui/icons-material'
-import { RoleChooserItem } from './SessionRoleChooser'
+import { CheckBoxOutlineBlank, QuestionMark } from '@mui/icons-material'
+import { RoleChooserItem, RoleIconBadgeTooltip } from './SessionRoleChooser'
 import { ShipRoleColors, ShipRoleIcons, ShipRoleNames } from '../../lib/roles'
 
 export interface ShipRoleChooserProps {
@@ -71,19 +71,33 @@ export const ShipRoleChooser: React.FC<ShipRoleChooserProps> = ({ value, disable
   )
 }
 
-export const ShipRoleIconBadge: React.FC<{ role: ShipRoleEnum | string; sx?: SxProps<Theme> }> = ({ role, sx }) => {
-  if (!role) return null
+export const ShipRoleIconBadge: React.FC<{
+  role: ShipRoleEnum | string
+  sx?: SxProps<Theme>
+  placeholder?: boolean
+}> = ({ role, sx, placeholder }) => {
+  if (!role) {
+    if (placeholder)
+      return (
+        <CheckBoxOutlineBlank
+          sx={{
+            opacity: 0,
+          }}
+        />
+      )
+    return null
+  }
   const roleName = ShipRoleNames[role as ShipRoleEnum] || role
   const Icon = ShipRoleIcons[role] || QuestionMark
   const color = ShipRoleColors[role as ShipRoleEnum] || '#555555'
   return (
-    <Tooltip title={`Session Role: ${roleName}`}>
+    <RoleIconBadgeTooltip title={'Ship Role'} roleName={roleName} color={color} Icon={Icon}>
       <Icon
         sx={{
           color: color,
           ...(sx || {}),
         }}
       />
-    </Tooltip>
+    </RoleIconBadgeTooltip>
   )
 }

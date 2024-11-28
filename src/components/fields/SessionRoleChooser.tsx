@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
+import { Box, Card, CardHeader, CardMedia, MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
 import { SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
-import { QuestionMark } from '@mui/icons-material'
-import { SessionRoleColors, SessionRoleIcons, SessionRoleNames } from '../../lib/roles'
+import { CheckBoxOutlineBlank, QuestionMark } from '@mui/icons-material'
+import { RoleIconType, SessionRoleColors, SessionRoleIcons, SessionRoleNames } from '../../lib/roles'
 
 export interface SessionRoleChooserProps {
   value?: string | null
@@ -65,23 +65,71 @@ export const SessionRoleChooser: React.FC<SessionRoleChooserProps> = ({ value, d
   )
 }
 
-export const SessionRoleIconBadge: React.FC<{ role: SessionRoleEnum | string; sx?: SxProps<Theme> }> = ({
-  role,
-  sx,
-}) => {
-  if (!role) return null
+export const RoleIconBadgeTooltip: React.FC<{
+  title: string
+  roleName: string
+  color: string
+  Icon?: RoleIconType
+  children: React.ReactElement
+}> = ({ title, roleName, color, Icon, children }) => {
+  return (
+    <Tooltip
+      title={
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="overline" color="text.secondary">
+            {title}
+          </Typography>
+          {Icon && <Icon sx={{ color: color, height: 40, width: 40 }} />}
+          <Typography
+            variant="overline"
+            sx={{
+              color: color,
+            }}
+          >
+            {roleName}
+          </Typography>
+        </Box>
+      }
+    >
+      {children}
+    </Tooltip>
+  )
+}
+
+export const SessionRoleIconBadge: React.FC<{
+  role: SessionRoleEnum | string
+  sx?: SxProps<Theme>
+  placeholder?: boolean
+}> = ({ role, sx, placeholder }) => {
+  if (!role) {
+    if (placeholder)
+      return (
+        <CheckBoxOutlineBlank
+          sx={{
+            opacity: 0,
+          }}
+        />
+      )
+    return null
+  }
   const roleName = SessionRoleNames[role as SessionRoleEnum] || role
   const Icon = SessionRoleIcons[role] || QuestionMark
   const color = SessionRoleColors[role as SessionRoleEnum] || '#555555'
   return (
-    <Tooltip title={`Session Role: ${roleName}`}>
+    <RoleIconBadgeTooltip title={'Session Role'} roleName={roleName} color={color} Icon={Icon}>
       <Icon
         sx={{
           color: color,
           ...(sx || {}),
         }}
       />
-    </Tooltip>
+    </RoleIconBadgeTooltip>
   )
 }
 

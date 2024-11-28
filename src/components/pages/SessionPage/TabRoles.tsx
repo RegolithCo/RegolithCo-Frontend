@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Menu,
   Stack,
   Switch,
   SxProps,
@@ -18,8 +19,8 @@ import {
   TableHead,
   TableRow,
   Theme,
+  Tooltip,
   Typography,
-  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import {
@@ -30,15 +31,18 @@ import {
   SessionInput,
   SessionSettings,
   SessionUser,
+  ShipRoleEnum,
+  SessionRoleEnum,
 } from '@regolithco/common'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { fontFamilies } from '../../../theme'
-import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
-import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
-import { DeleteSweep } from '@mui/icons-material'
+import { SessionRoleChooser, sessionRoleOptions } from '../../fields/SessionRoleChooser'
+import { ShipRoleChooser, shipRoleOptions } from '../../fields/ShipRoleChooser'
+import { DeleteSweep, GroupAdd } from '@mui/icons-material'
 import { DeleteModal } from '../../modals/DeleteModal'
 import { UserAvatar } from '../../UserAvatar'
 import { AppContext } from '../../../context/app.context'
+import { ConfirmModal } from '../../modals/ConfirmModal'
 
 export interface RolesTabProps {
   // For the profile version we only have the sessionSettings
@@ -53,11 +57,14 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
   const styles = stylesThunk(theme, true)
   const [deleteSessionRolesOpen, setDeleteSessionRolesOpen] = React.useState(false)
   const [deleteShipRolesOpen, setDeleteShipRolesOpen] = React.useState(false)
-  const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const { isSessionAdmin, captains, updateSessionRole, updateShipRole, updatePendingUsers, mySessionUser, session } =
     React.useContext(SessionContext)
   const { getSafeName, hideNames } = React.useContext(AppContext)
   const [groupCrew, setGroupCrew] = React.useState<boolean>(true)
+  const [shipRoleMenu, setShipRoleMenu] = React.useState<HTMLElement | null>(null)
+  const [sessionRoleMenu, setSessionRoleMenu] = React.useState<HTMLElement | null>(null)
+  const [confirmSetAllShiproles, setConfirmSetAllShiproles] = React.useState<ShipRoleEnum | null>(null)
+  const [confirmSetAllSessionroles, setConfirmSetAllSessionroles] = React.useState<SessionRoleEnum | null>(null)
 
   const allCrew: [PendingUser | SessionUser, boolean, boolean][] = React.useMemo(() => {
     const crewArr: (PendingUser | SessionUser)[] = [
@@ -145,22 +152,62 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                 </TableCell>
                 <TableCell width={'30%'}>
                   <Stack direction="row" spacing={1} justifyContent="space-between">
-                    <Typography variant="overline">Session Role</Typography>
+                    <Typography variant="overline">Ship Role</Typography>
                     {isSessionAdmin && (
                       <Stack direction="row" spacing={1}>
-                        <IconButton color="error" onClick={() => setDeleteSessionRolesOpen(true)}>
-                          <DeleteSweep />
-                        </IconButton>
+                        <Tooltip title="Set ALL ship roles" placement="top">
+                          <IconButton color="secondary" onClick={(e) => setShipRoleMenu(e.currentTarget)}>
+                            <GroupAdd />
+                          </IconButton>
+                        </Tooltip>
+                        {shipRoleMenu && (
+                          <Menu
+                            anchorEl={shipRoleMenu}
+                            open
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            onClose={() => setShipRoleMenu(null)}
+                          >
+                            {shipRoleOptions((role) => {
+                              setShipRoleMenu(null)
+                              setConfirmSetAllShiproles(role as ShipRoleEnum)
+                            })}
+                          </Menu>
+                        )}
+                        <Tooltip title="Clear All Ship Roles" placement="top">
+                          <IconButton color="error" onClick={() => setDeleteShipRolesOpen(true)}>
+                            <DeleteSweep />
+                          </IconButton>
+                        </Tooltip>
                       </Stack>
                     )}
                   </Stack>
                 </TableCell>
                 <TableCell width={'30%'}>
                   <Stack direction="row" spacing={1} justifyContent="space-between">
-                    <Typography variant="overline">Ship Role</Typography>
+                    <Typography variant="overline">Session Role</Typography>
                     {isSessionAdmin && (
                       <Stack direction="row" spacing={1}>
-                        <IconButton color="error" onClick={() => setDeleteShipRolesOpen(true)}>
+                        <Tooltip title="Set ALL session roles" placement="top">
+                          <IconButton color="secondary" onClick={(e) => setSessionRoleMenu(e.currentTarget)}>
+                            <GroupAdd />
+                          </IconButton>
+                        </Tooltip>
+                        {sessionRoleMenu && (
+                          <Menu
+                            anchorEl={sessionRoleMenu}
+                            open
+                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            onClose={() => setSessionRoleMenu(null)}
+                          >
+                            {sessionRoleOptions((role) => {
+                              setSessionRoleMenu(null)
+                              setConfirmSetAllSessionroles(role as SessionRoleEnum)
+                            })}
+                          </Menu>
+                        )}
+                        <IconButton color="error" onClick={() => setDeleteSessionRolesOpen(true)}>
                           <DeleteSweep />
                         </IconButton>
                       </Stack>
@@ -271,22 +318,6 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                       </List>
                     </TableCell>
                     <TableCell width={'30%'}>
-                      <SessionRoleChooser
-                        value={crew.sessionRole}
-                        disabled={sessionRoleDisabled}
-                        onChange={(value) => {
-                          isPendingUser
-                            ? updatePendingUsers([
-                                {
-                                  ...crew,
-                                  sessionRole: value || null,
-                                } as PendingUserInput,
-                              ])
-                            : updateSessionRole((crew as SessionUser).ownerId, value || null)
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell width={'30%'}>
                       <ShipRoleChooser
                         value={crew.shipRole}
                         disabled={shipRoleDisabled}
@@ -299,6 +330,22 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                                 } as PendingUserInput,
                               ])
                             : updateShipRole((crew as SessionUser).ownerId, value || null)
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell width={'30%'}>
+                      <SessionRoleChooser
+                        value={crew.sessionRole}
+                        disabled={sessionRoleDisabled}
+                        onChange={(value) => {
+                          isPendingUser
+                            ? updatePendingUsers([
+                                {
+                                  ...crew,
+                                  sessionRole: value || null,
+                                } as PendingUserInput,
+                              ])
+                            : updateSessionRole((crew as SessionUser).ownerId, value || null)
                         }}
                       />
                     </TableCell>
@@ -363,7 +410,10 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
             updatePromises.push(updatePendingUsers(pendingUsers))
 
             allCrew
-              .filter(([crew, sessionRoleDisabled, shipRoleDisabled]) => !shipRoleDisabled && crew.shipRole)
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !(crew as PendingUser).scName && !shipRoleDisabled && crew.shipRole
+              )
               .forEach(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
                 updatePromises.push(updateShipRole((crew as SessionUser).ownerId, null))
               })
@@ -372,6 +422,78 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
           }}
           title="Delete All Ship Roles"
           message="Are you sure you want to delete all Ship roles?"
+        />
+      )}
+      {confirmSetAllShiproles && (
+        <ConfirmModal
+          open
+          onClose={() => setConfirmSetAllShiproles(null)}
+          onConfirm={() => {
+            const updatePromises: Promise<unknown>[] = []
+            const pendingUsers: PendingUserInput[] = allCrew
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !!(crew as PendingUser).scName && !shipRoleDisabled && crew.shipRole !== confirmSetAllShiproles
+              )
+              .map(([crew, sessionRoleDisabled, shipRoleDisabled]) => {
+                return {
+                  ...crew,
+                  shipRole: confirmSetAllShiproles,
+                } as PendingUserInput
+              })
+            updatePromises.push(updatePendingUsers(pendingUsers))
+
+            allCrew
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !(crew as PendingUser).scName && !shipRoleDisabled && crew.shipRole !== confirmSetAllShiproles
+              )
+              .forEach(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
+                updatePromises.push(updateShipRole((crew as SessionUser).ownerId, confirmSetAllShiproles))
+              })
+
+            return Promise.all(updatePromises)
+          }}
+          title="Set All Ship Roles"
+          message={`Are you sure you want to set all Ship roles to ${confirmSetAllShiproles}?`}
+        />
+      )}
+      {confirmSetAllSessionroles && (
+        <ConfirmModal
+          open
+          onClose={() => setConfirmSetAllSessionroles(null)}
+          onConfirm={() => {
+            const updatePromises: Promise<unknown>[] = []
+            const pendingUsers: PendingUserInput[] = allCrew
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !!(crew as PendingUser).scName &&
+                  !sessionRoleDisabled &&
+                  crew.sessionRole !== confirmSetAllSessionroles
+              )
+              .map(([crew, sessionRoleDisabled, shipRoleDisabled]) => {
+                return {
+                  ...crew,
+                  sessionRole: confirmSetAllSessionroles,
+                } as PendingUserInput
+              })
+            updatePromises.push(updatePendingUsers(pendingUsers))
+
+            allCrew
+              .filter(
+                ([crew, sessionRoleDisabled, shipRoleDisabled]) =>
+                  !(crew as PendingUser).scName &&
+                  !sessionRoleDisabled &&
+                  crew.sessionRole !== confirmSetAllSessionroles
+              )
+              .forEach(([crew, sessionRoleDisabled, shipRoleDisabled], idx) => {
+                updatePromises.push(updateSessionRole((crew as SessionUser).ownerId, confirmSetAllSessionroles))
+              })
+
+            return Promise.all(updatePromises)
+          }}
+          title="Set All Session Roles"
+          message={`Are you sure you want to set all Session roles to ${confirmSetAllSessionroles}?`}
         />
       )}
     </Box>

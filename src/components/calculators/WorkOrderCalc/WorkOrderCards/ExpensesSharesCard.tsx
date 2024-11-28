@@ -35,11 +35,10 @@ import {
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import {
-  AddCircle,
   ArrowDropDown,
   CheckBox,
   CheckBoxOutlineBlank,
-  ClearAll,
+  ChevronLeft,
   DeleteSweep,
   ExpandMore,
   Help,
@@ -446,6 +445,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     }}
                   >
                     <MenuItem
+                      sx={{ pl: 3 }}
                       onClick={() => {
                         const newShares: string[] = Object.entries(userSuggest)
                           .reduce((acc, [scName, entry]) => {
@@ -484,15 +484,17 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         setAddMenuOpen(null)
                       }}
                     >
-                      Add All
+                      Everyone
                     </MenuItem>
                     <MenuItem
                       selected={!!addMenuOpen2[0]}
+                      sx={{ pl: 0 }}
                       onClick={(e) => {
                         setAddMenuOpen2([e.currentTarget, null, null])
                       }}
                     >
-                      Add Crew
+                      <ChevronLeft sx={{ opacity: addMenuOpen2[0] ? 1 : 0.1 }} />
+                      Crew
                     </MenuItem>
                     {addMenuOpen2[0] && (
                       <Menu
@@ -576,11 +578,13 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     )}
                     <MenuItem
                       selected={!!addMenuOpen2[1]}
+                      sx={{ pl: 0 }}
                       onClick={(e) => {
                         setAddMenuOpen2([null, e.currentTarget, null])
                       }}
                     >
-                      Add Session Role
+                      <ChevronLeft sx={{ opacity: addMenuOpen2[1] ? 1 : 0.1 }} />
+                      Session Role
                     </MenuItem>
                     {addMenuOpen2[1] && (
                       <Menu
@@ -595,11 +599,13 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     )}
                     <MenuItem
                       selected={!!addMenuOpen2[2]}
+                      sx={{ pl: 0 }}
                       onClick={(e) => {
                         setAddMenuOpen2([null, null, e.currentTarget])
                       }}
                     >
-                      Add Ship Role
+                      <ChevronLeft sx={{ opacity: addMenuOpen2[2] ? 1 : 0.1 }} />
+                      Ship Role
                     </MenuItem>
                     {addMenuOpen2[2] && (
                       <Menu

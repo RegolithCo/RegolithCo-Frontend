@@ -13,6 +13,8 @@ import {
   TravelExplore,
 } from '@mui/icons-material'
 
+export type RoleIconType = typeof RocketLaunch
+
 export const ShipRoleNames: Record<ShipRoleEnum, string> = {
   [ShipRoleEnum.Pilot]: 'Pilot',
   [ShipRoleEnum.Copilot]: 'Co-Pilot',
@@ -23,7 +25,7 @@ export const ShipRoleNames: Record<ShipRoleEnum, string> = {
   [ShipRoleEnum.Stevedore]: 'Stevedore',
 }
 
-export const ShipRoleIcons: Record<ShipRoleEnum, typeof RocketLaunch> = {
+export const ShipRoleIcons: Record<ShipRoleEnum, RoleIconType> = {
   [ShipRoleEnum.Pilot]: RocketLaunch,
   [ShipRoleEnum.Copilot]: RocketLaunch,
   [ShipRoleEnum.Engineer]: Handyman,
@@ -52,7 +54,7 @@ export const SessionRoleNames: Record<SessionRoleEnum, string> = {
   [SessionRoleEnum.Transport]: 'Transport',
 }
 
-export const SessionRoleIcons: Record<SessionRoleEnum, typeof RocketLaunch> = {
+export const SessionRoleIcons: Record<SessionRoleEnum, RoleIconType> = {
   [SessionRoleEnum.Manager]: ManageAccounts,
   [SessionRoleEnum.Scout]: TravelExplore,
   [SessionRoleEnum.Medical]: Support,
