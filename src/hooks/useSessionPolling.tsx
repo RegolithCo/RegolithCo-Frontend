@@ -30,7 +30,7 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
     },
     skip: !sessionId || !sessionUser,
     onCompleted: (data) => {
-      log.debug('MARZIPAN: FULL sessionUserQry.onCompleted', data)
+      log.debug('Polling: FULL sessionUserQry.onCompleted', data)
       setLastFullQuery(Date.now())
     },
   })
@@ -46,11 +46,11 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
     notifyOnNetworkStatusChange: true, // this should get the onComplete firing every time
     skip: !sessionQry?.data?.session?.sessionId || sessionQry?.loading,
     onError: (error) => {
-      log.error('MARZIPAN: sessionUpdatedQry.onError', error)
+      log.error('Polling: sessionUpdatedQry.onError', error)
     },
     onCompleted: (data) => {
       if (data.sessionUpdates) {
-        log.debug('MARZIPAN: sessionUpdatedQry.onCompleted FOUND', data.sessionUpdates?.length, data.sessionUpdates)
+        log.debug('Polling: sessionUpdatedQry.onCompleted FOUND', data.sessionUpdates?.length, data.sessionUpdates)
         const updatedDates: number[] = []
         data.sessionUpdates.forEach((update) => {
           handleCacheUpdate(client, sessionQry?.data?.session, update)
@@ -115,7 +115,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
     fragmentName: sessFrag.definitions[0].name.value,
   })
   if (!sessionObj) {
-    log.error('MARZIPAN: sessionObj not found in cache. BAILING!', sessionId)
+    log.error('Polling: sessionObj not found in cache. BAILING!', sessionId)
     return
   }
 
@@ -176,13 +176,13 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
       return // Do nothing if the item is already up to date or the incoming item is behind
     }
     if (eventName === EventNameEnum.Remove) {
-      log.debug('MARZIPAN: Deleting item from cache')
+      log.debug('Polling: Deleting item from cache')
       client.cache.evict({ id: incomingDataId, fieldName: '__typename' })
       return
     }
   }
 
-  log.debug('MARZIPAN: Writing item to the cache', incomingDataId)
+  log.debug('Polling: Writing item to the cache', incomingDataId)
   client.cache.writeFragment({
     id: incomingDataId,
     fragment,
@@ -197,7 +197,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
   // If an item is CREATED then we need to add it to the session
   // We should also check that the cached item is added to the session object
   if (itemNeedsAdding) {
-    console.debug('Item not found in cache: ', incomingDataId)
+    log.debug('Item not found in cache: ', incomingDataId)
     const fields = {}
     let needsUpdate = false
 
@@ -216,12 +216,12 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
         case 'SessionUser':
           fields['activeMemberIds'] = (existingArray: Session['activeMemberIds']) => {
             if (existingArray?.includes(data.userId)) return existingArray
-            console.debug('Adding userId to activeMemberIds', data)
+            log.debug('Adding userId to activeMemberIds', data)
             return [...(existingArray || []), data.userId]
           }
           fields['activeMembers'] = (existingObj) => {
             if (existingObj?.items.some((item) => item.__ref === incomingDataId)) return existingObj
-            console.debug('Adding sessionUser to session', data)
+            log.debug('Adding sessionUser to session', data)
             return {
               ...existingObj,
               items: [...(existingObj?.items || []), { __ref: incomingDataId }],
@@ -234,7 +234,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
         case 'VehicleClusterFind':
           fields['scouting'] = (existingObj) => {
             if (existingObj?.items.find((item) => item.__ref === incomingDataId)) return existingObj
-            console.debug('Adding ScoutingFind to Session', data)
+            log.debug('Adding ScoutingFind to Session', data)
             return {
               ...existingObj,
               items: [...(existingObj?.items || []), { __ref: incomingDataId }],
@@ -248,7 +248,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
         case 'ShipMiningOrder':
           fields['workOrders'] = (existingObj) => {
             if (existingObj?.items.some((item) => item.__ref === incomingDataId)) return existingObj
-            console.debug('Adding WorkOrder to Session', data)
+            log.debug('Adding WorkOrder to Session', data)
             return {
               ...existingObj,
               items: [...(existingObj?.items || []), { __ref: incomingDataId }],
@@ -257,29 +257,29 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
           needsUpdate = true
           break
         default:
-          log.error('MARZIPAN: Unknown dataType', dataType)
+          log.error('Polling: Unknown dataType', dataType)
           return
       }
       if (needsUpdate) {
         const sessionCacheId = client.cache.identify({ __typename: 'Session', sessionId })
         if (!sessionCacheId) {
-          log.error('MARZIPAN: sessionCacheId not found')
+          log.error('Polling: sessionCacheId not found')
           return
         }
         try {
           if (!sessionCacheId) {
-            log.error('MARZIPAN: sessionCacheId not found')
+            log.error('Polling: sessionCacheId not found')
             return
           }
           if (typeof client.cache.modify !== 'function') {
-            throw new Error('MARZIPAN: client.cache.modify is not a function')
+            throw new Error('Polling: client.cache.modify is not a function')
           }
           client.cache.modify({
             id: sessionCacheId,
             fields,
           })
         } catch (e) {
-          log.error('MARZIPAN: Error modifying cache', e)
+          log.error('Polling: Error modifying cache', e)
         }
       }
     }

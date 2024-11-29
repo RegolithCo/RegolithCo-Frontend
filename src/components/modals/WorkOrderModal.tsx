@@ -161,8 +161,6 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const isShipMining = workOrder.orderType === ActivityEnum.ShipMining
 
-  console.log('NEWWORKORDER', newWorkOrder)
-
   // We need to make sure newWorkOrder is always up to date with the workOrder
   React.useEffect(() => {
     setNewWorkOrder(workOrder)
