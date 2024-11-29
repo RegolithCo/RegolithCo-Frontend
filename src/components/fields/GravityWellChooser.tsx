@@ -34,7 +34,7 @@ export const gravityWellName = (id: string, systemLookup: SystemLookup): string 
       finalRenderName = `${sysObj.name} ▶ Aaron Halo`
       return
     }
-    Object.entries(sysObj.planets).forEach(([plKey, plObj], idx) => {
+    Object.entries(sysObj.planets || {}).forEach(([plKey, plObj], idx) => {
       if (plKey === id) {
         finalRenderName = `${sysObj.name} ▶ ${plObj.name}`
         return
