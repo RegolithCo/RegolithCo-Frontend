@@ -86,9 +86,13 @@ export const MValueFormatter = (
 
   // Number: Just a number
   if (!format || format === MValueFormat.number) {
-    if (decimals) finalVal = Numeral(value).format(`0,0.${'0'.repeat(decimals)}`)
-    else if (maxDecimals) finalVal = Numeral(value).format(`0,0.${'0'.repeat(maxDecimals)}`)
-    else finalVal = Numeral(value).format('0,0')
+    let finalDecimals = 0
+    if (decimals) finalDecimals = decimals
+    else if (maxDecimals) finalDecimals = countDecimals(value as number, maxDecimals)
+    else finalDecimals = 0
+    //
+    if (finalDecimals === 0) finalVal = Numeral(value).format(`0,0`)
+    else finalVal = Numeral(value).format(`0,0.${'0'.repeat(finalDecimals)}`)
   } else if (format === MValueFormat.number_sm) {
     // The small version is pretty tightly wound
     let finalDecimals = 0

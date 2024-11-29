@@ -31,16 +31,19 @@ import {
   CrewShare,
   ShareTypeEnum,
   StoreChoice,
+  SessionRoleEnum,
+  ShipRoleEnum,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import {
   ArrowDropDown,
+  Cancel,
   CheckBox,
   CheckBoxOutlineBlank,
   ChevronLeft,
-  DeleteSweep,
   ExpandMore,
+  GroupAdd,
   Help,
   Percent,
   PieChart,
@@ -61,6 +64,7 @@ import { LookupsContext } from '../../../../context/lookupsContext'
 import { SessionContext } from '../../../../context/session.context'
 import { shipRoleOptions } from '../../../fields/ShipRoleChooser'
 import { sessionRoleOptions } from '../../../fields/SessionRoleChooser'
+import { RoleCrewShareAddModal } from '../../../modals/RoleCrewShareAddModal'
 
 // import log from 'loglevel'
 
@@ -89,6 +93,8 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 
   const [addMenuOpen, setAddMenuOpen] = useState<HTMLElement | null>(null)
   const [addMenuOpen2, setAddMenuOpen2] = useState<(HTMLElement | null)[]>([null, null, null])
+
+  const [addByRoleOpen, setAddByRoleOpen] = useState<ShipRoleEnum | SessionRoleEnum | null>(null)
 
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
@@ -424,10 +430,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   <Button
                     size="small"
                     color="primary"
+                    startIcon={<GroupAdd />}
                     endIcon={<ArrowDropDown />}
                     onClick={(e) => setAddMenuOpen(e.currentTarget)}
                   >
-                    Add By
+                    Group Add
                   </Button>
                 )}
                 {addMenuOpen && userSuggest && (
@@ -594,7 +601,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                         onClose={() => setAddMenuOpen2([null, null, null])}
                       >
-                        {sessionRoleOptions()}
+                        {sessionRoleOptions((role) => {
+                          setAddByRoleOpen(role as SessionRoleEnum)
+                          setAddMenuOpen(null)
+                          setAddMenuOpen2([null, null, null])
+                        })}
                       </Menu>
                     )}
                     <MenuItem
@@ -615,7 +626,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                         onClose={() => setAddMenuOpen2([null, null, null])}
                       >
-                        {shipRoleOptions()}
+                        {shipRoleOptions((role) => {
+                          setAddByRoleOpen(role as ShipRoleEnum)
+                          setAddMenuOpen(null)
+                          setAddMenuOpen2([null, null, null])
+                        })}
                       </Menu>
                     )}
                   </Menu>
@@ -625,7 +640,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   size="small"
                   color="error"
                   // down arrow on the end
-                  endIcon={<DeleteSweep />}
+                  startIcon={<Cancel />}
                   onClick={() => {
                     const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
                     onChange({
@@ -634,7 +649,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     })
                   }}
                 >
-                  Clear
+                  Clear All
                 </Button>
               </>
             )}
@@ -742,6 +757,41 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               shareAmount: null,
             })
             setConfirmPriceReset(false)
+          }}
+        />
+      )}
+      {addByRoleOpen && (
+        <RoleCrewShareAddModal
+          open={!!addByRoleOpen}
+          userSuggest={userSuggest}
+          role={addByRoleOpen}
+          onClose={() => setAddByRoleOpen(null)}
+          onConfirm={({ scNames, share, shareType }) => {
+            if (!userSuggest) return
+            const newShares = (workOrder.crewShares || []).filter((cs) => !scNames.includes(cs.payeeScName))
+            // Now we have to build and merge new crewshares for these users
+            onChange({
+              ...workOrder,
+              crewShares: [
+                ...newShares,
+                ...scNames.map((payeeScName) => {
+                  return {
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    orderId: workOrder.orderId,
+                    sessionId: workOrder.sessionId,
+                    payeeScName,
+                    payeeUserId: userSuggest[payeeScName].userId,
+                    note: `Added by role: ${addByRoleOpen}`,
+                    state: false,
+                    // These two are set
+                    shareType,
+                    share,
+                    __typename: 'CrewShare',
+                  } as CrewShare
+                }),
+              ],
+            })
           }}
         />
       )}

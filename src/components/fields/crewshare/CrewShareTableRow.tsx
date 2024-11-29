@@ -126,7 +126,11 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
             />
           </TableCell>
 
-          {isEditing && !isMandatory ? formatCrewShareTypeEdit(crewShare, onChange) : formatCrewShareType(crewShare)}
+          {isEditing && !isMandatory ? (
+            <CrewShareTypeEdit crewShare={crewShare} onChange={onChange} />
+          ) : (
+            formatCrewShareType(crewShare)
+          )}
           {formatCrewShare(crewShare, onChange, Boolean(isEditing && !isMandatory), editingShare, setEditingShare)}
 
           {isSeller ? formatPayout(finalPayout, false) : formatPayout(finalPayout, Boolean(includeTransferFee))}
@@ -198,16 +202,18 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   )
 }
 
-const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
+export const crewShareTypeIcons: Record<ShareTypeEnum, React.ReactElement> = {
   [ShareTypeEnum.Amount]: <TollIcon sx={{ fontSize: '1em' }} />,
   [ShareTypeEnum.Percent]: <Percent sx={{ fontSize: '1em' }} />,
   [ShareTypeEnum.Share]: <PieChartIcon sx={{ fontSize: '1em' }} />,
 }
 
-const formatCrewShareTypeEdit = (
-  crewShare: CrewShare,
+export interface CrewShareTypeEditProps {
+  crewShare: CrewShare
   onChange: (newCrewShare: CrewShare) => void
-): React.ReactElement => {
+}
+
+export const CrewShareTypeEdit: React.FC<CrewShareTypeEditProps> = ({ crewShare, onChange }): React.ReactElement => {
   const theme = useTheme()
 
   return (
