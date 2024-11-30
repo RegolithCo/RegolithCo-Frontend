@@ -11,6 +11,7 @@ import { OwingList } from '../pages/SessionPage/TabSummary'
 import { WorkOrderTable } from '../pages/SessionPage/WorkOrderTable'
 import { AppContext } from '../../context/app.context'
 import { LookupsContext } from '../../context/lookupsContext'
+import { WorkOrderTableColsEnum } from '../pages/SessionPage/WorkOrderTableRow'
 
 export type SessionShareSettings = {
   hideNames?: boolean
@@ -123,7 +124,19 @@ export const SessionShare: React.FC<SessionShareProps> = ({ session, settings })
       <TabSummaryStats session={session} isShare />
       <Typography sx={styles.sectionTitle}>Work Orders:</Typography>
       {(session.workOrders?.items || []).length > 0 ? (
-        <WorkOrderTable workOrders={session.workOrders?.items || []} isShare />
+        <WorkOrderTable
+          workOrders={session.workOrders?.items || []}
+          isShare
+          columns={[
+            WorkOrderTableColsEnum.Activity,
+            WorkOrderTableColsEnum.Refinery,
+            WorkOrderTableColsEnum.OrderId,
+            WorkOrderTableColsEnum.Ores,
+            WorkOrderTableColsEnum.Volume,
+            WorkOrderTableColsEnum.Gross,
+            WorkOrderTableColsEnum.Net,
+          ]}
+        />
       ) : (
         <Typography sx={{ m: 2, textAlign: 'center' }} color="text.secondary" variant="overline" component="div">
           No Work Orders (yet)

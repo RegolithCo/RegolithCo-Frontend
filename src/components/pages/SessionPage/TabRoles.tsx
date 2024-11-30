@@ -169,7 +169,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                             onClose={() => setShipRoleMenu(null)}
                           >
-                            {shipRoleOptions((role) => {
+                            {shipRoleOptions(undefined, false, (role) => {
                               setShipRoleMenu(null)
                               setConfirmSetAllShiproles(role as ShipRoleEnum)
                             })}
@@ -202,7 +202,7 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
                             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                             onClose={() => setSessionRoleMenu(null)}
                           >
-                            {sessionRoleOptions((role) => {
+                            {sessionRoleOptions(undefined, false, (role) => {
                               setSessionRoleMenu(null)
                               setConfirmSetAllSessionroles(role as SessionRoleEnum)
                             })}

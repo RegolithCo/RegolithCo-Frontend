@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
+import { MenuItem, Select, SxProps, Theme, Typography } from '@mui/material'
 import { ShipRoleEnum } from '@regolithco/common'
 import { CheckBoxOutlineBlank, QuestionMark } from '@mui/icons-material'
 import { RoleChooserItem, RoleIconBadgeTooltip } from './SessionRoleChooser'
@@ -10,14 +10,20 @@ export interface ShipRoleChooserProps {
   disabled?: boolean
   onChange: (value: ShipRoleEnum | null) => void
 }
-
-export const shipRoleOptions = (onClick?: (value: string) => void): React.ReactNode[] => {
+export type ShipRoleCounts = Record<ShipRoleEnum, number>
+export const shipRoleOptions = (
+  counts?: ShipRoleCounts,
+  disableZeroCount?: boolean,
+  onClick?: (value: string) => void
+): React.ReactNode[] => {
   return Object.values(ShipRoleEnum).map((role, idx) => {
     const RoleIcon = ShipRoleIcons[role]
+    const count = counts && counts[role]
     return (
       <MenuItem
         value={role}
         key={idx}
+        disabled={disableZeroCount && count === 0}
         onClick={onClick ? () => onClick(role) : undefined}
         sx={{
           '& svg': {
@@ -28,6 +34,7 @@ export const shipRoleOptions = (onClick?: (value: string) => void): React.ReactN
       >
         <RoleChooserItem
           roleName={ShipRoleNames[role as ShipRoleEnum] || role}
+          count={count}
           icon={<RoleIcon />}
           color={ShipRoleColors[role]}
         />

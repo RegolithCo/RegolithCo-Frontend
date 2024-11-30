@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -62,8 +62,8 @@ import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
 import { LookupsContext } from '../../../../context/lookupsContext'
 import { SessionContext } from '../../../../context/session.context'
-import { shipRoleOptions } from '../../../fields/ShipRoleChooser'
-import { sessionRoleOptions } from '../../../fields/SessionRoleChooser'
+import { ShipRoleCounts, shipRoleOptions } from '../../../fields/ShipRoleChooser'
+import { SessionRoleCounts, sessionRoleOptions } from '../../../fields/SessionRoleChooser'
 import { RoleCrewShareAddModal } from '../../../modals/RoleCrewShareAddModal'
 
 // import log from 'loglevel'
@@ -120,6 +120,26 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   }, [summary.oreSummary, shipOrder.isRefined, workOrder.sellStore])
 
   const shareAmountIsSet = typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null
+
+  const { shipRoleCounts, sessionRoleCounts } = useMemo(() => {
+    if (!userSuggest) return { shipRoleCounts: {} as ShipRoleCounts, sessionRoleCounts: {} as SessionRoleCounts }
+    const shipRoleCounts = Object.values(ShipRoleEnum).reduce((acc, shipRole) => {
+      return {
+        ...acc,
+        [shipRole]: Object.values(userSuggest).filter((usr) => usr.shipRole && usr.shipRole === shipRole).length,
+      }
+    }, {} as ShipRoleCounts)
+
+    const sessionRoleCounts = Object.values(SessionRoleEnum).reduce((acc, sessionRole) => {
+      return {
+        ...acc,
+        [sessionRole]: Object.values(userSuggest).filter((usr) => usr.sessionRole && usr.sessionRole === sessionRole)
+          .length,
+      }
+    }, {} as SessionRoleCounts)
+
+    return { shipRoleCounts, sessionRoleCounts }
+  }, [userSuggest])
 
   // Update the share amount but only if the user has not already edited it
   useEffect(() => {
@@ -496,6 +516,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     <MenuItem
                       selected={!!addMenuOpen2[0]}
                       sx={{ pl: 0 }}
+                      disabled={captains.length === 0}
                       onClick={(e) => {
                         setAddMenuOpen2([e.currentTarget, null, null])
                       }}
@@ -601,7 +622,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                         onClose={() => setAddMenuOpen2([null, null, null])}
                       >
-                        {sessionRoleOptions((role) => {
+                        {sessionRoleOptions(sessionRoleCounts, true, (role) => {
                           setAddByRoleOpen(role as SessionRoleEnum)
                           setAddMenuOpen(null)
                           setAddMenuOpen2([null, null, null])
@@ -626,7 +647,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                         onClose={() => setAddMenuOpen2([null, null, null])}
                       >
-                        {shipRoleOptions((role) => {
+                        {shipRoleOptions(shipRoleCounts, true, (role) => {
                           setAddByRoleOpen(role as ShipRoleEnum)
                           setAddMenuOpen(null)
                           setAddMenuOpen2([null, null, null])

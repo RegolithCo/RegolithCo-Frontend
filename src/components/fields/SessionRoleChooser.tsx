@@ -1,22 +1,29 @@
 import * as React from 'react'
-import { Box, Card, CardHeader, CardMedia, MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
+import { Box, MenuItem, Select, SxProps, Theme, Tooltip, Typography } from '@mui/material'
 import { SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
 import { CheckBoxOutlineBlank, QuestionMark } from '@mui/icons-material'
 import { RoleIconType, SessionRoleColors, SessionRoleIcons, SessionRoleNames } from '../../lib/roles'
+import { isUndefined } from 'lodash'
 
 export interface SessionRoleChooserProps {
   value?: string | null
   disabled?: boolean
   onChange: (value: SessionRoleEnum | null) => void
 }
-
-export const sessionRoleOptions = (onClick?: (value: string) => void): React.ReactNode[] => {
+export type SessionRoleCounts = Record<SessionRoleEnum, number>
+export const sessionRoleOptions = (
+  counts?: SessionRoleCounts,
+  disableZeroCount?: boolean,
+  onClick?: (value: string) => void
+): React.ReactNode[] => {
   return Object.values(SessionRoleEnum).map((role, idx) => {
     const RoleIcon = SessionRoleIcons[role]
+    const count = counts && counts[role]
     return (
       <MenuItem
         value={role}
         key={idx}
+        disabled={disableZeroCount && !count}
         onClick={onClick ? () => onClick(role) : undefined}
         sx={{
           '& svg': {
@@ -24,7 +31,12 @@ export const sessionRoleOptions = (onClick?: (value: string) => void): React.Rea
           },
         }}
       >
-        <RoleChooserItem roleName={SessionRoleNames[role]} icon={<RoleIcon />} color={SessionRoleColors[role]} />
+        <RoleChooserItem
+          roleName={SessionRoleNames[role]}
+          count={count}
+          icon={<RoleIcon />}
+          color={SessionRoleColors[role]}
+        />
       </MenuItem>
     )
   })
@@ -156,11 +168,12 @@ export const SessionRoleRenderItem: React.FC<{ role?: ShipRoleEnum | string }> =
   )
 }
 
-export const RoleChooserItem: React.FC<{ roleName?: string | null; icon?: React.ReactNode; color?: string }> = ({
-  roleName,
-  icon,
-  color,
-}) => {
+export const RoleChooserItem: React.FC<{
+  roleName?: string | null
+  count?: number
+  icon?: React.ReactNode
+  color?: string
+}> = ({ roleName, icon, count, color }) => {
   return (
     <Typography
       variant="overline"
@@ -178,6 +191,7 @@ export const RoleChooserItem: React.FC<{ roleName?: string | null; icon?: React.
     >
       {icon}
       {roleName || 'None'}
+      {!isUndefined(count) && count > -1 ? ` (${count}) ` : ''}
     </Typography>
   )
 }

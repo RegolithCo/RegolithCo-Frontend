@@ -97,13 +97,13 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
           type: 'belt',
           id: `AARON_HALO`,
         })
-      Object.entries(sysObj.planets).forEach(([plKey, plObj], idx) => {
+      Object.entries(sysObj.planets || {}).forEach(([plKey, plObj], idx) => {
         acc.push({
           label: plObj.name,
           type: 'planet',
           id: plKey,
         })
-        Object.entries(plObj.satellites).forEach(([satKey, satName], idx) => {
+        Object.entries(plObj.satellites || {}).forEach(([satKey, satName], idx) => {
           acc.push({
             label: satName,
             type: 'satellite',
