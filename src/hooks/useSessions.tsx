@@ -330,6 +330,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
         return {
           addSessionMentions: {
             ...(sessionQry.data?.session as Session),
+            updatedAt: new Date().getTime(),
             mentionedUsers: newMentionedMembers,
           },
           __typename: 'Mutation',
@@ -372,38 +373,10 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           sessionId: sessionId as string,
           scNames,
         },
-        // We need to filter out the users because it may be another 10 seconds before the query updates its poll
-        // Also we can save ourselves a query by just updating the cache
-        update: (cache) => {
-          // 1. Pull all crew shares for this session from the cache
-          const sessionQry = cache.readQuery<GetSessionQuery>({
-            query: GetSessionDocument,
-            variables: { sessionId: sessionId as string },
-          })
-          if (!sessionQry || !sessionQry.session || !sessionQry.session.workOrders) return
-          const newSessionQry: GetSessionQuery = {
-            ...sessionQry,
-            session: {
-              ...sessionQry.session,
-              workOrders: {
-                ...sessionQry.session?.workOrders,
-                items: (sessionQry.session?.workOrders?.items as WorkOrder[]).map((wo) => ({
-                  ...wo,
-                  crewShares: (wo.crewShares as CrewShare[]).filter((cs) => !scNames.includes(cs.payeeScName)),
-                })),
-              },
-            },
-          }
-          // 2. Write the modified session back to the cache
-          cache.writeQuery<GetSessionQuery>({
-            query: GetSessionDocument,
-            variables: { sessionId: sessionId as string },
-            data: newSessionQry,
-          })
-        },
         optimisticResponse: () => ({
           removeSessionMentions: {
             ...(sessionQry.data?.session as Session),
+            updatedAt: new Date().getTime(),
             mentionedUsers: (sessionQry.data?.session?.mentionedUsers as Session['mentionedUsers']).filter(
               (m) => !scNames.includes(m.scName)
             ),

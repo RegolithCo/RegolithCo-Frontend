@@ -12,18 +12,19 @@ import {
   useTheme,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import { MiningLoadout, SessionUser, ShipLookups, User } from '@regolithco/common'
+import { MiningLoadout, PendingUser, PendingUserInput, SessionUser, ShipLookups, User } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
 import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { SessionContext } from '../../../context/session.context'
 import { ModuleIcon } from '../../../icons'
-import { GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
+import { DeleteForever, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
 import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
+import { DeleteModal } from '../DeleteModal'
 
 dayjs.extend(relativeTime)
 
@@ -36,6 +37,7 @@ export interface ActivePopupUserProps {
 export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose, sessionUser }) => {
   const theme = useTheme()
   const { getSafeName, hideNames } = React.useContext(AppContext)
+  const [deleteActiveUserOpen, setDeleteActiveUserOpen] = React.useState(false)
   const dataStore = React.useContext(LookupsContext)
 
   const {
@@ -44,9 +46,8 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
     mySessionUser,
     myUserProfile,
     isSessionAdmin,
+    removeSessionCrew,
     openLoadoutModal,
-    updateSessionRole,
-    updateShipRole,
     updateSessionUserCaptain,
     addFriend,
     crewHierarchy,
@@ -147,48 +148,7 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
           )}
         </Typography>
 
-        {(sessionUser.sessionRole || sessionUser.shipRole || !sessionRoleDisabled || !shipRoleDisabled) && (
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            justifyContent={'space-around'}
-            sx={{
-              border: '1px solid #555555',
-              pb: 2,
-              my: 2,
-            }}
-          >
-            {(sessionUser.sessionRole || !sessionRoleDisabled) && (
-              <Box>
-                <Typography variant="overline" color="primary" component="div">
-                  Session Role
-                </Typography>
-                <SessionRoleChooser
-                  onChange={(newRole) => {
-                    updateSessionRole(sessionUser.ownerId, newRole || null)
-                  }}
-                  disabled={sessionRoleDisabled}
-                  value={sessionUser.sessionRole}
-                />
-              </Box>
-            )}
-            {(sessionUser.shipRole || !shipRoleDisabled) && (
-              <Box>
-                <Typography variant="overline" color="primary" component="div">
-                  Ship Role
-                </Typography>
-                <ShipRoleChooser
-                  onChange={(newRole) => {
-                    updateShipRole(sessionUser.ownerId, newRole || null)
-                  }}
-                  disabled={shipRoleDisabled}
-                  value={sessionUser.shipRole}
-                />
-              </Box>
-            )}
-          </Stack>
-        )}
+        <PopupUserRoleChooser user={sessionUser} />
 
         <Box>
           <Typography variant="overline" color="primary" component="div">
@@ -304,8 +264,46 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
                 Add to my friend List
               </Button>
             )}
+            {isSessionAdmin && (
+              <Button
+                startIcon={<DeleteForever />}
+                color="error"
+                onClick={() => {
+                  setDeleteActiveUserOpen(true)
+                }}
+              >
+                Delete {getSafeName(sessionUser.owner?.scName)} from session
+              </Button>
+            )}
           </ButtonGroup>
         </Box>
+
+        <DeleteModal
+          open={deleteActiveUserOpen}
+          title={`Delete ${sessionUser?.owner?.scName} from session?`}
+          message={
+            <>
+              <Typography>
+                Are you sure you want to delete <strong>{sessionUser?.owner?.scName}</strong> from the session? This
+                will:
+                <ul>
+                  <li>Remove all of their work orders.</li>
+                  <li>Remove their work order shares in any work order.</li>
+                  <li>Reassigned all their scouting shares to the session owner (you).</li>
+                </ul>
+              </Typography>
+              <Typography color="error">
+                You should know that if they still have the link for this session and you have not set "Require users to
+                be added first." in the sesison settings they can still rejoin the session.
+              </Typography>
+            </>
+          }
+          onClose={() => setDeleteActiveUserOpen(false)}
+          onConfirm={() => {
+            removeSessionCrew(sessionUser?.owner?.scName as string)
+            setDeleteActiveUserOpen(false)
+          }}
+        />
       </DialogContent>
       <DialogActions>
         <div style={{ flexGrow: 1 }} />
@@ -314,5 +312,107 @@ export const ActivePopupUser: React.FC<ActivePopupUserProps> = ({ open, onClose,
         </Button>
       </DialogActions>
     </Dialog>
+  )
+}
+
+export interface props {
+  user: SessionUser | PendingUser
+}
+
+export const PopupUserRoleChooser: React.FC<props> = ({ user }) => {
+  const dataStore = React.useContext(LookupsContext)
+  const isPending = !(user as SessionUser).ownerId
+  const sessionUser = user as SessionUser
+
+  const {
+    session,
+    captains,
+    mySessionUser,
+    isSessionAdmin,
+    updatePendingUsers,
+    updateSessionRole,
+    updateShipRole,
+    crewHierarchy,
+  } = React.useContext(SessionContext)
+
+  if (!dataStore.ready) return null
+
+  const theirCaptain: SessionUser | null =
+    user.captainId && crewHierarchy[user.captainId] ? captains.find((c) => c.ownerId === user.captainId) || null : null
+
+  const isMe = !isPending && mySessionUser.ownerId === sessionUser.ownerId
+  const meIsCaptain = !!crewHierarchy[mySessionUser?.ownerId]
+  const myCrewCaptain = meIsCaptain ? mySessionUser?.ownerId : mySessionUser?.captainId
+
+  const theyOnAnyCrew = Boolean(user?.captainId && crewHierarchy[user?.captainId])
+  const theyOnMyCrew = theyOnAnyCrew && theirCaptain?.ownerId === myCrewCaptain
+
+  let sessionRoleDisabled = true
+  if (isSessionAdmin) sessionRoleDisabled = false
+  else if (!session?.sessionSettings?.controlledSessionRole && isMe) sessionRoleDisabled = false
+
+  let shipRoleDisabled = true
+  if (isSessionAdmin) shipRoleDisabled = false
+  else if (!session?.sessionSettings?.controlledShipRole && (isMe || theyOnMyCrew)) shipRoleDisabled = false
+
+  return (
+    <>
+      {(user.sessionRole || user.shipRole || !sessionRoleDisabled || !shipRoleDisabled) && (
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent={'space-around'}
+          sx={{
+            border: '1px solid #555555',
+            pb: 2,
+            my: 2,
+          }}
+        >
+          {(user.sessionRole || !sessionRoleDisabled) && (
+            <Box>
+              <Typography variant="overline" color="primary" component="div">
+                Session Role
+              </Typography>
+              <SessionRoleChooser
+                onChange={(newRole) => {
+                  if (isPending)
+                    updatePendingUsers([
+                      {
+                        ...user,
+                        sessionRole: newRole || null,
+                      } as PendingUserInput,
+                    ])
+                  else updateSessionRole(sessionUser.ownerId, newRole || null)
+                }}
+                disabled={sessionRoleDisabled}
+                value={user.sessionRole}
+              />
+            </Box>
+          )}
+          {(user.shipRole || !shipRoleDisabled) && (
+            <Box>
+              <Typography variant="overline" color="primary" component="div">
+                Ship Role
+              </Typography>
+              <ShipRoleChooser
+                onChange={(newRole) => {
+                  if (isPending)
+                    updatePendingUsers([
+                      {
+                        ...user,
+                        shipRole: newRole || null,
+                      } as PendingUserInput,
+                    ])
+                  else updateShipRole(sessionUser.ownerId, newRole || null)
+                }}
+                disabled={shipRoleDisabled}
+                value={user.shipRole}
+              />
+            </Box>
+          )}
+        </Stack>
+      )}
+    </>
   )
 }

@@ -1200,6 +1200,7 @@ export const AddSessionMentionsDocument = gql`
     mutation addSessionMentions($sessionId: ID!, $scNames: [String]!) {
   addSessionMentions(sessionId: $sessionId, scNames: $scNames) {
     sessionId
+    updatedAt
     mentionedUsers {
       scName
       captainId
@@ -1238,6 +1239,7 @@ export const RemoveSessionMentionsDocument = gql`
     mutation removeSessionMentions($sessionId: ID!, $scNames: [String]!) {
   removeSessionMentions(sessionId: $sessionId, scNames: $scNames) {
     sessionId
+    updatedAt
     mentionedUsers {
       scName
       captainId
@@ -1276,6 +1278,7 @@ export const RemoveSessionCrewDocument = gql`
     mutation removeSessionCrew($sessionId: ID!, $scNames: [String]!) {
   removeSessionCrew(sessionId: $sessionId, scNames: $scNames) {
     sessionId
+    updatedAt
     mentionedUsers {
       scName
       captainId

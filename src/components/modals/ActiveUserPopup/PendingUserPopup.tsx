@@ -1,5 +1,8 @@
 import * as React from 'react'
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Alert,
   AlertTitle,
   Button,
@@ -19,12 +22,24 @@ import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { UserAvatar } from '../../UserAvatar'
-import { Cancel, CheckCircle, DeleteForever, GroupAdd, GroupRemove, Logout, RocketLaunch } from '@mui/icons-material'
+import {
+  Cancel,
+  CheckCircle,
+  ChevronLeft,
+  DeleteForever,
+  Expand,
+  ExpandMore,
+  GroupAdd,
+  GroupRemove,
+  Info,
+  Logout,
+  RocketLaunch,
+} from '@mui/icons-material'
 import { SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { SessionRoleChooser } from '../../fields/SessionRoleChooser'
-import { ShipRoleChooser } from '../../fields/ShipRoleChooser'
+import { PopupUserRoleChooser } from './ActivePopupUser'
+import { DeleteModal } from '../DeleteModal'
 dayjs.extend(relativeTime)
 
 export interface PendingUserPopupProps {
@@ -36,6 +51,7 @@ export interface PendingUserPopupProps {
 export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClose, pendingUser }) => {
   const theme = useTheme()
   const { getSafeName } = React.useContext(AppContext)
+  const [deletePendingUsersOpen, setDeletePendingUserOpen] = React.useState(false)
 
   const dataStore = React.useContext(LookupsContext)
   const {
@@ -45,6 +61,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
     mySessionUser,
     myUserProfile,
     addFriend,
+    removeSessionMentions,
     removeFriend,
     updatePendingUsers,
     crewHierarchy,
@@ -137,58 +154,7 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
           </Typography>
         )}
 
-        {(pendingUser.sessionRole || pendingUser.shipRole) && (
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            justifyContent={'space-around'}
-            sx={{
-              border: '1px solid #555555',
-              pb: 2,
-              my: 2,
-            }}
-          >
-            {pendingUser.sessionRole && (
-              <Box>
-                <Typography variant="overline" color="primary" component="div">
-                  Session Role
-                </Typography>
-                <SessionRoleChooser
-                  onChange={(newRole) => {
-                    updatePendingUsers([
-                      {
-                        ...pendingUser,
-                        sessionRole: newRole || null,
-                      } as PendingUserInput,
-                    ])
-                  }}
-                  disabled={sessionRoleDisabled}
-                  value={pendingUser.sessionRole}
-                />
-              </Box>
-            )}
-            {pendingUser.shipRole && (
-              <Box>
-                <Typography variant="overline" color="primary" component="div">
-                  Ship Role
-                </Typography>
-                <ShipRoleChooser
-                  onChange={(newRole) => {
-                    updatePendingUsers([
-                      {
-                        ...pendingUser,
-                        shipRole: newRole || null,
-                      } as PendingUserInput,
-                    ])
-                  }}
-                  disabled={shipRoleDisabled}
-                  value={pendingUser.shipRole}
-                />
-              </Box>
-            )}
-          </Stack>
-        )}
+        <PopupUserRoleChooser user={pendingUser} />
 
         {vehicle && theirCaptain && (
           <Box>
@@ -206,6 +172,9 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
         <Divider sx={{ my: 3 }} />
 
         <Box>
+          <Typography variant="overline" color="primary" component="div">
+            Actions:
+          </Typography>
           <ButtonGroup fullWidth variant="text" color="info" orientation="vertical">
             {(meIsPotentialCaptain || iAmOnCrew) && !theyOnAnyCrew && (
               <Button
@@ -256,62 +225,81 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             {isSessionAdmin && (
               <Button
                 startIcon={<DeleteForever />}
+                color="error"
                 onClick={() => {
-                  addFriend(pendingUser.scName as string)
+                  setDeletePendingUserOpen(true)
                 }}
               >
-                Delete {iAmTheirCaptain ? 'my' : getSafeName(pendingUser.scName)} from session
+                Delete {getSafeName(pendingUser.scName)} from session
               </Button>
             )}
           </ButtonGroup>
         </Box>
 
-        <Alert severity="info" variant="outlined" sx={{ mt: 3 }}>
-          <AlertTitle>About Pending Users</AlertTitle>
-          <Typography variant="caption" paragraph component="div">
-            Pending users have been added to the session or one of its work orders but have not yet logged in and
-            joined.
-          </Typography>
-          <Typography variant="caption" paragraph component="div">
-            They are added to the session automatically when you add them to a work order or manually using the ADD
-            button at the top of the members list.
-          </Typography>
-          <Typography variant="caption" paragraph component="div">
-            You can set your session to only allow pending users to join and use this as a sort of "invite only" list to
-            prevent random people with the share URL from joining.
-          </Typography>
-          <Typography variant="subtitle1" paragraph>
-            <CheckCircle color="success" sx={{ mr: 1 }} />
-            Pending users CAN
-          </Typography>
-          <Typography variant="caption" paragraph component="div">
-            <ul>
-              <li>Be on your crew.</li>
-              <li>Be mentioned in work orders.</li>
-              <li>Be on your friend list.</li>
-              <li>
-                Become <strong>active users</strong> when they log in and join your session.
-              </li>
-            </ul>
-          </Typography>
-          <Typography variant="subtitle1" paragraph>
-            <Cancel color="error" sx={{ mr: 1 }} />
-            Pending users CANNOT
-          </Typography>
-          <Typography variant="caption" paragraph component="div">
-            <ul>
-              <li>Be captains of a crew.</li>
-              <li>Create work orders or scouting finds.</li>
-            </ul>
-          </Typography>
-        </Alert>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Info />
+            <Typography variant="overline">What is a "pending" user?</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="caption" paragraph component="div">
+              Pending users have been added to the session or one of its work orders but have not yet logged in and
+              joined.
+            </Typography>
+            <Typography variant="caption" paragraph component="div">
+              They are added to the session automatically when you add them to a work order or manually using the ADD
+              button at the top of the members list.
+            </Typography>
+            <Typography variant="caption" paragraph component="div">
+              You can set your session to only allow pending users to join and use this as a sort of "invite only" list
+              to prevent random people with the share URL from joining.
+            </Typography>
+            <Typography variant="subtitle1" paragraph>
+              <CheckCircle color="success" sx={{ mr: 1 }} />
+              Pending users CAN
+            </Typography>
+            <Typography variant="caption" paragraph component="div">
+              <ul>
+                <li>Be on your crew.</li>
+                <li>Be mentioned in work orders.</li>
+                <li>Be on your friend list.</li>
+                <li>
+                  Become <strong>active users</strong> when they log in and join your session.
+                </li>
+              </ul>
+            </Typography>
+            <Typography variant="subtitle1" paragraph>
+              <Cancel color="error" sx={{ mr: 1 }} />
+              Pending users CANNOT
+            </Typography>
+            <Typography variant="caption" paragraph component="div">
+              <ul>
+                <li>Be captains of a crew.</li>
+                <li>Create work orders or scouting finds.</li>
+              </ul>
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
       </DialogContent>
+
       <DialogActions>
         <div style={{ flexGrow: 1 }} />
         <Button color="info" onClick={onClose}>
           Dismiss
         </Button>
       </DialogActions>
+
+      {/* Modal for deleting pedning users from the session */}
+      <DeleteModal
+        open={deletePendingUsersOpen}
+        title={`Delete ${pendingUser?.scName} from session?`}
+        message={`Are you sure you want to delete ${pendingUser?.scName} from the session? This will also remove any of their work order shares.`}
+        onClose={() => setDeletePendingUserOpen(false)}
+        onConfirm={() => {
+          removeSessionMentions([pendingUser?.scName as string])
+          setDeletePendingUserOpen(false)
+        }}
+      />
     </Dialog>
   )
 }

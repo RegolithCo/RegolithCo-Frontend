@@ -25,6 +25,7 @@ import { LoadoutSelect } from '../../fields/LoadoutSelect'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { PopupUserRoleChooser } from './ActivePopupUser'
 dayjs.extend(relativeTime)
 
 export interface ActivePopupMeProps {
@@ -142,6 +143,8 @@ export const ActivePopupMe: React.FC<ActivePopupMeProps> = ({ open, onClose }) =
             The 'en-route' and 'on site' statuses are set by interacting with a scouting find.
           </Typography>
         </Box>
+
+        <PopupUserRoleChooser user={mySessionUser} />
 
         <Box>
           <Typography variant="overline" color="primary" component="div">

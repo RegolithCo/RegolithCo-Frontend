@@ -172,7 +172,7 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
   if (existingItem) {
     // We don't need to update if the item is already up to date. This should
     // prevent us from committing and re-rendering changes WE already made
-    if (existingItem.updatedAt >= data.updatedAt) {
+    if (existingItem.updatedAt > data.updatedAt) {
       return // Do nothing if the item is already up to date or the incoming item is behind
     }
     if (eventName === EventNameEnum.Remove) {
