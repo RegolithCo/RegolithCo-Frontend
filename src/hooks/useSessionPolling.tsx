@@ -118,27 +118,37 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
     log.error('Polling: sessionObj not found in cache. BAILING!', sessionId)
     return
   }
+  const isRemove = eventName === EventNameEnum.Remove
 
   let fragment
   let stateName
   // If the item needs adding to the session. It might already be in the cache so this must be handled separately
   let itemNeedsAdding = false
-  const __typename = dataType
+  let incomingDataIds: (string | undefined)[]
   switch (dataType) {
     case 'Session':
       fragment = SessionFragmentFragmentDoc
       stateName = 'sessionState'
       itemNeedsAdding = false
+      incomingDataIds = [client.cache.identify({ __typename: 'Session', sessionId })]
       break
     case 'SessionUser':
       fragment = SessionUserFragmentFragmentDoc
       stateName = 'sessionUserState'
       itemNeedsAdding = !sessionObj.activeMembers?.items.find((item) => item.ownerId === data.ownerId)
+      incomingDataIds = [client.cache.identify({ __typename: 'SessionUser', sessionId, ownerId: data.ownerId })]
       break
     case 'CrewShare':
       fragment = CrewShareFragmentFragmentDoc
       stateName = 'crewShareState'
-      // NOTE: We do itemNeedsAdding below after we load the workOrder
+      incomingDataIds = [
+        client.cache.identify({
+          __typename: 'CrewShare',
+          sessionId,
+          orderId: data.orderId,
+          payeeScName: data.payeeScName,
+        }),
+      ]
       break
     case 'SalvageFind':
     case 'ShipClusterFind':
@@ -146,6 +156,11 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
       fragment = ScoutingFindFragmentFragmentDoc
       stateName = 'scoutingState'
       itemNeedsAdding = !sessionObj.scouting?.items.find((item) => item.scoutingFindId === data.scoutingFindId)
+      incomingDataIds = [
+        client.cache.identify({ __typename: 'SalvageFind', sessionId, scoutingFindId: data.scoutingFindId }),
+        client.cache.identify({ __typename: 'ShipClusterFind', sessionId, scoutingFindId: data.scoutingFindId }),
+        client.cache.identify({ __typename: 'VehicleClusterFind', sessionId, scoutingFindId: data.scoutingFindId }),
+      ]
       break
     case 'VehicleMiningOrder':
     case 'OtherOrder':
@@ -154,32 +169,49 @@ const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate)
       fragment = WorkOrderFragmentFragmentDoc
       stateName = 'workOrderState'
       itemNeedsAdding = !sessionObj.workOrders?.items.find((item) => item.orderId === data.orderId)
+      incomingDataIds = [
+        client.cache.identify({ __typename: 'VehicleMiningOrder', sessionId, orderId: data.orderId }),
+        client.cache.identify({ __typename: 'OtherOrder', sessionId, orderId: data.orderId }),
+        client.cache.identify({ __typename: 'SalvageOrder', sessionId, orderId: data.orderId }),
+        client.cache.identify({ __typename: 'ShipMiningOrder', sessionId, orderId: data.orderId }),
+      ]
       break
     default:
       return
   }
   const fragmentName = fragment.definitions[0].name.value
-  const incomingDataId = client.cache.identify({ ...data, __typename })
 
-  const existingItem = client.cache.readFragment<Session | SessionUser | WorkOrder | ScoutingFind>({
-    id: incomingDataId,
-    fragment,
-    fragmentName,
-  })
+  let existingItem
+  let incomingDataId
+
+  for (const cacheId of incomingDataIds) {
+    if (!cacheId) continue
+    incomingDataId = cacheId
+    existingItem = client.cache.readFragment<Session | SessionUser | WorkOrder | ScoutingFind>({
+      id: cacheId,
+      fragment,
+      fragmentName,
+    })
+    if (existingItem) break
+  }
 
   // NOTE: This needs to be here because we do not cache SessionPolling data. All data that is
   // returned must be incorporated into the Cache manually
   if (existingItem) {
     // We don't need to update if the item is already up to date. This should
     // prevent us from committing and re-rendering changes WE already made
-    if (existingItem.updatedAt > data.updatedAt) {
+    if (!isRemove && existingItem.updatedAt > data.updatedAt) {
       return // Do nothing if the item is already up to date or the incoming item is behind
     }
-    if (eventName === EventNameEnum.Remove) {
-      log.debug('Polling: Deleting item from cache')
-      client.cache.evict({ id: incomingDataId, fieldName: '__typename' })
-      return
-    }
+  }
+
+  // Removals are handled and then we drop out to prevent any more processing
+  if (isRemove) {
+    if (!incomingDataId) return
+    log.debug('Polling: Deleting item from cache', incomingDataId)
+    client.cache.evict({ id: incomingDataId })
+    client.cache.gc()
+    return
   }
 
   log.debug('Polling: Writing item to the cache', incomingDataId)

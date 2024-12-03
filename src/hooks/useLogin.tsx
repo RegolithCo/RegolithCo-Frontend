@@ -8,7 +8,6 @@ import {
   NormalizedCacheObject,
   split,
   ApolloError,
-  defaultDataIdFromObject,
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
@@ -196,7 +195,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
             },
           },
           WorkOrderInterface: {
-            keyFields: ['orderId'],
+            keyFields: ['sessionId', 'orderId'],
             fields: {
               crewShares: {
                 merge(existing: CrewShare[] = [], incoming: CrewShare[]) {

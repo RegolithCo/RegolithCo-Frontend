@@ -2234,6 +2234,9 @@ export const GetSessionUpdatesDocument = gql`
       }
       ... on ScoutingFindInterface {
         ...ScoutingFindBaseFragment
+        attendance {
+          ...SessionUserFragment
+        }
         scoutingState: state
       }
       ... on CrewShare {
@@ -2254,6 +2257,7 @@ export const GetSessionUpdatesDocument = gql`
 }
     ${WorkOrderBaseFragmentFragmentDoc}
 ${ScoutingFindBaseFragmentFragmentDoc}
+${SessionUserFragmentFragmentDoc}
 ${CrewShareBaseFragmentFragmentDoc}
 ${SessionUserBaseFragmentFragmentDoc}
 ${SessionBaseFragmentFragmentDoc}`;
