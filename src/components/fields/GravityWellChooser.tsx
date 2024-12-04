@@ -136,6 +136,22 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
       onChange={(event, newValue) => {
         onClick(newValue?.id || null)
       }}
+      filterOptions={(options, { inputValue }) => {
+        const words = inputValue
+          .split(' ')
+          .map((word) => word.toLowerCase().trim())
+          .filter((word) => word && word.length)
+        // return values (case insensitive) that match ALL of the words
+        return options.filter((option) => {
+          const found = words.map(
+            (word) =>
+              option.label.toLowerCase().includes(word) ||
+              option.id.toLowerCase().includes(word) ||
+              option.type.toLowerCase().includes(word)
+          )
+          return found.every((f) => f)
+        })
+      }}
       getOptionLabel={(option) => gravityWellName(option.id, systemLookup)}
       renderOption={(props, option, { selected }) => {
         let color = theme.palette.text.primary

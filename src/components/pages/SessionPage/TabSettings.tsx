@@ -241,8 +241,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                           disabled={!endSession}
                           startIcon={<StopCircle />}
                           onClick={() => {
-                            endSession && endSession()
-                            setActiveModal && setActiveModal(DialogEnum.CLOSE_SESSION)
+                            if (endSession) endSession()
+                            if (setActiveModal) setActiveModal(DialogEnum.CLOSE_SESSION)
                           }}
                           color="secondary"
                         >
@@ -256,7 +256,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                           disabled={!endSession}
                           startIcon={<PlayArrow />}
                           onClick={() => {
-                            reOpenSession && reOpenSession()
+                            if (reOpenSession) reOpenSession()
                           }}
                           color="success"
                         >
@@ -270,8 +270,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                           disabled={!deleteSession}
                           startIcon={<Delete />}
                           onClick={() => {
-                            deleteSession && deleteSession()
-                            setActiveModal && setActiveModal(DialogEnum.DELETE_SESSION)
+                            if (deleteSession) deleteSession()
+                            if (setActiveModal) setActiveModal(DialogEnum.DELETE_SESSION)
                           }}
                           color="error"
                         >
@@ -905,7 +905,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
           disabled={!valid}
           variant="outlined"
           onClick={() => {
-            resetDefaultSystemSettings && resetDefaultSystemSettings()
+            if (resetDefaultSystemSettings) resetDefaultSystemSettings()
             setForceRefresh((f) => f + 1)
           }}
         >
@@ -919,7 +919,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
             disabled={!valid}
             variant="outlined"
             onClick={() => {
-              resetDefaultUserSettings && resetDefaultUserSettings()
+              if (resetDefaultUserSettings) resetDefaultUserSettings()
               setForceRefresh((f) => f + 1)
             }}
           >
@@ -933,8 +933,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
           fullWidth={!mediumUp}
           variant="contained"
           onClick={() => {
-            session && onChangeSession && onChangeSession(newSession as SessionInput, newSettings)
-            sessionSettings && onChangeSettings && onChangeSettings(newSettings)
+            if (session && onChangeSession) onChangeSession(newSession as SessionInput, newSettings)
+            if (sessionSettings && onChangeSettings) onChangeSettings(newSettings)
           }}
         >
           Save

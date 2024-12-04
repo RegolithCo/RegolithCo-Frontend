@@ -9,7 +9,7 @@ import {
   smartDate,
   SessionStateEnum,
 } from '@regolithco/common'
-import { Box, Button, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { SxProps, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -17,14 +17,11 @@ import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { CollaborateLinkIcon, DownloadJSONIcon, ExportImageIcon } from '../../../icons/badges'
-import { ExpandMore } from '@mui/icons-material'
 import { GravityWellNameRender } from '../../fields/GravityWellChooser'
 
 export interface SesionHeaderProps {
   propA?: string
 }
-
-const TwelveHoursMs = 12 * 60 * 60 * 1000
 
 export const sessionSubtitleArr = (session: Session, protect: boolean): (string | JSX.Element)[] => {
   const subtitleArr: (string | JSX.Element)[] = []
@@ -90,23 +87,13 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
   const { hideNames } = React.useContext(AppContext)
   const { session, setActiveModal } = React.useContext(SessionContext)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
-  const [collapsed, setCollapsed] = React.useState(!mediumUp)
 
   // If there isn't a session don't even try to render anything
   if (!session) return null
   const subtitleArr = sessionSubtitleArr(session, hideNames)
 
   return (
-    <Box sx={{ cursor: 'pointer', ...styles.container }} onClick={() => setCollapsed(!collapsed)}>
-      <IconButton color="inherit">
-        <ExpandMore
-          sx={{
-            // Animat this so it's upside down when expanded
-            transform: !collapsed ? 'rotate(0deg)' : 'rotate(-90deg)',
-            transition: 'transform 0.3s ease-in-out',
-          }}
-        />
-      </IconButton>
+    <Box sx={{ cursor: 'pointer', ...styles.container }}>
       <Grid xs={12} container sx={styles.gridInside}>
         <Grid xs={12} sm={12} md={8}>
           {/* Title and button */}
@@ -154,30 +141,28 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                 ))}
               </Typography>
             )}
-            {!collapsed && session.note && session.note.trim().length && (
-              <Typography
-                component="div"
-                sx={{
-                  fontSize: {
-                    xs: '0.6rem',
-                    md: '0.8rem',
-                  },
-                }}
-                gutterBottom
-              >
-                {session.note}
-              </Typography>
-            )}
+            <Typography
+              component="div"
+              sx={{
+                fontSize: {
+                  xs: '0.6rem',
+                  md: '0.8rem',
+                },
+              }}
+              gutterBottom
+            >
+              {session.note}
+            </Typography>
           </Box>
         </Grid>
         {/* Start and end date box */}
-        {(mediumUp || !collapsed) && (
+        {mediumUp && (
           <Grid xs={12} sm={12} md={4} sx={styles.gridInsideDates}>
             <Box sx={{ display: 'flex' }}>
               {/* SHARE BUTTON */}
               <div style={{ flex: '1 1' }} />
               <SessionState sessionState={session.state} size="large" />
-              <Tooltip title="Download Session" placement="top">
+              <Tooltip title="Download Session data" placement="top">
                 <IconButton
                   onClick={(e) => {
                     e.preventDefault()
@@ -189,7 +174,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                   <DownloadJSONIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Export an image for social media or discord." placement="top">
+              <Tooltip title="Take PNG Snapshot" placement="top">
                 <IconButton
                   onClick={(e) => {
                     e.preventDefault()
@@ -208,24 +193,22 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                     e.stopPropagation()
                     setActiveModal(DialogEnum.COLLABORATE)
                   }}
-                  color="secondary"
+                  color="primary"
                 >
                   <CollaborateLinkIcon />
                 </IconButton>
               </Tooltip>
             </Box>
-            {!collapsed ? (
-              <>
-                <Typography
-                  sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                  component="div"
-                  gutterBottom
-                  variant="overline"
-                >
-                  Started: <strong>{smartDate(session.createdAt)}</strong>
-                </Typography>
+            <Typography
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+              component="div"
+              gutterBottom
+              variant="overline"
+            >
+              Started: <strong>{smartDate(session.createdAt)}</strong>
+            </Typography>
 
-                {/* {session.state === SessionStateEnum.Active && (
+            {/* {session.state === SessionStateEnum.Active && (
                   <Typography
                     sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
                     component="div"
@@ -235,43 +218,36 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                     EXPIRES: <strong>{smartDate(session.updatedAt + TwelveHoursMs)}</strong>
                   </Typography>
                 )} */}
-                {session.state === SessionStateEnum.Closed && session.finishedAt && (
-                  <Typography
-                    sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                    component="div"
-                    gutterBottom
-                    variant="overline"
-                  >
-                    Ended: <strong>{smartDate(session.finishedAt)}</strong>
-                  </Typography>
-                )}
-
-                <Typography
-                  sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                  component="div"
-                  gutterBottom
-                  color="text.secondary"
-                  variant="overline"
-                >
-                  Require Verification: <strong>{!session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
-                </Typography>
-
-                <Typography
-                  sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
-                  component="div"
-                  gutterBottom
-                  color="text.secondary"
-                  variant="overline"
-                >
-                  Require Mention: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
-                </Typography>
-              </>
-            ) : (
-              <>
-                <Box flexGrow={1} />
-                <Button color="inherit">(Expand...)</Button>
-              </>
+            {session.state === SessionStateEnum.Closed && session.finishedAt && (
+              <Typography
+                sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+                component="div"
+                gutterBottom
+                variant="overline"
+              >
+                Ended: <strong>{smartDate(session.finishedAt)}</strong>
+              </Typography>
             )}
+
+            <Typography
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+              component="div"
+              gutterBottom
+              color="text.secondary"
+              variant="overline"
+            >
+              Require Verification: <strong>{!session.sessionSettings.allowUnverifiedUsers ? 'Yes' : 'No'}</strong>
+            </Typography>
+
+            <Typography
+              sx={{ fontFamily: 'inherit', m: 0, p: 0, lineHeight: 1.4, fontSize: '0.6rem' }}
+              component="div"
+              gutterBottom
+              color="text.secondary"
+              variant="overline"
+            >
+              Require Mention: <strong>{session.sessionSettings.specifyUsers ? 'Yes' : 'No'}</strong>
+            </Typography>
           </Grid>
         )}
       </Grid>

@@ -269,15 +269,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Box>
             </Box>
 
-            {/* {userProfile.plan && userProfile.plan !== UserPlanEnum.Free && (
-              <Box sx={styles.section}>
-                <Typography component="div" sx={styles.sectionTitle}>
-                  Support Level
-                </Typography>
-                <Box sx={styles.sectionBody}>{userProfile.plan}</Box>
-              </Box>
-            )} */}
-
             {userProfile.state !== UserStateEnum.Verified && (
               <Box sx={styles.section}>
                 <Typography component="div" sx={styles.sectionTitle}>
@@ -296,7 +287,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                       size="small"
                       variant="contained"
                       onClick={() => {
-                        !loading && navigate && navigate('/verify')
+                        if (!loading && navigate) navigate('/verify')
                       }}
                     >
                       Click here to verify your handle
@@ -412,7 +403,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     onChange={(newVehicle) => {
                       const updatedNewUserProfile = { ...newUserProfile, sessionShipCode: newVehicle?.UEXID as string }
                       setNewUserProfile(updatedNewUserProfile)
-                      updateUserProfile && updateUserProfile(updatedNewUserProfile)
+                      updateUserProfile(updatedNewUserProfile)
                     }}
                   />
                   <Typography variant="caption" sx={{ mt: 1 }}>
@@ -434,7 +425,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     onChange={(newVehicle) => {
                       const updatedNewUserProfile = { ...newUserProfile, deliveryShipCode: newVehicle?.UEXID as string }
                       setNewUserProfile(updatedNewUserProfile)
-                      updateUserProfile && updateUserProfile(updatedNewUserProfile)
+                      updateUserProfile(updatedNewUserProfile)
                     }}
                   />
                   <Typography variant="caption" sx={{ mt: 1 }}>
@@ -449,16 +440,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <Typography component="div" sx={styles.sectionTitle}>
                 Session Defaults
               </Typography>
-              <Typography paragraph variant="body2">
-                These settings will be used as your session defaults. You can always override them when you create a
-                session.
-              </Typography>
+              <Alert severity="info" sx={{ mt: 2 }}>
+                <Typography paragraph variant="body2">
+                  These settings will be used as your session defaults. You can always override them when you create a
+                  session. Changing these settings will not affect existing sessions.
+                </Typography>
+              </Alert>
               <Box sx={styles.sectionBody}>
                 <SessionSettingsTab
                   sessionSettings={userProfile.sessionSettings}
                   resetDefaultSystemSettings={resetDefaultSettings}
                   onChangeSettings={(newSettings) => {
-                    updateUserProfile && updateUserProfile(newUserProfile, newSettings)
+                    updateUserProfile(newUserProfile, newSettings)
                     setModalOpen(null)
                   }}
                   userSuggest={userProfile.friends.reduce((acc, friendName) => {
@@ -615,7 +608,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         scName={userProfile.scName}
         onClose={() => setModalOpen(null)}
         onConfirm={(leaveData) => {
-          deleteProfile && deleteProfile(leaveData)
+          deleteProfile(leaveData)
           setModalOpen(null)
         }}
       />
@@ -625,7 +618,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         open={modalOpen === ProfileModals.ChangeUsername}
         onClose={() => setModalOpen(null)}
         onChange={(newName) => {
-          updateUserProfile && updateUserProfile({ ...newUserProfile, scName: newName })
+          updateUserProfile({ ...newUserProfile, scName: newName })
           setModalOpen(null)
         }}
       />
@@ -650,7 +643,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         scName={friend2remove || ''}
         open={Boolean(friend2remove && friend2remove.length > 0)}
         onConfirm={() => {
-          friend2remove && friend2remove.length > 0 && removeFriend && removeFriend(friend2remove)
+          if (friend2remove && friend2remove.length > 0 && removeFriend) removeFriend(friend2remove)
           setFriend2remove(undefined)
         }}
         onClose={() => setFriend2remove(undefined)}

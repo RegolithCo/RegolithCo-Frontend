@@ -1,14 +1,17 @@
-### December 1, 2024
+### December 7, 2024
 ## 1.1.4 - The Organizer's Patch
 
+This is a stepping stone to Star Citizen 4.0
+
+- Sessions now close after 48 hours instead of 12 hours
 - Closed sessions can now be re-opened!
-- Sessions now close after 48 hours instead of 12
 - Much better state synching means session changes appear much faster on all clients and take way less server resources.
-- Roles
-- A few little system changes to pave the way for 4.0
+- Roles:
+    - Session roles and ship roles can now be set. 
+    - You can also add crew shares to a work order by role (i.e. security people get a split of 10% of the profits etc.)
 - Percentage and share values can now have up to 2 decimal places.
 - Many little bug fixes.
-- Temporarily disabled the "Users must be a member of a discord server to join this session." until a fix can be found. Hopefully this will be back soon.
+- **NOTE:** Temporarily disabled the "Users must be a member of a discord server to join this session." until a fix can be found. Hopefully this will be back soon.
 
 ### November 2, 2024
 ## 1.1.3 - Minor fixes
