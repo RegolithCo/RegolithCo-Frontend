@@ -16,7 +16,7 @@ export const shipRoleOptions = (
   disableZeroCount?: boolean,
   onClick?: (value: string) => void
 ): React.ReactNode[] => {
-  return Object.values(ShipRoleEnum).map((role, idx) => {
+  return Object.keys(ShipRoleNames).map((role, idx) => {
     const RoleIcon = ShipRoleIcons[role]
     const count = counts && counts[role]
     return (

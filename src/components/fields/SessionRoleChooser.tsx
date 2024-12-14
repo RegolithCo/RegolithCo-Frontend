@@ -16,7 +16,7 @@ export const sessionRoleOptions = (
   disableZeroCount?: boolean,
   onClick?: (value: string) => void
 ): React.ReactNode[] => {
-  return Object.values(SessionRoleEnum).map((role, idx) => {
+  return Object.keys(SessionRoleNames).map((role, idx) => {
     const RoleIcon = SessionRoleIcons[role]
     const count = counts && counts[role]
     return (

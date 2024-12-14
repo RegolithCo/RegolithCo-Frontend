@@ -1,9 +1,7 @@
-import * as React from 'react'
 import { SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
 import {
   Engineering,
   Handyman,
-  Inventory,
   LocalPolice,
   LocalShipping,
   ManageAccounts,
@@ -11,18 +9,22 @@ import {
   Security,
   Support,
   TravelExplore,
+  Warehouse,
 } from '@mui/icons-material'
+import { LaserIcon } from '../icons'
 
 export type RoleIconType = typeof RocketLaunch
 
+// THIS IS ALSO THE ORDER TO SORT IN
 export const ShipRoleNames: Record<ShipRoleEnum, string> = {
   [ShipRoleEnum.Pilot]: 'Pilot',
   [ShipRoleEnum.Copilot]: 'Co-Pilot',
-  [ShipRoleEnum.Engineer]: 'Engineer',
+  [ShipRoleEnum.LaserOperator]: 'Laser Operator',
+  [ShipRoleEnum.Stevedore]: 'Stevedore',
   [ShipRoleEnum.Turret]: 'Turret',
   [ShipRoleEnum.Security]: 'Security',
   [ShipRoleEnum.Medic]: 'Medic',
-  [ShipRoleEnum.Stevedore]: 'Stevedore',
+  [ShipRoleEnum.Engineer]: 'Engineer',
 }
 
 export const ShipRoleIcons: Record<ShipRoleEnum, RoleIconType> = {
@@ -30,9 +32,10 @@ export const ShipRoleIcons: Record<ShipRoleEnum, RoleIconType> = {
   [ShipRoleEnum.Copilot]: RocketLaunch,
   [ShipRoleEnum.Engineer]: Handyman,
   [ShipRoleEnum.Turret]: Security,
+  [ShipRoleEnum.LaserOperator]: LaserIcon,
   [ShipRoleEnum.Security]: Security,
   [ShipRoleEnum.Medic]: Support,
-  [ShipRoleEnum.Stevedore]: Inventory,
+  [ShipRoleEnum.Stevedore]: Warehouse,
 }
 
 export const ShipRoleColors: Record<ShipRoleEnum, string> = {
@@ -40,17 +43,19 @@ export const ShipRoleColors: Record<ShipRoleEnum, string> = {
   [ShipRoleEnum.Copilot]: '#ff0',
   [ShipRoleEnum.Engineer]: '#b26eff',
   [ShipRoleEnum.Turret]: '#f00',
+  [ShipRoleEnum.LaserOperator]: '#0f0',
   [ShipRoleEnum.Security]: '#f00',
   [ShipRoleEnum.Medic]: '#0ff',
-  [ShipRoleEnum.Stevedore]: '#ccc',
+  [ShipRoleEnum.Stevedore]: '#ff8400',
 }
 
+// THIS IS ALSO THE ORDER TO SORT IN
 export const SessionRoleNames: Record<SessionRoleEnum, string> = {
   [SessionRoleEnum.Manager]: 'Manager',
   [SessionRoleEnum.Scout]: 'Surveyor / Scout',
+  [SessionRoleEnum.Logistics]: 'Logistics & Support',
   [SessionRoleEnum.Medical]: 'Medical & Rescue',
   [SessionRoleEnum.Security]: 'Security',
-  [SessionRoleEnum.Logistics]: 'Logistics & Support',
   [SessionRoleEnum.Transport]: 'Transport',
 }
 

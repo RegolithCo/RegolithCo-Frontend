@@ -88,18 +88,6 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUs
   return { sessionLoading: sessionUpdatedQry.loading, sessionError: sessionUpdatedQry.error }
 }
 
-type CachedSession = Omit<Session, 'workOrders' | 'scouting' | 'activeMembers'> & {
-  workOrders: {
-    items: Reference[]
-  }
-  scouting: {
-    items: Reference[]
-  }
-  activeMembers: {
-    items: Reference[]
-  }
-}
-
 const handleCacheUpdate = (client: ApolloClient<object>, session, sessionUpdate) => {
   const { eventDate, sessionId, eventName, data } = sessionUpdate
   const dataType = data?.__typename
