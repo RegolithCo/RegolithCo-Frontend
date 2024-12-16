@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   CrewShareFragmentFragmentDoc,
-  GetSessionUserQueryResult,
   ScoutingFindFragmentFragmentDoc,
   SessionFragmentFragmentDoc,
   SessionUserFragmentFragmentDoc,
@@ -12,12 +11,12 @@ import {
 import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
 import { EventNameEnum, ScoutingFind, Session, SessionUser, WorkOrder } from '@regolithco/common'
-import { ApolloClient, Reference, useApolloClient } from '@apollo/client'
+import { ApolloClient, useApolloClient } from '@apollo/client'
 
 const POLL_TIME = 5000
 const FULL_REFRESH_TIME = 120000
 
-export const useSessionPolling = (sessionId?: string, sessionUser?: GetSessionUserQueryResult['data']) => {
+export const useSessionPolling = (sessionId?: string, sessionUser?: SessionUser) => {
   const client = useApolloClient()
   const [lastUpdated, setLastUpdated] = React.useState<number>(Date.now())
   const [lastFullQuery, setLastFullQuery] = React.useState<number>(0)

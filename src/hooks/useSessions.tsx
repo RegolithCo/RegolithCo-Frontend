@@ -61,7 +61,6 @@ import { useGQLErrors } from './useGQLErrors'
 import { useLogin } from './useOAuth2'
 import log from 'loglevel'
 import { Reference, StoreObject } from '@apollo/client'
-import { useSessionPolling } from './useSessionPolling'
 
 type useSessionsReturn = {
   session?: Session
@@ -92,6 +91,9 @@ type useSessionsReturn = {
 export const useSessions = (sessionId?: string): useSessionsReturn => {
   const { userProfile } = useLogin()
   const navigate = useNavigate()
+  const [fetchPolicy, setFetchPolicy] = React.useState<'cache-only' | 'network-only'>('cache-only')
+  const previousSessionId = React.useRef<string | null>(null)
+
   const { enqueueSnackbar } = useSnackbar()
   const [sessionError, setSessionError] = React.useState<ErrorCode>()
 
@@ -101,18 +103,26 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     skip: !sessionId,
   })
-  const { sessionLoading } = useSessionPolling(sessionId, sessionUserQry?.data)
 
   const sessionQry = useGetSessionQuery({
     variables: {
       sessionId: sessionId as string,
     },
-    fetchPolicy: 'cache-only',
+    fetchPolicy,
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
-    onCompleted: (data) => {
-      log.debug('MARZIPAN: FULL sessionUserQry.onCompleted', data)
-    },
+    onCompleted: (data) => {},
   })
+
+  React.useEffect(() => {
+    if (previousSessionId.current !== sessionId) {
+      setFetchPolicy('network-only')
+      previousSessionId.current = sessionId || null
+      // refetch the session if the sessionId changes
+      sessionQry.refetch()
+    } else {
+      setFetchPolicy('cache-only')
+    }
+  }, [sessionId])
 
   React.useEffect(() => {
     if (sessionQry.error) {
@@ -304,7 +314,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
 
   useGQLErrors(queries, mutations)
 
-  const loading = queries.some((q) => q.loading) || sessionLoading
+  const loading = queries.some((q) => q.loading)
   const mutating = mutations.some((m) => m[1].loading)
 
   const addSessionMentions = (scNames: string[]): Promise<void> => {

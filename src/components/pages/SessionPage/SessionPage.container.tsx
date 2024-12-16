@@ -48,6 +48,7 @@ import { DownloadModalContainer } from '../../modals/DownloadModalWrapper'
 import { useImagePaste } from '../../../hooks/useImagePaste'
 import { PasteDetectedModal } from '../../modals/PasteDetectedModal'
 import { ScreenshareContext } from '../../../context/screenshare.context'
+import { SessionPoller } from './SessionPoller'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -268,6 +269,7 @@ export const SessionPageContainer: React.FC = () => {
 
   return (
     <>
+      <SessionPoller sessionId={sessionId} sessionUser={sessionQueries.sessionUser} />
       <SessionContext.Provider
         value={{
           session,
