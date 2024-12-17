@@ -87,7 +87,6 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
     if (!dataStore.ready) return
     const calcStoreChoices = async () => {
       const storeChoices = await findAllStoreChoices(dataStore, ores, isRefined)
-      console.log('MARZIPAN', storeChoices)
       setStoreChoices(storeChoices.filter((store) => !systemFilter || store.system === systemFilter))
     }
     calcStoreChoices()
