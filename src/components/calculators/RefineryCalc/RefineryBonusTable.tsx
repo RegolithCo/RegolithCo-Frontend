@@ -7,8 +7,21 @@ import {
   getShipOreName,
   findPrice,
   RefineryMethodEnum,
+  SystemRefineries,
+  SystemEnum,
+  getRefineryName,
 } from '@regolithco/common'
-import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  useTheme,
+  TableBody,
+  Typography,
+  darken,
+} from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
@@ -30,6 +43,10 @@ export const RefineryBonusTable: React.FC = () => {
   ])
 
   const bgColorArr = ['#b93327', '#000000', '#229f63']
+  const systemColorMap = {
+    [SystemEnum.Stanton]: theme.palette.info.dark,
+    [SystemEnum.Pyro]: theme.palette.error.dark,
+  }
   const bgColors = new Gradient()
     .setColorGradient(...bgColorArr)
     .setMidpoint(101) // 100 is the number of colors to generate. Should be enough stops for our ores
@@ -39,16 +56,22 @@ export const RefineryBonusTable: React.FC = () => {
   React.useEffect(() => {
     const calcTable = async () => {
       if (!dataStore.ready) return
-      const tradeportData = ((await dataStore.getLookup('tradeportLookups')) || []).filter(
-        ({ refinery }) => refinery === true
-      )
+      // const tradeportData = ((await dataStore.getLookup('tradeportLookups')) || []).filter(
+      //   ({ refinery }) => refinery === true
+      // )
       const refineryBonusLookup = await dataStore.getLookup('refineryBonusLookup')
 
-      const hAxis: [RefineryEnum, string][] = Object.values(RefineryEnum).map((refVal) => [
-        refVal as RefineryEnum,
-        (tradeportData.find(({ code }) => code.endsWith(refVal))?.name_short as string) || (refVal as string),
-      ])
-      hAxis.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+      const hAxis: [RefineryEnum, string, SystemEnum][] = Object.entries(SystemRefineries).reduce(
+        (acc, [system, refineries]) => {
+          const refineryVals: [RefineryEnum, string, SystemEnum][] = refineries.map((refinery) => [
+            refinery,
+            getRefineryName(refinery),
+            system as SystemEnum,
+          ])
+          return acc.concat(refineryVals)
+        },
+        [] as [RefineryEnum, string, SystemEnum][]
+      )
 
       let vAxis: [ShipOreEnum, string][] = []
       const sortable = Object.entries(ShipOreEnum)
@@ -73,7 +96,7 @@ export const RefineryBonusTable: React.FC = () => {
         const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
           const opl = refineryBonusLookup[refinery] as OreProcessingLookup
           if (!opl) return [NaN, NaN, NaN]
-          const outArr = opl[ore] as RefineryModifiers
+          const outArr = (opl[ore] as RefineryModifiers) || [1, 1, 1]
 
           const outArrNormed = outArr.map((val) => {
             if (val === null) return null
@@ -122,7 +145,7 @@ export const RefineryBonusTable: React.FC = () => {
     })
   )
 
-  const tables = ['Yield']
+  const tables = ['Yield Bonus']
   const reversed = [false, true, true]
   if (!dataStore.ready) return <div>Loading...</div>
   return (
@@ -157,6 +180,38 @@ export const RefineryBonusTable: React.FC = () => {
               <TableRow>
                 <TableCell
                   sx={{
+                    background: 'black',
+                    color: 'black',
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
+                    fontSize: '1.2rem',
+                    // I want this first column to be sticky
+                    position: 'sticky',
+                    zIndex: 3,
+                    [theme.breakpoints.down('sm')]: {
+                      fontSize: '0.75rem',
+                    },
+                  }}
+                >
+                  {' '}
+                </TableCell>
+                {hAxis.map(([, hAxisLabel, system], colIdx) => {
+                  return (
+                    <TableCell
+                      sx={{
+                        backgroundColor:
+                          colIdx % 2 === 0 ? systemColorMap[system] : darken(systemColorMap[system], 0.2),
+                        color: 'white',
+                      }}
+                    >
+                      {colIdx === 0 || system !== hAxis[colIdx - 1][2] ? system : ' '}
+                    </TableCell>
+                  )
+                })}
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  sx={{
                     background: theme.palette.primary.main,
                     color: 'black',
                     fontFamily: fontFamilies.robotoMono,
@@ -173,7 +228,7 @@ export const RefineryBonusTable: React.FC = () => {
                   {tableName}
                 </TableCell>
 
-                {hAxis.map(([, hAxisLabel], colIdx) => (
+                {hAxis.map(([hAxisName, hAxisLabel, system], colIdx) => (
                   <TableCell
                     key={`collabel-${colIdx}`}
                     align="left"
@@ -186,17 +241,19 @@ export const RefineryBonusTable: React.FC = () => {
                       // Text align to the top
                       verticalAlign: 'top',
                       fontFamily: fontFamilies.robotoMono,
-                      background: colIdx % 2 === 0 ? '#000000' : '#222222',
+
+                      backgroundColor: colIdx % 2 === 0 ? systemColorMap[system] : darken(systemColorMap[system], 0.2),
+                      color: 'white',
                       '& .MuiTableCell-root * ': {
                         fontSize: '0.75rem!important',
                       },
                     }}
                   >
                     <Typography variant="h5" sx={{ fontSize: '1.2rem' }} component="div">
-                      {hAxisLabel.split(' ')[0]}
+                      {hAxisLabel.split(':')[0]}
                     </Typography>
                     <Typography variant="caption" sx={{ fontSize: '0.65rem' }} component="div">
-                      {hAxisLabel.split(' ').slice(1).join(' ')}
+                      {hAxisLabel.split(':').slice(1).join(' ')}
                     </Typography>
                   </TableCell>
                 ))}

@@ -111,17 +111,17 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
         .
       </Alert>
 
-      {tab === 'ore' && (
+      {tab === DataTabsEnum.ORE && (
         <Box>
           <RefineryCalc />
         </Box>
       )}
-      {tab === 'refinery' && (
+      {tab === DataTabsEnum.REFINERY && (
         <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
           <RefineryBonusTable />
         </Box>
       )}
-      {tab === 'market' && (
+      {tab === DataTabsEnum.MARKET && (
         <Grid container spacing={4} margin={{ xs: 0, sm: 1, md: 2 }}>
           <Grid xs={12}>
             <Typography variant="h4" sx={{ borderBottom: '1px solid', mb: 4 }}>
