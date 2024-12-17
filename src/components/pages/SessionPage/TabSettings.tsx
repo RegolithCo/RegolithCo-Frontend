@@ -56,6 +56,7 @@ import { isEqual } from 'lodash'
 import { useDiscordGuilds } from '../../../hooks/useDiscordGuilds'
 import { DiscordServerControl } from '../../fields/DiscordServerControl'
 import { GravityWellChooser } from '../../fields/GravityWellChooser'
+import { SystemChooser } from '../../fields/SystemChooser'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -346,6 +347,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                 </Typography>
                 <Box sx={styles.sectionBody}>
                   <GravityWellChooser
+                    filterToSystem={newSettings.sessionSettings?.systemFilter}
                     onClick={(choice) => {
                       setNewSettings({
                         ...newSettings,
@@ -358,26 +360,6 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     wellId={gravWell}
                   />
                   <Stack direction={mediumUp ? 'row' : 'column'} spacing={2} sx={{ mb: 2 }}>
-                    {/* <Autocomplete
-                      id="combo-box-demo"
-                      options={planetOptions}
-                      fullWidth
-                      autoHighlight
-                      sx={{ mb: 3 }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      value={gravWell ? { label: getPlanetName(gravWell), id: gravWell } : null}
-                      onChange={(event, newValue) => {
-                        setNewSettings({
-                          ...newSettings,
-                          sessionSettings: {
-                            ...newSettings.sessionSettings,
-                            gravityWell: newValue ? newValue.id : null,
-                          },
-                        })
-                      }}
-                      renderInput={(params) => <TextField {...params} label="Gravity Well" />}
-                    /> */}
-
                     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
                       <InputLabel id="gwell">Location Type</InputLabel>
                       <Select
@@ -410,6 +392,22 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   <Typography variant="caption" paragraph component="div">
                     (Optional) You can indicate where the mining is going to happen. These settings are not enforced in
                     any way and are only visible to active session members.
+                  </Typography>
+                  <SystemChooser
+                    value={newSettings.sessionSettings?.systemFilter || undefined}
+                    onChange={(newSystem) => {
+                      setNewSettings({
+                        ...newSettings,
+                        sessionSettings: {
+                          ...newSettings.sessionSettings,
+                          systemFilter: newSystem,
+                        },
+                      })
+                    }}
+                  />
+                  <Typography variant="caption" paragraph component="div">
+                    Limit the session to a specific system. This will filter the refineries, gravity wells and markets
+                    to be only the system you specify.
                   </Typography>
                 </Box>
               </Box>
@@ -752,6 +750,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                               <InputLabel id="gwell">Default Refinery</InputLabel>
                               <RefineryControl
                                 settingsScreen
+                                filterToSystem={newSettings.sessionSettings?.systemFilter}
                                 onChange={(refinery) => {
                                   setNewSettings({
                                     ...newSettings,

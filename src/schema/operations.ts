@@ -110,6 +110,7 @@ export const SessionSettingFragmentFragmentDoc = gql`
   }
   gravityWell
   location
+  systemFilter
   lockedFields
   specifyUsers
   workOrderDefaults {

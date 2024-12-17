@@ -1,25 +1,16 @@
 import * as React from 'react'
 
 import { Autocomplete, MenuItem, SxProps, TextField, Theme, useTheme } from '@mui/material'
-import { Lookups, SystemLookup } from '@regolithco/common'
+import { Lookups, SystemEnum, SystemLookup } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
 import { Bedtime, Brightness5, GolfCourse, Language } from '@mui/icons-material'
 import { RockIcon } from '../../icons'
 
 export interface GravityWellChooserProps {
   wellId: string | null
+  filterToSystem?: SystemEnum | null
   onClick: (choice: string | null) => void
 }
-
-const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-  tinyChips: {
-    fontSize: '0.7rem',
-    mr: 0.5,
-    height: 14,
-    borderRadius: 1,
-    fontWeight: 'bold',
-  },
-})
 
 export const gravityWellName = (id: string, systemLookup: SystemLookup): string => {
   let finalRenderName = id
@@ -70,9 +61,9 @@ export const GravityWellNameRender: React.FC<{ id: string }> = ({ id }) => {
   return gravityWellName(id, systemLookup)
 }
 
-export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick, wellId }) => {
+export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick, wellId, filterToSystem }) => {
   const theme = useTheme()
-  const styles = styleThunk(theme)
+
   const dataStore = React.useContext(LookupsContext)
 
   if (!dataStore.ready) return null
@@ -90,24 +81,28 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
         label: sysObj.name,
         type: 'system',
         id: sysKey,
+        system: sysKey as SystemEnum,
       })
       if (sysKey === 'ST')
         acc.push({
           label: `Aaron Halo`,
           type: 'belt',
           id: `AARON_HALO`,
+          system: sysKey as SystemEnum,
         })
       Object.entries(sysObj.planets || {}).forEach(([plKey, plObj], idx) => {
         acc.push({
           label: plObj.name,
           type: 'planet',
           id: plKey,
+          system: sysKey as SystemEnum,
         })
         Object.entries(plObj.satellites || {}).forEach(([satKey, satName], idx) => {
           acc.push({
             label: satName,
             type: 'satellite',
             id: satKey,
+            system: sysKey as SystemEnum,
           })
         })
         const lagrange = ['L1', 'L2', 'L3', 'L4', 'L5']
@@ -116,12 +111,13 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
             label: `${plObj.name} - ${lagKey}`,
             type: 'lagrange',
             id: `${plKey}-${lagKey}`,
+            system: sysKey as SystemEnum,
           })
         })
       })
       return acc
     },
-    [] as { label: string; type: string; id: string }[]
+    [] as { label: string; type: string; id: string; system: SystemEnum }[]
   )
 
   return (
@@ -143,6 +139,8 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
           .filter((word) => word && word.length)
         // return values (case insensitive) that match ALL of the words
         return options.filter((option) => {
+          if (wellId === option.id) return true
+          if (filterToSystem && filterToSystem !== option.system) return false
           const found = words.map(
             (word) =>
               option.label.toLowerCase().includes(word) ||

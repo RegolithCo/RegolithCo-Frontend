@@ -1,13 +1,13 @@
 import React from 'react'
-import { Select, MenuItem, Box } from '@mui/material'
-import { RefineryEnum, getRefineryName } from '@regolithco/common'
+import { Select, MenuItem, Box, useTheme } from '@mui/material'
+import { RefineryEnum, SystemEnum, SystemRefineries, getRefineryName, getSystemName } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
 
 export interface RefineryControlProps {
   value?: RefineryEnum
   onChange: (refinery?: RefineryEnum) => void
   settingsScreen?: boolean
-  filterToSystem?: string
+  filterToSystem?: SystemEnum | null
   disabled?: boolean
   allowNone?: boolean
 }
@@ -18,9 +18,12 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
   value,
   settingsScreen,
   disabled,
+  filterToSystem,
   onChange,
   allowNone,
 }) => {
+  const theme = useTheme()
+  const missingItem = value && filterToSystem && !SystemRefineries[filterToSystem].includes(value as RefineryEnum)
   if (disabled)
     return (
       <Box
@@ -96,13 +99,42 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
           None
         </MenuItem>
       )}
-      {Object.values(RefineryEnum)
-        .filter((refinery) => !DISABLE_LIST.includes(refinery))
-        .map((refinery) => (
-          <MenuItem key={`refinery-${refinery}`} value={refinery}>
-            {getRefineryName(refinery)}
-          </MenuItem>
-        ))}
+      {missingItem && (
+        <MenuItem key={`refinery-${value}`} value={value}>
+          {getRefineryName(value as RefineryEnum)}
+        </MenuItem>
+      )}
+      {filterToSystem
+        ? SystemRefineries[filterToSystem]
+            .filter((refinery) => !DISABLE_LIST.includes(refinery))
+            .map((refinery) => (
+              <MenuItem key={`refinery-${refinery}`} value={refinery}>
+                {getRefineryName(refinery)}
+              </MenuItem>
+            ))
+        : Object.entries(SystemRefineries).reduce((acc, [system, refineries]) => {
+            // Push an unselectable system header
+            acc.push(
+              <MenuItem
+                key={`system-${system}`}
+                disabled
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                }}
+              >
+                {getSystemName(system as SystemEnum)}
+              </MenuItem>
+            )
+            refineries.forEach((refinery) => {
+              acc.push(
+                <MenuItem key={`refinery-${refinery}`} value={refinery}>
+                  {getRefineryName(refinery)}
+                </MenuItem>
+              )
+            })
+            return acc
+          }, [] as JSX.Element[])}
     </Select>
   )
 }

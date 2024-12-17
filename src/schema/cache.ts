@@ -305,7 +305,7 @@ export type SessionFieldPolicy = {
 	version?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrders?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'controlledSessionRole' | 'controlledShipRole' | 'gravityWell' | 'location' | 'lockToDiscordGuild' | 'lockedFields' | 'specifyUsers' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
+export type SessionSettingsKeySpecifier = ('activity' | 'allowUnverifiedUsers' | 'controlledSessionRole' | 'controlledShipRole' | 'gravityWell' | 'location' | 'lockToDiscordGuild' | 'lockedFields' | 'specifyUsers' | 'systemFilter' | 'usersCanAddUsers' | 'usersCanInviteUsers' | 'workOrderDefaults' | SessionSettingsKeySpecifier)[];
 export type SessionSettingsFieldPolicy = {
 	activity?: FieldPolicy<any> | FieldReadFunction<any>,
 	allowUnverifiedUsers?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -316,6 +316,7 @@ export type SessionSettingsFieldPolicy = {
 	lockToDiscordGuild?: FieldPolicy<any> | FieldReadFunction<any>,
 	lockedFields?: FieldPolicy<any> | FieldReadFunction<any>,
 	specifyUsers?: FieldPolicy<any> | FieldReadFunction<any>,
+	systemFilter?: FieldPolicy<any> | FieldReadFunction<any>,
 	usersCanAddUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	usersCanInviteUsers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderDefaults?: FieldPolicy<any> | FieldReadFunction<any>

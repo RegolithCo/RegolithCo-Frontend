@@ -13,7 +13,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { OreSummary, findAllStoreChoices, StoreChoice } from '@regolithco/common'
+import { OreSummary, findAllStoreChoices, StoreChoice, SystemEnum } from '@regolithco/common'
 import { Stack } from '@mui/system'
 import Gradient from 'javascript-color-gradient'
 import { Cancel, ResetTv } from '@mui/icons-material'
@@ -24,6 +24,7 @@ export interface StoreChooserModalProps {
   open?: boolean
   ores: OreSummary
   initStore?: string
+  systemFilter?: SystemEnum | null
   isRefined?: boolean
   onClose: () => void
   onSubmit?: (storeCode: string | null) => void
@@ -71,6 +72,7 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
   ores,
   initStore,
   isRefined,
+  systemFilter,
   onClose,
   onSubmit,
 }) => {
@@ -85,10 +87,11 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
     if (!dataStore.ready) return
     const calcStoreChoices = async () => {
       const storeChoices = await findAllStoreChoices(dataStore, ores, isRefined)
-      setStoreChoices(storeChoices)
+      console.log('MARZIPAN', storeChoices)
+      setStoreChoices(storeChoices.filter((store) => !systemFilter || store.system === systemFilter))
     }
     calcStoreChoices()
-  }, [dataStore.ready, ores, isRefined])
+  }, [dataStore.ready, ores, isRefined, systemFilter])
 
   const quaColors = [theme.palette.success.light, theme.palette.warning.light, theme.palette.error.light]
 

@@ -820,6 +820,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
         open={storeChooserOpen}
         onClose={() => setStoreChooserOpen(false)}
         ores={summary.oreSummary}
+        systemFilter={session?.sessionSettings?.systemFilter || null}
         initStore={workOrder.sellStore as string}
         isRefined={shipOrder.isRefined || false}
         onSubmit={(store) => {

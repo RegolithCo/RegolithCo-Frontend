@@ -18,6 +18,7 @@ import {
   UserSuggest,
   WorkOrder,
   WorkOrderDefaults,
+  SystemEnum,
 } from '@regolithco/common'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { makeSessionUrls } from '../../../lib/routingUrls'
@@ -359,6 +360,7 @@ export const SessionPageContainer: React.FC = () => {
                 markCrewSharePaid: sessionQueries.markCrewSharePaid,
                 workOrder: modalWorkOrder as WorkOrder,
                 templateJob: session?.sessionSettings?.workOrderDefaults as WorkOrderDefaults,
+                systemFilter: session?.sessionSettings?.systemFilter as SystemEnum,
                 userSuggest,
                 isMine: modalWorkOrder.ownerId === myUserProfile?.userId,
                 allowPay:
@@ -410,6 +412,7 @@ export const SessionPageContainer: React.FC = () => {
               allowPay: true,
               isSessionActive: isActive,
               forceTemplate: true,
+              systemFilter: session?.sessionSettings?.systemFilter as SystemEnum,
               userSuggest: userSuggest,
               isNew: true,
               markCrewSharePaid: sessionQueries.markCrewSharePaid,

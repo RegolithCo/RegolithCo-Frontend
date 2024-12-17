@@ -92,6 +92,7 @@ export const OreCard: React.FC<OreCardProps> = ({
   summary,
   onChange,
   isShare,
+  systemFilter,
   isCalculator,
   allowEdit,
   templateJob,
@@ -187,6 +188,7 @@ export const OreCard: React.FC<OreCardProps> = ({
             {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
               <RefineryControl
                 value={shipOrder.refinery || RefineryEnum.Arcl1}
+                filterToSystem={systemFilter}
                 disabled={!isEditing || isRefineryLocked}
                 onChange={(refinery) => {
                   refinery && onChange({ ...shipOrder, refinery })

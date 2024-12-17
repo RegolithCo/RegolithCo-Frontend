@@ -1,4 +1,4 @@
-import { CrewShare, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
+import { CrewShare, SystemEnum, UserSuggest, WorkOrder, WorkOrderDefaults } from '@regolithco/common'
 import { createContext } from 'react'
 import log from 'loglevel'
 
@@ -13,6 +13,7 @@ export interface WorkOrderContextType {
   isMine?: boolean
   isSessionActive?: boolean
   templateJob?: WorkOrderDefaults
+  systemFilter?: SystemEnum | null
   forceTemplate?: boolean
   userSuggest?: UserSuggest
   isNew?: boolean

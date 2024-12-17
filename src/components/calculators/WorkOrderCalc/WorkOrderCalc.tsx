@@ -9,6 +9,7 @@ import {
   WorkOrderDefaults,
   CrewShare,
   WorkOrderSummary,
+  SystemEnum,
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
@@ -28,6 +29,7 @@ export interface WorkOrderCalcProps {
   isShare?: boolean // is this an exportable share?
   isMine?: boolean
   isCalculator?: boolean
+  systemFilter?: SystemEnum | null
   isEditing?: boolean
   templateJob?: WorkOrderDefaults
   userSuggest?: UserSuggest
