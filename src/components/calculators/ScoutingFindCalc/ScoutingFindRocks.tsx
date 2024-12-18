@@ -79,7 +79,7 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
   const numScans = hasScans ? shipFind.shipRocks.length : 0
 
   // Convenience type guards
-  const clusterCount = shipFind.clusterCount || 0
+  const clusterCount = shipFind.clusterCount || 1
 
   // Just a handy array to map over
   const placeholderItems: unknown[] =

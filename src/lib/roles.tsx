@@ -33,7 +33,7 @@ export const ShipRoleIcons: Record<ShipRoleEnum, RoleIconType> = {
   [ShipRoleEnum.Engineer]: Handyman,
   [ShipRoleEnum.Turret]: Security,
   [ShipRoleEnum.LaserOperator]: LaserIcon,
-  [ShipRoleEnum.Security]: Security,
+  [ShipRoleEnum.Security]: LocalPolice,
   [ShipRoleEnum.Medic]: Support,
   [ShipRoleEnum.Stevedore]: Warehouse,
 }

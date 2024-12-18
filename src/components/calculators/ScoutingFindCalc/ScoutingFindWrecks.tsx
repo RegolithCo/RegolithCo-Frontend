@@ -80,7 +80,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
   const numScans = hasScans ? salvageFind.wrecks.length : 0
 
   // Convenience type guards
-  const clusterCount = salvageFind.clusterCount || 0
+  const clusterCount = salvageFind.clusterCount || 1
 
   // Just a handy array to map over
   const placeholderItems: unknown[] =

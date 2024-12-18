@@ -1,14 +1,27 @@
-### December 7, 2024
+### December 19, 2024
 ## 1.1.4 - The Organizer's Patch
 
 This is a stepping stone to Star Citizen 4.0
 
+### Session Roles!
+
+- Session roles and ship roles can now be set. 
+- You can also add crew shares to a work order by role (i.e. security people get a split of 10% of the profits etc.)
+
+### For Pyro:
+
+- **New Refineries**: New refineries for Pyro including: Checkmate, Ruin, Orbituary and Stanton Gateway.
+- **New Materials:** Ice, Stileron, Tin, Silicon and Riccite. NOTE: PRICE SYNCHIGN FOR THESE MATERIALS IS NOT YET AVAILABLE.
+- **System Filter**: Optionally limit your refineries, markets and gravity wells to one system.
+
+### Session Changes:
+
 - Sessions now close after 48 hours instead of 12 hours
 - Closed sessions can now be re-opened!
 - Much better state synching means session changes appear much faster on all clients and take way less server resources.
-- Roles:
-    - Session roles and ship roles can now be set. 
-    - You can also add crew shares to a work order by role (i.e. security people get a split of 10% of the profits etc.)
+
+### Other fixes:
+
 - Percentage and share values can now have up to 2 decimal places.
 - Many little bug fixes.
 - **NOTE:** Temporarily disabled the "Users must be a member of a discord server to join this session." until a fix can be found. Hopefully this will be back soon.

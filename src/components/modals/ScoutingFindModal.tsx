@@ -16,6 +16,7 @@ import {
   RockStateEnum,
   ScoutingFind,
   ScoutingFindStateEnum,
+  ScoutingFindTypeEnum,
   ShipClusterFind,
   ShipMiningOrderCapture,
   ShipRock,
@@ -216,7 +217,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             {isNew ? 'Cancel' : 'Close'}
           </Button>
           <div style={{ flexGrow: 1 }} />
-          {allowEdit && (
+          {allowEdit && scoutingFind.clusterType === ScoutingFindTypeEnum.Ship && (
             <Tooltip title="Import a rock scan using a game screenshot." placement="top">
               <Button
                 size={isSmall ? 'small' : 'large'}
