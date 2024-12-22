@@ -117,6 +117,7 @@ export function formatChartData(
   chartType: 'workOrders' | 'scouting',
   maxVals?: number
 ): Serie[] {
+  if (!stats) return []
   let keys = Object.keys(stats)
   keys.sort((a, b) => (new Date(a) > new Date(b) ? 1 : -1))
 

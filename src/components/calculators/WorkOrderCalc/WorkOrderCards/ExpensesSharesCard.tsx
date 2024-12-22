@@ -33,6 +33,8 @@ import {
   StoreChoice,
   SessionRoleEnum,
   ShipRoleEnum,
+  calculateWorkOrder,
+  WorkOrder,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
@@ -101,6 +103,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const [confirmPriceReset, setConfirmPriceReset] = useState<boolean>(false)
   const [storeChoices, setStoreChoices] = useState<StoreChoice[]>([])
   const [myStoreChoice, setMyStoreChoice] = useState<StoreChoice>()
+  const [finalSummary, setFinalSummary] = useState<WorkOrderSummary>(summary)
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
   const useScrollerRef = React.useRef<HTMLDivElement>(null)
   const shipOrder = workOrder as ShipMiningOrder
@@ -113,11 +116,26 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
       if (storeChoices.length === 0) {
         setMyStoreChoice(undefined)
       } else {
-        setMyStoreChoice(storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0])
+        const store = storeChoices.find((sc) => sc.code === workOrder.sellStore) || storeChoices[0]
+        setMyStoreChoice(store)
       }
     }
     calcMyStoreChoice()
   }, [summary.oreSummary, shipOrder.isRefined, workOrder.sellStore])
+
+  useEffect(() => {
+    if (!dataStore.ready) return
+    const calcNewSummary = async () => {
+      // If there's no sell store then just use the first summary
+      if (!myStoreChoice) setFinalSummary(summary)
+      // Otherwise we need to recalculate for the store otherwise we end up with a max price
+      // That's too high for the highest store we're selling to
+      const tempWorkOrder: WorkOrder = {...workOrder, sellStore: myStoreChoice?.code}
+      const newSummary = await calculateWorkOrder(dataStore, tempWorkOrder)
+      setFinalSummary(newSummary)
+    }
+    calcNewSummary()
+  }, [workOrder, myStoreChoice, summary])
 
   const shareAmountIsSet = typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null
 
@@ -687,7 +705,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             markCrewSharePaid={markCrewSharePaid}
             onDeleteCrewShare={onDeleteCrewShare}
             workOrder={workOrder}
-            summary={summary}
+            summary={finalSummary}
             userSuggest={userSuggest}
           />
           {!isShare && (

@@ -99,7 +99,7 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
       )}
 
       <Alert severity="info">
-        All prices are the Stanton maximums reported by{' '}
+        All prices are the maximums of all systems reported by{' '}
         <Link
           to="https://uexcorp.space/"
           target="_blank"

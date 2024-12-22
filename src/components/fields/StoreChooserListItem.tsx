@@ -85,7 +85,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const price = React.useMemo(() => Object.values(cityStores.prices).reduce((a, b) => a + b, 0), [cityStores.prices])
 
   // // NO HOOKS BELOW HERE
-
+  const systemName = planetLookups[cityStores.system] ? planetLookups[cityStores.system].name : cityStores.system
   const planetName =
     cityStores && cityStores.planet
       ? planetLookups[cityStores.system] &&
@@ -111,7 +111,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
               {compact ? cityStores.name_short : cityStores.name}
             </Typography>
             <Typography variant="caption" sx={{ color: theme.palette.secondary.main }} component="div">
-              {planetName}
+              {systemName} // {planetName}
               {satellite && ` // ${satellite}${city ? ' // ' + city : ''}`}
             </Typography>
           </Box>

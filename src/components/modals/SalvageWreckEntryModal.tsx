@@ -280,7 +280,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
         <Tooltip
           title={
             <>
-              <Typography variant="caption">Values are using the maximum stanton price for each element:</Typography>
+              <Typography variant="caption">Values are using the maximum price in all systems for each element:</Typography>
               <TableContainer>
                 <Table>
                   <TableHead>
