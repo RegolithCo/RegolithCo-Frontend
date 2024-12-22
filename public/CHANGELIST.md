@@ -7,6 +7,7 @@
 - BUG Fixed: the refinery UI background dot grid sometimes made it look like yield numbers had a decimal.
 - BUG Fixed: inconsistent station names for better refinery lookups 
 - BUG Fixed: The workorder split total was sometimes different from the final sell price.
+- Updated the scVersion to `4.0.0`.
 
 
 ### December 19, 2024
