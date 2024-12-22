@@ -83,7 +83,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
 
         <TableContainer
           sx={{
-            maxWidth: 300,
+            maxWidth: 320,
             mt: 5,
           }}
         >
