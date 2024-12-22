@@ -3,9 +3,10 @@
 
 4.0 changes a lot so we're probably not done yet but here are a few (mostly OCR) bug fixes.
 
-- Fixed an issue where OCR Capture wouldn't apply values if there was no Method or Refinery found in the capture.
-- Fixed an issue where the background dot grid sometimes made it look like yield numbers had a decimal.
-- Fixed inconsistent station names for better refinery lookups 
+- BUG Fixed: OCR Capture didn't apply values if there was no Method or Refinery found in the capture.
+- BUG Fixed: the refinery UI background dot grid sometimes made it look like yield numbers had a decimal.
+- BUG Fixed: inconsistent station names for better refinery lookups 
+- BUG Fixed: The workorder split total was sometimes different from the final sell price.
 
 
 ### December 19, 2024
