@@ -50,7 +50,6 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
       labelId="refineryChoice"
       id="refineryChoice"
       variant="standard"
-      disableUnderline
       disabled={disabled}
       value={value ? value : allowNone ? '' : RefineryEnum.Arcl1}
       sx={

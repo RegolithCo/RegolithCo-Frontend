@@ -84,7 +84,6 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
         <Select
           {...baseProps}
           disabled={readonly}
-          disableUnderline
           value={value || ''}
           sx={{
             minWidth: value ? 0 : undefined,
@@ -230,7 +229,6 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
         <Select
           {...baseProps}
           disabled={readonly}
-          disableUnderline
           value={value || ''}
           sx={{
             minWidth: value ? 0 : undefined,

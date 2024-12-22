@@ -3,7 +3,7 @@ import { AppWrapperContainer } from './components/AppWrapper'
 import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { HomePageContainer } from './components/pages/HomePage.container'
 import { AboutPageContainer } from './components/pages/AboutPage'
-import { ProfilePageContainer } from './components/pages/ProfilePage.container'
+import { ProfilePageContainer } from './components/pages/ProfilePage/ProfilePage.container'
 import { TopBarContainer } from './components/TopBar.container'
 import { SessionPageContainer } from './components/pages/SessionPage/SessionPage.container'
 import { InitializeUserContainer } from './components/modals/InitializeUser/InitializeUser.container'
@@ -115,6 +115,15 @@ export const App: React.FC = () => {
               {/* User's profile page */}
               <Route
                 path={`/${ProfileTabsEnum.PROFILE}`}
+                element={
+                  <AuthGate>
+                    <ProfilePageContainer />
+                  </AuthGate>
+                }
+                errorElement={<ErrorPage />}
+              />
+              <Route
+                path={`/${ProfileTabsEnum.SURVEY}`}
                 element={
                   <AuthGate>
                     <ProfilePageContainer />

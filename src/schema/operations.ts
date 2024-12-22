@@ -544,6 +544,10 @@ export const UserProfileFragmentFragmentDoc = gql`
   }
   userSettings
   friends
+  surveyorName
+  surveyorScore
+  isSurveyor
+  isSurveyorBanned
 }
     ${MiningLoadoutFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}`;

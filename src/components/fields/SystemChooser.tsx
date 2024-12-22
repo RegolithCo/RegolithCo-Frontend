@@ -18,7 +18,6 @@ export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, value })
         fullWidth
         variant="outlined"
         labelId="sysId"
-        disableUnderline
         value={value || ''}
         label="System"
         onChange={(event) => {

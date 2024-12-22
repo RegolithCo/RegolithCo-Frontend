@@ -10,9 +10,10 @@ import {
   UserPlanEnum,
 } from '@regolithco/common'
 
-import { PageWrapper } from '../PageWrapper'
+import { PageWrapper } from '../../PageWrapper'
 import {
   Alert,
+  AlertTitle,
   Box,
   Button,
   IconButton,
@@ -31,24 +32,27 @@ import {
   useTheme,
 } from '@mui/material'
 import { ContentCopy, Edit, Verified, Visibility, VisibilityOff } from '@mui/icons-material'
-import { RemoveUserModal } from '../modals/RemoveUserModal'
-import { ChangeUsernameModal } from '../modals/ChangeUsernameModal'
-import { DeleteProfileModal } from '../modals/DeleteProfileModal'
+import { RemoveUserModal } from '../../modals/RemoveUserModal'
+import { ChangeUsernameModal } from '../../modals/ChangeUsernameModal'
+import { DeleteProfileModal } from '../../modals/DeleteProfileModal'
 import { yellow } from '@mui/material/colors'
-import { MentionedUserList } from '../fields/MentionedUserList'
+import { MentionedUserList } from '../../fields/MentionedUserList'
 import { pick } from 'lodash'
-import { fontFamilies } from '../../theme'
-import { SessionSettingsTab } from './SessionPage/TabSettings'
-import { VehicleChooser } from '../fields/VehicleChooser'
+import { fontFamilies } from '../../../theme'
+import { SessionSettingsTab } from './../SessionPage/TabSettings'
+import { VehicleChooser } from '../../fields/VehicleChooser'
 import { Theme } from '@mui/system'
-import { AppContext } from '../../context/app.context'
-import { UserAvatar } from '../UserAvatar'
-import { ConfirmModal } from '../modals/ConfirmModal'
-import config from '../../config'
+import { AppContext } from '../../../context/app.context'
+import { UserAvatar } from '../../UserAvatar'
+import { ConfirmModal } from '../../modals/ConfirmModal'
+import config from '../../../config'
+import { DiscordIcon } from '../../../icons'
+import { SurveyCorps } from './SurveyCorps'
 
 export const ProfileTabsEnum = {
   PROFILE: 'profile',
   FRIENDS: 'profile/friends',
+  SURVEY: 'profile/survey',
   SESSION_DEFAULTS: 'profile/session-settings',
   API: 'profile/api',
 } as const
@@ -81,7 +85,7 @@ export interface ProfilePageProps {
   deleteAPIKey: () => void
 }
 
-const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
+export const profileStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   pageWrapper: {
     '&>.MuiPaper-root': {},
     [theme.breakpoints.up('md')]: {
@@ -130,7 +134,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   deleteAPIKey,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+  const styles = profileStylesThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const [modalOpen, setModalOpen] = React.useState<ProfileModals | null>(null)
   const { hideNames, getSafeName } = React.useContext(AppContext)
@@ -172,6 +176,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           sx={styles.sessionTabs}
         >
           <Tab label="Profile" value={ProfileTabsEnum.PROFILE} />
+          <Tab label="Survey Corps." value={ProfileTabsEnum.SURVEY} />
           <Tab label="Friends" value={ProfileTabsEnum.FRIENDS} />
           <Tab label="Session Defaults" value={ProfileTabsEnum.SESSION_DEFAULTS} />
           <Tab label="API Access" value={ProfileTabsEnum.API} />
@@ -344,6 +349,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             >
               Permanently Delete Profile
             </Button>
+          </Box>
+        )}
+
+        {/* Scout Tab */}
+        {activeTab === ProfileTabsEnum.SURVEY && (
+          <Box sx={{ px: 2 }}>
+            <Box sx={styles.section}>
+              <SurveyCorps updateUserProfile={updateUserProfile} userProfile={userProfile} navigate={navigate} />
+            </Box>
           </Box>
         )}
 

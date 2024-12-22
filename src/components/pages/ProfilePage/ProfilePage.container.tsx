@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ProfilePage, ProfileTabsEnum } from './ProfilePage'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useUserProfile } from '../../hooks/useUserProfile'
+import { useUserProfile } from '../../../hooks/useUserProfile'
 import { UserProfile } from '@regolithco/common'
 
 export const ProfilePageContainer: React.FC = () => {
