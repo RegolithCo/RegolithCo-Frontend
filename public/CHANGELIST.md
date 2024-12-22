@@ -1,3 +1,13 @@
+### December 22, 2024
+## 1.1.5 - 4.0 Bug fixes
+
+4.0 changes a lot so we're probably not done yet but here are a few (mostly OCR) bug fixes.
+
+- Fixed an issue where OCR Capture wouldn't apply values if there was no Method or Refinery found in the capture.
+- Fixed an issue where the background dot grid sometimes made it look like yield numbers had a decimal.
+- Fixed inconsistent station names for better refinery lookups 
+
+
 ### December 19, 2024
 ## 1.1.4 - The Organizer's Patch
 
