@@ -42,6 +42,7 @@ import {
   FindClusterSummary,
   SalvageWreck,
   ShipRock,
+  RockType,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -327,6 +328,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const shipFind = scoutingFind as ShipClusterFind
   const vehicleFind = scoutingFind as VehicleClusterFind
   const salvageFind = scoutingFind as SalvageFind
+
+  const defaultRockType = shipFind.shipRocks && shipFind.shipRocks[0]?.rockType
 
   // Some convenience variables
   let hasScans = false
@@ -620,7 +623,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   // Update the record
                   onChange && onChange({ ...scoutingFind, gravityWell: gWell })
                 }}
-                wellId={null}
+                wellId={scoutingFind.gravityWell || null}
                 filterToSystem={null}
               />
             )}
@@ -767,6 +770,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           <ShipRockEntryModal
             open
             isNew={addScanModalOpen !== false}
+            defaultRockType={defaultRockType as RockType}
             onClose={() => {
               if (editScanModalOpen[1] !== false) setEditScanModalOpen([-1, false])
               if (addScanModalOpen !== false) setAddScanModalOpen(false)

@@ -33,13 +33,13 @@ import {
   getShipOreName,
   jsRound,
   RockStateEnum,
+  RockType,
   ShipOreEnum,
   ShipRock,
   shipRockCalc,
   ShipRockOre,
 } from '@regolithco/common'
 import { ShipOreChooser } from '../fields/ShipOreChooser'
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RockIcon } from '../../icons'
 import { Stack } from '@mui/system'
 import { MValue, MValueFormat } from '../fields/MValue'
@@ -58,6 +58,7 @@ export interface ShipRockEntryModalProps {
   open?: boolean
   isNew?: boolean
   shipRock?: ShipRock
+  defaultRockType?: RockType
   onClose: () => void
   onDelete?: () => void
   onSubmit?: (newRock: ShipRock) => void
@@ -117,18 +118,6 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
       textAlign: 'right',
       fontFamily: fontFamilies.robotoMono,
       fontWeight: 'bold',
-      padding: 0.5,
-    },
-  },
-  massField: {
-    '& .MuiInputBase-root': {
-      paddingRight: 0,
-    },
-    '& .MuiOutlinedInput-input': {
-      textAlign: 'right',
-      fontFamily: fontFamilies.robotoMono,
-      fontWeight: 'bold',
-      fontSize: 20,
       padding: 0.5,
     },
   },
@@ -193,6 +182,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   open,
   isNew,
   shipRock,
+  defaultRockType,
   onClose,
   onDelete,
   onSubmit,
@@ -214,7 +204,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement>>>({})
 
   const [newShipRock, _setNewShipRock] = React.useState<ShipRock>(
-    !isNew && shipRock ? shipRock : { state: RockStateEnum.Ready, mass: 0, ores: [], __typename: 'ShipRock' }
+    !isNew && shipRock
+      ? shipRock
+      : { state: RockStateEnum.Ready, mass: 0, rockType: defaultRockType, ores: [], __typename: 'ShipRock' }
   )
   const [instTextValue, setInstTextValue] = React.useState<string>('')
   const [resTextValue, setResTextValue] = React.useState<string>('')
@@ -419,105 +411,116 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
           <Alert severity="warning">
             <Typography variant="caption">Enter all minerals for maximum SCU and value accuracy.</Typography>
           </Alert>
-          <Grid2 container spacing={2} paddingX={0} sx={styles.compositionGrid}>
-            <Grid2 xs={6}>
-              <Typography variant="overline" sx={styles.headTitles} component="div">
-                Rock Class
-              </Typography>
-              <RockTypeChooser
-                onChange={(choice) => setNewShipRock({ ...newShipRock, rockType: choice })}
-                value={newShipRock.rockType}
-              />
-            </Grid2>
-            <Grid2 xs={6}>
-              <Typography variant="overline" sx={styles.headTitles} component="div">
-                Mass
-              </Typography>
-              <TextField
-                sx={styles.massField}
-                fullWidth
-                InputProps={{
-                  endAdornment: <Typography sx={{ mr: 1 }}>t</Typography>,
-                }}
-                onFocus={(event) => {
-                  event.target.select()
-                }}
-                error={massError}
-                helperText={disabled ? massErrorReason : 'Required'}
-                value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
-                onChange={(event) => {
-                  const rawValue = event.target.value.replace(/[^\d.]/g, '').replace(/^0+/, '')
-                  const value = jsRound(parseInt(rawValue, 10), 0)
-                  setNewShipRock({ ...newShipRock, mass: value })
-                }}
-                variant="outlined"
-                type="text"
-              />
-            </Grid2>
-            <Grid2 xs={6}>
-              <Typography variant="overline" sx={styles.headTitles} component="div">
-                Resistance
-              </Typography>
-              <TextField
-                sx={styles.massField}
-                fullWidth
-                InputProps={{
-                  endAdornment: <Typography sx={{ mr: 1 }}>%</Typography>,
-                }}
-                onFocus={(event) => {
-                  event.target.select()
-                }}
-                helperText={'Optional'}
-                error={resistanceError}
-                onBlur={() => setResTextValue('')}
-                value={
-                  resTextValue && resTextValue.length > 0
-                    ? resTextValue
-                    : ((newShipRock.res || 0) * 100).toFixed(0) || ''
+
+          {/* These are the fields for the rock */}
+          <Typography variant="overline" sx={styles.headTitles} component="div">
+            Properties
+          </Typography>
+          <Box
+            sx={{
+              mx: 2,
+              mb: 1,
+              '& .MuiInputAdornment-positionStart *': {
+                color: theme.palette.primary.dark,
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+              },
+              '& .MuiInputAdornment-positionEnd *': {
+                color: theme.palette.primary.dark,
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+              },
+              '& .MuiInputBase-root': {
+                paddingRight: 0,
+              },
+              '& .MuiInput-input': {
+                textAlign: 'right',
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+                fontSize: 15,
+                padding: 0.5,
+              },
+            }}
+          >
+            <RockTypeChooser
+              onChange={(choice) => setNewShipRock({ ...newShipRock, rockType: choice })}
+              value={newShipRock.rockType}
+            />
+            <TextField
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start">Mass</InputAdornment>,
+                endAdornment: <InputAdornment position="end">t</InputAdornment>,
+              }}
+              onFocus={(event) => {
+                event.target.select()
+              }}
+              error={massError}
+              helperText={disabled ? massErrorReason : ''}
+              value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
+              onChange={(event) => {
+                const rawValue = event.target.value.replace(/[^\d.]/g, '').replace(/^0+/, '')
+                const value = jsRound(parseInt(rawValue, 10), 0)
+                setNewShipRock({ ...newShipRock, mass: value })
+              }}
+              variant="standard"
+              type="text"
+            />
+            <TextField
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start">Resistance</InputAdornment>,
+                endAdornment: <InputAdornment position="end">%</InputAdornment>,
+              }}
+              onFocus={(event) => {
+                event.target.select()
+              }}
+              error={resistanceError}
+              onBlur={() => setResTextValue('')}
+              value={
+                resTextValue && resTextValue.length > 0 ? resTextValue : ((newShipRock.res || 0) * 100).toFixed(0) || ''
+              }
+              onChange={(event) => {
+                const parsedVal = event.target.value.replace(/[^\d]/g, '').replace(/^0+/, '').slice(0, 2) || '0'
+                setResTextValue(parsedVal)
+                try {
+                  const value = parseInt(parsedVal, 10)
+                  if (value <= 100 && value >= 0) setNewShipRock({ ...newShipRock, res: value / 100 })
+                } catch (e) {
+                  log.error(e)
                 }
-                onChange={(event) => {
-                  const parsedVal = event.target.value.replace(/[^\d]/g, '').replace(/^0+/, '').slice(0, 2) || '0'
-                  setResTextValue(parsedVal)
-                  try {
-                    const value = parseInt(parsedVal, 10)
-                    if (value <= 100 && value >= 0) setNewShipRock({ ...newShipRock, res: value / 100 })
-                  } catch (e) {
-                    log.error(e)
-                  }
-                }}
-                variant="outlined"
-                type="text"
-              />
-            </Grid2>
-            <Grid2 xs={6}>
-              <Typography variant="overline" sx={styles.headTitles} component="div">
-                Instability
-              </Typography>
-              <TextField
-                sx={styles.massField}
-                fullWidth
-                helperText={'Optional'}
-                onFocus={(event) => {
-                  event.target.select()
-                }}
-                onBlur={() => setInstTextValue('')}
-                error={instabilityError}
-                value={instTextValue && instTextValue.length > 0 ? instTextValue : newShipRock.inst || ''}
-                onChange={(event) => {
-                  const parsedVal = parseNum(event.target.value, 2, 3)
-                  setInstTextValue(parsedVal)
-                  try {
-                    const value = jsRound(parseFloat(parsedVal), 2)
-                    setNewShipRock({ ...newShipRock, inst: value })
-                  } catch (e) {
-                    log.error(e)
-                  }
-                }}
-                variant="outlined"
-                type="text"
-              />
-            </Grid2>
-          </Grid2>
+              }}
+              variant="standard"
+              type="text"
+            />
+            <TextField
+              fullWidth
+              size="small"
+              InputProps={{
+                startAdornment: <InputAdornment position="start">Instability</InputAdornment>,
+                endAdornment: <InputAdornment position="end">&nbsp;</InputAdornment>,
+              }}
+              onFocus={(event) => {
+                event.target.select()
+              }}
+              onBlur={() => setInstTextValue('')}
+              error={instabilityError}
+              value={instTextValue && instTextValue.length > 0 ? instTextValue : newShipRock.inst || ''}
+              onChange={(event) => {
+                const parsedVal = parseNum(event.target.value, 2, 3)
+                setInstTextValue(parsedVal)
+                try {
+                  const value = jsRound(parseFloat(parsedVal), 2)
+                  setNewShipRock({ ...newShipRock, inst: value })
+                } catch (e) {
+                  log.error(e)
+                }
+              }}
+              variant="standard"
+              type="text"
+            />
+          </Box>
           <Typography variant="overline" sx={styles.headTitles} component="div">
             Composition
           </Typography>

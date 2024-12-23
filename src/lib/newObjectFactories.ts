@@ -313,6 +313,7 @@ export function newEmptyScoutingFind(
     scoutingFindId: 'NEWSCOUTINGFIND', // This is a placeholder. it will never be committed
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    gravityWell: session.sessionSettings.gravityWell,
     clusterType: scoutingType,
 
     ownerId: sessUser.owner?.userId,
