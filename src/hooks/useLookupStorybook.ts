@@ -19,7 +19,7 @@ class StorybookDataStore implements DataStore {
         return lookupMocks.data.lookups.CIG.refineryBonusLookup as Lookups[K]
       case 'oreProcessingLookup':
         return lookupMocks.data.lookups.CIG.oreProcessingLookup as Lookups[K]
-      case 'planetLookups':
+      case 'gravityWellLookups':
         return lookupMocks.data.lookups.UEX.bodies as unknown as Lookups[K]
       case 'priceStatsLookups':
         return lookupMocks.data.lookups.UEX.maxPrices as Lookups[K]

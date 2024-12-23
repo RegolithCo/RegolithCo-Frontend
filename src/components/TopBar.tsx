@@ -8,7 +8,17 @@ import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Button from '@mui/material/Button'
 import { yellow } from '@mui/material/colors'
-import { alpha, CircularProgress, keyframes, PaletteColor, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
+import {
+  alpha,
+  Avatar,
+  CircularProgress,
+  keyframes,
+  PaletteColor,
+  SxProps,
+  Theme,
+  Tooltip,
+  useTheme,
+} from '@mui/material'
 import { fontFamilies } from '../theme'
 import {
   AccountCircle,
@@ -176,6 +186,23 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
 
   const profileMenu: MenuItemType[] = [
     { path: `/${ProfileTabsEnum.PROFILE}`, name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
+    {
+      path: `/${ProfileTabsEnum.SURVEY}`,
+      name: 'Survey Corps.',
+      icon: (
+        <Avatar
+          src="/images/icons/SurveyorLogo128.png"
+          sx={{
+            width: '1.5rem',
+            height: '1.5rem',
+            borderRadius: '50%',
+            border: '1px solid #000',
+            backgroundColor: 'white',
+          }}
+        />
+      ),
+      disabled: !userCtx.userProfile,
+    },
     { path: `/${ProfileTabsEnum.FRIENDS}`, name: 'Manage Friends', icon: <Group />, disabled: !userCtx.userProfile },
     {
       path: `/${ProfileTabsEnum.SESSION_DEFAULTS}`,

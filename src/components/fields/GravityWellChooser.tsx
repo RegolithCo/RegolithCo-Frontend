@@ -1,7 +1,7 @@
 import * as React from 'react'
 
-import { Autocomplete, MenuItem, SxProps, TextField, Theme, useTheme } from '@mui/material'
-import { Lookups, SystemEnum, SystemLookup } from '@regolithco/common'
+import { Autocomplete, MenuItem, Stack, TextField, Typography, useTheme } from '@mui/material'
+import { GravirtyWellTypeEnum, GravityWellTypeEnum, Lookups, SystemEnum, SystemLookupItem } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
 import { Bedtime, Brightness5, GolfCourse, Language } from '@mui/icons-material'
 import { RockIcon } from '../../icons'
@@ -10,55 +10,57 @@ export interface GravityWellChooserProps {
   wellId: string | null
   filterToSystem?: SystemEnum | null
   onClick: (choice: string | null) => void
+  isSmall?: boolean
 }
 
-export const gravityWellName = (id: string, systemLookup: SystemLookup): string => {
-  let finalRenderName = id
-
-  //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
-  Object.entries(systemLookup).forEach(([sysKey, sysObj], key) => {
-    if (sysKey === id) {
-      finalRenderName = sysObj.name
-      return
-    }
-    if (id === 'AARON_HALO') {
-      finalRenderName = `${sysObj.name} ▶ Aaron Halo`
-      return
-    }
-    Object.entries(sysObj.planets || {}).forEach(([plKey, plObj], idx) => {
-      if (plKey === id) {
-        finalRenderName = `${sysObj.name} ▶ ${plObj.name}`
-        return
-      }
-      Object.entries(plObj.satellites).forEach(([satKey, satName], idx) => {
-        if (satKey === id) {
-          finalRenderName = `${sysObj.name} ▶ ${plObj.name} ▶ ${satName}`
-          return
-        }
-      })
-      const lagrange = ['L1', 'L2', 'L3', 'L4', 'L5']
-      lagrange.forEach((lagKey) => {
-        if (`${plKey}-${lagKey}` === id) {
-          finalRenderName = `${sysObj.name} ▶ ${plObj.name} - ${lagKey}`
-          return
-        }
-      })
-    })
-  })
-  return finalRenderName
-}
-
-export const GravityWellNameRender: React.FC<{ id: string }> = ({ id }) => {
+export const GravityWellNameRender: React.FC<{ code: string }> = ({ code }) => {
   const dataStore = React.useContext(LookupsContext)
+  const theme = useTheme()
   if (!dataStore.ready) return null
   const systemLookup = React.useMemo(
-    () => dataStore.getLookup('planetLookups') as Lookups['planetLookups'],
+    () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
-  ) as SystemLookup
+  ) as SystemLookupItem[]
 
-  if (!dataStore.ready) return id
+  if (!dataStore.ready) return code
+  const item = systemLookup.find((item) => item.code === code)
+  if (!item) return code
 
-  return gravityWellName(id, systemLookup)
+  let color = theme.palette.text.primary
+  let icon: React.ReactElement | null = null
+  switch (item.wellType) {
+    case GravirtyWellTypeEnum.SYSTEM:
+      color = theme.palette.primary.main
+      icon = <Brightness5 />
+      break
+    case GravirtyWellTypeEnum.LAGRANGE:
+      color = theme.palette.info.dark
+      icon = <GolfCourse />
+      break
+    case GravirtyWellTypeEnum.SATELLITE:
+      color = 'white'
+      icon = <Bedtime />
+      break
+    case GravirtyWellTypeEnum.CLUSTER:
+      color = theme.palette.success.main
+      icon = <Bedtime />
+      break
+    case GravirtyWellTypeEnum.BELT:
+      color = theme.palette.secondary.light
+      icon = <RockIcon />
+      break
+    case GravirtyWellTypeEnum.PLANET:
+      color = theme.palette.info.main
+      icon = <Language />
+      break
+  }
+
+  return (
+    <Stack style={{ color }} direction="row" spacing={2} alignItems="center">
+      {icon}
+      <Typography>{item.name}</Typography>
+    </Stack>
+  )
 }
 
 export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick, wellId, filterToSystem }) => {
@@ -68,56 +70,92 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
 
   if (!dataStore.ready) return null
   const systemLookup = React.useMemo(
-    () => dataStore.getLookup('planetLookups') as Lookups['planetLookups'],
+    () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
-  ) as SystemLookup
+  ) as SystemLookupItem[]
 
   // // NO HOOKS BELOW HERE
+  const systems = systemLookup.filter(({ wellType }) => wellType === GravirtyWellTypeEnum.SYSTEM)
 
   //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
-  const planetOptions = Object.entries(systemLookup).reduce(
-    (acc, [sysKey, sysObj], key) => {
+  const planetOptions = systems.reduce(
+    (acc, system, key) => {
       acc.push({
-        label: sysObj.name,
-        type: 'system',
-        id: sysKey,
-        system: sysKey as SystemEnum,
+        label: system.name,
+        type: GravirtyWellTypeEnum.SYSTEM,
+        id: system.code,
+        system: system.code as SystemEnum,
+        parentType: null,
       })
-      if (sysKey === 'ST')
-        acc.push({
-          label: `Aaron Halo`,
-          type: 'belt',
-          id: `AARON_HALO`,
-          system: sysKey as SystemEnum,
-        })
-      Object.entries(sysObj.planets || {}).forEach(([plKey, plObj], idx) => {
-        acc.push({
-          label: plObj.name,
-          type: 'planet',
-          id: plKey,
-          system: sysKey as SystemEnum,
-        })
-        Object.entries(plObj.satellites || {}).forEach(([satKey, satName], idx) => {
+      systemLookup
+        .filter(({ wellType, parent }) => wellType === GravirtyWellTypeEnum.BELT && parent === system.code)
+        .forEach((belt, idx) => {
           acc.push({
-            label: satName,
-            type: 'satellite',
-            id: satKey,
-            system: sysKey as SystemEnum,
+            label: belt.name,
+            type: GravirtyWellTypeEnum.BELT,
+            id: belt.code,
+            system: belt.system as SystemEnum,
+            parentType: GravirtyWellTypeEnum.SYSTEM,
           })
         })
-        const lagrange = ['L1', 'L2', 'L3', 'L4', 'L5']
-        lagrange.forEach((lagKey) => {
+
+      // Now we descend into planets
+      systemLookup
+        .filter(({ wellType, parent }) => wellType === GravirtyWellTypeEnum.PLANET && parent === system.code)
+        .forEach((planet, idx) => {
           acc.push({
-            label: `${plObj.name} - ${lagKey}`,
-            type: 'lagrange',
-            id: `${plKey}-${lagKey}`,
-            system: sysKey as SystemEnum,
+            label: planet.name,
+            type: GravirtyWellTypeEnum.PLANET,
+            id: planet.code,
+            system: planet.system as SystemEnum,
+            parentType: GravirtyWellTypeEnum.SYSTEM,
+          })
+          systemLookup
+            .filter(({ wellType, parent }) => wellType === GravirtyWellTypeEnum.LAGRANGE && parent === planet.code)
+            .forEach((lagrange, idx) => {
+              acc.push({
+                label: lagrange.name,
+                type: GravirtyWellTypeEnum.LAGRANGE,
+                id: lagrange.code,
+                system: lagrange.system as SystemEnum,
+                parentType: GravirtyWellTypeEnum.PLANET,
+              })
+            })
+          systemLookup
+            .filter(({ wellType, parent }) => wellType === GravirtyWellTypeEnum.SATELLITE && parent === planet.code)
+            .forEach((sat, idx) => {
+              acc.push({
+                label: sat.name,
+                type: GravirtyWellTypeEnum.CLUSTER,
+                id: sat.code,
+                system: sat.system as SystemEnum,
+                parentType: GravirtyWellTypeEnum.PLANET,
+              })
+            })
+        })
+
+      // Finally we use system clusters
+      systemLookup
+        .filter(({ wellType, parent }) => wellType === GravirtyWellTypeEnum.CLUSTER && parent === system.code)
+        .forEach((cluster, idx) => {
+          acc.push({
+            label: cluster.name,
+            type: GravirtyWellTypeEnum.CLUSTER,
+            id: cluster.code,
+            system: cluster.system as SystemEnum,
+            parentType: GravirtyWellTypeEnum.SYSTEM,
           })
         })
-      })
+
       return acc
     },
-    [] as { label: string; type: string; id: string; system: SystemEnum }[]
+    [] as {
+      label: string
+      type: GravityWellTypeEnum
+      id: string
+      system: SystemEnum
+      parentType: GravityWellTypeEnum | null
+    }[]
   )
 
   return (
@@ -127,6 +165,7 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
       fullWidth
       autoHighlight
       sx={{ mb: 3 }}
+      size="small"
       value={planetOptions.find((opt) => opt.id === wellId) || null}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       onChange={(event, newValue) => {
@@ -150,75 +189,45 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
           return found.every((f) => f)
         })
       }}
-      getOptionLabel={(option) => gravityWellName(option.id, systemLookup)}
+      // getOptionLabel={(option) => option.label}
       renderOption={(props, option, { selected }) => {
-        let color = theme.palette.text.primary
+        const { key, ...rest } = props
+        let spacing: number = 0
         switch (option.type) {
-          case 'system':
-            color = theme.palette.primary.main
+          case GravirtyWellTypeEnum.SYSTEM:
+            spacing = 0
             break
-          case 'lagrange':
-            color = theme.palette.success.main
+          case GravirtyWellTypeEnum.BELT:
+            spacing = 2
             break
-          case 'planet':
-            color = theme.palette.info.main
+          case GravirtyWellTypeEnum.PLANET:
+            spacing = 4
+            break
+          case GravirtyWellTypeEnum.LAGRANGE:
+            spacing = 6
+            break
+          case GravirtyWellTypeEnum.SATELLITE:
+            spacing = 6
+            break
+          case GravirtyWellTypeEnum.CLUSTER:
+            spacing = 6
             break
         }
-        const { key, ...rest } = props
         return (
           <MenuItem
             key={key}
             {...rest}
             value={option.id}
             sx={{
-              color: color,
-              fontWeight: option.type === 'satellite' ? 'normal' : 'bold',
+              ml: spacing,
+              backgroundColor: selected ? theme.palette.action.selected : 'transparent',
             }}
           >
-            {option.type === 'system' && (
-              <Brightness5
-                sx={{
-                  mr: 2,
-                }}
-              />
-            )}
-            {option.type === 'belt' && (
-              <RockIcon
-                sx={{
-                  mr: 2,
-                  ml: 3,
-                }}
-              />
-            )}
-            {option.type === 'planet' && (
-              <Language
-                sx={{
-                  mr: 2,
-                  ml: 3,
-                }}
-              />
-            )}
-            {option.type === 'lagrange' && (
-              <GolfCourse
-                sx={{
-                  mr: 2,
-                  ml: 6,
-                }}
-              />
-            )}
-            {option.type === 'satellite' && (
-              <Bedtime
-                sx={{
-                  mr: 2,
-                  ml: 6,
-                }}
-              />
-            )}
-            {option.label}
+            <GravityWellNameRender code={option.id} />
           </MenuItem>
         )
       }}
-      renderInput={(params) => <TextField {...params} label="Gravity Well" />}
+      renderInput={(params) => <TextField {...params} label="Location (Gravity Well)" />}
     />
   )
 }

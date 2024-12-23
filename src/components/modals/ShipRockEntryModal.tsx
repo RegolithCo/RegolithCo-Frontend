@@ -50,6 +50,7 @@ import { DeleteModal } from './DeleteModal'
 import Numeral from 'numeral'
 import log from 'loglevel'
 import { LookupsContext } from '../../context/lookupsContext'
+import { RockTypeChooser } from '../fields/RockTypeChooser'
 
 export const SHIP_ROCK_BOUNDS = [1, 200000]
 
@@ -419,7 +420,16 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
             <Typography variant="caption">Enter all minerals for maximum SCU and value accuracy.</Typography>
           </Alert>
           <Grid2 container spacing={2} paddingX={0} sx={styles.compositionGrid}>
-            <Grid2 xs={4}>
+            <Grid2 xs={6}>
+              <Typography variant="overline" sx={styles.headTitles} component="div">
+                Rock Class
+              </Typography>
+              <RockTypeChooser
+                onChange={(choice) => setNewShipRock({ ...newShipRock, rockType: choice })}
+                value={newShipRock.rockType}
+              />
+            </Grid2>
+            <Grid2 xs={6}>
               <Typography variant="overline" sx={styles.headTitles} component="div">
                 Mass
               </Typography>
@@ -444,7 +454,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 type="text"
               />
             </Grid2>
-            <Grid2 xs={4}>
+            <Grid2 xs={6}>
               <Typography variant="overline" sx={styles.headTitles} component="div">
                 Resistance
               </Typography>
@@ -479,7 +489,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 type="text"
               />
             </Grid2>
-            <Grid2 xs={4}>
+            <Grid2 xs={6}>
               <Typography variant="overline" sx={styles.headTitles} component="div">
                 Instability
               </Typography>

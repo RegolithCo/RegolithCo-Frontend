@@ -288,6 +288,7 @@ export const ShipRockFragmentFragmentDoc = gql`
   inst
   res
   state
+  rockType
   ores {
     ore
     percent
@@ -302,6 +303,7 @@ export const ScoutingFindBaseFragmentFragmentDoc = gql`
   updatedAt
   clusterType
   clusterCount
+  gravityWell
   ownerId
   owner {
     ...UserFragment

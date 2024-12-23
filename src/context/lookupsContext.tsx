@@ -53,7 +53,7 @@ export class ClientDataStore implements DataStore {
           retVal = this.lookups?.CIG?.oreProcessingLookup as Lookups[K]
           break
         // UEX Endpoints
-        case 'planetLookups':
+        case 'gravityWellLookups':
           retVal = this.lookups?.UEX?.bodies as Lookups[K]
           break
         case 'priceStatsLookups':

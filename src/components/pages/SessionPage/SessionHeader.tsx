@@ -9,7 +9,7 @@ import {
   smartDate,
   SessionStateEnum,
 } from '@regolithco/common'
-import { Box, IconButton, Theme, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Stack, Theme, Tooltip, Typography, useTheme } from '@mui/material'
 import { SxProps, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -29,7 +29,7 @@ export const sessionSubtitleArr = (session: Session, protect: boolean): (string 
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
   if (sessionSettings.gravityWell)
-    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameRender id={sessionSettings.gravityWell} />)
+    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameRender code={sessionSettings.gravityWell} />)
   if (sessionSettings.location) subtitleArr.push(protect ? 'UNDISCLOSED' : getLocationName(sessionSettings.location))
   return subtitleArr
 }
@@ -120,9 +120,10 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
           {/* Context, note and ores header box */}
           <Box>
             {subtitleArr.length > 0 && (
-              <Typography
-                variant="h6"
-                component="div"
+              <Stack
+                spacing={2}
+                direction="row"
+                alignItems="center"
                 sx={{
                   color: theme.palette.grey[500],
                   fontFamily: fontFamilies.robotoMono,
@@ -133,13 +134,21 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                   },
                 }}
               >
-                {subtitleArr.map((subtitle, i) => (
-                  <React.Fragment key={i}>
-                    {subtitle}
-                    {i < subtitleArr.length - 1 && ' // '}
-                  </React.Fragment>
-                ))}
-              </Typography>
+                {subtitleArr.reduce(
+                  (acc, subtitle, i) => {
+                    acc.push(
+                      <Typography key={i} component="div">
+                        {subtitle}
+                      </Typography>
+                    )
+                    if (i < subtitleArr.length - 1) {
+                      acc.push(<span>//</span>)
+                    }
+                    return acc
+                  },
+                  [] as (string | JSX.Element)[]
+                )}
+              </Stack>
             )}
             <Typography
               component="div"

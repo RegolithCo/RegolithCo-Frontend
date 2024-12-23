@@ -60,6 +60,7 @@ import { ScoutingFindRocks } from './ScoutingFindRocks'
 import { ScoutingFindWrecks } from './ScoutingFindWrecks'
 import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { SalvageWreckEntryModal } from '../../modals/SalvageWreckEntryModal'
+import { GravityWellChooser } from '../../fields/GravityWellChooser'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -613,6 +614,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 an area.
               </Typography>
             )} */}
+            {!standalone && (
+              <GravityWellChooser
+                onClick={(gWell) => {
+                  // Update the record
+                  onChange && onChange({ ...scoutingFind, gravityWell: gWell })
+                }}
+                wellId={null}
+                filterToSystem={null}
+              />
+            )}
+
             {!standalone && (
               <Tooltip title="Add a note">
                 <Box onClick={() => setOpenNoteDialog(true)}>

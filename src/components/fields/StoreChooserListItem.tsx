@@ -56,8 +56,8 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const dataStore = React.useContext(LookupsContext)
 
   if (!dataStore.ready) return null
-  const planetLookups = React.useMemo(
-    () => dataStore.getLookup('planetLookups') as Lookups['planetLookups'],
+  const gravityWellLookups = React.useMemo(
+    () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
   )
   const oreKeys = Object.keys(ores)
@@ -88,13 +88,13 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const systemName = planetLookups[cityStores.system] ? planetLookups[cityStores.system].name : cityStores.system
   const planetName =
     cityStores && cityStores.planet
-      ? planetLookups[cityStores.system] &&
-        planetLookups[cityStores.system]?.planets[cityStores.planet] &&
-        planetLookups[cityStores.system]?.planets[cityStores.planet].name
+      ? gravityWellLookups[cityStores.system] &&
+        gravityWellLookups[cityStores.system]?.planets[cityStores.planet] &&
+        gravityWellLookups[cityStores.system]?.planets[cityStores.planet].name
       : ''
   const satellite =
     cityStores && cityStores.satellite
-      ? planetLookups[cityStores.system]?.planets[cityStores.planet]?.satellites[cityStores.satellite]
+      ? gravityWellLookups[cityStores.system]?.planets[cityStores.planet]?.satellites[cityStores.satellite]
       : undefined
   const city = cityStores.city || ''
   // Price is the sum of all the prices
