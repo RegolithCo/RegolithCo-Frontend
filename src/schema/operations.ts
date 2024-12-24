@@ -2637,6 +2637,7 @@ export const CaptureShipRockScanDocument = gql`
   captureShipRockScan(imgUrl: $imgUrl) {
     mass
     inst
+    rockType
     res
     ores {
       ore

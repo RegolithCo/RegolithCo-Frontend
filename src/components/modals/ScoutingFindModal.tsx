@@ -112,11 +112,20 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
 
     if (newScoutingFind.clusterType !== 'SHIP') return
     const shipFind = newScoutingFind as ShipClusterFind
+
+    // If this rock is part of a cluster then it is likely the same type as the rest of the rocks
+    // in the cluster so let's find one
+    const rockTypeDefault =
+      shipFind.shipRocks.length > 0
+        ? shipFind.shipRocks.find((rock) => rock.rockType)?.rockType || undefined
+        : undefined
+
     // Add this rock to the list
     const newRock = {
       mass: capturedRock.mass || 0,
       inst: capturedRock.inst || 0,
       res: capturedRock.res || 0,
+      rockType: capturedRock.rockType || rockTypeDefault,
       ores: capturedRock.ores.map((ore) => ({
         ore: ore.ore,
         percent: ore.percent,

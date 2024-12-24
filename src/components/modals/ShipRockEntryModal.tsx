@@ -421,13 +421,13 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               mx: 2,
               mb: 1,
               '& .MuiInputAdornment-positionStart *': {
-                color: theme.palette.primary.dark,
+                color: theme.palette.secondary.light,
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
                 textTransform: 'uppercase',
               },
               '& .MuiInputAdornment-positionEnd *': {
-                color: theme.palette.primary.dark,
+                color: theme.palette.secondary.light,
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
               },

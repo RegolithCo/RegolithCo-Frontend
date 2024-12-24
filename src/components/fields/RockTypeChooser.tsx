@@ -31,10 +31,10 @@ export const RockTypeChooser: React.FC<RockTypeChooserProps> = ({ onChange, valu
       // Now center the text inside the select
       sx={{
         '& .MuiSelect-select': {
-          textAlign: 'center',
+          textAlign: 'right',
         },
         '& .MuiSelect-selectMenu': {
-          textAlign: 'center',
+          textAlign: 'right',
         },
         '& .MuiSelect-select:focus': {
           backgroundColor: theme.palette.background.paper,

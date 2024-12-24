@@ -20,6 +20,8 @@ import {
   Select,
   Stack,
   Tooltip,
+  FormControlLabel,
+  Switch,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -625,6 +627,19 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 }}
                 wellId={scoutingFind.gravityWell || null}
                 filterToSystem={null}
+              />
+            )}
+            {!standalone && (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={Boolean(scoutingFind.includeInSurvey)}
+                    onChange={(e) => {
+                      onChange && onChange({ ...scoutingFind, includeInSurvey: e.target.checked })
+                    }}
+                  />
+                }
+                label={`Submit to Survey Corps: ${scoutingFind.includeInSurvey ? 'Yes' : 'No'}`}
               />
             )}
 

@@ -164,7 +164,28 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
       options={planetOptions}
       fullWidth
       autoHighlight
-      sx={{ mb: 3 }}
+      sx={{
+        mb: 3,
+        // I want the border and the label to all be red
+        '& .MuiInputLabel-root': {
+          color: theme.palette.primary.main,
+          borderColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+          '& fieldset': {
+            color: theme.palette.primary.main,
+            borderColor: theme.palette.primary.main,
+          },
+          '&:hover fieldset': {
+            color: theme.palette.primary.main,
+            borderColor: theme.palette.primary.main,
+          },
+          '&.Mui-focused fieldset': {
+            color: theme.palette.primary.main,
+            borderColor: theme.palette.primary.main,
+          },
+        },
+      }}
       size="small"
       value={planetOptions.find((opt) => opt.id === wellId) || null}
       isOptionEqualToValue={(option, value) => option.id === value.id}

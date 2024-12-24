@@ -1,10 +1,9 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { getOreName, ShipRockCapture } from '@regolithco/common'
+import { getOreName, getRockTypeName, ShipRockCapture } from '@regolithco/common'
 import { Box } from '@mui/system'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
-import { number } from 'prop-types'
 
 export interface PreviewScoutingRockCaptureProps {
   shipRock: ShipRockCapture
@@ -54,6 +53,16 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
         >
           <Table size="small">
             <TableBody>
+              <PreviewRow
+                heading="Rock Class"
+                value={
+                  shipRock.rockType !== undefined && shipRock.rockType !== null ? (
+                    getRockTypeName(shipRock.rockType)
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
               <PreviewRow
                 heading="Mass"
                 value={shipRock.mass !== undefined && shipRock.mass !== null ? shipRock.mass.toFixed(0) : <NotFound />}
