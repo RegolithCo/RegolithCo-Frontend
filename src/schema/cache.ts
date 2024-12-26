@@ -203,7 +203,7 @@ export type RefineryRowCaptureFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
 	yield?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SalvageFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'state' | 'surveyBonus' | 'updatedAt' | 'wrecks' | SalvageFindKeySpecifier)[];
+export type SalvageFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'state' | 'surveyBonus' | 'updatedAt' | 'version' | 'wrecks' | SalvageFindKeySpecifier)[];
 export type SalvageFindFieldPolicy = {
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendanceIds?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -222,6 +222,7 @@ export type SalvageFindFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyBonus?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	version?: FieldPolicy<any> | FieldReadFunction<any>,
 	wrecks?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SalvageOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isSold' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'salvageOres' | 'sellStore' | 'seller' | 'sellerUserId' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'version' | SalvageOrderKeySpecifier)[];
@@ -267,7 +268,7 @@ export type SalvageWreckOreFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
 	scu?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ScoutingFindInterfaceKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'state' | 'surveyBonus' | 'updatedAt' | ScoutingFindInterfaceKeySpecifier)[];
+export type ScoutingFindInterfaceKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'state' | 'surveyBonus' | 'updatedAt' | 'version' | ScoutingFindInterfaceKeySpecifier)[];
 export type ScoutingFindInterfaceFieldPolicy = {
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendanceIds?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -285,7 +286,8 @@ export type ScoutingFindInterfaceFieldPolicy = {
 	sessionId?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyBonus?: FieldPolicy<any> | FieldReadFunction<any>,
-	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
+	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SellStoresKeySpecifier = ('gem' | 'oreRaw' | 'oreRefined' | 'salvage' | SellStoresKeySpecifier)[];
 export type SellStoresFieldPolicy = {
@@ -399,7 +401,7 @@ export type SessionUserFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicleCode?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ShipClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'shipRocks' | 'state' | 'surveyBonus' | 'updatedAt' | ShipClusterFindKeySpecifier)[];
+export type ShipClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'shipRocks' | 'state' | 'surveyBonus' | 'updatedAt' | 'version' | ShipClusterFindKeySpecifier)[];
 export type ShipClusterFindFieldPolicy = {
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendanceIds?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -418,7 +420,8 @@ export type ShipClusterFindFieldPolicy = {
 	shipRocks?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyBonus?: FieldPolicy<any> | FieldReadFunction<any>,
-	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>
+	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
+	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ShipMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isRefined' | 'isSold' | 'method' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'processDurationS' | 'processEndTime' | 'processStartTime' | 'refinery' | 'sellStore' | 'seller' | 'sellerUserId' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'shareRefinedValue' | 'shipOres' | 'state' | 'updatedAt' | 'version' | ShipMiningOrderKeySpecifier)[];
 export type ShipMiningOrderFieldPolicy = {
@@ -546,7 +549,7 @@ export type VehicleFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	role?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type VehicleClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'state' | 'surveyBonus' | 'updatedAt' | 'vehicleRocks' | VehicleClusterFindKeySpecifier)[];
+export type VehicleClusterFindKeySpecifier = ('attendance' | 'attendanceIds' | 'clusterCount' | 'clusterType' | 'createdAt' | 'gravityWell' | 'includeInSurvey' | 'note' | 'owner' | 'ownerId' | 'rawScore' | 'score' | 'scoutingFindId' | 'sessionId' | 'state' | 'surveyBonus' | 'updatedAt' | 'vehicleRocks' | 'version' | VehicleClusterFindKeySpecifier)[];
 export type VehicleClusterFindFieldPolicy = {
 	attendance?: FieldPolicy<any> | FieldReadFunction<any>,
 	attendanceIds?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -565,7 +568,8 @@ export type VehicleClusterFindFieldPolicy = {
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyBonus?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
-	vehicleRocks?: FieldPolicy<any> | FieldReadFunction<any>
+	vehicleRocks?: FieldPolicy<any> | FieldReadFunction<any>,
+	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type VehicleMiningOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isSold' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'sellStore' | 'seller' | 'sellerUserId' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'vehicleOres' | 'version' | VehicleMiningOrderKeySpecifier)[];
 export type VehicleMiningOrderFieldPolicy = {
