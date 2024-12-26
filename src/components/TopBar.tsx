@@ -157,9 +157,26 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
     },
     {
       path: '/tables/ore',
-      name: 'Data Tables',
+      name: 'Data',
       icon: <TableChart />,
       children: [
+        {
+          path: '/survey',
+          name: 'Mineral Survey',
+          icon: (
+            <Avatar
+              src="/images/icons/SurveyorLogo128.png"
+              sx={{
+                width: '1.5rem',
+                height: '1.5rem',
+                borderRadius: '50%',
+                border: '1px solid #000',
+                backgroundColor: 'white',
+              }}
+            />
+          ),
+        },
+        { isDivider: true },
         { path: '/tables/ore', name: 'Refinery Methods', icon: <TableChart /> },
         { path: '/tables/refinery', name: 'Refining Bonuses', icon: <TableChart /> },
         { path: '/tables/market', name: 'Market Prices', icon: <Store /> },

@@ -1,4 +1,5 @@
 import { AlertProps } from '@mui/material'
+import { GravityWellTypeEnum, SystemEnum } from '@regolithco/common'
 
 export type Config = {
   apiUrl: string
@@ -18,3 +19,16 @@ export type RegolithAlert = {
 
 export type ScoutingFindTypenames = 'SalvageFind' | 'ShipClusterFind' | 'VehicleClusterFind'
 export type WorkOrderTypenames = 'OtherOrder' | 'SalvageOrder' | 'ShipMiningOrder' | 'VehicleMiningOrder'
+
+// We rework this slightly so it's easier to work with
+export type GravityWellOptions = {
+  label: string
+  type: GravityWellTypeEnum
+  id: string
+  system: SystemEnum
+  icon: React.ReactNode
+  color: string
+  depth: number
+  parents: string[]
+  parentType: GravityWellTypeEnum | null
+}

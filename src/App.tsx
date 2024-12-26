@@ -19,6 +19,7 @@ import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
 import { SessionJoinContainer } from './components/pages/SessionJoin.container'
 import { ProfileTabsEnum } from './components/pages/ProfilePage'
 import { ErrorPage } from './Error'
+import { SurveyCorpsHome } from './components/pages/SurveyCorps'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -97,6 +98,9 @@ export const App: React.FC = () => {
               {/* Standalone calc */}
               <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<ErrorPage />} />
               {/* Tables uses urls for tabs */}
+              <Route path="/survey" element={<Navigate to="/survey/" replace />} />
+              <Route path="/survey/:tab" element={<SurveyCorpsHome />} />
+
               <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
               <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<ErrorPage />} />
 

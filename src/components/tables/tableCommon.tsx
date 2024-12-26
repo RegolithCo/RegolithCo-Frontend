@@ -110,11 +110,16 @@ export const StatsCell: React.FC<{
   )
 }
 
-export const LongCellHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
+export interface LongCellHeaderProps extends React.PropsWithChildren {
+  sx?: SxProps<Theme>
+}
+
+export const LongCellHeader: React.FC<LongCellHeaderProps> = ({ children, sx }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
+  const finalSx: SxProps<Theme> = Object.assign({ ...styles.longHeaders, ...sx }, {})
   return (
-    <TableCell sx={styles.longHeaders}>
+    <TableCell sx={finalSx}>
       <Typography variant="caption" component="div">
         {children}
       </Typography>
