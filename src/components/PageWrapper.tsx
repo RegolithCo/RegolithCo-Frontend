@@ -5,7 +5,7 @@ import { Theme, useTheme } from '@mui/system'
 import { fontFamilies } from '../theme'
 
 export interface PageWrapperProps {
-  title?: string
+  title?: string | React.ReactNode
   children: React.ReactNode
   maxWidth?: false | Breakpoint | undefined
   loading?: boolean

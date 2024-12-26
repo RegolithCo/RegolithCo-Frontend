@@ -20,6 +20,13 @@ export type RegolithAlert = {
 export type ScoutingFindTypenames = 'SalvageFind' | 'ShipClusterFind' | 'VehicleClusterFind'
 export type WorkOrderTypenames = 'OtherOrder' | 'SalvageOrder' | 'ShipMiningOrder' | 'VehicleMiningOrder'
 
+export const SurfaceWellTypes: GravityWellTypeEnum[] = [GravityWellTypeEnum.PLANET, GravityWellTypeEnum.SATELLITE]
+export const AsteroidWellTypes: GravityWellTypeEnum[] = [
+  GravityWellTypeEnum.BELT,
+  GravityWellTypeEnum.CLUSTER,
+  GravityWellTypeEnum.LAGRANGE,
+]
+
 // We rework this slightly so it's easier to work with
 export type GravityWellOptions = {
   label: string

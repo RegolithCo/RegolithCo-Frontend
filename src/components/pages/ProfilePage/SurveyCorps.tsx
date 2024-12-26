@@ -17,7 +17,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { DiscordIcon } from '../../../icons'
+import { DiscordIcon, SurveyCorpsIcon } from '../../../icons'
 import { fontFamilies } from '../../../theme'
 import { Check, MeetingRoom, ThumbUp } from '@mui/icons-material'
 
@@ -41,11 +41,10 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
   return (
     <Box>
       <Stack direction={'row'} alignItems={'center'} spacing={2} sx={{ mb: 2 }}>
-        <Avatar
-          src="/images/icons/SurveyorLogo128.png"
+        <SurveyCorpsIcon
           sx={{
-            width: theme.spacing(7),
-            height: theme.spacing(7),
+            width: 48,
+            height: 48,
           }}
         />
         <Typography

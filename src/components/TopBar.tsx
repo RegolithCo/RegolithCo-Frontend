@@ -45,7 +45,7 @@ import {
   TableChart,
   Verified,
 } from '@mui/icons-material'
-import { RockIcon } from '../icons'
+import { RockIcon, SurveyCorpsIcon } from '../icons'
 import { LoginContext, LoginContextObj } from '../hooks/useOAuth2'
 import { UserAvatar } from './UserAvatar'
 import { ModuleIcon } from '../icons/Module'
@@ -163,18 +163,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         {
           path: '/survey',
           name: 'Mineral Survey',
-          icon: (
-            <Avatar
-              src="/images/icons/SurveyorLogo128.png"
-              sx={{
-                width: '1.5rem',
-                height: '1.5rem',
-                borderRadius: '50%',
-                border: '1px solid #000',
-                backgroundColor: 'white',
-              }}
-            />
-          ),
+          icon: <SurveyCorpsIcon />,
         },
         { isDivider: true },
         { path: '/tables/ore', name: 'Refinery Methods', icon: <TableChart /> },
