@@ -194,7 +194,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
     { path: `/${ProfileTabsEnum.PROFILE}`, name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
     {
       path: `/${ProfileTabsEnum.SURVEY}`,
-      name: 'Survey Corps.',
+      name: 'Survey Corps',
       icon: (
         <Avatar
           src="/images/icons/SurveyorLogo128.png"

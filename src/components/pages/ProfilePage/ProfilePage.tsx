@@ -176,7 +176,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           sx={styles.sessionTabs}
         >
           <Tab label="Profile" value={ProfileTabsEnum.PROFILE} />
-          <Tab label="Survey Corps." value={ProfileTabsEnum.SURVEY} />
+          <Tab label="Survey Corps" value={ProfileTabsEnum.SURVEY} />
           <Tab label="Friends" value={ProfileTabsEnum.FRIENDS} />
           <Tab label="Session Defaults" value={ProfileTabsEnum.SESSION_DEFAULTS} />
           <Tab label="API Access" value={ProfileTabsEnum.API} />

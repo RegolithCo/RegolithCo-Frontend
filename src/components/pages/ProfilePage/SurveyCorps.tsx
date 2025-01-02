@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { UserProfile, UserProfileInput, DestructuredSettings, validateSCName } from '@regolithco/common'
+import { UserProfile, UserProfileInput, DestructuredSettings, validateSCName, UserStateEnum } from '@regolithco/common'
 
 import {
   Alert,
@@ -60,7 +60,9 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
         </Typography>
       </Stack>
       {isBanned && <SurveyCorpsBanned />}
-      {!isBanned && !isEnlisted && <SurveyCorpsEnlist updateUserProfile={updateUserProfile} />}
+      {!isBanned && !isEnlisted && (
+        <SurveyCorpsEnlist updateUserProfile={updateUserProfile} userProfile={userProfile} navigate={navigate} />
+      )}
       {!isBanned && isEnlisted && (
         <Box>
           <Typography paragraph variant="body2">
@@ -181,42 +183,14 @@ export const SurveyCorpsBanned: React.FC = () => {
 export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, navigate, updateUserProfile }) => {
   const theme = useTheme()
   const [consentBoxChecked, setConsentBoxChecked] = React.useState(false)
+  const isElligible = Boolean(userProfile?.state === UserStateEnum.Verified && !userProfile?.isSurveyorBanned)
 
   return (
     <Box>
       <Typography paragraph variant="body2">
-        When you enlist with the Regolith Survey Corps your Scouting data will be combined with others to generate the
-        <Link href="http://google.com">location and composition charts</Link>. Just by scouting rocks, gems and wrecks
-        normally you will help discover the best places to mine and salvage in the 'verse'.
+        Not sure if this is for you? You can read more about the Survey Corps <Link href="/survey/about">here</Link>.
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
-        Q: "How does this work?"
-      </Typography>
-      <Typography paragraph variant="body2">
-        When you scout a rock cluster, ROC Gem cluster or salvage site in your normal sessions you will have the option
-        to contribute this data (on by default) to the global stats pool.
-      </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
-        Q: "Why should I do this?"
-      </Typography>
-      <Typography paragraph variant="body2" component="div">
-        There are several reasons to do this:
-        <ul>
-          <li>It helps the community by providing more data to generate the charts.</li>
-          <li>It helps you by providing more accurate data for your own use.</li>
-          <li>For clout or just to see your score increase on the leaderboard.</li>
-          <li>Periodically we may offer small incentives to those who contribute the most data.</li>
-          <li>It's a lightweight form of exploration gameplay that Star Citizen so far is lacking.</li>
-          <li>Maybe you like scanning and finding rocks more than you like mining them.</li>
-        </ul>
-      </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
-        Q: "What happens if I leave the Corps later?"
-      </Typography>
-      <Typography paragraph variant="body2" component="div">
-        If you leave the Corps any scouting finds from that point onward will no longer be included in the global stats.
-        Your existing data will still be included though. You can re-enlist at any time.
-      </Typography>
+
       <Typography paragraph variant="overline" color="primary">
         Terms and Conditions
       </Typography>
@@ -244,10 +218,16 @@ export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, nav
         </ul>
       </Typography>
       <Divider />
+      {userProfile?.state !== UserStateEnum.Verified && (
+        <Alert severity="error" sx={{ my: 2 }}>
+          Your user account is not verified. Only verified users can be surveyors
+        </Alert>
+      )}
       <FormGroup row>
         <FormControlLabel
           control={
             <Checkbox
+              disabled={!isElligible}
               checked={consentBoxChecked}
               onChange={(e, checked) => {
                 setConsentBoxChecked(checked)
@@ -270,7 +250,7 @@ export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, nav
         onClick={() => {
           updateUserProfile({ isSurveyor: true })
         }}
-        disabled={!consentBoxChecked}
+        disabled={!consentBoxChecked && isElligible}
         fullWidth
         startIcon={<ThumbUp />}
       >

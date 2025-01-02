@@ -1,17 +1,35 @@
 import * as React from 'react'
 
 import { PageWrapper } from '../../PageWrapper'
-import { Avatar, Box, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { Box, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { ShipOreDistribution } from './ShipOreDistribution'
 import { GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
+import { ObjectValues } from '@regolithco/common'
+import { useNavigate, useParams } from 'react-router-dom'
+import { SurveyCorpsAbout } from './SurveyCorpsAbout'
+
+export const SurveyTabsEnum = {
+  SHIP_ORE: 'rocks',
+  VEHICLE_ORE: 'gems',
+  ABOUT_SURVEY_CORPS: 'about',
+} as const
+export type SurveyTabsEnum = ObjectValues<typeof SurveyTabsEnum>
+
+export const SurveyCorpsHomeContainer: React.FC = () => {
+  const navigate = useNavigate()
+  const { tab } = useParams()
+
+  return <SurveyCorpsHome navigate={navigate} tab={tab as SurveyTabsEnum} />
+}
 
 export interface SurveyCorpsHomeProps {
   loading?: boolean
-  activeTab?: number
+  tab?: SurveyTabsEnum
+  navigate?: (path: string) => void
   setActiveTab?: (tab: number) => void
 }
 
-export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, activeTab, setActiveTab }) => {
+export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, tab, setActiveTab, navigate }) => {
   const theme = useTheme()
 
   return (
@@ -32,7 +50,16 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, activ
               height: 48,
             }}
           />
-          <Typography variant="h4">Survey Corps</Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: theme.typography.fontFamily,
+              fontWeight: 'bold',
+              color: theme.palette.primary.main,
+            }}
+          >
+            Survey Corps
+          </Typography>
         </Stack>
       }
       loading={loading}
@@ -45,14 +72,15 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, activ
     >
       <Box sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
         <Tabs
-          value={activeTab}
+          value={tab}
           onChange={(_, newValue) => {
+            navigate && navigate(`/survey/${newValue}`)
             // setActiveTab(newValue)
           }}
         >
-          <Tab label="Ship Ores" value={1} icon={<RockIcon />} />
-          <Tab label="Vehicle / Hand Ores" value={1} icon={<GemIcon />} />
-          <Tab label="About Survey Corps." value={2} icon={<SurveyCorpsIcon />} />
+          <Tab label="Ship Ores" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
+          <Tab label="Vehicle / Hand Ores" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
+          <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
         </Tabs>
       </Box>
       <Box
@@ -63,7 +91,9 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, activ
         }
       >
         {/* Fitler box */}
-        <ShipOreDistribution />
+        {tab === SurveyTabsEnum.SHIP_ORE && <ShipOreDistribution />}
+        {tab === SurveyTabsEnum.VEHICLE_ORE && <ShipOreDistribution />}
+        {tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS && <SurveyCorpsAbout />}
       </Box>
     </PageWrapper>
   )
