@@ -262,9 +262,14 @@ const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] =>
       legend: '3.24.1',
     },
     {
-      // 3.24.1 cargo refactor
+      // 3.24.3 Last patch before 4.0
       value: dayjs('2024-11-22').startOf(rounding).toDate(),
       legend: 'IAE 2954 (3.24.3)',
+    },
+    {
+      // 4.0 live
+      value: dayjs('2024-12-19').startOf(rounding).toDate(),
+      legend: '4.0',
     },
   ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
 
