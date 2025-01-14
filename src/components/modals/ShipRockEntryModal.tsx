@@ -95,6 +95,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontWeight: 'bold',
     // lineHeight: 1.5,
     fontSize: '0.8rem',
+    color: theme.palette.secondary.light,
     // textAlign: 'center',
     // p: 1,
     // my: 1,
@@ -421,7 +422,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               mx: 2,
               mb: 1,
               '& .MuiInputAdornment-positionStart *': {
-                color: theme.palette.secondary.light,
+                color: theme.palette.text.secondary,
                 fontFamily: fontFamilies.robotoMono,
                 fontWeight: 'bold',
                 textTransform: 'uppercase',

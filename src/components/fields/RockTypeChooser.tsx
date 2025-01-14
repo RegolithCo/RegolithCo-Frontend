@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { InputAdornment, MenuItem, Select, Typography, useTheme } from '@mui/material'
+import { InputAdornment, MenuItem, Select, useTheme } from '@mui/material'
 import {
   AsteroidTypeEnum,
   DepositTypeEnum,

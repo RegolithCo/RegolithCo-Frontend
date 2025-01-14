@@ -17,7 +17,7 @@ import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { CollaborateLinkIcon, DownloadJSONIcon, ExportImageIcon } from '../../../icons/badges'
-import { GravityWellNameRender } from '../../fields/GravityWellChooser'
+import { GravityWellNameLookup, GravityWellNameRender } from '../../fields/GravityWellChooser'
 
 export interface SesionHeaderProps {
   propA?: string
@@ -29,7 +29,7 @@ export const sessionSubtitleArr = (session: Session, protect: boolean): (string 
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
   if (sessionSettings.gravityWell)
-    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameRender code={sessionSettings.gravityWell} />)
+    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameLookup code={sessionSettings.gravityWell} />)
   if (sessionSettings.location) subtitleArr.push(protect ? 'UNDISCLOSED' : getLocationName(sessionSettings.location))
   return subtitleArr
 }

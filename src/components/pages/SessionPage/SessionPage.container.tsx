@@ -158,7 +158,7 @@ export const SessionPageContainer: React.FC = () => {
 
   const createNewScoutingFind = (scoutingType: ScoutingFindTypeEnum) => {
     if (!session) return
-    setNewScoutingFind(newEmptyScoutingFind(session, mySessionUser, scoutingType))
+    setNewScoutingFind(newEmptyScoutingFind(session, mySessionUser, scoutingType, Boolean(myUserProfile.isSurveyor)))
     setActiveModal(DialogEnum.ADD_SCOUTING)
   }
 

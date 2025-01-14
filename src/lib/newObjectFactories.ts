@@ -306,7 +306,8 @@ export function newWorkOrderMaker(
 export function newEmptyScoutingFind(
   session: Session,
   sessUser: SessionUser,
-  scoutingType: ScoutingFindTypeEnum
+  scoutingType: ScoutingFindTypeEnum,
+  includeInSurvey?: boolean
 ): ScoutingFind {
   const baseObj: Partial<ScoutingFind> = {
     sessionId: session.sessionId,
@@ -315,6 +316,7 @@ export function newEmptyScoutingFind(
     updatedAt: Date.now(),
     gravityWell: session.sessionSettings.gravityWell,
     clusterType: scoutingType,
+    includeInSurvey,
 
     ownerId: sessUser.owner?.userId,
     owner: sessUser.owner,

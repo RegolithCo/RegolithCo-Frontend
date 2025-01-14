@@ -15,13 +15,36 @@ export interface GravityWellChooserProps {
 }
 
 export const GravityWellNameRender: React.FC<{ options: GravityWellOptions }> = ({ options }) => {
-  const { color, icon, label } = options
+  const { color, icon, label } = (options || {}) as GravityWellOptions
   return (
     <Stack style={{ color }} direction="row" spacing={2} alignItems="center">
       {icon}
       <Typography>{label}</Typography>
     </Stack>
   )
+}
+
+export const GravityWellNameLookup: React.FC<{ code: string }> = ({ code }) => {
+  const dataStore = React.useContext(LookupsContext)
+  const userTheme = useTheme()
+  if (!dataStore.ready) return null
+  const systemLookup = React.useMemo(() => {
+    const lookup = (dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups']) || []
+    return getGravityWellOptions(userTheme, lookup)
+  }, [dataStore]) as GravityWellOptions[]
+
+  const well = systemLookup.find((well) => well.id === code) || {
+    color: 'white',
+    depth: 0,
+    icon: null,
+    id: code,
+    label: code,
+    parents: [],
+    parentType: null,
+    system: SystemEnum.Stanton,
+    type: GravityWellTypeEnum.PLANET,
+  }
+  return <GravityWellNameRender options={well as GravityWellOptions} />
 }
 
 export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[] => {

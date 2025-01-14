@@ -26,7 +26,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
   const activeScoutingFind = React.useMemo(() => {
     if (clusters && clusters[activeScoutingFindType]) return clusters && clusters[activeScoutingFindType]
     else {
-      const newFind = newEmptyScoutingFind(session, sessionUser, activeScoutingFindType)
+      const newFind = newEmptyScoutingFind(session, sessionUser, activeScoutingFindType, false)
       newFind.state = ScoutingFindStateEnum.Discovered
       return newFind
     }

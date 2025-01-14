@@ -22,6 +22,7 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  Checkbox,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -46,7 +47,7 @@ import {
   ShipRock,
   RockType,
 } from '@regolithco/common'
-import { ClawIcon, GemIcon, RockIcon } from '../../../icons'
+import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter, findDecimalsSm } from '../../fields/MValue'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -293,6 +294,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   scoutingFind,
   me,
+  allowDelete,
   isNew,
   isShare,
   allowEdit,
@@ -307,7 +309,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [summary, setSummary] = React.useState<FindClusterSummary>()
-  const { getSafeName } = React.useContext(AppContext)
+  const { getSafeName, myUserProfile } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
 
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | SalvageWreck | false>(false)
@@ -630,17 +632,64 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               />
             )}
             {!standalone && (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={Boolean(scoutingFind.includeInSurvey)}
-                    onChange={(e) => {
-                      onChange && onChange({ ...scoutingFind, includeInSurvey: e.target.checked })
-                    }}
-                  />
-                }
-                label={`Submit to Survey Corps: ${scoutingFind.includeInSurvey ? 'Yes' : 'No'}`}
-              />
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  px: 1,
+                  border: `1px solid ${scoutingFind.includeInSurvey ? theme.palette.primary.main : theme.palette.text.secondary}`,
+                  borderRadius: 1,
+                }}
+              >
+                <Tooltip
+                  title={
+                    !myUserProfile?.isSurveyor ? (
+                      <Typography variant="caption">
+                        You must be a Surveyor to submit to the Survey Corps. Sign up today in your user profile
+                      </Typography>
+                    ) : (
+                      <Typography variant="caption">
+                        Submitting to the Survey Corps will contribute to the overall knowledge of the verse.
+                      </Typography>
+                    )
+                  }
+                >
+                  <SurveyCorpsIcon />
+                </Tooltip>
+                <FormControlLabel
+                  labelPlacement="start"
+                  slotProps={{
+                    typography: {
+                      sx: {
+                        // fontFamily: fontFamilies.robotoMono,
+                        fontSize: '0.8em',
+                        color: scoutingFind.includeInSurvey ? theme.palette.primary.main : theme.palette.text.secondary,
+                      },
+                    },
+                  }}
+                  sx={{
+                    color: scoutingFind.includeInSurvey ? theme.palette.secondary.light : theme.palette.text.secondary,
+                    '& .MuiSwitch-switchBase': {
+                      color: scoutingFind.includeInSurvey
+                        ? theme.palette.secondary.light
+                        : theme.palette.text.secondary,
+                    },
+                  }}
+                  control={
+                    <Checkbox
+                      checked={Boolean(scoutingFind.includeInSurvey)}
+                      disabled={!allowEdit || !myUserProfile?.isSurveyor}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange && onChange({ ...scoutingFind, includeInSurvey: e.target.checked })
+                      }}
+                    />
+                  }
+                  label={`Submit to Survey Corps`}
+                />
+              </Stack>
             )}
 
             {!standalone && (
