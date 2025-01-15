@@ -23,6 +23,7 @@ import {
   FormControlLabel,
   Switch,
   Checkbox,
+  Link,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -46,6 +47,8 @@ import {
   SalvageWreck,
   ShipRock,
   RockType,
+  SurveyFindScore,
+  calculateSurveyFind,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -65,6 +68,7 @@ import { ScoutingFindWrecks } from './ScoutingFindWrecks'
 import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { SalvageWreckEntryModal } from '../../modals/SalvageWreckEntryModal'
 import { GravityWellChooser } from '../../fields/GravityWellChooser'
+import { SurveyScore } from './SurveyScore'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -308,6 +312,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const styles = stylesThunk(theme)
   const [editCountModalOpen, setEditCountModalOpen] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
+  const [scoreObj, setScoreObj] = React.useState<SurveyFindScore>({
+    score: 0,
+    possible: 0,
+    warnings: [],
+    errors: [],
+  })
   const [summary, setSummary] = React.useState<FindClusterSummary>()
   const { getSafeName, myUserProfile } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
@@ -326,6 +336,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     }
   }, [openCapture])
 
+  // Now do a useEffect along with a lodash debounce to calculate the score
+  React.useEffect(() => {
+    const calcScore = async () => {
+      if (!dataStore.ready) return
+      const newScore = await calculateSurveyFind(dataStore, scoutingFind)
+      console.log('MARZIPAN', newScore)
+      setScoreObj(newScore)
+    }
+    calcScore()
+  }, [scoutingFind, dataStore.ready])
+
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
 
   // Convenience type guards
@@ -334,6 +355,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const salvageFind = scoutingFind as SalvageFind
 
   const defaultRockType = shipFind.shipRocks && shipFind.shipRocks[0]?.rockType
+
+  const includeInSurveyEnabled = Boolean(myUserProfile?.isSurveyor && !standalone)
+  const includeInSurveyChecked = Boolean(includeInSurveyEnabled && scoutingFind?.includeInSurvey)
 
   // Some convenience variables
   let hasScans = false
@@ -407,7 +431,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     <>
       <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
         {!standalone && !isNew && <Typography sx={styles.scoutingFindId}>{scoutId}</Typography>}
-
         {/* THE STATE (WITH DROPDOWN) */}
         {!standalone && (
           <Box sx={styles.stateBox}>
@@ -632,64 +655,64 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
               />
             )}
             {!standalone && (
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  px: 1,
-                  border: `1px solid ${scoutingFind.includeInSurvey ? theme.palette.primary.main : theme.palette.text.secondary}`,
-                  borderRadius: 1,
-                }}
+              <Tooltip
+                title={
+                  !myUserProfile?.isSurveyor ? (
+                    <Typography variant="caption">
+                      You must be a Surveyor to submit to the Survey Corps.{' '}
+                      <Link href="/profile/survey" target="_blank" rel="noopener noreferrer">
+                        Sign up today
+                      </Link>{' '}
+                      in your user profile
+                    </Typography>
+                  ) : (
+                    <Typography variant="caption">
+                      Submitting to the Survey Corps will contribute to the overall knowledge of the verse.
+                    </Typography>
+                  )
+                }
               >
-                <Tooltip
-                  title={
-                    !myUserProfile?.isSurveyor ? (
-                      <Typography variant="caption">
-                        You must be a Surveyor to submit to the Survey Corps. Sign up today in your user profile
-                      </Typography>
-                    ) : (
-                      <Typography variant="caption">
-                        Submitting to the Survey Corps will contribute to the overall knowledge of the verse.
-                      </Typography>
-                    )
-                  }
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    width: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    px: 1,
+                    border: `1px solid ${includeInSurveyEnabled ? theme.palette.primary.main : theme.palette.text.secondary}`,
+                    borderRadius: 1,
+                  }}
                 >
                   <SurveyCorpsIcon />
-                </Tooltip>
-                <FormControlLabel
-                  labelPlacement="start"
-                  slotProps={{
-                    typography: {
-                      sx: {
-                        // fontFamily: fontFamilies.robotoMono,
-                        fontSize: '0.8em',
-                        color: scoutingFind.includeInSurvey ? theme.palette.primary.main : theme.palette.text.secondary,
+
+                  <FormControlLabel
+                    labelPlacement="start"
+                    slotProps={{
+                      typography: {
+                        sx: {
+                          // fontFamily: fontFamilies.robotoMono,
+                          fontSize: '0.8em',
+                          color: includeInSurveyEnabled ? theme.palette.primary.main : theme.palette.text.secondary,
+                        },
                       },
-                    },
-                  }}
-                  sx={{
-                    color: scoutingFind.includeInSurvey ? theme.palette.secondary.light : theme.palette.text.secondary,
-                    '& .MuiSwitch-switchBase': {
-                      color: scoutingFind.includeInSurvey
-                        ? theme.palette.secondary.light
-                        : theme.palette.text.secondary,
-                    },
-                  }}
-                  control={
-                    <Checkbox
-                      checked={Boolean(scoutingFind.includeInSurvey)}
-                      disabled={!allowEdit || !myUserProfile?.isSurveyor}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        onChange && onChange({ ...scoutingFind, includeInSurvey: e.target.checked })
-                      }}
-                    />
-                  }
-                  label={`Submit to Survey Corps`}
-                />
-              </Stack>
+                    }}
+                    sx={{
+                      color: includeInSurveyEnabled ? theme.palette.secondary.light : theme.palette.text.secondary,
+                    }}
+                    control={
+                      <Checkbox
+                        checked={includeInSurveyChecked}
+                        disabled={!allowEdit || !myUserProfile?.isSurveyor}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          if (onChange) onChange({ ...scoutingFind, includeInSurvey: e.target.checked })
+                        }}
+                      />
+                    }
+                    label={`Submit to Survey Corps`}
+                  />
+                </Stack>
+              </Tooltip>
             )}
 
             {!standalone && (
@@ -827,6 +850,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             editScanModalOpen={editScanModalOpen}
           />
         )}
+        {includeInSurveyChecked && <SurveyScore scoreObj={scoreObj} />}
       </Grid>
 
       {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&

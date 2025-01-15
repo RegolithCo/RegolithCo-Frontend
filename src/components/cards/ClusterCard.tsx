@@ -23,7 +23,7 @@ import {
   makeHumanIds,
   FindClusterSummary,
 } from '@regolithco/common'
-import { ClawIcon, GemIcon, RockIcon } from '../../icons'
+import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../icons'
 import { fontFamilies, scoutingFindStateThemes } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -465,6 +465,28 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
             )}
           </Box>
         </Box>
+
+        {scoutingFind?.includeInSurvey && (
+          <Box
+            sx={{
+              opacity: 0.1,
+              zIndex: 1,
+              height: '50%',
+              width: '50%',
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <SurveyCorpsIcon
+              sx={{
+                height: '100%',
+                width: '100%',
+              }}
+            />
+          </Box>
+        )}
       </Card>
       <DeleteScoutingFindModal
         onClose={() => setDeleteConfirmModal(false)}

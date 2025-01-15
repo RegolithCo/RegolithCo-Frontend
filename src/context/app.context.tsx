@@ -1,7 +1,6 @@
 import { obfuscateUserId, UserProfile } from '@regolithco/common'
 import React, { createContext, PropsWithChildren } from 'react'
 import log from 'loglevel'
-import { useLogin } from '../hooks/useOAuth2'
 import { useGetUserProfileQuery } from '../schema'
 
 export interface AppContextType {
@@ -28,7 +27,6 @@ export const AppContext = createContext<AppContextType>(appContextDefault)
 
 export const AppContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const [hideNames, setHideNames] = React.useState(false)
-  const ctx = useLogin()
   const userProfileQry = useGetUserProfileQuery({
     // returnPartialData: true,
   })

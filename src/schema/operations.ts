@@ -38,6 +38,7 @@ export const ScoutingIdFragmentFragmentDoc = gql`
   scoutingFindId
   updatedAt
   state
+  includeInSurvey
   attendanceIds
   attendance {
     sessionId
@@ -304,6 +305,7 @@ export const ScoutingFindBaseFragmentFragmentDoc = gql`
   clusterType
   clusterCount
   gravityWell
+  includeInSurvey
   ownerId
   owner {
     ...UserFragment
@@ -2781,3 +2783,39 @@ export type GetPublicLookupsQueryHookResult = ReturnType<typeof useGetPublicLook
 export type GetPublicLookupsLazyQueryHookResult = ReturnType<typeof useGetPublicLookupsLazyQuery>;
 export type GetPublicLookupsSuspenseQueryHookResult = ReturnType<typeof useGetPublicLookupsSuspenseQuery>;
 export type GetPublicLookupsQueryResult = Apollo.QueryResult<types.GetPublicLookupsQuery, types.GetPublicLookupsQueryVariables>;
+export const SetUserPlanDocument = gql`
+    mutation setUserPlan($userId: ID!, $plan: UserPlanEnum!) {
+  setUserPlan(userId: $userId, plan: $plan) {
+    scName
+    userId
+    plan
+  }
+}
+    `;
+export type SetUserPlanMutationFn = Apollo.MutationFunction<types.SetUserPlanMutation, types.SetUserPlanMutationVariables>;
+
+/**
+ * __useSetUserPlanMutation__
+ *
+ * To run a mutation, you first call `useSetUserPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetUserPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setUserPlanMutation, { data, loading, error }] = useSetUserPlanMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      plan: // value for 'plan'
+ *   },
+ * });
+ */
+export function useSetUserPlanMutation(baseOptions?: Apollo.MutationHookOptions<types.SetUserPlanMutation, types.SetUserPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<types.SetUserPlanMutation, types.SetUserPlanMutationVariables>(SetUserPlanDocument, options);
+      }
+export type SetUserPlanMutationHookResult = ReturnType<typeof useSetUserPlanMutation>;
+export type SetUserPlanMutationResult = Apollo.MutationResult<types.SetUserPlanMutation>;
+export type SetUserPlanMutationOptions = Apollo.BaseMutationOptions<types.SetUserPlanMutation, types.SetUserPlanMutationVariables>;
