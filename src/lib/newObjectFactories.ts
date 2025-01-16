@@ -331,6 +331,7 @@ export function newEmptyScoutingFind(
       return {
         ...(baseObj as ShipClusterFind),
         shipRocks: [],
+        clusterCount: 1,
       }
     case ScoutingFindTypeEnum.Vehicle:
       return {
@@ -341,6 +342,7 @@ export function newEmptyScoutingFind(
       return {
         ...(baseObj as SalvageFind),
         wrecks: [],
+        clusterCount: 1,
       }
     default:
       throw new Error(`Unknown scouting type: ${scoutingType}`)

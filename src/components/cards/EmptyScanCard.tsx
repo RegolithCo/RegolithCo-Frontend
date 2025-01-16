@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { Card, useTheme, SxProps, Theme, IconButton, Box, Tooltip, Typography } from '@mui/material'
+import { Card, useTheme, SxProps, Theme, IconButton, Box, Tooltip, Typography, alpha } from '@mui/material'
 import { Add, Cancel, SvgIconComponent } from '@mui/icons-material'
 
 export interface EmptyScanCardProps {
   onClick?: () => void
   onDelete?: () => void
+  deleteDisabled?: boolean
   Icon: SvgIconComponent
 }
 
@@ -39,6 +40,17 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     opacity: 0.6,
     zIndex: 2,
   },
+  deleteButtonDisabled: {
+    position: 'absolute',
+    top: '12%',
+    right: '-4%',
+    transform: 'translate(-50%, -50%)',
+    color: alpha(theme.palette.primary.light, 0.2),
+    cursor: 'not-allowed',
+    // backgroundColor: theme.palette.primary.main,
+    opacity: 0.6,
+    zIndex: 2,
+  },
   iconButton: {
     position: 'absolute',
     top: '50%',
@@ -55,15 +67,15 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
  * @param param0
  * @returns
  */
-export const EmptyScanCard: React.FC<EmptyScanCardProps> = ({ onClick, Icon, onDelete }) => {
+export const EmptyScanCard: React.FC<EmptyScanCardProps> = ({ onClick, Icon, onDelete, deleteDisabled }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <Tooltip title="Delete from the cluster" placement="top">
+      <Tooltip title={deleteDisabled ? 'Cannot delete last scan' : 'Delete this scan'} placement="top">
         <Cancel
-          sx={styles.deleteButton}
+          sx={deleteDisabled ? styles.deleteButtonDisabled : styles.deleteButton}
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()

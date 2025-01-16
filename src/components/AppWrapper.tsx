@@ -14,6 +14,7 @@ export const BGImagesEnum = {
   SALVAGE2: 'salvage2.png',
   ASTEROIDS1: 'asteroids1.png',
   ASTEROIDS2: 'asteroids2.jpg',
+  SURVEYCORPS: 'corps.png',
   CONCOURSE: 'concourse.jpg',
   MARKET1: 'market1.jpg',
   CITY1: 'city1.jpg',
@@ -76,6 +77,9 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       break
     case '/cluster':
       bgImage = BGImagesEnum.ASTEROIDS2
+      break
+    case '/survey':
+      bgImage = BGImagesEnum.SURVEYCORPS
       break
     case '/loadouts':
       bgImage = BGImagesEnum.HANGAR

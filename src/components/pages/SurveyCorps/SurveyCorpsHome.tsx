@@ -58,7 +58,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, tab, 
               color: theme.palette.primary.main,
             }}
           >
-            Survey Corps
+            Regolith Survey Corps
           </Typography>
         </Stack>
       }

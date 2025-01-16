@@ -20,6 +20,7 @@ import {
 import { DiscordIcon, SurveyCorpsIcon } from '../../../icons'
 import { fontFamilies } from '../../../theme'
 import { Check, MeetingRoom, ThumbUp } from '@mui/icons-material'
+import { ConfirmModal } from '../../modals/ConfirmModal'
 
 export interface SurveyCorpsProps {
   userProfile?: UserProfile
@@ -29,6 +30,7 @@ export interface SurveyCorpsProps {
 
 export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate, updateUserProfile }) => {
   const theme = useTheme()
+  const [confirmLeave, setConfirmLeave] = React.useState(false)
   const [newLeaderboardName, setNewLeaderboardName] = React.useState<string>(userProfile?.surveyorName || '')
   const isBanned = userProfile?.isSurveyorBanned
   const isEnlisted = userProfile?.isSurveyor && !isBanned
@@ -128,11 +130,37 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
             size="large"
             startIcon={<MeetingRoom />}
             onClick={() => {
-              updateUserProfile({ isSurveyor: false })
+              setConfirmLeave(true)
             }}
           >
             Leave the Survey Corps
           </Button>
+          <ConfirmModal
+            open={confirmLeave}
+            confirmIcon={<MeetingRoom />}
+            confirmBtnText="Leave the Corps"
+            title="Leave the Survey Corps?"
+            message={
+              <Stack direction="column" spacing={2}>
+                <Typography paragraph variant="body2">
+                  Are you sure you want to leave the Survey Corps? You will lose your leaderboard status and your data
+                  will no longer be considered in the global stats.
+                </Typography>
+                <Typography paragraph variant="body2">
+                  Any data you have already submitted will remain in the system but you are free to remove individual
+                  clusters and scans from consideration if you wish.
+                </Typography>
+                <Typography paragraph variant="body2">
+                  You can re-enlist at any time if you change your mind.
+                </Typography>
+              </Stack>
+            }
+            onClose={() => setConfirmLeave(false)}
+            onConfirm={() => {
+              updateUserProfile({ isSurveyor: false })
+              setConfirmLeave(false)
+            }}
+          />
         </Box>
       )}
     </Box>
@@ -220,28 +248,32 @@ export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, nav
       <Divider />
       {userProfile?.state !== UserStateEnum.Verified && (
         <Alert severity="error" sx={{ my: 2 }}>
-          Your user account is not verified. Only verified users can be surveyors
+          Your user account is not verified. Only verified users can be surveyors. Please complete the verification
+          process on the "Profile" tab first.
         </Alert>
       )}
-      <FormGroup row>
-        <FormControlLabel
-          control={
-            <Checkbox
-              disabled={!isElligible}
-              checked={consentBoxChecked}
-              onChange={(e, checked) => {
-                setConsentBoxChecked(checked)
-              }}
-              name="checkedA"
-            />
-          }
-          label={
-            <Typography variant="body2" color="secondary">
-              By checking this box you agree to the terms and conditions of the Regolith Survey Corps.
-            </Typography>
-          }
-        />
-      </FormGroup>
+      {isElligible && (
+        <FormGroup row>
+          <FormControlLabel
+            control={
+              <Checkbox
+                disabled={!isElligible}
+                checked={consentBoxChecked}
+                onChange={(e, checked) => {
+                  setConsentBoxChecked(checked)
+                }}
+                name="checkedA"
+              />
+            }
+            label={
+              <Typography variant="body2" color="secondary">
+                By checking this box you agree to the terms and conditions of the Regolith Survey Corps.
+              </Typography>
+            }
+          />
+        </FormGroup>
+      )}
+
       <Button
         size="large"
         sx={{ mt: 2 }}
@@ -250,7 +282,7 @@ export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, nav
         onClick={() => {
           updateUserProfile({ isSurveyor: true })
         }}
-        disabled={!consentBoxChecked && isElligible}
+        disabled={!consentBoxChecked || !isElligible}
         fullWidth
         startIcon={<ThumbUp />}
       >

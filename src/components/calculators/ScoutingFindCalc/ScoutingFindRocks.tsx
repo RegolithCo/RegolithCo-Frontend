@@ -155,9 +155,11 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
             <Grid key={idx} xs={6} sm={4} md={3}>
               <EmptyScanCard
                 Icon={RockIcon}
+                deleteDisabled={!shipFind.clusterCount || shipFind.clusterCount <= 1}
                 onDelete={() => {
                   if (!shipFind.shipRocks || !shipFind.clusterCount) return
                   if (shipFind.clusterCount <= shipFind.shipRocks.length) return
+                  if (shipFind.clusterCount <= 1) return
                   onChange &&
                     onChange({
                       ...shipFind,

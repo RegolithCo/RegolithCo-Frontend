@@ -104,8 +104,12 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = () => {
           }}
           aria-label="text alignment"
         >
-          <ToggleButton value={'ASTEROID'}>Asteroid</ToggleButton>
-          <ToggleButton value={'SURFACE'}>Surface</ToggleButton>
+          <ToggleButton color="info" value={'ASTEROID'}>
+            Asteroid
+          </ToggleButton>
+          <ToggleButton color="primary" value={'SURFACE'}>
+            Surface
+          </ToggleButton>
         </ToggleButtonGroup>
       </Stack>
       <Stack direction="row" spacing={2} sx={{ marginBottom: theme.spacing(2) }}>

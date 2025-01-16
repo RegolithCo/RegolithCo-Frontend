@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, Stack, useTheme, Button, Link, Dialog, Box } from '@mui/material'
+import { Typography, Stack, useTheme, Button, Link, Dialog, Box, DialogTitle, DialogActions } from '@mui/material'
 import { ScoutingFindStateEnum, SurveyFindScore } from '@regolithco/common'
 import { SurveyCorpsIcon } from '../../../icons'
 
@@ -29,40 +29,54 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
   else if (scoreObj.warnings.length > 0 || percentSuccess < 100) color = 'warning'
 
   return (
-    <Stack direction="row" spacing={1} sx={{ mx: 2 }} alignItems={'center'}>
-      <SurveyCorpsIcon />
-      <Typography
-        variant="caption"
-        component="div"
+    <>
+      <Button
+        fullWidth
+        onClick={() => setExplainOpen(true)}
+        size="small"
         sx={{
           color: theme.palette[color].main,
         }}
       >
         Survey Score: {scoreObj.score}/{scoreObj.possible}{' '}
-        <Link
-          onClick={() => {
-            setExplainOpen(true)
-          }}
-        >
-          Explain?
-        </Link>
-      </Typography>
-      <Dialog open={explainOpen} onClose={() => setExplainOpen(false)}>
-        <Stack direction="column" spacing={2} sx={{ p: 2 }}>
-          <Typography variant="h6">Survey Score Explanation</Typography>
-          <Typography variant="body1" component="div">
-            The survey score is a measure of how well you have completed a survey. It is calculated by adding points for
-            each successful completion and subtracting points for each error or warning. The possible score is the
-            maximum number of points that can be earned for a survey.
-            <ul>
-              <li>There are large bonuses for completing a scan.</li>
-              <li>Red Errors need to be fixed or your score is 0.</li>
-            </ul>
+      </Button>
+      <Dialog
+        open={explainOpen}
+        onClose={() => setExplainOpen(false)}
+        maxWidth="sm"
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: 10,
+            boxShadow: `0px 0px 20px 5px ${theme.palette.primary.light}, 0px 0px 60px 40px black`,
+            background: theme.palette.background.default,
+            border: `10px solid ${theme.palette.primary.main}`,
+          },
+        }}
+      >
+        <DialogTitle>
+          <Stack direction="row" spacing={1} alignItems={'center'}>
+            <SurveyCorpsIcon sx={{ fontSize: 50 }} />
+            <Typography variant="h5">
+              Survey Corps Score: {scoreObj.score}/{scoreObj.possible}
+            </Typography>
+          </Stack>
+        </DialogTitle>
+        <Stack direction="column" spacing={2} sx={{ px: 4 }}>
+          <Typography variant="body1" component="div" color="text.secondary">
+            <p>
+              This score is a measure of how well you have completed a survey. It is calculated by adding points for
+              each complete scan and subtracting points for each error or warning. These points will go toward your
+              leaderboard score.
+            </p>
+            <p>
+              In this case there are <strong>{scoreObj.possible}</strong> possible points of which you have earned{' '}
+              <strong>{scoreObj.score}</strong>.
+            </p>
           </Typography>
           {scoreObj.errors.length > 0 && (
             <Box>
               <Typography variant="h6" color="error">
-                Errors
+                Errors for this cluster:
               </Typography>
               <Typography variant="body1" component="div">
                 <ul>
@@ -76,7 +90,7 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
           {scoreObj.warnings.length > 0 && (
             <Box>
               <Typography variant="h6" color="orange">
-                Warnings
+                Warnings for this cluster:
               </Typography>
               <Typography variant="body1" color="orange" component="div">
                 <ul>
@@ -87,9 +101,33 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
               </Typography>
             </Box>
           )}
-          <Button onClick={() => setExplainOpen(false)}>Close</Button>
+          <Typography variant="body2" component="div" color="text.secondary">
+            <p>Tips for maximizing your score:</p>
+            <ul>
+              <li>Make sure to accurately scan all rocks in a cluster.</li>
+              <li>Make sure to scan all ores in every rock.</li>
+              <li>Address any of the warnings or errors above.</li>
+            </ul>
+          </Typography>
+          <Typography variant="body2" component="div" color="text.secondary">
+            <Link href="/survey/about" target="_blank" rel="noreferrer">
+              Learn more about the Survey Corps
+            </Link>
+          </Typography>
+          <DialogActions>
+            <Stack justifyContent={'center'} direction="row" spacing={1} sx={{ width: '100%' }}>
+              <Button
+                color="primary"
+                variant="text"
+                onClick={() => setExplainOpen(false)}
+                sx={{ background: theme.palette.background.paper }}
+              >
+                {'Ok'}
+              </Button>
+            </Stack>
+          </DialogActions>
         </Stack>
       </Dialog>
-    </Stack>
+    </>
   )
 }

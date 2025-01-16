@@ -148,9 +148,11 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
             <Grid key={idx} xs={6} sm={4} md={3}>
               <EmptyScanCard
                 Icon={ClawIcon}
+                deleteDisabled={!salvageFind.clusterCount || salvageFind.clusterCount <= 1}
                 onDelete={() => {
                   if (!salvageFind.wrecks || !salvageFind.clusterCount) return
                   if (salvageFind.clusterCount <= salvageFind.wrecks.length) return
+                  if (salvageFind.clusterCount <= 1) return
                   onChange &&
                     onChange({
                       ...salvageFind,

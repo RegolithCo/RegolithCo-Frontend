@@ -21,7 +21,6 @@ import {
   Stack,
   Tooltip,
   FormControlLabel,
-  Switch,
   Checkbox,
   Link,
 } from '@mui/material'
@@ -341,13 +340,13 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     const calcScore = async () => {
       if (!dataStore.ready) return
       const newScore = await calculateSurveyFind(dataStore, scoutingFind)
-      console.log('MARZIPAN', newScore)
       setScoreObj(newScore)
     }
     calcScore()
   }, [scoutingFind, dataStore.ready])
 
   const hasNote = scoutingFind.note && scoutingFind.note.trim().length > 0
+  const iAmOwner = me?.owner?.userId === scoutingFind.ownerId
 
   // Convenience type guards
   const shipFind = scoutingFind as ShipClusterFind
@@ -356,8 +355,8 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const defaultRockType = shipFind.shipRocks && shipFind.shipRocks[0]?.rockType
 
-  const includeInSurveyEnabled = Boolean(myUserProfile?.isSurveyor && !standalone)
-  const includeInSurveyChecked = Boolean(includeInSurveyEnabled && scoutingFind?.includeInSurvey)
+  const includeInSurveyVisible = Boolean(!standalone)
+  const includeInSurveyEnabled = Boolean(allowEdit && (scoutingFind?.includeInSurvey || myUserProfile?.isSurveyor))
 
   // Some convenience variables
   let hasScans = false
@@ -523,6 +522,60 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 />
               </>
             )}
+            {includeInSurveyVisible && (
+              <Box>
+                <Tooltip
+                  placement="top"
+                  title={
+                    !myUserProfile?.isSurveyor ? (
+                      <Typography variant="caption">
+                        You must be a Surveyor to submit to the Survey Corps.{' '}
+                        <Link href="/profile/survey" target="_blank" rel="noopener noreferrer">
+                          Sign up today
+                        </Link>{' '}
+                        in your user profile
+                      </Typography>
+                    ) : (
+                      <Typography variant="caption">
+                        Submitting to the Survey Corps will contribute to the overall knowledge of the verse.
+                      </Typography>
+                    )
+                  }
+                >
+                  <Typography
+                    variant="overline"
+                    component="div"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      color: theme.palette.primary.main,
+                      mt: 1,
+                      cursor: includeInSurveyEnabled ? 'pointer' : 'not-allowed',
+                    }}
+                    onClick={() => {
+                      if (includeInSurveyEnabled) {
+                        if (onChange) onChange({ ...scoutingFind, includeInSurvey: !scoutingFind.includeInSurvey })
+                      }
+                    }}
+                  >
+                    <SurveyCorpsIcon
+                      sx={{
+                        fontSize: 17,
+                      }}
+                    />
+                    <span>Survey Corps</span>
+                    <div style={{ flexGrow: 1 }} />
+                    <Checkbox
+                      size="small"
+                      checked={Boolean(scoutingFind?.includeInSurvey)}
+                      disabled={!includeInSurveyEnabled}
+                    />
+                  </Typography>
+                </Tooltip>
+                {iAmOwner && scoutingFind?.includeInSurvey && <SurveyScore scoreObj={scoreObj} />}
+              </Box>
+            )}
           </Grid>
           {/* Cluster stats */}
           <Grid xs={12} sm={standalone || isShare ? 9 : 4.5} sx={styles.topRowGrid}>
@@ -653,66 +706,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 wellId={scoutingFind.gravityWell || null}
                 filterToSystem={null}
               />
-            )}
-            {!standalone && (
-              <Tooltip
-                title={
-                  !myUserProfile?.isSurveyor ? (
-                    <Typography variant="caption">
-                      You must be a Surveyor to submit to the Survey Corps.{' '}
-                      <Link href="/profile/survey" target="_blank" rel="noopener noreferrer">
-                        Sign up today
-                      </Link>{' '}
-                      in your user profile
-                    </Typography>
-                  ) : (
-                    <Typography variant="caption">
-                      Submitting to the Survey Corps will contribute to the overall knowledge of the verse.
-                    </Typography>
-                  )
-                }
-              >
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{
-                    width: '100%',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    px: 1,
-                    border: `1px solid ${includeInSurveyEnabled ? theme.palette.primary.main : theme.palette.text.secondary}`,
-                    borderRadius: 1,
-                  }}
-                >
-                  <SurveyCorpsIcon />
-
-                  <FormControlLabel
-                    labelPlacement="start"
-                    slotProps={{
-                      typography: {
-                        sx: {
-                          // fontFamily: fontFamilies.robotoMono,
-                          fontSize: '0.8em',
-                          color: includeInSurveyEnabled ? theme.palette.primary.main : theme.palette.text.secondary,
-                        },
-                      },
-                    }}
-                    sx={{
-                      color: includeInSurveyEnabled ? theme.palette.secondary.light : theme.palette.text.secondary,
-                    }}
-                    control={
-                      <Checkbox
-                        checked={includeInSurveyChecked}
-                        disabled={!allowEdit || !myUserProfile?.isSurveyor}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          if (onChange) onChange({ ...scoutingFind, includeInSurvey: e.target.checked })
-                        }}
-                      />
-                    }
-                    label={`Submit to Survey Corps`}
-                  />
-                </Stack>
-              </Tooltip>
             )}
 
             {!standalone && (
@@ -850,7 +843,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             editScanModalOpen={editScanModalOpen}
           />
         )}
-        {includeInSurveyChecked && <SurveyScore scoreObj={scoreObj} />}
       </Grid>
 
       {scoutingFind.clusterType === ScoutingFindTypeEnum.Ship &&

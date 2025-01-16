@@ -13,12 +13,13 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { AnyOreEnum, OreSummary, StoreChoice, getOreName, Lookups } from '@regolithco/common'
+import { AnyOreEnum, OreSummary, StoreChoice, getOreName, Lookups, GravityWellTypeEnum } from '@regolithco/common'
 import { MValueFormat } from '../fields/MValue'
 import { MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { alpha } from '@mui/material'
 import { LookupsContext } from '../../context/lookupsContext'
+import { gql } from '@apollo/client'
 
 export interface StoreChooserListItemProps {
   cityStores: StoreChoice
@@ -85,17 +86,15 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const price = React.useMemo(() => Object.values(cityStores.prices).reduce((a, b) => a + b, 0), [cityStores.prices])
 
   // // NO HOOKS BELOW HERE
-  const systemName = planetLookups[cityStores.system] ? planetLookups[cityStores.system].name : cityStores.system
+  const systemName =
+    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.SYSTEM && gw.code === cityStores.system)
+      ?.name || ''
   const planetName =
-    cityStores && cityStores.planet
-      ? gravityWellLookups[cityStores.system] &&
-        gravityWellLookups[cityStores.system]?.planets[cityStores.planet] &&
-        gravityWellLookups[cityStores.system]?.planets[cityStores.planet].name
-      : ''
+    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.PLANET && gw.code === cityStores.planet)
+      ?.name || ''
   const satellite =
-    cityStores && cityStores.satellite
-      ? gravityWellLookups[cityStores.system]?.planets[cityStores.planet]?.satellites[cityStores.satellite]
-      : undefined
+    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.SATELLITE && gw.code === cityStores.satellite)
+      ?.name || ''
   const city = cityStores.city || ''
   // Price is the sum of all the prices
 
