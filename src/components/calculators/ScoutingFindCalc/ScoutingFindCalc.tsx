@@ -313,6 +313,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
   const [scoreObj, setScoreObj] = React.useState<SurveyFindScore>({
     score: 0,
+    rawScore: 0,
     possible: 0,
     warnings: [],
     errors: [],
@@ -339,7 +340,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   React.useEffect(() => {
     const calcScore = async () => {
       if (!dataStore.ready) return
-      const newScore = await calculateSurveyFind(dataStore, scoutingFind)
+      const newScore = await calculateSurveyFind(scoutingFind)
       setScoreObj(newScore)
     }
     calcScore()
