@@ -2732,6 +2732,49 @@ export type CaptureRefineryOrderQueryHookResult = ReturnType<typeof useCaptureRe
 export type CaptureRefineryOrderLazyQueryHookResult = ReturnType<typeof useCaptureRefineryOrderLazyQuery>;
 export type CaptureRefineryOrderSuspenseQueryHookResult = ReturnType<typeof useCaptureRefineryOrderSuspenseQuery>;
 export type CaptureRefineryOrderQueryResult = Apollo.QueryResult<types.CaptureRefineryOrderQuery, types.CaptureRefineryOrderQueryVariables>;
+export const GetPublicSurveyDataDocument = gql`
+    query getPublicSurveyData($epoch: String!, $dataName: String!) {
+  surveyData(epoch: $epoch, dataName: $dataName) {
+    epoch
+    dataName
+    data
+  }
+}
+    `;
+
+/**
+ * __useGetPublicSurveyDataQuery__
+ *
+ * To run a query within a React component, call `useGetPublicSurveyDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPublicSurveyDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPublicSurveyDataQuery({
+ *   variables: {
+ *      epoch: // value for 'epoch'
+ *      dataName: // value for 'dataName'
+ *   },
+ * });
+ */
+export function useGetPublicSurveyDataQuery(baseOptions: Apollo.QueryHookOptions<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables> & ({ variables: types.GetPublicSurveyDataQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables>(GetPublicSurveyDataDocument, options);
+      }
+export function useGetPublicSurveyDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables>(GetPublicSurveyDataDocument, options);
+        }
+export function useGetPublicSurveyDataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables>(GetPublicSurveyDataDocument, options);
+        }
+export type GetPublicSurveyDataQueryHookResult = ReturnType<typeof useGetPublicSurveyDataQuery>;
+export type GetPublicSurveyDataLazyQueryHookResult = ReturnType<typeof useGetPublicSurveyDataLazyQuery>;
+export type GetPublicSurveyDataSuspenseQueryHookResult = ReturnType<typeof useGetPublicSurveyDataSuspenseQuery>;
+export type GetPublicSurveyDataQueryResult = Apollo.QueryResult<types.GetPublicSurveyDataQuery, types.GetPublicSurveyDataQueryVariables>;
 export const GetPublicLookupsDocument = gql`
     query getPublicLookups {
   lookups {

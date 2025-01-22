@@ -176,7 +176,7 @@ export type PendingUserFieldPolicy = {
 	sessionRole?: FieldPolicy<any> | FieldReadFunction<any>,
 	shipRole?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('captureRefineryOrder' | 'captureShipRockScan' | 'crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'user' | 'workOrder' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('captureRefineryOrder' | 'captureShipRockScan' | 'crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'surveyData' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	captureRefineryOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	captureShipRockScan?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -188,6 +188,7 @@ export type QueryFieldPolicy = {
 	sessionShare?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionUpdates?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
+	surveyData?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrder?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -488,6 +489,13 @@ export type ShipRockOreFieldPolicy = {
 export type SubscriptionKeySpecifier = ('apiSubscription' | SubscriptionKeySpecifier)[];
 export type SubscriptionFieldPolicy = {
 	apiSubscription?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SurveyDataKeySpecifier = ('data' | 'dataName' | 'epoch' | 'lastUpdated' | SurveyDataKeySpecifier)[];
+export type SurveyDataFieldPolicy = {
+	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	dataName?: FieldPolicy<any> | FieldReadFunction<any>,
+	epoch?: FieldPolicy<any> | FieldReadFunction<any>,
+	lastUpdated?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type UEXLookupsKeySpecifier = ('bodies' | 'maxPrices' | 'ships' | 'tradeports' | UEXLookupsKeySpecifier)[];
 export type UEXLookupsFieldPolicy = {
@@ -824,6 +832,10 @@ export type StrictTypedTypePolicies = {
 	Subscription?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SubscriptionKeySpecifier | (() => undefined | SubscriptionKeySpecifier),
 		fields?: SubscriptionFieldPolicy,
+	},
+	SurveyData?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SurveyDataKeySpecifier | (() => undefined | SurveyDataKeySpecifier),
+		fields?: SurveyDataFieldPolicy,
 	},
 	UEXLookups?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UEXLookupsKeySpecifier | (() => undefined | UEXLookupsKeySpecifier),
