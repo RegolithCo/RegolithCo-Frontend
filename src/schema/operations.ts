@@ -2737,6 +2737,7 @@ export const GetPublicSurveyDataDocument = gql`
   surveyData(epoch: $epoch, dataName: $dataName) {
     epoch
     dataName
+    lastUpdated
     data
   }
 }

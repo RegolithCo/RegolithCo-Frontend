@@ -21,6 +21,9 @@ import {
   UserProfile,
   UserStateEnum,
   StrictTypedTypePolicies,
+  SurveyData,
+  scVersion,
+  getEpochFromVersion,
 } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
@@ -69,6 +72,9 @@ const splitLink = split(
   publicLink,
   privateLink
 )
+
+const CURRENT_SC_VERSION = scVersion
+const CURRENT_SC_EPOCH = getEpochFromVersion(CURRENT_SC_VERSION)
 
 /**
  * This is only here to show an error dialog provided by a snackbar
@@ -133,34 +139,37 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           Query: {
             fields: {
               surveyData: {
-                read(existingData) {
-                  if (!existingData) return existingData
+                keyArgs: ['dataName', 'epoch'],
+                read(existingData, { args }) {
+                  // log.debug('Reading SurveyData from cache', args)
+                  const { dataName, epoch } = args as { dataName: string; epoch: string }
+                  if (!dataName || !epoch) return existingData
 
-                  const storedData = localStorage.getItem('SurveyData:Data')
-                  const storedTimestamp = localStorage.getItem('SurveyData:lastUpdate')
-                  const storedEpoch = localStorage.getItem('SurveyData:epoch')
+                  const cached = localStorage.getItem(`SurveyData:${epoch}:${dataName}`)
+                  if (!cached) return existingData
 
-                  if (
-                    storedData &&
-                    storedTimestamp &&
-                    storedEpoch &&
-                    Date.now() - Number(storedTimestamp) < 60 * 60 * 1000
-                  ) {
-                    return JSON.parse(storedData)
+                  const parsed = JSON.parse(cached)
+
+                  // If the data is older than an hour or the epoch has changed, we need to refresh
+                  if (epoch !== CURRENT_SC_EPOCH || Date.now() - Number(parsed.lastUpdated) < 60 * 60 * 1000) {
+                    // log.debug(`SurveyData CACHE HIT: ${epoch} ${dataName}`, parsed)
+                    return parsed
                   }
+
+                  // log.debug(`SurveyData CACHE MISS: ${epoch} ${dataName}`)
                   return existingData
                 },
                 merge(existingData, incomingData) {
-                  log.debug('Merging SurveyData from cache')
-                  // localStorage.setItem('SurveyData:Data', JSON.stringify(incomingData))
-                  // localStorage.setItem('SurveyData:lastUpdate', String(Date.now()))
-                  // localStorage.setItem('SurveyData:epoch', getVersion())
+                  if (!incomingData) return incomingData
+
+                  const { dataName, epoch } = incomingData as SurveyData
+                  // log.debug(`Merging SurveyData from cache: ${epoch} ${dataName}`, incomingData)
+                  localStorage.setItem(`SurveyData:${epoch}:${dataName}`, JSON.stringify(incomingData))
                   return incomingData
                 },
               },
               lookups: {
                 read(existingData) {
-                  // log.debug('Reading LookupData from cache')
                   const storedData = localStorage.getItem('LookupData:Data')
                   // Anything older than an hour is stale
                   const storedTimestamp = localStorage.getItem('LookupData:lastUpdate')

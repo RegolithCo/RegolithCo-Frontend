@@ -6,7 +6,7 @@ import { GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { getEpochFromVersion, ObjectValues, scVersion, ScVersionEpochEnum, SurveyData } from '@regolithco/common'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
-import { useGetPublicSurveyDataLazyQuery } from '../../../schema'
+import { useGetPublicSurveyDataLazyQuery, useGetPublicSurveyDataQuery } from '../../../schema'
 import { EmojiEvents } from '@mui/icons-material'
 import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { ShipOreLocationStats } from './ShipOreLocationStats'
@@ -36,46 +36,50 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
   const navigate = useNavigate()
   const { tab } = useParams()
   const [epoch, setEpoch] = React.useState(getEpochFromVersion(scVersion))
-  const epochRef = React.useRef<ScVersionEpochEnum>()
-  const [surveyData, setSurveyData] = React.useState<SurveyDataTables>({
-    vehicleProbs: null,
-    shipOreByGravProb: null,
-    shipOreByRockClassProb: null,
-    bonusMap: null,
-    leaderBoard: null,
+
+  const vehicleProbs = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'vehicleProbs',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
+  const shipOreByGravProb = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'shipOreByGravProb',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
+  const shipOreByRockClassProb = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'shipOreByRockClassProb',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
+  const bonusMap = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'bonusMap',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
+  const leaderBoard = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'leaderBoard',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
   })
 
-  const [fetchSurveyData, { data, loading, error }] = useGetPublicSurveyDataLazyQuery()
-
-  const fetchData = (dataName: string) => {
-    fetchSurveyData({
-      variables: {
-        dataName,
-        epoch,
-      },
-      fetchPolicy: 'cache-first',
-      // Refetch every hour
-      pollInterval: 3600 * 1000,
-    }).then((result) => {
-      if (result.data) {
-        setSurveyData((prevData) => ({
-          ...prevData,
-          [dataName]: result.data?.surveyData,
-        }))
-      }
-    })
+  const surveyData: SurveyDataTables = {
+    vehicleProbs: vehicleProbs.data?.surveyData || null,
+    shipOreByGravProb: shipOreByGravProb.data?.surveyData || null,
+    shipOreByRockClassProb: shipOreByRockClassProb.data?.surveyData || null,
+    bonusMap: bonusMap.data?.surveyData || null,
+    leaderBoard: leaderBoard.data?.surveyData || null,
   }
-
-  React.useEffect(() => {
-    // If the epoch has changed then we need to refetch all the data
-    if (epoch !== epochRef.current) {
-      Object.keys(surveyData).forEach((key) => {
-        fetchData(key)
-      })
-    }
-    epochRef.current = epoch
-  }, [epoch])
-
   return <SurveyCorpsHome navigate={navigate} tab={tab as SurveyTabsEnum} surveyData={surveyData} />
 }
 

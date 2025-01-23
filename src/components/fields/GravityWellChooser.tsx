@@ -153,12 +153,12 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
 
   const dataStore = React.useContext(LookupsContext)
 
-  if (!dataStore.ready) return null
   const systemLookup = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
   ) as SystemLookupItem[]
 
+  if (!dataStore.ready) return null
   // NO HOOKS BELOW HERE
   //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
   const planetOptions = getGravityWellOptions(theme, systemLookup)
