@@ -140,7 +140,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, tab, 
         >
           <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
           <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
-          <Tab label="Rock Stats" value={SurveyTabsEnum.SHIP_ORE_STATS} icon={<RockIcon />} />
+          {/* <Tab label="Rock Stats" value={SurveyTabsEnum.SHIP_ORE_STATS} icon={<RockIcon />} /> */}
           <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
           <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
           <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
@@ -158,9 +158,9 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, tab, 
         {tab === SurveyTabsEnum.SHIP_ORE_CLASS && (
           <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />
         )}
-        {tab === SurveyTabsEnum.SHIP_ORE_STATS && (
+        {/* {tab === SurveyTabsEnum.SHIP_ORE_STATS && (
           <ShipOreLocationStats data={surveyData?.shipOreByGravProb} bonuses={surveyData?.bonusMap} />
-        )}
+        )} */}
         {tab === SurveyTabsEnum.VEHICLE_ORE && <VehicleOreDistribution data={surveyData?.vehicleProbs} />}
         {tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS && <SurveyCorpsAbout />}
         {tab === SurveyTabsEnum.LEADERBOARD && <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} />}

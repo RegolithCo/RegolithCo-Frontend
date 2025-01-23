@@ -21,7 +21,15 @@ import {
   useTheme,
 } from '@mui/material'
 import { getGravityWellOptions, GravityWellChooser, GravityWellNameRender } from '../../fields/GravityWellChooser'
-import { hoverColor, OreTierColors, OreTierEnum, OreTierNames, selectColor, ShipOreTiers } from './types'
+import {
+  hoverColor,
+  OreTierColors,
+  OreTierEnum,
+  OreTierNames,
+  selectBorderColor,
+  selectColor,
+  ShipOreTiers,
+} from './types'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { Lookups, SurveyData, SystemLookupItem } from '@regolithco/common'
@@ -115,6 +123,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data }
               },
               zIndex: 3,
               borderRight: `3px solid ${theme.palette.primary.main}`,
+              borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
+              borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
+
               pl: theme.spacing(row.depth * 3),
             }}
           >
@@ -151,6 +162,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data }
                       }
                     }}
                     sx={{
+                      borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
+                      borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
+
                       borderLeft: isNewTier
                         ? `3px solid ${theme.palette[OreTierColors[tier as OreTierEnum]].main}`
                         : `1px solid ${alpha(theme.palette[OreTierColors[tier as OreTierEnum]].dark, 0.5)}`,
@@ -241,7 +255,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data }
                 onChange={(e) => setFilterSelected(e.target.checked)}
               />
             }
-            label="Filter Selected Rows"
+            label={`Filter to ${selected.length} selected rows`}
           />
 
           <Button

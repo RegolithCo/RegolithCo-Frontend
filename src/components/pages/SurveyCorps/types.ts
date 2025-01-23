@@ -1,3 +1,4 @@
+import { lighten } from '@mui/system'
 import { ObjectValues, ShipOreEnum } from '@regolithco/common'
 
 export const OreTierEnum = {
@@ -46,4 +47,5 @@ export const OreTierNames: Record<OreTierEnum, string> = {
 }
 
 export const hoverColor = '#242424'
-export const selectColor = '#222222'
+export const selectColor = 'rgba(55,55,55)'
+export const selectBorderColor = lighten(selectColor, 0.5)
