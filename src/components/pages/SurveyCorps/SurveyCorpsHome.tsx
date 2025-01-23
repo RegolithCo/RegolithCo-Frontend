@@ -1,15 +1,14 @@
 import * as React from 'react'
 
-import { Box, Container, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { Box, Container, MenuItem, Select, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { ShipOreDistribution } from './ShipOreDistribution'
 import { GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { getEpochFromVersion, ObjectValues, scVersion, ScVersionEpochEnum, SurveyData } from '@regolithco/common'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
-import { useGetPublicSurveyDataLazyQuery, useGetPublicSurveyDataQuery } from '../../../schema'
+import { useGetPublicSurveyDataQuery } from '../../../schema'
 import { EmojiEvents } from '@mui/icons-material'
 import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
-import { ShipOreLocationStats } from './ShipOreLocationStats'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
@@ -80,17 +79,34 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     bonusMap: bonusMap.data?.surveyData || null,
     leaderBoard: leaderBoard.data?.surveyData || null,
   }
-  return <SurveyCorpsHome navigate={navigate} tab={tab as SurveyTabsEnum} surveyData={surveyData} />
+  return (
+    <SurveyCorpsHome
+      navigate={navigate}
+      tab={tab as SurveyTabsEnum}
+      surveyData={surveyData}
+      epoch={epoch}
+      setEpoch={setEpoch}
+    />
+  )
 }
 
 export interface SurveyCorpsHomeProps {
   loading?: boolean
   tab?: SurveyTabsEnum
+  epoch: ScVersionEpochEnum
+  setEpoch: (epoch: ScVersionEpochEnum) => void
   navigate?: (path: string) => void
   surveyData?: SurveyDataTables
 }
 
-export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, tab, navigate, surveyData }) => {
+export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
+  loading,
+  tab,
+  navigate,
+  surveyData,
+  epoch,
+  setEpoch,
+}) => {
   const theme = useTheme()
 
   return (
@@ -138,12 +154,23 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({ loading, tab, 
             // setActiveTab(newValue)
           }}
         >
+          <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
           <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
           <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
           {/* <Tab label="Rock Stats" value={SurveyTabsEnum.SHIP_ORE_STATS} icon={<RockIcon />} /> */}
           <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
           <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
-          <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
+          {/* Epoch selector */}
+          <Box sx={{ flexGrow: 1 }} />
+          <Stack direction="row" spacing={2}>
+            <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
+              {Object.values(ScVersionEpochEnum).map((epoch) => (
+                <MenuItem key={epoch} value={epoch}>
+                  Epoch: {epoch}
+                </MenuItem>
+              ))}
+            </Select>
+          </Stack>
         </Tabs>
       </Container>
       <Box
