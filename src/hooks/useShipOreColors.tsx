@@ -4,7 +4,8 @@ import { ShipOreEnum, findPrice } from '@regolithco/common'
 import Gradient from 'javascript-color-gradient'
 import { LookupsContext } from '../context/lookupsContext'
 
-export type SortedShipOreColors = { ore: ShipOreEnum; fg: string; bg: string }[]
+export type SortedShipOreColor = { ore: ShipOreEnum; fg: string; bg: string }
+export type SortedShipOreColors = SortedShipOreColor[]
 
 export const useShipOreColors = (): SortedShipOreColors => {
   const theme = useTheme()
@@ -13,6 +14,8 @@ export const useShipOreColors = (): SortedShipOreColors => {
   const [fgColors, setFgColors] = React.useState<string[]>([])
 
   const quaColors = ['#f700ff', '#ffffff']
+  const stilColors = ['#f700ff', '#ffffff']
+  const riccitColors = ['#f700ff', '#ffffff']
   const innertColors = ['#848484', '#000000']
 
   const dataStore = React.useContext(LookupsContext)
@@ -53,11 +56,19 @@ export const useShipOreColors = (): SortedShipOreColors => {
       fgc = quaColors[1] || '#000'
       bgc = quaColors[0] || '#fff'
     }
+    if (shipOreKey === ShipOreEnum.Stileron) {
+      fgc = stilColors[1] || '#000'
+      bgc = stilColors[0] || '#fff'
+    }
+    if (shipOreKey === ShipOreEnum.Riccite) {
+      fgc = riccitColors[1] || '#000'
+      bgc = riccitColors[0] || '#fff'
+    }
     if (shipOreKey === ShipOreEnum.Inertmaterial) {
       fgc = innertColors[1] || '#fff'
       bgc = innertColors[0] || '#000'
     }
 
-    return { ore: shipOreKey, fg: fgc, bg: bgc }
+    return { ore: shipOreKey, fg: fgc, bg: bgc } as SortedShipOreColor
   })
 }

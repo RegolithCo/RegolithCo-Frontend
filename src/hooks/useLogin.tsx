@@ -132,6 +132,32 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         typePolicies: {
           Query: {
             fields: {
+              surveyData: {
+                read(existingData) {
+                  if (!existingData) return existingData
+
+                  const storedData = localStorage.getItem('SurveyData:Data')
+                  const storedTimestamp = localStorage.getItem('SurveyData:lastUpdate')
+                  const storedEpoch = localStorage.getItem('SurveyData:epoch')
+
+                  if (
+                    storedData &&
+                    storedTimestamp &&
+                    storedEpoch &&
+                    Date.now() - Number(storedTimestamp) < 60 * 60 * 1000
+                  ) {
+                    return JSON.parse(storedData)
+                  }
+                  return existingData
+                },
+                merge(existingData, incomingData) {
+                  log.debug('Merging SurveyData from cache')
+                  // localStorage.setItem('SurveyData:Data', JSON.stringify(incomingData))
+                  // localStorage.setItem('SurveyData:lastUpdate', String(Date.now()))
+                  // localStorage.setItem('SurveyData:epoch', getVersion())
+                  return incomingData
+                },
+              },
               lookups: {
                 read(existingData) {
                   // log.debug('Reading LookupData from cache')
