@@ -181,7 +181,9 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         }
       >
         {/* Fitler box */}
-        {tab === SurveyTabsEnum.SHIP_ORE && <ShipOreDistribution data={surveyData?.shipOreByGravProb} />}
+        {tab === SurveyTabsEnum.SHIP_ORE && (
+          <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />
+        )}
         {tab === SurveyTabsEnum.SHIP_ORE_CLASS && (
           <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />
         )}

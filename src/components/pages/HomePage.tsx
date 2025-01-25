@@ -149,6 +149,13 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
           }}
         />
         <HomeCard
+          title="Regolith Survey Corps"
+          disabled={Boolean(maintenanceMode)}
+          description="Mining survey data collected by our fearless users. Help us survey the 'verse! Join Today!"
+          imgageUrl="images/sm/workshop.jpg"
+          url="/survey"
+        />
+        <HomeCard
           title="Mining Loadouts"
           disabled={Boolean(maintenanceMode)}
           description="Plan and tweak your mining ship loadouts using the right components for the right kind of ores."

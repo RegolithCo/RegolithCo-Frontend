@@ -19,7 +19,7 @@ import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
 import { SessionJoinContainer } from './components/pages/SessionJoin.container'
 import { ProfileTabsEnum } from './components/pages/ProfilePage'
 import { ErrorPage } from './Error'
-import { SurveyCorpsHome, SurveyCorpsHomeContainer } from './components/pages/SurveyCorps'
+import { SurveyCorpsHomeContainer } from './components/pages/SurveyCorps'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
