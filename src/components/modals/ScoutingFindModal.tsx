@@ -19,6 +19,7 @@ import {
   ScoutingFindTypeEnum,
   ShipClusterFind,
   ShipMiningOrderCapture,
+  ShipOreEnum,
   ShipRock,
   ShipRockCapture,
 } from '@regolithco/common'
@@ -52,9 +53,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     position: 'relative',
     overflow: 'hidden',
     overflowY: 'auto',
-    [theme.breakpoints.up('md')]: {
-      overflowY: 'hidden',
-    },
     height: '100%',
   },
 })
@@ -135,6 +133,18 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
       __typename: 'ShipRock',
     } as ShipRock
     const newRocks = [...shipFind.shipRocks, newRock]
+
+    if (!newRock.ores.find((ore) => ore.ore === ShipOreEnum.Inertmaterial)) {
+      // calculate the inert material
+      const totalOres = newRock.ores.reduce((acc, ore) => acc + ore.percent, 0)
+      const inertMaterial = totalOres >= 0 && totalOres <= 1 ? 1 - totalOres : 0
+      newRock.ores.push({
+        ore: ShipOreEnum.Inertmaterial,
+        percent: inertMaterial,
+        __typename: 'ShipRockOre',
+      })
+    }
+
     const newFind = {
       ...newScoutingFind,
       clusterCount: (shipFind.clusterCount || 0) < newRocks.length ? newRocks.length : shipFind.clusterCount,

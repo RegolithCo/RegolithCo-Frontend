@@ -252,10 +252,13 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         />
         <CardContent
           sx={{
-            overflowY: 'scroll',
+            height: '100%',
+            overflow: 'hidden',
+            overflowY: 'auto',
+            display: 'flex',
           }}
         >
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{}}>
             {/* This grid has the lasers and the stats */}
             <Grid
               xs={12}

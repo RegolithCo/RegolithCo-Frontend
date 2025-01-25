@@ -20,7 +20,6 @@ import {
   Select,
   Stack,
   Tooltip,
-  FormControlLabel,
   Checkbox,
   Link,
 } from '@mui/material'
@@ -102,8 +101,6 @@ export const AttendanceStateEnum = {
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   containerGrid: {
     background: theme.palette.background.default,
-    overflow: 'hidden',
-    height: '100%',
     width: '100%',
     m: 0,
     '* .MuiTypography-overline': {
@@ -357,7 +354,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const defaultRockType = shipFind.shipRocks && shipFind.shipRocks[0]?.rockType
 
   const includeInSurveyVisible = Boolean(!standalone)
-  const includeInSurveyEnabled = Boolean(allowEdit && (scoutingFind?.includeInSurvey || myUserProfile?.isSurveyor))
+  const includeInSurveyEnabled = Boolean(iAmOwner && (scoutingFind?.includeInSurvey || myUserProfile?.isSurveyor))
 
   // Some convenience variables
   let hasScans = false
@@ -429,7 +426,15 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   return (
     <>
-      <Grid container spacing={{ xs: 1, sm: 2 }} padding={{ xs: 1, sm: 2 }} sx={styles.containerGrid}>
+      <Grid
+        container
+        spacing={{ xs: 1, sm: 2 }}
+        padding={{ xs: 1, sm: 2 }}
+        sx={{
+          ...styles.containerGrid,
+          overflowY: standalone ? 'hidden' : 'auto',
+        }}
+      >
         {!standalone && !isNew && <Typography sx={styles.scoutingFindId}>{scoutId}</Typography>}
         {/* THE STATE (WITH DROPDOWN) */}
         {!standalone && (

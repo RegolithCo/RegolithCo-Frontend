@@ -11,6 +11,8 @@ export interface PreviewScoutingRockCaptureProps {
 
 export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProps> = ({ shipRock }) => {
   const theme = useTheme()
+  const totalOres = shipRock ? shipRock.ores.reduce((acc, ore) => acc + ore.percent, 0) : 0
+  const inertMaterial = totalOres >= 0 && totalOres <= 1 ? 1 - totalOres : 0
   return (
     <Box
       sx={{
@@ -144,7 +146,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                       color: theme.palette.text.secondary,
                     }}
                   >
-                    Ignored
+                    {MValueFormatter(inertMaterial, MValueFormat.percent, 2)}
                   </TableCell>
                 </TableRow>
               )}
@@ -153,7 +155,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
         </TableContainer>
       </Box>
       <Typography variant="caption" color="text.secondary" paragraph>
-        <strong>Note:</strong> Inert Materials are never captured on purpose.
+        <strong>Note:</strong> Inert Materials are never captured, only calculated.
       </Typography>
       <Typography variant="caption" color="primary">
         If this looks to be basically correct you can click "Use" to import this data or "Retry" with a different image
