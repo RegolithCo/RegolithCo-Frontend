@@ -36,7 +36,7 @@ import {
 import { ClearAll, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { blue, green } from '@mui/material/colors'
-import { selectColor } from './types'
+import { hoverColor, selectColor } from './types'
 import Gradient from 'javascript-color-gradient'
 import { set } from 'lodash'
 
@@ -131,11 +131,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       }
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
-      const bgColor = rowSelected
-        ? selectColor
-        : rowEven
-          ? theme.palette.background.paper
-          : theme.palette.background.default
+      const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
       if (!rowSelected && filterSelected) return null
 
@@ -160,6 +156,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             })
           }}
           sx={{
+            position: 'relative',
             backgroundColor: bgColor,
           }}
         >
@@ -385,19 +382,41 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         </Stack>
 
         {/* Table Box */}
-        <Paper sx={{ mb: 4 }}>
-          <TableContainer sx={styles.table}>
-            <Table size="small" aria-label="simple table">
+        <Paper sx={{ mb: 4, position: 'relative' }}>
+          <Box
+            sx={{
+              pt: 16,
+              position: 'absolute',
+              pointerEvents: 'none', // Make the box transparent to all mouse events
+              zIndex: 1,
+              top: 0,
+              left: 0,
+              width: '100%',
+              backgroundColor: theme.palette.background.paper,
+            }}
+          />
+          <TableContainer sx={styles.tableStickyHead}>
+            <Table size="small" aria-label="simple table" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={styles.shortHeaderFirst}>Gravity Well</TableCell>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      ...styles.shortHeaderFirst,
+                      background: theme.palette.background.paper,
+                    }}
+                  >
+                    Gravity Well
+                  </TableCell>
                   {showExtendedStats && (
                     <LongCellHeader
                       sx={{
+                        backgroundColor: 'transparent',
                         borderBottom:
                           hoverCol && hoverCol[0] === -1
                             ? `3px solid ${theme.palette.info.main}`
-                            : '3px solid transparent',
+                            : `3px solid ${hoverColor}`,
                         '& .MuiTypography-caption': {
                           fontSize: '1.2em',
                           fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
@@ -416,10 +435,11 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                   {showExtendedStats && (
                     <LongCellHeader
                       sx={{
+                        backgroundColor: 'transparent',
                         borderBottom:
                           hoverCol && hoverCol[0] === -1
                             ? `3px solid ${theme.palette.info.main}`
-                            : '3px solid transparent',
+                            : `3px solid ${hoverColor}`,
                         '& .MuiTypography-caption': {
                           fontSize: '1.2em',
                           fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
@@ -446,7 +466,8 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                       <LongCellHeader
                         key={ore}
                         sx={{
-                          borderBottom: colHovered ? `3px solid ${bgc}` : '3px solid transparent',
+                          backgroundColor: 'transparent',
+                          borderBottom: colHovered ? `3px solid ${bgc}` : `3px solid ${hoverColor}`,
                           '& .MuiTypography-caption': {
                             fontSize: '1.2em',
                             fontWeight: colHovered ? 'bold' : undefined,
@@ -463,7 +484,14 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                     )
                   })}
 
-                  <TableCell sx={styles.spacerCell}> </TableCell>
+                  <TableCell
+                    sx={{
+                      ...styles.spacerCell,
+                      backgroundColor: 'transparent',
+                    }}
+                  >
+                    {' '}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody

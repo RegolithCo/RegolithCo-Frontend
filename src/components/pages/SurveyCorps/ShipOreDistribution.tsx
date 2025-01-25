@@ -53,6 +53,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
+  const tHeadRef = React.useRef<HTMLTableSectionElement>(null)
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
   // Hover state: [colNum, left, width, color]
@@ -87,12 +88,27 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     if (gravityWellOptions && data?.data && bonuses?.data) {
       gravityWellOptions.forEach((row) => {
         const dataCols = data?.data || {}
+        // Calculate the bonus
         const bonusCols = bonuses?.data || {}
         const bonus = bonusCols[row.id] || 0
-        if (!retVal['BONUS']) retVal['BONUS'] = { max: 0, min: 0 }
-        const oldBonusMax = retVal['BONUS'].max || 0
-
-        retVal['BONUS'].max = Math.max(oldBonusMax, bonus)
+        if (!retVal['STAT_BONUS']) retVal['STAT_BONUS'] = { max: 0, min: 0 }
+        const oldBonusMax = retVal['STAT_BONUS'].max || 0
+        retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
+        // Calculate the users
+        const users = dataCols[row.id]?.users || 0
+        if (!retVal['STAT_USERS']) retVal['STAT_USERS'] = { max: 0, min: 0 }
+        const oldUsersMax = retVal['STAT_USERS'].max || 0
+        retVal['STAT_USERS'].max = Math.max(oldUsersMax, users)
+        // Calculate the scans
+        const scans = dataCols[row.id]?.scans || 0
+        if (!retVal['STAT_SCANS']) retVal['STAT_SCANS'] = { max: 0, min: 0 }
+        const oldScansMax = retVal['STAT_SCANS'].max || 0
+        retVal['STAT_SCANS'].max = Math.max(oldScansMax, scans)
+        // Calculate the clusters
+        const clusters = dataCols[row.id]?.clusters || 0
+        if (!retVal['STAT_CLUSTERS']) retVal['STAT_CLUSTERS'] = { max: 0, min: 0 }
+        const oldClustersMax = retVal['STAT_CLUSTERS'].max || 0
+        retVal['STAT_CLUSTERS'].max = Math.max(oldClustersMax, clusters)
 
         // Then the ores
         Object.keys(OreTierNames).forEach((tier, idx) => {
@@ -111,16 +127,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     return retVal
   }, [gravityWellOptions, data?.data, bonuses?.data])
 
-  const bonusGradient = React.useMemo(() => {
-    const light = theme.palette.info.main
-    const dark = rgbToHex(darken(theme.palette.info.dark, 0.5))
-    return new Gradient()
-      .setColorGradient(dark, light)
-      .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
-      .getColors()
-  }, [])
   const gradients = React.useMemo(() => {
-    return Object.values(OreTierColors).reduce(
+    const retVal = Object.values(OreTierColors).reduce(
       (acc, color) => {
         const light = theme.palette[color].main
         const dark = rgbToHex(darken(theme.palette[color].dark, 0.5))
@@ -128,13 +136,30 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           .setColorGradient(dark, light)
           .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
           .getColors()
+          .map((color) => alpha(color, 0.4))
         return acc
       },
       {} as Record<string, string[]>
     )
+    // A generic one for statistics
+    const statsLight = theme.palette.info.main
+    const statsDark = rgbToHex(darken(theme.palette.info.dark, 0.5))
+    retVal['STATS'] = new Gradient()
+      .setColorGradient(statsDark, statsLight)
+      .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+      .getColors()
+      .map((color) => alpha(color, 0.4))
+
+    return retVal
   }, [])
 
   const tableRows = React.useMemo(() => {
+    if (!gravityWellOptions || !maxMins || !data) return null
+    const maxMinsBonus = maxMins['STAT_BONUS'] || { max: 1, min: 0 }
+    const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
+    const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
+    const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
+
     return gravityWellOptions.map((row, idr) => {
       let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
@@ -144,15 +169,31 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
-      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.type)) return null
-      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.type)) return null
+      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.type)) hide = true
+      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.type)) hide = true
 
       const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 0
 
-      const bonusMax = maxMins['BONUS'] && maxMins['BONUS'].max !== null ? maxMins['BONUS'].max : 1
-      const bonusMin = maxMins['BONUS'] && maxMins['BONUS'].min !== null ? maxMins['BONUS'].min : 0
       // The normalized value between 0 and 1 that prob is
-      const normBonus = calculateNormalizedProbability(bonus, bonusMin, bonusMax)
+      const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
+
+      let normUsers = 0
+      let normScans = 0
+      let normClusters = 0
+
+      let users = 0
+      let clusters = 0
+      let scans = 0
+
+      if (data && data.data && data.data[row.id]) {
+        scans = data.data[row.id].scans
+        users = data.data[row.id].users
+        clusters = data.data[row.id].clusters
+
+        normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
+        normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
+        normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
+      }
 
       if (!rowSelected && filterSelected) hide = true
       // Only render this option if the
@@ -175,11 +216,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             display: hide ? 'none' : undefined,
             position: 'relative',
             backgroundColor: bgColor,
-            '&:hover': {
-              backgroundColor: rowSelected ? selectColor : hoverColor,
-            },
           }}
         >
+          {/* --------- GRAVITY WELL CELL --------- */}
           <TableCell
             component="th"
             scope="row"
@@ -220,12 +259,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             <GravityWellNameRender options={row} />
           </TableCell>
 
+          {/* --------- SCAN BONUS CELL --------- */}
           <TableCell
             sx={{
               textAlign: 'center',
               fontFamily: fontFamilies.robotoMono,
               borderLeft: `3px solid ${theme.palette.primary.main}`,
-              backgroundColor: normBonus ? alpha(bonusGradient[normBonus], 0.4) : 'rgba(0,0,0,0)',
+              backgroundColor: normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
             }}
             onMouseEnter={(e) => {
               if (tBodyRef.current) {
@@ -244,10 +284,86 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               }
             }}
           >
-            <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
-              {bonuses && bonuses.data && MValueFormatter(bonuses.data[row.id], MValueFormat.number) + 'X'}
-            </Typography>
+            <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
+              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+                {bonuses && bonuses.data && MValueFormatter(bonuses.data[row.id], MValueFormat.number) + 'X'}
+              </Typography>
+            </Tooltip>
           </TableCell>
+
+          {/* --------- ROCKS / CLUSTERS CELL --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                borderLeft: `3px solid ${theme.palette.primary.main}`,
+                backgroundColor: normClusters ? gradients['STATS'][normClusters] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {showExtendedStats && (
+                <Tooltip title={`Based on ${scans} rock scans inside ${clusters} clusters`} placement="top">
+                  <Typography variant="h6" sx={{ minWidth: 90, textAlign: 'center' }}>
+                    {scans} / {clusters}
+                  </Typography>
+                </Tooltip>
+              )}
+            </TableCell>
+          )}
+
+          {/* --------- USERS PARTICIPATED CELL --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                borderLeft: `3px solid ${theme.palette.primary.main}`,
+                backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+                {showExtendedStats && (
+                  <Tooltip title={`Users that collected this data`} placement="top">
+                    <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+                      {users}
+                    </Typography>
+                  </Tooltip>
+                )}
+              </Typography>
+            </TableCell>
+          )}
 
           {/* Ore Tiers */}
           {Object.keys(OreTierNames).reduce((acc, tier, idx) => {
@@ -260,10 +376,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 let maxPct = 0
                 let minPct = 0
                 let avgPct = 0
-
-                let users = 0
-                let clusters = 0
-                let scans = 0
 
                 let maxMass = 0
                 let minMass = 0
@@ -279,10 +391,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   maxMass = data.data[row.id].mass.max
                   minMass = data.data[row.id].mass.min
                   avgMass = data.data[row.id].mass.avg
-
-                  scans = data.data[row.id].scans
-                  users = data.data[row.id].users
-                  clusters = data.data[row.id].clusters
 
                   if (prob !== null) {
                     const oreMax = maxMins[ore] && maxMins[ore].max !== null ? maxMins[ore].max : 1
@@ -316,53 +424,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
                       borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
                       backgroundColor: normProb
-                        ? alpha(gradients[OreTierColors[tier as OreTierEnum]][normProb], 0.4)
+                        ? gradients[OreTierColors[tier as OreTierEnum]][normProb]
                         : 'rgba(0,0,0,0)',
                       borderLeft: isNewTier
                         ? `3px solid ${theme.palette[OreTierColors[tier as OreTierEnum]].main}`
                         : `1px solid ${alpha(theme.palette[OreTierColors[tier as OreTierEnum]].dark, 0.5)}`,
                     }}
                   >
-                    {showExtendedStats && prob && (
-                      <Tooltip title={`Based on ${scans} rock scans inside ${clusters} clusters`} placement="top">
-                        <Stack
-                          direction={'row'}
-                          alignItems={'center'}
-                          sx={{
-                            position: 'absolute',
-                            top: 5,
-                            left: 10,
-                            '& *': {
-                              fontSize: '0.8rem',
-                            },
-                          }}
-                        >
-                          <RockIcon />
-                          <span>
-                            {scans} / {clusters}
-                          </span>
-                        </Stack>
-                      </Tooltip>
-                    )}
-                    {showExtendedStats && prob && (
-                      <Tooltip title={`Users that collected this data`} placement="top">
-                        <Stack
-                          direction={'row'}
-                          alignItems={'center'}
-                          sx={{
-                            position: 'absolute',
-                            top: 5,
-                            right: 5,
-                            '& *': {
-                              fontSize: '0.8rem',
-                            },
-                          }}
-                        >
-                          <PeopleAlt />
-                          {users}
-                        </Stack>
-                      </Tooltip>
-                    )}
                     <Stack
                       spacing={1}
                       sx={{
@@ -374,23 +442,11 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                         <Typography
                           variant="h6"
                           sx={{
-                            pt: prob && showExtendedStats ? 3 : 0,
                             textAlign: 'center',
                             minWidth: 30,
                           }}
                         >
-                          <span
-                            style={{
-                              borderRadius: 50,
-                              padding: prob && showExtendedStats ? 10 : 0,
-                              border:
-                                prob && showExtendedStats
-                                  ? `1px solid ${theme.palette[OreTierColors[tier as OreTierEnum]].main}`
-                                  : 'none',
-                            }}
-                          >
-                            {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
-                          </span>
+                          {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
                         </Typography>
                       </Tooltip>
                       {showExtendedStats && prob && (
@@ -437,6 +493,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   }, [
     gravityWellOptions,
     data,
+    gradients,
+    maxMins,
     oreTierFilter,
     rockTypeFilter,
     filterSelected,
@@ -546,20 +604,42 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       </Container>
 
       {/* Table Box */}
-      <Paper sx={{ mb: 4 }}>
+      <Paper sx={{ mb: 4, position: 'relative' }}>
+        <Box
+          sx={{
+            pt: 16,
+            position: 'absolute',
+            pointerEvents: 'none', // Make the box transparent to all mouse events
+            zIndex: 1,
+            top: 0,
+            left: 0,
+            width: '100%',
+            backgroundColor: theme.palette.background.paper,
+          }}
+        />
         {data && (
-          <TableContainer sx={styles.table}>
-            <Table size="small" aria-label="simple table">
-              <TableHead>
+          <TableContainer sx={styles.tableStickyHead}>
+            <Table size="small" aria-label="simple table" stickyHeader>
+              <TableHead ref={tHeadRef}>
                 <TableRow>
-                  <TableCell sx={styles.shortHeaderFirst}>Gravity Well</TableCell>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      ...styles.shortHeaderFirst,
+                      background: theme.palette.background.paper,
+                    }}
+                  >
+                    Gravity Well
+                  </TableCell>
 
                   <LongCellHeader
                     sx={{
+                      backgroundColor: 'transparent',
                       borderBottom:
                         hoverCol && hoverCol[0] === -1
                           ? `3px solid ${theme.palette.info.main}`
-                          : '3px solid transparent',
+                          : `3px solid ${hoverColor}`,
                       '& .MuiTypography-caption': {
                         fontSize: '1.2em',
                         fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
@@ -570,6 +650,45 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   >
                     Scan Bonus
                   </LongCellHeader>
+                  {showExtendedStats && (
+                    <LongCellHeader
+                      sx={{
+                        backgroundColor: 'transparent',
+                        borderBottom:
+                          hoverCol && hoverCol[0] === -1
+                            ? `3px solid ${theme.palette.info.main}`
+                            : `3px solid ${hoverColor}`,
+                        '& .MuiTypography-caption': {
+                          fontSize: '1.2em',
+                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          paddingLeft: theme.spacing(5),
+                          borderTop: `3px solid ${theme.palette.info.main}`,
+                        },
+                      }}
+                    >
+                      Rocks / Clusters
+                    </LongCellHeader>
+                  )}
+
+                  {showExtendedStats && (
+                    <LongCellHeader
+                      sx={{
+                        backgroundColor: 'transparent',
+                        borderBottom:
+                          hoverCol && hoverCol[0] === -1
+                            ? `3px solid ${theme.palette.info.main}`
+                            : `3px solid ${hoverColor}`,
+                        '& .MuiTypography-caption': {
+                          fontSize: '1.2em',
+                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          paddingLeft: theme.spacing(5),
+                          borderTop: `3px solid ${theme.palette.info.main}`,
+                        },
+                      }}
+                    >
+                      Users Participated
+                    </LongCellHeader>
+                  )}
 
                   {Object.keys(OreTierNames).reduce((acc, tier, idx) => {
                     if (oreTierFilter.includes(tier as OreTierEnum)) {
@@ -580,9 +699,10 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                           <LongCellHeader
                             key={ore}
                             sx={{
+                              backgroundColor: 'transparent',
                               borderBottom: colHovered
                                 ? `3px solid ${theme.palette[OreTierColors[tier as OreTierEnum]].main}`
-                                : '3px solid transparent',
+                                : `3px solid ${hoverColor}`,
                               '& .MuiTypography-caption': {
                                 fontSize: '1.2em',
                                 fontWeight: colHovered ? 'bold' : undefined,
@@ -605,12 +725,20 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                     return acc
                   }, [] as React.ReactNode[])}
 
-                  <TableCell sx={styles.spacerCell}> </TableCell>
+                  <TableCell
+                    sx={{
+                      ...styles.spacerCell,
+                      backgroundColor: 'transparent',
+                    }}
+                  >
+                    {' '}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody
                 ref={tBodyRef}
                 sx={{
+                  zIndex: 0,
                   position: 'relative',
                 }}
                 onMouseLeave={() => {
@@ -660,8 +788,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   )
 }
 
-const calculateNormalizedProbability = (prob: number, oreMin: number, oreMax: number): number => {
+const calculateNormalizedProbability = (prob: number, oreMin: number | null, oreMax: number | null): number => {
   if (oreMin === oreMax) return 99
+  if (oreMin === null || oreMax === null) return 0
   // Normalize the probability to a percentage and round to the nearest integer
   const normProb = Math.round((100 * (prob - oreMin)) / (oreMax - oreMin)) - 1
   if (normProb > 100) return 99

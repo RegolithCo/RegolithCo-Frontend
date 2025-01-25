@@ -22,6 +22,26 @@ export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> =
       borderRight: `1px solid ${theme.palette.divider}`,
     },
   },
+  tableStickyHead: {
+    width: 'auto',
+    position: 'relative',
+    maxHeight: '80vh',
+    '& table': {
+      borderCollapse: 'separate',
+      '& th:first-of-type': {
+        left: 0,
+        zIndex: 1,
+      },
+      '& thead th:first-of-type': {
+        zIndex: 2,
+      },
+    },
+    '& .MuiTableBody-root .MuiTableCell-root': {
+      width: 40,
+      minWidth: 40,
+      borderRight: `1px solid ${theme.palette.divider}`,
+    },
+  },
   textCell: {
     maxWidth: 60,
   },
@@ -54,9 +74,10 @@ export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> =
   longHeaders: {
     p: 0,
     pt: 15,
-    position: 'relative',
+    zIndex: 1,
     overflowX: 'visible',
     overflowY: 'clip',
+    position: 'sticky',
     '& .MuiTypography-root': {
       width: 250,
       pl: 5,

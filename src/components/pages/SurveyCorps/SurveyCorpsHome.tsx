@@ -190,7 +190,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         )} */}
         {tab === SurveyTabsEnum.VEHICLE_ORE && <VehicleOreDistribution data={surveyData?.vehicleProbs} />}
         {tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS && <SurveyCorpsAbout />}
-        {tab === SurveyTabsEnum.LEADERBOARD && <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} />}
+        {tab === SurveyTabsEnum.LEADERBOARD && <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />}
       </Box>
     </TablePageWrapper>
   )

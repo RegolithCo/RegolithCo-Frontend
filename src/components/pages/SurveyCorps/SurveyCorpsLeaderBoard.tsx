@@ -1,27 +1,52 @@
 import * as React from 'react'
 
 import {
+  Alert,
+  AlertTitle,
+  alpha,
   Avatar,
   Container,
+  darken,
   List,
   ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
+  rgbToHex,
   Typography,
   useTheme,
 } from '@mui/material'
-import { JSONObject, SurveyData, UserProfile } from '@regolithco/common'
+import { JSONObject, ScVersionEpochEnum, SurveyData, UserProfile } from '@regolithco/common'
+import { blue, green } from '@mui/material/colors'
+import Gradient from 'javascript-color-gradient'
+import { fontFamilies } from '../../../theme'
+import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 
 export interface SurveyCorpsLeaderBoardProps {
   // Props here
+  epoch: ScVersionEpochEnum
   userProfile?: UserProfile
   data?: SurveyData | null
 }
 
-export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ userProfile, data }) => {
+export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ userProfile, data, epoch }) => {
   const theme = useTheme()
   console.log('marzipan2', data)
+  const finalData = (data?.data as []) || []
+  const gradient = new Gradient()
+    .setColorGradient('#fff200', '#ff00c3', blue[500], green[500])
+    .setMidpoint(finalData.length === 0 ? 100 : finalData.length) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .getColors()
+  const contrastColors = gradient.map((color) => {
+    return theme.palette.getContrastText(color)
+  })
+  const bgColors = gradient.map((color) => {
+    return alpha(color, 0.5)
+  })
+  const borderColors = gradient.map((color) => {
+    return darken(color, 0.5)
+  })
+
   return (
     <Container
       maxWidth="md"
@@ -29,40 +54,117 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
         pt: 4,
       }}
     >
-      <Typography variant="h5" paragraph>
-        Scanning Leaderboard
+      <Typography
+        variant="h4"
+        paragraph
+        sx={{
+          borderBottom: '1px solid white',
+        }}
+      >
+        Survey Corps Leaderboard (epoch {epoch})
       </Typography>
 
       {data && (
         <List
           sx={{
-            maxWidth: 400,
+            margin: 'auto',
+            maxWidth: 600,
             // zebra striping
             '& li:nth-of-type(odd)': {
               backgroundColor: theme.palette.background.default,
             },
           }}
         >
+          {/* HEADER */}
           <ListItem>
-            <ListItemAvatar></ListItemAvatar>
-            <ListItemText primary={'Name'} />
+            <ListItemAvatar sx={{ mr: 3 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 'bold',
+                  fontFamily: fontFamilies.robotoMono,
+                  textAlign: 'center',
+                }}
+              >
+                {'#'}
+              </Typography>
+            </ListItemAvatar>
+            <ListItemText
+              primary={'Name'}
+              primaryTypographyProps={{
+                variant: 'h4',
+                sx: {
+                  fontWeight: 'bold',
+                  fontFamily: fontFamilies.robotoMono,
+                },
+              }}
+            />
             <ListItemSecondaryAction>
-              <Typography variant="h6">{'Score'}</Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 'bold',
+                  fontFamily: fontFamilies.robotoMono,
+                }}
+              >
+                {'Score'}
+              </Typography>
             </ListItemSecondaryAction>
           </ListItem>
+
+          {/* LIST */}
           {(data.data as []).map((entry: JSONObject, idx: number) => (
-            <ListItem key={idx}>
-              <ListItemAvatar>
-                <Avatar>{idx + 1}</Avatar>
+            <ListItem
+              key={idx}
+              sx={{
+                color: 'white',
+                backgroundColor: bgColors[idx],
+              }}
+            >
+              <ListItemAvatar sx={{ mr: 3 }}>
+                <Avatar
+                  sx={{
+                    height: 50,
+                    width: 50,
+                    color: contrastColors[idx],
+                    fontSize: '2rem',
+                    border: `4px solid ${borderColors[idx]}`,
+                    backgroundColor: gradient[idx],
+                  }}
+                >
+                  {idx + 1}
+                </Avatar>
               </ListItemAvatar>
-              <ListItemText primary={entry['name']} />
+              <ListItemText
+                primary={entry['name']}
+                primaryTypographyProps={{
+                  variant: 'h4',
+                  sx: {
+                    fontWeight: 'bold',
+                    fontFamily: fontFamilies.robotoMono,
+                  },
+                }}
+              />
               <ListItemSecondaryAction>
-                <Typography variant="h6">{entry['score']}</Typography>
+                <Typography variant="h5">{MValueFormatter(entry['score'], MValueFormat.number)}</Typography>
               </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
       )}
+      <Alert severity="info" sx={{ my: 4 }}>
+        <AlertTitle>Leaderboard</AlertTitle>
+        <Typography variant="body1" paragraph>
+          When you scan rocks for the Survey Corps you get a score based on completeness, accuracy and data need.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          The leaderboard updates every hour (ish)
+        </Typography>
+        <Typography variant="body1" paragraph>
+          The names here are chosen by the user and may or may not be their real name. Users are free to remain
+          anonymous as well if they want.
+        </Typography>
+      </Alert>
     </Container>
   )
 }

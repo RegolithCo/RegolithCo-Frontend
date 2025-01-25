@@ -306,6 +306,9 @@ export const ScoutingFindBaseFragmentFragmentDoc = gql`
   clusterCount
   gravityWell
   includeInSurvey
+  score
+  rawScore
+  surveyBonus
   ownerId
   owner {
     ...UserFragment

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Typography, Stack, useTheme, Button, Link, Dialog, Box, DialogTitle, DialogActions } from '@mui/material'
 import { ScoutingFindStateEnum, SurveyFindScore } from '@regolithco/common'
 import { SurveyCorpsIcon } from '../../../icons'
+import { HelpOutline } from '@mui/icons-material'
 
 // Object.values(ScoutingFindStateEnum)
 export const SCOUTING_FIND_STATE_NAMES: ScoutingFindStateEnum[] = [
@@ -33,12 +34,13 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
       <Button
         fullWidth
         onClick={() => setExplainOpen(true)}
+        endIcon={<HelpOutline />}
         size="small"
         sx={{
           color: theme.palette[color].main,
         }}
       >
-        Survey Score: {scoreObj.score}/{scoreObj.possible}{' '}
+        Survey Score: {scoreObj.score}/{scoreObj.possible}
       </Button>
       <Dialog
         open={explainOpen}

@@ -10,6 +10,7 @@ import { WorkOrderStatus } from './WorkOrderStatus'
 import { ScoutingFindStatus } from './ScoutingFindStatus'
 import { SessionUsersStatus } from './SessionUsersStatus'
 import { RefineryIcon } from './RefineryIcon'
+import { SurveyCorpsIcon } from '../../icons'
 
 export interface SessionListSummaryProps {
   session: Session
@@ -197,6 +198,27 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
               num={session.summary?.scoutingFindsByType?.salvage || 0}
               sfType={ScoutingFindTypeEnum.Salvage}
             />
+            <Box flexGrow={1} />
+            {(session.scouting?.items || []).length > 0 && (
+              <Tooltip placement="top" arrow title={'Number of scanned rocks submitted to the Survey Corps.'}>
+                <Chip
+                  size="small"
+                  sx={{
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
+                    fontSize: '0.8rem',
+                  }}
+                  label={
+                    <span>
+                      {session.scouting?.items?.reduce((acc, curr) => acc + (curr.includeInSurvey ? 1 : 0), 0) || 0}
+                      {'/'}
+                      {(session.scouting?.items || []).length}
+                    </span>
+                  }
+                  avatar={<SurveyCorpsIcon sx={{ fontSize: '1.5rem' }} />}
+                />
+              </Tooltip>
+            )}
           </Stack>
         </Stack>
       </Stack>
