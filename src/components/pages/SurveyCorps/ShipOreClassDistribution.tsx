@@ -1,6 +1,8 @@
 import * as React from 'react'
 
 import {
+  Alert,
+  AlertTitle,
   alpha,
   Box,
   Card,
@@ -31,6 +33,7 @@ import Grid2 from '@mui/material/Unstable_Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { RockIcon } from '../../../icons'
 import { useShipOreColors } from '../../../hooks/useShipOreColors'
+import { fontFamilies } from '../../../theme'
 
 export interface ShipOreClassDistributionProps {
   // Props here
@@ -50,12 +53,22 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
           <Typography
             variant="h2"
             sx={{
-              borderBottom: '2px solid white',
+              fontFamily: fontFamilies.robotoMono,
+              // fontWeight: 'bold',
+              color: theme.palette.text.primary,
+              borderBottom: `2px solid ${theme.palette.text.primary}`,
               marginBottom: theme.spacing(2),
               my: 5,
             }}
           >
-            Asteroids
+            <RockIcon
+              sx={{
+                fontSize: '3rem',
+                color: 'inherit',
+                mr: 2,
+              }}
+            />
+            Asteroid Types
           </Typography>
           <Grid2 width={'100%'} container spacing={4}>
             {Object.values(AsteroidTypeEnum).map((type, idx) => (
@@ -68,12 +81,22 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
           <Typography
             variant="h2"
             sx={{
-              borderBottom: '2px solid white',
+              fontFamily: fontFamilies.robotoMono,
+              // fontWeight: 'bold',
+              color: theme.palette.text.primary,
+              borderBottom: `2px solid ${theme.palette.text.primary}`,
               marginBottom: theme.spacing(2),
               my: 5,
             }}
           >
-            Surface Deposits
+            <RockIcon
+              sx={{
+                fontSize: '3rem',
+                color: 'inherit',
+                mr: 2,
+              }}
+            />
+            Surface Deposit Types
           </Typography>
           <Grid2 width={'100%'} container spacing={4}>
             {Object.values(DepositTypeEnum).map((type, idx) => (
@@ -84,6 +107,20 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
           </Grid2>
         </Box>
       )}
+      <Alert severity="info" sx={{ borderRadius: 0, mt: 4 }}>
+        <AlertTitle>Glossary</AlertTitle>
+        <Typography variant="body2" paragraph component="div">
+          <ul>
+            <li>
+              <strong>Prob:</strong> The probability of finding this ore in a given rock of this type
+            </li>
+            <li>
+              <strong>Min, Max, Avg:</strong> The minimum, maximum, and average percentage of this ore in a given rock
+              of this type
+            </li>
+          </ul>
+        </Typography>
+      </Alert>
     </Box>
   )
 }
@@ -116,7 +153,15 @@ const ClassCard: React.FC<ClassCardProps> = ({ className, data }) => {
       <CardHeader
         title={
           <Stack direction="row" spacing={2} alignItems="center">
-            <Typography variant="h6">{getRockTypeName(className)}</Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+              }}
+            >
+              {getRockTypeName(className)}
+            </Typography>
             <Box sx={{ flexGrow: 1 }} />
             {data && (
               <Stack
@@ -131,6 +176,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ className, data }) => {
                 }}
               >
                 <Tooltip
+                  placement="top"
                   title={`Based on ${(data && data['scans']) || 0} rock scans inside ${(data && data['clusters']) || 0} clusters`}
                 >
                   <Stack direction="row" spacing={1} alignItems={'center'}>
@@ -140,7 +186,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ className, data }) => {
                     </span>
                   </Stack>
                 </Tooltip>
-                <Tooltip title={`Data collected by ${(data && data['users']) || 0} users`}>
+                <Tooltip placement="top" title={`Data collected by ${(data && data['users']) || 0} users`}>
                   <Stack direction="row" spacing={1} alignItems={'center'}>
                     <PeopleAlt />
                     <span>{(data && data['users']) || 0}</span>
@@ -197,10 +243,10 @@ const ClassCard: React.FC<ClassCardProps> = ({ className, data }) => {
                   <TableCell align="right">{MValueFormatter(rocks.avg, MValueFormat.number)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Rock Mass</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.min, MValueFormat.mass_sm)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.max, MValueFormat.mass_sm)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.avg, MValueFormat.mass_sm)}</TableCell>
+                  <TableCell>Rock Mass (T)</TableCell>
+                  <TableCell align="right">{MValueFormatter(mass.min, MValueFormat.number_sm)}</TableCell>
+                  <TableCell align="right">{MValueFormatter(mass.max, MValueFormat.number_sm)}</TableCell>
+                  <TableCell align="right">{MValueFormatter(mass.avg, MValueFormat.number_sm)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Instability</TableCell>

@@ -3,6 +3,7 @@ import * as React from 'react'
 import {
   Alert,
   AlertTitle,
+  alpha,
   Box,
   Button,
   Container,
@@ -16,7 +17,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -34,8 +34,7 @@ import {
 import { ClearAll, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { blue, green } from '@mui/material/colors'
-import { GemIcon } from '../../../icons'
-import { hoverColor, selectColor } from './types'
+import { selectColor } from './types'
 
 export interface VehicleOreDistributionProps {
   // Props here
@@ -45,10 +44,14 @@ export interface VehicleOreDistributionProps {
 export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ data }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
+  const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
-  const [hover, setHover] = React.useState<[number, number] | null>(null)
+  // Hover state: [colNum, left, width, color]
+  const [hoverCol, setHoverCol] = React.useState<[number, number, number, string] | null>(null)
+  // Hover state: [colNum, top, height, color]
+  const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
 
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
   const [showExtendedStats, setShowExtendedStats] = React.useState<boolean>(false)
@@ -60,6 +63,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const fgColors = ['#000000', '#ffffff', '#ffffff']
 
   React.useEffect(() => {
+    if (!dataStore) return
     const calcVehicleRowKeys = async () => {
       const vehicleRowKeys = Object.values(VehicleOreEnum)
       const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(dataStore, vehicleOreKey)))
@@ -80,7 +84,195 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
   const gravityWellOptions = React.useMemo(() => {
     return getGravityWellOptions(theme, systemLookup)
-  }, [])
+  }, [systemLookup])
+
+  const tableRows = React.useMemo(() => {
+    return gravityWellOptions.map((row, idr) => {
+      if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
+        return null
+      }
+      const rowEven = idr % 2 === 0
+      const rowSelected = selected.includes(row.id)
+      const bgColor = rowSelected
+        ? selectColor
+        : rowEven
+          ? theme.palette.background.paper
+          : theme.palette.background.default
+
+      if (!rowSelected && filterSelected) return null
+
+      const rowData = (data && data.data && data.data[row.id]) || null
+      if (row.type === GravityWellTypeEnum.PLANET || row.type === GravityWellTypeEnum.SATELLITE) {
+        // keep these always
+      } else if (!rowData && (row.depth >= 2 || row.type === GravityWellTypeEnum.CLUSTER)) return null
+
+      return (
+        <TableRow
+          key={row.id}
+          onClick={() => {
+            setSelected((prev) => {
+              if (prev.includes(row.id)) {
+                return prev.filter((id) => id !== row.id)
+              }
+              const newSelected = [...prev, row.id]
+              if (newSelected.length === 0 && filterSelected) {
+                setFilterSelected(false)
+              }
+              return newSelected
+            })
+          }}
+          sx={{
+            backgroundColor: bgColor,
+          }}
+        >
+          <TableCell
+            component="th"
+            scope="row"
+            onClick={(e) => {
+              setGravityWellFilter(row.id)
+            }}
+            onMouseEnter={(e) => {
+              if (tBodyRef.current) {
+                // Get the left of the table
+                const tableRect = tBodyRef.current.getBoundingClientRect()
+                const tableTop = tableRect.top
+                // Get the left and wdith of this tableCell
+                const rect = e.currentTarget.getBoundingClientRect()
+                const top = rect.top - tableTop
+                const height = rect.height
+                setHoverRow([idr, top, height, theme.palette.info.dark])
+              }
+            }}
+            sx={{
+              // STICKY FIRST COLUMN
+              cursor: 'pointer',
+              position: 'sticky',
+              // backgroundColor: rowSelected ? selectColor : isRowHovered ? hoverColor : theme.palette.background.paper,
+              zIndex: 3,
+              borderRight: `3px solid ${theme.palette.primary.main}`,
+              pl: theme.spacing(row.depth * 3),
+            }}
+          >
+            <GravityWellNameRender options={row} />
+          </TableCell>
+
+          {showExtendedStats && (
+            <TableCell
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-2, left, width, theme.palette.info.dark])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.dark])
+                }
+              }}
+              sx={{
+                // background: isRowHovered || colHovered === -1 ? hoverColor : 'transparent',
+                borderLeft: `1px solid #ffffff`,
+              }}
+            >
+              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+                {rowData?.finds}
+              </Typography>
+            </TableCell>
+          )}
+          {showExtendedStats && (
+            <TableCell
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-2, left, width, theme.palette.info.dark])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.dark])
+                }
+              }}
+              sx={{
+                // background: isRowHovered || colHovered === -2 ? hoverColor : 'transparent',
+                borderLeft: `1px solid #ffffff`,
+              }}
+            >
+              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+                {rowData?.users}
+              </Typography>
+            </TableCell>
+          )}
+
+          {/* Ore Tiers */}
+          {sortedVehicleRowKeys.map((ore, colIdx) => {
+            let prob: number | null = null
+            let minNum: number | null = null
+            let maxNum: number | null = null
+            let avgNum: number | null = null
+
+            const fgc = fgColors[colIdx]
+            const bgc = bgColors[colIdx]
+            if (data && data.data && data.data[row.id] && data.data[row.id].ores[ore]) {
+              prob = data.data[row.id].ores[ore].prob
+              minNum = data.data[row.id].ores[ore].minRocks
+              maxNum = data.data[row.id].ores[ore].maxRocks
+              avgNum = data.data[row.id].ores[ore].avgRocks
+            }
+            return (
+              <TableCell
+                key={ore}
+                onMouseEnter={(e) => {
+                  if (tBodyRef.current) {
+                    // Get the left of the table
+                    const tableRect = tBodyRef.current.getBoundingClientRect()
+                    const tableLeft = tableRect.left
+                    const tableTop = tableRect.top
+                    // Get the left and wdith of this tableCell
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const left = rect.left - tableLeft
+                    const width = rect.width
+                    setHoverCol([colIdx, left, width, bgc])
+                    const top = rect.top - tableTop
+                    const height = rect.height
+                    setHoverRow([idr, top, height, bgc])
+                  }
+                }}
+                sx={{
+                  width: '300px',
+                  borderLeft: `1px solid ${bgc}`,
+                }}
+              >
+                <Stack
+                  spacing={1}
+                  sx={{
+                    textAlign: 'center',
+                    width: showExtendedStats ? 150 : 'auto',
+                  }}
+                >
+                  <Typography variant="h6">{prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}</Typography>
+                  {showExtendedStats && minNum && (
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
+                      {minNum} - {maxNum} - {avgNum}
+                    </Typography>
+                  )}
+                </Stack>
+              </TableCell>
+            )
+          })}
+        </TableRow>
+      )
+    })
+  }, [data, sortedVehicleRowKeys, selected, filterSelected, showExtendedStats, gravityWellFilter])
 
   return (
     <Box>
@@ -143,14 +335,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
         {/* Table Box */}
         <Paper sx={{ mb: 4 }}>
-          <Alert severity="info" sx={{ borderRadius: 0 }}>
-            <AlertTitle>Vehicle Ore Distribution</AlertTitle>
-            <Typography variant="caption">
-              The percentages underneath the ore types are the probability that a cluster you find in this area will be
-              of that type
-            </Typography>
-          </Alert>
-
           <TableContainer sx={styles.table}>
             <Table size="small" aria-label="simple table">
               <TableHead>
@@ -159,13 +343,19 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                   {showExtendedStats && (
                     <LongCellHeader
                       sx={{
-                        borderBottom: hover && hover[1] === -1 ? `3px solid #ffffff` : '3px solid transparent',
+                        borderBottom:
+                          hoverCol && hoverCol[0] === -1
+                            ? `3px solid ${theme.palette.info.main}`
+                            : '3px solid transparent',
                         '& .MuiTypography-caption': {
-                          fontWeight: hover && hover[1] === -1 ? 'bold' : undefined,
-                          borderTop: `1px solid #ffffff`,
+                          fontSize: '1.2em',
+                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          paddingLeft: theme.spacing(5),
+                          borderTop: `3px solid ${theme.palette.info.main}`,
                         },
                         '& *': {
-                          // color: fgc,
+                          fontSize: '1.3em',
+                          fontWeight: 'bold',
                         },
                       }}
                     >
@@ -175,13 +365,19 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                   {showExtendedStats && (
                     <LongCellHeader
                       sx={{
-                        borderBottom: hover && hover[1] === -2 ? `3px solid #ffffff` : '3px solid transparent',
+                        borderBottom:
+                          hoverCol && hoverCol[0] === -1
+                            ? `3px solid ${theme.palette.info.main}`
+                            : '3px solid transparent',
                         '& .MuiTypography-caption': {
-                          fontWeight: hover && hover[1] === -2 ? 'bold' : undefined,
-                          borderTop: `1px solid #ffffff`,
+                          fontSize: '1.2em',
+                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          paddingLeft: theme.spacing(5),
+                          borderTop: `3px solid ${theme.palette.info.main}`,
                         },
                         '& *': {
-                          // color: fgc,
+                          fontSize: '1.3em',
+                          fontWeight: 'bold',
                         },
                       }}
                     >
@@ -190,18 +386,18 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                   )}
 
                   {sortedVehicleRowKeys.map((ore, colIdx) => {
-                    const colHovered = hover && hover[1] === colIdx
+                    // const colHovered = hover && hover[1] === colIdx
                     const fgc = fgColors[colIdx]
                     const bgc = bgColors[colIdx]
                     return (
                       <LongCellHeader
                         key={ore}
                         sx={{
-                          borderBottom: colHovered ? `3px solid ${bgc}` : '3px solid transparent',
-                          '& .MuiTypography-caption': {
-                            fontWeight: colHovered ? 'bold' : undefined,
-                            borderTop: `1px solid ${bgc}`,
-                          },
+                          // borderBottom: colHovered ? `3px solid ${bgc}` : '3px solid transparent',
+                          // '& .MuiTypography-caption': {
+                          //   fontWeight: colHovered ? 'bold' : undefined,
+                          //   borderTop: `1px solid ${bgc}`,
+                          // },
                           '& *': {
                             fontSize: '1.3em',
                             fontWeight: 'bold',
@@ -217,160 +413,63 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                   <TableCell sx={styles.spacerCell}> </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody onMouseLeave={() => setHover(null)}>
-                {gravityWellOptions.map((row, idr) => {
-                  if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
-                    return null
-                  }
-                  const rowEven = idr % 2 === 0
-                  const rowSelected = selected.includes(row.id)
-                  const bgColor = rowSelected
-                    ? selectColor
-                    : rowEven
-                      ? theme.palette.background.paper
-                      : theme.palette.background.default
-
-                  if (!rowSelected && filterSelected) return null
-                  // Only render this option if the
-                  const isRowHovered = hover && hover[0] === idr
-                  const colHovered = hover && hover[1]
-
-                  const rowData = (data && data.data && data.data[row.id]) || null
-                  if (row.type === GravityWellTypeEnum.PLANET || row.type === GravityWellTypeEnum.SATELLITE) {
-                    // keep these always
-                  } else if (!rowData && (row.depth >= 2 || row.type === GravityWellTypeEnum.CLUSTER)) return null
-
-                  return (
-                    <TableRow
-                      key={row.id}
-                      onClick={() => {
-                        setSelected((prev) => {
-                          if (prev.includes(row.id)) {
-                            return prev.filter((id) => id !== row.id)
-                          }
-                          const newSelected = [...prev, row.id]
-                          if (newSelected.length === 0 && filterSelected) {
-                            setFilterSelected(false)
-                          }
-                          return newSelected
-                        })
-                      }}
-                      sx={{
-                        backgroundColor: bgColor,
-                      }}
-                    >
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        onMouseEnter={() => setHover(null)}
-                        sx={{
-                          // STICKY FIRST COLUMN
-                          position: 'sticky',
-                          backgroundColor: rowSelected
-                            ? selectColor
-                            : isRowHovered
-                              ? hoverColor
-                              : theme.palette.background.paper,
-                          zIndex: 3,
-                          borderRight: `3px solid ${theme.palette.primary.main}`,
-                          pl: theme.spacing(row.depth * 3),
-                        }}
-                      >
-                        <GravityWellNameRender options={row} />
-                      </TableCell>
-
-                      {showExtendedStats && (
-                        <TableCell
-                          onMouseOver={() => setHover([idr, -1])}
-                          sx={{
-                            background: isRowHovered || colHovered === -1 ? hoverColor : 'transparent',
-                            borderLeft: `1px solid #ffffff`,
-                          }}
-                        >
-                          {rowData?.finds}
-                        </TableCell>
-                      )}
-                      {showExtendedStats && (
-                        <TableCell
-                          onMouseOver={() => setHover([idr, -2])}
-                          sx={{
-                            background: isRowHovered || colHovered === -2 ? hoverColor : 'transparent',
-                            borderLeft: `1px solid #ffffff`,
-                          }}
-                        >
-                          {rowData?.users}
-                        </TableCell>
-                      )}
-
-                      {/* Ore Tiers */}
-                      {sortedVehicleRowKeys.map((ore, rowIdx) => {
-                        let prob: number | null = null
-                        let minNum: number | null = null
-                        let maxNum: number | null = null
-                        let avgNum: number | null = null
-                        const fgc = fgColors[rowIdx]
-                        const bgc = bgColors[rowIdx]
-                        if (data && data.data && data.data[row.id] && data.data[row.id].ores[ore]) {
-                          prob = data.data[row.id].ores[ore].prob
-                          minNum = data.data[row.id].ores[ore].minRocks
-                          maxNum = data.data[row.id].ores[ore].maxRocks
-                          avgNum = data.data[row.id].ores[ore].avgRocks
-                        }
-                        return (
-                          <TableCell
-                            key={ore}
-                            onMouseOver={() => setHover([idr, rowIdx])}
-                            sx={{
-                              width: '300px',
-                              background: isRowHovered || colHovered === rowIdx ? '#333333' : 'transparent',
-                              borderLeft: `1px solid ${bgc}`,
-                            }}
-                          >
-                            <Stack
-                              spacing={1}
-                              sx={{
-                                textAlign: 'center',
-                                width: showExtendedStats ? 150 : 'auto',
-                              }}
-                            >
-                              <Typography
-                                variant="h6"
-                                sx={
-                                  {
-                                    //
-                                  }
-                                }
-                              >
-                                {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
-                              </Typography>
-                              {showExtendedStats && minNum && (
-                                <Tooltip title={`Rocks in cluster: Min: ${minNum} Max: ${maxNum} Avg: ${avgNum}`}>
-                                  <Typography
-                                    variant="caption"
-                                    sx={{ color: theme.palette.text.secondary }}
-                                    textAlign={'center'}
-                                  >
-                                    <GemIcon
-                                      sx={{
-                                        fontSize: '0.8rem',
-                                        color: theme.palette.text.secondary,
-                                        marginRight: theme.spacing(1),
-                                      }}
-                                    />
-                                    ⬇ {minNum} ⬆ {maxNum} AVG: {avgNum}
-                                  </Typography>
-                                </Tooltip>
-                              )}
-                            </Stack>
-                          </TableCell>
-                        )
-                      })}
-                    </TableRow>
-                  )
-                })}
+              <TableBody
+                ref={tBodyRef}
+                sx={{
+                  position: 'relative',
+                }}
+                onMouseLeave={() => {
+                  setHoverCol(null)
+                  setHoverRow(null)
+                }}
+              >
+                {hoverCol && (
+                  <Box
+                    sx={{
+                      pointerEvents: 'none', // Make the box transparent to all mouse events
+                      zIndex: 4,
+                      position: 'absolute',
+                      top: 0,
+                      left: hoverCol[1],
+                      width: hoverCol[2],
+                      height: '100%',
+                      // mixBlendMode: 'difference',
+                      border: `1px solid ${alpha(hoverCol[3], 0.3)}`,
+                      backgroundColor: alpha(hoverCol[3], 0.1),
+                    }}
+                  />
+                )}
+                {hoverRow && (
+                  <Box
+                    sx={{
+                      pointerEvents: 'none', // Make the box transparent to all mouse events
+                      zIndex: 4,
+                      position: 'absolute',
+                      left: 0,
+                      top: hoverRow[1],
+                      height: hoverRow[2],
+                      width: '100%',
+                      // mixBlendMode: 'difference',
+                      border: `1px solid ${alpha(hoverRow[3], 0.3)}`,
+                      backgroundColor: alpha(hoverRow[3], 0.1),
+                    }}
+                  />
+                )}
+                {tableRows}
               </TableBody>
             </Table>
           </TableContainer>
+          <Alert severity="info" sx={{ borderRadius: 0, mt: 4 }}>
+            <AlertTitle>Vehicle Ore Distribution</AlertTitle>
+            <Typography variant="body2" paragraph>
+              The percentages in the table cells represent the probability that a cluster you find will be of that type.
+            </Typography>
+            {showExtendedStats && (
+              <Typography variant="body2" paragraph>
+                The numbers in the form of "Min - Max - Avg" are the number of rocks in a cluster of that type
+              </Typography>
+            )}
+          </Alert>
         </Paper>
       </Container>
     </Box>

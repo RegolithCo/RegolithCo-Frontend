@@ -87,12 +87,11 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       gravityWellOptions.forEach((row) => {
         const dataCols = data?.data || {}
         const bonusCols = bonuses?.data || {}
-        const bonus = bonusCols[row.id]
-        if (!retVal['BONUS']) retVal['BONUS'] = { max: null, min: null }
-        const oldBonus = retVal['BONUS']
+        const bonus = bonusCols[row.id] || 0
+        if (!retVal['BONUS']) retVal['BONUS'] = { max: 0, min: 0 }
+        const oldBonusMax = retVal['BONUS'].max || 0
 
-        retVal['BONUS'].max = bonus ? (oldBonus.max ? Math.max(oldBonus.max, bonus) : bonus) : oldBonus.max
-        retVal['BONUS'].min = bonus ? (oldBonus.min ? Math.min(oldBonus.min, bonus) : bonus) : oldBonus.min
+        retVal['BONUS'].max = Math.max(oldBonusMax, bonus)
 
         // Then the ores
         Object.keys(OreTierNames).forEach((tier, idx) => {
@@ -111,6 +110,14 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     return retVal
   }, [gravityWellOptions, data?.data, bonuses?.data])
 
+  const bonusGradient = React.useMemo(() => {
+    const light = theme.palette.info.main
+    const dark = rgbToHex(darken(theme.palette.info.dark, 0.5))
+    return new Gradient()
+      .setColorGradient(dark, light)
+      .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+      .getColors()
+  }, [])
   const gradients = React.useMemo(() => {
     return Object.values(OreTierColors).reduce(
       (acc, color) => {
@@ -137,6 +144,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
       if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.type)) return null
       if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.type)) return null
+
+      const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 0
+
+      const bonusMax = maxMins['BONUS'] && maxMins['BONUS'].max !== null ? maxMins['BONUS'].max : 1
+      const bonusMin = maxMins['BONUS'] && maxMins['BONUS'].min !== null ? maxMins['BONUS'].min : 0
+      // The normalized value between 0 and 1 that prob is
+      const normBonus = calculateNormalizedProbability(bonus, bonusMin, bonusMax)
 
       if (!rowSelected && filterSelected) return null
       // Only render this option if the
@@ -166,8 +180,24 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           <TableCell
             component="th"
             scope="row"
+            onClick={(e) => {
+              setGravityWellFilter(row.id)
+            }}
+            onMouseEnter={(e) => {
+              if (tBodyRef.current) {
+                // Get the left of the table
+                const tableRect = tBodyRef.current.getBoundingClientRect()
+                const tableTop = tableRect.top
+                // Get the left and wdith of this tableCell
+                const rect = e.currentTarget.getBoundingClientRect()
+                const top = rect.top - tableTop
+                const height = rect.height
+                setHoverRow([idr, top, height, theme.palette.info.dark])
+              }
+            }}
             sx={{
               // STICKY FIRST COLUMN
+              cursor: 'pointer',
               position: 'sticky',
               whiteSpace: 'nowrap',
               backgroundColor: rowSelected ? selectColor : bgColor,
@@ -191,7 +221,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               textAlign: 'center',
               fontFamily: fontFamilies.robotoMono,
               borderLeft: `3px solid ${theme.palette.primary.main}`,
-              backgroundColor: theme.palette.info.dark,
+              backgroundColor: normBonus ? alpha(bonusGradient[normBonus], 0.4) : 'rgba(0,0,0,0)',
             }}
             onMouseEnter={(e) => {
               if (tBodyRef.current) {
@@ -484,6 +514,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             onClick={() => {
               setSelected([])
               setFilterSelected(false)
+              setGravityWellFilter(null)
+              setOreTierFilter([OreTierEnum.STier, OreTierEnum.ATier, OreTierEnum.BTier, OreTierEnum.CTier])
             }}
             variant="text"
             size="small"
