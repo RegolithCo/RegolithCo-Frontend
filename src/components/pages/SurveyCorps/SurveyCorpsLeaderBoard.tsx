@@ -34,7 +34,7 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
   const finalData = (data?.data as []) || []
   const gradient = new Gradient()
     .setColorGradient('#fff200', '#ff00c3', blue[500], green[500])
-    .setMidpoint(finalData.length === 0 ? 100 : finalData.length) // 100 is the number of colors to generate. Should be enough stops for our ores
+    .setMidpoint(finalData.length < 4 ? 100 : 4) // 100 is the number of colors to generate. Should be enough stops for our ores
     .getColors()
   const contrastColors = gradient.map((color) => {
     return theme.palette.getContrastText(color)
