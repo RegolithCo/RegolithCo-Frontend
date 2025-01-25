@@ -506,6 +506,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               >
                 {hoverCol && (
                   <Box
+                    component="tr"
                     sx={{
                       pointerEvents: 'none', // Make the box transparent to all mouse events
                       zIndex: 4,
@@ -522,6 +523,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                 )}
                 {hoverRow && (
                   <Box
+                    component="tr"
                     sx={{
                       pointerEvents: 'none', // Make the box transparent to all mouse events
                       zIndex: 4,

@@ -146,30 +146,42 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
       }
     >
       <Container maxWidth={'lg'} sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
-        <Tabs
-          value={tab}
-          onChange={(_, newValue) => {
-            navigate && navigate(`/survey/${newValue}`)
-            // setActiveTab(newValue)
+        <Stack
+          direction={{
+            xs: 'column',
+            md: 'row',
           }}
+          spacing={2}
+          component={'div'}
         >
-          <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
-          <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
-          <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
-          <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
-          <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
+          <Tabs
+            value={tab}
+            sx={{
+              flex: '1 1',
+              width: '100%',
+            }}
+            variant="scrollable"
+            scrollButtons="auto"
+            onChange={(_, newValue) => {
+              navigate && navigate(`/survey/${newValue}`)
+              // setActiveTab(newValue)
+            }}
+          >
+            <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
+            <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
+            <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
+            <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
+            <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
+          </Tabs>
           {/* Epoch selector */}
-          <Box sx={{ flexGrow: 1 }} />
-          <Stack direction="row" spacing={2}>
-            <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
-              {Object.values(ScVersionEpochEnum).map((epoch) => (
-                <MenuItem key={epoch} value={epoch}>
-                  Epoch: {epoch}
-                </MenuItem>
-              ))}
-            </Select>
-          </Stack>
-        </Tabs>
+          <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
+            {Object.values(ScVersionEpochEnum).map((epoch) => (
+              <MenuItem key={epoch} value={epoch}>
+                Epoch: {epoch}
+              </MenuItem>
+            ))}
+          </Select>
+        </Stack>
       </Container>
       <Box
         sx={
@@ -185,9 +197,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         {tab === SurveyTabsEnum.SHIP_ORE_CLASS && (
           <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />
         )}
-        {/* {tab === SurveyTabsEnum.SHIP_ORE_STATS && (
-          <ShipOreLocationStats data={surveyData?.shipOreByGravProb} bonuses={surveyData?.bonusMap} />
-        )} */}
+
         {tab === SurveyTabsEnum.VEHICLE_ORE && <VehicleOreDistribution data={surveyData?.vehicleProbs} />}
         {tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS && <SurveyCorpsAbout />}
         {tab === SurveyTabsEnum.LEADERBOARD && <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />}

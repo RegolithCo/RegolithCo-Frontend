@@ -142,7 +142,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                       </Typography>
                     )
                     if (i < subtitleArr.length - 1) {
-                      acc.push(<span>//</span>)
+                      acc.push(<span key={`sep-${i}`}>//</span>)
                     }
                     return acc
                   },

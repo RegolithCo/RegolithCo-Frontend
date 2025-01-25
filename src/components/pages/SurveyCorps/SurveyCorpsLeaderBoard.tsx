@@ -12,7 +12,6 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-  rgbToHex,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -31,7 +30,7 @@ export interface SurveyCorpsLeaderBoardProps {
 
 export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ userProfile, data, epoch }) => {
   const theme = useTheme()
-  console.log('marzipan2', data)
+
   const finalData = (data?.data as []) || []
   const gradient = new Gradient()
     .setColorGradient('#fff200', '#ff00c3', blue[500], green[500])

@@ -13,9 +13,9 @@ import {
 import { PageWrapper } from '../../PageWrapper'
 import {
   Alert,
-  AlertTitle,
   Box,
   Button,
+  Container,
   IconButton,
   Link,
   List,
@@ -46,7 +46,6 @@ import { AppContext } from '../../../context/app.context'
 import { UserAvatar } from '../../UserAvatar'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import config from '../../../config'
-import { DiscordIcon } from '../../../icons'
 import { SurveyCorps } from './SurveyCorps'
 
 export const ProfileTabsEnum = {
@@ -154,7 +153,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   friends.sort((a, b) => a.localeCompare(b))
   // const myAvatar = makeAvatar(userProfile?.avatarUrl as string)
 
-  const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'sm'
+  const maxWidth = mediumUp && activeTab === ProfileTabsEnum.SESSION_DEFAULTS ? 'md' : 'md'
 
   if (loading || !userProfile)
     return (
@@ -169,6 +168,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     <PageWrapper title="User Profile" loading={loading} maxWidth={maxWidth} sx={styles.pageWrapper}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
         <Tabs
+          variant="scrollable"
           value={activeTab}
           onChange={(_, newValue) => {
             setActiveTab(newValue)
@@ -185,7 +185,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       <Box sx={styles.container}>
         {/* Profile Tab */}
         {activeTab === ProfileTabsEnum.PROFILE && (
-          <Box sx={{ px: 2 }}>
+          <Container sx={{ px: 2 }} maxWidth="sm">
             <Box sx={styles.section}>
               <Typography component="div" sx={styles.sectionTitle}>
                 User Handle
@@ -349,21 +349,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             >
               Permanently Delete Profile
             </Button>
-          </Box>
+          </Container>
         )}
 
         {/* Scout Tab */}
         {activeTab === ProfileTabsEnum.SURVEY && (
-          <Box sx={{ px: 2 }}>
+          <Container sx={{ px: 2 }} maxWidth="sm">
             <Box sx={styles.section}>
               <SurveyCorps updateUserProfile={updateUserProfile} userProfile={userProfile} navigate={navigate} />
             </Box>
-          </Box>
+          </Container>
         )}
 
         {/* Friends Tab */}
         {activeTab === ProfileTabsEnum.FRIENDS && (
-          <Box sx={{ px: 2 }}>
+          <Container sx={{ px: 2 }} maxWidth="sm">
             {!hideNames && (
               <Box sx={styles.section}>
                 <Typography component="div" sx={styles.sectionTitle}>
@@ -399,7 +399,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 You cannot see your friend list while streaming mode is on.
               </Typography>
             )}
-          </Box>
+          </Container>
         )}
 
         {/* Sessions Tab */}
@@ -552,8 +552,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </Box>
             <Box sx={styles.sectionBody}>
               <Typography paragraph variant="body2">
-                <strong>DO NOT SHARE THIS CODE OR MAKE IT PUBLIC IN ANY WAY</strong>. Anyone with this code has full
-                access to your <em>(and only your)</em> Regolith Account.
+                <strong>DO NOT SHARE YOUR API TOKEN OR MAKE IT PUBLIC IN ANY WAY</strong>. Anyone with this code has
+                full access to your <em>(and only your)</em> Regolith Account.
               </Typography>
               <Typography paragraph variant="body2">
                 To use the Regolith API you need to include your API key in the header of your requests as follows:

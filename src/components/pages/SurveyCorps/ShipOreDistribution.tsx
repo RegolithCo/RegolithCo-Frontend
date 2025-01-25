@@ -36,12 +36,11 @@ import {
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { Lookups, SurveyData, SystemLookupItem } from '@regolithco/common'
-import { ClearAll, PeopleAlt, Refresh } from '@mui/icons-material'
+import { ClearAll, Refresh } from '@mui/icons-material'
 import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import Gradient from 'javascript-color-gradient'
-import { RockIcon } from '../../../icons'
 
 export interface ShipOreDistributionProps {
   // Props here
@@ -90,8 +89,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         const dataCols = data?.data || {}
         // Calculate the bonus
         const bonusCols = bonuses?.data || {}
-        const bonus = bonusCols[row.id] || 0
-        if (!retVal['STAT_BONUS']) retVal['STAT_BONUS'] = { max: 0, min: 0 }
+        const bonus = bonusCols[row.id] || 1
+        if (!retVal['STAT_BONUS']) retVal['STAT_BONUS'] = { max: 1, min: 1 }
         const oldBonusMax = retVal['STAT_BONUS'].max || 0
         retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
         // Calculate the users
@@ -172,7 +171,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.type)) hide = true
       if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.type)) hide = true
 
-      const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 0
+      const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
 
       // The normalized value between 0 and 1 that prob is
       const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
@@ -285,8 +284,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             }}
           >
             <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
-              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
-                {bonuses && bonuses.data && MValueFormatter(bonuses.data[row.id], MValueFormat.number) + 'X'}
+              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
+                {MValueFormatter(bonus, MValueFormat.number) + 'X'}
               </Typography>
             </Tooltip>
           </TableCell>
@@ -319,7 +318,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             >
               {showExtendedStats && (
                 <Tooltip title={`Based on ${scans} rock scans inside ${clusters} clusters`} placement="top">
-                  <Typography variant="h6" sx={{ minWidth: 90, textAlign: 'center' }}>
+                  <Typography variant="h6" sx={{ minWidth: 90, textAlign: 'center' }} component={'div'}>
                     {scans} / {clusters}
                   </Typography>
                 </Tooltip>
@@ -353,15 +352,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 }
               }}
             >
-              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
-                {showExtendedStats && (
-                  <Tooltip title={`Users that collected this data`} placement="top">
-                    <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
-                      {users}
-                    </Typography>
-                  </Tooltip>
-                )}
-              </Typography>
+              {showExtendedStats && (
+                <Tooltip title={`Users that collected this data`} placement="top">
+                  <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
+                    {users}
+                  </Typography>
+                </Tooltip>
+              )}
             </TableCell>
           )}
 
@@ -441,6 +438,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       <Tooltip title={`Probability of finding ${ore} in a rock at ${row.label}`} placement="top">
                         <Typography
                           variant="h6"
+                          component="div"
                           sx={{
                             textAlign: 'center',
                             minWidth: 30,
@@ -748,6 +746,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               >
                 {hoverCol && (
                   <Box
+                    component="tr"
                     sx={{
                       pointerEvents: 'none', // Make the box transparent to all mouse events
                       zIndex: 4,
@@ -764,6 +763,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 )}
                 {hoverRow && (
                   <Box
+                    component="tr"
                     sx={{
                       pointerEvents: 'none', // Make the box transparent to all mouse events
                       zIndex: 4,
