@@ -82,8 +82,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
   const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
     // prepopulate the maxMins array
+
     const retVal: Record<string, { max: number | null; min: number | null }> = {}
-    if (data?.data || bonuses?.data) {
+    if (gravityWellOptions && data?.data && bonuses?.data) {
       gravityWellOptions.forEach((row) => {
         const dataCols = data?.data || {}
         const bonusCols = bonuses?.data || {}
@@ -96,7 +97,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         // Then the ores
         Object.keys(OreTierNames).forEach((tier, idx) => {
           if (oreTierFilter.includes(tier as OreTierEnum)) {
-            ShipOreTiers[tier as OreTierEnum].map((ore, idy) => {
+            ShipOreTiers[tier as OreTierEnum].forEach((ore, idy) => {
               const prob = dataCols[row.id]?.ores[ore]?.prob
               if (!retVal[ore]) retVal[ore] = { max: null, min: null }
               const old = retVal[ore]
@@ -183,6 +184,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             component="th"
             scope="row"
             onClick={(e) => {
+              e.stopPropagation()
               setGravityWellFilter(row.id)
             }}
             onMouseEnter={(e) => {
@@ -242,7 +244,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               }
             }}
           >
-            {bonuses && bonuses.data && MValueFormatter(bonuses.data[row.id], MValueFormat.number) + 'X'}
+            <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+              {bonuses && bonuses.data && MValueFormatter(bonuses.data[row.id], MValueFormat.number) + 'X'}
+            </Typography>
           </TableCell>
 
           {/* Ore Tiers */}
@@ -516,8 +520,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             onClick={() => {
               setSelected([])
               setFilterSelected(false)
-              setGravityWellFilter(null)
-              setOreTierFilter([OreTierEnum.STier, OreTierEnum.ATier, OreTierEnum.BTier, OreTierEnum.CTier])
             }}
             variant="text"
             size="small"
@@ -564,9 +566,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                         paddingLeft: theme.spacing(5),
                         borderTop: `3px solid ${theme.palette.info.main}`,
                       },
-                      // '& *': {
-                      //   color: theme.palette[OreTierColors[tier as OreTierEnum]].main,
-                      // },
                     }}
                   >
                     Scan Bonus
@@ -662,9 +661,10 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 }
 
 const calculateNormalizedProbability = (prob: number, oreMin: number, oreMax: number): number => {
+  if (oreMin === oreMax) return 99
   // Normalize the probability to a percentage and round to the nearest integer
   const normProb = Math.round((100 * (prob - oreMin)) / (oreMax - oreMin)) - 1
-  if (normProb > 100) return 100
+  if (normProb > 100) return 99
   if (normProb < 0) return 0
   return normProb
 }

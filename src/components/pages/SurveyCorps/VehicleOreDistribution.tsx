@@ -7,8 +7,10 @@ import {
   Box,
   Button,
   Container,
+  darken,
   FormControlLabel,
   Paper,
+  rgbToHex,
   Stack,
   Switch,
   Table,
@@ -35,6 +37,8 @@ import { ClearAll, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { blue, green } from '@mui/material/colors'
 import { selectColor } from './types'
+import Gradient from 'javascript-color-gradient'
+import { set } from 'lodash'
 
 export interface VehicleOreDistributionProps {
   // Props here
@@ -86,6 +90,40 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     return getGravityWellOptions(theme, systemLookup)
   }, [systemLookup])
 
+  const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
+    // prepopulate the maxMins array
+    const retVal: Record<string, { max: number | null; min: number | null }> = {}
+    if (data?.data && gravityWellOptions) {
+      gravityWellOptions.forEach((row) => {
+        const dataCols = data?.data || {}
+        // Then the ores
+        Object.values(VehicleOreEnum).forEach((ore, idy) => {
+          const prob = dataCols[row.id]?.ores[ore]?.prob
+          if (!retVal[ore]) retVal[ore] = { max: null, min: null }
+          const old = retVal[ore]
+          retVal[ore].max = prob ? (old.max ? Math.max(old.max, prob) : prob) : old.max
+          retVal[ore].min = prob ? (old.min ? Math.min(old.min, prob) : prob) : old.min
+        })
+      })
+    }
+    return retVal
+  }, [gravityWellOptions, data?.data])
+
+  const gradients = React.useMemo(() => {
+    return Object.values(sortedVehicleRowKeys).reduce(
+      (acc, color, idx) => {
+        const light = bgColors[idx]
+        const dark = rgbToHex(darken(light, 0.5))
+        acc[color] = new Gradient()
+          .setColorGradient(dark, light)
+          .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+          .getColors()
+        return acc
+      },
+      {} as Record<string, string[]>
+    )
+  }, [sortedVehicleRowKeys])
+
   const tableRows = React.useMemo(() => {
     return gravityWellOptions.map((row, idr) => {
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
@@ -129,6 +167,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             component="th"
             scope="row"
             onClick={(e) => {
+              e.stopPropagation()
               setGravityWellFilter(row.id)
             }}
             onMouseEnter={(e) => {
@@ -219,6 +258,8 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             let minNum: number | null = null
             let maxNum: number | null = null
             let avgNum: number | null = null
+            let normProb: number | null = null
+            let bgColor: string | undefined = undefined
 
             const fgc = fgColors[colIdx]
             const bgc = bgColors[colIdx]
@@ -228,6 +269,15 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               maxNum = data.data[row.id].ores[ore].maxRocks
               avgNum = data.data[row.id].ores[ore].avgRocks
             }
+
+            if (prob !== null) {
+              const oreMax = maxMins[ore] && maxMins[ore].max !== null ? maxMins[ore].max : 1
+              const oreMin = maxMins[ore] && maxMins[ore].min !== null ? maxMins[ore].min : 0
+              // The normalized value between 0 and 1 that prob is
+              normProb = calculateNormalizedProbability(prob, oreMin, oreMax)
+              bgColor = gradients && gradients[ore] ? alpha(gradients[ore][normProb], 0.4) : undefined
+            }
+
             return (
               <TableCell
                 key={ore}
@@ -250,13 +300,14 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                 sx={{
                   width: '300px',
                   borderLeft: `1px solid ${bgc}`,
+                  backgroundColor: bgColor,
                 }}
               >
                 <Stack
                   spacing={1}
                   sx={{
                     textAlign: 'center',
-                    width: showExtendedStats ? 150 : 'auto',
+                    width: showExtendedStats ? 150 : 50,
                   }}
                 >
                   <Typography variant="h6">{prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}</Typography>
@@ -381,7 +432,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                         },
                       }}
                     >
-                      Collected by users
+                      Users Participated
                     </LongCellHeader>
                   )}
 
@@ -389,18 +440,20 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                     // const colHovered = hover && hover[1] === colIdx
                     const fgc = fgColors[colIdx]
                     const bgc = bgColors[colIdx]
+                    const colHovered = hoverCol && hoverCol[0] === colIdx
+
                     return (
                       <LongCellHeader
                         key={ore}
                         sx={{
-                          // borderBottom: colHovered ? `3px solid ${bgc}` : '3px solid transparent',
-                          // '& .MuiTypography-caption': {
-                          //   fontWeight: colHovered ? 'bold' : undefined,
-                          //   borderTop: `1px solid ${bgc}`,
-                          // },
+                          borderBottom: colHovered ? `3px solid ${bgc}` : '3px solid transparent',
+                          '& .MuiTypography-caption': {
+                            fontSize: '1.2em',
+                            fontWeight: colHovered ? 'bold' : undefined,
+                            paddingLeft: theme.spacing(5),
+                            borderTop: colIdx === 0 ? `3px solid ${bgc}` : `1px solid ${alpha(bgc, 0.5)}`,
+                          },
                           '& *': {
-                            fontSize: '1.3em',
-                            fontWeight: 'bold',
                             color: bgc,
                           },
                         }}
@@ -460,7 +513,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             </Table>
           </TableContainer>
           <Alert severity="info" sx={{ borderRadius: 0, mt: 4 }}>
-            <AlertTitle>Vehicle Ore Distribution</AlertTitle>
+            <AlertTitle>Legend:</AlertTitle>
             <Typography variant="body2" paragraph>
               The percentages in the table cells represent the probability that a cluster you find will be of that type.
             </Typography>
@@ -474,4 +527,13 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       </Container>
     </Box>
   )
+}
+
+const calculateNormalizedProbability = (prob: number, oreMin: number, oreMax: number): number => {
+  // Normalize the probability to a percentage and round to the nearest integer
+  if (oreMax === oreMin) return 99
+  const normProb = Math.round((100 * (prob - oreMin)) / (oreMax - oreMin)) - 1
+  if (normProb > 100) return 99
+  if (normProb < 0) return 0
+  return normProb
 }
