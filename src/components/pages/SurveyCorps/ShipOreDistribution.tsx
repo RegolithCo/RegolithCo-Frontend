@@ -41,7 +41,7 @@ import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import Gradient from 'javascript-color-gradient'
-import { GemIcon, RockIcon } from '../../../icons'
+import { RockIcon } from '../../../icons'
 
 export interface ShipOreDistributionProps {
   // Props here
@@ -135,8 +135,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
   const tableRows = React.useMemo(() => {
     return gravityWellOptions.map((row, idr) => {
+      let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
-        return null
+        hide = true
       }
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
@@ -152,7 +153,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       // The normalized value between 0 and 1 that prob is
       const normBonus = calculateNormalizedProbability(bonus, bonusMin, bonusMax)
 
-      if (!rowSelected && filterSelected) return null
+      if (!rowSelected && filterSelected) hide = true
       // Only render this option if the
       return (
         <TableRow
@@ -170,6 +171,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             })
           }}
           sx={{
+            display: hide ? 'none' : undefined,
             position: 'relative',
             backgroundColor: bgColor,
             '&:hover': {
@@ -368,7 +370,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                         <Typography
                           variant="h6"
                           sx={{
-                            pt: prob && showExtendedStats ? 2 : 0,
+                            pt: prob && showExtendedStats ? 3 : 0,
                             textAlign: 'center',
                             minWidth: 30,
                           }}
