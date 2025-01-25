@@ -83,6 +83,37 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
         </ul>
       </Typography>
       <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+        Q: "Can I add scan data from before I joined?"
+      </Typography>
+      <Typography paragraph variant="body2">
+        Yes! You will need to go back to your previous scans and enable the "Survey Corps" checkbox on each scan though.
+        Also don't forget to add location data and a rock class if you still remember it.
+      </Typography>
+      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+        Q: "I added scans but they aren't showing!"
+      </Typography>
+      <Typography paragraph variant="body2" component="div">
+        Collating the scan data is a little more expensive so we do it every hour. If your data isn't showing after an
+        hour then check:
+        <ul>
+          <li>
+            Did you sign up for the Survey Corps on the{' '}
+            <Link href="/profile/survey" target="_blank" rel="noopener noreferrer">
+              profile page
+            </Link>
+            ?
+          </li>
+          <li>
+            Is your leaderboard name set? Your name will show as "USER-####" until you choose a leaderboard name. We do
+            this so that you can opt-in and not have your name revealed if you don't want it to be.
+          </li>
+          <li>
+            Did you check the "Survey Corps" checkbox on your scan? If you did your data will be included but not your
+            name.
+          </li>
+        </ul>
+      </Typography>
+      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
         Q: "What happens if I leave the Corps?"
       </Typography>
       <Typography paragraph variant="body2" component="div">

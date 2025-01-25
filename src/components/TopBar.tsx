@@ -45,7 +45,7 @@ import {
   TableChart,
   Verified,
 } from '@mui/icons-material'
-import { RockIcon, SurveyCorpsIcon } from '../icons'
+import { GemIcon, RockIcon, SurveyCorpsIcon } from '../icons'
 import { LoginContext, LoginContextObj } from '../hooks/useOAuth2'
 import { UserAvatar } from './UserAvatar'
 import { ModuleIcon } from '../icons/Module'
@@ -161,9 +161,24 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
       icon: <TableChart />,
       children: [
         {
-          path: '/survey',
-          name: 'Mineral Survey',
+          path: '/survey/about',
+          name: 'Survey Corps',
           icon: <SurveyCorpsIcon />,
+        },
+        {
+          path: '/survey/rocks',
+          name: 'Rock Locations',
+          icon: <RockIcon />,
+        },
+        {
+          path: '/survey/rock_class',
+          name: 'Rock Types',
+          icon: <RockIcon />,
+        },
+        {
+          path: '/survey/gems',
+          name: 'Gem Locations',
+          icon: <GemIcon />,
         },
         { isDivider: true },
         { path: '/tables/ore', name: 'Refinery Methods', icon: <TableChart /> },

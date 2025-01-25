@@ -137,7 +137,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                       color: 'text',
                     }}
                   >
-                    Intert Materials
+                    Inert Materials
                   </TableCell>
                   <TableCell
                     sx={{

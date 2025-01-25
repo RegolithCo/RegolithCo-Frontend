@@ -16,7 +16,6 @@ import { ShipOreClassDistribution } from './ShipOreClassDistribution'
 export const SurveyTabsEnum = {
   SHIP_ORE: 'rocks',
   SHIP_ORE_CLASS: 'rock_class',
-  SHIP_ORE_STATS: 'rock_stats',
   VEHICLE_ORE: 'gems',
   ABOUT_SURVEY_CORPS: 'about',
   LEADERBOARD: 'leaderboard',
@@ -157,7 +156,6 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
           <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
           <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
           <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
-          {/* <Tab label="Rock Stats" value={SurveyTabsEnum.SHIP_ORE_STATS} icon={<RockIcon />} /> */}
           <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
           <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
           {/* Epoch selector */}

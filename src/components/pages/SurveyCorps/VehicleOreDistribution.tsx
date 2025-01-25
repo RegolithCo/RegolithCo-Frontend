@@ -343,7 +343,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         <Stack direction="row" spacing={2} sx={{ marginBottom: theme.spacing(2) }}>
           <FormControlLabel
             control={<Switch checked={showExtendedStats} onChange={(e) => setShowExtendedStats(e.target.checked)} />}
-            label="Extended Stats"
+            label="Advanced Stats"
           />
 
           <FormControlLabel
