@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Alert, Box, Button, Container, Link, Typography, useTheme } from '@mui/material'
+import { Alert, Button, Container, Link, Typography, useTheme } from '@mui/material'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { AppContext } from '../../../context/app.context'
 import { LoginContext } from '../../../hooks/useOAuth2'
@@ -35,7 +35,7 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
 
       <Typography variant="body2" paragraph>
         When you enlist with the Regolith Survey Corps your Scouting data will be combined with others to generate the{' '}
-        <Link href="http://google.com">location and composition charts</Link>. Just by scouting rocks, gems and wrecks
+        <Link href="/survey/rocks">location and composition charts</Link>. Just by scouting rocks, gems and wrecks
         normally you will help discover the best places to mine and salvage in the 'verse'.
       </Typography>
       {usrQries.userProfile?.isSurveyor && (
@@ -51,7 +51,7 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
           <Typography variant="body2" paragraph>
             You are not a member of the Survey Corps. If you are interested in joining, please click the button below.
           </Typography>
-          <Button size="large" variant="contained" startIcon={<SurveyCorpsIcon />}>
+          <Button size="large" variant="contained" startIcon={<SurveyCorpsIcon />} href="/profile/survey">
             Enlist today
           </Button>
         </Alert>
