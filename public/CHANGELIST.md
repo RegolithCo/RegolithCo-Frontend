@@ -1,4 +1,19 @@
 ### December 22, 2024
+## 1.2.0 - Introducing the Regolith Survey Corps.
+
+Introducing the **Regolith Survey Corps!** This is a new opt-in feature that will allow you to share your scouting finds with the community. This is a great way to help other miners find the best rocks and to get a little recognition for your hard work (if you want it).
+
+The survey corps also creates an incentive to scan rocks even if you don't mine them and gives users a reason to get away hunting the most valuable rocks and find joy in the exploration and survey.
+
+Hopefully this will be like a lightweight exploration mechanic while we wait for a better one from CIG!
+
+### Bug Fixes:
+
+- Fixed an issue where people who had set "Lock to discord guild" as their default were unable to unset this setting.
+- Upgraded all legacy gravity well data to the new codes.
+- Fixed an issue where OCR scans weren't getting their inert material values calculated correctly.
+
+### December 22, 2024
 ## 1.1.5 - 4.0 Bug fixes
 
 4.0 changes a lot so we're probably not done yet but here are a few (mostly OCR) bug fixes.

@@ -114,6 +114,19 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
         </ul>
       </Typography>
       <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+        Q: "What's an Epoch? Is that like a version of Star Citizen?"
+      </Typography>
+      <Typography paragraph variant="body2">
+        Loosely, yes. An epoch is a period of time where the general distribution of ores in the game hasn't changed.
+        For example, if CIG hasn't changed the ore distributions from 3.24 to 4.0.1 then they can be said to be part of
+        the same epoch.
+      </Typography>
+      <Typography paragraph variant="body2">
+        When the epoch changes (decided by consultation with the community) we reset all the stats and need to start
+        fresh surveys to collect new data. Old epoch data should still be available going forward to help with the lack
+        of data after an epoch change but before users have had time to survey it properly.
+      </Typography>
+      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
         Q: "What happens if I leave the Corps?"
       </Typography>
       <Typography paragraph variant="body2" component="div">
