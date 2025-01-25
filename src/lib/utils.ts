@@ -20,3 +20,28 @@ export const downloadFile = (data: string, finalFileName: string, fileType: stri
   a.dispatchEvent(clickEvt)
   a.remove()
 }
+
+export const wipeLocalLookups = () => {
+  const lookupDataKeys = fetchLocalStorageKeys('LookupData:')
+  lookupDataKeys.forEach((key) => {
+    localStorage.removeItem(key)
+  })
+
+  const surveyDataKeys = fetchLocalStorageKeys('SurveyData:')
+  surveyDataKeys.forEach((key) => {
+    localStorage.removeItem(key)
+  })
+}
+
+export const fetchLocalStorageKeys = (prefix: string) => {
+  const items: string[] = []
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && key.startsWith(prefix)) {
+      items.push(key)
+    }
+  }
+
+  return items
+}

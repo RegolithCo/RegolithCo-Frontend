@@ -47,6 +47,7 @@ import { UserAvatar } from '../../UserAvatar'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import config from '../../../config'
 import { SurveyCorps } from './SurveyCorps'
+import { wipeLocalLookups } from '../../../lib/utils'
 
 export const ProfileTabsEnum = {
   PROFILE: 'profile',
@@ -339,6 +340,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </Box>
 
             <div style={{ flexGrow: 1 }} />
+            <Button
+              fullWidth
+              color="warning"
+              disabled={loading}
+              variant="outlined"
+              onClick={() => {
+                wipeLocalLookups()
+                window.location.reload()
+              }}
+              sx={{ mt: 4 }}
+            >
+              Wipe Lookup Cache
+            </Button>
             <Button
               fullWidth
               color="error"

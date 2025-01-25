@@ -10,6 +10,7 @@ import { DiscordIcon } from './icons'
 import { Replay } from '@mui/icons-material'
 import { TopBarContainer } from './components/TopBar.container'
 import { useSnackbar } from 'notistack'
+import { wipeLocalLookups } from './lib/utils'
 
 // const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
 
@@ -30,6 +31,7 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
   const { enqueueSnackbar } = useSnackbar()
 
   const handleReload = () => {
+    wipeLocalLookups()
     window.location.reload()
   }
 
