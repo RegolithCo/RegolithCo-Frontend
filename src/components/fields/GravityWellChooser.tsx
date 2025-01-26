@@ -95,6 +95,21 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
           parentType: GravityWellTypeEnum.SYSTEM,
         })
         systemLookup
+          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === planet.code)
+          .forEach((belt, idx) => {
+            acc.push({
+              label: belt.name,
+              type: GravityWellTypeEnum.BELT,
+              id: belt.code,
+              system: belt.system as SystemEnum,
+              color: theme.palette.secondary.light,
+              icon: <RockIcon />,
+              depth: 2,
+              parents: [system.code, planet.code],
+              parentType: GravityWellTypeEnum.PLANET,
+            })
+          })
+        systemLookup
           .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.LAGRANGE && parent === planet.code)
           .forEach((lagrange, idx) => {
             acc.push({
@@ -123,6 +138,21 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
               parents: [system.code, planet.code],
               parentType: GravityWellTypeEnum.PLANET,
             })
+            systemLookup
+              .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === sat.code)
+              .forEach((belt, idx) => {
+                acc.push({
+                  label: belt.name,
+                  type: GravityWellTypeEnum.BELT,
+                  id: belt.code,
+                  system: belt.system as SystemEnum,
+                  color: theme.palette.secondary.light,
+                  icon: <RockIcon />,
+                  depth: 3,
+                  parents: [system.code, planet.code, sat.code],
+                  parentType: GravityWellTypeEnum.PLANET,
+                })
+              })
           })
       })
 
