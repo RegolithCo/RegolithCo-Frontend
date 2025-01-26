@@ -7,6 +7,7 @@ import {
   Container,
   darken,
   FormControlLabel,
+  IconButton,
   Paper,
   rgbToHex,
   Stack,
@@ -36,7 +37,7 @@ import {
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { Lookups, SurveyData, SystemLookupItem } from '@regolithco/common'
-import { ClearAll, Refresh } from '@mui/icons-material'
+import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
@@ -221,10 +222,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           <TableCell
             component="th"
             scope="row"
-            onClick={(e) => {
-              e.stopPropagation()
-              setGravityWellFilter(row.id)
-            }}
             onMouseEnter={(e) => {
               if (tBodyRef.current) {
                 // Get the left of the table
@@ -247,6 +244,12 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 color: theme.palette.primary.contrastText,
                 backgroundColor: rowSelected ? selectColor : hoverColor,
               },
+              '& .MuiIconButton-root': {
+                display: 'none',
+              },
+              '&:hover .MuiIconButton-root': {
+                display: 'block',
+              },
               zIndex: 3,
               borderRight: `3px solid ${theme.palette.primary.main}`,
               borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
@@ -255,6 +258,27 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               pl: theme.spacing(row.depth * 3),
             }}
           >
+            <Tooltip
+              title={gravityWellFilter === row.id ? 'Remove Filter' : `Filter to ${row.label} and children`}
+              placement="top"
+            >
+              <IconButton
+                color={gravityWellFilter === row.id ? 'error' : 'primary'}
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setGravityWellFilter((prev) => (prev === row.id ? null : row.id))
+                }}
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                }}
+              >
+                {gravityWellFilter === row.id ? <FilterAltOff /> : <FilterAlt />}
+              </IconButton>
+            </Tooltip>
             <GravityWellNameRender options={row} />
           </TableCell>
 
