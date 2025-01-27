@@ -87,14 +87,12 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
 
   // // NO HOOKS BELOW HERE
   const systemName =
-    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.SYSTEM && gw.code === cityStores.system)
-      ?.name || ''
+    gravityWellLookups.find((gw) => gw.type === GravityWellTypeEnum.SYSTEM && gw.id === cityStores.system)?.label || ''
   const planetName =
-    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.PLANET && gw.code === cityStores.planet)
-      ?.name || ''
+    gravityWellLookups.find((gw) => gw.type === GravityWellTypeEnum.PLANET && gw.id === cityStores.planet)?.label || ''
   const satellite =
-    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.SATELLITE && gw.code === cityStores.satellite)
-      ?.name || ''
+    gravityWellLookups.find((gw) => gw.type === GravityWellTypeEnum.SATELLITE && gw.id === cityStores.satellite)
+      ?.label || ''
   const city = cityStores.city || ''
   // Price is the sum of all the prices
 

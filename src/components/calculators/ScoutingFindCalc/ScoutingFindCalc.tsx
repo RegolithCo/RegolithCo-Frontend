@@ -47,6 +47,8 @@ import {
   RockType,
   SurveyFindScore,
   calculateSurveyFind,
+  GravityWell,
+  Lookups,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -333,11 +335,16 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     }
   }, [openCapture])
 
+  const systemLookup = React.useMemo(() => {
+    const lookup = (dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups']) || []
+    return lookup
+  }, [dataStore]) as GravityWell[]
+
   // Now do a useEffect along with a lodash debounce to calculate the score
   React.useEffect(() => {
     const calcScore = async () => {
       if (!dataStore.ready) return
-      const newScore = await calculateSurveyFind(scoutingFind)
+      const newScore = await calculateSurveyFind(scoutingFind, systemLookup)
       setScoreObj(newScore)
     }
     calcScore()
