@@ -190,6 +190,14 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       let clusters = 0
       let scans = 0
 
+      let maxMass = 0
+      let minMass = 0
+      let avgMass = 0
+
+      let cluserSizeMin = 0
+      let clusterSizeMax = 0
+      let clusterSizeAvg = 0
+
       if (data && data.data && data.data[row.id]) {
         scans = data.data[row.id].scans
         users = data.data[row.id].users
@@ -198,6 +206,14 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
         normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
         normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
+
+        maxMass = data.data[row.id].mass.max
+        minMass = data.data[row.id].mass.min
+        avgMass = data.data[row.id].mass.avg
+
+        cluserSizeMin = data.data[row.id].clusterCount.min
+        clusterSizeMax = data.data[row.id].clusterCount.max
+        clusterSizeAvg = data.data[row.id].clusterCount.avg
       }
 
       if (!rowSelected && filterSelected) hide = true
@@ -259,10 +275,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               borderRight: `3px solid ${theme.palette.primary.main}`,
               borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
               borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
-
-              pl: theme.spacing(row.depth * 3),
+              '& .MuiTypography-root': {
+                ...theme.typography.h6,
+              },
+              pl: rockTypeFilter.length === 2 ? theme.spacing(row.depth * 3) : 0,
             }}
           >
+            {/* FILTER BUTTON */}
             <Tooltip
               title={gravityWellFilter === row.id ? 'Remove Filter' : `Filter to ${row.label} and children`}
               placement="top"
@@ -345,12 +364,21 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 }
               }}
             >
-              {showExtendedStats && (
+              {scans && clusters ? (
                 <Tooltip title={`Based on ${scans} rock scans inside ${clusters} clusters`} placement="top">
-                  <Typography variant="h6" sx={{ minWidth: 90, textAlign: 'center' }} component={'div'}>
+                  <Typography variant="body2" sx={{ minWidth: 90, textAlign: 'center' }} component={'div'}>
                     {scans} / {clusters}
                   </Typography>
                 </Tooltip>
+              ) : (
+                <Typography
+                  variant="body2"
+                  sx={{ minWidth: 90, textAlign: 'center' }}
+                  component={'div'}
+                  color="text.secondary"
+                >
+                  {' '}
+                </Typography>
               )}
             </TableCell>
           )}
@@ -381,12 +409,103 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 }
               }}
             >
-              {showExtendedStats && (
+              {users ? (
                 <Tooltip title={`Users that collected this data`} placement="top">
-                  <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
+                  <Typography variant="body2" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
                     {users}
                   </Typography>
                 </Tooltip>
+              ) : (
+                <Typography variant="body2" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
+                  {' '}
+                </Typography>
+              )}
+            </TableCell>
+          )}
+
+          {/* --------- CLUSTER SIZE STATS --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                borderLeft: `3px solid ${theme.palette.primary.main}`,
+                backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {clusterSizeMax ? (
+                <Tooltip title={`Cluster size: Min - Max - Avg`} placement="top">
+                  <Typography variant="body2" sx={{ minWidth: 100, textAlign: 'center' }} component={'div'}>
+                    {MValueFormatter(cluserSizeMin, MValueFormat.number_sm)}
+                    {' - '}
+                    {MValueFormatter(clusterSizeMax, MValueFormat.number_sm)}
+                    {' - '}
+                    <strong>{MValueFormatter(clusterSizeAvg, MValueFormat.number_sm, 1)}</strong>
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography variant="body2" sx={{ minWidth: 60, textAlign: 'center' }} component={'div'}>
+                  {' '}
+                </Typography>
+              )}
+            </TableCell>
+          )}
+          {/* --------- ROCK MASS STATS  --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                borderLeft: `3px solid ${theme.palette.primary.main}`,
+                backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {maxMass ? (
+                <Tooltip title={`Rock Mass: Min - Max - Avg`} placement="top">
+                  <Typography variant="body2" sx={{ minWidth: 150, textAlign: 'center' }} component={'div'}>
+                    {MValueFormatter(minMass, MValueFormat.number_sm)}
+                    {' - '}
+                    {MValueFormatter(maxMass, MValueFormat.number_sm)}
+                    {' - '}
+                    <strong>{MValueFormatter(avgMass, MValueFormat.number_sm, 1)}</strong>
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography variant="caption" sx={{ minWidth: 80, textAlign: 'center' }} component={'div'}>
+                  {' '}
+                </Typography>
               )}
             </TableCell>
           )}
@@ -403,9 +522,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 let minPct = 0
                 let avgPct = 0
 
-                let maxMass = 0
-                let minMass = 0
-                let avgMass = 0
                 let normProb: number | null = null
 
                 if (data && data.data && data.data[row.id] && data.data[row.id].ores[ore]) {
@@ -413,10 +529,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   maxPct = data.data[row.id].ores[ore].maxPct
                   minPct = data.data[row.id].ores[ore].minPct
                   avgPct = data.data[row.id].ores[ore].avgPct
-
-                  maxMass = data.data[row.id].mass.max
-                  minMass = data.data[row.id].mass.min
-                  avgMass = data.data[row.id].mass.avg
 
                   if (prob !== null) {
                     const oreMax = maxMins[ore] && maxMins[ore].max !== null ? maxMins[ore].max : 1
@@ -488,21 +600,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                             {MValueFormatter(maxPct, MValueFormat.percent)}
                             {' - '}
                             <strong>{MValueFormatter(avgPct, MValueFormat.percent)}</strong>
-                          </Typography>
-                        </Tooltip>
-                      )}
-                      {showExtendedStats && prob && (
-                        <Tooltip title={`Rock Mass: Min - Max - Avg`}>
-                          <Typography
-                            variant="caption"
-                            sx={{ color: theme.palette.text.secondary }}
-                            textAlign={'center'}
-                          >
-                            {MValueFormatter(minMass, MValueFormat.number_sm)}
-                            {' - '}
-                            {MValueFormatter(maxMass, MValueFormat.number_sm)}
-                            {' - '}
-                            <strong>{MValueFormatter(avgMass, MValueFormat.number_sm)}</strong>
                           </Typography>
                         </Tooltip>
                       )}
@@ -693,7 +790,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                         },
                       }}
                     >
-                      Rocks / Clusters
+                      Rocks / Clusters Surveyed
                     </LongCellHeader>
                   )}
 
@@ -713,7 +810,45 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                         },
                       }}
                     >
-                      Users Participated
+                      Survey Users
+                    </LongCellHeader>
+                  )}
+                  {showExtendedStats && (
+                    <LongCellHeader
+                      sx={{
+                        backgroundColor: 'transparent',
+                        borderBottom:
+                          hoverCol && hoverCol[0] === -1
+                            ? `3px solid ${theme.palette.info.main}`
+                            : `3px solid ${hoverColor}`,
+                        '& .MuiTypography-caption': {
+                          fontSize: '1.2em',
+                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          paddingLeft: theme.spacing(5),
+                          borderTop: `3px solid ${theme.palette.info.main}`,
+                        },
+                      }}
+                    >
+                      Cluster Size
+                    </LongCellHeader>
+                  )}
+                  {showExtendedStats && (
+                    <LongCellHeader
+                      sx={{
+                        backgroundColor: 'transparent',
+                        borderBottom:
+                          hoverCol && hoverCol[0] === -1
+                            ? `3px solid ${theme.palette.info.main}`
+                            : `3px solid ${hoverColor}`,
+                        '& .MuiTypography-caption': {
+                          fontSize: '1.2em',
+                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          paddingLeft: theme.spacing(5),
+                          borderTop: `3px solid ${theme.palette.info.main}`,
+                        },
+                      }}
+                    >
+                      Rock Mass
                     </LongCellHeader>
                   )}
 
