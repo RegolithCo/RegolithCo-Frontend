@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { Autocomplete, MenuItem, Stack, TextField, Typography, useTheme } from '@mui/material'
-import { GravityWellTypeEnum, Lookups, SystemEnum, SystemLookupItem } from '@regolithco/common'
+import { GravityWell, GravityWellTypeEnum, Lookups, SystemEnum } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
 import { Bedtime, Brightness5, GolfCourse, Language } from '@mui/icons-material'
 import { RockIcon } from '../../icons'
@@ -33,17 +33,22 @@ export const GravityWellNameLookup: React.FC<{ code: string }> = ({ code }) => {
     return getGravityWellOptions(userTheme, lookup)
   }, [dataStore]) as GravityWellOptions[]
 
-  const well = systemLookup.find((well) => well.id === code) || {
-    color: 'white',
-    depth: 0,
-    icon: null,
-    id: code,
-    label: code,
-    parents: [],
-    parentType: null,
-    system: SystemEnum.Stanton,
-    type: GravityWellTypeEnum.PLANET,
-  }
+  const well =
+    systemLookup.find((well) => well.id === code) ||
+    ({
+      color: 'white',
+      depth: 0,
+      icon: null,
+      id: code,
+      label: code,
+      parent: null,
+      parents: [],
+      parentType: null,
+      system: SystemEnum.Stanton,
+      wellType: GravityWellTypeEnum.PLANET,
+      isSpace: false,
+      isSurface: true,
+    } as GravityWellOptions)
   return <GravityWellNameRender options={well as GravityWellOptions} />
 }
 
@@ -53,104 +58,62 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
   //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
   const planetOptions = systems.reduce((acc, system, key) => {
     acc.push({
-      label: system.name,
-      type: GravityWellTypeEnum.SYSTEM,
-      id: system.code,
-      system: system.code as SystemEnum,
+      ...system,
       color: theme.palette.primary.main,
       icon: <Brightness5 />,
-      depth: 0,
-      parents: [],
-      parentType: null,
     })
     systemLookup
-      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === system.code)
+      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === system.id)
       .forEach((belt, idx) => {
         acc.push({
-          label: belt.name,
-          type: GravityWellTypeEnum.BELT,
-          id: belt.code,
-          system: belt.system as SystemEnum,
+          ...belt,
           color: theme.palette.secondary.light,
           icon: <RockIcon />,
-          depth: 1,
-          parents: [system.code],
-          parentType: GravityWellTypeEnum.SYSTEM,
         })
       })
 
     // Now we descend into planets
     systemLookup
-      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.PLANET && parent === system.code)
+      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.PLANET && parent === system.id)
       .forEach((planet, idx) => {
         acc.push({
-          label: planet.name,
-          type: GravityWellTypeEnum.PLANET,
-          id: planet.code,
-          system: planet.system as SystemEnum,
+          ...planet,
           color: theme.palette.info.main,
           icon: <Language />,
-          depth: 1,
-          parents: [system.code],
-          parentType: GravityWellTypeEnum.SYSTEM,
         })
         systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === planet.code)
+          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === planet.id)
           .forEach((belt, idx) => {
             acc.push({
-              label: belt.name,
-              type: GravityWellTypeEnum.BELT,
-              id: belt.code,
-              system: belt.system as SystemEnum,
+              ...belt,
               color: theme.palette.secondary.light,
               icon: <RockIcon />,
-              depth: 2,
-              parents: [system.code, planet.code],
-              parentType: GravityWellTypeEnum.PLANET,
             })
           })
         systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.LAGRANGE && parent === planet.code)
+          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.LAGRANGE && parent === planet.id)
           .forEach((lagrange, idx) => {
             acc.push({
-              label: lagrange.name,
-              type: GravityWellTypeEnum.LAGRANGE,
-              id: lagrange.code,
-              system: lagrange.system as SystemEnum,
+              ...lagrange,
               color: theme.palette.info.dark,
               icon: <GolfCourse />,
-              depth: 2,
-              parents: [system.code, planet.code],
-              parentType: GravityWellTypeEnum.PLANET,
             })
           })
         systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.SATELLITE && parent === planet.code)
+          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.SATELLITE && parent === planet.id)
           .forEach((sat, idx) => {
             acc.push({
-              label: sat.name,
-              type: GravityWellTypeEnum.SATELLITE,
-              id: sat.code,
-              system: sat.system as SystemEnum,
+              ...sat,
               color: 'white',
               icon: <Bedtime />,
-              depth: 2,
-              parents: [system.code, planet.code],
-              parentType: GravityWellTypeEnum.PLANET,
             })
             systemLookup
-              .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === sat.code)
+              .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === sat.id)
               .forEach((belt, idx) => {
                 acc.push({
-                  label: belt.name,
-                  type: GravityWellTypeEnum.BELT,
-                  id: belt.code,
-                  system: belt.system as SystemEnum,
+                  ...belt,
                   color: theme.palette.secondary.light,
                   icon: <RockIcon />,
-                  depth: 3,
-                  parents: [system.code, planet.code, sat.code],
-                  parentType: GravityWellTypeEnum.PLANET,
                 })
               })
           })
@@ -158,18 +121,12 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
 
     // Finally we use system clusters
     systemLookup
-      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === system.code)
+      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === system.id)
       .forEach((cluster, idx) => {
         acc.push({
-          label: cluster.name,
-          type: GravityWellTypeEnum.CLUSTER,
-          id: cluster.code,
-          system: cluster.system as SystemEnum,
+          ...cluster,
           color: theme.palette.success.main,
           icon: <Bedtime />,
-          depth: 1,
-          parents: [system.code],
-          parentType: GravityWellTypeEnum.SYSTEM,
         })
       })
 
@@ -183,15 +140,15 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
 
   const dataStore = React.useContext(LookupsContext)
 
-  const systemLookup = React.useMemo(
+  const gravityWells = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
-  ) as SystemLookupItem[]
+  ) as GravityWell[]
 
   if (!dataStore.ready) return null
   // NO HOOKS BELOW HERE
   //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
-  const planetOptions = getGravityWellOptions(theme, systemLookup)
+  const planetOptions = getGravityWellOptions(theme, gravityWells)
 
   return (
     <Autocomplete
@@ -240,7 +197,7 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
             (word) =>
               option.label.toLowerCase().includes(word) ||
               option.id.toLowerCase().includes(word) ||
-              option.type.toLowerCase().includes(word)
+              option.wellType.toLowerCase().includes(word)
           )
           return found.every((f) => f)
         })

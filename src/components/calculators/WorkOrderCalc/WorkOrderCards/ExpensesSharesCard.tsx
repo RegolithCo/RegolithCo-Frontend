@@ -130,7 +130,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
       if (!myStoreChoice) setFinalSummary(summary)
       // Otherwise we need to recalculate for the store otherwise we end up with a max price
       // That's too high for the highest store we're selling to
-      const tempWorkOrder: WorkOrder = {...workOrder, sellStore: myStoreChoice?.code}
+      const tempWorkOrder: WorkOrder = { ...workOrder, sellStore: myStoreChoice?.code }
       const newSummary = await calculateWorkOrder(dataStore, tempWorkOrder)
       setFinalSummary(newSummary)
     }

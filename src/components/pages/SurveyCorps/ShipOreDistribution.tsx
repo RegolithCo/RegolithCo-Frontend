@@ -36,7 +36,7 @@ import {
 } from './types'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { Lookups, SurveyData, SystemLookupItem } from '@regolithco/common'
+import { GravityWell, Lookups, SurveyData } from '@regolithco/common'
 import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -74,12 +74,12 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
   const dataStore = React.useContext(LookupsContext)
 
-  const systemLookup = React.useMemo(
+  const gravityWells = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
-  ) as SystemLookupItem[]
+  ) as GravityWell[]
 
-  const gravityWellOptions = React.useMemo(() => getGravityWellOptions(theme, systemLookup), [systemLookup])
+  const gravityWellOptions = React.useMemo(() => getGravityWellOptions(theme, gravityWells), [gravityWells])
 
   const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
     // prepopulate the maxMins array
@@ -160,17 +160,22 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
 
+    console.log('gravityWellOptions', gravityWellOptions)
+
     return gravityWellOptions.map((row, idr) => {
       let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
         hide = true
       }
+
+      console.log('gravityWellOptions row', row)
+
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
-      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.type)) hide = true
-      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.type)) hide = true
+      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
+      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
 
       const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
 

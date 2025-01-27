@@ -25,14 +25,7 @@ import {
 import { getGravityWellOptions, GravityWellChooser, GravityWellNameRender } from '../../fields/GravityWellChooser'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
-import {
-  findPrice,
-  GravityWellTypeEnum,
-  Lookups,
-  SurveyData,
-  SystemLookupItem,
-  VehicleOreEnum,
-} from '@regolithco/common'
+import { findPrice, GravityWell, GravityWellTypeEnum, Lookups, SurveyData, VehicleOreEnum } from '@regolithco/common'
 import { ClearAll, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { blue, green } from '@mui/material/colors'
@@ -81,14 +74,14 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     calcVehicleRowKeys()
   }, [dataStore])
 
-  const systemLookup = React.useMemo(
+  const gravityWells = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
-  ) as SystemLookupItem[]
+  ) as GravityWell[]
 
   const gravityWellOptions = React.useMemo(() => {
-    return getGravityWellOptions(theme, systemLookup)
-  }, [systemLookup])
+    return getGravityWellOptions(theme, gravityWells)
+  }, [gravityWells])
 
   const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
     // prepopulate the maxMins array
@@ -136,9 +129,9 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       if (!rowSelected && filterSelected) return null
 
       const rowData = (data && data.data && data.data[row.id]) || null
-      if (row.type === GravityWellTypeEnum.PLANET || row.type === GravityWellTypeEnum.SATELLITE) {
+      if (row.wellType === GravityWellTypeEnum.PLANET || row.wellType === GravityWellTypeEnum.SATELLITE) {
         // keep these always
-      } else if (!rowData && (row.depth >= 2 || row.type === GravityWellTypeEnum.CLUSTER)) return null
+      } else if (!rowData && (row.depth >= 2 || row.wellType === GravityWellTypeEnum.CLUSTER)) return null
 
       return (
         <TableRow

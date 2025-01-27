@@ -1,5 +1,5 @@
 import { AlertProps } from '@mui/material'
-import { GravityWellTypeEnum, SystemEnum } from '@regolithco/common'
+import { GravityWell, GravityWellTypeEnum, SystemEnum } from '@regolithco/common'
 
 export type Config = {
   apiUrl: string
@@ -28,14 +28,7 @@ export const AsteroidWellTypes: GravityWellTypeEnum[] = [
 ]
 
 // We rework this slightly so it's easier to work with
-export type GravityWellOptions = {
-  label: string
-  type: GravityWellTypeEnum
-  id: string
-  system: SystemEnum
+export type GravityWellOptions = GravityWell & {
   icon: React.ReactNode
   color: string
-  depth: number
-  parents: string[]
-  parentType: GravityWellTypeEnum | null
 }
