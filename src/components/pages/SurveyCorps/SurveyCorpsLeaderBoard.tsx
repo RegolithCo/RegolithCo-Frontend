@@ -16,7 +16,6 @@ import {
   useTheme,
 } from '@mui/material'
 import { JSONObject, ScVersionEpochEnum, SurveyData, UserProfile } from '@regolithco/common'
-import { blue, green } from '@mui/material/colors'
 import Gradient from 'javascript-color-gradient'
 import { fontFamilies } from '../../../theme'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -32,10 +31,14 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
   const theme = useTheme()
 
   const finalData = (data?.data as []) || []
-  const gradient = new Gradient()
-    .setColorGradient('#fff200', '#ff00c3', blue[500], green[500])
-    .setMidpoint(finalData.length < 4 ? 100 : 4) // 100 is the number of colors to generate. Should be enough stops for our ores
-    .getColors()
+  const gradient = React.useMemo(
+    () =>
+      new Gradient()
+        .setColorGradient(theme.palette.primary.main, theme.palette.secondary.dark, '#222222')
+        .setMidpoint(finalData.length < 4 ? 4 : finalData.length) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors(),
+    [finalData.length]
+  )
   const contrastColors = gradient.map((color) => {
     return theme.palette.getContrastText(color)
   })

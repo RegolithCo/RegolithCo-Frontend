@@ -39,12 +39,6 @@ export const OreTierColors: Record<OreTierEnum, string> = {
   [OreTierEnum.BTier]: 'warning',
   [OreTierEnum.CTier]: 'error',
 }
-export const OreTierNames: Record<OreTierEnum, string> = {
-  [OreTierEnum.STier]: 'S-Tier',
-  [OreTierEnum.ATier]: 'A-Tier',
-  [OreTierEnum.BTier]: 'B-Tier',
-  [OreTierEnum.CTier]: 'C-Tier',
-}
 
 export const hoverColor = '#242424'
 export const selectColor = 'rgba(55,55,55)'

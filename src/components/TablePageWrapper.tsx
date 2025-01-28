@@ -1,36 +1,32 @@
 import * as React from 'react'
-import { Box, Breakpoint, Container, Paper, SxProps, Typography } from '@mui/material'
+import { Box, Container, Paper, SxProps, Typography } from '@mui/material'
 import { PageLoader } from './pages/PageLoader'
-import { margin, Theme, useTheme } from '@mui/system'
+import { Theme, useTheme } from '@mui/system'
 import { fontFamilies } from '../theme'
 
 export interface TablePageWrapperProps {
   title?: string | React.ReactNode
   children: React.ReactNode
-  maxWidth?: false | Breakpoint | undefined
   loading?: boolean
-  sx?: SxProps<Theme>
   titleSx?: SxProps<Theme>
 }
 
 const styles = {
   container: {
+    display: 'flex',
+    flexDirection: 'column',
     border: {
       // sm: '1px solid red',
       // md: '1px solid green',
     },
-    pr: {
-      xs: 0,
-      sm: 0,
-      md: 3,
-    },
-    pl: {
-      xs: 0,
-      sm: 0,
-      md: 3,
-    },
   },
   paper: {
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    height: '100%',
+
     py: {
       xs: 0,
       sm: 2,
@@ -47,28 +43,30 @@ const styles = {
       md: 4,
     },
     border: {
+      // lg: '2px solid red',
       md: '1px solid #444444',
     },
     backgroundColor: '#09090bec',
-    maxWidth: '90%',
+    maxWidth: '2200px',
     margin: 'auto',
   },
 }
 
-export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({
-  title,
-  children,
-  maxWidth,
-  loading,
-  sx,
-  titleSx,
-}) => {
+export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({ title, children, loading, titleSx }) => {
   const theme = useTheme()
   return (
-    <>
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        height: '100%',
+      }}
+    >
       <Paper elevation={4} sx={styles.paper}>
-        <Container maxWidth={'lg'} sx={{ ...styles.container, ...sx }}>
-          {title && (
+        {title && (
+          <Container sx={{ ...styles.container, flexGrow: 0 }}>
             <Typography
               variant="h4"
               component="h1"
@@ -95,11 +93,11 @@ export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({
             >
               {title}
             </Typography>
-          )}
-        </Container>
-        <Box sx={{ ...styles.container, ...sx }}>{children}</Box>
+          </Container>
+        )}
+        <Box sx={{ ...styles.container, flexGrow: 1, overflow: 'hidden' }}>{children}</Box>
       </Paper>
       <PageLoader title="Loading..." loading={loading} />
-    </>
+    </Box>
   )
 }

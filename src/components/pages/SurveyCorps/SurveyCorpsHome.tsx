@@ -1,13 +1,26 @@
 import * as React from 'react'
 
-import { Box, Container, MenuItem, Select, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  MenuItem,
+  Modal,
+  Select,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import { ShipOreDistribution } from './ShipOreDistribution'
 import { GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { getEpochFromVersion, ObjectValues, scVersion, ScVersionEpochEnum, SurveyData } from '@regolithco/common'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
 import { useGetPublicSurveyDataQuery } from '../../../schema'
-import { EmojiEvents } from '@mui/icons-material'
+import { Close, EmojiEvents, Fullscreen } from '@mui/icons-material'
 import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
@@ -107,6 +120,29 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   setEpoch,
 }) => {
   const theme = useTheme()
+  const [modalOpen, setModalOpen] = React.useState(false)
+
+  const pageContent = React.useMemo(() => {
+    let pContent: React.ReactNode = null
+    switch (tab) {
+      case SurveyTabsEnum.SHIP_ORE:
+        pContent = <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />
+        break
+      case SurveyTabsEnum.SHIP_ORE_CLASS:
+        pContent = <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />
+        break
+      case SurveyTabsEnum.VEHICLE_ORE:
+        pContent = <VehicleOreDistribution data={surveyData?.vehicleProbs} />
+        break
+      case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
+        pContent = <SurveyCorpsAbout />
+        break
+      case SurveyTabsEnum.LEADERBOARD:
+        pContent = <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />
+        break
+    }
+    return pContent
+  }, [surveyData, epoch, tab])
 
   return (
     <TablePageWrapper
@@ -139,11 +175,6 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         </Stack>
       }
       loading={loading}
-      sx={
-        {
-          //
-        }
-      }
     >
       <Container maxWidth={'lg'} sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
         <Stack
@@ -173,6 +204,14 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
             <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
             <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
           </Tabs>
+          <Button
+            onClick={() => setModalOpen(true)}
+            color="primary"
+            startIcon={<Fullscreen />}
+            disabled={tab === SurveyTabsEnum.LEADERBOARD || tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS}
+          >
+            Fullscreen
+          </Button>
           {/* Epoch selector */}
           <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
             {Object.values(ScVersionEpochEnum).map((epoch) => (
@@ -184,23 +223,52 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         </Stack>
       </Container>
       <Box
-        sx={
-          {
-            //
-          }
-        }
+        sx={{
+          height: '100%',
+          overflow: 'hidden',
+        }}
       >
         {/* Fitler box */}
-        {tab === SurveyTabsEnum.SHIP_ORE && (
-          <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />
+        {modalOpen ? (
+          // Fullscreen modal
+          <Modal
+            open
+            onClose={() => setModalOpen(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                backgroundColor: '#262728',
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20,
+                }}
+              >
+                <IconButton onClick={() => setModalOpen(false)} color="error">
+                  <Close />
+                </IconButton>
+              </Box>
+              {pageContent}
+            </Box>
+          </Modal>
+        ) : (
+          pageContent
         )}
-        {tab === SurveyTabsEnum.SHIP_ORE_CLASS && (
-          <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />
-        )}
-
-        {tab === SurveyTabsEnum.VEHICLE_ORE && <VehicleOreDistribution data={surveyData?.vehicleProbs} />}
-        {tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS && <SurveyCorpsAbout />}
-        {tab === SurveyTabsEnum.LEADERBOARD && <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />}
       </Box>
     </TablePageWrapper>
   )

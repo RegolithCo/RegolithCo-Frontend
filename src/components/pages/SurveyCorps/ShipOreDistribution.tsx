@@ -25,18 +25,10 @@ import {
   useTheme,
 } from '@mui/material'
 import { getGravityWellOptions, GravityWellChooser, GravityWellNameRender } from '../../fields/GravityWellChooser'
-import {
-  hoverColor,
-  OreTierColors,
-  OreTierEnum,
-  OreTierNames,
-  selectBorderColor,
-  selectColor,
-  ShipOreTiers,
-} from './types'
+import { hoverColor, OreTierColors, OreTierEnum, selectBorderColor, selectColor, ShipOreTiers } from './types'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { GravityWell, Lookups, SurveyData } from '@regolithco/common'
+import { GravityWell, Lookups, OreTierNames, SurveyData } from '@regolithco/common'
 import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -54,6 +46,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   const styles = tableStylesThunk(theme)
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const tHeadRef = React.useRef<HTMLTableSectionElement>(null)
+  const tContainerRef = React.useRef<HTMLDivElement>(null)
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
   // Hover state: [colNum, left, width, color]
@@ -73,6 +66,17 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   const [gravityWellFilter, setGravityWellFilter] = React.useState<string | null>(null)
 
   const dataStore = React.useContext(LookupsContext)
+
+  const handleGravityWellFilter = React.useCallback((newGrav: string | null) => {
+    setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
+    // if tContainerRef exists scroll to the top
+    setTimeout(() => {
+      console.log('scrolling', tContainerRef.current)
+      if (tContainerRef.current) {
+        tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
+      }
+    }, 1000)
+  }, [])
 
   const gravityWells = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
@@ -99,16 +103,35 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         if (!retVal['STAT_USERS']) retVal['STAT_USERS'] = { max: 0, min: 0 }
         const oldUsersMax = retVal['STAT_USERS'].max || 0
         retVal['STAT_USERS'].max = Math.max(oldUsersMax, users)
+
         // Calculate the scans
         const scans = dataCols[row.id]?.scans || 0
         if (!retVal['STAT_SCANS']) retVal['STAT_SCANS'] = { max: 0, min: 0 }
         const oldScansMax = retVal['STAT_SCANS'].max || 0
         retVal['STAT_SCANS'].max = Math.max(oldScansMax, scans)
+
         // Calculate the clusters
         const clusters = dataCols[row.id]?.clusters || 0
         if (!retVal['STAT_CLUSTERS']) retVal['STAT_CLUSTERS'] = { max: 0, min: 0 }
         const oldClustersMax = retVal['STAT_CLUSTERS'].max || 0
         retVal['STAT_CLUSTERS'].max = Math.max(oldClustersMax, clusters)
+
+        // Calculate max clusterSizeMax
+        const clusterSizeMax = dataCols[row.id]?.clusterCount.max || 0
+        if (!retVal['STAT_CLUSTER_SIZE']) retVal['STAT_CLUSTER_SIZE'] = { max: 0, min: 0 }
+        const oldClusterSizeMax = retVal['STAT_CLUSTER_SIZE'].max || 0
+        const oldClusterSizeMin = retVal['STAT_CLUSTER_SIZE'].min || 0
+        retVal['STAT_CLUSTER_SIZE'].max = Math.max(oldClusterSizeMax, clusterSizeMax)
+        retVal['STAT_CLUSTER_SIZE'].min = Math.min(oldClusterSizeMin, clusterSizeMax)
+
+        // Then the rock mass
+        const rockMassMax = dataCols[row.id]?.mass.max || 0
+        const rockMassMin = dataCols[row.id]?.mass.min || 0
+        if (!retVal['STAT_ROCK_MASS']) retVal['STAT_ROCK_MASS'] = { max: 0, min: 0 }
+        const oldRockMassMax = retVal['STAT_ROCK_MASS'].max || 0
+        const oldRockMassMin = retVal['STAT_ROCK_MASS'].min || 0
+        retVal['STAT_ROCK_MASS'].max = Math.max(oldRockMassMax, rockMassMax)
+        retVal['STAT_ROCK_MASS'].min = Math.min(oldRockMassMin, rockMassMin)
 
         // Then the ores
         Object.keys(OreTierNames).forEach((tier, idx) => {
@@ -159,6 +182,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
     const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
+    const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
     console.log('gravityWellOptions', gravityWellOptions)
 
@@ -185,6 +209,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       let normUsers = 0
       let normScans = 0
       let normClusters = 0
+      let normClusterSize = 0
+      let normRockMass = 0
 
       let users = 0
       let clusters = 0
@@ -206,6 +232,16 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
         normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
         normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
+        normClusterSize = calculateNormalizedProbability(
+          data.data[row.id].clusterCount.max,
+          maxMinClusterSize.min,
+          maxMinClusterSize.max
+        )
+        normRockMass = calculateNormalizedProbability(
+          data.data[row.id].mass.max,
+          maxMins['STAT_ROCK_MASS'].min,
+          maxMins['STAT_ROCK_MASS'].max
+        )
 
         maxMass = data.data[row.id].mass.max
         minMass = data.data[row.id].mass.min
@@ -291,7 +327,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 size="small"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setGravityWellFilter((prev) => (prev === row.id ? null : row.id))
+                  handleGravityWellFilter(row.id)
                 }}
                 sx={{
                   position: 'absolute',
@@ -311,7 +347,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             sx={{
               textAlign: 'center',
               fontFamily: fontFamilies.robotoMono,
-              borderLeft: `3px solid ${theme.palette.primary.main}`,
+              borderLeft: `3px solid ${theme.palette.info.main}`,
               backgroundColor: normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
             }}
             onMouseEnter={(e) => {
@@ -344,7 +380,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               sx={{
                 textAlign: 'center',
                 fontFamily: fontFamilies.robotoMono,
-                borderLeft: `3px solid ${theme.palette.primary.main}`,
                 backgroundColor: normClusters ? gradients['STATS'][normClusters] : 'rgba(0,0,0,0)',
               }}
               onMouseEnter={(e) => {
@@ -357,7 +392,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   const rect = e.currentTarget.getBoundingClientRect()
                   const left = rect.left - tableLeft
                   const width = rect.width
-                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  setHoverCol([-2, left, width, theme.palette.info.main])
                   const top = rect.top - tableTop
                   const height = rect.height
                   setHoverRow([idr, top, height, theme.palette.info.main])
@@ -389,7 +424,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               sx={{
                 textAlign: 'center',
                 fontFamily: fontFamilies.robotoMono,
-                borderLeft: `3px solid ${theme.palette.primary.main}`,
                 backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
               }}
               onMouseEnter={(e) => {
@@ -402,7 +436,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   const rect = e.currentTarget.getBoundingClientRect()
                   const left = rect.left - tableLeft
                   const width = rect.width
-                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  setHoverCol([-3, left, width, theme.palette.info.main])
                   const top = rect.top - tableTop
                   const height = rect.height
                   setHoverRow([idr, top, height, theme.palette.info.main])
@@ -429,8 +463,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               sx={{
                 textAlign: 'center',
                 fontFamily: fontFamilies.robotoMono,
-                borderLeft: `3px solid ${theme.palette.primary.main}`,
-                backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
+                backgroundColor: normUsers ? gradients['STATS'][normClusterSize] : 'rgba(0,0,0,0)',
               }}
               onMouseEnter={(e) => {
                 if (tBodyRef.current) {
@@ -442,7 +475,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   const rect = e.currentTarget.getBoundingClientRect()
                   const left = rect.left - tableLeft
                   const width = rect.width
-                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  setHoverCol([-4, left, width, theme.palette.info.main])
                   const top = rect.top - tableTop
                   const height = rect.height
                   setHoverRow([idr, top, height, theme.palette.info.main])
@@ -472,8 +505,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               sx={{
                 textAlign: 'center',
                 fontFamily: fontFamilies.robotoMono,
-                borderLeft: `3px solid ${theme.palette.primary.main}`,
-                backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
+                backgroundColor: normUsers ? gradients['STATS'][normRockMass] : 'rgba(0,0,0,0)',
               }}
               onMouseEnter={(e) => {
                 if (tBodyRef.current) {
@@ -485,7 +517,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   const rect = e.currentTarget.getBoundingClientRect()
                   const left = rect.left - tableLeft
                   const width = rect.width
-                  setHoverCol([-1, left, width, theme.palette.info.main])
+                  setHoverCol([-5, left, width, theme.palette.info.main])
                   const top = rect.top - tableTop
                   const height = rect.height
                   setHoverRow([idr, top, height, theme.palette.info.main])
@@ -628,7 +660,14 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   ])
 
   return (
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
       <Container maxWidth={'lg'} sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
         {/* Fitler box */}
         <Typography variant="overline" sx={{ marginBottom: theme.spacing(2) }}>
@@ -637,7 +676,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         <Stack direction="row" spacing={2} sx={{ marginBottom: theme.spacing(2) }}>
           <GravityWellChooser
             onClick={(newGrav) => {
-              setGravityWellFilter(newGrav)
+              handleGravityWellFilter(newGrav)
             }}
             wellId={gravityWellFilter}
           />
@@ -728,7 +767,16 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       </Container>
 
       {/* Table Box */}
-      <Paper sx={{ mb: 4, position: 'relative' }}>
+      <Paper
+        sx={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          overflow: 'hidden',
+        }}
+      >
+        {/* the table header background box */}
         <Box
           sx={{
             pt: 16,
@@ -742,7 +790,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           }}
         />
         {data && (
-          <TableContainer sx={styles.tableStickyHead}>
+          <TableContainer sx={{ ...styles.tableStickyHead, maxHeight: '100%' }} ref={tContainerRef}>
             <Table size="small" aria-label="simple table" stickyHeader>
               <TableHead ref={tHeadRef}>
                 <TableRow>
@@ -779,14 +827,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       sx={{
                         backgroundColor: 'transparent',
                         borderBottom:
-                          hoverCol && hoverCol[0] === -1
+                          hoverCol && hoverCol[0] === -2
                             ? `3px solid ${theme.palette.info.main}`
                             : `3px solid ${hoverColor}`,
                         '& .MuiTypography-caption': {
                           fontSize: '1.2em',
-                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          fontWeight: hoverCol && hoverCol[0] === -2 ? 'bold' : undefined,
                           paddingLeft: theme.spacing(5),
-                          borderTop: `3px solid ${theme.palette.info.main}`,
                         },
                       }}
                     >
@@ -799,14 +846,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       sx={{
                         backgroundColor: 'transparent',
                         borderBottom:
-                          hoverCol && hoverCol[0] === -1
+                          hoverCol && hoverCol[0] === -3
                             ? `3px solid ${theme.palette.info.main}`
                             : `3px solid ${hoverColor}`,
                         '& .MuiTypography-caption': {
                           fontSize: '1.2em',
-                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          fontWeight: hoverCol && hoverCol[0] === -3 ? 'bold' : undefined,
                           paddingLeft: theme.spacing(5),
-                          borderTop: `3px solid ${theme.palette.info.main}`,
                         },
                       }}
                     >
@@ -818,14 +864,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       sx={{
                         backgroundColor: 'transparent',
                         borderBottom:
-                          hoverCol && hoverCol[0] === -1
+                          hoverCol && hoverCol[0] === -4
                             ? `3px solid ${theme.palette.info.main}`
                             : `3px solid ${hoverColor}`,
                         '& .MuiTypography-caption': {
                           fontSize: '1.2em',
-                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          fontWeight: hoverCol && hoverCol[0] === -4 ? 'bold' : undefined,
                           paddingLeft: theme.spacing(5),
-                          borderTop: `3px solid ${theme.palette.info.main}`,
                         },
                       }}
                     >
@@ -837,14 +882,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       sx={{
                         backgroundColor: 'transparent',
                         borderBottom:
-                          hoverCol && hoverCol[0] === -1
+                          hoverCol && hoverCol[0] === -5
                             ? `3px solid ${theme.palette.info.main}`
                             : `3px solid ${hoverColor}`,
                         '& .MuiTypography-caption': {
                           fontSize: '1.2em',
-                          fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                          fontWeight: hoverCol && hoverCol[0] === -5 ? 'bold' : undefined,
                           paddingLeft: theme.spacing(5),
-                          borderTop: `3px solid ${theme.palette.info.main}`,
                         },
                       }}
                     >

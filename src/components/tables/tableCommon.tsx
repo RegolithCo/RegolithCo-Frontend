@@ -25,7 +25,6 @@ export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> =
   tableStickyHead: {
     width: 'auto',
     position: 'relative',
-    maxHeight: '80vh',
     '& table': {
       borderCollapse: 'separate',
       '& th:first-of-type': {

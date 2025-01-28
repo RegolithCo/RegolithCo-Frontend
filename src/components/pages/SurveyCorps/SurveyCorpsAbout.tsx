@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Alert, Button, Container, Link, Typography, useTheme } from '@mui/material'
+import { Alert, Button, Container, Divider, Link, Typography, useTheme } from '@mui/material'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { AppContext } from '../../../context/app.context'
 import { LoginContext } from '../../../hooks/useOAuth2'
@@ -22,7 +22,14 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
     <Container
       maxWidth="md"
       sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'auto',
         pt: 4,
+        '& .MuiDivider-root': {
+          my: 2,
+        },
       }}
     >
       <Typography variant="h5" paragraph>
@@ -61,14 +68,15 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
         FAQ:
       </Typography>
 
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "How does this work?"
       </Typography>
       <Typography paragraph variant="body2">
         When you scout a rock cluster, ROC Gem cluster or salvage site in your normal sessions you will have the option
         to contribute this data (on by default) to the global stats pool.
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Divider />
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "Why should I enlist?"
       </Typography>
       <Typography paragraph variant="body2" component="div">
@@ -82,14 +90,17 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
           <li>Maybe you like scanning and finding rocks more than you like mining them.</li>
         </ul>
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Divider />
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "Can I add scan data from before I joined?"
       </Typography>
       <Typography paragraph variant="body2">
         Yes! You will need to go back to your previous scans and enable the "Survey Corps" checkbox on each scan though.
         Also don't forget to add location data and a rock class if you still remember it.
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Divider />
+
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "I added scans but they aren't showing!"
       </Typography>
       <Typography paragraph variant="body2" component="div">
@@ -113,7 +124,8 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
           </li>
         </ul>
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Divider />
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "What's an Epoch? Is that like a version of Star Citizen?"
       </Typography>
       <Typography paragraph variant="body2">
@@ -126,14 +138,17 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
         fresh surveys to collect new data. Old epoch data should still be available going forward to help with the lack
         of data after an epoch change but before users have had time to survey it properly.
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Divider />
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "What happens if I leave the Corps?"
       </Typography>
       <Typography paragraph variant="body2" component="div">
         If you leave the Corps any scouting finds from that point onward will no longer be included in the global stats.
         Your existing data will still be included though. You can re-enlist at any time.
       </Typography>
-      <Typography paragraph variant="subtitle1" color="primary" fontStyle="italic">
+      <Divider />
+
+      <Typography paragraph variant="h5" color="primary" fontStyle="italic">
         Q: "What are the best practices for a Surveyor?"
       </Typography>
       <Typography
