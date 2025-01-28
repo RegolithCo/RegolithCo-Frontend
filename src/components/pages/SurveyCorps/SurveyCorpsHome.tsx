@@ -12,6 +12,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { ShipOreDistribution } from './ShipOreDistribution'
@@ -25,6 +26,7 @@ import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
+import { PageLoader } from '../PageLoader'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'rocks',
@@ -94,6 +96,7 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
   return (
     <SurveyCorpsHome
       navigate={navigate}
+      loading={vehicleProbs.loading || shipOreByGravProb.loading || shipOreByRockClassProb.loading}
       tab={tab as SurveyTabsEnum}
       surveyData={surveyData}
       epoch={epoch}
@@ -120,30 +123,47 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   setEpoch,
 }) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+
   const [modalOpen, setModalOpen] = React.useState(false)
 
-  const pageContent = React.useMemo(() => {
-    let pContent: React.ReactNode = null
-    switch (tab) {
-      case SurveyTabsEnum.SHIP_ORE:
-        pContent = <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />
-        break
-      case SurveyTabsEnum.SHIP_ORE_CLASS:
-        pContent = <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />
-        break
-      case SurveyTabsEnum.VEHICLE_ORE:
-        pContent = <VehicleOreDistribution data={surveyData?.vehicleProbs} />
-        break
-      case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
-        pContent = <SurveyCorpsAbout />
-        break
-      case SurveyTabsEnum.LEADERBOARD:
-        pContent = <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />
-        break
-    }
-    return pContent
-  }, [surveyData, epoch, tab])
+  const leaderBoard = React.useMemo(
+    () => <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />,
+    [surveyData?.leaderBoard?.data]
+  )
+  const rockLocation = React.useMemo(
+    () => <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />,
+    [surveyData?.bonusMap?.data, surveyData?.shipOreByGravProb?.data]
+  )
+  const rockType = React.useMemo(
+    () => <ShipOreClassDistribution data={surveyData?.shipOreByRockClassProb} />,
+    [surveyData?.shipOreByRockClassProb?.data]
+  )
+  const vehicleOre = React.useMemo(
+    () => <VehicleOreDistribution data={surveyData?.vehicleProbs} />,
+    [surveyData?.vehicleProbs?.data]
+  )
 
+  let pageContent: React.ReactNode = null
+  switch (tab) {
+    case SurveyTabsEnum.SHIP_ORE:
+      pageContent = rockLocation
+      break
+    case SurveyTabsEnum.SHIP_ORE_CLASS:
+      pageContent = rockType
+      break
+    case SurveyTabsEnum.VEHICLE_ORE:
+      pageContent = vehicleOre
+      break
+    case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
+      pageContent = <SurveyCorpsAbout isSmall />
+      break
+    case SurveyTabsEnum.LEADERBOARD:
+      pageContent = leaderBoard
+      break
+  }
+
+  const iconSize = isSmall ? 24 : 48
   return (
     <TablePageWrapper
       title={
@@ -158,12 +178,12 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         >
           <SurveyCorpsIcon
             sx={{
-              width: 48,
-              height: 48,
+              width: iconSize,
+              height: iconSize,
             }}
           />
           <Typography
-            variant="h4"
+            variant={isSmall ? 'h6' : 'h4'}
             sx={{
               fontFamily: theme.typography.fontFamily,
               fontWeight: 'bold',
@@ -173,6 +193,38 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
             Regolith Survey Corps
           </Typography>
         </Stack>
+      }
+      bottomFixed={
+        isSmall && (
+          <Tabs
+            variant="scrollable"
+            sx={{
+              borderTop: '2px solid',
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+              '& .MuiTab-root': {
+                color: theme.palette.primary.contrastText,
+              },
+              '& .Mui-selected': {
+                backgroundColor: theme.palette.secondary.main,
+                // color: theme.palette.primary.light,
+                // textShadow: '0 0 2px #FFF',
+              },
+            }}
+            allowScrollButtonsMobile
+            value={tab}
+            onChange={(_, newValue) => {
+              navigate && navigate(`/survey/${newValue}`)
+            }}
+            aria-label="basic tabs example"
+          >
+            <Tab label="About" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
+            <Tab label="Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
+            <Tab label="Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
+            <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
+            <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
+          </Tabs>
+        )
       }
       loading={loading}
     >
@@ -185,47 +237,55 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
           spacing={2}
           component={'div'}
         >
-          <Tabs
-            value={tab}
-            sx={{
-              flex: '1 1',
-              width: '100%',
-            }}
-            variant="scrollable"
-            scrollButtons="auto"
-            onChange={(_, newValue) => {
-              navigate && navigate(`/survey/${newValue}`)
-              // setActiveTab(newValue)
-            }}
-          >
-            <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
-            <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
-            <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
-            <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
-            <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
-          </Tabs>
-          <Button
-            onClick={() => setModalOpen(true)}
-            color="primary"
-            startIcon={<Fullscreen />}
-            disabled={tab === SurveyTabsEnum.LEADERBOARD || tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS}
-          >
-            Fullscreen
-          </Button>
+          {!isSmall && (
+            // DESKTOP TABS
+            <Tabs
+              value={tab}
+              sx={{
+                flex: '1 1',
+                width: '100%',
+              }}
+              variant="scrollable"
+              scrollButtons="auto"
+              onChange={(_, newValue) => {
+                navigate && navigate(`/survey/${newValue}`)
+                // setActiveTab(newValue)
+              }}
+            >
+              <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
+              <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
+              <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
+              <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
+              <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
+            </Tabs>
+          )}
+          {!isSmall && (
+            <Button
+              onClick={() => setModalOpen(true)}
+              color="primary"
+              startIcon={<Fullscreen />}
+              disabled={tab === SurveyTabsEnum.LEADERBOARD || tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS}
+            >
+              Fullscreen
+            </Button>
+          )}
           {/* Epoch selector */}
-          <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
-            {Object.values(ScVersionEpochEnum).map((epoch) => (
-              <MenuItem key={epoch} value={epoch}>
-                Epoch: {epoch}
-              </MenuItem>
-            ))}
-          </Select>
+          {!isSmall && (
+            <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
+              {Object.values(ScVersionEpochEnum).map((epoch) => (
+                <MenuItem key={epoch} value={epoch}>
+                  Epoch: {epoch}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
         </Stack>
       </Container>
       <Box
+        id="SurveyCorpsHome"
         sx={{
           height: '100%',
-          overflow: 'hidden',
+          overflow: isSmall ? 'visible' : 'hidden',
         }}
       >
         {/* Fitler box */}
@@ -248,7 +308,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'hidden',
+                overflow: isSmall ? 'visible' : 'hidden',
                 backgroundColor: '#262728',
               }}
             >
@@ -269,6 +329,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         ) : (
           pageContent
         )}
+        {/* Mobile-only menu */}
       </Box>
     </TablePageWrapper>
   )

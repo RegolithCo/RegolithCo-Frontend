@@ -21,6 +21,7 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import {
@@ -50,6 +51,8 @@ export interface ShipOreClassDistributionProps {
 
 export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> = ({ data }) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+
   const [hoveredOre, setHoveredOre] = React.useState<ShipOreEnum | null>(null)
   const [rockTypeFilter, setRockTypeFilter] = React.useState<('SURFACE' | 'ASTEROID')[]>(['SURFACE', 'ASTEROID'])
   const [oreTierFilter, setOreTierFilter] = React.useState<OreTierEnum[]>([
@@ -66,11 +69,24 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
         display: 'flex',
         height: '100%',
         flexDirection: 'column',
-        overflowY: 'auto',
+        overflowY: isSmall ? 'visible' : 'auto',
       }}
     >
-      <Container maxWidth={'lg'} sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0', my: 2 }}>
-        <Stack direction="row" spacing={2} sx={{ marginBottom: theme.spacing(2) }} alignItems="center">
+      <Container
+        maxWidth={'lg'}
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          flex: '0 0',
+          my: 2,
+        }}
+      >
+        <Stack
+          direction={isSmall ? 'column' : 'row'}
+          spacing={2}
+          sx={{ marginBottom: theme.spacing(2) }}
+          alignItems="center"
+        >
           <Typography variant="overline" sx={{ marginBottom: theme.spacing(2) }}>
             Filter Options:
           </Typography>
@@ -136,19 +152,19 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
           {rockTypeFilter.includes('ASTEROID') && (
             <>
               <Typography
-                variant="h2"
+                variant={isSmall ? 'h5' : 'h2'}
                 sx={{
                   fontFamily: fontFamilies.robotoMono,
                   // fontWeight: 'bold',
                   color: theme.palette.text.primary,
                   borderBottom: `2px solid ${theme.palette.text.primary}`,
                   marginBottom: theme.spacing(2),
-                  my: 5,
+                  my: isSmall ? 2 : 5,
                 }}
               >
                 <RockIcon
                   sx={{
-                    fontSize: '3rem',
+                    fontSize: isSmall ? '2rem' : '3rem',
                     color: 'inherit',
                     mr: 2,
                   }}
@@ -174,19 +190,19 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
           {rockTypeFilter.includes('SURFACE') && (
             <>
               <Typography
-                variant="h2"
+                variant={isSmall ? 'h5' : 'h2'}
                 sx={{
                   fontFamily: fontFamilies.robotoMono,
                   // fontWeight: 'bold',
                   color: theme.palette.text.primary,
                   borderBottom: `2px solid ${theme.palette.text.primary}`,
                   marginBottom: theme.spacing(2),
-                  my: 5,
+                  my: isSmall ? 2 : 5,
                 }}
               >
                 <RockIcon
                   sx={{
-                    fontSize: '3rem',
+                    fontSize: isSmall ? '2rem' : '3rem',
                     color: 'inherit',
                     mr: 2,
                   }}
@@ -247,6 +263,8 @@ const ClassCard: React.FC<ClassCardProps> = ({
   setOreTierFilter,
 }) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+
   const sortedShipRowColors = useShipOreColors()
 
   const mass = (data && data['mass']) || {}

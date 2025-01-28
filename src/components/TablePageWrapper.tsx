@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Box, Container, Paper, SxProps, Typography } from '@mui/material'
+import { Box, Container, Paper, SxProps, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { PageLoader } from './pages/PageLoader'
-import { Theme, useTheme } from '@mui/system'
 import { fontFamilies } from '../theme'
 
 export interface TablePageWrapperProps {
@@ -9,6 +8,7 @@ export interface TablePageWrapperProps {
   children: React.ReactNode
   loading?: boolean
   titleSx?: SxProps<Theme>
+  bottomFixed?: React.ReactNode
 }
 
 const styles = {
@@ -26,20 +26,26 @@ const styles = {
     flexDirection: 'column',
     overflow: 'hidden',
     height: '100%',
-
     py: {
       xs: 0,
       sm: 2,
       md: 3,
       lg: 4,
     },
-    px: {
+    pl: {
       xs: 2,
       sm: 2,
       md: 2,
       lg: 4,
     },
+    pr: {
+      xs: 0,
+      sm: 0,
+      md: 0,
+      lg: 4,
+    },
     my: {
+      sm: 2,
       md: 4,
     },
     border: {
@@ -48,23 +54,37 @@ const styles = {
     },
     backgroundColor: '#09090bec',
     maxWidth: '2200px',
-    margin: 'auto',
   },
 }
 
-export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({ title, children, loading, titleSx }) => {
+export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({
+  title,
+  children,
+  loading,
+  titleSx,
+  bottomFixed,
+}) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   return (
     <Box
+      id="TablePageWrapper"
       sx={{
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        overflowY: isSmall ? 'auto' : 'hidden',
         height: '100%',
       }}
     >
-      <Paper elevation={4} sx={styles.paper}>
+      <Paper
+        elevation={4}
+        sx={{
+          ...styles.paper,
+          margin: isSmall ? '0' : 'auto',
+        }}
+      >
         {title && (
           <Container sx={{ ...styles.container, flexGrow: 0 }}>
             <Typography
@@ -81,7 +101,7 @@ export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({ title, child
                 },
                 textAlign: 'center',
                 py: {
-                  xs: 3,
+                  xs: 1,
                   sm: 0,
                 },
                 color: theme.palette.primary.light,
@@ -95,8 +115,20 @@ export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({ title, child
             </Typography>
           </Container>
         )}
-        <Box sx={{ ...styles.container, flexGrow: 1, overflow: 'hidden' }}>{children}</Box>
+        <Box
+          id="TablePageWrapperInner"
+          sx={{
+            ...styles.container,
+            flexGrow: 1,
+            //
+            overflow: 'hidden',
+            overflowY: isSmall ? 'visible' : 'hidden',
+          }}
+        >
+          {children}
+        </Box>
       </Paper>
+      {bottomFixed}
       <PageLoader title="Loading..." loading={loading} />
     </Box>
   )

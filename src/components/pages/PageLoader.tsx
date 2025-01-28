@@ -37,6 +37,7 @@ to {
 
 const useStyleBig = (theme: Theme): Record<string, React.CSSProperties> => ({
   wrapper: {
+    zIndex: 2000,
     position: 'fixed',
     top: '50%',
     left: '50%',

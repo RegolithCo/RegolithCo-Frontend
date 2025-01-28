@@ -141,6 +141,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
               surveyData: {
                 keyArgs: ['dataName', 'epoch'],
                 read(existingData, { args }) {
+                  const storedVersion = localStorage.getItem('LookupData:version')
                   // log.debug('Reading SurveyData from cache', args)
                   const { dataName, epoch } = args as { dataName: string; epoch: string }
                   if (!dataName || !epoch) return existingData
@@ -148,10 +149,14 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   const cached = localStorage.getItem(`SurveyData:${epoch}:${dataName}`)
                   if (!cached) return existingData
 
+                  const version = getVersion()
                   const parsed = JSON.parse(cached)
 
                   // If the data is older than an hour or the epoch has changed, we need to refresh
-                  if (epoch !== CURRENT_SC_EPOCH || Date.now() - Number(parsed.lastUpdated) < 60 * 60 * 1000) {
+                  if (
+                    version === storedVersion &&
+                    (epoch !== CURRENT_SC_EPOCH || Date.now() - Number(parsed.lastUpdated) < 60 * 60 * 1000)
+                  ) {
                     // log.debug(`SurveyData CACHE HIT: ${epoch} ${dataName}`, parsed)
                     return parsed
                   }

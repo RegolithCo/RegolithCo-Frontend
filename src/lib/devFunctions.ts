@@ -1,12 +1,12 @@
 import { AuthTypeEnum } from '@regolithco/common'
 import log from 'loglevel'
-import axios from 'axios'
-import config from '../config'
+import { wipeLocalLookups } from './utils'
 
 export let DEV_HEADERS: Record<string, string> = {}
 
 declare global {
   interface Window {
+    clearLookups: () => void
     dev_user: (devUserId?: string) => void
   }
 }
@@ -21,6 +21,9 @@ if (import.meta.env.MODE === 'development') {
    * @param authId
    * @param authType
    */
+  window.clearLookups = () => {
+    wipeLocalLookups()
+  }
   window.dev_user = (authId?: string, authType?: AuthTypeEnum) => {
     if (!authId) {
       delete DEV_HEADERS['dev_user']

@@ -13,6 +13,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { JSONObject, ScVersionEpochEnum, SurveyData, UserProfile } from '@regolithco/common'
@@ -29,6 +30,7 @@ export interface SurveyCorpsLeaderBoardProps {
 
 export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ userProfile, data, epoch }) => {
   const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   const finalData = (data?.data as []) || []
   const gradient = React.useMemo(
@@ -48,22 +50,29 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
   const borderColors = gradient.map((color) => {
     return darken(color, 0.5)
   })
+  const h4Size = isSmall ? 'h6' : 'h4'
 
   return (
     <Container
       maxWidth="md"
       sx={{
         pt: 4,
+        overflow: 'hidden',
+        overflowY: 'auto',
+        height: '100%',
       }}
     >
       <Typography
-        variant="h4"
+        variant={h4Size}
         paragraph
         sx={{
           borderBottom: '1px solid white',
         }}
       >
-        Survey Corps Leaderboard (epoch {epoch})
+        Survey Corps Leaderboard
+      </Typography>
+      <Typography variant={'overline'} paragraph sx={{}}>
+        epoch {epoch}
       </Typography>
 
       {data && (
@@ -79,9 +88,9 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
         >
           {/* HEADER */}
           <ListItem>
-            <ListItemAvatar sx={{ mr: 3 }}>
+            <ListItemAvatar sx={{ mr: isSmall ? 0 : 3 }}>
               <Typography
-                variant="h4"
+                variant={h4Size}
                 sx={{
                   fontWeight: 'bold',
                   fontFamily: fontFamilies.robotoMono,
@@ -94,7 +103,7 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
             <ListItemText
               primary={'Name'}
               primaryTypographyProps={{
-                variant: 'h4',
+                variant: h4Size,
                 sx: {
                   fontWeight: 'bold',
                   fontFamily: fontFamilies.robotoMono,
@@ -103,7 +112,7 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
             />
             <ListItemSecondaryAction>
               <Typography
-                variant="h4"
+                variant={h4Size}
                 sx={{
                   fontWeight: 'bold',
                   fontFamily: fontFamilies.robotoMono,
@@ -123,13 +132,13 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
                 backgroundColor: bgColors[idx],
               }}
             >
-              <ListItemAvatar sx={{ mr: 3 }}>
+              <ListItemAvatar sx={{ mr: isSmall ? 0 : 3 }}>
                 <Avatar
                   sx={{
-                    height: 50,
-                    width: 50,
+                    height: isSmall ? 30 : 50,
+                    width: isSmall ? 30 : 50,
                     color: contrastColors[idx],
-                    fontSize: '2rem',
+                    fontSize: isSmall ? '1rem' : '2rem',
                     border: `4px solid ${borderColors[idx]}`,
                     backgroundColor: gradient[idx],
                   }}
@@ -140,7 +149,7 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
               <ListItemText
                 primary={entry['name']}
                 primaryTypographyProps={{
-                  variant: 'h4',
+                  variant: h4Size,
                   sx: {
                     fontWeight: 'bold',
                     fontFamily: fontFamilies.robotoMono,

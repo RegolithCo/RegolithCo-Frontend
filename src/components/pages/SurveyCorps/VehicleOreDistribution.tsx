@@ -428,6 +428,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
           overflow: 'hidden',
         }}
       >
+        {/* the table header background box */}
         <Box
           sx={{
             pt: 16,
@@ -542,6 +543,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             <TableBody
               ref={tBodyRef}
               sx={{
+                zIndex: 0,
                 position: 'relative',
               }}
               onMouseLeave={() => {

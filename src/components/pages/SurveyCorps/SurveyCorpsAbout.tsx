@@ -10,9 +10,10 @@ import { SurveyCorpsIcon } from '../../../icons'
 export interface SurveyCorpsAboutProps {
   // Props here
   userProfile?: UserProfile
+  isSmall?: boolean
 }
 
-export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile }) => {
+export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile, isSmall }) => {
   const theme = useTheme()
   const { hideNames, setHideNames } = React.useContext(AppContext)
   const { maintenanceMode, isAuthenticated, isInitialized } = React.useContext(LoginContext)
@@ -25,7 +26,8 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile 
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        overflowY: 'auto',
+        overflow: 'hidden',
+        overflowY: isSmall ? 'visible' : 'auto',
         pt: 4,
         '& .MuiDivider-root': {
           my: 2,
