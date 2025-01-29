@@ -71,7 +71,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
     // if tContainerRef exists scroll to the top
     setTimeout(() => {
-      console.log('scrolling', tContainerRef.current)
       if (tContainerRef.current) {
         tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
       }
@@ -185,15 +184,11 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
     const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
-    console.log('gravityWellOptions', gravityWellOptions)
-
     return gravityWellOptions.map((row, idr) => {
       let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
         hide = true
       }
-
-      console.log('gravityWellOptions row', row)
 
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
@@ -370,7 +365,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           >
             <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
               <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
-                {MValueFormatter(bonus, MValueFormat.number) + 'X'}
+                {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
               </Typography>
             </Tooltip>
           </TableCell>

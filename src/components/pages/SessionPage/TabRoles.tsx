@@ -123,7 +123,6 @@ export const RolesTab: React.FC<RolesTabProps> = ({ onChangeSession, onChangeSet
     })
   }, [session?.activeMembers, session?.mentionedUsers, groupCrew, mySessionUser, captains])
 
-  // console.log('CAKE', allCrew, session)
   return (
     <Box sx={styles.tabContainerOuter}>
       {/* Here's our scrollbox */}

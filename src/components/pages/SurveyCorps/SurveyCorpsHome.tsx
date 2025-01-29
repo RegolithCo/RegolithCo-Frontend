@@ -26,7 +26,6 @@ import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
-import { PageLoader } from '../PageLoader'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'rocks',
@@ -253,7 +252,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
               }}
             >
               <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
-              <Tab label="Rock Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
+              <Tab label="Ore Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
               <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
               <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
               <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />

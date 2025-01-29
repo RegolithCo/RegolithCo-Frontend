@@ -60,7 +60,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
     // if tContainerRef exists scroll to the top
     setTimeout(() => {
-      console.log('scrolling', tContainerRef.current)
       if (tContainerRef.current) {
         tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
       }

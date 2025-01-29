@@ -205,7 +205,6 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                       return false
                     }
                   })
-                  console.log('deliverableWorkOrders', deliverableWorkOrders)
 
                   return (
                     <TreeItem
