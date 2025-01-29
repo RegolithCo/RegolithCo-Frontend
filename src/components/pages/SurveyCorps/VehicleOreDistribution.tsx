@@ -80,7 +80,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       if (tContainerRef.current) {
         tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
       }
-    }, 1000)
+    }, 100)
   }, [])
 
   const handleMouseEnter = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>, tier, idr, colIdx, bgc) => {

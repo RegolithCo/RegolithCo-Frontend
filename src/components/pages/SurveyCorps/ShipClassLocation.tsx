@@ -18,6 +18,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Theme,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -25,7 +26,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { getGravityWellOptions, GravityWellChooser, GravityWellNameRender } from '../../fields/GravityWellChooser'
-import { hoverColor, OreTierColors, OreTierEnum, selectBorderColor, selectColor, ShipOreTiers } from './types'
+import { hoverColor, selectBorderColor, selectColor } from './types'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
 import {
@@ -34,7 +35,6 @@ import {
   getRockTypeName,
   GravityWell,
   Lookups,
-  OreTierNames,
   SurveyData,
 } from '@regolithco/common'
 import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
@@ -55,6 +55,8 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const tHeadRef = React.useRef<HTMLTableSectionElement>(null)
   const tContainerRef = React.useRef<HTMLDivElement>(null)
+
+  const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({})
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
   // Hover state: [colNum, left, width, color]
@@ -69,6 +71,19 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
 
   const dataStore = React.useContext(LookupsContext)
 
+  const handleRowClick = React.useCallback((gravWellId: string) => {
+    setSelected((prev) => {
+      if (prev.includes(gravWellId)) {
+        return prev.filter((id) => id !== gravWellId)
+      }
+      const newSelected = [...prev, gravWellId]
+      if (newSelected.length === 0 && filterSelected) {
+        setFilterSelected(false)
+      }
+      return newSelected
+    })
+  }, [])
+
   const handleGravityWellFilter = React.useCallback((newGrav: string | null) => {
     setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
     // if tContainerRef exists scroll to the top
@@ -76,7 +91,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       if (tContainerRef.current) {
         tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
       }
-    }, 1000)
+    }, 100)
   }, [])
 
   const gravityWells = React.useMemo(
@@ -84,578 +99,516 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
     [dataStore]
   ) as GravityWell[]
 
+  const handleMouseEnter = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>, oreKey, idr, colNum) => {
+    if (tBodyRef.current) {
+      // Get the left of the table
+      const tableRect = tBodyRef.current.getBoundingClientRect()
+      const tableLeft = tableRect.left
+      const tableTop = tableRect.top
+      // Get the left and wdith of this tableCell
+      const rect = e.currentTarget.getBoundingClientRect()
+      const left = rect.left - tableLeft
+      const width = rect.width
+      const isSpace = oreKey === 'ASTEROID'
+      setHoverCol([colNum, left, width, theme.palette[isSpace ? 'info' : 'primary'].main])
+      const top = rect.top - tableTop
+      const height = rect.height
+      setHoverRow([idr, top, height, theme.palette[isSpace ? 'info' : 'primary'].main])
+    }
+  }, [])
+
   const gravityWellOptions = React.useMemo(() => getGravityWellOptions(theme, gravityWells), [gravityWells])
 
-  // const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
-  //   // prepopulate the maxMins array
+  React.useEffect(() => {
+    // prepopulate the maxMins array
+    const retVal: Record<string, { max: number | null; min: number | null }> = {
+      STAT_BONUS: { max: 1, min: 1 },
+      STAT_USERS: { max: 0, min: 0 },
+      STAT_SCANS: { max: 0, min: 0 },
+      STAT_CLUSTERS: { max: 0, min: 0 },
+      STAT_CLUSTER_SIZE: { max: 0, min: 0 },
+      STAT_ROCK_MASS: { max: 0, min: 0 },
+    }
+    if (gravityWellOptions && data?.data && bonuses?.data) {
+      gravityWellOptions.forEach((row) => {
+        const dataCols = data?.data || {}
+        // Calculate the bonus
+        const bonusCols = bonuses?.data || {}
+        const bonus = bonusCols[row.id] || 1
+        const oldBonusMax = retVal['STAT_BONUS'].max || 0
+        retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
 
-  //   const retVal: Record<string, { max: number | null; min: number | null }> = {
-  //     STAT_BONUS: { max: 1, min: 1 },
-  //     STAT_USERS: { max: 0, min: 0 },
-  //     STAT_SCANS: { max: 0, min: 0 },
-  //     STAT_CLUSTERS: { max: 0, min: 0 },
-  //     STAT_CLUSTER_SIZE: { max: 0, min: 0 },
-  //     STAT_ROCK_MASS: { max: 0, min: 0 },
-  //   }
-  //   if (gravityWellOptions && data?.data && bonuses?.data) {
-  //     gravityWellOptions.forEach((row) => {
-  //       const dataCols = data?.data || {}
-  //       // Calculate the bonus
-  //       const bonusCols = bonuses?.data || {}
-  //       const bonus = bonusCols[row.id] || 1
-  //       const oldBonusMax = retVal['STAT_BONUS'].max || 0
-  //       retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
-  //       // Calculate the users
-  //       const users = dataCols[row.id]?.users || 0
-  //       const oldUsersMax = retVal['STAT_USERS'].max || 0
-  //       retVal['STAT_USERS'].max = Math.max(oldUsersMax, users)
+        // Calculate the users
+        const users = dataCols[row.id]?.users || 0
+        const oldUsersMax = retVal['STAT_USERS'].max || 0
+        retVal['STAT_USERS'].max = Math.max(oldUsersMax, users)
+        // Calculate the scans
+        const scans = dataCols[row.id]?.scans || 0
+        const oldScansMax = retVal['STAT_SCANS'].max || 0
+        retVal['STAT_SCANS'].max = Math.max(oldScansMax, scans)
+        // Calculate the clusters
+        const clusters = dataCols[row.id]?.clusters || 0
+        const oldClustersMax = retVal['STAT_CLUSTERS'].max || 0
+        retVal['STAT_CLUSTERS'].max = Math.max(oldClustersMax, clusters)
 
-  //       // Calculate the scans
-  //       const scans = dataCols[row.id]?.scans || 0
-  //       const oldScansMax = retVal['STAT_SCANS'].max || 0
-  //       retVal['STAT_SCANS'].max = Math.max(oldScansMax, scans)
+        //       // Calculate max clusterSizeMax
+        //       const clusterSizeMax = dataCols[row.id]?.clusterCount.max || 0
+        //       const oldClusterSizeMax = retVal['STAT_CLUSTER_SIZE'].max || 0
+        //       const oldClusterSizeMin = retVal['STAT_CLUSTER_SIZE'].min || 0
+        //       retVal['STAT_CLUSTER_SIZE'].max = Math.max(oldClusterSizeMax, clusterSizeMax)
+        //       retVal['STAT_CLUSTER_SIZE'].min = Math.min(oldClusterSizeMin, clusterSizeMax)
+        //       // Then the rock mass
+        //       const rockMassMax = dataCols[row.id]?.mass.max || 0
+        //       const rockMassMin = dataCols[row.id]?.mass.min || 0
+        //       const oldRockMassMax = retVal['STAT_ROCK_MASS'].max || 0
+        //       const oldRockMassMin = retVal['STAT_ROCK_MASS'].min || 0
+        //       retVal['STAT_ROCK_MASS'].max = Math.max(oldRockMassMax, rockMassMax)
+        //       retVal['STAT_ROCK_MASS'].min = Math.min(oldRockMassMin, rockMassMin)
 
-  //       // Calculate the clusters
-  //       const clusters = dataCols[row.id]?.clusters || 0
-  //       const oldClustersMax = retVal['STAT_CLUSTERS'].max || 0
-  //       retVal['STAT_CLUSTERS'].max = Math.max(oldClustersMax, clusters)
+        // Then the types
+        const allOres = [...Object.values(AsteroidTypeEnum), ...Object.values(DepositTypeEnum)]
+        allOres.forEach((aType, ido) => {
+          const prob = dataCols[row.id]?.rockTypes[aType]?.prob
+          if (!retVal[aType]) retVal[aType] = { max: null, min: null }
+          const old = retVal[aType]
+          retVal[aType].max = prob ? (old.max ? Math.max(old.max, prob) : prob) : old.max
+          retVal[aType].min = prob ? (old.min ? Math.min(old.min, prob) : prob) : old.min
+        })
+      })
+      setMaxMins(retVal)
+    }
+  }, [gravityWellOptions, data?.data, bonuses?.data])
 
-  //       // Calculate max clusterSizeMax
-  //       const clusterSizeMax = dataCols[row.id]?.clusterCount.max || 0
-  //       const oldClusterSizeMax = retVal['STAT_CLUSTER_SIZE'].max || 0
-  //       const oldClusterSizeMin = retVal['STAT_CLUSTER_SIZE'].min || 0
-  //       retVal['STAT_CLUSTER_SIZE'].max = Math.max(oldClusterSizeMax, clusterSizeMax)
-  //       retVal['STAT_CLUSTER_SIZE'].min = Math.min(oldClusterSizeMin, clusterSizeMax)
+  const gradients = React.useMemo(() => {
+    const retVal = {
+      ASTEROID: new Gradient()
+        .setColorGradient(rgbToHex(darken(theme.palette.info.dark, 0.5)), theme.palette.info.main)
+        .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors()
+        .map((color) => alpha(color, 0.4)),
+      SURFACE: new Gradient()
+        .setColorGradient(rgbToHex(darken(theme.palette.primary.dark, 0.5)), theme.palette.primary.main)
+        .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors()
+        .map((color) => alpha(color, 0.4)),
+      STATS: new Gradient()
+        .setColorGradient(rgbToHex(darken(theme.palette.info.dark, 0.5)), theme.palette.info.main)
+        .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors()
+        .map((color) => alpha(color, 0.4)),
+    }
+    return retVal
+  }, [])
 
-  //       // Then the rock mass
-  //       const rockMassMax = dataCols[row.id]?.mass.max || 0
-  //       const rockMassMin = dataCols[row.id]?.mass.min || 0
-  //       const oldRockMassMax = retVal['STAT_ROCK_MASS'].max || 0
-  //       const oldRockMassMin = retVal['STAT_ROCK_MASS'].min || 0
-  //       retVal['STAT_ROCK_MASS'].max = Math.max(oldRockMassMax, rockMassMax)
-  //       retVal['STAT_ROCK_MASS'].min = Math.min(oldRockMassMin, rockMassMin)
+  const tableRows = React.useMemo(() => {
+    if (!gravityWellOptions || !maxMins || !data) return null
+    const maxMinsBonus = maxMins['STAT_BONUS'] || { max: 1, min: 0 }
+    const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
+    const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
+    const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
+    const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
-  //       // Then the ores
-  //       Object.keys(OreTierNames).forEach((tier, idx) => {
-  //         if (oreTierFilter.includes(tier as OreTierEnum)) {
-  //           ShipOreTiers[tier as OreTierEnum].forEach((ore, idy) => {
-  //             const prob = dataCols[row.id]?.ores[ore]?.prob
-  //             if (!retVal[ore]) retVal[ore] = { max: null, min: null }
-  //             const old = retVal[ore]
-  //             retVal[ore].max = prob ? (old.max ? Math.max(old.max, prob) : prob) : old.max
-  //             retVal[ore].min = prob ? (old.min ? Math.min(old.min, prob) : prob) : old.min
-  //           })
-  //         }
-  //       })
-  //     })
-  //   }
-  //   return retVal
-  // }, [gravityWellOptions, data?.data, bonuses?.data])
+    console.log('MARZIPAN', data.data)
 
-  // const gradients = React.useMemo(() => {
-  //   const retVal = Object.values(OreTierColors).reduce(
-  //     (acc, color) => {
-  //       const light = theme.palette[color].main
-  //       const dark = rgbToHex(darken(theme.palette[color].dark, 0.5))
-  //       acc[color] = new Gradient()
-  //         .setColorGradient(dark, light)
-  //         .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
-  //         .getColors()
-  //         .map((color) => alpha(color, 0.4))
-  //       return acc
-  //     },
-  //     {} as Record<string, string[]>
-  //   )
-  //   // A generic one for statistics
-  //   const statsLight = theme.palette.info.main
-  //   const statsDark = rgbToHex(darken(theme.palette.info.dark, 0.5))
-  //   retVal['STATS'] = new Gradient()
-  //     .setColorGradient(statsDark, statsLight)
-  //     .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
-  //     .getColors()
-  //     .map((color) => alpha(color, 0.4))
+    return gravityWellOptions.map((row, idr) => {
+      let hide = false
+      if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
+        hide = true
+      }
 
-  //   return retVal
-  // }, [])
+      const rowEven = idr % 2 === 0
+      const rowSelected = selected.includes(row.id)
+      const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
-  // const tableRows = React.useMemo(() => {
-  //   if (!gravityWellOptions || !maxMins || !data) return null
-  //   const maxMinsBonus = maxMins['STAT_BONUS'] || { max: 1, min: 0 }
-  //   const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
-  //   const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
-  //   const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
-  //   const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
+      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
+      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
 
-  //   return gravityWellOptions.map((row, idr) => {
-  //     let hide = false
-  //     if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
-  //       hide = true
-  //     }
+      const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
 
-  //     const rowEven = idr % 2 === 0
-  //     const rowSelected = selected.includes(row.id)
-  //     const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+      // The normalized value between 0 and 1 that prob is
+      const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
 
-  //     if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
-  //     if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
+      const normUsers = 0
+      const normScans = 0
+      const normClusters = 0
+      const normClusterSize = 0
+      const normRockMass = 0
 
-  //     const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
+      let users = 0
+      let clusters = 0
+      let scans = 0
 
-  //     // The normalized value between 0 and 1 that prob is
-  //     const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
+      const maxMass = 0
+      const minMass = 0
+      const avgMass = 0
 
-  //     let normUsers = 0
-  //     let normScans = 0
-  //     let normClusters = 0
-  //     let normClusterSize = 0
-  //     let normRockMass = 0
+      const cluserSizeMin = 0
+      const clusterSizeMax = 0
+      const clusterSizeAvg = 0
 
-  //     let users = 0
-  //     let clusters = 0
-  //     let scans = 0
+      if (data && data.data && data.data[row.id]) {
+        scans = data.data[row.id].scans
+        users = data.data[row.id].users
+        clusters = data.data[row.id].clusters
 
-  //     let maxMass = 0
-  //     let minMass = 0
-  //     let avgMass = 0
+        //   normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
+        //   normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
+        //   normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
+        //   normClusterSize = calculateNormalizedProbability(
+        //     data.data[row.id].clusterCount.max,
+        //     maxMinClusterSize.min,
+        //     maxMinClusterSize.max
+        //   )
+        //   normRockMass = calculateNormalizedProbability(
+        //     data.data[row.id].mass.max,
+        //     maxMins['STAT_ROCK_MASS'].min,
+        //     maxMins['STAT_ROCK_MASS'].max
+        //   )
 
-  //     let cluserSizeMin = 0
-  //     let clusterSizeMax = 0
-  //     let clusterSizeAvg = 0
+        //   maxMass = data.data[row.id].mass.max
+        //   minMass = data.data[row.id].mass.min
+        //   avgMass = data.data[row.id].mass.avg
 
-  //     if (data && data.data && data.data[row.id]) {
-  //       scans = data.data[row.id].scans
-  //       users = data.data[row.id].users
-  //       clusters = data.data[row.id].clusters
+        //   cluserSizeMin = data.data[row.id].clusterCount.min
+        //   clusterSizeMax = data.data[row.id].clusterCount.max
+        //   clusterSizeAvg = data.data[row.id].clusterCount.avg
+      }
 
-  //       normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
-  //       normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
-  //       normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
-  //       normClusterSize = calculateNormalizedProbability(
-  //         data.data[row.id].clusterCount.max,
-  //         maxMinClusterSize.min,
-  //         maxMinClusterSize.max
-  //       )
-  //       normRockMass = calculateNormalizedProbability(
-  //         data.data[row.id].mass.max,
-  //         maxMins['STAT_ROCK_MASS'].min,
-  //         maxMins['STAT_ROCK_MASS'].max
-  //       )
+      if (!rowSelected && filterSelected) hide = true
+      // Only render this option if the
+      return (
+        <SurveyTableRow
+          key={row.id}
+          gravWell={row}
+          handleRowClick={handleRowClick}
+          idx={idr}
+          isSelected={rowSelected}
+          hidden={hide}
+        >
+          {/* --------- GRAVITY WELL CELL --------- */}
+          <TableCell
+            component="th"
+            scope="row"
+            onMouseEnter={(e) => {
+              if (tBodyRef.current) {
+                // Get the left of the table
+                const tableRect = tBodyRef.current.getBoundingClientRect()
+                const tableTop = tableRect.top
+                // Get the left and wdith of this tableCell
+                const rect = e.currentTarget.getBoundingClientRect()
+                const top = rect.top - tableTop
+                const height = rect.height
+                setHoverRow([idr, top, height, theme.palette.info.dark])
+              }
+            }}
+            sx={{
+              // STICKY FIRST COLUMN
+              cursor: 'pointer',
+              position: 'sticky',
+              whiteSpace: 'nowrap',
+              backgroundColor: rowSelected ? selectColor : bgColor,
+              '&:hover': {
+                color: theme.palette.primary.contrastText,
+                backgroundColor: rowSelected ? selectColor : hoverColor,
+              },
+              '& .MuiIconButton-root': {
+                display: 'none',
+              },
+              '&:hover .MuiIconButton-root': {
+                display: 'block',
+              },
+              zIndex: 3,
+              borderRight: `3px solid ${theme.palette.primary.main}`,
+              borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
+              borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
+              '& .MuiTypography-root': {
+                ...theme.typography.h6,
+              },
+              pl: rockTypeFilter.length === 2 ? theme.spacing(row.depth * 3) : 0,
+            }}
+          >
+            {/* FILTER BUTTON */}
+            <Tooltip
+              title={gravityWellFilter === row.id ? 'Remove Filter' : `Filter to ${row.label} and children`}
+              placement="top"
+            >
+              <IconButton
+                color={gravityWellFilter === row.id ? 'error' : 'primary'}
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleGravityWellFilter(row.id)
+                }}
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                }}
+              >
+                {gravityWellFilter === row.id ? <FilterAltOff /> : <FilterAlt />}
+              </IconButton>
+            </Tooltip>
+            <GravityWellNameRender options={row} />
+          </TableCell>
 
-  //       maxMass = data.data[row.id].mass.max
-  //       minMass = data.data[row.id].mass.min
-  //       avgMass = data.data[row.id].mass.avg
+          {/* --------- SCAN BONUS CELL --------- */}
+          <TableCell
+            sx={{
+              textAlign: 'center',
+              fontFamily: fontFamilies.robotoMono,
+              borderLeft: `3px solid ${theme.palette.info.main}`,
+              backgroundColor: normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
+            }}
+            onMouseEnter={(e) => {
+              if (tBodyRef.current) {
+                // Get the left of the table
+                const tableRect = tBodyRef.current.getBoundingClientRect()
+                const tableLeft = tableRect.left
+                const tableTop = tableRect.top
+                // Get the left and wdith of this tableCell
+                const rect = e.currentTarget.getBoundingClientRect()
+                const left = rect.left - tableLeft
+                const width = rect.width
+                setHoverCol([-1, left, width, theme.palette.info.main])
+                const top = rect.top - tableTop
+                const height = rect.height
+                setHoverRow([idr, top, height, theme.palette.info.main])
+              }
+            }}
+          >
+            <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
+              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
+                {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
+              </Typography>
+            </Tooltip>
+          </TableCell>
 
-  //       cluserSizeMin = data.data[row.id].clusterCount.min
-  //       clusterSizeMax = data.data[row.id].clusterCount.max
-  //       clusterSizeAvg = data.data[row.id].clusterCount.avg
-  //     }
+          {/* --------- ROCKS / CLUSTERS CELL --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                backgroundColor: normClusters ? gradients['STATS'][normClusters] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-2, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {scans && clusters ? (
+                <Tooltip title={`Based on ${scans} rock scans inside ${clusters} clusters`} placement="top">
+                  <Typography variant="body2" sx={{ minWidth: 90, textAlign: 'center' }} component={'div'}>
+                    {scans} / {clusters}
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography
+                  variant="body2"
+                  sx={{ minWidth: 90, textAlign: 'center' }}
+                  component={'div'}
+                  color="text.secondary"
+                >
+                  {' '}
+                </Typography>
+              )}
+            </TableCell>
+          )}
 
-  //     if (!rowSelected && filterSelected) hide = true
-  //     // Only render this option if the
-  //     return (
-  //       <TableRow
-  //         key={row.id}
-  //         onClick={() => {
-  //           setSelected((prev) => {
-  //             if (prev.includes(row.id)) {
-  //               return prev.filter((id) => id !== row.id)
-  //             }
-  //             const newSelected = [...prev, row.id]
-  //             if (newSelected.length === 0 && filterSelected) {
-  //               setFilterSelected(false)
-  //             }
-  //             return newSelected
-  //           })
-  //         }}
-  //         sx={{
-  //           display: hide ? 'none' : undefined,
-  //           position: 'relative',
-  //           backgroundColor: bgColor,
-  //         }}
-  //       >
-  //         {/* --------- GRAVITY WELL CELL --------- */}
-  //         <TableCell
-  //           component="th"
-  //           scope="row"
-  //           onMouseEnter={(e) => {
-  //             if (tBodyRef.current) {
-  //               // Get the left of the table
-  //               const tableRect = tBodyRef.current.getBoundingClientRect()
-  //               const tableTop = tableRect.top
-  //               // Get the left and wdith of this tableCell
-  //               const rect = e.currentTarget.getBoundingClientRect()
-  //               const top = rect.top - tableTop
-  //               const height = rect.height
-  //               setHoverRow([idr, top, height, theme.palette.info.dark])
-  //             }
-  //           }}
-  //           sx={{
-  //             // STICKY FIRST COLUMN
-  //             cursor: 'pointer',
-  //             position: 'sticky',
-  //             whiteSpace: 'nowrap',
-  //             backgroundColor: rowSelected ? selectColor : bgColor,
-  //             '&:hover': {
-  //               color: theme.palette.primary.contrastText,
-  //               backgroundColor: rowSelected ? selectColor : hoverColor,
-  //             },
-  //             '& .MuiIconButton-root': {
-  //               display: 'none',
-  //             },
-  //             '&:hover .MuiIconButton-root': {
-  //               display: 'block',
-  //             },
-  //             zIndex: 3,
-  //             borderRight: `3px solid ${theme.palette.primary.main}`,
-  //             borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
-  //             borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
-  //             '& .MuiTypography-root': {
-  //               ...theme.typography.h6,
-  //             },
-  //             pl: rockTypeFilter.length === 2 ? theme.spacing(row.depth * 3) : 0,
-  //           }}
-  //         >
-  //           {/* FILTER BUTTON */}
-  //           <Tooltip
-  //             title={gravityWellFilter === row.id ? 'Remove Filter' : `Filter to ${row.label} and children`}
-  //             placement="top"
-  //           >
-  //             <IconButton
-  //               color={gravityWellFilter === row.id ? 'error' : 'primary'}
-  //               size="small"
-  //               onClick={(e) => {
-  //                 e.stopPropagation()
-  //                 handleGravityWellFilter(row.id)
-  //               }}
-  //               sx={{
-  //                 position: 'absolute',
-  //                 right: 0,
-  //                 top: '50%',
-  //                 transform: 'translateY(-50%)',
-  //               }}
-  //             >
-  //               {gravityWellFilter === row.id ? <FilterAltOff /> : <FilterAlt />}
-  //             </IconButton>
-  //           </Tooltip>
-  //           <GravityWellNameRender options={row} />
-  //         </TableCell>
+          {/* --------- USERS PARTICIPATED CELL --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-3, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {users ? (
+                <Tooltip title={`Users that collected this data`} placement="top">
+                  <Typography variant="body2" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
+                    {users}
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography variant="body2" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
+                  {' '}
+                </Typography>
+              )}
+            </TableCell>
+          )}
 
-  //         {/* --------- SCAN BONUS CELL --------- */}
-  //         <TableCell
-  //           sx={{
-  //             textAlign: 'center',
-  //             fontFamily: fontFamilies.robotoMono,
-  //             borderLeft: `3px solid ${theme.palette.info.main}`,
-  //             backgroundColor: normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
-  //           }}
-  //           onMouseEnter={(e) => {
-  //             if (tBodyRef.current) {
-  //               // Get the left of the table
-  //               const tableRect = tBodyRef.current.getBoundingClientRect()
-  //               const tableLeft = tableRect.left
-  //               const tableTop = tableRect.top
-  //               // Get the left and wdith of this tableCell
-  //               const rect = e.currentTarget.getBoundingClientRect()
-  //               const left = rect.left - tableLeft
-  //               const width = rect.width
-  //               setHoverCol([-1, left, width, theme.palette.info.main])
-  //               const top = rect.top - tableTop
-  //               const height = rect.height
-  //               setHoverRow([idr, top, height, theme.palette.info.main])
-  //             }
-  //           }}
-  //         >
-  //           <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
-  //             <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
-  //               {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
-  //             </Typography>
-  //           </Tooltip>
-  //         </TableCell>
+          {/* --------- CLUSTER SIZE STATS --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                backgroundColor: normUsers ? gradients['STATS'][normClusterSize] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-4, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {clusterSizeMax ? (
+                <Tooltip title={`Cluster size: Min - Max - Avg`} placement="top">
+                  <Typography variant="body2" sx={{ minWidth: 100, textAlign: 'center' }} component={'div'}>
+                    {MValueFormatter(cluserSizeMin, MValueFormat.number_sm)}
+                    {' - '}
+                    {MValueFormatter(clusterSizeMax, MValueFormat.number_sm)}
+                    {' - '}
+                    <strong>{MValueFormatter(clusterSizeAvg, MValueFormat.number_sm, 1)}</strong>
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography variant="body2" sx={{ minWidth: 60, textAlign: 'center' }} component={'div'}>
+                  {' '}
+                </Typography>
+              )}
+            </TableCell>
+          )}
+          {/* --------- ROCK MASS STATS  --------- */}
+          {showExtendedStats && (
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                fontFamily: fontFamilies.robotoMono,
+                backgroundColor: normUsers ? gradients['STATS'][normRockMass] : 'rgba(0,0,0,0)',
+              }}
+              onMouseEnter={(e) => {
+                if (tBodyRef.current) {
+                  // Get the left of the table
+                  const tableRect = tBodyRef.current.getBoundingClientRect()
+                  const tableLeft = tableRect.left
+                  const tableTop = tableRect.top
+                  // Get the left and wdith of this tableCell
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const left = rect.left - tableLeft
+                  const width = rect.width
+                  setHoverCol([-5, left, width, theme.palette.info.main])
+                  const top = rect.top - tableTop
+                  const height = rect.height
+                  setHoverRow([idr, top, height, theme.palette.info.main])
+                }
+              }}
+            >
+              {maxMass ? (
+                <Tooltip title={`Rock Mass: Min - Max - Avg`} placement="top">
+                  <Typography variant="body2" sx={{ minWidth: 150, textAlign: 'center' }} component={'div'}>
+                    {MValueFormatter(minMass, MValueFormat.number_sm)}
+                    {' - '}
+                    {MValueFormatter(maxMass, MValueFormat.number_sm)}
+                    {' - '}
+                    <strong>{MValueFormatter(avgMass, MValueFormat.number_sm, 1)}</strong>
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography variant="caption" sx={{ minWidth: 80, textAlign: 'center' }} component={'div'}>
+                  {' '}
+                </Typography>
+              )}
+            </TableCell>
+          )}
 
-  //         {/* --------- ROCKS / CLUSTERS CELL --------- */}
-  //         {showExtendedStats && (
-  //           <TableCell
-  //             sx={{
-  //               textAlign: 'center',
-  //               fontFamily: fontFamilies.robotoMono,
-  //               backgroundColor: normClusters ? gradients['STATS'][normClusters] : 'rgba(0,0,0,0)',
-  //             }}
-  //             onMouseEnter={(e) => {
-  //               if (tBodyRef.current) {
-  //                 // Get the left of the table
-  //                 const tableRect = tBodyRef.current.getBoundingClientRect()
-  //                 const tableLeft = tableRect.left
-  //                 const tableTop = tableRect.top
-  //                 // Get the left and wdith of this tableCell
-  //                 const rect = e.currentTarget.getBoundingClientRect()
-  //                 const left = rect.left - tableLeft
-  //                 const width = rect.width
-  //                 setHoverCol([-2, left, width, theme.palette.info.main])
-  //                 const top = rect.top - tableTop
-  //                 const height = rect.height
-  //                 setHoverRow([idr, top, height, theme.palette.info.main])
-  //               }
-  //             }}
-  //           >
-  //             {scans && clusters ? (
-  //               <Tooltip title={`Based on ${scans} rock scans inside ${clusters} clusters`} placement="top">
-  //                 <Typography variant="body2" sx={{ minWidth: 90, textAlign: 'center' }} component={'div'}>
-  //                   {scans} / {clusters}
-  //                 </Typography>
-  //               </Tooltip>
-  //             ) : (
-  //               <Typography
-  //                 variant="body2"
-  //                 sx={{ minWidth: 90, textAlign: 'center' }}
-  //                 component={'div'}
-  //                 color="text.secondary"
-  //               >
-  //                 {' '}
-  //               </Typography>
-  //             )}
-  //           </TableCell>
-  //         )}
+          {[...Object.values(AsteroidTypeEnum), ...Object.values(DepositTypeEnum)].map((aType, ido) => {
+            const isNewTier = ido === 0 || ido === Object.values(AsteroidTypeEnum).length
+            const colNum = ido
+            const isAsteroid = ido < Object.values(AsteroidTypeEnum).length
 
-  //         {/* --------- USERS PARTICIPATED CELL --------- */}
-  //         {showExtendedStats && (
-  //           <TableCell
-  //             sx={{
-  //               textAlign: 'center',
-  //               fontFamily: fontFamilies.robotoMono,
-  //               backgroundColor: normUsers ? gradients['STATS'][normUsers] : 'rgba(0,0,0,0)',
-  //             }}
-  //             onMouseEnter={(e) => {
-  //               if (tBodyRef.current) {
-  //                 // Get the left of the table
-  //                 const tableRect = tBodyRef.current.getBoundingClientRect()
-  //                 const tableLeft = tableRect.left
-  //                 const tableTop = tableRect.top
-  //                 // Get the left and wdith of this tableCell
-  //                 const rect = e.currentTarget.getBoundingClientRect()
-  //                 const left = rect.left - tableLeft
-  //                 const width = rect.width
-  //                 setHoverCol([-3, left, width, theme.palette.info.main])
-  //                 const top = rect.top - tableTop
-  //                 const height = rect.height
-  //                 setHoverRow([idr, top, height, theme.palette.info.main])
-  //               }
-  //             }}
-  //           >
-  //             {users ? (
-  //               <Tooltip title={`Users that collected this data`} placement="top">
-  //                 <Typography variant="body2" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
-  //                   {users}
-  //                 </Typography>
-  //               </Tooltip>
-  //             ) : (
-  //               <Typography variant="body2" sx={{ minWidth: 30, textAlign: 'center' }} component={'div'}>
-  //                 {' '}
-  //               </Typography>
-  //             )}
-  //           </TableCell>
-  //         )}
+            let prob: number | null = null
+            const maxPct = 0
+            const minPct = 0
+            const avgPct = 0
 
-  //         {/* --------- CLUSTER SIZE STATS --------- */}
-  //         {showExtendedStats && (
-  //           <TableCell
-  //             sx={{
-  //               textAlign: 'center',
-  //               fontFamily: fontFamilies.robotoMono,
-  //               backgroundColor: normUsers ? gradients['STATS'][normClusterSize] : 'rgba(0,0,0,0)',
-  //             }}
-  //             onMouseEnter={(e) => {
-  //               if (tBodyRef.current) {
-  //                 // Get the left of the table
-  //                 const tableRect = tBodyRef.current.getBoundingClientRect()
-  //                 const tableLeft = tableRect.left
-  //                 const tableTop = tableRect.top
-  //                 // Get the left and wdith of this tableCell
-  //                 const rect = e.currentTarget.getBoundingClientRect()
-  //                 const left = rect.left - tableLeft
-  //                 const width = rect.width
-  //                 setHoverCol([-4, left, width, theme.palette.info.main])
-  //                 const top = rect.top - tableTop
-  //                 const height = rect.height
-  //                 setHoverRow([idr, top, height, theme.palette.info.main])
-  //               }
-  //             }}
-  //           >
-  //             {clusterSizeMax ? (
-  //               <Tooltip title={`Cluster size: Min - Max - Avg`} placement="top">
-  //                 <Typography variant="body2" sx={{ minWidth: 100, textAlign: 'center' }} component={'div'}>
-  //                   {MValueFormatter(cluserSizeMin, MValueFormat.number_sm)}
-  //                   {' - '}
-  //                   {MValueFormatter(clusterSizeMax, MValueFormat.number_sm)}
-  //                   {' - '}
-  //                   <strong>{MValueFormatter(clusterSizeAvg, MValueFormat.number_sm, 1)}</strong>
-  //                 </Typography>
-  //               </Tooltip>
-  //             ) : (
-  //               <Typography variant="body2" sx={{ minWidth: 60, textAlign: 'center' }} component={'div'}>
-  //                 {' '}
-  //               </Typography>
-  //             )}
-  //           </TableCell>
-  //         )}
-  //         {/* --------- ROCK MASS STATS  --------- */}
-  //         {showExtendedStats && (
-  //           <TableCell
-  //             sx={{
-  //               textAlign: 'center',
-  //               fontFamily: fontFamilies.robotoMono,
-  //               backgroundColor: normUsers ? gradients['STATS'][normRockMass] : 'rgba(0,0,0,0)',
-  //             }}
-  //             onMouseEnter={(e) => {
-  //               if (tBodyRef.current) {
-  //                 // Get the left of the table
-  //                 const tableRect = tBodyRef.current.getBoundingClientRect()
-  //                 const tableLeft = tableRect.left
-  //                 const tableTop = tableRect.top
-  //                 // Get the left and wdith of this tableCell
-  //                 const rect = e.currentTarget.getBoundingClientRect()
-  //                 const left = rect.left - tableLeft
-  //                 const width = rect.width
-  //                 setHoverCol([-5, left, width, theme.palette.info.main])
-  //                 const top = rect.top - tableTop
-  //                 const height = rect.height
-  //                 setHoverRow([idr, top, height, theme.palette.info.main])
-  //               }
-  //             }}
-  //           >
-  //             {maxMass ? (
-  //               <Tooltip title={`Rock Mass: Min - Max - Avg`} placement="top">
-  //                 <Typography variant="body2" sx={{ minWidth: 150, textAlign: 'center' }} component={'div'}>
-  //                   {MValueFormatter(minMass, MValueFormat.number_sm)}
-  //                   {' - '}
-  //                   {MValueFormatter(maxMass, MValueFormat.number_sm)}
-  //                   {' - '}
-  //                   <strong>{MValueFormatter(avgMass, MValueFormat.number_sm, 1)}</strong>
-  //                 </Typography>
-  //               </Tooltip>
-  //             ) : (
-  //               <Typography variant="caption" sx={{ minWidth: 80, textAlign: 'center' }} component={'div'}>
-  //                 {' '}
-  //               </Typography>
-  //             )}
-  //           </TableCell>
-  //         )}
+            let normProb: number | null = null
 
-  //         {/* Ore Tiers */}
-  //         {Object.keys(OreTierNames).reduce((acc, tier, idx) => {
-  //           if (oreTierFilter.includes(tier as OreTierEnum)) {
-  //             ShipOreTiers[tier as OreTierEnum].map((ore, idy) => {
-  //               const isNewTier = idy === 0
-  //               const colNum = idx * ShipOreTiers[tier as OreTierEnum].length + idy
+            if (data && data.data && data.data[row.id] && data.data[row.id].rockTypes[aType]) {
+              prob = data.data[row.id].rockTypes[aType].prob
+              //   maxPct = data.data[row.id].ores[ore].maxPct
+              //   minPct = data.data[row.id].ores[ore].minPct
+              //   avgPct = data.data[row.id].ores[ore].avgPct
 
-  //               let prob: number | null = null
-  //               let maxPct = 0
-  //               let minPct = 0
-  //               let avgPct = 0
-
-  //               let normProb: number | null = null
-
-  //               if (data && data.data && data.data[row.id] && data.data[row.id].ores[ore]) {
-  //                 prob = data.data[row.id].ores[ore].prob
-  //                 maxPct = data.data[row.id].ores[ore].maxPct
-  //                 minPct = data.data[row.id].ores[ore].minPct
-  //                 avgPct = data.data[row.id].ores[ore].avgPct
-
-  //                 if (prob !== null) {
-  //                   const oreMax = maxMins[ore] && maxMins[ore].max !== null ? maxMins[ore].max : 1
-  //                   const oreMin = maxMins[ore] && maxMins[ore].min !== null ? maxMins[ore].min : 0
-  //                   // The normalized value between 0 and 1 that prob is
-  //                   normProb = calculateNormalizedProbability(prob, oreMin, oreMax)
-  //                 }
-  //               }
-
-  //               acc.push(
-  //                 <TableCell
-  //                   key={ore}
-  //                   onMouseEnter={(e) => {
-  //                     if (tBodyRef.current) {
-  //                       // Get the left of the table
-  //                       const tableRect = tBodyRef.current.getBoundingClientRect()
-  //                       const tableLeft = tableRect.left
-  //                       const tableTop = tableRect.top
-  //                       // Get the left and wdith of this tableCell
-  //                       const rect = e.currentTarget.getBoundingClientRect()
-  //                       const left = rect.left - tableLeft
-  //                       const width = rect.width
-  //                       setHoverCol([colNum, left, width, theme.palette[OreTierColors[tier as OreTierEnum]].main])
-  //                       const top = rect.top - tableTop
-  //                       const height = rect.height
-  //                       setHoverRow([idr, top, height, theme.palette[OreTierColors[tier as OreTierEnum]].main])
-  //                     }
-  //                   }}
-  //                   sx={{
-  //                     position: 'relative',
-  //                     borderTop: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
-  //                     borderBottom: `1px solid ${rowSelected ? selectBorderColor : 'transparent'}`,
-  //                     backgroundColor: normProb
-  //                       ? gradients[OreTierColors[tier as OreTierEnum]][normProb]
-  //                       : 'rgba(0,0,0,0)',
-  //                     borderLeft: isNewTier
-  //                       ? `3px solid ${theme.palette[OreTierColors[tier as OreTierEnum]].main}`
-  //                       : `1px solid ${alpha(theme.palette[OreTierColors[tier as OreTierEnum]].dark, 0.5)}`,
-  //                   }}
-  //                 >
-  //                   <Stack
-  //                     spacing={1}
-  //                     sx={{
-  //                       textAlign: 'center',
-  //                       width: showExtendedStats ? 110 : 'auto',
-  //                     }}
-  //                   >
-  //                     <Tooltip title={`Probability of finding ${ore} in a rock at ${row.label}`} placement="top">
-  //                       <Typography
-  //                         variant="h6"
-  //                         component="div"
-  //                         sx={{
-  //                           textAlign: 'center',
-  //                           minWidth: 30,
-  //                         }}
-  //                       >
-  //                         {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
-  //                       </Typography>
-  //                     </Tooltip>
-  //                     {showExtendedStats && prob && (
-  //                       <Tooltip title={`Composition Percent: Min - Max - Avg`}>
-  //                         <Typography
-  //                           variant="caption"
-  //                           sx={{ color: theme.palette.text.secondary }}
-  //                           textAlign={'center'}
-  //                         >
-  //                           {MValueFormatter(minPct, MValueFormat.percent)}
-  //                           {' - '}
-  //                           {MValueFormatter(maxPct, MValueFormat.percent)}
-  //                           {' - '}
-  //                           <strong>{MValueFormatter(avgPct, MValueFormat.percent)}</strong>
-  //                         </Typography>
-  //                       </Tooltip>
-  //                     )}
-  //                   </Stack>
-  //                 </TableCell>
-  //               )
-  //             })
-  //           }
-
-  //           return acc
-  //         }, [] as React.ReactNode[])}
-  //       </TableRow>
-  //     )
-  //   })
-  // }, [
-  //   gravityWellOptions,
-  //   data,
-  //   gradients,
-  //   maxMins,
-  //   oreTierFilter,
-  //   rockTypeFilter,
-  //   filterSelected,
-  //   selected,
-  //   gravityWellFilter,
-  //   showExtendedStats,
-  // ])
+              if (prob !== null) {
+                const oreMax = maxMins[aType] && maxMins[aType].max !== null ? maxMins[aType].max : 1
+                const oreMin = maxMins[aType] && maxMins[aType].min !== null ? maxMins[aType].min : 0
+                // The normalized value between 0 and 1 that prob is
+                normProb = calculateNormalizedProbability(prob, oreMin, oreMax)
+              }
+            }
+            return (
+              <SurveyTableOreCell
+                key={aType}
+                theme={theme}
+                handleMouseEnter={(e) => handleMouseEnter(e, isAsteroid ? 'ASTEROID' : 'SURFACE', idr, colNum)}
+                prob={prob}
+                normProb={normProb}
+                minPct={minPct}
+                maxPct={maxPct}
+                avgPct={avgPct}
+                gradientColor={gradients[isAsteroid ? 'ASTEROID' : 'SURFACE'][normProb || 0]}
+                isNewTier={isNewTier}
+                showExtendedStats={showExtendedStats}
+                toolTipText={`Probability of finding asteroid of type ${aType} at ${row.label}`}
+                typeColor={isAsteroid ? 'info' : 'primary'}
+              />
+            )
+          })}
+        </SurveyTableRow>
+      )
+    })
+  }, [
+    gravityWellOptions,
+    data,
+    gradients,
+    maxMins,
+    rockTypeFilter,
+    filterSelected,
+    selected,
+    gravityWellFilter,
+    showExtendedStats,
+  ])
 
   return (
     <Box
@@ -908,7 +861,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                           sx={{
                             backgroundColor: 'transparent',
                             borderBottom: colHovered
-                              ? `3px solid ${theme.palette.info.main}`
+                              ? `3px solid ${theme.palette.primary.main}`
                               : `3px solid ${hoverColor}`,
                             '& .MuiTypography-caption': {
                               fontSize: '1.2em',
@@ -916,11 +869,11 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                               paddingLeft: theme.spacing(5),
                               borderTop:
                                 ido === 0
-                                  ? `3px solid ${theme.palette.info.main}`
-                                  : `1px solid ${alpha(theme.palette.info.dark, 0.5)}`,
+                                  ? `3px solid ${theme.palette.primary.main}`
+                                  : `1px solid ${alpha(theme.palette.primary.dark, 0.5)}`,
                             },
                             '& *': {
-                              color: theme.palette.info.main,
+                              color: theme.palette.primary.main,
                             },
                           }}
                         >
@@ -983,16 +936,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                     }}
                   />
                 )}
-                <TableRow>
-                  {/* {tableRows} */}
-                  <TableCell>-</TableCell>
-                  {Object.values(AsteroidTypeEnum).map((asteroidType, ido) => {
-                    return <TableCell key={asteroidType}>{asteroidType}</TableCell>
-                  })}
-                  {Object.values(DepositTypeEnum).map((asteroidType, ido) => {
-                    return <TableCell key={asteroidType}>{asteroidType}</TableCell>
-                  })}
-                </TableRow>
+                {tableRows}
               </TableBody>
             </Table>
           </TableContainer>
@@ -1050,6 +994,7 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
 }
 
 export interface SurveyTableOreCellProps {
+  theme: Theme
   prob: number | null
   normProb: number | null
   minPct: number | null
@@ -1057,13 +1002,14 @@ export interface SurveyTableOreCellProps {
   avgPct: number | null
   showExtendedStats: boolean
   isNewTier: boolean
-  tierColor: string
+  typeColor: string
   gradientColor: string
   toolTipText: string
   handleMouseEnter: (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => void
 }
 
 export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
+  theme,
   prob,
   normProb,
   minPct,
@@ -1071,14 +1017,12 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   avgPct,
   showExtendedStats,
   isNewTier,
-  tierColor,
+  typeColor,
   gradientColor,
   toolTipText,
   handleMouseEnter,
 }) =>
   React.useMemo(() => {
-    const theme = useTheme()
-
     return (
       <TableCell
         onMouseEnter={handleMouseEnter}
@@ -1086,8 +1030,8 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
           position: 'relative',
           backgroundColor: normProb ? gradientColor : 'rgba(0,0,0,0)',
           borderLeft: isNewTier
-            ? `3px solid ${theme.palette[tierColor].main}`
-            : `1px solid ${alpha(theme.palette[tierColor].dark, 0.5)}`,
+            ? `3px solid ${theme.palette[typeColor].main}`
+            : `1px solid ${alpha(theme.palette[typeColor].dark, 0.5)}`,
         }}
       >
         <Stack
@@ -1123,4 +1067,4 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
         </Stack>
       </TableCell>
     )
-  }, [prob, normProb, minPct, maxPct, avgPct, showExtendedStats, isNewTier, tierColor, gradientColor])
+  }, [prob, normProb, minPct, maxPct, avgPct, showExtendedStats, isNewTier, typeColor, gradientColor])
