@@ -31,7 +31,7 @@ import { findPrice, GravityWell, GravityWellTypeEnum, Lookups, SurveyData, Vehic
 import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { blue, green } from '@mui/material/colors'
-import { hoverColor, selectColor } from './types'
+import { hoverColor, selectBorderColor, selectColor } from './types'
 import Gradient from 'javascript-color-gradient'
 
 export interface VehicleOreDistributionProps {
@@ -56,6 +56,19 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const [showExtendedStats, setShowExtendedStats] = React.useState<boolean>(false)
   const [gravityWellFilter, setGravityWellFilter] = React.useState<string | null>(null)
 
+  const handleRowClick = React.useCallback((gravWellId: string) => {
+    setSelected((prev) => {
+      if (prev.includes(gravWellId)) {
+        return prev.filter((id) => id !== gravWellId)
+      }
+      const newSelected = [...prev, gravWellId]
+      if (newSelected.length === 0 && filterSelected) {
+        setFilterSelected(false)
+      }
+      return newSelected
+    })
+  }, [])
+
   const handleGravityWellFilter = React.useCallback((newGrav: string | null) => {
     setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
     // if tContainerRef exists scroll to the top
@@ -64,6 +77,23 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
       }
     }, 1000)
+  }, [])
+
+  const handleMouseEnter = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>, tier, idr, colIdx, bgc) => {
+    if (tBodyRef.current) {
+      // Get the left of the table
+      const tableRect = tBodyRef.current.getBoundingClientRect()
+      const tableLeft = tableRect.left
+      const tableTop = tableRect.top
+      // Get the left and wdith of this tableCell
+      const rect = e.currentTarget.getBoundingClientRect()
+      const left = rect.left - tableLeft
+      const width = rect.width
+      setHoverCol([colIdx, left, width, bgc])
+      const top = rect.top - tableTop
+      const height = rect.height
+      setHoverRow([idr, top, height, bgc])
+    }
   }, [])
 
   const dataStore = React.useContext(LookupsContext)
@@ -146,24 +176,13 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       } else if (!rowData && (row.depth >= 2 || row.wellType === GravityWellTypeEnum.CLUSTER)) return null
 
       return (
-        <TableRow
+        <SurveyTableRow
           key={row.id}
-          onClick={() => {
-            setSelected((prev) => {
-              if (prev.includes(row.id)) {
-                return prev.filter((id) => id !== row.id)
-              }
-              const newSelected = [...prev, row.id]
-              if (newSelected.length === 0 && filterSelected) {
-                setFilterSelected(false)
-              }
-              return newSelected
-            })
-          }}
-          sx={{
-            position: 'relative',
-            backgroundColor: bgColor,
-          }}
+          idx={idr}
+          gravWell={row}
+          isSelected={rowSelected}
+          hidden={Boolean(gravityWellFilter && row.parents.includes(gravityWellFilter))}
+          handleRowClick={handleRowClick}
         >
           <TableCell
             component="th"
@@ -304,49 +323,64 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               bgColor = gradients && gradients[ore] ? alpha(gradients[ore][normProb], 0.4) : undefined
             }
 
+            // return (
+            //   <TableCell
+            //     key={ore}
+            //     onMouseEnter={(e) => {
+            //       if (tBodyRef.current) {
+            //         // Get the left of the table
+            //         const tableRect = tBodyRef.current.getBoundingClientRect()
+            //         const tableLeft = tableRect.left
+            //         const tableTop = tableRect.top
+            //         // Get the left and wdith of this tableCell
+            //         const rect = e.currentTarget.getBoundingClientRect()
+            //         const left = rect.left - tableLeft
+            //         const width = rect.width
+            //         setHoverCol([colIdx, left, width, bgc])
+            //         const top = rect.top - tableTop
+            //         const height = rect.height
+            //         setHoverRow([idr, top, height, bgc])
+            //       }
+            //     }}
+            //     sx={{
+            //       width: '300px',
+            //       borderLeft: `1px solid ${bgc}`,
+            //       backgroundColor: bgColor,
+            //     }}
+            //   >
+            //     <Stack
+            //       spacing={1}
+            //       sx={{
+            //         textAlign: 'center',
+            //         width: showExtendedStats ? 150 : 50,
+            //       }}
+            //     >
+            //       <Typography variant="h6">{prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}</Typography>
+            //       {showExtendedStats && minNum && (
+            //         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
+            //           {minNum} - {maxNum} - {avgNum}
+            //         </Typography>
+            //       )}
+            //     </Stack>
+            //   </TableCell>
+            // )
             return (
-              <TableCell
+              <SurveyTableOreCell
                 key={ore}
-                onMouseEnter={(e) => {
-                  if (tBodyRef.current) {
-                    // Get the left of the table
-                    const tableRect = tBodyRef.current.getBoundingClientRect()
-                    const tableLeft = tableRect.left
-                    const tableTop = tableRect.top
-                    // Get the left and wdith of this tableCell
-                    const rect = e.currentTarget.getBoundingClientRect()
-                    const left = rect.left - tableLeft
-                    const width = rect.width
-                    setHoverCol([colIdx, left, width, bgc])
-                    const top = rect.top - tableTop
-                    const height = rect.height
-                    setHoverRow([idr, top, height, bgc])
-                  }
-                }}
-                sx={{
-                  width: '300px',
-                  borderLeft: `1px solid ${bgc}`,
-                  backgroundColor: bgColor,
-                }}
-              >
-                <Stack
-                  spacing={1}
-                  sx={{
-                    textAlign: 'center',
-                    width: showExtendedStats ? 150 : 50,
-                  }}
-                >
-                  <Typography variant="h6">{prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}</Typography>
-                  {showExtendedStats && minNum && (
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
-                      {minNum} - {maxNum} - {avgNum}
-                    </Typography>
-                  )}
-                </Stack>
-              </TableCell>
+                prob={prob}
+                normProb={normProb}
+                minNum={minNum}
+                maxNum={maxNum}
+                avgNum={avgNum}
+                showExtendedStats={showExtendedStats}
+                isNewTier={false}
+                oreColor={bgc}
+                backgroundColor={bgColor}
+                handleMouseEnter={(e) => handleMouseEnter(e, 'primary', idr, colIdx, bgc)}
+              />
             )
           })}
-        </TableRow>
+        </SurveyTableRow>
       )
     })
   }, [data, sortedVehicleRowKeys, selected, filterSelected, showExtendedStats, gravityWellFilter])
@@ -612,3 +646,111 @@ const calculateNormalizedProbability = (prob: number, oreMin: number, oreMax: nu
   if (normProb < 0) return 0
   return normProb
 }
+
+interface SurveyTableRowProps extends React.PropsWithChildren {
+  idx: number
+  gravWell: GravityWell
+  isSelected: boolean
+  hidden: boolean
+  handleRowClick: (gravWellId: string) => void
+}
+
+export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
+  children,
+  gravWell,
+  isSelected,
+  hidden,
+  handleRowClick,
+  ...props
+}) => {
+  const rowEven = props.idx % 2 === 0
+  const bgColor = isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+  return (
+    <TableRow
+      key={gravWell.id}
+      onClick={() => handleRowClick(gravWell.id)}
+      sx={{
+        display: hidden ? 'none' : undefined,
+        position: 'relative',
+        backgroundColor: bgColor,
+        '& .MuiTableCell-root': {
+          borderTop: `1px solid ${isSelected ? selectBorderColor : 'transparent'}`,
+          borderBottom: `1px solid ${isSelected ? selectBorderColor : 'transparent'}`,
+        },
+      }}
+    >
+      {children}
+    </TableRow>
+  )
+}
+
+export interface SurveyTableOreCellProps {
+  prob: number | null
+  normProb: number | null
+  minNum: number | null
+  maxNum: number | null
+  avgNum: number | null
+  showExtendedStats: boolean
+  isNewTier: boolean
+  oreColor: string | undefined
+  backgroundColor: string | undefined
+  handleMouseEnter: (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => void
+}
+
+export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
+  prob,
+  normProb,
+  minNum,
+  maxNum,
+  avgNum,
+  showExtendedStats,
+  isNewTier,
+  oreColor,
+  backgroundColor,
+  handleMouseEnter,
+}) =>
+  React.useMemo(() => {
+    const theme = useTheme()
+
+    return (
+      <TableCell
+        onMouseEnter={handleMouseEnter}
+        sx={{
+          position: 'relative',
+          backgroundColor: backgroundColor,
+          // borderLeft: `2px solid ${oreColor}`,
+        }}
+      >
+        <Stack
+          spacing={1}
+          sx={{
+            textAlign: 'center',
+            width: showExtendedStats ? 150 : 'auto',
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              textAlign: 'center',
+              borderLeft: `1px solid ${backgroundColor}`,
+              minWidth: 30,
+            }}
+          >
+            {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
+          </Typography>
+          {showExtendedStats && minNum && (
+            <Tooltip title={`Number of rocks in cluster: Min - Max - Avg`}>
+              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
+                {MValueFormatter(minNum, MValueFormat.number)}
+                {' - '}
+                {MValueFormatter(maxNum, MValueFormat.number)}
+                {' - '}
+                <strong>{MValueFormatter(avgNum, MValueFormat.number)}</strong>
+              </Typography>
+            </Tooltip>
+          )}
+        </Stack>
+      </TableCell>
+    )
+  }, [prob, normProb, minNum, maxNum, avgNum, showExtendedStats, isNewTier, oreColor, backgroundColor])

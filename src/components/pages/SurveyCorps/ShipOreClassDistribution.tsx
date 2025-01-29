@@ -275,12 +275,12 @@ const ClassCard: React.FC<ClassCardProps> = ({
 
   return (
     <Card
-      elevation={4}
+      elevation={1}
       sx={{
         height: '100%',
         minHeight: oreTierFilter.length > 0 ? '400px' : '200px',
         borderRadius: 3,
-        border: '1px solid white',
+        border: '1px solid #666666',
       }}
     >
       <CardHeader
