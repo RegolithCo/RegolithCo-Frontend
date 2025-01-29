@@ -167,7 +167,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         },
         {
           path: '/survey/rocks',
-          name: 'Rock Locations',
+          name: 'Ore Locations',
           icon: <RockIcon />,
         },
         {

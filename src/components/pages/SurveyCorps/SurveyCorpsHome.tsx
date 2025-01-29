@@ -26,10 +26,12 @@ import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
+import { ShipClassLocation } from './ShipClassLocation'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'rocks',
   SHIP_ORE_CLASS: 'rock_class',
+  SHIP_CLASS_LOCATION: 'class_location',
   VEHICLE_ORE: 'gems',
   ABOUT_SURVEY_CORPS: 'about',
   LEADERBOARD: 'leaderboard',
@@ -40,6 +42,7 @@ export type SurveyDataTables = {
   vehicleProbs: SurveyData | null
   shipOreByGravProb: SurveyData | null
   shipOreByRockClassProb: SurveyData | null
+  shipRockClassByGravProb: SurveyData | null
   bonusMap: SurveyData | null
   leaderBoard: SurveyData | null
 }
@@ -70,6 +73,13 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     },
     fetchPolicy: 'cache-first',
   })
+  const shipRockClassByGravProb = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'shipRockClassByGravProb',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
   const bonusMap = useGetPublicSurveyDataQuery({
     variables: {
       dataName: 'bonusMap',
@@ -89,6 +99,7 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     vehicleProbs: vehicleProbs.data?.surveyData || null,
     shipOreByGravProb: shipOreByGravProb.data?.surveyData || null,
     shipOreByRockClassProb: shipOreByRockClassProb.data?.surveyData || null,
+    shipRockClassByGravProb: shipRockClassByGravProb.data?.surveyData || null,
     bonusMap: bonusMap.data?.surveyData || null,
     leaderBoard: leaderBoard.data?.surveyData || null,
   }
@@ -142,6 +153,10 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
     () => <VehicleOreDistribution data={surveyData?.vehicleProbs} />,
     [surveyData?.vehicleProbs?.data]
   )
+  const shipClassLocation = React.useMemo(
+    () => <ShipClassLocation data={surveyData?.shipRockClassByGravProb} />,
+    [surveyData?.shipRockClassByGravProb?.data]
+  )
 
   let pageContent: React.ReactNode = null
   switch (tab) {
@@ -156,6 +171,9 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
       break
     case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
       pageContent = <SurveyCorpsAbout isSmall />
+      break
+    case SurveyTabsEnum.SHIP_CLASS_LOCATION:
+      pageContent = shipClassLocation
       break
     case SurveyTabsEnum.LEADERBOARD:
       pageContent = leaderBoard
@@ -220,6 +238,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
             <Tab label="About" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
             <Tab label="Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
             <Tab label="Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
+            <Tab label="Type Loc." value={SurveyTabsEnum.SHIP_CLASS_LOCATION} icon={<RockIcon />} />
             <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
             <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
           </Tabs>
@@ -254,6 +273,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
               <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
               <Tab label="Ore Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
               <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
+              <Tab label="Type Location" value={SurveyTabsEnum.SHIP_CLASS_LOCATION} icon={<RockIcon />} />
               <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
               <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
             </Tabs>
