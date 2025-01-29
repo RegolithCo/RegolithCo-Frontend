@@ -1011,3 +1011,116 @@ const calculateNormalizedProbability = (prob: number, oreMin: number | null, ore
   if (normProb < 0) return 0
   return normProb
 }
+
+interface SurveyTableRowProps extends React.PropsWithChildren {
+  idx: number
+  gravWell: GravityWell
+  isSelected: boolean
+  hidden: boolean
+  handleRowClick: (gravWellId: string) => void
+}
+
+export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
+  children,
+  gravWell,
+  isSelected,
+  hidden,
+  handleRowClick,
+  ...props
+}) => {
+  const rowEven = props.idx % 2 === 0
+  const bgColor = isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+  return (
+    <TableRow
+      key={gravWell.id}
+      onClick={() => handleRowClick(gravWell.id)}
+      sx={{
+        display: hidden ? 'none' : undefined,
+        position: 'relative',
+        backgroundColor: bgColor,
+        '& .MuiTableCell-root': {
+          borderTop: `1px solid ${isSelected ? selectBorderColor : 'transparent'}`,
+          borderBottom: `1px solid ${isSelected ? selectBorderColor : 'transparent'}`,
+        },
+      }}
+    >
+      {children}
+    </TableRow>
+  )
+}
+
+export interface SurveyTableOreCellProps {
+  prob: number | null
+  normProb: number | null
+  minPct: number | null
+  maxPct: number | null
+  avgPct: number | null
+  showExtendedStats: boolean
+  isNewTier: boolean
+  tierColor: string
+  gradientColor: string
+  toolTipText: string
+  handleMouseEnter: (e: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => void
+}
+
+export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
+  prob,
+  normProb,
+  minPct,
+  maxPct,
+  avgPct,
+  showExtendedStats,
+  isNewTier,
+  tierColor,
+  gradientColor,
+  toolTipText,
+  handleMouseEnter,
+}) =>
+  React.useMemo(() => {
+    const theme = useTheme()
+
+    return (
+      <TableCell
+        onMouseEnter={handleMouseEnter}
+        sx={{
+          position: 'relative',
+          backgroundColor: normProb ? gradientColor : 'rgba(0,0,0,0)',
+          borderLeft: isNewTier
+            ? `3px solid ${theme.palette[tierColor].main}`
+            : `1px solid ${alpha(theme.palette[tierColor].dark, 0.5)}`,
+        }}
+      >
+        <Stack
+          spacing={1}
+          sx={{
+            textAlign: 'center',
+            width: showExtendedStats ? 110 : 'auto',
+          }}
+        >
+          <Tooltip title={toolTipText} placement="top">
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                textAlign: 'center',
+                minWidth: 30,
+              }}
+            >
+              {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
+            </Typography>
+          </Tooltip>
+          {showExtendedStats && prob && (
+            <Tooltip title={`Composition Percent: Min - Max - Avg`}>
+              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
+                {MValueFormatter(minPct, MValueFormat.percent)}
+                {' - '}
+                {MValueFormatter(maxPct, MValueFormat.percent)}
+                {' - '}
+                <strong>{MValueFormatter(avgPct, MValueFormat.percent)}</strong>
+              </Typography>
+            </Tooltip>
+          )}
+        </Stack>
+      </TableCell>
+    )
+  }, [prob, normProb, minPct, maxPct, avgPct, showExtendedStats, isNewTier, tierColor, gradientColor])

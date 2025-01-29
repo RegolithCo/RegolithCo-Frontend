@@ -45,6 +45,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const tContainerRef = React.useRef<HTMLDivElement>(null)
   const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
+  const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({})
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
   // Hover state: [colNum, left, width, color]
@@ -125,24 +126,30 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     return getGravityWellOptions(theme, gravityWells)
   }, [gravityWells])
 
-  const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
+  // Calculate the max and min values for each ore
+  React.useEffect(() => {
     // prepopulate the maxMins array
     const retVal: Record<string, { max: number | null; min: number | null }> = {}
     if (data?.data && gravityWellOptions) {
-      gravityWellOptions.forEach((row) => {
-        const dataCols = data?.data || {}
-        // Then the ores
-        Object.values(VehicleOreEnum).forEach((ore, idy) => {
-          const prob = dataCols[row.id]?.ores[ore]?.prob
-          if (!retVal[ore]) retVal[ore] = { max: null, min: null }
-          const old = retVal[ore]
-          retVal[ore].max = prob ? (old.max ? Math.max(old.max, prob) : prob) : old.max
-          retVal[ore].min = prob ? (old.min ? Math.min(old.min, prob) : prob) : old.min
+      gravityWellOptions
+        .filter((row) => {
+          if (gravityWellFilter) return row.id === gravityWellFilter || row.parents.includes(gravityWellFilter)
+          else if (filterSelected) return selected.includes(row.id)
         })
-      })
+        .forEach((row) => {
+          const dataCols = data?.data || {}
+          // Then the ores
+          Object.values(VehicleOreEnum).forEach((ore, idy) => {
+            const prob = dataCols[row.id]?.ores[ore]?.prob
+            if (!retVal[ore]) retVal[ore] = { max: null, min: null }
+            const old = retVal[ore]
+            retVal[ore].max = prob ? (old.max ? Math.max(old.max, prob) : prob) : old.max
+            retVal[ore].min = prob ? (old.min ? Math.min(old.min, prob) : prob) : old.min
+          })
+        })
     }
-    return retVal
-  }, [gravityWellOptions, data?.data])
+    setMaxMins(retVal)
+  }, [gravityWellOptions, data?.data, selected, filterSelected, gravityWellFilter])
 
   const gradients = React.useMemo(() => {
     return Object.values(sortedVehicleRowKeys).reduce(
@@ -161,9 +168,11 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
   const tableRows = React.useMemo(() => {
     return gravityWellOptions.map((row, idr) => {
+      let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
-        return null
+        hide = true
       }
+
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
@@ -181,7 +190,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
           idx={idr}
           gravWell={row}
           isSelected={rowSelected}
-          hidden={Boolean(gravityWellFilter && row.parents.includes(gravityWellFilter))}
+          hidden={hide}
           handleRowClick={handleRowClick}
         >
           <TableCell
@@ -323,47 +332,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               bgColor = gradients && gradients[ore] ? alpha(gradients[ore][normProb], 0.4) : undefined
             }
 
-            // return (
-            //   <TableCell
-            //     key={ore}
-            //     onMouseEnter={(e) => {
-            //       if (tBodyRef.current) {
-            //         // Get the left of the table
-            //         const tableRect = tBodyRef.current.getBoundingClientRect()
-            //         const tableLeft = tableRect.left
-            //         const tableTop = tableRect.top
-            //         // Get the left and wdith of this tableCell
-            //         const rect = e.currentTarget.getBoundingClientRect()
-            //         const left = rect.left - tableLeft
-            //         const width = rect.width
-            //         setHoverCol([colIdx, left, width, bgc])
-            //         const top = rect.top - tableTop
-            //         const height = rect.height
-            //         setHoverRow([idr, top, height, bgc])
-            //       }
-            //     }}
-            //     sx={{
-            //       width: '300px',
-            //       borderLeft: `1px solid ${bgc}`,
-            //       backgroundColor: bgColor,
-            //     }}
-            //   >
-            //     <Stack
-            //       spacing={1}
-            //       sx={{
-            //         textAlign: 'center',
-            //         width: showExtendedStats ? 150 : 50,
-            //       }}
-            //     >
-            //       <Typography variant="h6">{prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}</Typography>
-            //       {showExtendedStats && minNum && (
-            //         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
-            //           {minNum} - {maxNum} - {avgNum}
-            //         </Typography>
-            //       )}
-            //     </Stack>
-            //   </TableCell>
-            // )
             return (
               <SurveyTableOreCell
                 key={ore}
@@ -733,7 +701,6 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
             component="div"
             sx={{
               textAlign: 'center',
-              borderLeft: `1px solid ${backgroundColor}`,
               minWidth: 30,
             }}
           >
