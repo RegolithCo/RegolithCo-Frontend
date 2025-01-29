@@ -88,37 +88,39 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   const maxMins: Record<string, { max: number | null; min: number | null }> = React.useMemo(() => {
     // prepopulate the maxMins array
 
-    const retVal: Record<string, { max: number | null; min: number | null }> = {}
+    const retVal: Record<string, { max: number | null; min: number | null }> = {
+      STAT_BONUS: { max: 1, min: 1 },
+      STAT_USERS: { max: 0, min: 0 },
+      STAT_SCANS: { max: 0, min: 0 },
+      STAT_CLUSTERS: { max: 0, min: 0 },
+      STAT_CLUSTER_SIZE: { max: 0, min: 0 },
+      STAT_ROCK_MASS: { max: 0, min: 0 },
+    }
     if (gravityWellOptions && data?.data && bonuses?.data) {
       gravityWellOptions.forEach((row) => {
         const dataCols = data?.data || {}
         // Calculate the bonus
         const bonusCols = bonuses?.data || {}
         const bonus = bonusCols[row.id] || 1
-        if (!retVal['STAT_BONUS']) retVal['STAT_BONUS'] = { max: 1, min: 1 }
         const oldBonusMax = retVal['STAT_BONUS'].max || 0
         retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
         // Calculate the users
         const users = dataCols[row.id]?.users || 0
-        if (!retVal['STAT_USERS']) retVal['STAT_USERS'] = { max: 0, min: 0 }
         const oldUsersMax = retVal['STAT_USERS'].max || 0
         retVal['STAT_USERS'].max = Math.max(oldUsersMax, users)
 
         // Calculate the scans
         const scans = dataCols[row.id]?.scans || 0
-        if (!retVal['STAT_SCANS']) retVal['STAT_SCANS'] = { max: 0, min: 0 }
         const oldScansMax = retVal['STAT_SCANS'].max || 0
         retVal['STAT_SCANS'].max = Math.max(oldScansMax, scans)
 
         // Calculate the clusters
         const clusters = dataCols[row.id]?.clusters || 0
-        if (!retVal['STAT_CLUSTERS']) retVal['STAT_CLUSTERS'] = { max: 0, min: 0 }
         const oldClustersMax = retVal['STAT_CLUSTERS'].max || 0
         retVal['STAT_CLUSTERS'].max = Math.max(oldClustersMax, clusters)
 
         // Calculate max clusterSizeMax
         const clusterSizeMax = dataCols[row.id]?.clusterCount.max || 0
-        if (!retVal['STAT_CLUSTER_SIZE']) retVal['STAT_CLUSTER_SIZE'] = { max: 0, min: 0 }
         const oldClusterSizeMax = retVal['STAT_CLUSTER_SIZE'].max || 0
         const oldClusterSizeMin = retVal['STAT_CLUSTER_SIZE'].min || 0
         retVal['STAT_CLUSTER_SIZE'].max = Math.max(oldClusterSizeMax, clusterSizeMax)
@@ -127,7 +129,6 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         // Then the rock mass
         const rockMassMax = dataCols[row.id]?.mass.max || 0
         const rockMassMin = dataCols[row.id]?.mass.min || 0
-        if (!retVal['STAT_ROCK_MASS']) retVal['STAT_ROCK_MASS'] = { max: 0, min: 0 }
         const oldRockMassMax = retVal['STAT_ROCK_MASS'].max || 0
         const oldRockMassMin = retVal['STAT_ROCK_MASS'].min || 0
         retVal['STAT_ROCK_MASS'].max = Math.max(oldRockMassMax, rockMassMax)
