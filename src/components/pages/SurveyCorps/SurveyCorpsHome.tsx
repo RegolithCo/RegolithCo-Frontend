@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import {
+  Badge,
   Box,
   Button,
   Container,
@@ -21,7 +22,7 @@ import { getEpochFromVersion, ObjectValues, scVersion, ScVersionEpochEnum, Surve
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
 import { useGetPublicSurveyDataQuery } from '../../../schema'
-import { Close, EmojiEvents, Fullscreen } from '@mui/icons-material'
+import { Close, EmojiEvents, Explore, Fullscreen, ListAlt } from '@mui/icons-material'
 import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
@@ -271,9 +272,33 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
               }}
             >
               <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
-              <Tab label="Ore Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
-              <Tab label="Rock Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
-              <Tab label="Type Location" value={SurveyTabsEnum.SHIP_CLASS_LOCATION} icon={<RockIcon />} />
+              <Tab
+                label="Ore Location"
+                value={SurveyTabsEnum.SHIP_ORE}
+                icon={
+                  <Badge badgeContent={<Explore />}>
+                    <RockIcon />
+                  </Badge>
+                }
+              />
+              <Tab
+                label="Rock Type"
+                value={SurveyTabsEnum.SHIP_ORE_CLASS}
+                icon={
+                  <Badge badgeContent={<ListAlt />}>
+                    <RockIcon />
+                  </Badge>
+                }
+              />
+              <Tab
+                label="Rock Location"
+                value={SurveyTabsEnum.SHIP_CLASS_LOCATION}
+                icon={
+                  <Badge badgeContent={<Explore />}>
+                    <RockIcon />
+                  </Badge>
+                }
+              />
               <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
               <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
             </Tabs>
