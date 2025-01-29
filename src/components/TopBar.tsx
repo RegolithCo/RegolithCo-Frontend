@@ -11,6 +11,7 @@ import { yellow } from '@mui/material/colors'
 import {
   alpha,
   Avatar,
+  Badge,
   CircularProgress,
   keyframes,
   PaletteColor,
@@ -27,11 +28,13 @@ import {
   Coffee,
   Dashboard,
   Engineering,
+  Explore,
   Group,
   HelpCenter,
   Info,
   KeyboardArrowDown,
   KeyboardArrowUp,
+  ListAlt,
   Login,
   Logout,
   NewReleases,
@@ -168,12 +171,29 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         {
           path: '/survey/rocks',
           name: 'Ore Locations',
-          icon: <RockIcon />,
+          icon: (
+            <Badge badgeContent={<Explore sx={{ fontSize: 14 }} />}>
+              <RockIcon />
+            </Badge>
+          ),
         },
         {
           path: '/survey/rock_class',
           name: 'Rock Types',
-          icon: <RockIcon />,
+          icon: (
+            <Badge badgeContent={<ListAlt sx={{ fontSize: 14 }} />}>
+              <RockIcon />
+            </Badge>
+          ),
+        },
+        {
+          path: '/survey/rock_class',
+          name: 'Rock Locations',
+          icon: (
+            <Badge badgeContent={<Explore sx={{ fontSize: 14 }} />}>
+              <RockIcon />
+            </Badge>
+          ),
         },
         {
           path: '/survey/gems',

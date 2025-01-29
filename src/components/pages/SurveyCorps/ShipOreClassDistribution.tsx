@@ -438,9 +438,23 @@ const ClassCard: React.FC<ClassCardProps> = ({
                           key={idx}
                           onMouseEnter={() => setHoveredOre(sortedOreColor.ore)}
                           sx={{
-                            backgroundColor: hoveredOre === sortedOreColor.ore ? 'black' : 'transparent',
-                            '& *': {
-                              color: sortedOreColor.bg,
+                            position: 'relative',
+                            '&::after': {
+                              content: '""',
+                              display: hoveredOre === sortedOreColor.ore ? 'block' : 'none',
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%',
+                              border: '1px solid white',
+                              zIndex: 0,
+                              backgroundColor: sortedOreColor.bg,
+                              opacity: hoveredOre === sortedOreColor.ore ? 0.5 : 0,
+                            },
+                            '& .MuiTableCell-root': {
+                              px: 0.1,
+                              color: hoveredOre === sortedOreColor.ore ? 'white' : sortedOreColor.bg,
                               fontWeight: hoveredOre === sortedOreColor.ore ? 'bold' : 'normal',
                             },
                           }}

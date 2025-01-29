@@ -273,7 +273,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
             >
               <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
               <Tab
-                label="Ore Location"
+                label="Ore Locations"
                 value={SurveyTabsEnum.SHIP_ORE}
                 icon={
                   <Badge badgeContent={<Explore />}>
@@ -282,7 +282,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
                 }
               />
               <Tab
-                label="Rock Type"
+                label="Rock Types"
                 value={SurveyTabsEnum.SHIP_ORE_CLASS}
                 icon={
                   <Badge badgeContent={<ListAlt />}>
@@ -291,7 +291,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
                 }
               />
               <Tab
-                label="Rock Location"
+                label="Rock Locations"
                 value={SurveyTabsEnum.SHIP_CLASS_LOCATION}
                 icon={
                   <Badge badgeContent={<Explore />}>
