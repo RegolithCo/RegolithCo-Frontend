@@ -30,7 +30,7 @@ import { ShipOreClassDistribution } from './ShipOreClassDistribution'
 import { ShipClassLocation } from './ShipClassLocation'
 
 export const SurveyTabsEnum = {
-  SHIP_ORE: 'rocks',
+  SHIP_ORE: 'ores',
   SHIP_ORE_CLASS: 'rock_class',
   SHIP_CLASS_LOCATION: 'class_location',
   VEHICLE_ORE: 'gems',
@@ -271,9 +271,9 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
                 // setActiveTab(newValue)
               }}
             >
-              <Tab label="About Survey Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
+              <Tab label="About The Corps" value={SurveyTabsEnum.ABOUT_SURVEY_CORPS} icon={<SurveyCorpsIcon />} />
               <Tab
-                label="Ore Locations"
+                label="Ore Types"
                 value={SurveyTabsEnum.SHIP_ORE}
                 icon={
                   <Badge badgeContent={<Explore />}>

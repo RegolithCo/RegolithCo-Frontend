@@ -18,6 +18,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Theme,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -603,6 +604,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 acc.push(
                   <SurveyTableOreCell
                     key={ore}
+                    theme={theme}
                     handleMouseEnter={(e) => handleMouseEnter(e, tier, idr, colNum)}
                     prob={prob}
                     normProb={normProb}
@@ -1022,6 +1024,7 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
 }
 
 export interface SurveyTableOreCellProps {
+  theme: Theme
   prob: number | null
   normProb: number | null
   minPct: number | null
@@ -1036,6 +1039,7 @@ export interface SurveyTableOreCellProps {
 }
 
 export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
+  theme,
   prob,
   normProb,
   minPct,
@@ -1049,8 +1053,6 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   handleMouseEnter,
 }) =>
   React.useMemo(() => {
-    const theme = useTheme()
-
     return (
       <TableCell
         onMouseEnter={handleMouseEnter}

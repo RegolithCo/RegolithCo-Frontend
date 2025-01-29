@@ -44,7 +44,7 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile,
 
       <Typography variant="body2" paragraph>
         When you enlist with the Regolith Survey Corps your Scouting data will be combined with others to generate the{' '}
-        <Link href="/survey/rocks">location and composition charts</Link>. Just by scouting rocks, gems and wrecks
+        <Link href="/survey/ores">location and composition charts</Link>. Just by scouting rocks, gems and wrecks
         normally you will help discover the best places to mine and salvage in the 'verse'.
       </Typography>
       {usrQries.userProfile?.isSurveyor && (

@@ -20,6 +20,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Theme,
   Tooltip,
   Typography,
   useTheme,
@@ -72,6 +73,8 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
   const handleGravityWellFilter = React.useCallback((newGrav: string | null) => {
     setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
+    setHoverCol(null)
+    setHoverRow(null)
     // if tContainerRef exists scroll to the top
     setTimeout(() => {
       if (tContainerRef.current) {
@@ -103,7 +106,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const fgColors = ['#000000', '#ffffff', '#ffffff']
 
   React.useEffect(() => {
-    if (!dataStore) return
+    if (!dataStore.ready) return
     const calcVehicleRowKeys = async () => {
       const vehicleRowKeys = Object.values(VehicleOreEnum)
       const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(dataStore, vehicleOreKey)))
@@ -334,6 +337,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
             return (
               <SurveyTableOreCell
+                theme={theme}
                 key={ore}
                 prob={prob}
                 normProb={normProb}
@@ -377,7 +381,16 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         </Stack>
         <Stack direction="row" spacing={2} sx={{ marginBottom: theme.spacing(2) }}>
           <FormControlLabel
-            control={<Switch checked={showExtendedStats} onChange={(e) => setShowExtendedStats(e.target.checked)} />}
+            control={
+              <Switch
+                checked={showExtendedStats}
+                onChange={(e) => {
+                  setShowExtendedStats(e.target.checked)
+                  setHoverCol(null)
+                  setHoverRow(null)
+                }}
+              />
+            }
             label="Advanced Stats"
           />
 
@@ -408,7 +421,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             onClick={() => {
               setSelected([])
               setFilterSelected(false)
-              setGravityWellFilter(null)
+              handleGravityWellFilter(null)
             }}
             color="error"
             variant="text"
@@ -653,6 +666,7 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
 }
 
 export interface SurveyTableOreCellProps {
+  theme: Theme
   prob: number | null
   normProb: number | null
   minNum: number | null
@@ -666,6 +680,7 @@ export interface SurveyTableOreCellProps {
 }
 
 export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
+  theme,
   prob,
   normProb,
   minNum,
@@ -678,8 +693,6 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   handleMouseEnter,
 }) =>
   React.useMemo(() => {
-    const theme = useTheme()
-
     return (
       <TableCell
         onMouseEnter={handleMouseEnter}

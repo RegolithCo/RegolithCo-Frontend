@@ -98,7 +98,7 @@ export const App: React.FC = () => {
               {/* Standalone calc */}
               <Route path="/workorder" element={<WorkOrderCalcPageContainer />} errorElement={<ErrorPage />} />
               {/* Tables uses urls for tabs */}
-              <Route path="/survey" element={<Navigate to="/survey/rocks" replace />} />
+              <Route path="/survey" element={<Navigate to="/survey/ores" replace />} />
               <Route path="/survey/:tab" element={<SurveyCorpsHomeContainer />} />
 
               <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />

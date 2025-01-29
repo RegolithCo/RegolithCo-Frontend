@@ -169,8 +169,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
           icon: <SurveyCorpsIcon />,
         },
         {
-          path: '/survey/rocks',
-          name: 'Ore Locations',
+          path: '/survey/ores',
+          name: 'Ore Types by Location',
           icon: (
             <Badge badgeContent={<Explore sx={{ fontSize: 14 }} />}>
               <RockIcon />
@@ -179,7 +179,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         },
         {
           path: '/survey/rock_class',
-          name: 'Rock Types',
+          name: 'Rock Type Compositions',
           icon: (
             <Badge badgeContent={<ListAlt sx={{ fontSize: 14 }} />}>
               <RockIcon />
@@ -187,8 +187,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
           ),
         },
         {
-          path: '/survey/rock_class',
-          name: 'Rock Locations',
+          path: '/survey/class_location',
+          name: 'Rock Types by Location',
           icon: (
             <Badge badgeContent={<Explore sx={{ fontSize: 14 }} />}>
               <RockIcon />
@@ -197,7 +197,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
         },
         {
           path: '/survey/gems',
-          name: 'Gem Locations',
+          name: 'ROC / Hand Mining Ores',
           icon: <GemIcon />,
         },
         { isDivider: true },
