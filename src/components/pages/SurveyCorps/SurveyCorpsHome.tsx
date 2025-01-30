@@ -3,7 +3,6 @@ import * as React from 'react'
 import {
   Badge,
   Box,
-  Button,
   Container,
   IconButton,
   MenuItem,
@@ -12,22 +11,31 @@ import {
   Stack,
   Tab,
   Tabs,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { ShipOreDistribution } from './ShipOreDistribution'
 import { GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
-import { getEpochFromVersion, ObjectValues, scVersion, ScVersionEpochEnum, SurveyData } from '@regolithco/common'
+import {
+  getEpochFromVersion,
+  JSONObject,
+  ObjectValues,
+  scVersion,
+  ScVersionEpochEnum,
+  SurveyData,
+} from '@regolithco/common'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
 import { useGetPublicSurveyDataQuery } from '../../../schema'
-import { Close, EmojiEvents, Explore, Fullscreen, ListAlt } from '@mui/icons-material'
+import { Close, CloudDownload, EmojiEvents, Explore, Fullscreen, ListAlt } from '@mui/icons-material'
 import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
 import { ShipClassLocation } from './ShipClassLocation'
+import dayjs from 'dayjs'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'ores',
@@ -160,24 +168,42 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   )
 
   let pageContent: React.ReactNode = null
+  let downloadData: JSONObject | null = null
+  // In the form 'YYYY-MM-DD.json'
+  let downloadDataFileName: string = `${dayjs().format('YYYY-MM-DD')}.json`
+  let fullScreenName = ''
   switch (tab) {
     case SurveyTabsEnum.SHIP_ORE:
       pageContent = rockLocation
+      downloadData = surveyData?.shipOreByGravProb?.data || null
+      downloadDataFileName = `OreLocations_${downloadDataFileName}`
+      fullScreenName = 'Ore Locations'
       break
     case SurveyTabsEnum.SHIP_ORE_CLASS:
       pageContent = rockType
+      downloadData = surveyData?.shipOreByRockClassProb?.data || null
+      downloadDataFileName = `RockTypes_${downloadDataFileName}`
+      fullScreenName = 'Rock Types'
       break
     case SurveyTabsEnum.VEHICLE_ORE:
       pageContent = vehicleOre
+      downloadData = surveyData?.vehicleProbs?.data || null
+      downloadDataFileName = `RockTypeLocations_${downloadDataFileName}`
+      fullScreenName = 'Rock Type Locations'
       break
     case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
       pageContent = <SurveyCorpsAbout isSmall />
+      fullScreenName = 'About The Corps'
       break
     case SurveyTabsEnum.SHIP_CLASS_LOCATION:
       pageContent = shipClassLocation
+      downloadData = surveyData?.shipRockClassByGravProb?.data || null
+      downloadDataFileName = `ROC-Hand-Mining_${downloadDataFileName}`
+      fullScreenName = 'ROC / Hand Mining'
       break
     case SurveyTabsEnum.LEADERBOARD:
       pageContent = leaderBoard
+      fullScreenName = 'Leaderboard'
       break
   }
 
@@ -303,16 +329,54 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
               <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
             </Tabs>
           )}
-          {!isSmall && (
-            <Button
-              onClick={() => setModalOpen(true)}
-              color="primary"
-              startIcon={<Fullscreen />}
-              disabled={tab === SurveyTabsEnum.LEADERBOARD || tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS}
-            >
-              Fullscreen
-            </Button>
-          )}
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent="flex-end"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+            }}
+          >
+            <Tooltip title="Download Data">
+              <span>
+                <IconButton
+                  color="info"
+                  disabled={!downloadData}
+                  onClick={() => {
+                    if (downloadData) {
+                      // make sure to use the filename: downloadDataFileName
+                      const dataStr =
+                        'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(downloadData, null, 2))
+                      const downloadAnchorNode = document.createElement('a')
+                      downloadAnchorNode.setAttribute('href', dataStr)
+                      downloadAnchorNode.setAttribute('download', downloadDataFileName)
+                      document.body.appendChild(downloadAnchorNode) // required for firefox
+                      downloadAnchorNode.click()
+                      downloadAnchorNode.remove()
+                    }
+                  }}
+                >
+                  <CloudDownload />
+                </IconButton>
+              </span>
+            </Tooltip>
+            {!isSmall && (
+              <Tooltip title="Fullscreen View">
+                <span>
+                  <IconButton
+                    onClick={() => setModalOpen(true)}
+                    color="primary"
+                    disabled={tab === SurveyTabsEnum.LEADERBOARD || tab === SurveyTabsEnum.ABOUT_SURVEY_CORPS}
+                  >
+                    <Fullscreen />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+          </Stack>
           {/* Epoch selector */}
           {!isSmall && (
             <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
@@ -367,6 +431,34 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
                   <Close />
                 </IconButton>
               </Box>
+
+              <Stack
+                direction="row"
+                spacing={2}
+                alignItems="center"
+                justifyContent={'center'}
+                sx={{
+                  width: '100%',
+                }}
+              >
+                <SurveyCorpsIcon
+                  sx={{
+                    width: iconSize,
+                    height: iconSize,
+                  }}
+                />
+                <Typography
+                  variant={isSmall ? 'h6' : 'h4'}
+                  sx={{
+                    fontFamily: theme.typography.fontFamily,
+                    fontWeight: 'bold',
+                    color: theme.palette.primary.main,
+                  }}
+                >
+                  Regolith Survey Corps: {fullScreenName}
+                </Typography>
+              </Stack>
+
               {pageContent}
             </Box>
           </Modal>

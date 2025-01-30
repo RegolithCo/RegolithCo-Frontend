@@ -3,6 +3,7 @@ import { Button, Stack, Typography } from '@mui/material'
 import * as React from 'react'
 
 import { PageWrapper } from '../PageWrapper'
+import { wipeLocalLookups } from '../../lib/utils'
 
 export const ServiceDownPage: React.FC = () => {
   const [countdown, setCountdown] = React.useState<number>(10)
@@ -13,6 +14,7 @@ export const ServiceDownPage: React.FC = () => {
         const newCountdown = prev - 1
         if (newCountdown <= 0) {
           clearInterval(interval)
+          wipeLocalLookups()
           window.location.reload()
           return prev
         } else return newCountdown

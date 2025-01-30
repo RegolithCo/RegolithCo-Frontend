@@ -135,35 +135,23 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
         // Calculate the bonus
         const bonusCols = bonuses?.data || {}
         const bonus = bonusCols[row.id] || 1
-        const oldBonusMax = retVal['STAT_BONUS'].max || 0
+        const oldBonusMax = retVal['STAT_BONUS'].max || 1
         retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
 
         // Calculate the users
         const users = dataCols[row.id]?.users || 0
         const oldUsersMax = retVal['STAT_USERS'].max || 0
         retVal['STAT_USERS'].max = Math.max(oldUsersMax, users)
+
         // Calculate the scans
         const scans = dataCols[row.id]?.scans || 0
         const oldScansMax = retVal['STAT_SCANS'].max || 0
         retVal['STAT_SCANS'].max = Math.max(oldScansMax, scans)
+
         // Calculate the clusters
         const clusters = dataCols[row.id]?.clusters || 0
         const oldClustersMax = retVal['STAT_CLUSTERS'].max || 0
         retVal['STAT_CLUSTERS'].max = Math.max(oldClustersMax, clusters)
-
-        //       // Calculate max clusterSizeMax
-        //       const clusterSizeMax = dataCols[row.id]?.clusterCount.max || 0
-        //       const oldClusterSizeMax = retVal['STAT_CLUSTER_SIZE'].max || 0
-        //       const oldClusterSizeMin = retVal['STAT_CLUSTER_SIZE'].min || 0
-        //       retVal['STAT_CLUSTER_SIZE'].max = Math.max(oldClusterSizeMax, clusterSizeMax)
-        //       retVal['STAT_CLUSTER_SIZE'].min = Math.min(oldClusterSizeMin, clusterSizeMax)
-        //       // Then the rock mass
-        //       const rockMassMax = dataCols[row.id]?.mass.max || 0
-        //       const rockMassMin = dataCols[row.id]?.mass.min || 0
-        //       const oldRockMassMax = retVal['STAT_ROCK_MASS'].max || 0
-        //       const oldRockMassMin = retVal['STAT_ROCK_MASS'].min || 0
-        //       retVal['STAT_ROCK_MASS'].max = Math.max(oldRockMassMax, rockMassMax)
-        //       retVal['STAT_ROCK_MASS'].min = Math.min(oldRockMassMin, rockMassMin)
 
         // Then the types
         const allOres = [...Object.values(AsteroidTypeEnum), ...Object.values(DepositTypeEnum)]
@@ -191,8 +179,13 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
         .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
         .getColors()
         .map((color) => alpha(color, 0.4)),
-      STATS: new Gradient()
+      BONUS: new Gradient()
         .setColorGradient(rgbToHex(darken(theme.palette.info.dark, 0.5)), theme.palette.info.main)
+        .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+        .getColors()
+        .map((color) => alpha(color, 0.4)),
+      STATS: new Gradient()
+        .setColorGradient(rgbToHex(darken(theme.palette.grey[700], 0.5)), theme.palette.grey[100])
         .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
         .getColors()
         .map((color) => alpha(color, 0.4)),
@@ -228,9 +221,9 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       // The normalized value between 0 and 1 that prob is
       const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
 
-      const normUsers = 0
-      const normScans = 0
-      const normClusters = 0
+      let normUsers = 0
+      let normScans = 0
+      let normClusters = 0
       const normClusterSize = 0
       const normRockMass = 0
 
@@ -251,9 +244,9 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
         users = data.data[row.id].users
         clusters = data.data[row.id].clusters
 
-        //   normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
-        //   normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
-        //   normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
+        normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
+        normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
+        normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
         //   normClusterSize = calculateNormalizedProbability(
         //     data.data[row.id].clusterCount.max,
         //     maxMinClusterSize.min,
@@ -358,7 +351,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
               textAlign: 'center',
               fontFamily: fontFamilies.robotoMono,
               borderLeft: `3px solid ${theme.palette.info.main}`,
-              backgroundColor: normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
+              backgroundColor: normBonus ? gradients['BONUS'][normBonus] : 'rgba(0,0,0,0)',
             }}
             onMouseEnter={(e) => {
               if (tBodyRef.current) {
@@ -402,10 +395,10 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                   const rect = e.currentTarget.getBoundingClientRect()
                   const left = rect.left - tableLeft
                   const width = rect.width
-                  setHoverCol([-2, left, width, theme.palette.info.main])
+                  setHoverCol([-2, left, width, theme.palette.grey[500]])
                   const top = rect.top - tableTop
                   const height = rect.height
-                  setHoverRow([idr, top, height, theme.palette.info.main])
+                  setHoverRow([idr, top, height, theme.palette.grey[500]])
                 }
               }}
             >
@@ -467,108 +460,46 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
             </TableCell>
           )}
 
-          {/* --------- CLUSTER SIZE STATS --------- */}
-          {showExtendedStats && (
-            <TableCell
-              sx={{
-                textAlign: 'center',
-                fontFamily: fontFamilies.robotoMono,
-                backgroundColor: normUsers ? gradients['STATS'][normClusterSize] : 'rgba(0,0,0,0)',
-              }}
-              onMouseEnter={(e) => {
-                if (tBodyRef.current) {
-                  // Get the left of the table
-                  const tableRect = tBodyRef.current.getBoundingClientRect()
-                  const tableLeft = tableRect.left
-                  const tableTop = tableRect.top
-                  // Get the left and wdith of this tableCell
-                  const rect = e.currentTarget.getBoundingClientRect()
-                  const left = rect.left - tableLeft
-                  const width = rect.width
-                  setHoverCol([-4, left, width, theme.palette.info.main])
-                  const top = rect.top - tableTop
-                  const height = rect.height
-                  setHoverRow([idr, top, height, theme.palette.info.main])
-                }
-              }}
-            >
-              {clusterSizeMax ? (
-                <Tooltip title={`Cluster size: Min - Max - Avg`} placement="top">
-                  <Typography variant="body2" sx={{ minWidth: 100, textAlign: 'center' }} component={'div'}>
-                    {MValueFormatter(cluserSizeMin, MValueFormat.number_sm)}
-                    {' - '}
-                    {MValueFormatter(clusterSizeMax, MValueFormat.number_sm)}
-                    {' - '}
-                    <strong>{MValueFormatter(clusterSizeAvg, MValueFormat.number_sm, 1)}</strong>
-                  </Typography>
-                </Tooltip>
-              ) : (
-                <Typography variant="body2" sx={{ minWidth: 60, textAlign: 'center' }} component={'div'}>
-                  {' '}
-                </Typography>
-              )}
-            </TableCell>
-          )}
-          {/* --------- ROCK MASS STATS  --------- */}
-          {showExtendedStats && (
-            <TableCell
-              sx={{
-                textAlign: 'center',
-                fontFamily: fontFamilies.robotoMono,
-                backgroundColor: normUsers ? gradients['STATS'][normRockMass] : 'rgba(0,0,0,0)',
-              }}
-              onMouseEnter={(e) => {
-                if (tBodyRef.current) {
-                  // Get the left of the table
-                  const tableRect = tBodyRef.current.getBoundingClientRect()
-                  const tableLeft = tableRect.left
-                  const tableTop = tableRect.top
-                  // Get the left and wdith of this tableCell
-                  const rect = e.currentTarget.getBoundingClientRect()
-                  const left = rect.left - tableLeft
-                  const width = rect.width
-                  setHoverCol([-5, left, width, theme.palette.info.main])
-                  const top = rect.top - tableTop
-                  const height = rect.height
-                  setHoverRow([idr, top, height, theme.palette.info.main])
-                }
-              }}
-            >
-              {maxMass ? (
-                <Tooltip title={`Rock Mass: Min - Max - Avg`} placement="top">
-                  <Typography variant="body2" sx={{ minWidth: 150, textAlign: 'center' }} component={'div'}>
-                    {MValueFormatter(minMass, MValueFormat.number_sm)}
-                    {' - '}
-                    {MValueFormatter(maxMass, MValueFormat.number_sm)}
-                    {' - '}
-                    <strong>{MValueFormatter(avgMass, MValueFormat.number_sm, 1)}</strong>
-                  </Typography>
-                </Tooltip>
-              ) : (
-                <Typography variant="caption" sx={{ minWidth: 80, textAlign: 'center' }} component={'div'}>
-                  {' '}
-                </Typography>
-              )}
-            </TableCell>
-          )}
-
           {[...Object.values(AsteroidTypeEnum), ...Object.values(DepositTypeEnum)].map((aType, ido) => {
             const isNewTier = ido === 0 || ido === Object.values(AsteroidTypeEnum).length
             const colNum = ido
             const isAsteroid = ido < Object.values(AsteroidTypeEnum).length
 
+            const hide =
+              (isAsteroid && !rockTypeFilter.includes('ASTEROID')) ||
+              (!isAsteroid && !rockTypeFilter.includes('SURFACE'))
+            if (hide) return null
+
             let prob: number | null = null
-            const maxPct = 0
-            const minPct = 0
-            const avgPct = 0
+
+            let maxMass = 0
+            let minMass = 0
+            let avgMass = 0
+
+            let maxInst = 0
+            let minInst = 0
+            let avgInst = 0
+
+            let maxRes = 0
+            let minRes = 0
+            let avgRes = 0
 
             let normProb: number | null = null
 
             if (data && data.data && data.data[row.id] && data.data[row.id].rockTypes[aType]) {
               prob = data.data[row.id].rockTypes[aType].prob
-              //   maxPct = data.data[row.id].ores[ore].maxPct
-              //   minPct = data.data[row.id].ores[ore].minPct
-              //   avgPct = data.data[row.id].ores[ore].avgPct
+
+              maxMass = data.data[row.id].rockTypes[aType].mass.max
+              minMass = data.data[row.id].rockTypes[aType].mass.min
+              avgMass = data.data[row.id].rockTypes[aType].mass.avg
+
+              maxInst = data.data[row.id].rockTypes[aType].inst.max
+              minInst = data.data[row.id].rockTypes[aType].inst.min
+              avgInst = data.data[row.id].rockTypes[aType].inst.avg
+
+              maxRes = data.data[row.id].rockTypes[aType].res.max
+              minRes = data.data[row.id].rockTypes[aType].res.min
+              avgRes = data.data[row.id].rockTypes[aType].res.avg
 
               if (prob !== null) {
                 const oreMax = maxMins[aType] && maxMins[aType].max !== null ? maxMins[aType].max : 1
@@ -584,9 +515,15 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                 handleMouseEnter={(e) => handleMouseEnter(e, isAsteroid ? 'ASTEROID' : 'SURFACE', idr, colNum)}
                 prob={prob}
                 normProb={normProb}
-                minPct={minPct}
-                maxPct={maxPct}
-                avgPct={avgPct}
+                maxMass={maxMass}
+                minMass={minMass}
+                avgMass={avgMass}
+                maxInst={maxInst}
+                minInst={minInst}
+                avgInst={avgInst}
+                maxRes={maxRes}
+                minRes={minRes}
+                avgRes={avgRes}
                 gradientColor={gradients[isAsteroid ? 'ASTEROID' : 'SURFACE'][normProb || 0]}
                 isNewTier={isNewTier}
                 showExtendedStats={showExtendedStats}
@@ -787,42 +724,6 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                       Survey Users
                     </LongCellHeader>
                   )}
-                  {showExtendedStats && (
-                    <LongCellHeader
-                      sx={{
-                        backgroundColor: 'transparent',
-                        borderBottom:
-                          hoverCol && hoverCol[0] === -4
-                            ? `3px solid ${theme.palette.info.main}`
-                            : `3px solid ${hoverColor}`,
-                        '& .MuiTypography-caption': {
-                          fontSize: '1.2em',
-                          fontWeight: hoverCol && hoverCol[0] === -4 ? 'bold' : undefined,
-                          paddingLeft: theme.spacing(5),
-                        },
-                      }}
-                    >
-                      Cluster Size
-                    </LongCellHeader>
-                  )}
-                  {showExtendedStats && (
-                    <LongCellHeader
-                      sx={{
-                        backgroundColor: 'transparent',
-                        borderBottom:
-                          hoverCol && hoverCol[0] === -5
-                            ? `3px solid ${theme.palette.info.main}`
-                            : `3px solid ${hoverColor}`,
-                        '& .MuiTypography-caption': {
-                          fontSize: '1.2em',
-                          fontWeight: hoverCol && hoverCol[0] === -5 ? 'bold' : undefined,
-                          paddingLeft: theme.spacing(5),
-                        },
-                      }}
-                    >
-                      Rock Mass
-                    </LongCellHeader>
-                  )}
                   {rockTypeFilter.includes('ASTEROID') &&
                     Object.values(AsteroidTypeEnum).map((asteroidType, ido) => {
                       const colHovered = hoverCol && hoverCol[0] === ido
@@ -996,10 +897,18 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
 export interface SurveyTableOreCellProps {
   theme: Theme
   prob: number | null
+
   normProb: number | null
-  minPct: number | null
-  maxPct: number | null
-  avgPct: number | null
+  maxMass: number | null
+  minMass: number | null
+  avgMass: number | null
+  maxInst: number | null
+  minInst: number | null
+  avgInst: number | null
+  maxRes: number | null
+  minRes: number | null
+  avgRes: number
+
   showExtendedStats: boolean
   isNewTier: boolean
   typeColor: string
@@ -1012,9 +921,15 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   theme,
   prob,
   normProb,
-  minPct,
-  maxPct,
-  avgPct,
+  maxMass,
+  minMass,
+  avgMass,
+  maxInst,
+  minInst,
+  avgInst,
+  maxRes,
+  minRes,
+  avgRes,
   showExtendedStats,
   isNewTier,
   typeColor,
@@ -1054,17 +969,59 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
             </Typography>
           </Tooltip>
           {showExtendedStats && prob && (
-            <Tooltip title={`Composition Percent: Min - Max - Avg`}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
-                {MValueFormatter(minPct, MValueFormat.percent)}
-                {' - '}
-                {MValueFormatter(maxPct, MValueFormat.percent)}
-                {' - '}
-                <strong>{MValueFormatter(avgPct, MValueFormat.percent)}</strong>
-              </Typography>
-            </Tooltip>
+            <Box
+              sx={{
+                '& .MuiTypography-caption': {
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                  flexDirection: 'row',
+                  color: theme.palette.text.secondary,
+                  lineHeight: 1.5,
+                  fontSize: '0.8em',
+                },
+              }}
+            >
+              <Tooltip title={`Rock Mass: Min - Max - Avg`}>
+                <Typography variant="caption" component="div">
+                  <span>{MValueFormatter(minMass, MValueFormat.number_sm)}</span>
+                  <span>{MValueFormatter(maxMass, MValueFormat.number_sm)}</span>
+                  <strong>{MValueFormatter(avgMass, MValueFormat.number_sm)}</strong>
+                </Typography>
+              </Tooltip>
+              <Tooltip title={`Resistance: Min - Max - Avg`}>
+                <Typography variant="caption">
+                  <span>{MValueFormatter(minRes, MValueFormat.percent)}</span>
+                  <span>{MValueFormatter(maxRes, MValueFormat.percent)}</span>
+                  <strong>{MValueFormatter(avgRes, MValueFormat.percent)}</strong>
+                </Typography>
+              </Tooltip>
+              <Tooltip title={`Instability: Min - Max - Avg`}>
+                <Typography variant="caption">
+                  <span>{MValueFormatter(minInst, MValueFormat.number)}</span>
+                  <span>{MValueFormatter(maxInst, MValueFormat.number)}</span>
+                  <strong>{MValueFormatter(avgInst, MValueFormat.number)}</strong>
+                </Typography>
+              </Tooltip>
+            </Box>
           )}
         </Stack>
       </TableCell>
     )
-  }, [prob, normProb, minPct, maxPct, avgPct, showExtendedStats, isNewTier, typeColor, gradientColor])
+  }, [
+    prob,
+    normProb,
+    normProb,
+    maxMass,
+    minMass,
+    avgMass,
+    maxInst,
+    minInst,
+    avgInst,
+    maxRes,
+    minRes,
+    avgRes,
+    showExtendedStats,
+    isNewTier,
+    typeColor,
+    gradientColor,
+  ])

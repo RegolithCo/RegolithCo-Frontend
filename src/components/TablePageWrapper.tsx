@@ -82,6 +82,7 @@ export const TablePageWrapper: React.FC<TablePageWrapperProps> = ({
         elevation={4}
         sx={{
           ...styles.paper,
+          position: 'relative',
           margin: isSmall ? '0' : 'auto',
         }}
       >

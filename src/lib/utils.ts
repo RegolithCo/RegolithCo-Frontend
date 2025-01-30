@@ -22,11 +22,14 @@ export const downloadFile = (data: string, finalFileName: string, fileType: stri
 }
 
 export const wipeLocalLookups = () => {
+  // Wipe all local storage keys that start with 'LookupData:'
+  // This should refresh all the lookups and price data
   const lookupDataKeys = fetchLocalStorageKeys('LookupData:')
   lookupDataKeys.forEach((key) => {
     localStorage.removeItem(key)
   })
 
+  // Now remove all the Survey Corps data
   const surveyDataKeys = fetchLocalStorageKeys('SurveyData:')
   surveyDataKeys.forEach((key) => {
     localStorage.removeItem(key)
