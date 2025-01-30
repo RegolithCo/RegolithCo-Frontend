@@ -173,6 +173,10 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   let downloadDataFileName: string = `${dayjs().format('YYYY-MM-DD')}.json`
   let fullScreenName = ''
   switch (tab) {
+    case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
+      pageContent = <SurveyCorpsAbout isSmall />
+      fullScreenName = 'About The Corps'
+      break
     case SurveyTabsEnum.SHIP_ORE:
       pageContent = rockLocation
       downloadData = surveyData?.shipOreByGravProb?.data || null
@@ -185,19 +189,15 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
       downloadDataFileName = `RockTypes_${downloadDataFileName}`
       fullScreenName = 'Rock Types'
       break
-    case SurveyTabsEnum.VEHICLE_ORE:
-      pageContent = vehicleOre
-      downloadData = surveyData?.vehicleProbs?.data || null
-      downloadDataFileName = `RockTypeLocations_${downloadDataFileName}`
-      fullScreenName = 'Rock Type Locations'
-      break
-    case SurveyTabsEnum.ABOUT_SURVEY_CORPS:
-      pageContent = <SurveyCorpsAbout isSmall />
-      fullScreenName = 'About The Corps'
-      break
     case SurveyTabsEnum.SHIP_CLASS_LOCATION:
       pageContent = shipClassLocation
       downloadData = surveyData?.shipRockClassByGravProb?.data || null
+      downloadDataFileName = `RockTypeLocations_${downloadDataFileName}`
+      fullScreenName = 'Rock Type Locations'
+      break
+    case SurveyTabsEnum.VEHICLE_ORE:
+      pageContent = vehicleOre
+      downloadData = surveyData?.vehicleProbs?.data || null
       downloadDataFileName = `ROC-Hand-Mining_${downloadDataFileName}`
       fullScreenName = 'ROC / Hand Mining'
       break
