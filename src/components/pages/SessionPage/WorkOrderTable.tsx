@@ -25,6 +25,7 @@ import { LookupsContext } from '../../../context/lookupsContext'
 export interface WorkOrderTableProps {
   workOrders: WorkOrder[]
   onRowClick?: (sessionId: string, orderId: string) => void
+  reverse?: boolean
   isShare?: boolean
   sessionActive?: boolean
   columns?: WorkOrderTableColsEnum[]
@@ -67,6 +68,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
   workOrders,
   isShare,
+  reverse,
   columns,
   onRowClick,
   sessionActive,
@@ -77,7 +79,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
 
   // NOTE: Order is REALLY important here
   const [summaries, setSummaries] = React.useState<Record<string, WorkOrderSummary>>()
-  const [volSCU, setVolSCU] = React.useState(0)
+  const [yieldVolSCU, setYieldVolSCU] = React.useState(0)
   const [grossAmount, setGrossAmount] = React.useState(0)
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
@@ -85,7 +87,9 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
   React.useEffect(() => {
     if (!dataStore.ready) return
     const calcWorkOrders = async () => {
-      const sortedWorkOrders = [...workOrders].sort((a, b) => a.createdAt - b.createdAt)
+      const sortedWorkOrders = [...workOrders].sort((a, b) =>
+        reverse ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
+      )
       setSortedWorkOrders(sortedWorkOrders)
 
       const summaries: Record<string, WorkOrderSummary> = {}
@@ -94,14 +98,8 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
       }
       setSummaries(summaries)
 
-      const volSCU = Object.values(summaries).reduce(
-        (acc, summary) =>
-          acc +
-          (summary.oreSummary ? Object.values(summary.oreSummary).reduce((acc, ore) => acc + ore.collected, 0) : 0) /
-            100,
-        0
-      )
-      setVolSCU(volSCU)
+      const volSCU = Object.values(summaries).reduce((acc, summary) => acc + summary.yieldSCU, 0)
+      setYieldVolSCU(volSCU)
 
       const [grossAmt, shareAmt] = workOrders.reduce(
         (acc, wo) => {
@@ -152,7 +150,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
             )}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Ores)) && <TableCell>Ores</TableCell>}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Volume)) && (
-              <TableCell align="right">Amount</TableCell>
+              <TableCell align="right">Yield</TableCell>
             )}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && <TableCell align="right">Gross</TableCell>}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Net)) && <TableCell align="right">Net</TableCell>}
@@ -192,7 +190,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
             <TableCell colSpan={footerColSpan}>Totals</TableCell>
             {(!columns || columns.includes(WorkOrderTableColsEnum.Volume)) && (
               <TableCell align="right">
-                <MValue value={volSCU} format={MValueFormat.volSCU} decimals={volSCU > 10 ? 0 : 1} />
+                <MValue value={yieldVolSCU} format={MValueFormat.volSCU} decimals={yieldVolSCU > 10 ? 0 : 1} />
               </TableCell>
             )}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && (

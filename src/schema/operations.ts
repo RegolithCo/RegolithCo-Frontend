@@ -157,7 +157,8 @@ export const SessionSummaryFragmentFragmentDoc = gql`
     fragment SessionSummaryFragment on Session {
   summary {
     aUEC
-    oreSCU
+    collectedSCU
+    yieldSCU
     allPaid
     lastJobDone
     refineries

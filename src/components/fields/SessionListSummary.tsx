@@ -96,20 +96,16 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
     totalMembers,
     // allPaid,
     lastJobDone,
-    oreSCU,
+    collectedSCU,
+    yieldSCU,
     refineries,
     scoutingFindsByType,
     // workOrderSummaries,
     // workOrdersByType,
   } = session.summary as SessionSummary
 
-  const oreSCUDecimals = oreSCU && oreSCU > 0 && oreSCU < 10 ? 1 : 0
+  const oreSCUDecimals = yieldSCU && yieldSCU > 0 && yieldSCU < 10 ? 1 : 0
 
-  // Sum all the numeric values of workOrders
-  // const totalWorkOrders = Object.values(workOrderSummaries || {}).reduce<number>(
-  //   (acc, curr) => (typeof curr === 'number' ? acc + curr : acc),
-  //   0
-  // )
   const totalScoutingFnds = Object.values(scoutingFindsByType || {}).reduce<number>(
     (acc, curr) => (typeof curr === 'number' ? acc + curr : acc),
     0
@@ -240,8 +236,8 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
             title={
               <Box>
                 <Typography>
-                  Total raw ore collected: <br />
-                  {MValueFormatter(oreSCU, MValueFormat.volSCU, oreSCUDecimals)}
+                  Total refined ore yield:
+                  {MValueFormatter(yieldSCU, MValueFormat.volSCU, oreSCUDecimals)}
                 </Typography>
                 <Typography component="div">
                   <strong>Refinery:</strong> {refineries.join(', ')}
@@ -257,7 +253,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
               <Chip
                 size="small"
                 variant="outlined"
-                label={MValueFormatter(oreSCU, MValueFormat.volSCU, oreSCUDecimals)}
+                label={MValueFormatter(yieldSCU, MValueFormat.volSCU, oreSCUDecimals)}
                 sx={{
                   mr: 1,
                 }}

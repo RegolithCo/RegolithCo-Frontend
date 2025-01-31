@@ -115,6 +115,21 @@ export const TabSummaryStats: React.FC<TabSummaryStatsProps> = ({ session, isSha
           </ListItemSecondaryAction>
         </ListItem>
         <ListItem>
+          <ListItemText primary="Yielded ore for sale" />
+          <ListItemSecondaryAction>
+            <MValue
+              value={sessionSummary.yieldSCU}
+              format={MValueFormat.volSCU}
+              decimals={1}
+              typoProps={{
+                px: 2,
+                fontSize: '1.1rem',
+                lineHeight: '2rem',
+              }}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
           <ListItemText primary="Work Orders Created" />
           <ListItemSecondaryAction>
             <MValue

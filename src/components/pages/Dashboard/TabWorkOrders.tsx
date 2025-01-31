@@ -42,6 +42,7 @@ import { WorkOrderTableColsEnum } from '../SessionPage/WorkOrderTableRow'
 import { PageLoader } from '../PageLoader'
 import { FetchMoreSessionLoader, FetchMoreWithDate } from './FetchMoreSessionLoader'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
+import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 
 export const TabWorkOrders: React.FC<DashboardProps> = ({
   userProfile,
@@ -187,15 +188,13 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
               <SimpleTreeView sx={{ my: 2 }} disabledItemsFocusable disableSelection>
                 {Object.entries(undeliveredWorkOrders).map(([refinery, orders]) => {
                   const uniqueSessions = Array.from(new Set(orders.map((wo) => wo.sessionId))).length
-                  const totalSCU: number = orders.reduce(
-                    (acc, wo) =>
-                      acc +
-                      wo.shipOres.reduce((acc, { amt }) => {
-                        const amount = Math.ceil(amt / 100)
-                        return acc + amount
-                      }, 0),
-                    0
-                  )
+                  const totalSCU: number = orders.reduce((acc, wo) => {
+                    const woYield =
+                      workOrderSummaries[wo.sessionId] && workOrderSummaries[wo.sessionId][wo.orderId]
+                        ? workOrderSummaries[wo.sessionId][wo.orderId].yieldSCU
+                        : 0
+                    return acc + woYield
+                  }, 0)
                   const deliverableWorkOrders = orders.filter((wo) => {
                     try {
                       const woLookup = workOrderSummaries[wo.sessionId][wo.orderId]
@@ -290,7 +289,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                         }
                         const completionTime = lookupVal?.completionTime || 0
                         const isProcessing = completionTime && completionTime > Date.now()
-
+                        if (!lookupVal?.yieldSCU) return null
                         return (
                           <TreeItem
                             key={order.orderId}
@@ -339,6 +338,11 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                       )}
                                     </Typography>
                                   </Link>
+                                </Tooltip>
+                                <Tooltip title="Ore Yields to be picked up" placement="top">
+                                  <Typography variant="caption">
+                                    {MValueFormatter(lookupVal?.yieldSCU || 0, MValueFormat.volSCU, 0)}
+                                  </Typography>
                                 </Tooltip>
                                 <Grid2 sx={{ flex: '0 1 60%' }} container spacing={1}>
                                   {totalSCU === 0 && (
@@ -504,6 +508,7 @@ export const WorkOrderListMonth: React.FC<WorkOrderListMonthProps> = ({ yearMont
       </Typography>
       <WorkOrderTable
         sessionActive
+        reverse
         workOrders={yearMonthArr}
         columns={[
           WorkOrderTableColsEnum.Session,

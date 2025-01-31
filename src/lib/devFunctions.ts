@@ -8,6 +8,7 @@ declare global {
   interface Window {
     clearLookups: () => void
     dev_user: (devUserId?: string) => void
+    toggleDevLogs: () => void
   }
 }
 
@@ -23,6 +24,15 @@ if (import.meta.env.MODE === 'development') {
    */
   window.clearLookups = () => {
     wipeLocalLookups()
+  }
+  window.toggleDevLogs = () => {
+    if (log.getLevel() === log.levels.DEBUG) {
+      log.setLevel(log.levels.INFO)
+      log.info('Logging is set to INFO')
+    } else {
+      log.setLevel(log.levels.DEBUG)
+      log.debug('Logging is set to DEBUG')
+    }
   }
   window.dev_user = (authId?: string, authType?: AuthTypeEnum) => {
     if (!authId) {

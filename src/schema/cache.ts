@@ -351,18 +351,19 @@ export type SessionShareFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	version?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SessionSummaryKeySpecifier = ('aUEC' | 'activeMembers' | 'allPaid' | 'lastJobDone' | 'oreSCU' | 'refineries' | 'scoutingFindsByType' | 'totalMembers' | 'workOrderSummaries' | 'workOrdersByType' | SessionSummaryKeySpecifier)[];
+export type SessionSummaryKeySpecifier = ('aUEC' | 'activeMembers' | 'allPaid' | 'collectedSCU' | 'lastJobDone' | 'refineries' | 'scoutingFindsByType' | 'totalMembers' | 'workOrderSummaries' | 'workOrdersByType' | 'yieldSCU' | SessionSummaryKeySpecifier)[];
 export type SessionSummaryFieldPolicy = {
 	aUEC?: FieldPolicy<any> | FieldReadFunction<any>,
 	activeMembers?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPaid?: FieldPolicy<any> | FieldReadFunction<any>,
+	collectedSCU?: FieldPolicy<any> | FieldReadFunction<any>,
 	lastJobDone?: FieldPolicy<any> | FieldReadFunction<any>,
-	oreSCU?: FieldPolicy<any> | FieldReadFunction<any>,
 	refineries?: FieldPolicy<any> | FieldReadFunction<any>,
 	scoutingFindsByType?: FieldPolicy<any> | FieldReadFunction<any>,
 	totalMembers?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrderSummaries?: FieldPolicy<any> | FieldReadFunction<any>,
-	workOrdersByType?: FieldPolicy<any> | FieldReadFunction<any>
+	workOrdersByType?: FieldPolicy<any> | FieldReadFunction<any>,
+	yieldSCU?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SessionSummaryTotalsKeySpecifier = ('other' | 'salvage' | 'ship' | 'vehicle' | SessionSummaryTotalsKeySpecifier)[];
 export type SessionSummaryTotalsFieldPolicy = {

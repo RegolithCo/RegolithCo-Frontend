@@ -24,6 +24,7 @@ import { PageLoader } from '../../PageLoader'
 import { SessionDashTabsEnum, tabUrl } from '../Dashboard.container'
 import { ChartTypesEnum } from '../../../cards/charts/DailyMonthlyChart'
 import { MyDashboardStatsChart } from '../../../cards/charts/MyDashboardStatsChart'
+import { DoubleArrow } from '@mui/icons-material'
 
 export type StatsFilters = {
   preset: DatePresetsEnum
@@ -198,7 +199,7 @@ export const TabStats: React.FC<DashboardProps> = ({
   }, [sessionsFiltered, workOrdersFiltered, crewSharesFiltered, workOrderSummaries])
 
   // Accumulate all the results for our charts
-  const { activityPie, oreReduced, scoutedRocks } = React.useMemo(() => {
+  const { activityPie, oreReducedRaw, oreReducedYielded, scoutedRocks } = React.useMemo(() => {
     const activityPie = sessionsFiltered.reduce(
       (acc, { summary }) => {
         const activity = summary?.workOrdersByType
@@ -212,9 +213,14 @@ export const TabStats: React.FC<DashboardProps> = ({
       {} as RegolithStatsSummary['workOrderTypes']
     )
 
-    const oreReduced = formatCardNumber(
+    const oreReducedRaw = formatCardNumber(
       sessionsFiltered.reduce((acc, sess) => {
-        return acc + (sess.summary?.oreSCU || 0)
+        return acc + (sess.summary?.collectedSCU || 0)
+      }, 0)
+    )
+    const oreReducedYielded = formatCardNumber(
+      sessionsFiltered.reduce((acc, sess) => {
+        return acc + (sess.summary?.yieldSCU || 0)
       }, 0)
     )
 
@@ -229,7 +235,8 @@ export const TabStats: React.FC<DashboardProps> = ({
     )
     return {
       activityPie,
-      oreReduced,
+      oreReducedRaw,
+      oreReducedYielded,
       scoutedRocks,
     }
   }, [sessionsFiltered])
@@ -275,7 +282,7 @@ export const TabStats: React.FC<DashboardProps> = ({
 
       Object.entries(summ.oreSummary || {}).forEach(([key, value]) => {
         if (key === '__typename') return
-        const refinedVal = value.collected
+        const refinedVal = value.refined
         if (shipOres.includes(key as ShipOreEnum)) {
           shipOrePie[key] = (shipOrePie[key] || 0) + refinedVal / 100
         } else if (vehicleOres.includes(key as VehicleOreEnum)) {
@@ -393,13 +400,31 @@ export const TabStats: React.FC<DashboardProps> = ({
           <SiteStatsCard value={expenses[0]} scale={expenses[1]} subText="Expenses (aUEC)" loading={loading} />
 
           <SiteStatsCard
-            value={oreReduced[0]}
-            scale={oreReduced[1]}
-            subText="Raw Ore (SCU)"
-            tooltip={`${MValueFormatter(
-              oreReduced[0] || 0,
-              MValueFormat.number
-            )} SCU of raw material mined, collected or salvaged`}
+            value={
+              <>
+                {MValueFormatter(oreReducedRaw[0] || 0, MValueFormat.number)}
+                <DoubleArrow />
+                {MValueFormatter(oreReducedYielded[0] || 0, MValueFormat.number)}
+              </>
+            }
+            scale={oreReducedRaw[1]}
+            subText="Ore (SCU)"
+            tooltip={
+              <Box sx={{ backgroundColor: 'black', p: 2 }}>
+                <Typography variant="body2" gutterBottom color="text.secondary">
+                  {MValueFormatter(oreReducedRaw[0] || 0, MValueFormat.number)} SCU of raw material mined, collected or
+                  salvaged
+                </Typography>
+                <Typography variant="body2" gutterBottom color="text.primary">
+                  {MValueFormatter(oreReducedYielded[0] || 0, MValueFormat.number)} SCU of refined material produced for
+                  sale
+                </Typography>
+                <Typography variant="caption" color="error">
+                  Note: Yield can be greater than collected because refining always rounds up to the nearest SCU to fill
+                  a box.
+                </Typography>
+              </Box>
+            }
             loading={loading}
           />
           <SiteStatsCard

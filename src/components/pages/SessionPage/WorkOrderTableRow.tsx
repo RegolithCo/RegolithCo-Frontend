@@ -85,7 +85,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
   const shipOrder = workOrder as ShipMiningOrder
 
   // let stateIcon: React.ReactNode
-  const volumeVal = Object.entries(summary.oreSummary).reduce((acc, [, { collected }]) => acc + collected / 100, 0)
+  const volumeVal = summary.yieldSCU
 
   const isPaid = !!crewShares?.every(({ state }) => state === true)
   const numPaid = crewShares?.filter(({ state }) => state === true).length || 0
@@ -187,7 +187,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.Refinery)) && (
         <TableCell align="center" onClick={onRowClickInner}>
-          {shipOrder.refinery && <RefineryIcon shortName={shipOrder.refinery} />}
+          {shipOrder.isRefined && shipOrder.refinery && <RefineryIcon shortName={shipOrder.refinery} />}
         </TableCell>
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.OrderId)) && (
