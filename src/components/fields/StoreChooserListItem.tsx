@@ -83,15 +83,20 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
     })
   }, [oreKeys, cityStores.missingOres, compact, styles.tinyChips])
 
-  const price = React.useMemo(() => Object.values(cityStores.prices).reduce((a, b) => a + b, 0), [cityStores.prices])
+  const finalPrice = React.useMemo(
+    () => Object.values(cityStores.prices).reduce((a, b) => a + b, 0),
+    [cityStores.prices]
+  )
 
   // // NO HOOKS BELOW HERE
   const systemName =
-    gravityWellLookups.find((gw) => gw.type === GravityWellTypeEnum.SYSTEM && gw.id === cityStores.system)?.label || ''
+    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.SYSTEM && gw.id === cityStores.system)?.label ||
+    ''
   const planetName =
-    gravityWellLookups.find((gw) => gw.type === GravityWellTypeEnum.PLANET && gw.id === cityStores.planet)?.label || ''
+    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.PLANET && gw.id === cityStores.planet)?.label ||
+    ''
   const satellite =
-    gravityWellLookups.find((gw) => gw.type === GravityWellTypeEnum.SATELLITE && gw.id === cityStores.satellite)
+    gravityWellLookups.find((gw) => gw.wellType === GravityWellTypeEnum.SATELLITE && gw.id === cityStores.satellite)
       ?.label || ''
   const city = cityStores.city || ''
   // Price is the sum of all the prices
@@ -136,8 +141,8 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
           },
         }}
         primary={
-          <Tooltip title={MValueFormatter(price, MValueFormat.currency)}>
-            <span>{MValueFormatter(price, MValueFormat.currency_sm)}</span>
+          <Tooltip title={MValueFormatter(finalPrice, MValueFormat.currency)}>
+            <span>{MValueFormatter(finalPrice, MValueFormat.currency_sm)}</span>
           </Tooltip>
         }
         secondaryTypographyProps={{

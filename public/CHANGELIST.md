@@ -1,4 +1,21 @@
 ### December 22, 2024
+## 1.2.1 - Ore SCU and price fixes
+
+This is a small but very important update and reflects a problem Regolith has had for a while. 
+
+The problem is this: When you refine ore the game always rounds up to fill a box but Regolith didn't reflect that so the prices and SCU values shown were always reflective of the exact amount of ore refined instead of the number of boxes you take to market.
+
+This change doesn't affect the database in any way, it just makes better choices about how to render the result in the client and when to round up. Hopefully this will be clearer going forward. Also note that we don't do this for salvage or vehicle ores because vehicle ores sell by the gem and salvage is already in boxes when it comes out.
+
+This fix changes a LOT of numbers in the app so I've tried to be as careful as possible. If you see any discrepencies let me know.
+
+**You should notice:**
+
+- Fixed a bug where the store planet and system were not showing
+- SCU values in the work order table are now "Yield" and not "Collected" because that number is more important for people hauling ore to market anyway.
+- Yield SCU numbers for ship orders are always rounded up to the nearest SCU FOR EACH ORE TYPE.
+
+### December 22, 2024
 ## 1.2.0 - Introducing the Regolith Survey Corps.
 
 Introducing the **Regolith Survey Corps!** This is a new opt-in feature that will allow you to share your scouting finds with the community. This is a great way to help other miners find the best rocks and to get a little recognition for your hard work (if you want it).
