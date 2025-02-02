@@ -9,6 +9,9 @@ This change doesn't affect the database in any way, it just makes better choices
 
 This fix changes a LOT of numbers in the app so I've tried to be as careful as possible. If you see any discrepencies let me know.
 
+- System filter now correctly applies to the market price finder
+- Instability and resistance values now allow "0" as a valid value. Scouting scores have been updated to reflect this.
+
 **You should notice:**
 
 - Fixed a bug where the store planet and system were not showing

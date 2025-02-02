@@ -111,7 +111,12 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   useEffect(() => {
     const calcMyStoreChoice = async () => {
       if (!dataStore.ready) return
-      const storeChoices = await findAllStoreChoices(dataStore, summary.oreSummary, Boolean(shipOrder.isRefined))
+      const storeChoices = await findAllStoreChoices(
+        dataStore,
+        summary.oreSummary,
+        Boolean(shipOrder.isRefined),
+        session?.sessionSettings?.systemFilter || null
+      )
       setStoreChoices(storeChoices)
       if (storeChoices.length === 0) {
         setMyStoreChoice(undefined)

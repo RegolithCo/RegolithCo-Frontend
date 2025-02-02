@@ -180,7 +180,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const [nameValid, setNameValid] = React.useState(true)
   const [notevalid, setNoteValid] = React.useState(true)
   const isDirty = React.useMemo(() => !isEqual(oldSettings, newSettings), [oldSettings, newSettings])
-  const { isDiscord, error, loading: loadingDiscordGuilds, myGuilds } = useDiscordGuilds()
+  // const { isDiscord, error, loading: loadingDiscordGuilds, myGuilds } = useDiscordGuilds()
 
   React.useEffect(() => {
     const incomingSettings = makeNewSettings(session, sessionSettings)
@@ -394,6 +394,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     any way and are only visible to active session members.
                   </Typography>
                   <SystemChooser
+                    label="System Filter"
+                    blankLabel="All Systems (No Filter)"
                     value={newSettings.sessionSettings?.systemFilter || undefined}
                     onChange={(newSystem) => {
                       setNewSettings({
@@ -408,6 +410,9 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   <Typography variant="caption" paragraph component="div">
                     Limit the session to a specific system. This will filter the refineries, gravity wells and markets
                     to be only the system you specify.
+                  </Typography>
+                  <Typography variant="caption" paragraph component="div" color="primary.main">
+                    NOTE: If you plan on mining, refining and/or selling in different systems it's best to leave blank.
                   </Typography>
                 </Box>
               </Box>
@@ -549,8 +554,10 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       },
                     })
                   }}
-                  isDiscordEnabled={isDiscord}
-                  options={myGuilds}
+                  // isDiscordEnabled={isDiscord}
+                  // options={myGuilds}
+                  isDiscordEnabled={false}
+                  options={[]}
                 />
 
                 {/* <FormControlLabel

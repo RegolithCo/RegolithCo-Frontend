@@ -169,7 +169,13 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 })
 
 function parseNum(inputVal: string, numDecimals: number, numDigits: number) {
+  if (inputVal === '') return ''
+  else if (inputVal === '0') return '0'
   const parsedVal = inputVal
+    // Europeans might not be happy with this but we need to keep the standard
+    .replace(/[,]/g, '.')
+    // Replace the second occurance of a period with an empty string
+    .replace(/(\..*)(\.)/g, '$1')
     .replace(/[^0-9.]/g, '')
     .replace(/^0+/, '')
     .split('.')
@@ -209,24 +215,22 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
       ? shipRock
       : { state: RockStateEnum.Ready, mass: 0, rockType: defaultRockType, ores: [], __typename: 'ShipRock' }
   )
-  const [instTextValue, setInstTextValue] = React.useState<string>('')
-  const [resTextValue, setResTextValue] = React.useState<string>('')
+  const [instTextValue, setInstTextValue] = React.useState<string>(shipRock?.inst ? shipRock.inst.toString() : '')
+  const [resTextValue, setResTextValue] = React.useState<string>(shipRock?.res ? (shipRock.res * 100).toString() : '')
 
-  const instabilityError = Boolean(
-    instTextValue &&
-      instTextValue.length > 0 &&
-      newShipRock.inst &&
-      newShipRock.inst > 0 &&
-      (parseFloat(instTextValue).toString() !== instTextValue || parseFloat(instTextValue) !== newShipRock.inst)
-  )
-  const resistanceF = parseFloat(resTextValue)
-  const resistanceError = Boolean(
-    resTextValue.length > 0 &&
-      (resistanceF < 0 ||
-        resistanceF >= 100 ||
-        resistanceF.toString() !== resTextValue ||
-        resistanceF / 100 !== newShipRock.res)
-  )
+  const instabilkityF = instTextValue.length > 0 ? parseFloat(instTextValue) : null
+  const instabilityError =
+    instabilkityF === null || instabilkityF < 0 || instabilkityF >= 1000 ? 'Instability must be >= 0' : null
+
+  const resistanceF = resTextValue.length > 0 ? parseFloat(resTextValue) : null
+  const resistanceError =
+    resTextValue.trim().length === 0 ||
+    resistanceF === null ||
+    resistanceF < 0 ||
+    resistanceF >= 100 ||
+    resistanceF.toString() !== resTextValue
+      ? 'Resistance must be between 0 and 100%'
+      : null
 
   const setNewShipRock = React.useCallback(
     async (newRock: ShipRock) => {
@@ -302,8 +306,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   // This can be disabled for a whole bunch of reasons
   const disabled =
     !newShipRock.mass ||
-    instabilityError ||
-    resistanceError ||
+    Boolean(instabilityError) ||
+    Boolean(resistanceError) ||
     !newShipRock.ores ||
     !newShipRock.ores.length ||
     newShipRock.mass <= SHIP_ROCK_BOUNDS[0] ||
@@ -468,6 +472,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               variant="standard"
               type="text"
             />
+
+            {/* RESISTANCE */}
             <TextField
               fullWidth
               InputProps={{
@@ -477,13 +483,11 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               onFocus={(event) => {
                 event.target.select()
               }}
-              error={resistanceError}
-              onBlur={() => setResTextValue('')}
-              value={
-                resTextValue && resTextValue.length > 0 ? resTextValue : ((newShipRock.res || 0) * 100).toFixed(0) || ''
-              }
+              error={Boolean(resistanceError)}
+              helperText={resistanceError}
+              value={resTextValue || ''}
               onChange={(event) => {
-                const parsedVal = event.target.value.replace(/[^\d]/g, '').replace(/^0+/, '').slice(0, 2) || '0'
+                const parsedVal = parseNum(event.target.value, 0, 2)
                 setResTextValue(parsedVal)
                 try {
                   const value = parseInt(parsedVal, 10)
@@ -495,6 +499,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               variant="standard"
               type="text"
             />
+
+            {/* INSTABILITY */}
             <TextField
               fullWidth
               size="small"
@@ -505,9 +511,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               onFocus={(event) => {
                 event.target.select()
               }}
-              onBlur={() => setInstTextValue('')}
-              error={instabilityError}
-              value={instTextValue && instTextValue.length > 0 ? instTextValue : newShipRock.inst || ''}
+              error={Boolean(instabilityError)}
+              helperText={instabilityError}
+              value={instTextValue || ''}
               onChange={(event) => {
                 const parsedVal = parseNum(event.target.value, 2, 3)
                 setInstTextValue(parsedVal)

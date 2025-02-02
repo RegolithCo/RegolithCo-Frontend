@@ -75,6 +75,15 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({ 
         epoch {epoch}
       </Typography>
 
+      <Alert severity="error" sx={{ my: 4 }}>
+        <AlertTitle>Scores subject to change</AlertTitle>
+        <Typography variant="body1" paragraph>
+          Scoring equations are still being developed so expect these numbers to jump around a bit in the next few
+          weeks. Ranks shouldn't change much since an update to the scoring system will apply to all data simultaneously
+          but this is tricky so the Regolith staff thanks you for your patience while we figure this out.
+        </Typography>
+      </Alert>
+
       {data && (
         <List
           sx={{
