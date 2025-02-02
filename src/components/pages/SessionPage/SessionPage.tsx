@@ -1,9 +1,32 @@
 import * as React from 'react'
 
 import { SessionStateEnum } from '@regolithco/common'
-import { Box, Button, Drawer, Stack, Tab, Tabs, Theme, Tooltip, useMediaQuery, useTheme } from '@mui/material'
+import {
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  Stack,
+  styled,
+  Tab,
+  Tabs,
+  Theme,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import { SxProps } from '@mui/system'
-import { AdminPanelSettings, ArrowBack, Dashboard, Group, Logout, Settings, Summarize } from '@mui/icons-material'
+import {
+  AdminPanelSettings,
+  ArrowBack,
+  Dashboard,
+  Diversity3,
+  Group,
+  KeyboardDoubleArrowLeft,
+  Logout,
+  Settings,
+  Summarize,
+} from '@mui/icons-material'
 import { SessionHeader } from './SessionHeader'
 import { fontFamilies } from '../../../theme'
 import { TabDashboard } from './TabDashboard'
@@ -39,10 +62,44 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
 
 const DRAWER_WIDTH = 300
 
+const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'open' })<{
+  open?: boolean
+  mediumUp?: boolean
+}>(({ theme, open, mediumUp }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create('margin', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: `-${DRAWER_WIDTH}px`,
+  ...(open && {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  }),
+
+  overflow: 'hidden',
+  mx: mediumUp ? 3 : 0,
+  display: 'flex',
+  flex: '1 1',
+  flexDirection: 'column',
+  height: '100%',
+  pb: {
+    xs: 0,
+    sm: 0,
+    md: 2, // Leave a little space for the copyright marker
+  },
+}))
+
 export const SessionPage: React.FC<SessionPageProps> = () => {
   const {
     navigate,
     activeTab,
+    userTabExpanded,
+    setUserTabExpanded,
     setActiveTab,
     setActiveModal,
     onUpdateSession,
@@ -67,7 +124,6 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
 
   return (
     <Box sx={styles.container}>
-      {/* NAV Drawer   */}
       {mediumUp && (
         <Drawer
           sx={{
@@ -79,7 +135,8 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               boxSizing: 'border-box',
             },
           }}
-          variant="permanent"
+          open={userTabExpanded}
+          variant="persistent"
           anchor="left"
         >
           {/* <Toolbar /> */}
@@ -113,22 +170,37 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
         </Drawer>
       )}
       {/* This is the main content */}
-      <Box
-        sx={{
-          overflow: 'hidden',
-          mx: mediumUp ? 3 : 0,
-          display: 'flex',
-          flex: '1 1',
-          maxWidth: 1200,
-          flexDirection: 'column',
-          height: '100%',
-          pb: {
-            xs: 0,
-            sm: 0,
-            md: 2, // Leave a little space for the copyright marker
-          },
-        }}
-      >
+      <Main open={!mediumUp || userTabExpanded} mediumUp={mediumUp}>
+        {/* NAV Drawer   */}
+        <Tooltip title={userTabExpanded ? 'Collapse User Tab' : 'Expand User Tab'}>
+          <IconButton
+            color="default"
+            sx={{
+              opacity: 0.5,
+              // backgroundColor: theme.palette.secondary.dark,
+              height: theme.spacing(4),
+              width: theme.spacing(8),
+              border: '1px solid',
+              borderRadius: 0,
+              // borderTopRightRadius: 20,
+              borderBottomRightRadius: 20,
+              position: 'absolute',
+              left: userTabExpanded ? DRAWER_WIDTH : 0,
+              top: 0,
+              zIndex: 1000,
+            }}
+            onClick={() => setUserTabExpanded(!userTabExpanded)}
+          >
+            <Diversity3 />
+            <KeyboardDoubleArrowLeft
+              sx={{
+                // color: theme.palette.primary.contrastText,
+                // rotate 180 degrees if expanded
+                transform: !userTabExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+              }}
+            />
+          </IconButton>
+        </Tooltip>
         <SessionHeader />
         <Box
           sx={{
@@ -221,7 +293,7 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
             {isSessionAdmin && <Tab label="Settings" value={SessionTabs.SETTINGS} icon={<Settings />} />}
           </Tabs>
         )}
-      </Box>
+      </Main>
     </Box>
   )
 }

@@ -50,11 +50,13 @@ import { useImagePaste } from '../../../hooks/useImagePaste'
 import { PasteDetectedModal } from '../../modals/PasteDetectedModal'
 import { ScreenshareContext } from '../../../context/screenshare.context'
 import { SessionPoller } from './SessionPoller'
+import useLocalStorage from '../../../hooks/useLocalStorage'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
   const navigate = useNavigate()
   const userQry = useUserProfile()
+  const [expandedUserDrawer, setExpandedUserDrawer] = useLocalStorage('SESSION::expandedUserDrawer', true)
 
   // For temporary objects before we commit them to the DB
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder | null>(null)
@@ -278,6 +280,9 @@ export const SessionPageContainer: React.FC = () => {
           loading: sessionQueries.loading,
           mutating: sessionQueries.mutating,
           isSessionAdmin: amISessionOwner,
+          // Tab Settings
+          userTabExpanded: expandedUserDrawer,
+          setUserTabExpanded: setExpandedUserDrawer,
           // User
           myUserProfile,
           // A bit redundant but we need it

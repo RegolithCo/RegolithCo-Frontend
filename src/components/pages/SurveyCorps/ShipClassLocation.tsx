@@ -201,8 +201,6 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
     const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
-    console.log('MARZIPAN', data.data)
-
     return gravityWellOptions.map((row, idr) => {
       let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {

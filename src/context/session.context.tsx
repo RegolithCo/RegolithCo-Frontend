@@ -59,6 +59,9 @@ export interface SessionContextType {
   myUserProfile: UserProfile
   mySessionUser: SessionUser
 
+  userTabExpanded: boolean
+  setUserTabExpanded: (expanded: boolean) => void
+
   activeTab: SessionTabs
   setActiveTab: (tab: SessionTabs) => void
   // Utility
@@ -147,6 +150,9 @@ const notAvailablePromise =
 export const sessionContextDefault: SessionContextType = {
   mySessionUser: {} as SessionUser,
   myUserProfile: {} as UserProfile,
+
+  userTabExpanded: true,
+  setUserTabExpanded: notAvailable('setUserTabExpanded'),
 
   navigate: notAvailable('navigate'),
 
