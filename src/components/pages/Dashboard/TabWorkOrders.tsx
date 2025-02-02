@@ -353,8 +353,9 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                   {sortedShipRowColors.map((color) => {
                                     const ore = order.shipOres.find((ore) => ore.ore === color.ore)
                                     if (!ore || ore.amt <= 0) return null
-                                    const label = `${getShipOreName(ore.ore).slice(0, 4)}: ${Math.ceil(ore.amt / 100)} SCU`
-                                    const labelLong = `${getShipOreName(ore.ore)}: ${Math.ceil(ore.amt / 100)} SCU`
+                                    const finalAmt = lookupVal.oreSummary[ore.ore]?.refined || ore.amt
+                                    const label = `${getShipOreName(ore.ore).slice(0, 4)}: ${Math.ceil(finalAmt / 100)} SCU`
+                                    const labelLong = `${getShipOreName(ore.ore)}: ${Math.ceil(finalAmt / 100)} SCU`
                                     return (
                                       <Grid2 key={ore.ore}>
                                         <Tooltip title={labelLong} placement="top">
