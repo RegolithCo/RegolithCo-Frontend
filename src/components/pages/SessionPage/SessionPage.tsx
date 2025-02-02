@@ -186,6 +186,11 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
               borderBottomRightRadius: 20,
               position: 'absolute',
               left: userTabExpanded ? DRAWER_WIDTH : 0,
+              // I want the left to transition and animate smoothly
+              transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+              }),
               top: 0,
               zIndex: 1000,
             }}

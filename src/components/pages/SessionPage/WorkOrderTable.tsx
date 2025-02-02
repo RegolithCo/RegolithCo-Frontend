@@ -84,6 +84,25 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
   const [shareAmount, setShareAmount] = React.useState(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
 
+  const workOrderTableRows = React.useMemo(
+    () =>
+      sortedWorkOrders.map((workOrder) => {
+        // Might have to wait for the summaries to catch up
+        if (!summaries || !summaries[workOrder.orderId]) return null
+        return (
+          <WorkOrderTableRow
+            key={workOrder.orderId}
+            workOrder={workOrder}
+            summary={summaries[workOrder.orderId]}
+            columns={columns}
+            onRowClick={onRowClick}
+            isShare={isShare}
+          />
+        )
+      }),
+    [sortedWorkOrders, summaries, columns, onRowClick, isShare]
+  )
+
   React.useEffect(() => {
     if (!dataStore.ready) return
     const calcWorkOrders = async () => {
@@ -169,24 +188,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
             )}
           </TableRow>
         </TableHead>
-        <TableBody>
-          {[...sortedWorkOrders, ...sortedWorkOrders, ...sortedWorkOrders, ...sortedWorkOrders].map(
-            (workOrder: WorkOrder) => {
-              // Might have to wait for the summaries to catch up
-              if (!summaries[workOrder.orderId]) return null
-              return (
-                <WorkOrderTableRow
-                  key={`wo-${workOrder.orderId}`}
-                  workOrder={workOrder}
-                  onRowClick={onRowClick}
-                  isShare={isShare}
-                  summary={summaries[workOrder.orderId]}
-                  columns={columns}
-                />
-              )
-            }
-          )}
-        </TableBody>
+        <TableBody>{workOrderTableRows}</TableBody>
         <TableFooter sx={styles.footer}>
           <TableRow>
             <TableCell colSpan={footerColSpan}>Totals</TableCell>
