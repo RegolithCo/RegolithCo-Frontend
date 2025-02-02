@@ -27,6 +27,7 @@ export interface StoreChooserModalProps {
   isRefined?: boolean
   onClose: () => void
   onSubmit?: (storeCode: string | null) => void
+  isShipOrder?: boolean
 }
 
 const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -71,6 +72,7 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
   ores,
   initStore,
   isRefined,
+  isShipOrder,
   onClose,
   onSubmit,
 }) => {
@@ -84,7 +86,7 @@ export const StoreChooserModal: React.FC<StoreChooserModalProps> = ({
   React.useEffect(() => {
     if (!dataStore.ready) return
     const calcStoreChoices = async () => {
-      const storeChoices = await findAllStoreChoices(dataStore, ores, isRefined)
+      const storeChoices = await findAllStoreChoices(dataStore, ores, isRefined, isShipOrder)
       setStoreChoices(storeChoices)
     }
     calcStoreChoices()

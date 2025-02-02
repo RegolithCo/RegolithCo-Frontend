@@ -79,7 +79,7 @@ const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'open' })<{
     marginLeft: 0,
   }),
   '&>.MuiBox-root': {
-    maxWidth: 1200,
+    maxWidth: 1500 - (open ? DRAWER_WIDTH : 0),
   },
   overflow: 'hidden',
   mx: mediumUp ? 3 : 0,

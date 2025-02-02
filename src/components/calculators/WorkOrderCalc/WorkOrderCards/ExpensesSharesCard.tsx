@@ -111,7 +111,12 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   useEffect(() => {
     const calcMyStoreChoice = async () => {
       if (!dataStore.ready) return
-      const storeChoices = await findAllStoreChoices(dataStore, summary.oreSummary, Boolean(shipOrder.isRefined))
+      const storeChoices = await findAllStoreChoices(
+        dataStore,
+        summary.oreSummary,
+        Boolean(shipOrder.isRefined),
+        workOrder.orderType === ActivityEnum.ShipMining
+      )
       setStoreChoices(storeChoices)
       if (storeChoices.length === 0) {
         setMyStoreChoice(undefined)
@@ -840,6 +845,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
         ores={summary.oreSummary}
         initStore={workOrder.sellStore as string}
         isRefined={shipOrder.isRefined || false}
+        isShipOrder={workOrder.orderType === ActivityEnum.ShipMining}
         onSubmit={(store) => {
           onChange({
             ...workOrder,
