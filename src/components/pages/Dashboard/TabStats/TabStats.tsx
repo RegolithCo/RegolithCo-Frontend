@@ -22,7 +22,6 @@ import { OrePieChart } from '../../../cards/charts/OrePieChart'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { PageLoader } from '../../PageLoader'
 import { SessionDashTabsEnum, tabUrl } from '../Dashboard.container'
-import { ChartTypesEnum } from '../../../cards/charts/DailyMonthlyChart'
 import { MyDashboardStatsChart } from '../../../cards/charts/MyDashboardStatsChart'
 import { DoubleArrow } from '@mui/icons-material'
 
@@ -380,21 +379,21 @@ export const TabStats: React.FC<DashboardProps> = ({
             value={totalRevenue[0]}
             scale={totalRevenue[1]}
             subText="Total Session Revenue"
-            tooltip={`${MValueFormatter(totalRevenue, MValueFormat.number)} aUEC Earned by all users in sessions I have owned/joined`}
+            tooltip={`aUEC Earned by all users in sessions I have owned/joined`}
             loading={loading}
           />
           <SiteStatsCard
             value={myIncome[0]}
             scale={myIncome[1]}
             subText="Personal Profit"
-            tooltip={`${MValueFormatter(myIncome, MValueFormat.number)} aUEC Earned by users`}
+            tooltip={`aUEC Earned by users`}
             loading={loading}
           />
           <SiteStatsCard
             value={sharedIncome[0]}
             scale={sharedIncome[1]}
             subText="Shared Income"
-            tooltip={`${MValueFormatter(sharedIncome, MValueFormat.number)} aUEC Earned by users other than you in your sessions.`}
+            tooltip={`aUEC Earned by users other than you in your sessions.`}
             loading={loading}
           />
           <SiteStatsCard value={expenses[0]} scale={expenses[1]} subText="Expenses (aUEC)" loading={loading} />

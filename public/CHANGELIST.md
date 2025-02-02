@@ -9,8 +9,10 @@ This change doesn't affect the database in any way, it just makes better choices
 
 This fix changes a LOT of numbers in the app so I've tried to be as careful as possible. If you see any discrepencies let me know.
 
-- System filter now correctly applies to the market price finder
 - Instability and resistance values now allow "0" as a valid value. Scouting scores have been updated to reflect this.
+- Session user tab can now be hidden
+- Final sell price was sometimes defaulting to 0
+- Prices and store lookups are no longer affected by the system filter. 
 
 **You should notice:**
 

@@ -280,7 +280,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   setShareAmountInputVal(0)
                   onChange({
                     ...workOrder,
-                    shareAmount: 0,
+                    shareAmount: null,
                   })
                 }
               } catch {
