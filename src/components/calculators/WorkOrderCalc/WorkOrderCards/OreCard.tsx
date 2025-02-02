@@ -129,7 +129,9 @@ export const OreCard: React.FC<OreCardProps> = ({
     const calcOreTableRows = async () => {
       if (!dataStore.ready) return
       const newOreTableRows = Object.entries(summary?.oreSummary || [])
-      const prices = await Promise.all(newOreTableRows.map(([oreKey]) => findPrice(dataStore, oreKey as ShipOreEnum)))
+      const prices = await Promise.all(
+        newOreTableRows.map(([oreKey]) => findPrice(dataStore, oreKey as ShipOreEnum, undefined, undefined))
+      )
       newOreTableRows.sort(([a, { refined: ra }], [b, { refined: rb }]) => {
         const aPrice = prices[newOreTableRows.findIndex(([oreKey]) => oreKey === a)]
         const bPrice = prices[newOreTableRows.findIndex(([oreKey]) => oreKey === b)]

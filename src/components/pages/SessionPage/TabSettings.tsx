@@ -408,8 +408,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     }}
                   />
                   <Typography variant="caption" paragraph component="div">
-                    Limit the session to a specific system. This will filter the refineries, gravity wells and markets
-                    to be only the system you specify.
+                    This will filter the REFINERIES and GRAVITY WELLS to only the selected system. Prices and Market
+                    lookups are not filtered.
                   </Typography>
                   <Typography variant="caption" paragraph component="div" color="primary.main">
                     NOTE: If you plan on mining, refining and/or selling in different systems it's best to leave blank.
