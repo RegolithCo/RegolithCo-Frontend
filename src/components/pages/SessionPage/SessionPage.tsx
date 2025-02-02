@@ -30,8 +30,6 @@ import {
 import { SessionHeader } from './SessionHeader'
 import { fontFamilies } from '../../../theme'
 import { TabDashboard } from './TabDashboard'
-// import { TabWorkOrders } from './TabWorkOrders'
-// import { TabScouting } from './TabScouting'
 import { SessionSettingsTab } from './TabSettings'
 import { TabUsers } from './TabUsers'
 import { TabSummary } from './TabSummary'
@@ -67,7 +65,7 @@ const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'open' })<{
   mediumUp?: boolean
 }>(({ theme, open, mediumUp }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  position: 'relative',
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -80,18 +78,22 @@ const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'open' })<{
     }),
     marginLeft: 0,
   }),
-
+  '&>.MuiBox-root': {
+    maxWidth: 1200,
+  },
   overflow: 'hidden',
   mx: mediumUp ? 3 : 0,
   display: 'flex',
   flex: '1 1',
   flexDirection: 'column',
   height: '100%',
-  pb: {
-    xs: 0,
-    sm: 0,
-    md: 2, // Leave a little space for the copyright marker
-  },
+  padding: mediumUp ? theme.spacing(3) : 0,
+  paddingTop: theme.spacing(3),
+  // paddingBottom: {
+  //   xs: 0,
+  //   sm: 0,
+  //   md: 2, // Leave a little space for the copyright marker
+  // },
 }))
 
 export const SessionPage: React.FC<SessionPageProps> = () => {
@@ -170,42 +172,48 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
         </Drawer>
       )}
       {/* This is the main content */}
-      <Main open={!mediumUp || userTabExpanded} mediumUp={mediumUp}>
+      <Main id="main" open={!mediumUp || userTabExpanded} mediumUp={mediumUp}>
         {/* NAV Drawer   */}
-        <Tooltip title={userTabExpanded ? 'Collapse User Tab' : 'Expand User Tab'}>
-          <IconButton
-            color="default"
-            sx={{
-              opacity: 0.5,
-              // backgroundColor: theme.palette.secondary.dark,
-              height: theme.spacing(4),
-              width: theme.spacing(8),
-              border: '1px solid',
-              borderRadius: 0,
-              // borderTopRightRadius: 20,
-              borderBottomRightRadius: 20,
-              position: 'absolute',
-              left: userTabExpanded ? DRAWER_WIDTH : 0,
-              // I want the left to transition and animate smoothly
-              transition: theme.transitions.create('left', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-              }),
-              top: 0,
-              zIndex: 1000,
-            }}
-            onClick={() => setUserTabExpanded(!userTabExpanded)}
-          >
-            <Diversity3 />
-            <KeyboardDoubleArrowLeft
+        {mediumUp && (
+          <Tooltip title={userTabExpanded ? 'Collapse User Tab' : 'Expand User Tab'}>
+            <IconButton
+              color="default"
               sx={{
-                // color: theme.palette.primary.contrastText,
-                // rotate 180 degrees if expanded
-                transform: !userTabExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                opacity: 0.5,
+                // backgroundColor: theme.palette.secondary.dark,
+                height: theme.spacing(4),
+                width: theme.spacing(8),
+                border: '1px solid',
+                borderRadius: 0,
+                // borderTopRightRadius: 20,
+                borderBottomRightRadius: 20,
+                position: 'absolute',
+                left: 0,
+                // I want the left to transition and animate smoothly
+                transition: theme.transitions.create('left', {
+                  easing: theme.transitions.easing.easeOut,
+                  duration: theme.transitions.duration.enteringScreen,
+                }),
+                top: 0,
+                zIndex: 1000,
               }}
-            />
-          </IconButton>
-        </Tooltip>
+              onClick={() => {
+                setUserTabExpanded(!userTabExpanded)
+                // Trigger a window reserize event to force the map to resize
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 300)
+              }}
+            >
+              <Diversity3 />
+              <KeyboardDoubleArrowLeft
+                sx={{
+                  // color: theme.palette.primary.contrastText,
+                  // rotate 180 degrees if expanded
+                  transform: !userTabExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                }}
+              />
+            </IconButton>
+          </Tooltip>
+        )}
         <SessionHeader />
         <Box
           sx={{
@@ -244,8 +252,6 @@ export const SessionPage: React.FC<SessionPageProps> = () => {
           {activeTab === SessionTabs.USERS && <TabUsers />}
           {activeTab === SessionTabs.DASHBOARD && <TabDashboard />}
           {activeTab === SessionTabs.ROLES && <RolesTab />}
-          {/* {activeTab === SessionTabs.WORK_ORDERS && <TabWorkOrders />} */}
-          {/* {activeTab === SessionTabs.SCOUTING && <TabScouting />} */}
           {activeTab === SessionTabs.SUMMARY && <TabSummary />}
           {activeTab === SessionTabs.SETTINGS && (
             <SessionSettingsTab
