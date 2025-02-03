@@ -14,6 +14,10 @@ This fix changes a LOT of numbers in the app so I've tried to be as careful as p
 - Final sell price was sometimes defaulting to 0
 - Prices and store lookups are no longer affected by the system filter. 
 
+#### New Features:
+
+- Added a scouting summary to the summary tab so you can see who your scouts are ranked by they're score, discovered clusters etc.
+
 **You should notice:**
 
 - Fixed a bug where the store planet and system were not showing
