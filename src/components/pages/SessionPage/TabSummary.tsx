@@ -10,6 +10,7 @@ import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 import { PayConfirmModal } from '../../modals/PayConfirmModal'
+import { TabScoutingSummary } from './TabScoutingSummary'
 
 export interface TabSummaryProps {
   propA?: string
@@ -93,6 +94,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
       <Typography sx={styles.sectionTitle}>Session Stats</Typography>
       <TabSummaryStats session={session as Session} />
       <Box sx={{ mb: 2 }} />
+
       {/* Unpaid Crew Shares */}
       <Typography sx={styles.sectionTitle}>Unpaid Crew Shares</Typography>
       <OwingList
@@ -116,6 +118,11 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
         sessionSummary={sessionSummary}
         sessionUser={mySessionUser}
       />
+      <Box sx={{ mb: 2 }} />
+
+      <Typography sx={styles.sectionTitle}>Scouting Summary</Typography>
+      <TabScoutingSummary session={session as Session} />
+
       <PayConfirmModal
         payConfirm={payConfirm}
         onClose={() => setPayConfirm(undefined)}
