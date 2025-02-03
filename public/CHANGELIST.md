@@ -1,22 +1,24 @@
 ### December 22, 2024
-## 1.2.1 - Ore SCU and price fixes
+## 1.2.2 - Shut up, MATH! -- Ore SCU and price fixes
 
-This is a small but very important update and reflects a problem Regolith has had for a while. 
+This is a small but very important update and reflects a few problems Regolith has had for a while. 
 
-The problem is this: When you refine ore the game always rounds up to fill a box but Regolith didn't reflect that so the prices and SCU values shown were always reflective of the exact amount of ore refined instead of the number of boxes you take to market.
+One of those problem: When you collect refined ore the game always rounds up to fill a box but Regolith didn't reflect that so the prices and SCU values shown were always reflective of the exact amount of ore refined instead of the number of boxes you take to market.
 
 This change doesn't affect the database in any way, it just makes better choices about how to render the result in the client and when to round up. Hopefully this will be clearer going forward. Also note that we don't do this for salvage or vehicle ores because vehicle ores sell by the gem and salvage is already in boxes when it comes out.
 
-This fix changes a LOT of numbers in the app so I've tried to be as careful as possible. If you see any discrepencies let me know.
+This fix changes a LOT of numbers in the app so I've tried to be as careful as possible. If you see any discrepancies let me know.
 
-- Instability and resistance values now allow "0" as a valid value. Scouting scores have been updated to reflect this.
-- Session user tab can now be hidden
-- Final sell price was sometimes defaulting to 0
-- Prices and store lookups are no longer affected by the system filter. 
+- **FIXED**: Instability and resistance values now allow "0" as a valid value. Scouting scores have been updated to reflect this.
+- **FIXED**: Final sell price was sometimes defaulting to 0.
+- **FIXED**: Prices and store lookups are no longer affected by the system filter.  This was causing a lot of complications. The system filter now just affects refinery and gravity well dropdowns.
 
 #### New Features:
 
+- Session user tab can now be hidden since it's superfluous for sessions with only one user.
 - Added a scouting summary to the summary tab so you can see who your scouts are ranked by they're score, discovered clusters etc.
+
+
 
 **You should notice:**
 
