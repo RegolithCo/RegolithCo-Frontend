@@ -211,8 +211,9 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
-      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
-      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
+      if (!rockTypeFilter.includes('SURFACE') && (SurfaceWellTypes.includes(row.wellType) || !row.hasRocks)) hide = true
+      if (!rockTypeFilter.includes('ASTEROID') && (AsteroidWellTypes.includes(row.wellType) || !row.hasRocks))
+        hide = true
 
       const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
 
@@ -543,10 +544,10 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
             value={rockTypeFilter}
             fullWidth
             onChange={(_, newFilter) => {
-              if (newFilter) {
+              if (newFilter && newFilter.length > 0) {
                 setRockTypeFilter(newFilter)
               } else {
-                setRockTypeFilter([])
+                // setRockTypeFilter([])
               }
             }}
             aria-label="text alignment"
@@ -844,7 +845,9 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
   ...props
 }) => {
   const rowEven = props.idx % 2 === 0
-  const bgColor = isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+  const blank = !gravWell?.hasRocks
+  const bgColor = blank ? 'black ' : isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+
   return (
     <TableRow
       key={gravWell.id}

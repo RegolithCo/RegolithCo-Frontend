@@ -645,7 +645,9 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
   ...props
 }) => {
   const rowEven = props.idx % 2 === 0
-  const bgColor = isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+  const blank = !gravWell?.hasGems
+  const bgColor = blank ? 'black ' : isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+
   return (
     <TableRow
       key={gravWell.id}
