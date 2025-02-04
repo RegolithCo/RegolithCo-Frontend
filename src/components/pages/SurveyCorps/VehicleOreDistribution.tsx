@@ -314,7 +314,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             let prob: number | null = null
             let minNum: number | null = null
             let maxNum: number | null = null
-            let avgNum: number | null = null
+            let medianNum: number | null = null
             let normProb: number | null = null
             let bgColor: string | undefined = undefined
 
@@ -324,7 +324,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               prob = data.data[row.id].ores[ore].prob
               minNum = data.data[row.id].ores[ore].minRocks
               maxNum = data.data[row.id].ores[ore].maxRocks
-              avgNum = data.data[row.id].ores[ore].avgRocks
+              medianNum = data.data[row.id].ores[ore].medianRocks
             }
 
             if (prob !== null) {
@@ -343,7 +343,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                 normProb={normProb}
                 minNum={minNum}
                 maxNum={maxNum}
-                avgNum={avgNum}
+                medianNum={medianNum}
                 showExtendedStats={showExtendedStats}
                 isNewTier={false}
                 oreColor={bgc}
@@ -610,7 +610,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
           </Typography>
           {showExtendedStats && (
             <Typography variant="body2" paragraph>
-              The numbers in the form of "Min - Max - Avg" are the number of rocks in a cluster of that type
+              The numbers in the form of "Min - Max - median" are the number of rocks in a cluster of that type
             </Typography>
           )}
         </Alert>
@@ -671,7 +671,7 @@ export interface SurveyTableOreCellProps {
   normProb: number | null
   minNum: number | null
   maxNum: number | null
-  avgNum: number | null
+  medianNum: number | null
   showExtendedStats: boolean
   isNewTier: boolean
   oreColor: string | undefined
@@ -685,7 +685,7 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   normProb,
   minNum,
   maxNum,
-  avgNum,
+  medianNum,
   showExtendedStats,
   isNewTier,
   oreColor,
@@ -720,17 +720,16 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
             {prob ? MValueFormatter(prob, MValueFormat.percent) : ' '}
           </Typography>
           {showExtendedStats && minNum && (
-            <Tooltip title={`Number of rocks in cluster: Min - Max - Avg`}>
+            <Tooltip title={`Number of rocks in cluster: Median (Min - Max)`}>
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
+                <strong>{MValueFormatter(medianNum, MValueFormat.number)}</strong> (
                 {MValueFormatter(minNum, MValueFormat.number)}
                 {' - '}
-                {MValueFormatter(maxNum, MValueFormat.number)}
-                {' - '}
-                <strong>{MValueFormatter(avgNum, MValueFormat.number)}</strong>
+                {MValueFormatter(maxNum, MValueFormat.number)})
               </Typography>
             </Tooltip>
           )}
         </Stack>
       </TableCell>
     )
-  }, [prob, normProb, minNum, maxNum, avgNum, showExtendedStats, isNewTier, oreColor, backgroundColor])
+  }, [prob, normProb, minNum, maxNum, medianNum, showExtendedStats, isNewTier, oreColor, backgroundColor])

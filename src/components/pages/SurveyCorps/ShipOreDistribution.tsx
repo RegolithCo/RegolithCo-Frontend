@@ -140,8 +140,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           if (gravityWellFilter) return row.id === gravityWellFilter || row.parents.includes(gravityWellFilter)
           else if (filterSelected) return selected.includes(row.id)
           else if (rockTypeFilter.length === 2) return true
-          else if (rockTypeFilter.includes('SURFACE')) return !SurfaceWellTypes.includes(row.wellType)
-          else if (rockTypeFilter.includes('ASTEROID')) return !AsteroidWellTypes.includes(row.wellType)
+          else if (rockTypeFilter.includes('SURFACE')) return SurfaceWellTypes.includes(row.wellType) && row.hasRocks
+          else if (rockTypeFilter.includes('ASTEROID')) return AsteroidWellTypes.includes(row.wellType) && row.hasRocks
           else return true
         })
         .forEach((row) => {
@@ -242,8 +242,9 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
-      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
-      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
+      if (!rockTypeFilter.includes('SURFACE') && (SurfaceWellTypes.includes(row.wellType) || !row.hasRocks)) hide = true
+      if (!rockTypeFilter.includes('ASTEROID') && (AsteroidWellTypes.includes(row.wellType) || !row.hasRocks))
+        hide = true
 
       const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
 
@@ -262,11 +263,11 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
       let maxMass = 0
       let minMass = 0
-      let avgMass = 0
+      let medianMass = 0
 
       let cluserSizeMin = 0
       let clusterSizeMax = 0
-      let clusterSizeAvg = 0
+      let clusterSizemedian = 0
 
       if (data && data.data && data.data[row.id]) {
         scans = data.data[row.id].scans
@@ -289,11 +290,11 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
         maxMass = data.data[row.id].mass.max
         minMass = data.data[row.id].mass.min
-        avgMass = data.data[row.id].mass.avg
+        medianMass = data.data[row.id].mass.med
 
         cluserSizeMin = data.data[row.id].clusterCount.min
         clusterSizeMax = data.data[row.id].clusterCount.max
-        clusterSizeAvg = data.data[row.id].clusterCount.avg
+        clusterSizemedian = data.data[row.id].clusterCount.med
       }
 
       if (!rowSelected && filterSelected) hide = true
@@ -515,13 +516,12 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               }}
             >
               {clusterSizeMax ? (
-                <Tooltip title={`Cluster size: Min - Max - Avg`} placement="top">
+                <Tooltip title={`Cluster size: Median (Min - Max)`} placement="top">
                   <Typography variant="body2" sx={{ minWidth: 100, textAlign: 'center' }} component={'div'}>
+                    <strong>{MValueFormatter(clusterSizemedian, MValueFormat.number_sm, 1)}</strong> (
                     {MValueFormatter(cluserSizeMin, MValueFormat.number_sm)}
                     {' - '}
-                    {MValueFormatter(clusterSizeMax, MValueFormat.number_sm)}
-                    {' - '}
-                    <strong>{MValueFormatter(clusterSizeAvg, MValueFormat.number_sm, 1)}</strong>
+                    {MValueFormatter(clusterSizeMax, MValueFormat.number_sm)})
                   </Typography>
                 </Tooltip>
               ) : (
@@ -557,13 +557,12 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               }}
             >
               {maxMass ? (
-                <Tooltip title={`Rock Mass: Min - Max - Avg`} placement="top">
+                <Tooltip title={`Rock Mass: Median (Min - Max)`} placement="top">
                   <Typography variant="body2" sx={{ minWidth: 150, textAlign: 'center' }} component={'div'}>
+                    <strong>{MValueFormatter(medianMass, MValueFormat.number_sm, 1)}</strong> (
                     {MValueFormatter(minMass, MValueFormat.number_sm)}
                     {' - '}
-                    {MValueFormatter(maxMass, MValueFormat.number_sm)}
-                    {' - '}
-                    <strong>{MValueFormatter(avgMass, MValueFormat.number_sm, 1)}</strong>
+                    {MValueFormatter(maxMass, MValueFormat.number_sm)})
                   </Typography>
                 </Tooltip>
               ) : (
@@ -584,7 +583,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                 let prob: number | null = null
                 let maxPct = 0
                 let minPct = 0
-                let avgPct = 0
+                let medPct = 0
 
                 let normProb: number | null = null
 
@@ -592,7 +591,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                   prob = data.data[row.id].ores[ore].prob
                   maxPct = data.data[row.id].ores[ore].maxPct
                   minPct = data.data[row.id].ores[ore].minPct
-                  avgPct = data.data[row.id].ores[ore].avgPct
+                  medPct = data.data[row.id].ores[ore].medPct
 
                   if (prob !== null) {
                     const oreMax = maxMins[ore] && maxMins[ore].max !== null ? maxMins[ore].max : 1
@@ -610,7 +609,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                     normProb={normProb}
                     minPct={minPct}
                     maxPct={maxPct}
-                    avgPct={avgPct}
+                    medPct={medPct}
                     gradientColor={gradients[OreTierColors[tier as OreTierEnum]][normProb || 0]}
                     isNewTier={isNewTier}
                     showExtendedStats={showExtendedStats}
@@ -685,10 +684,10 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
             value={rockTypeFilter}
             fullWidth
             onChange={(_, newFilter) => {
-              if (newFilter) {
+              if (newFilter.length > 0) {
                 setRockTypeFilter(newFilter)
               } else {
-                setRockTypeFilter([])
+                // setRockTypeFilter([])
               }
             }}
             aria-label="text alignment"
@@ -1003,7 +1002,8 @@ export const SurveyTableRow: React.FC<SurveyTableRowProps> = ({
   ...props
 }) => {
   const rowEven = props.idx % 2 === 0
-  const bgColor = isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+  const blank = !gravWell?.hasRocks
+  const bgColor = blank ? 'black ' : isSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
   return (
     <TableRow
       key={gravWell.id}
@@ -1029,7 +1029,7 @@ export interface SurveyTableOreCellProps {
   normProb: number | null
   minPct: number | null
   maxPct: number | null
-  avgPct: number | null
+  medPct: number | null
   showExtendedStats: boolean
   isNewTier: boolean
   tierColor: string
@@ -1044,7 +1044,7 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   normProb,
   minPct,
   maxPct,
-  avgPct,
+  medPct,
   showExtendedStats,
   isNewTier,
   tierColor,
@@ -1084,17 +1084,16 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
             </Typography>
           </Tooltip>
           {showExtendedStats && prob && (
-            <Tooltip title={`Composition Percent: Min - Max - Avg`}>
+            <Tooltip title={`Composition Percent: Median (Min - Max)`} placement="top">
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }} textAlign={'center'}>
+                <strong>{MValueFormatter(medPct, MValueFormat.percent)}</strong> (
                 {MValueFormatter(minPct, MValueFormat.percent)}
                 {' - '}
-                {MValueFormatter(maxPct, MValueFormat.percent)}
-                {' - '}
-                <strong>{MValueFormatter(avgPct, MValueFormat.percent)}</strong>
+                {MValueFormatter(maxPct, MValueFormat.percent)})
               </Typography>
             </Tooltip>
           )}
         </Stack>
       </TableCell>
     )
-  }, [prob, normProb, minPct, maxPct, avgPct, showExtendedStats, isNewTier, tierColor, gradientColor])
+  }, [prob, normProb, minPct, maxPct, medPct, showExtendedStats, isNewTier, tierColor, gradientColor])

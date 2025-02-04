@@ -235,7 +235,7 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
               <strong>Prob:</strong> The probability of finding this ore in a given rock of this type
             </li>
             <li>
-              <strong>Min, Max, Avg:</strong> The minimum, maximum, and average percentage of this ore in a given rock
+              <strong>Min, Max, Median:</strong> The minimum, maximum, and median percentage of this ore in a given rock
               of this type
             </li>
           </ul>
@@ -365,7 +365,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
                   <TableCell> </TableCell>
                   <TableCell align="right">Min</TableCell>
                   <TableCell align="right">Max</TableCell>
-                  <TableCell align="right">Avg</TableCell>
+                  <TableCell align="right">Med</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -373,25 +373,25 @@ const ClassCard: React.FC<ClassCardProps> = ({
                   <TableCell>Cluster Rocks</TableCell>
                   <TableCell align="right">{MValueFormatter(rocks.min, MValueFormat.number)}</TableCell>
                   <TableCell align="right">{MValueFormatter(rocks.max, MValueFormat.number)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(rocks.avg, MValueFormat.number)}</TableCell>
+                  <TableCell align="right">{MValueFormatter(rocks.med, MValueFormat.number)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Rock Mass (t)</TableCell>
                   <TableCell align="right">{MValueFormatter(mass.min, MValueFormat.number_sm)}</TableCell>
                   <TableCell align="right">{MValueFormatter(mass.max, MValueFormat.number_sm)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.avg, MValueFormat.number_sm)}</TableCell>
+                  <TableCell align="right">{MValueFormatter(mass.med, MValueFormat.number_sm)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Instability</TableCell>
                   <TableCell align="right">{MValueFormatter(inst.min, MValueFormat.number)}</TableCell>
                   <TableCell align="right">{MValueFormatter(inst.max, MValueFormat.number)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(inst.avg, MValueFormat.number)}</TableCell>
+                  <TableCell align="right">{MValueFormatter(inst.med, MValueFormat.number)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Resistance</TableCell>
                   <TableCell align="right">{MValueFormatter(res.min, MValueFormat.percent)}</TableCell>
                   <TableCell align="right">{MValueFormatter(res.max, MValueFormat.percent)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(res.avg, MValueFormat.percent)}</TableCell>
+                  <TableCell align="right">{MValueFormatter(res.med, MValueFormat.percent)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -416,7 +416,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
                     <TableCell align="right">Prob</TableCell>
                     <TableCell align="right">Min</TableCell>
                     <TableCell align="right">Max</TableCell>
-                    <TableCell align="right">Avg</TableCell>
+                    <TableCell align="right">Med</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody onMouseLeave={() => setHoveredOre(null)}>
@@ -427,11 +427,11 @@ const ClassCard: React.FC<ClassCardProps> = ({
                       const show = oreTierFilter.find((tier) => ShipOreTiers[tier].indexOf(sortedOreColor.ore) !== -1)
                       if (!show) return
 
-                      const { prob, minPct, maxPct, avgPct } = ores[sortedOreColor.ore] as {
+                      const { prob, minPct, maxPct, medPct } = ores[sortedOreColor.ore] as {
                         prob: number
                         minPct: number
                         maxPct: number
-                        avgPct: number
+                        medPct: number
                       }
                       return (
                         <TableRow
@@ -463,7 +463,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
                           <TableCell align="right">{MValueFormatter(prob, MValueFormat.percent)}</TableCell>
                           <TableCell align="right">{MValueFormatter(minPct, MValueFormat.percent)}</TableCell>
                           <TableCell align="right">{MValueFormatter(maxPct, MValueFormat.percent)}</TableCell>
-                          <TableCell align="right">{MValueFormatter(avgPct, MValueFormat.percent)}</TableCell>
+                          <TableCell align="right">{MValueFormatter(medPct, MValueFormat.percent)}</TableCell>
                         </TableRow>
                       )
                     })}

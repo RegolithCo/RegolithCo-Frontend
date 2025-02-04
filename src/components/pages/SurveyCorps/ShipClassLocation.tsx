@@ -222,20 +222,10 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       let normUsers = 0
       let normScans = 0
       let normClusters = 0
-      const normClusterSize = 0
-      const normRockMass = 0
 
       let users = 0
       let clusters = 0
       let scans = 0
-
-      const maxMass = 0
-      const minMass = 0
-      const avgMass = 0
-
-      const cluserSizeMin = 0
-      const clusterSizeMax = 0
-      const clusterSizeAvg = 0
 
       if (data && data.data && data.data[row.id]) {
         scans = data.data[row.id].scans
@@ -245,24 +235,6 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
         normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
         normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
         normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
-        //   normClusterSize = calculateNormalizedProbability(
-        //     data.data[row.id].clusterCount.max,
-        //     maxMinClusterSize.min,
-        //     maxMinClusterSize.max
-        //   )
-        //   normRockMass = calculateNormalizedProbability(
-        //     data.data[row.id].mass.max,
-        //     maxMins['STAT_ROCK_MASS'].min,
-        //     maxMins['STAT_ROCK_MASS'].max
-        //   )
-
-        //   maxMass = data.data[row.id].mass.max
-        //   minMass = data.data[row.id].mass.min
-        //   avgMass = data.data[row.id].mass.avg
-
-        //   cluserSizeMin = data.data[row.id].clusterCount.min
-        //   clusterSizeMax = data.data[row.id].clusterCount.max
-        //   clusterSizeAvg = data.data[row.id].clusterCount.avg
       }
 
       if (!rowSelected && filterSelected) hide = true
@@ -472,15 +444,15 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
 
             let maxMass = 0
             let minMass = 0
-            let avgMass = 0
+            let medMass = 0
 
             let maxInst = 0
             let minInst = 0
-            let avgInst = 0
+            let medInst = 0
 
             let maxRes = 0
             let minRes = 0
-            let avgRes = 0
+            let medRes = 0
 
             let normProb: number | null = null
 
@@ -489,15 +461,15 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
 
               maxMass = data.data[row.id].rockTypes[aType].mass.max
               minMass = data.data[row.id].rockTypes[aType].mass.min
-              avgMass = data.data[row.id].rockTypes[aType].mass.avg
+              medMass = data.data[row.id].rockTypes[aType].mass.med
 
               maxInst = data.data[row.id].rockTypes[aType].inst.max
               minInst = data.data[row.id].rockTypes[aType].inst.min
-              avgInst = data.data[row.id].rockTypes[aType].inst.avg
+              medInst = data.data[row.id].rockTypes[aType].inst.med
 
               maxRes = data.data[row.id].rockTypes[aType].res.max
               minRes = data.data[row.id].rockTypes[aType].res.min
-              avgRes = data.data[row.id].rockTypes[aType].res.avg
+              medRes = data.data[row.id].rockTypes[aType].res.med
 
               if (prob !== null) {
                 const oreMax = maxMins[aType] && maxMins[aType].max !== null ? maxMins[aType].max : 1
@@ -515,13 +487,13 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                 normProb={normProb}
                 maxMass={maxMass}
                 minMass={minMass}
-                avgMass={avgMass}
+                medMass={medMass}
                 maxInst={maxInst}
                 minInst={minInst}
-                avgInst={avgInst}
+                medInst={medInst}
                 maxRes={maxRes}
                 minRes={minRes}
-                avgRes={avgRes}
+                medRes={medRes}
                 gradientColor={gradients[isAsteroid ? 'ASTEROID' : 'SURFACE'][normProb || 0]}
                 isNewTier={isNewTier}
                 showExtendedStats={showExtendedStats}
@@ -899,13 +871,13 @@ export interface SurveyTableOreCellProps {
   normProb: number | null
   maxMass: number | null
   minMass: number | null
-  avgMass: number | null
+  medMass: number | null
   maxInst: number | null
   minInst: number | null
-  avgInst: number | null
+  medInst: number | null
   maxRes: number | null
   minRes: number | null
-  avgRes: number
+  medRes: number
 
   showExtendedStats: boolean
   isNewTier: boolean
@@ -921,13 +893,13 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
   normProb,
   maxMass,
   minMass,
-  avgMass,
+  medMass,
   maxInst,
   minInst,
-  avgInst,
+  medInst,
   maxRes,
   minRes,
-  avgRes,
+  medRes,
   showExtendedStats,
   isNewTier,
   typeColor,
@@ -979,25 +951,34 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
                 },
               }}
             >
-              <Tooltip title={`Rock Mass: Min - Max - Avg`}>
+              <Tooltip title={`Rock Mass: Median (Min - Max)`}>
                 <Typography variant="caption" component="div">
-                  <span>{MValueFormatter(minMass, MValueFormat.number_sm)}</span>
-                  <span>{MValueFormatter(maxMass, MValueFormat.number_sm)}</span>
-                  <strong>{MValueFormatter(avgMass, MValueFormat.number_sm)}</strong>
+                  <strong>{MValueFormatter(medMass, MValueFormat.number_sm)}</strong>
+                  <span>
+                    ({MValueFormatter(minMass, MValueFormat.number_sm)}
+                    {' - '}
+                    {MValueFormatter(maxMass, MValueFormat.number_sm)})
+                  </span>
                 </Typography>
               </Tooltip>
-              <Tooltip title={`Resistance: Min - Max - Avg`}>
+              <Tooltip title={`Resistance: Median (Min - Max)`}>
                 <Typography variant="caption">
-                  <span>{MValueFormatter(minRes, MValueFormat.percent)}</span>
-                  <span>{MValueFormatter(maxRes, MValueFormat.percent)}</span>
-                  <strong>{MValueFormatter(avgRes, MValueFormat.percent)}</strong>
+                  <strong>{MValueFormatter(medRes, MValueFormat.percent)}</strong>{' '}
+                  <span>
+                    ({MValueFormatter(minRes, MValueFormat.percent)}
+                    {' - '}
+                    {MValueFormatter(maxRes, MValueFormat.percent)})
+                  </span>
                 </Typography>
               </Tooltip>
-              <Tooltip title={`Instability: Min - Max - Avg`}>
+              <Tooltip title={`Instability: Median (Min - Max)`}>
                 <Typography variant="caption">
-                  <span>{MValueFormatter(minInst, MValueFormat.number)}</span>
-                  <span>{MValueFormatter(maxInst, MValueFormat.number)}</span>
-                  <strong>{MValueFormatter(avgInst, MValueFormat.number)}</strong>
+                  <strong>{MValueFormatter(medInst, MValueFormat.number)}</strong>{' '}
+                  <span>
+                    ({MValueFormatter(minInst, MValueFormat.number)}
+                    {' - '}
+                    {MValueFormatter(maxInst, MValueFormat.number)})
+                  </span>
                 </Typography>
               </Tooltip>
             </Box>
@@ -1011,13 +992,13 @@ export const SurveyTableOreCell: React.FC<SurveyTableOreCellProps> = ({
     normProb,
     maxMass,
     minMass,
-    avgMass,
+    medMass,
     maxInst,
     minInst,
-    avgInst,
+    medInst,
     maxRes,
     minRes,
-    avgRes,
+    medRes,
     showExtendedStats,
     isNewTier,
     typeColor,

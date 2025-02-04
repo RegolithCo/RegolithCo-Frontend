@@ -80,7 +80,13 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
               <Typography variant="h6" color="error">
                 Errors for this cluster:
               </Typography>
-              <Typography variant="body1" component="div">
+              <Typography
+                variant="body1"
+                component="div"
+                sx={{
+                  color: theme.palette.error.main,
+                }}
+              >
                 <ul>
                   {scoreObj.errors.map((err, idx) => (
                     <li key={idx}>{err}</li>
