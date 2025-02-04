@@ -610,7 +610,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
           </Typography>
           {showExtendedStats && (
             <Typography variant="body2" paragraph>
-              The numbers in the form of "Min - Max - median" are the number of rocks in a cluster of that type
+              The numbers in the form of "Median (Min - Max)" are the number of rocks in a cluster of that type
             </Typography>
           )}
         </Alert>
