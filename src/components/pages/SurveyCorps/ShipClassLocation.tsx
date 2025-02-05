@@ -210,10 +210,10 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+      const isBlank = !row.hasRocks
 
-      if (!rockTypeFilter.includes('SURFACE') && (SurfaceWellTypes.includes(row.wellType) || !row.hasRocks)) hide = true
-      if (!rockTypeFilter.includes('ASTEROID') && (AsteroidWellTypes.includes(row.wellType) || !row.hasRocks))
-        hide = true
+      if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
+      if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
 
       const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
 
