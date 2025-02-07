@@ -1,4 +1,12 @@
-### December 22, 2024
+### February 7, 2025
+## 1.2.4 - Lasers and Loadouts Rework
+
+All lasers, modules, gadgets etc. now have their attributes and prices synced from the UEX API. This should help keep things fresher between patches and make it easier for users to submit data changes when things don't look right.
+
+- Table rework to include pyro and some new filter controls
+- New full screen mode for the Loadouts page.
+
+### February 2, 2025
 ## 1.2.2 - Shut up, MATH! -- Ore SCU and price fixes
 
 This is a small but very important update and reflects a few problems Regolith has had for a while. 
@@ -19,14 +27,13 @@ This fix changes a LOT of numbers in the app so I've tried to be as careful as p
 - Added a scouting summary to the summary tab so you can see who your scouts are ranked by they're score, discovered clusters etc.
 
 
-
 **You should notice:**
 
 - Fixed a bug where the store planet and system were not showing
 - SCU values in the work order table are now "Yield" and not "Collected" because that number is more important for people hauling ore to market anyway.
 - Yield SCU numbers for ship orders are always rounded up to the nearest SCU FOR EACH ORE TYPE.
 
-### December 22, 2024
+### January 27, 2025
 ## 1.2.0 - Introducing the Regolith Survey Corps.
 
 Introducing the **Regolith Survey Corps!** This is a new opt-in feature that will allow you to share your scouting finds with the community. This is a great way to help other miners find the best rocks and to get a little recognition for your hard work (if you want it).
