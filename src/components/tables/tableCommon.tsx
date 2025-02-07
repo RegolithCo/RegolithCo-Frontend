@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, TableCell, useTheme, SxProps, Theme } from '@mui/material'
+import { Typography, TableCell, useTheme, SxProps, Theme, TableCellProps } from '@mui/material'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 
 export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -92,43 +92,49 @@ export const tableStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> =
 })
 
 export const StatsCell: React.FC<{
+  theme: Theme
   value?: number
   sx?: SxProps<Theme>
   reversed?: boolean
+  onMouseEnter?: TableCellProps['onMouseEnter']
   maxMin?: { max: number; min: number }
-}> = ({ value, sx, reversed, maxMin }) => {
-  const theme = useTheme()
-  const isBold = maxMin && typeof value !== 'undefined' && (value === maxMin.max || value === maxMin.min)
-  const finalSx: SxProps<Theme> = Object.assign({ fontWeight: isBold ? 'bold' : null, textAlign: 'right' }, sx || {})
+}> = ({ theme, value, sx, reversed, maxMin, onMouseEnter }) =>
+  React.useMemo(() => {
+    const isBold = maxMin && typeof value !== 'undefined' && (value === maxMin.max || value === maxMin.min)
+    const finalSx: SxProps<Theme> = Object.assign({ fontWeight: isBold ? 'bold' : null, textAlign: 'right' }, sx || {})
 
-  if (typeof value === 'undefined') {
-    return <TableCell sx={finalSx}> </TableCell>
-  }
-  const finalValue = value > 0 ? value - 1 : 0
-  const color = reversed
-    ? finalValue <= 0
-      ? isBold
-        ? theme.palette.success.main
-        : theme.palette.success.dark
-      : isBold
-        ? theme.palette.error.main
-        : theme.palette.error.dark
-    : finalValue > 0
-      ? isBold
-        ? theme.palette.success.main
-        : theme.palette.success.dark
-      : isBold
-        ? theme.palette.error.main
-        : theme.palette.error.dark
-  return (
-    <TableCell sx={finalSx}>
-      <span style={{ color }}>
-        {finalValue > 0 ? '+' : ''}
-        {finalValue === 0 ? ' ' : MValueFormatter(finalValue, MValueFormat.percent)}
-      </span>
-    </TableCell>
-  )
-}
+    if (typeof value === 'undefined') {
+      return (
+        <TableCell sx={finalSx} onMouseEnter={onMouseEnter}>
+          {' '}
+        </TableCell>
+      )
+    }
+    const finalValue = value > 0 ? value - 1 : 0
+    const color = reversed
+      ? finalValue <= 0
+        ? isBold
+          ? theme.palette.success.main
+          : theme.palette.success.dark
+        : isBold
+          ? theme.palette.error.main
+          : theme.palette.error.dark
+      : finalValue > 0
+        ? isBold
+          ? theme.palette.success.main
+          : theme.palette.success.dark
+        : isBold
+          ? theme.palette.error.main
+          : theme.palette.error.dark
+    return (
+      <TableCell sx={finalSx} onMouseEnter={onMouseEnter}>
+        <span style={{ color }}>
+          {finalValue > 0 ? '+' : ''}
+          {finalValue === 0 ? ' ' : MValueFormatter(finalValue, MValueFormat.percent)}
+        </span>
+      </TableCell>
+    )
+  }, [value, maxMin])
 
 export interface LongCellHeaderProps extends React.PropsWithChildren {
   sx?: SxProps<Theme>

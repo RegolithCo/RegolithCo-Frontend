@@ -20,6 +20,8 @@ import {
   alpha,
   Tooltip,
   Button,
+  Box,
+  TableCellProps,
 } from '@mui/material'
 import {
   BackwardStats,
@@ -31,12 +33,13 @@ import {
   Lookups,
   SystemEnum,
 } from '@regolithco/common'
-import { BarChart, Bolt, Check, ClearAll, Store } from '@mui/icons-material'
+import { BarChart, Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
-import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
+import { LongCellHeader, LongCellHeaderProps, StatsCell, tableStylesThunk } from './tableCommon'
 import { fontFamilies } from '../../theme'
 import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LookupsContext } from '../../context/lookupsContext'
+import { SystemColors } from '../pages/SurveyCorps/types'
 
 export interface LaserTableProps {
   onAddToLoadout: (module: MiningLaserEnum) => void
@@ -52,14 +55,40 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
+
+  const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
+  const sysColors = SystemColors(theme)
+
+  // Hover state: [colNum, left, width, color]
+  const [hoverCol, setHoverCol] = React.useState<[number, number, number, string] | null>(null)
+  // Hover state: [colNum, top, height, color]
+  const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
+
   const [selected, setSelected] = React.useState<MiningLaserEnum[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
-  const [filterSystems, setFilterSystems] = React.useState<SystemEnum[]>([SystemEnum.Stanton, SystemEnum.Pyro])
+  const [filterSystem, setFilterSystem] = React.useState<SystemEnum | null>(null)
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
   const [showPrices, setShowPrices] = React.useState<boolean>(false)
   const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
 
   const dataStore = React.useContext(LookupsContext)
+
+  const handleMouseEnter = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>, color, idr, colNum) => {
+    if (tBodyRef.current) {
+      // Get the left of the table
+      const tableRect = tBodyRef.current.getBoundingClientRect()
+      const tableLeft = tableRect.left
+      const tableTop = tableRect.top
+      // Get the left and wdith of this tableCell
+      const rect = e.currentTarget.getBoundingClientRect()
+      const left = rect.left - tableLeft
+      const width = rect.width
+      setHoverCol([colNum, left, width, color])
+      const top = rect.top - tableTop
+      const height = rect.height
+      setHoverRow([idr, top, height, color])
+    }
+  }, [])
 
   const bgColors = new Gradient()
     .setColorGradient('#b93327', '#229f63')
@@ -84,8 +113,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
       })
 
     const filteredStores = Object.values(loadoutLookup.stores).filter((store) => {
-      if (filterSystems.length === 0) return true
-      return filterSystems.includes(store.system)
+      return filterSystem === null || filterSystem === store.system
     })
     filteredStores.sort((a, b) => {
       // Sort by system first (stanton then pyro)
@@ -95,7 +123,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     })
 
     return [filteredVals, filteredStores]
-  }, [filterSelected, selected, shipFilter, filterSystems, dataStore.ready])
+  }, [filterSelected, selected, shipFilter, filterSystem, dataStore.ready])
 
   const [maxMin, statsRank] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
@@ -150,7 +178,6 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     }
   }
 
-  const stores = Object.values(MiningStoreEnum)
   if (!dataStore.ready) return <div>Loading...</div>
   return (
     <>
@@ -213,16 +240,35 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         <ToggleButtonGroup
           size="small"
           disabled={!columnGroups.includes(ColumnGroupEnum.Market)}
-          value={filterSystems}
-          onChange={(e, newSystems) => {
-            if (newSystems && newSystems.length > 0) setFilterSystems(newSystems)
+          value={filterSystem || 'ALL'}
+          exclusive
+          onChange={(e, newSystem) => {
+            if (newSystem === 'ALL') setFilterSystem(null)
+            else setFilterSystem(newSystem)
           }}
           aria-label="text alignment"
         >
-          <ToggleButton value={SystemEnum.Stanton} aria-label="Stanton" color="info">
+          <ToggleButton value={'ALL'} aria-label="ALL" color="info">
+            All
+          </ToggleButton>
+          <ToggleButton
+            value={SystemEnum.Stanton}
+            aria-label="Stanton"
+            color="info"
+            sx={{
+              color: theme.palette.info.dark,
+            }}
+          >
             Stanton
           </ToggleButton>
-          <ToggleButton value={SystemEnum.Pyro} aria-label="Pyro" color="primary">
+          <ToggleButton
+            value={SystemEnum.Pyro}
+            aria-label="Pyro"
+            color="primary"
+            sx={{
+              color: theme.palette.primary.dark,
+            }}
+          >
             Pyro
           </ToggleButton>
         </ToggleButtonGroup>
@@ -240,7 +286,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
               onChange={(e) => setFilterSelected(e.target.checked)}
             />
           }
-          label="Selected"
+          label={`Filter Selected ${selected.length ? `(${selected.length})` : ''}`}
         />
         <Button
           onClick={() => {
@@ -253,40 +299,77 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         >
           Clear Selection
         </Button>
+        <Button
+          onClick={() => {
+            setSelected([])
+            setFilterSelected(false)
+            setShipFilter(null)
+            setShowPrices(false)
+            setFilterSystem(null)
+            setColumnGroups(Object.values(ColumnGroupEnum))
+          }}
+          color="error"
+          variant="text"
+          size="small"
+          startIcon={<Refresh />}
+        >
+          Reset Form
+        </Button>
       </Stack>
       <Paper sx={{ mb: 4 }}>
         <TableContainer sx={styles.table}>
           <Table size="small" aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell sx={styles.shortHeaderFirst}>Laser</TableCell>
-                <TableCell sx={styles.shortHeader} align="center">
+                <HeaderCell theme={theme} first hovered={Boolean(hoverCol && hoverCol[0] === -1)}>
+                  Laser
+                </HeaderCell>
+                <HeaderCell theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -2)} align="center">
                   Size
-                </TableCell>
-                <TableCell sx={styles.shortHeader} align="right">
-                  Price
-                </TableCell>
-                <TableCell sx={styles.shortHeader} align="center">
+                </HeaderCell>
+                <HeaderCell theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -4)} align="center">
                   Slots
-                </TableCell>
+                </HeaderCell>
 
                 {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Base) && (
                   <>
-                    <LongCellHeader>Optimum Range</LongCellHeader>
-                    <LongCellHeader>Max. Range</LongCellHeader>
-                    <LongCellHeader>Min. Power %</LongCellHeader>
-                    <LongCellHeader>Min. Power</LongCellHeader>
-                    <LongCellHeader>Max. Power</LongCellHeader>
-                    <LongCellHeader>Extract Power</LongCellHeader>
+                    <LongCellHeaderWrapped theme={theme} first hovered={Boolean(hoverCol && hoverCol[0] === -10)}>
+                      Optimum Range
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -11)}>
+                      Max. Range
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -12)}>
+                      Min. Power %
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -13)}>
+                      Min. Power
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -14)}>
+                      Max. Power
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -15)}>
+                      Extract Power
+                    </LongCellHeaderWrapped>
                   </>
                 )}
                 {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Buffs) && (
                   <>
-                    <LongCellHeader>Resistance</LongCellHeader>
-                    <LongCellHeader>Instability</LongCellHeader>
-                    <LongCellHeader>Optimal Charge Rate</LongCellHeader>
-                    <LongCellHeader>Optimal Charge Window</LongCellHeader>
-                    <LongCellHeader>Inert Materials</LongCellHeader>
+                    <LongCellHeaderWrapped theme={theme} first hovered={Boolean(hoverCol && hoverCol[0] === -101)}>
+                      Resistance
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -102)}>
+                      Instability
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -103)}>
+                      Optimal Charge Rate
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -104)}>
+                      Optimal Charge Window
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -105)}>
+                      Inert Materials
+                    </LongCellHeaderWrapped>
                     {/* <LongCellHeader>Overcharge Rate</LongCellHeader>
               <LongCellHeader>Clustering</LongCellHeader>
               <LongCellHeader>Shatter Damage</LongCellHeader> */}
@@ -294,16 +377,18 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                 )}
                 {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Market) && (
                   <>
-                    {filteredStores.map((store, idx) => (
-                      <LongCellHeader
-                        key={`${store}-${idx}`}
+                    {filteredStores.map((store, colNum) => (
+                      <LongCellHeaderWrapped
+                        key={`${store.code}-${colNum}`}
+                        theme={theme}
+                        first={colNum === 0}
+                        hovered={Boolean(hoverCol && hoverCol[0] === colNum)}
                         sx={{
-                          color:
-                            store.system === SystemEnum.Stanton ? theme.palette.info.main : theme.palette.primary.main,
+                          color: sysColors[store.system],
                         }}
                       >
                         {store.nickname}
-                      </LongCellHeader>
+                      </LongCellHeaderWrapped>
                     ))}
                   </>
                 )}
@@ -311,7 +396,52 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                 <TableCell sx={styles.spacerCell}> </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody
+              ref={tBodyRef}
+              sx={{
+                zIndex: 0,
+                position: 'relative',
+              }}
+              onMouseLeave={() => {
+                if (hoverCol) setHoverCol(null)
+                if (hoverRow) setHoverRow(null)
+              }}
+            >
+              {hoverCol && (
+                <Box
+                  component="tr"
+                  sx={{
+                    pointerEvents: 'none', // Make the box transparent to all mouse events
+                    zIndex: 4,
+                    position: 'absolute',
+                    top: 0,
+                    left: hoverCol[1],
+                    width: hoverCol[2],
+                    height: '100%',
+                    // mixBlendMode: 'difference',
+                    border: `1px solid ${alpha(hoverCol[3], 0.3)}`,
+                    backgroundColor: alpha(hoverCol[3], 0.1),
+                  }}
+                />
+              )}
+              {hoverRow && (
+                <Box
+                  component="tr"
+                  sx={{
+                    pointerEvents: 'none', // Make the box transparent to all mouse events
+                    zIndex: 4,
+                    position: 'absolute',
+                    left: 0,
+                    top: hoverRow[1],
+                    height: hoverRow[2],
+                    width: '100%',
+                    // mixBlendMode: 'difference',
+                    border: `1px solid ${alpha(hoverRow[3], 0.3)}`,
+                    backgroundColor: alpha(hoverRow[3], 0.1),
+                  }}
+                />
+              )}
+
               {filteredVals.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={100} sx={{ textAlign: 'center' }}>
@@ -321,9 +451,9 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                   </TableCell>
                 </TableRow>
               )}
-              {filteredVals.map((laser, idx) => {
+              {filteredVals.map((laser, idr) => {
                 const rowSelected = selected.includes(laser.code as MiningLaserEnum)
-                const rowEven = idx % 2 === 0
+                const rowEven = idr % 2 === 0
 
                 const rankColors: Record<string, SxProps<Theme>> = Object.entries(statsRank).reduce(
                   (acc, [statName, statObj]) => {
@@ -342,80 +472,88 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                   },
                   {} as Record<string, SxProps<Theme>>
                 )
-                const bgColor = rowSelected
-                  ? theme.palette.action.selected
-                  : rowEven
-                    ? theme.palette.background.paper
-                    : theme.palette.background.default
+                const bgColor =
+                  rowSelected && !filterSelected
+                    ? theme.palette.action.selected
+                    : rowEven
+                      ? theme.palette.background.paper
+                      : theme.palette.background.default
 
-                const laserMinPrice = Math.min(...Object.values(laser.prices), 0)
                 return (
                   <TableRow
-                    key={`${laser.code}-${idx}`}
+                    key={`${laser.code}-${idr}`}
                     onClick={() => handleSelectedChange(laser.code as MiningLaserEnum, !rowSelected)}
                     sx={{
                       backgroundColor: bgColor,
-                      '&:hover': {
-                        backgroundColor: rowSelected ? theme.palette.action.selected : theme.palette.action.hover,
-                      },
                     }}
                   >
                     <TableCell
                       component="th"
                       scope="row"
+                      onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -1)}
                       sx={{
                         fontFamily: fontFamilies.robotoMono,
                         whiteSpace: 'nowrap',
                         fontWeight: 'bold',
                         // STICKY FIRST COLUMN
                         position: 'sticky',
-                        backgroundColor: rowSelected ? '#444' : theme.palette.background.paper,
-                        '&:hover': {
-                          color: theme.palette.primary.contrastText,
-                          backgroundColor: rowSelected
-                            ? alpha(theme.palette.action.selected, 1)
-                            : alpha(theme.palette.action.hover, 1),
-                        },
+                        backgroundColor: rowSelected && !filterSelected ? '#444' : theme.palette.background.paper,
                         zIndex: 3,
                         borderRight: `3px solid ${theme.palette.primary.main}`,
                       }}
                     >
                       {laser.name}
                     </TableCell>
-                    <TableCell padding="checkbox" align="center" sx={styles.tinyCell}>
+                    <TableCell
+                      padding="checkbox"
+                      align="center"
+                      sx={styles.tinyCell}
+                      onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -2)}
+                    >
                       {laser.size === 1 ? (
                         <Chip color="info" label="1" size="small" />
                       ) : (
                         <Chip color="success" label="2" size="small" />
                       )}
                     </TableCell>
-                    <Tooltip
-                      placement="top"
-                      title={laserMinPrice ? MValueFormatter(laserMinPrice, MValueFormat.currency) : 'Price Unknown'}
+                    <TableCell
+                      sx={Object.assign({}, styles.sectionDivider, styles.tinyCell)}
+                      align="center"
+                      onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -4)}
                     >
-                      <TableCell sx={{ fontFamily: fontFamilies.robotoMono, whiteSpace: 'nowrap' }} align="right">
-                        {laserMinPrice ? MValueFormatter(laserMinPrice, MValueFormat.currency_sm) : '--'}
-                      </TableCell>
-                    </Tooltip>
-                    <TableCell sx={Object.assign({}, styles.sectionDivider, styles.tinyCell)} align="center">
                       {laser.slots}
                     </TableCell>
 
                     {columnGroups.includes(ColumnGroupEnum.Base) && (
                       <>
-                        <TableCell sx={Object.assign({}, styles.numericCell, rankColors['optimumRange'])}>
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, rankColors['optimumRange'])}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -10)}
+                        >
                           {laser.stats.optimumRange}
                         </TableCell>
-                        <TableCell sx={Object.assign({}, styles.numericCell, rankColors['maxRange'])}>
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, rankColors['maxRange'])}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -11)}
+                        >
                           {laser.stats.maxRange}
                         </TableCell>
-                        <TableCell sx={Object.assign({}, styles.numericCell, rankColors['minPowerPct'])}>
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, rankColors['minPowerPct'])}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -12)}
+                        >
                           {MValueFormatter(laser.stats.minPowerPct, MValueFormat.percent)}
                         </TableCell>
-                        <TableCell sx={Object.assign({}, styles.numericCell, rankColors['minPower'])}>
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, rankColors['minPower'])}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -13)}
+                        >
                           {laser.stats.minPower}
                         </TableCell>
-                        <TableCell sx={Object.assign({}, styles.numericCell, rankColors['maxPower'])}>
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, rankColors['maxPower'])}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -14)}
+                        >
                           {laser.stats.maxPower}
                         </TableCell>
                         <TableCell
@@ -428,28 +566,38 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     {columnGroups.includes(ColumnGroupEnum.Buffs) && (
                       <>
                         <StatsCell
+                          theme={theme}
                           value={laser.stats.resistance}
                           maxMin={maxMin['resistance']}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -101)}
                           reversed={BackwardStats.includes('resistance')}
                         />
                         <StatsCell
+                          theme={theme}
                           value={laser.stats.instability}
                           maxMin={maxMin['instability']}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -102)}
                           reversed={BackwardStats.includes('instability')}
                         />
                         <StatsCell
+                          theme={theme}
                           value={laser.stats.optimalChargeRate}
                           maxMin={maxMin['optimalChargeRate']}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -103)}
                           reversed={BackwardStats.includes('optimalChargeRate')}
                         />
                         <StatsCell
+                          theme={theme}
                           value={laser.stats.optimalChargeWindow}
                           maxMin={maxMin['optimalChargeWindow']}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -104)}
                           reversed={BackwardStats.includes('optimalChargeWindow')}
                         />
                         <StatsCell
+                          theme={theme}
                           value={laser.stats.inertMaterials}
                           maxMin={maxMin['inertMaterials']}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -105)}
                           reversed={BackwardStats.includes('inertMaterials')}
                           sx={styles.sectionDivider}
                         />
@@ -460,11 +608,12 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     )}
                     {columnGroups.includes(ColumnGroupEnum.Market) && (
                       <>
-                        {filteredStores.map((store, idx) => {
+                        {filteredStores.map((store, colNum) => {
                           const price = laser.prices[store.code as MiningLaserEnum] || 0
                           return (
                             <TableCell
-                              key={`${store}-${idx}`}
+                              key={`${store}-${idr}-${colNum}`}
+                              onMouseEnter={(e) => handleMouseEnter(e, sysColors[store.system], idr, colNum)}
                               sx={Object.assign({}, styles.cellDivider, styles.storeCell)}
                               padding="checkbox"
                             >
@@ -495,3 +644,44 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     </>
   )
 }
+
+interface HeaderCellProps extends React.PropsWithChildren {
+  theme: Theme
+  hovered?: boolean
+  first?: boolean
+}
+
+const HeaderCell: React.FC<HeaderCellProps & TableCellProps> = ({ theme, children, hovered, first, sx: outerSx }) =>
+  React.useMemo(() => {
+    const styles = tableStylesThunk(theme)
+    const sx: SxProps<Theme> = Object.assign(
+      {
+        color: hovered ? theme.palette.grey[200] : theme.palette.grey[500],
+        fontWeight: 'bold',
+        ...(outerSx || {}),
+      },
+      first ? styles.shortHeaderFirst : styles.shortHeader
+    )
+
+    return <TableCell sx={sx}>{children}</TableCell>
+  }, [hovered])
+
+const LongCellHeaderWrapped: React.FC<HeaderCellProps & LongCellHeaderProps> = ({
+  theme,
+  hovered,
+  first,
+  sx: outerSx,
+  ...longProps
+}) =>
+  React.useMemo(() => {
+    const sx: SxProps<Theme> = Object.assign({
+      backgroundColor: 'transparent',
+      borderBottom: hovered ? `3px solid ${theme.palette.grey[200]}` : `3px solid ${theme.palette.grey[500]}`,
+      '& .MuiTypography-caption': {
+        fontWeight: hovered ? 'bold' : undefined,
+        ...(outerSx || {}),
+      },
+    })
+
+    return <LongCellHeader {...longProps} sx={sx} />
+  }, [hovered])

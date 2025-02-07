@@ -27,6 +27,7 @@ export const ServiceDownPage: React.FC = () => {
   }, [])
 
   const handleReload = () => {
+    wipeLocalLookups()
     window.location.reload()
   }
 

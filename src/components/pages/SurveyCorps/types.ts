@@ -1,5 +1,6 @@
+import { Theme } from '@mui/material'
 import { lighten } from '@mui/system'
-import { ObjectValues, ShipOreEnum } from '@regolithco/common'
+import { ObjectValues, ShipOreEnum, SystemEnum } from '@regolithco/common'
 
 export const OreTierEnum = {
   STier: 'S',
@@ -8,6 +9,11 @@ export const OreTierEnum = {
   CTier: 'C',
 } as const
 export type OreTierEnum = ObjectValues<typeof OreTierEnum>
+
+export const SystemColors: (theme: Theme) => Record<SystemEnum, string> = (theme: Theme) => ({
+  [SystemEnum.Stanton]: theme.palette.info.main,
+  [SystemEnum.Pyro]: theme.palette.error.main,
+})
 
 export const ShipOreTiers: Record<OreTierEnum, ShipOreEnum[]> = {
   [OreTierEnum.STier]: [ShipOreEnum.Quantanium, ShipOreEnum.Stileron, ShipOreEnum.Riccite],
