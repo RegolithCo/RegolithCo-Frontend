@@ -3,7 +3,10 @@
 
 All lasers, modules, gadgets etc. now have their attributes and prices synced from the UEX API. This should help keep things fresher between patches and make it easier for users to submit data changes when things don't look right.
 
+From now on if you see a number or price in the loadout tables that doesn't look right you can submit a data change request to UEX and Regolith will pick it up shortly after it's approved.
+
 - Table rework to include pyro and some new filter controls
+- Performance improvements to Loadout tables
 - New full screen mode for the Loadouts page.
 
 ### February 2, 2025
