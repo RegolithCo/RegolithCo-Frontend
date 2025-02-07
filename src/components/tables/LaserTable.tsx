@@ -28,14 +28,14 @@ import {
   MiningLaserEnum,
   MiningStoreEnum,
   ObjectValues,
-  getMiningStoreName,
   Lookups,
+  SystemEnum,
 } from '@regolithco/common'
 import { BarChart, Bolt, Check, ClearAll, Store } from '@mui/icons-material'
 import Gradient from 'javascript-color-gradient'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
 import { fontFamilies } from '../../theme'
-import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LookupsContext } from '../../context/lookupsContext'
 
 export interface LaserTableProps {
@@ -54,7 +54,9 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   const styles = tableStylesThunk(theme)
   const [selected, setSelected] = React.useState<MiningLaserEnum[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
+  const [filterSystems, setFilterSystems] = React.useState<SystemEnum[]>([SystemEnum.Stanton, SystemEnum.Pyro])
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
+  const [showPrices, setShowPrices] = React.useState<boolean>(false)
   const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
 
   const dataStore = React.useContext(LookupsContext)
@@ -66,10 +68,10 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
     .map((c) => alpha(c, 0.3))
   const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-  const filteredVals = React.useMemo(() => {
-    if (!dataStore.ready) return []
+  const [filteredVals, filteredStores] = React.useMemo(() => {
+    if (!dataStore.ready) return [[], []]
     const loadoutLookup = dataStore.getLookup('loadout') as Lookups['loadout']
-    return Object.values(loadoutLookup.lasers)
+    const filteredVals = Object.values(loadoutLookup.lasers)
       .filter((laser) => {
         if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
         if (shipFilter === LoadoutShipEnum.Prospector) return laser.size === 1
@@ -80,7 +82,20 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         if (selected.length === 0) return true
         return selected.includes(laser.code as MiningLaserEnum)
       })
-  }, [filterSelected, selected, shipFilter, dataStore.ready])
+
+    const filteredStores = Object.values(loadoutLookup.stores).filter((store) => {
+      if (filterSystems.length === 0) return true
+      return filterSystems.includes(store.system)
+    })
+    filteredStores.sort((a, b) => {
+      // Sort by system first (stanton then pyro)
+      if (a.system !== b.system) return a.system === SystemEnum.Stanton ? -1 : 1
+      // Then sort by nickname
+      return a.nickname.localeCompare(b.nickname)
+    })
+
+    return [filteredVals, filteredStores]
+  }, [filterSelected, selected, shipFilter, filterSystems, dataStore.ready])
 
   const [maxMin, statsRank] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
@@ -195,6 +210,28 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
           </ToggleButton>
         </ToggleButtonGroup>
 
+        <ToggleButtonGroup
+          size="small"
+          disabled={!columnGroups.includes(ColumnGroupEnum.Market)}
+          value={filterSystems}
+          onChange={(e, newSystems) => {
+            if (newSystems && newSystems.length > 0) setFilterSystems(newSystems)
+          }}
+          aria-label="text alignment"
+        >
+          <ToggleButton value={SystemEnum.Stanton} aria-label="Stanton" color="info">
+            Stanton
+          </ToggleButton>
+          <ToggleButton value={SystemEnum.Pyro} aria-label="Pyro" color="primary">
+            Pyro
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        <FormControlLabel
+          disabled={!columnGroups.includes(ColumnGroupEnum.Market)}
+          control={<Switch checked={showPrices} onChange={(e) => setShowPrices(e.target.checked)} />}
+          label="Prices (aUEC)"
+        />
         <FormControlLabel
           disabled={selected.length === 0}
           control={
@@ -257,8 +294,16 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                 )}
                 {filteredVals.length > 0 && columnGroups.includes(ColumnGroupEnum.Market) && (
                   <>
-                    {stores.map((store, idx) => (
-                      <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
+                    {filteredStores.map((store, idx) => (
+                      <LongCellHeader
+                        key={`${store}-${idx}`}
+                        sx={{
+                          color:
+                            store.system === SystemEnum.Stanton ? theme.palette.info.main : theme.palette.primary.main,
+                        }}
+                      >
+                        {store.nickname}
+                      </LongCellHeader>
                     ))}
                   </>
                 )}
@@ -302,6 +347,8 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                   : rowEven
                     ? theme.palette.background.paper
                     : theme.palette.background.default
+
+                const laserMinPrice = Math.min(...Object.values(laser.prices), 0)
                 return (
                   <TableRow
                     key={`${laser.code}-${idx}`}
@@ -344,10 +391,10 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     </TableCell>
                     <Tooltip
                       placement="top"
-                      title={laser.price ? MValueFormatter(laser.price, MValueFormat.currency) : 'Price Unknown'}
+                      title={laserMinPrice ? MValueFormatter(laserMinPrice, MValueFormat.currency) : 'Price Unknown'}
                     >
                       <TableCell sx={{ fontFamily: fontFamilies.robotoMono, whiteSpace: 'nowrap' }} align="right">
-                        {laser.price ? MValueFormatter(laser.price, MValueFormat.currency_sm) : '--'}
+                        {laserMinPrice ? MValueFormatter(laserMinPrice, MValueFormat.currency_sm) : '--'}
                       </TableCell>
                     </Tooltip>
                     <TableCell sx={Object.assign({}, styles.sectionDivider, styles.tinyCell)} align="center">
@@ -413,15 +460,26 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     )}
                     {columnGroups.includes(ColumnGroupEnum.Market) && (
                       <>
-                        {stores.map((store, idx) => (
-                          <TableCell
-                            key={`${store}-${idx}`}
-                            sx={Object.assign({}, styles.cellDivider, styles.storeCell)}
-                            padding="checkbox"
-                          >
-                            {laser.stores.includes(store) ? <Check color="success" /> : null}
-                          </TableCell>
-                        ))}
+                        {filteredStores.map((store, idx) => {
+                          const price = laser.prices[store.code as MiningLaserEnum] || 0
+                          return (
+                            <TableCell
+                              key={`${store}-${idx}`}
+                              sx={Object.assign({}, styles.cellDivider, styles.storeCell)}
+                              padding="checkbox"
+                            >
+                              {showPrices ? (
+                                price ? (
+                                  <MValue value={price} format={MValueFormat.number} typoProps={{}} />
+                                ) : (
+                                  ''
+                                )
+                              ) : Object.keys(laser.prices).includes(store.code) ? (
+                                <Check color="success" />
+                              ) : null}
+                            </TableCell>
+                          )
+                        })}
                       </>
                     )}
 

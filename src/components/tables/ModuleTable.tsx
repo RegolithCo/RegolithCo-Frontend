@@ -28,12 +28,12 @@ import {
   MiningModuleEnum,
   MiningStoreEnum,
   ObjectValues,
-  getMiningStoreName,
   Lookups,
+  SystemEnum,
 } from '@regolithco/common'
 import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
-import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, StatsCell, tableStylesThunk } from './tableCommon'
 import { LookupsContext } from '../../context/lookupsContext'
 
@@ -56,11 +56,13 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
   const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
   const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
+  const [filterSystems, setFilterSystems] = React.useState<SystemEnum[]>([SystemEnum.Stanton, SystemEnum.Pyro])
+  const [showPrices, setShowPrices] = React.useState<boolean>(false)
 
-  const filteredValues = React.useMemo(() => {
-    if (!dataStore.ready) return []
+  const [filteredValues, filteredStores] = React.useMemo(() => {
+    if (!dataStore.ready) return [[], []]
     const loadoutLookup = dataStore.getLookup('loadout') as Lookups['loadout']
-    return [...Object.values(loadoutLookup.modules), ...Object.values(loadoutLookup.gadgets)]
+    const filteredVals = [...Object.values(loadoutLookup.modules), ...Object.values(loadoutLookup.gadgets)]
       .filter((mod) => {
         if (filterSelected && !selected.includes(mod.code as MiningGadgetEnum | MiningModuleEnum)) return false
         return true
@@ -71,7 +73,19 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
         if (categoryFilter.includes('P') && mod.category === 'P') return true
         if (categoryFilter.includes('G') && mod.category === 'G') return true
       })
-  }, [categoryFilter, filterSelected, dataStore.ready])
+
+    const filteredStores = Object.values(loadoutLookup.stores).filter((store) => {
+      if (filterSystems.length === 0) return true
+      return filterSystems.includes(store.system)
+    })
+    filteredStores.sort((a, b) => {
+      // Sort by system first (stanton then pyro)
+      if (a.system !== b.system) return a.system === SystemEnum.Stanton ? -1 : 1
+      // Then sort by nickname
+      return a.nickname.localeCompare(b.nickname)
+    })
+    return [filteredVals, filteredStores]
+  }, [categoryFilter, filterSelected, filterSystems, dataStore.ready])
 
   const [maxMin] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
@@ -179,6 +193,29 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
           </ToggleButton>
         </ToggleButtonGroup>
 
+        <ToggleButtonGroup
+          size="small"
+          disabled={!columnGroups.includes(ColumnGroupEnum.Market)}
+          value={filterSystems}
+          onChange={(e, newSystems) => {
+            if (newSystems && newSystems.length > 0) setFilterSystems(newSystems)
+          }}
+          aria-label="text alignment"
+        >
+          <ToggleButton value={SystemEnum.Stanton} aria-label="Stanton" color="info">
+            Stanton
+          </ToggleButton>
+          <ToggleButton value={SystemEnum.Pyro} aria-label="Pyro" color="primary">
+            Pyro
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        <FormControlLabel
+          disabled={!columnGroups.includes(ColumnGroupEnum.Market)}
+          control={<Switch checked={showPrices} onChange={(e) => setShowPrices(e.target.checked)} />}
+          label="Prices (aUEC)"
+        />
+
         <FormControlLabel
           disabled={selected.length === 0}
           control={
@@ -245,8 +282,16 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                 )}
                 {filteredValues.length > 0 && columnGroups.includes(ColumnGroupEnum.Market) && (
                   <>
-                    {stores.map((store, idx) => (
-                      <LongCellHeader key={`${store}-${idx}`}>{getMiningStoreName(store)}</LongCellHeader>
+                    {filteredStores.map((store, idx) => (
+                      <LongCellHeader
+                        key={`${store}-${idx}`}
+                        sx={{
+                          color:
+                            store.system === SystemEnum.Stanton ? theme.palette.info.main : theme.palette.primary.main,
+                        }}
+                      >
+                        {store.nickname}
+                      </LongCellHeader>
                     ))}
                   </>
                 )}
@@ -279,6 +324,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                     ? theme.palette.background.paper
                     : theme.palette.background.default
 
+                const laserMinPrice = Math.min(...Object.values(lm.prices), 0)
                 return (
                   <TableRow
                     key={`${lm.code}-${idx}`}
@@ -317,7 +363,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                     </TableCell>
                     <Tooltip
                       placement="top"
-                      title={lm.price ? MValueFormatter(lm.price, MValueFormat.currency) : 'Price Unknown'}
+                      title={laserMinPrice ? MValueFormatter(laserMinPrice, MValueFormat.currency) : 'Price Unknown'}
                     >
                       <TableCell
                         sx={Object.assign({}, topBorder, styles.sectionDivider, {
@@ -326,7 +372,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                         })}
                         align="right"
                       >
-                        {lm.price ? MValueFormatter(lm.price, MValueFormat.currency_sm) : '--'}
+                        {laserMinPrice ? MValueFormatter(laserMinPrice, MValueFormat.currency_sm) : '--'}
                       </TableCell>
                     </Tooltip>
 
@@ -397,15 +443,26 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
 
                     {columnGroups.includes(ColumnGroupEnum.Market) && (
                       <>
-                        {stores.map((store, idx) => (
-                          <TableCell
-                            key={`${store}-${idx}`}
-                            sx={Object.assign({}, styles.cellDivider, topBorder)}
-                            padding="checkbox"
-                          >
-                            {lm.stores.includes(store) ? <Check color="success" /> : null}
-                          </TableCell>
-                        ))}
+                        {filteredStores.map((store, idx) => {
+                          const price = lm.prices[store.code as MiningModuleEnum] || 0
+                          return (
+                            <TableCell
+                              key={`${store}-${idx}`}
+                              sx={Object.assign({}, styles.cellDivider, styles.storeCell)}
+                              padding="checkbox"
+                            >
+                              {showPrices ? (
+                                price ? (
+                                  <MValue value={price} format={MValueFormat.number} typoProps={{}} />
+                                ) : (
+                                  ''
+                                )
+                              ) : Object.keys(lm.prices).includes(store.code) ? (
+                                <Check color="success" />
+                              ) : null}
+                            </TableCell>
+                          )
+                        })}
                       </>
                     )}
 
