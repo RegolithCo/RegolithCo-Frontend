@@ -285,7 +285,7 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
             if (showSubheader)
               acc.push(
                 <ListSubheader
-                  key="passive-subheader"
+                  key={`passive-subheader-${key}-${idx}`}
                   sx={{
                     backgroundColor: theme.palette.secondary.main,
                     color: theme.palette.secondary.contrastText,
@@ -326,6 +326,9 @@ export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
   if (!dataStore.ready) return null
   const laser = loadoutLookups.lasers[laserCode as MiningLaserEnum]
+  const allPrices = (Object.values(laser.prices) as number[]) || [0]
+  const minPrice = Math.min(...allPrices)
+
   return (
     <>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: '0.8rem' }}>
@@ -345,7 +348,7 @@ export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
           <ModuleIcon style={{ fontSize: 15 }} /> {laser.slots}
         </Box>
         <Box sx={{ width: 50, textAlign: 'right', fontFamily: fontFamilies.robotoMono }}>
-          {MValueFormatter(laser.price, MValueFormat.currency_sm)}
+          {MValueFormatter(minPrice, MValueFormat.currency_sm)}
         </Box>
         {toolMenuStatsOrder
           .filter(({ key }) => !LASER_NO_MENU_STAT.includes(key as keyof LaserLoadoutStats))
@@ -377,6 +380,8 @@ export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) =>
     loadoutLookups.modules[moduleCode as MiningModuleEnum] || loadoutLookups.gadgets[moduleCode as MiningGadgetEnum]
   if (!module) return null
   const isGadget = module.category === 'G'
+  const allPrices = (Object.values(module.prices) as number[]) || [0]
+  const minPrice = Math.min(...allPrices)
   return (
     <>
       <Stack
@@ -404,7 +409,7 @@ export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) =>
           {module.name}
         </Box>
         <Box sx={{ width: 60, fontFamily: fontFamilies.robotoMono, textAlign: 'right' }}>
-          {MValueFormatter(module.price, MValueFormat.currency_sm)}
+          {MValueFormatter(minPrice, MValueFormat.currency_sm)}
         </Box>
         {toolMenuStatsOrder
           .filter(

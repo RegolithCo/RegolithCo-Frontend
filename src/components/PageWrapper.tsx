@@ -15,6 +15,7 @@ export interface PageWrapperProps {
 
 const styles = {
   container: {
+    position: 'relative',
     border: {
       // sm: '1px solid red',
       // md: '1px solid green',
@@ -55,9 +56,10 @@ const styles = {
 
 export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWidth, loading, sx, titleSx }) => {
   const theme = useTheme()
+  const sxContainer: SxProps<Theme> = Object.assign({}, styles.container, sx)
   return (
     <>
-      <Container maxWidth={maxWidth || 'sm'} sx={{ ...styles.container, ...sx }}>
+      <Container maxWidth={maxWidth || 'sm'} sx={sxContainer}>
         <Paper elevation={4} sx={styles.paper}>
           {title && (
             <Typography

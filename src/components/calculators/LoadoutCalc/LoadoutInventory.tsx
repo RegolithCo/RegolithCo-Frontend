@@ -171,9 +171,9 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
                 //     ? 'Active '
                 //     : 'Passive '
                 //   : ''
-
+                const { key, ...otherProps } = props
                 return (
-                  <MenuItem {...props} value={option}>
+                  <MenuItem key={key} {...otherProps} value={option}>
                     {itemType === 'Laser' ? (
                       <LaserMenuItem laserCode={option as MiningLaserEnum} />
                     ) : (

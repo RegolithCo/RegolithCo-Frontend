@@ -111,6 +111,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         if (selected.length === 0) return true
         return selected.includes(laser.code as MiningLaserEnum)
       })
+    filteredVals.sort((a, b) => a.name.localeCompare(b.name))
 
     const filteredStores = Object.values(loadoutLookup.stores).filter((store) => {
       return filterSystem === null || filterSystem === store.system
@@ -619,7 +620,13 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                             >
                               {showPrices ? (
                                 price ? (
-                                  <MValue value={price} format={MValueFormat.number} typoProps={{}} />
+                                  <MValue
+                                    value={price}
+                                    format={MValueFormat.currency_sm}
+                                    typoProps={{
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                  />
                                 ) : (
                                   ''
                                 )

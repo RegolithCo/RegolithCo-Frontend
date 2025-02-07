@@ -577,7 +577,13 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                             >
                               {showPrices ? (
                                 price ? (
-                                  <MValue value={price} format={MValueFormat.number} typoProps={{}} />
+                                  <MValue
+                                    value={price}
+                                    format={MValueFormat.currency_sm}
+                                    typoProps={{
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                  />
                                 ) : (
                                   ''
                                 )

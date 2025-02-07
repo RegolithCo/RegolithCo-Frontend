@@ -603,13 +603,14 @@ const LoadoutWrapper: React.FC<LoadoutWrapperProps> = ({ children, isModal, isSh
     return (
       <Box
         sx={{
+          maxWidth: 1600,
           [theme.breakpoints.down('sm')]: {
             borderRadius: 0,
           },
           [theme.breakpoints.up('md')]: isShare
             ? {}
             : {
-                mx: 3,
+                mx: 'auto',
                 my: 6,
                 px: 2,
                 py: 2,
