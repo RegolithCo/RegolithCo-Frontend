@@ -168,7 +168,21 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
         </Typography>
       </>
     )
-  }, [theme, finalTab, isSmall])
+  }, [
+    theme,
+    finalTab,
+    isSmall,
+    navigate,
+    tab,
+    isLoggedIn,
+    userProfile,
+    loadouts,
+    loading,
+    activeLoadout,
+    createLoadout,
+    updateLoadout,
+    deleteLoadout,
+  ])
 
   return (
     <PageWrapper
