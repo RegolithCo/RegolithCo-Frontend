@@ -110,7 +110,8 @@ export const StatsCell: React.FC<{
         </TableCell>
       )
     }
-    const finalValue = value > 0 ? value - 1 : 0
+    // const finalValue = value > 0 ? value - 1 : 0
+    const finalValue = value
     const color = reversed
       ? finalValue <= 0
         ? isBold

@@ -446,6 +446,9 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                       ? theme.palette.background.paper
                       : theme.palette.background.default
 
+                const is = lm.name === 'Waveshift'
+                if (is) console.log('MARZIPAN', lm.stats)
+
                 return (
                   <TableRow
                     key={`${lm.code}-${idr}`}
