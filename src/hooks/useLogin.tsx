@@ -20,12 +20,11 @@ import {
   SessionUser,
   UserProfile,
   UserStateEnum,
-  StrictTypedTypePolicies,
   SurveyData,
   scVersion,
   getEpochFromVersion,
 } from '@regolithco/common'
-import { useGetUserProfileQuery } from '../schema'
+import { StrictTypedTypePolicies, useGetUserProfileQuery } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
 import { LoginContext, useOAuth2 } from './useOAuth2'
 import { LoginChoice } from '../components/modals/LoginChoice'

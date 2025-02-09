@@ -50,11 +50,11 @@ export type DiscordGuildFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LookupDataKeySpecifier = ('CIG' | 'Loadout' | 'UEX' | LookupDataKeySpecifier)[];
+export type LookupDataKeySpecifier = ('CIG' | 'UEX' | 'loadout' | LookupDataKeySpecifier)[];
 export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
-	Loadout?: FieldPolicy<any> | FieldReadFunction<any>,
-	UEX?: FieldPolicy<any> | FieldReadFunction<any>
+	UEX?: FieldPolicy<any> | FieldReadFunction<any>,
+	loadout?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type MiningLoadoutKeySpecifier = ('activeGadgetIndex' | 'activeLasers' | 'createdAt' | 'inventoryGadgets' | 'inventoryLasers' | 'inventoryModules' | 'loadoutId' | 'name' | 'owner' | 'ship' | 'updatedAt' | MiningLoadoutKeySpecifier)[];
 export type MiningLoadoutFieldPolicy = {

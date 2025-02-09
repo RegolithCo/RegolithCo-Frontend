@@ -28,7 +28,7 @@ class StorybookDataStore implements DataStore {
       case 'tradeportLookups':
         return lookupMocks.data.lookups.UEX.tradeports as Lookups[K]
       case 'loadout':
-        return lookupMocks.data.lookups.Loadout as Lookups[K]
+        return lookupMocks.data.lookups.loadout as unknown as Lookups[K]
       default:
         throw new Error('Lookup not found')
     }

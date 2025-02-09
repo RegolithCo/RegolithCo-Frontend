@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect } from 'react'
-import { DataStore, GetPublicLookupsQuery, Lookups } from '@regolithco/common'
+import { DataStore, Lookups } from '@regolithco/common'
 import { createContext } from 'react'
-import { useGetPublicLookupsQuery } from '../schema'
+import { GetPublicLookupsQuery, useGetPublicLookupsQuery } from '../schema'
 import { PageLoader } from '../components/pages/PageLoader'
 
 const normalizePath = (path: string) => (path.endsWith('/') ? path.slice(0, -1) : path)
@@ -67,7 +67,7 @@ export class ClientDataStore implements DataStore {
           break
         // Loadout Endpount
         case 'loadout':
-          retVal = this.lookups?.Loadout as Lookups[K]
+          retVal = this.lookups?.loadout as Lookups[K]
           break
         default:
           throw new Error('Lookup not found')

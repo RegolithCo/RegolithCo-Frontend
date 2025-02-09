@@ -48,6 +48,8 @@ export const GravityWellNameLookup: React.FC<{ code: string }> = ({ code }) => {
       wellType: GravityWellTypeEnum.PLANET,
       isSpace: false,
       isSurface: true,
+      hasGems: false,
+      hasRocks: false,
     } as GravityWellOptions)
   return <GravityWellNameRender options={well as GravityWellOptions} />
 }

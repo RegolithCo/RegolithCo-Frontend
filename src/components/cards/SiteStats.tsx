@@ -194,6 +194,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, scale, tooltip, loading }) => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
+  const isText = typeof value === 'string' || typeof value === 'number'
   return (
     <Grid
       xs={6}
@@ -220,13 +221,13 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
               {loading ? (
                 <CircularProgress size={20} />
               ) : (
-                <Textfit
+                isText ?( <Textfit
                   mode="single"
                   max={30}
                   style={{ fontFamily: fontFamilies.robotoMono, color: theme.palette.primary.light }}
                 >
                   {value}
-                </Textfit>
+                </Textfit>) : value
               )}
             </CardMedia>
             <Typography

@@ -565,4 +565,4 @@ export type GetPublicSurveyDataQuery = { __typename: 'Query', surveyData?: { __t
 export type GetPublicLookupsQueryVariables = types.Exact<{ [key: string]: never; }>;
 
 
-export type GetPublicLookupsQuery = { __typename: 'Query', lookups?: { __typename: 'LookupData', Loadout?: any | null, CIG?: { __typename: 'CIGLookups', densitiesLookups?: any | null, oreProcessingLookup?: any | null, refineryBonusLookup?: any | null, methodsBonusLookup?: any | null } | null, UEX?: { __typename: 'UEXLookups', bodies?: any | null, maxPrices?: any | null, ships?: any | null, tradeports?: any | null } | null } | null };
+export type GetPublicLookupsQuery = { __typename: 'Query', lookups?: { __typename: 'LookupData', loadout?: any | null, CIG?: { __typename: 'CIGLookups', densitiesLookups?: any | null, oreProcessingLookup?: any | null, refineryBonusLookup?: any | null, methodsBonusLookup?: any | null } | null, UEX?: { __typename: 'UEXLookups', bodies?: any | null, maxPrices?: any | null, ships?: any | null, tradeports?: any | null } | null } | null };

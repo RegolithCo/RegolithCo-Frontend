@@ -1,5 +1,6 @@
 import {
   GetMyUserSessionsDocument,
+  GetMyUserSessionsQuery,
   useCreateSessionMutation,
   useGetJoinedUserSessionsQuery,
   useGetMyUserSessionsQuery,
@@ -7,7 +8,6 @@ import {
 } from '../schema'
 import {
   defaultSessionName,
-  GetMyUserSessionsQuery,
   mergeSessionSettings,
   PaginatedSessions,
   RefineryEnum,

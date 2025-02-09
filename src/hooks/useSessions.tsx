@@ -19,6 +19,7 @@ import {
   useMarkCrewSharePaidMutation,
   useUpdateSessionUserMutation,
   useUpdatePendingUsersMutation,
+  GetSessionQuery,
 } from '../schema'
 import {
   CrewShare,
@@ -26,7 +27,6 @@ import {
   DestructuredSettings,
   destructureSettings,
   ErrorCode,
-  GetSessionQuery,
   PendingUser,
   mergeDestructured,
   PaginatedScoutingFinds,

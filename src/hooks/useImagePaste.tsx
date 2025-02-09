@@ -16,7 +16,7 @@ export const useImagePaste = (onImage: (image: string) => void, disabled?: boole
         // log.debug('useImagePaste: DISABLED')
         return
       }
-      const clipboardItems = event.clipboardData.items
+      const clipboardItems = Array.from(event.clipboardData.items)
 
       // Loop through clipboard items to find an image
       for (const item of clipboardItems) {

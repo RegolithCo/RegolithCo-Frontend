@@ -3,12 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useLogin } from '../../hooks/useOAuth2'
 import {
   GetLoadoutsDocument,
+  GetLoadoutsQuery,
   useCreateLoadoutMutation,
   useDeleteLoadoutMutation,
   useGetLoadoutsQuery,
   useUpdateLoadoutMutation,
 } from '../../schema'
-import { GetLoadoutsQuery, MiningLoadout, MiningLoadoutInput, removeKeyRecursive } from '@regolithco/common'
+import { MiningLoadout, MiningLoadoutInput, removeKeyRecursive } from '@regolithco/common'
 import { LoadoutPage } from './LoadoutPage'
 import { noop } from 'lodash'
 

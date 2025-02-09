@@ -3316,9 +3316,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@regolithco/common@npm:1.0.57":
-  version: 1.0.57
-  resolution: "@regolithco/common@npm:1.0.57"
+"@regolithco/common@npm:1.0.58":
+  version: 1.0.58
+  resolution: "@regolithco/common@npm:1.0.58"
   dependencies:
     "@apollo/client": ^3.12.11
     blob: ^0.1.0
@@ -3327,7 +3327,7 @@ __metadata:
     lodash: ^4.17.21
     loglevel: ^1.9.2
     numeral: ^2.0.6
-  checksum: ad26deaf9d075c04b751dd330e50d302a2e3e5b4f0cfd8d2d7be5d2598cd7e34298047a7b16bd3dc120dc7167d83c34013051828430dddf46b452e5f32f9a1b8
+  checksum: 1ea70a6bfcff07da881d01ec63274e7d9246a8d8853b0c0b59862936fc6bdec14a56874287a39a1f600c71677d658ab03bf4fc6ad1b50106b3d283e814918e33
   languageName: node
   linkType: hard
 
@@ -3359,7 +3359,7 @@ __metadata:
     "@nivo/line": ^0.87.0
     "@nivo/pie": ^0.87.0
     "@react-oauth/google": ^0.12.1
-    "@regolithco/common": 1.0.57
+    "@regolithco/common": 1.0.58
     "@storybook/addon-actions": ^8.5.1
     "@storybook/addon-docs": ^8.5.1
     "@storybook/addon-essentials": ^8.5.1

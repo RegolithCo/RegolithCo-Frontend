@@ -21,11 +21,11 @@ StoreChooserModal.args = {
     console.log('Closed')
   },
   ores: {
-    [VehicleOreEnum.Hadanite]: { collected: 80, refined: 80 },
-    [ShipOreEnum.Bexalite]: { collected: 1000, refined: 1000 },
-    [ShipOreEnum.Diamond]: { collected: 1000, refined: 1000 },
-    [ShipOreEnum.Corundum]: { collected: 1000, refined: 1000 },
-    [ShipOreEnum.Iron]: { collected: 1000, refined: 1000 },
+    [VehicleOreEnum.Hadanite]: { collected: 80, refined: 80, isRefined: false },
+    [ShipOreEnum.Bexalite]: { collected: 1000, refined: 1000, isRefined: false },
+    [ShipOreEnum.Diamond]: { collected: 1000, refined: 1000, isRefined: false },
+    [ShipOreEnum.Corundum]: { collected: 1000, refined: 1000, isRefined: false },
+    [ShipOreEnum.Iron]: { collected: 1000, refined: 1000, isRefined: false },
   },
   open: true,
   initStore: 'CRUTD',

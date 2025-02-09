@@ -2795,7 +2795,7 @@ export const GetPublicLookupsDocument = gql`
       ships
       tradeports
     }
-    Loadout
+    loadout
   }
 }
     `;

@@ -34,7 +34,7 @@ export const ScreenshareProvider: React.FC<PropsWithChildren> = ({ children }) =
         video: {
           displaySurface: 'application', // Prompts the user to share a window
           frameRate: { ideal: 2, max: 5 },
-          volume: 0,
+          // volume: 0,
         },
       })
       setStream(stream)

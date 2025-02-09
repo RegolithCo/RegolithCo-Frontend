@@ -1,5 +1,8 @@
 import {
+  FailWorkOrderMutation,
   GetWorkOrderDocument,
+  GetWorkOrderQuery,
+  UpdateWorkOrderMutation,
   useDeleteCrewShareMutation,
   useDeleteWorkOrderMutation,
   useFailWorkOrderMutation,
@@ -9,12 +12,9 @@ import {
 } from '../schema'
 import {
   crewSharesToInput,
-  FailWorkOrderMutation,
-  GetWorkOrderQuery,
   removeKeyRecursive,
   SalvageOrder,
   ShipMiningOrder,
-  UpdateWorkOrderMutation,
   VehicleMiningOrder,
   WorkOrder,
   WorkOrderStateEnum,

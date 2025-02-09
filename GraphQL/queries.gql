@@ -200,6 +200,6 @@ query getPublicLookups {
       ships
       tradeports
     }
-    Loadout
+    loadout
   }
 }
