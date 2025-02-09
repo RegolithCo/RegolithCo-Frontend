@@ -8,7 +8,7 @@ import log from 'loglevel'
 let redirectUri: string = ''
 switch (import.meta.env.MODE) {
   case 'development':
-    redirectUri = new URL('', 'http://localhost:3000').toString()
+    redirectUri = new URL('', `${window.location.protocol}//localhost:3000`).toString()
     break
   case 'production':
     redirectUri = new URL('', 'https://regolith.rocks/').toString()

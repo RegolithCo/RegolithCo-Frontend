@@ -1,0 +1,527 @@
+fragment UserFragment on User {
+  userId
+  scName
+  avatarUrl
+  createdAt
+  updatedAt
+  state
+}
+fragment CrewShareBaseFragment on CrewShare {
+  sessionId
+  payeeScName
+  payeeUserId
+  orderId
+  shareType
+  share
+  note
+  createdAt
+  updatedAt
+}
+fragment CrewShareFragment on CrewShare {
+  ...CrewShareBaseFragment
+  state # State has to be here because it exists in other interfaces under tha same name but has a different type
+}
+
+fragment WorkOrderListFragment on WorkOrderInterface {
+  orderId
+  sessionId
+  createdAt
+  updatedAt
+  ownerId
+  sellerscName
+  sellerUserId
+  seller {
+    ...UserFragment
+  }
+  state
+  failReason
+  isSold
+  includeTransferFee
+  orderType
+  note
+}
+
+# Just what we need to figure out if this is a new object
+fragment ScoutingIdFragment on ScoutingFindInterface {
+  sessionId
+  scoutingFindId
+  updatedAt
+  state
+  includeInSurvey
+  attendanceIds
+  attendance {
+    sessionId
+    ownerId
+  }
+}
+
+fragment ShipRockFragment on ShipRock {
+  mass
+  inst
+  res
+  state
+  rockType
+  ores {
+    ore
+    percent
+  }
+}
+fragment ScoutingFindBaseFragment on ScoutingFindInterface {
+  sessionId
+  scoutingFindId
+  createdAt
+  updatedAt
+  clusterType
+  clusterCount
+  gravityWell
+  includeInSurvey
+  score
+  rawScore
+  surveyBonus
+  ownerId
+  owner {
+    ...UserFragment
+  }
+  note
+  attendanceIds
+  ... on ShipClusterFind {
+    shipRocks {
+      ...ShipRockFragment
+    }
+  }
+  ... on VehicleClusterFind {
+    vehicleRocks {
+      mass
+      inst
+      res
+      ores {
+        ore
+        percent
+      }
+    }
+  }
+  ... on SalvageFind {
+    wrecks {
+      state
+      isShip
+      shipCode
+      salvageOres {
+        ore
+        scu
+      } 
+      sellableAUEC
+    }
+  }
+}
+
+fragment ScoutingFindFragment on ScoutingFindInterface {
+  ...ScoutingFindBaseFragment
+  state # State has to be here because it exists in other interfaces under tha same name but has a different type
+  attendance {
+    ...SessionUserFragment
+  }
+}
+
+# Just what we need to figure out if this is a new object
+fragment WorkOrderIdFragment on WorkOrderInterface {
+  orderId
+  isSold
+  sessionId
+  updatedAt
+  failReason
+  ownerId
+  sellerscName
+  sellerUserId
+  seller {
+    ...UserFragment
+  }  
+  shareAmount
+  sellStore
+  state
+}
+
+fragment WorkOrderBaseFragment on WorkOrderInterface {
+  orderId
+  sessionId
+  createdAt
+  updatedAt
+  ownerId
+  isSold
+  sellerscName
+  sellerUserId
+  seller {
+    ...UserFragment
+  }
+  owner {
+    ...UserFragment
+  }
+  failReason
+  includeTransferFee
+  orderType
+  note
+  shareAmount
+  sellStore
+  expenses {
+    amount
+    name
+  }
+  isSold
+  ... on ShipMiningOrder {
+    isRefined
+    shareRefinedValue
+    refinery
+    method
+    processStartTime
+    processDurationS
+    shipOres {
+      amt
+      ore
+    }
+  }
+  ... on VehicleMiningOrder {
+    vehicleOres {
+      ore
+      amt
+    }
+  }
+  ... on SalvageOrder {
+    salvageOres {
+      ore
+      amt
+    }
+  }
+}
+
+fragment WorkOrderFragment on WorkOrderInterface {
+  ...WorkOrderBaseFragment
+  state # State has to be here because it exists in other interfaces under tha same name but has a different type
+  # Derivative fields
+  crewShares {
+    ...CrewShareFragment
+  }
+}
+
+fragment SessionIdFragment on Session {
+  sessionId
+  updatedAt
+  state
+  name
+}
+
+fragment SessionSummaryFragment on Session {
+  summary {
+    aUEC
+    collectedSCU
+    yieldSCU
+    allPaid
+    lastJobDone
+    refineries
+    activeMembers
+    totalMembers
+    workOrdersByType {
+      other
+      salvage
+      ship
+      vehicle
+    }
+    scoutingFindsByType {
+      salvage
+      ship
+      vehicle
+    }
+    workOrderSummaries {
+      orderType
+      isSold
+      isFailed
+      unpaidShares
+      paidShares
+    }
+  }
+}
+
+fragment SessionUsersFragment on Session {
+  activeMembers {
+    items {
+      ownerId
+      sessionId
+      sessionRole
+      shipRole      
+      owner {
+        userId
+        scName
+        avatarUrl
+      }
+    }
+  }
+}
+
+fragment SessionWorkOrderStatusFragment on WorkOrderInterface {
+  orderId
+  isSold
+  orderType
+}
+
+fragment SessionListFragment on Session {
+  sessionId
+  name
+  onTheList
+  ownerId
+  owner {
+    ...UserFragment
+  }
+  sessionSettings {
+    ...SessionSettingFragment
+  }
+  createdAt
+  updatedAt
+  finishedAt
+  state
+  note
+}
+
+fragment MiningLoadoutFragment on MiningLoadout {
+  loadoutId
+  name
+  createdAt
+  updatedAt
+  ship
+  activeLasers {
+    laser
+    laserActive
+    modules
+    modulesActive
+  }
+  owner {
+    userId
+  }
+  activeGadgetIndex
+  inventoryLasers
+  inventoryModules
+  inventoryGadgets
+}
+fragment SessionUserBaseFragment on SessionUser {
+  sessionId
+  ownerId
+  sessionRole
+  shipRole  
+  owner {
+    ...UserFragment
+  }
+  createdAt
+  updatedAt
+  isPilot
+  captainId
+  shipName
+  vehicleCode
+  loadout {
+    ...MiningLoadoutFragment
+  }
+}
+
+fragment SessionUserFragment on SessionUser {
+  ...SessionUserBaseFragment
+  state # State has to be here because it exists in other interfaces under tha same name but has a different type
+}
+
+fragment SessionSettingFragment on SessionSettings {
+  activity
+  allowUnverifiedUsers
+  usersCanAddUsers
+  usersCanInviteUsers
+  controlledSessionRole
+  controlledShipRole
+  lockToDiscordGuild {
+    iconUrl
+    id
+    name
+  }
+  gravityWell
+  location
+  systemFilter
+  lockedFields
+  specifyUsers
+  workOrderDefaults {
+    includeTransferFee
+    crewShares {
+      note
+      payeeScName
+      share
+      shareType
+    }
+    lockedFields
+    isRefined
+    refinery
+    shareRefinedValue
+    method
+    shipOres
+    vehicleOres
+    salvageOres
+  }
+}
+
+fragment SessionUpdateFragment on Session {
+  sessionId
+  name
+  onTheList
+  ownerId
+  owner {
+    ...UserFragment
+  }
+  createdAt
+  updatedAt
+  finishedAt
+  state
+  note
+
+  # Set who can join
+  sessionSettings {
+    ...SessionSettingFragment
+  }
+  ...SessionSummaryFragment
+}
+
+fragment SessionBaseFragment on Session {
+  sessionId
+  joinId
+  name
+  onTheList
+  ownerId
+  owner {
+    ...UserFragment
+  }
+  createdAt
+  updatedAt
+  finishedAt
+
+  note
+
+  # Set who can join
+  sessionSettings {
+    ...SessionSettingFragment
+  }
+  # Just a manual list of usernames. These get claimed when people join the session
+  mentionedUsers {
+    scName
+    captainId
+    sessionRole
+    shipRole
+  }
+  ...SessionSummaryFragment
+}
+
+fragment SessionFragment on Session {
+  ...SessionBaseFragment
+  state # State has to be here because it exists in other interfaces under tha same name but has a different type
+  # These are derivative row types
+  activeMemberIds
+  activeMembers {
+    items {
+      ...SessionUserFragment
+    }
+    nextToken
+  }
+  scouting {
+    items {
+      ...ScoutingFindFragment
+    }
+    nextToken
+  }
+  workOrders {
+    items {
+      ...WorkOrderFragment
+    }
+    nextToken
+  }
+}
+
+fragment SessionShareFragment on SessionShare {
+  sessionId
+  name
+  createdAt
+  updatedAt
+  finishedAt
+  state
+  note
+  onTheList
+  # Only a few settings can come through1
+  activity
+  specifyUsers
+  allowUnverifiedUsers
+  lockToDiscordGuild {
+    iconUrl
+    id
+    name
+  }
+}
+
+fragment SessionActiveMembersFragment on Session {
+  sessionId
+  activeMembers(nextToken: $nextToken) {
+    items {
+      ...SessionUserFragment
+    }
+    nextToken
+  }
+}
+fragment SessionScoutingFragment on Session {
+  sessionId
+  scouting(nextToken: $nextToken) {
+    items {
+      ...ScoutingFindFragment
+    }
+    nextToken
+  }
+}
+fragment SessionWorkOrdersFragment on Session {
+  sessionId
+  workOrders(nextToken: $nextToken) {
+    items {
+      ...WorkOrderFragment
+    }
+    nextToken
+  }
+}
+
+fragment VehicleFragment on Vehicle {
+  maker
+  name
+  UEXID
+  cargo
+  miningHold
+  role
+}
+
+fragment UserProfileFragment on UserProfile {
+  userId
+  scName
+  avatarUrl
+  createdAt
+  updatedAt
+  lastActive
+  plan
+  apiKey
+  state
+  verifyCode
+  sessionShipCode
+  deliveryShipCode
+  loadouts {
+    ...MiningLoadoutFragment
+  }
+  sessionSettings {
+    ...SessionSettingFragment
+  }
+  userSettings
+  friends
+  surveyorName
+  surveyorScore
+  isSurveyor
+  isSurveyorBanned
+}
+
+fragment UserProfileLoadoutFragment on UserProfile {
+    userId
+    scName
+    loadouts {
+        ...MiningLoadoutFragment
+    }
+}

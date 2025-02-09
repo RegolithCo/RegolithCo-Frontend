@@ -1,0 +1,52 @@
+{
+  "folders": [
+    {
+      "name": "📱 React App",
+      "path": "."
+    },
+    {
+      "name": "📦 common",
+      "path": "./node_modules/@regolithco/common/src"
+    },    
+    {
+      "name": "🧬 Schema",
+      "path": "node_modules/@regolithco/common/GraphQL"
+    } 
+  ],
+  "settings": {
+    "npm.packageManager": "yarn",
+    "eslint.nodePath": ".yarn/sdks",
+    "typescript.tsdk": "🏠 Home/.yarn/sdks/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "window.title": "REGOLITH${separator}${activeEditorShort}${separator}${rootName}",
+    "workbench.colorCustomizations": {
+			"titleBar.activeBackground": "#001768",
+      "sideBar.background": "#242132",
+			"editor.background": "#1e1c2c"
+		},    
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "files.watcherExclude": {
+      "**/node_modules/**": true
+    },
+    "search.exclude": {
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/*.d.ts": true,
+      "react/": true
+    },
+    "files.exclude": {
+      "**/dist/**": true,
+      // "**/node_modules/**": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "arcanis.vscode-zipfs",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode"
+    ]
+  }
+}

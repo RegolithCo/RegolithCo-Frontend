@@ -3,6 +3,22 @@
   "version": "1.2.4",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=18 <19"
+  },
+  "scripts": {
+    "start": "dotenv -e .env.staging vite --mode staging",
+    "build": "./scripts/fancyBuild.sh",
+    "deploy": "./scripts/deploy.sh",
+    "build:staging": "dotenv -e .env.staging -- ./scripts/fancyBuild.sh",
+    "preview": "dotenv -e ../../.env.local.docker vite preview",
+    "test": "jest",
+    "lint": "tsc --noEmit && eslint src --fix",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "build:gql": "graphql-codegen",
+    "watch:gql": "graphql-codegen --watch"
+  },
   "dependencies": {
     "@apollo/client": "^3.12.7",
     "@emotion/react": "^11.14.0",
@@ -17,7 +33,7 @@
     "@nivo/line": "^0.87.0",
     "@nivo/pie": "^0.87.0",
     "@react-oauth/google": "^0.12.1",
-    "@regolithco/common": "^1.0.54",
+    "@regolithco/common": "1.0.57",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "graphql": "^16.10.0",
@@ -42,6 +58,9 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.17.0",
+    "@faker-js/faker": "^9.4.0",
     "@graphql-codegen/add": "^5.0.3",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "^4.1.2",
@@ -62,6 +81,8 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/eslint__eslintrc": "^2.1.2",
+    "@types/eslint__js": "^8.42.3",
     "@types/javascript-color-gradient": "^2.4.2",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.14",
@@ -70,11 +91,17 @@
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "@types/react-textfit": "^1.1.4",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
     "@vitejs/plugin-react": "^4.3.4",
     "babel-plugin-named-exports-order": "^0.0.2",
     "eslint": "^9.17.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-utils": "^3.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-promise": "^7.2.1",
     "prettier": "^3.4.2",
     "prop-types": "^15.8.1",
     "storybook": "^8.5.1",
@@ -82,17 +109,6 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "vite": "^5.4.14"
-  },
-  "scripts": {
-    "start": "dotenv -e ../../.env.local.docker vite --mode staging",
-    "build": "./scripts/fancyBuild.sh",
-    "preview": "dotenv -e ../../.env.local.docker vite preview",
-    "test": "jest",
-    "lint": "tsc --noEmit && eslint src --fix",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "build:gql": "graphql-codegen",
-    "watch:gql": "graphql-codegen --watch"
   },
   "overrides": {
     "react-refresh": "0.11.0"
@@ -120,5 +136,6 @@
         }
       }
     ]
-  }
+  },
+  "packageManager": "yarn@3.6.1"
 }

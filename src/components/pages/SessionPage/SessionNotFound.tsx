@@ -18,7 +18,7 @@ export const SessionNotFound: React.FC<SessionNotFound> = ({ action }) => {
           If you are trying to join a session make sure you use a link that looks like:
         </Typography>
         <code>
-          <pre>http://regolith.rocks/sharing?joinId=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</pre>
+          <pre>https://regolith.rocks/sharing?joinId=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</pre>
         </code>
         <Button variant="contained" startIcon={<ArrowBack />} onClick={action}>
           Back to sessions

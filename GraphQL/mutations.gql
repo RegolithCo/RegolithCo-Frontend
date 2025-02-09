@@ -1,0 +1,412 @@
+####################################################################
+# USER MUTATIONS
+####################################################################
+
+mutation upsertUser(
+  $userProfile: UserProfileInput!
+  $sessionSettings: SessionSettingsInput
+  $workOrderDefaults: WorkOrderDefaultsInput
+  $crewSharesDefaults: [CrewShareTemplateInput!]
+  $shipOreDefaults: [ShipOreEnum!]
+  $vehicleOreDefaults: [VehicleOreEnum!]
+  $salvageOreDefaults: [SalvageOreEnum!]
+) {
+  updateUserProfile(
+    userProfile: $userProfile
+    sessionSettings: $sessionSettings
+    workOrderDefaults: $workOrderDefaults
+    crewSharesDefaults: $crewSharesDefaults
+    shipOreDefaults: $shipOreDefaults
+    vehicleOreDefaults: $vehicleOreDefaults
+    salvageOreDefaults: $salvageOreDefaults
+  ) {
+    ...UserProfileFragment
+  }
+}
+
+mutation refreshAvatar($remove: Boolean) {
+  refreshAvatar(remove: $remove) {
+    userId
+    scName
+    avatarUrl
+  }
+}
+
+mutation deleteUserProfile($leaveData: Boolean) {
+  deleteUserProfile(leaveData: $leaveData)
+}
+
+mutation requestAccountVerify {
+  requestVerifyUserProfile
+}
+
+mutation verifyUser {
+  verifyUserProfile {
+    userId
+    scName
+    avatarUrl
+    state
+    verifyCode
+  }
+}
+
+mutation upsertAPIKey {
+  userAPIKey {
+    userId
+    scName
+    apiKey
+  }
+}
+mutation deletAPIKey {
+  userAPIKey(revoke: true) {
+    userId
+    scName
+    apiKey
+  }
+}
+
+mutation addFriends($friends: [String]!) {
+  addFriends(friends: $friends) {
+    userId
+    updatedAt
+    scName
+    friends
+  }
+}
+mutation removeFriends($friends: [String]!) {
+  removeFriends(friends: $friends) {
+    userId
+    updatedAt
+    scName
+    friends
+  }
+}
+
+####################################################################
+# Work Order MUTATIONS
+####################################################################
+
+mutation createWorkOrder(
+  $sessionId: ID!
+  $workOrder: WorkOrderInput!
+  $shipOres: [RefineryRowInput!]
+  $vehicleOres: [VehicleMiningRowInput!]
+  $salvageOres: [SalvageRowInput!]
+  $shares: [CrewShareInput!]!
+) {
+  createWorkOrder(
+    sessionId: $sessionId
+    workOrder: $workOrder
+    shipOres: $shipOres
+    vehicleOres: $vehicleOres
+    salvageOres: $salvageOres
+    shares: $shares
+  ) {
+    ...WorkOrderFragment
+  }
+}
+
+
+mutation updateWorkOrder(
+  $sessionId: ID!
+  $orderId: ID!
+  $workOrder: WorkOrderInput!
+  $shipOres: [RefineryRowInput!]
+  $vehicleOres: [VehicleMiningRowInput!]
+  $salvageOres: [SalvageRowInput!]
+
+  $shares: [CrewShareInput!]
+) {
+  updateWorkOrder(
+    sessionId: $sessionId
+    orderId: $orderId
+    workOrder: $workOrder
+    shipOres: $shipOres
+    vehicleOres: $vehicleOres
+    salvageOres: $salvageOres
+    shares: $shares
+  ) {
+    ...WorkOrderFragment
+  }
+}
+
+mutation failWorkOrder($sessionId: ID!, $orderId: ID!, $reason: String) {
+  failWorkOrder(sessionId: $sessionId, orderId: $orderId, reason: $reason) {
+    ...WorkOrderFragment
+  }
+}
+
+mutation deliverWorkOrder($sessionId: ID!, $orderId: ID!, $isSold: Boolean!) {
+  deliverWorkOrder(sessionId: $sessionId, orderId: $orderId, isSold: $isSold) {
+    ...WorkOrderFragment
+  }
+}
+
+
+mutation deleteWorkOrder($sessionId: ID!, $orderId: ID!) {
+  deleteWorkOrder(sessionId: $sessionId, orderId: $orderId) {
+    ... on WorkOrderInterface {
+      sessionId
+      orderId
+    }
+  }
+}
+
+####################################################################
+# Session MUTATIONS
+####################################################################
+
+
+mutation createSession(
+  $session: SessionInput!
+  $sessionSettings: SessionSettingsInput
+  $workOrderDefaults: WorkOrderDefaultsInput
+  $crewSharesDefaults: [CrewShareTemplateInput!]
+  $shipOreDefaults: [ShipOreEnum!]
+  $vehicleOreDefaults: [VehicleOreEnum!]
+  $salvageOreDefaults: [SalvageOreEnum!]
+) {
+  createSession(
+    session: $session
+    sessionSettings: $sessionSettings
+    workOrderDefaults: $workOrderDefaults
+    crewSharesDefaults: $crewSharesDefaults
+    shipOreDefaults: $shipOreDefaults
+    vehicleOreDefaults: $vehicleOreDefaults
+    salvageOreDefaults: $salvageOreDefaults
+) {
+    ...SessionUpdateFragment
+    activeMemberIds
+    joinId
+    mentionedUsers {
+      scName
+      captainId
+    }
+    scouting {
+      items {
+        ...ScoutingFindFragment
+      }
+      nextToken
+    }
+    workOrders {
+      items {
+        ...WorkOrderFragment
+      }
+      nextToken
+    }
+    activeMembers {
+      items {
+        ...SessionUserFragment
+      }
+      nextToken
+    }
+  }
+}
+
+
+mutation updateSession(
+  $sessionId: ID!
+  $session: SessionInput!
+  $sessionSettings: SessionSettingsInput
+  $workOrderDefaults: WorkOrderDefaultsInput
+  $crewSharesDefaults: [CrewShareTemplateInput!]
+  $shipOreDefaults: [ShipOreEnum!]
+  $vehicleOreDefaults: [VehicleOreEnum!]
+  $salvageOreDefaults: [SalvageOreEnum!]
+) {
+  updateSession(
+    sessionId: $sessionId
+    session: $session
+    sessionSettings: $sessionSettings
+    workOrderDefaults: $workOrderDefaults
+    crewSharesDefaults: $crewSharesDefaults
+    shipOreDefaults: $shipOreDefaults
+    vehicleOreDefaults: $vehicleOreDefaults
+    salvageOreDefaults: $salvageOreDefaults
+  ) {
+    ...SessionUpdateFragment
+  }
+}
+
+mutation addSessionMentions($sessionId: ID!, $scNames: [String]!) {
+  addSessionMentions(sessionId: $sessionId, scNames: $scNames) {
+    sessionId
+    updatedAt
+    mentionedUsers {
+      scName
+      captainId
+    }
+  }
+}
+
+mutation removeSessionMentions($sessionId: ID!, $scNames: [String]!) {
+  removeSessionMentions(sessionId: $sessionId, scNames: $scNames) {
+    sessionId
+    updatedAt
+    mentionedUsers {
+      scName
+      captainId
+    }
+  }
+}
+
+mutation removeSessionCrew($sessionId: ID!, $scNames: [String]!) {
+  removeSessionCrew(sessionId: $sessionId, scNames: $scNames) {
+    sessionId
+    updatedAt
+    mentionedUsers {
+      scName
+      captainId
+    }
+  }
+}
+
+mutation deleteSession($sessionId: ID!) {
+  deleteSession(sessionId: $sessionId)
+}
+
+####################################################################
+# SessionUser MUTATIONS
+####################################################################
+
+
+mutation upsertSessionUser($sessionId: ID!, $workSessionUser: SessionUserInput) {
+  upsertSessionUser(sessionId: $sessionId, workSessionUser: $workSessionUser) {
+    ...SessionUserFragment
+  }
+}
+
+mutation updateSessionUser($sessionId: ID!,$userId: ID!, $sessionUser: SessionUserUpdate!) {
+  updateSessionUser(sessionId: $sessionId, userId: $userId, sessionUser: $sessionUser) {
+    ...SessionUserFragment
+  }
+}
+
+mutation updatePendingUsers($sessionId: ID!,$pendingUsers: [PendingUserInput!]!) {
+  updatePendingUsers(sessionId: $sessionId, pendingUsers: $pendingUsers) {
+    ...SessionFragment
+  }
+}
+
+mutation joinSession($joinId: ID!) {
+  joinSession(joinId: $joinId) {
+    ...SessionUserFragment
+  }
+}
+
+
+mutation leaveSession($sessionId: ID!) {
+  leaveSession(sessionId: $sessionId)
+}
+
+####################################################################
+# CrewShare MUTATIONS
+####################################################################
+
+mutation markCrewSharePaid($sessionId: ID!, $orderId: ID!, $payeeScName: String!, $isPaid: Boolean!) {
+  markCrewSharePaid(sessionId: $sessionId, orderId: $orderId, payeeScName: $payeeScName, isPaid: $isPaid) {
+    ...CrewShareFragment
+  }
+}
+
+mutation upsertCrewShare($sessionId: ID!, $orderId: ID!, $crewShare: CrewShareInput!) {
+  upsertCrewShare(sessionId: $sessionId, orderId: $orderId, crewShare: $crewShare) {
+    ...CrewShareFragment
+  }
+}
+
+mutation deleteCrewShare($sessionId: ID!, $orderId: ID!, $payeeScName: String!) {
+  deleteCrewShare(sessionId: $sessionId, orderId: $orderId, payeeScName: $payeeScName) {
+    sessionId
+    orderId
+    payeeScName
+    payeeUserId
+  }
+}
+
+####################################################################
+# ScoutingMutations MUTATIONS
+####################################################################
+
+
+mutation addScoutingFind(
+    $sessionId: ID!
+    $scoutingFind: ScoutingFindInput!
+    $shipRocks: [ShipRockInput!]
+    $vehicleRocks: [VehicleRockInput!]
+    $wrecks: [SalvageWreckInput!]
+) {
+  addScoutingFind(
+    sessionId: $sessionId
+    scoutingFind: $scoutingFind
+    shipRocks: $shipRocks
+    vehicleRocks: $vehicleRocks
+    wrecks: $wrecks
+  ) {
+    ...ScoutingFindFragment
+  }
+}
+
+mutation updateScoutingFind(
+  $sessionId: ID!, 
+  $scoutingFindId: ID!, 
+  $scoutingFind: ScoutingFindInput!
+  $shipRocks: [ShipRockInput!]
+  $vehicleRocks: [VehicleRockInput!]
+  $wrecks: [SalvageWreckInput!]
+) {
+  updateScoutingFind(
+  sessionId: $sessionId, 
+  scoutingFindId: $scoutingFindId, 
+  scoutingFind: $scoutingFind
+  shipRocks: $shipRocks
+  vehicleRocks: $vehicleRocks
+  wrecks: $wrecks
+  ) {
+    ...ScoutingFindFragment
+  }
+}
+
+mutation deleteScoutingFind($sessionId: ID!, $scoutingFindId: ID!) {
+  deleteScoutingFind(sessionId: $sessionId, scoutingFindId: $scoutingFindId) {
+    ... on ScoutingFindInterface {
+      sessionId
+      scoutingFindId
+    }
+  }
+}
+
+mutation joinScoutingFind($sessionId: ID!, $scoutingFindId: ID!, $enRoute: Boolean) {
+  joinScoutingFind(sessionId: $sessionId, scoutingFindId: $scoutingFindId, enRoute: $enRoute) {
+    ...ScoutingIdFragment
+  }
+}
+
+mutation leaveScoutingFind($sessionId: ID!, $scoutingFindId: ID!) {
+  leaveScoutingFind(sessionId: $sessionId, scoutingFindId: $scoutingFindId) {
+    ...ScoutingIdFragment
+  }
+}
+
+####################################################################
+# ScoutingMutations MUTATIONS
+####################################################################
+
+mutation createLoadout($miningLoadout: MiningLoadoutInput!) {
+  createLoadout(shipLoadout: $miningLoadout) {
+    ...MiningLoadoutFragment
+  }
+}
+
+mutation updateLoadout($loadoutId: String!, $shipLoadout: MiningLoadoutInput!) {
+  updateLoadout(loadoutId: $loadoutId, shipLoadout: $shipLoadout){
+    ...MiningLoadoutFragment
+  }
+}
+
+
+mutation deleteLoadout($loadoutId: String!) {
+  deleteLoadout(loadoutId: $loadoutId) {
+    loadoutId
+  }
+}

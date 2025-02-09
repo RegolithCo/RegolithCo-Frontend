@@ -454,7 +454,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               paragraph
             >
               NOTE: Refinery fees must be entered manually until{' '}
-              <Link href="http://regolith.rocks/about/release-notes" target="_blank" sx={{ color: 'red' }}>
+              <Link href="https://regolith.rocks/about/release-notes" target="_blank" sx={{ color: 'red' }}>
                 further notice
               </Link>
               .

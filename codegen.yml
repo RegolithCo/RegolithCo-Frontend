@@ -1,15 +1,24 @@
 schema: 
-  - ../../schemas/gql/**/*.gql
-documents: '../../packages/**/*.gql'
+  - ./node_modules/@regolithco/common/GraphQL/**/*.gql
+documents: ./GraphQL/**/*.gql
 generates:
   ./src/schema/operations.ts:
     plugins:
       - add:
           content: "import * as types from '@regolithco/common'"
+      - typescript-operations
+    config:
+      nonOptionalTypename: true
+      namespacedImportName: types
+  ./src/schema/apollo.ts:
+    plugins:
+      - add:
+          content: "import * as operations from './operations'"
       - typescript-react-apollo
     config:
       nonOptionalTypename: true
-      importOperationTypesFrom: types
+      namespacedImportName: types      
+      importOperationTypesFrom: operations
   ./src/schema/cache.ts:
     plugins:
       - typescript-apollo-client-helpers

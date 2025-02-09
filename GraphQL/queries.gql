@@ -1,0 +1,205 @@
+
+query getUserProfile {
+  profile {
+    ...UserProfileFragment
+  }
+}
+
+query getLoadouts {
+  profile {
+    ...UserProfileLoadoutFragment
+  }
+}
+
+
+query getSessionUser($sessionId: ID!) {
+  sessionUser(sessionId: $sessionId) {
+    ...SessionUserFragment
+  }
+}
+
+query getMyUserSessions($nextToken: String) {
+  profile {
+    userId
+    mySessions(nextToken: $nextToken) {
+      items {
+       ...SessionFragment
+      }
+      nextToken
+    }
+  }
+}
+query getJoinedUserSessions($nextToken: String) {
+  profile {
+    userId
+    joinedSessions(nextToken: $nextToken) {
+      items {
+       ...SessionFragment
+      }
+      nextToken
+    }
+  }
+}
+
+
+query getUser($userId: ID!) {
+  user(userId: $userId) {
+    ...UserFragment
+  }
+}
+
+query getSession($sessionId: ID!) {
+  session(sessionId: $sessionId) {
+    ...SessionFragment
+  }
+}
+
+query getSessionUpdates($sessionId: ID!, $lastCheck: String!) {
+  sessionUpdates(sessionId: $sessionId, lastCheck: $lastCheck) {
+    sessionId
+    eventName
+    eventDate
+    data {
+      ...on WorkOrderInterface {
+        ...WorkOrderBaseFragment
+        workOrderState: state
+      }
+      ...on ScoutingFindInterface {
+        ...ScoutingFindBaseFragment
+        attendance {
+          ...SessionUserFragment
+        }
+        scoutingState: state
+      }
+      ...on CrewShare {
+        ...CrewShareBaseFragment
+        crewShareState: state
+      }
+      ...on SessionUser {
+        ...SessionUserBaseFragment
+        sessionUserState: state
+      }
+      ...on Session {
+        ...SessionBaseFragment
+        sessionState: state
+      }
+      __typename
+    }
+  }
+}
+
+query getSessionShare($joinId: ID!) {
+  sessionShare(joinId: $joinId) {
+    ...SessionShareFragment
+  }
+}
+
+# This one is for checking if the user is a member of the session
+query getSessionStub($sessionId: ID!) {
+  session(sessionId: $sessionId) {
+    ...SessionListFragment
+  }
+}
+
+query getSessionScouting($sessionId: ID!, $nextToken: String) {
+  session(sessionId: $sessionId) {
+    ...SessionScoutingFragment
+  }
+}
+query getSessionActiveMembers($sessionId: ID!, $nextToken: String ) {
+  session(sessionId: $sessionId) {
+    ...SessionActiveMembersFragment
+  }
+}
+query getSessionWorkOrders($sessionId: ID!, $nextToken: String) {
+  session(sessionId: $sessionId) {
+    ...SessionWorkOrdersFragment
+  }
+}
+
+
+query getWorkOrder($orderId: ID!, $sessionId: ID!) {
+  workOrder(sessionId: $sessionId, orderId: $orderId) {
+    ...WorkOrderFragment
+  }
+}
+
+query getScoutingFind($scoutingFindId: ID!, $sessionId: ID!) {
+  scoutingFind(sessionId: $sessionId, scoutingFindId: $scoutingFindId) {
+    ...ScoutingFindFragment
+  }
+}
+
+
+query getCrewShares($sessionId: ID!, $orderId: ID, $nextToken: String) {
+  crewShares(sessionId: $sessionId, orderId: $orderId, nextToken: $nextToken) {
+    items {
+      ...CrewShareFragment
+    }
+    nextToken
+  }
+}
+###################################################
+# Capture Queries 
+###################################################
+query captureShipRockScan($imgUrl: String!){
+  captureShipRockScan(imgUrl: $imgUrl) {
+    mass
+    inst
+    rockType
+    res
+    ores {
+      ore
+      percent
+    }
+  }
+}
+query captureRefineryOrder($imgUrl: String!){
+  captureRefineryOrder(imgUrl: $imgUrl) {
+  expenses {
+    amount
+    name
+  }
+  processDurationS
+  refinery
+  method
+  shipOres {
+    amt
+    ore
+    yield
+  }
+  }
+}
+
+# NOTE: The getPublic in the name is what makes it use the public API 
+query getPublicSurveyData($epoch: String!, $dataName: String!) {
+  surveyData(epoch: $epoch, dataName: $dataName) {
+    epoch
+    dataName
+    lastUpdated
+    data
+  }
+}
+
+###################################################
+# Public Queries 
+###################################################
+
+# NOTE: The getPublic in the name is what makes it use the public API 
+query getPublicLookups {
+  lookups {
+    CIG {
+      densitiesLookups
+      oreProcessingLookup
+      refineryBonusLookup
+      methodsBonusLookup
+    }
+    UEX {
+      bodies
+      maxPrices
+      ships
+      tradeports
+    }
+    Loadout
+  }
+}

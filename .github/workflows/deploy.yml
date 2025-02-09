@@ -1,0 +1,47 @@
+name: Deploy Regolith to S3
+on:
+  push:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:      
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: 'us-west-2'
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+              echo "${{secrets.PRODUCTION_ENV}}" > .env
+          elif [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "${{secrets.STAGING_ENV}}" > .env
+          fi
+  
+      - name: Yarn install
+        run: yarn install
+  
+      - name: Yarn build
+        env: 
+          CI: false # don't treat every warning as an error. A little sloppy but...
+        run: dotenv -e .env -- yarn build
+
+      - name: Deploy to S3
+        run: dotenv -e .env -- yarn deploy
+

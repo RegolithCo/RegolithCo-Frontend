@@ -1,7 +1,39 @@
 {
-  "extends": "../../tsconfig-react.json",
   "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "lib": [
+      "DOM",
+      "es2020",
+    ],
+    "types": [
+      "jest",
+      "node"
+    ],
+    "moduleResolution": "node",
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "target": "ES6",
+    "noImplicitAny": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
   },
+    "exclude": [
+      "**/dist/**",
+      "node_modules",
+      "**/*.test.?s",
+      "**/*.spec.?s",
+    ],
   "include": [
     "src"
   ]
