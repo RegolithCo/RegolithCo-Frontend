@@ -1,0 +1,42 @@
+{
+  "name": "Regolith React",
+  "dockerFile": "./Dockerfile",
+  "waitFor": "postCreateCommand",
+  // On container creation, install dependencies.
+  "postCreateCommand": "echo \"$DEVELOPER_ENV\" > .env.staging; yarn install",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "window.restoreWindows": "none"
+      },
+      "openFiles": [
+        "RegolithCo.code-workspace"
+      ],
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "eriklynd.json-tools",
+        "yzhang.markdown-all-in-one",
+        "unifiedjs.vscode-mdx",
+        "dbaeumer.vscode-eslint",
+        "christian-kohler.npm-intellisense",
+        "mhutchie.git-graph",
+        "GraphQL.vscode-graphql",
+        "GraphQL.vscode-graphql-syntax",
+        "Tyriar.lorem-ipsum",
+        "kuscamara.remove-unused-imports",
+        "styled-components.vscode-styled-components"
+      ]
+    }
+  },
+  // Trigger actions on ports. More info: https://containers.dev/implementors/json_reference/#port-attributes
+  "portsAttributes": {
+    "3000": {
+      "label": "Application",
+      "onAutoForward": "openBrowserOnce"
+    }
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [ 3000, 9222 ]
+}

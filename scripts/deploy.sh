@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+# set -x
 
 if [ -z "${CLOUDFRONT_DISTRIBUTION}" ]; then
   echo "CLOUDFRONT_DISTRIBUTION is not set. Exiting."
@@ -9,6 +11,16 @@ if [ -z "${WEB_BUCKET}" ]; then
   exit 1
 fi
 
+# If buid folder exists delete it
+if [ -d "build" ]; then
+  echo "DETECTED BUILD FOLDER. DELETING IT."
+  rm -rf build
+fi
+
+yarn build 
+
 # but ignore the stats/* folder
 aws s3 sync build/ s3://${WEB_BUCKET} --delete --exclude "stats/*"
-aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_DISTRIBUTION} --paths "/*"
+aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_DISTRIBUTION} --paths "/*" --output text --no-cli-pager
+
+echo "Deployment completed successfully."

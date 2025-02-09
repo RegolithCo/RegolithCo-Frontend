@@ -4,6 +4,7 @@ import { AuthContext, AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent, IAut
 import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
+import config from '../config'
 
 let redirectUri: string = ''
 switch (import.meta.env.MODE) {
@@ -22,7 +23,7 @@ switch (import.meta.env.MODE) {
 log.debug(`REDIRECT URL: ${redirectUri} for mode ${import.meta.env.MODE}`)
 
 const discordConfig: TAuthConfig = {
-  clientId: '1067082442877440050',
+  clientId: config.discordClientId,
   authorizationEndpoint: 'https://discord.com/oauth2/authorize',
   tokenEndpoint: 'https://discord.com/api/oauth2/token',
   redirectUri,
