@@ -49,11 +49,6 @@ jobs:
               echo "${{secrets.STAGING_ENV}}" > .env
           fi
   
-      - name: Yarn build
-        env: 
-          CI: false # don't treat every warning as an error. A little sloppy but...
-        run: dotenv -e .env -- yarn build
-
       - name: Deploy to S3
         run: dotenv -e .env -- yarn deploy
 
