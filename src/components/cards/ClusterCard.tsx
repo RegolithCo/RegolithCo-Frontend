@@ -22,6 +22,7 @@ import {
   SessionUserStateEnum,
   makeHumanIds,
   FindClusterSummary,
+  ShipOreEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../icons'
 import { fontFamilies, scoutingFindStateThemes } from '../../theme'
@@ -209,7 +210,18 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ scoutingFind }) => {
 `
   const finalOres = ores || []
   const oreNames =
-    finalOres.length > 1 ? finalOres.map((o) => o.slice(0, 3)).join(', ') : finalOres[0] ? finalOres[0] : '???'
+    finalOres.length > 1
+      ? finalOres
+          .map((o) => {
+            // Special case: Quartz and Quantanium will have the same abbreviation
+            if (o === ShipOreEnum.Quantanium) return 'QNT'
+            if (o === ShipOreEnum.Quartz) return 'QTZ'
+            return o.slice(0, 3)
+          })
+          .join(', ')
+      : finalOres[0]
+        ? finalOres[0]
+        : '???'
 
   let opacity = 1
   const badStates: ScoutingFindStateEnum[] = [ScoutingFindStateEnum.Abandonned, ScoutingFindStateEnum.Depleted]
