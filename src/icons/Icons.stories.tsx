@@ -24,8 +24,8 @@ const Template: StoryFn<typeof SvgIcon> = (args) => (
   </div>
 )
 
-export const LoggedIn = Template.bind({})
-LoggedIn.args = {
+export const Icons = Template.bind({})
+Icons.args = {
   sx: {
     color: 'primary.main',
     fontSize: 100,

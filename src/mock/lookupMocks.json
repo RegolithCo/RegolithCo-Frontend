@@ -1269,42 +1269,1834 @@
         }
       },
       "UEX": {
-        "bodies": {
-          "ST": {
-            "ARC": {
-              "name": "ArcCorp",
-              "satellites": {
-                "LYRI": "Lyria",
-                "WALA": "Wala"
-              }
-            },
-            "CRU": {
-              "name": "Crusader",
-              "satellites": {
-                "CELL": "Cellin",
-                "DAYM": "Daymar",
-                "YELA": "Yela"
-              }
-            },
-            "HUR": {
-              "name": "Hurston",
-              "satellites": {
-                "ABER": "Aberdeen",
-                "ARIA": "Arial",
-                "ITAA": "Ita",
-                "MAGD": "Magda"
-              }
-            },
-            "MIC": {
-              "name": "microTech",
-              "satellites": {
-                "CALL": "Calliope",
-                "CLIO": "Clio",
-                "EUTE": "Euterpe"
-              }
-            }
+        "bodies": [
+          {
+            "label": "Stanton",
+            "wellType": "SYSTEM",
+            "id": "STANTON",
+            "system": "STANTON",
+            "depth": 0,
+            "parent": null,
+            "parents": [],
+            "parentType": null,
+            "isSpace": true,
+            "isSurface": true,
+            "hasGems": false,
+            "hasRocks": false
+          },
+          {
+            "label": "Aaron Halo",
+            "wellType": "BELT",
+            "id": "AARON_HALO",
+            "system": "STANTON",
+            "depth": 1,
+            "parent": "STANTON",
+            "parents": [
+              "STANTON"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Hurston",
+            "wellType": "PLANET",
+            "id": "HUR",
+            "system": "STANTON",
+            "depth": 1,
+            "parent": "STANTON",
+            "parents": [
+              "STANTON"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "HUR L1",
+            "wellType": "LAGRANGE",
+            "id": "HUR-L1",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "HUR L2",
+            "wellType": "LAGRANGE",
+            "id": "HUR-L2",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "HUR L3",
+            "wellType": "LAGRANGE",
+            "id": "HUR-L3",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "HUR L4",
+            "wellType": "LAGRANGE",
+            "id": "HUR-L4",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "HUR L5",
+            "wellType": "LAGRANGE",
+            "id": "HUR-L5",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Aberdeen",
+            "wellType": "SATELLITE",
+            "id": "ABE",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Arial",
+            "wellType": "SATELLITE",
+            "id": "ARI",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Ita",
+            "wellType": "SATELLITE",
+            "id": "ITA",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Magda",
+            "wellType": "SATELLITE",
+            "id": "MAG",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "HUR",
+            "parents": [
+              "STANTON",
+              "HUR"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Microtech",
+            "wellType": "PLANET",
+            "id": "MIC",
+            "system": "STANTON",
+            "depth": 1,
+            "parent": "STANTON",
+            "parents": [
+              "STANTON"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "MIC L1",
+            "wellType": "LAGRANGE",
+            "id": "MIC-L1",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "MIC L2",
+            "wellType": "LAGRANGE",
+            "id": "MIC-L2",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "MIC L3",
+            "wellType": "LAGRANGE",
+            "id": "MIC-L3",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "MIC L4",
+            "wellType": "LAGRANGE",
+            "id": "MIC-L4",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "MIC L5",
+            "wellType": "LAGRANGE",
+            "id": "MIC-L5",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Calliope",
+            "wellType": "SATELLITE",
+            "id": "CAL",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Clio",
+            "wellType": "SATELLITE",
+            "id": "CLI",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Euterpe",
+            "wellType": "SATELLITE",
+            "id": "EUT",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "MIC",
+            "parents": [
+              "STANTON",
+              "MIC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "ArcCorp",
+            "wellType": "PLANET",
+            "id": "ARC",
+            "system": "STANTON",
+            "depth": 1,
+            "parent": "STANTON",
+            "parents": [
+              "STANTON"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "ARC L1",
+            "wellType": "LAGRANGE",
+            "id": "ARC-L1",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "ARC L2",
+            "wellType": "LAGRANGE",
+            "id": "ARC-L2",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "ARC L3",
+            "wellType": "LAGRANGE",
+            "id": "ARC-L3",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "ARC L4",
+            "wellType": "LAGRANGE",
+            "id": "ARC-L4",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "ARC L5",
+            "wellType": "LAGRANGE",
+            "id": "ARC-L5",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Lyria",
+            "wellType": "SATELLITE",
+            "id": "LYR",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Wala",
+            "wellType": "SATELLITE",
+            "id": "WAL",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "ARC",
+            "parents": [
+              "STANTON",
+              "ARC"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Crusader",
+            "wellType": "PLANET",
+            "id": "CRU",
+            "system": "STANTON",
+            "depth": 1,
+            "parent": "STANTON",
+            "parents": [
+              "STANTON"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": false,
+            "hasGems": false,
+            "hasRocks": false
+          },
+          {
+            "label": "CRU L1",
+            "wellType": "LAGRANGE",
+            "id": "CRU-L1",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "CRU L2",
+            "wellType": "LAGRANGE",
+            "id": "CRU-L2",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "CRU L3",
+            "wellType": "LAGRANGE",
+            "id": "CRU-L3",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "CRU L4",
+            "wellType": "LAGRANGE",
+            "id": "CRU-L4",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "CRU L5",
+            "wellType": "LAGRANGE",
+            "id": "CRU-L5",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Daymar",
+            "wellType": "SATELLITE",
+            "id": "DAY",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Cellin",
+            "wellType": "SATELLITE",
+            "id": "CEL",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Yela",
+            "wellType": "SATELLITE",
+            "id": "YEL",
+            "system": "STANTON",
+            "depth": 2,
+            "parent": "CRU",
+            "parents": [
+              "STANTON",
+              "CRU"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Yela Belt",
+            "wellType": "BELT",
+            "id": "YELB",
+            "depth": 3,
+            "parent": "YEL",
+            "system": "STANTON",
+            "parents": [
+              "STANTON",
+              "CRU",
+              "YEL"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Pyro",
+            "wellType": "SYSTEM",
+            "id": "PYRO",
+            "system": "PYRO",
+            "depth": 0,
+            "parent": null,
+            "parents": [],
+            "parentType": null,
+            "isSpace": true,
+            "isSurface": true,
+            "hasGems": false,
+            "hasRocks": false
+          },
+          {
+            "label": "Pyro I",
+            "wellType": "PLANET",
+            "id": "PY1",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "PYR1 L1",
+            "wellType": "LAGRANGE",
+            "id": "PYR1L1",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY1",
+            "parents": [
+              "PYRO",
+              "PY1"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR1 L2",
+            "wellType": "LAGRANGE",
+            "id": "PYR1L2",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY1",
+            "parents": [
+              "PYRO",
+              "PY1"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR1 L3",
+            "wellType": "LAGRANGE",
+            "id": "PYR1L3",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY1",
+            "parents": [
+              "PYRO",
+              "PY1"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR1 L4",
+            "wellType": "LAGRANGE",
+            "id": "PYR1L4",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY1",
+            "parents": [
+              "PYRO",
+              "PY1"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR1 L5",
+            "wellType": "LAGRANGE",
+            "id": "PYR1L5",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY1",
+            "parents": [
+              "PYRO",
+              "PY1"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Monox",
+            "wellType": "PLANET",
+            "id": "MON",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Bloom",
+            "wellType": "PLANET",
+            "id": "BLO",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Pyro V",
+            "wellType": "PLANET",
+            "id": "PY5",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": false,
+            "hasGems": false,
+            "hasRocks": false
+          },
+          {
+            "label": "PYR5 L1",
+            "wellType": "LAGRANGE",
+            "id": "PYR5L1",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR5 L2 - Gaslight",
+            "wellType": "LAGRANGE",
+            "id": "PYR5L2",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR5 L3",
+            "wellType": "LAGRANGE",
+            "id": "PYR5L3",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR5 L4",
+            "wellType": "LAGRANGE",
+            "id": "PYR5L4",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYR5 L5 - Rat's Nest",
+            "wellType": "LAGRANGE",
+            "id": "PYR5L5",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Pyro IV",
+            "wellType": "SATELLITE",
+            "id": "PY4",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Pyro 4 Rings",
+            "wellType": "BELT",
+            "id": "PY4_BELT",
+            "depth": 3,
+            "parent": "PY4",
+            "system": "PYRO",
+            "parents": [
+              "PYRO",
+              "PY5",
+              "PY4"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Ignis",
+            "wellType": "SATELLITE",
+            "id": "IGN",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Vatra",
+            "wellType": "SATELLITE",
+            "id": "VAT",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Adir",
+            "wellType": "SATELLITE",
+            "id": "ADI",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Fairo",
+            "wellType": "SATELLITE",
+            "id": "FAI",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Fuego",
+            "wellType": "SATELLITE",
+            "id": "FUE",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Vuur",
+            "wellType": "SATELLITE",
+            "id": "VUU",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "PY5",
+            "parents": [
+              "PYRO",
+              "PY5"
+            ],
+            "parentType": "PLANET",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Terminus",
+            "wellType": "PLANET",
+            "id": "TER",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": false,
+            "isSurface": true,
+            "hasGems": true,
+            "hasRocks": false
+          },
+          {
+            "label": "Terminus Rings",
+            "wellType": "BELT",
+            "id": "TER_BELT",
+            "system": "PYRO",
+            "depth": 2,
+            "parent": "TER",
+            "parents": [
+              "PYRO",
+              "TER"
+            ],
+            "parentType": "PLANET",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster BGR-560",
+            "wellType": "CLUSTER",
+            "id": "BGR-560",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster CAJ-445",
+            "wellType": "CLUSTER",
+            "id": "CAJ-445",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster DLO-486",
+            "wellType": "CLUSTER",
+            "id": "DLO-486",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster EMM-567",
+            "wellType": "CLUSTER",
+            "id": "EMM-567",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster FSN-704",
+            "wellType": "CLUSTER",
+            "id": "FSN-704",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster GRP-839",
+            "wellType": "CLUSTER",
+            "id": "GRP-839",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster HJS-232",
+            "wellType": "CLUSTER",
+            "id": "HJS-232",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster JWY-925",
+            "wellType": "CLUSTER",
+            "id": "JWY-925",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster KKE-717",
+            "wellType": "CLUSTER",
+            "id": "KKE-717",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster LHB-976",
+            "wellType": "CLUSTER",
+            "id": "LHB-976",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster MNK-833",
+            "wellType": "CLUSTER",
+            "id": "MNK-833",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster NBD-102",
+            "wellType": "CLUSTER",
+            "id": "NBD-102",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster RSC-340",
+            "wellType": "CLUSTER",
+            "id": "RSC-340",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster WDH-387",
+            "wellType": "CLUSTER",
+            "id": "WDH-387",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "Cluster YKA-011",
+            "wellType": "CLUSTER",
+            "id": "YKA-011",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYAM-EXHANG-0-1",
+            "wellType": "CLUSTER",
+            "id": "PYAM-EXHANG-0-1",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYAM-SUPVISR-3-4",
+            "wellType": "CLUSTER",
+            "id": "PYAM-SUPVISR-3-4",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "PYAM-SUPVISR-3-5",
+            "wellType": "CLUSTER",
+            "id": "PYAM-SUPVISR-3-5",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-ALPHA",
+            "wellType": "CLUSTER",
+            "id": "RAB-ALPHA",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-BRAVO",
+            "wellType": "CLUSTER",
+            "id": "RAB-BRAVO",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-CHARLIE",
+            "wellType": "CLUSTER",
+            "id": "RAB-CHARLIE",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-COOK",
+            "wellType": "CLUSTER",
+            "id": "RAB-COOK",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-DELTA",
+            "wellType": "CLUSTER",
+            "id": "RAB-DELTA",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-ECHO",
+            "wellType": "CLUSTER",
+            "id": "RAB-ECHO",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-FOXTROT",
+            "wellType": "CLUSTER",
+            "id": "RAB-FOXTROT",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-GULF",
+            "wellType": "CLUSTER",
+            "id": "RAB-GULF",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-HELIO",
+            "wellType": "CLUSTER",
+            "id": "RAB-HELIO",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-IGNITION",
+            "wellType": "CLUSTER",
+            "id": "RAB-IGNITION",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-ION",
+            "wellType": "CLUSTER",
+            "id": "RAB-ION",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-JAK",
+            "wellType": "CLUSTER",
+            "id": "RAB-JAK",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-KILO",
+            "wellType": "CLUSTER",
+            "id": "RAB-KILO",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-LAMDA",
+            "wellType": "CLUSTER",
+            "id": "RAB-LAMDA",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-LYNX",
+            "wellType": "CLUSTER",
+            "id": "RAB-LYNX",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-MAT",
+            "wellType": "CLUSTER",
+            "id": "RAB-MAT",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-NOVEMBER",
+            "wellType": "CLUSTER",
+            "id": "RAB-NOVEMBER",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-OVER",
+            "wellType": "CLUSTER",
+            "id": "RAB-OVER",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-POINT",
+            "wellType": "CLUSTER",
+            "id": "RAB-POINT",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-QUAGMIRE",
+            "wellType": "CLUSTER",
+            "id": "RAB-QUAGMIRE",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-ROTH",
+            "wellType": "CLUSTER",
+            "id": "RAB-ROTH",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-SIERRA",
+            "wellType": "CLUSTER",
+            "id": "RAB-SIERRA",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-TUNG",
+            "wellType": "CLUSTER",
+            "id": "RAB-TUNG",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-ULTRA",
+            "wellType": "CLUSTER",
+            "id": "RAB-ULTRA",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-VICTORY",
+            "wellType": "CLUSTER",
+            "id": "RAB-VICTORY",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-WHISKEY",
+            "wellType": "CLUSTER",
+            "id": "RAB-WHISKEY",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-XENO",
+            "wellType": "CLUSTER",
+            "id": "RAB-XENO",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-YORK",
+            "wellType": "CLUSTER",
+            "id": "RAB-YORK",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
+          },
+          {
+            "label": "RAB-ZETA",
+            "wellType": "CLUSTER",
+            "id": "RAB-ZETA",
+            "system": "PYRO",
+            "depth": 1,
+            "parent": "PYRO",
+            "parents": [
+              "PYRO"
+            ],
+            "parentType": "SYSTEM",
+            "isSpace": true,
+            "isSurface": false,
+            "hasGems": true,
+            "hasRocks": true
           }
-        },
+        ],
         "maxPrices": {
           "oreRaw": {
             "AGRICIUM": {

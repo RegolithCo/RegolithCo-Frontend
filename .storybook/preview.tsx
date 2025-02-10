@@ -6,8 +6,8 @@ import { ThemeProvider } from '@mui/system'
 import { CssBaseline } from '@mui/material'
 import { SnackbarProvider } from 'notistack'
 import { theme } from '../src/theme'
-import { AppContextWrapper } from '../src/context/app.context'
-import { LookupsContextWrapper } from '../src/context/lookupsContext'
+import { AppContextMock } from '../src/mock/app.mock'
+import { LookupsContextMock } from '../src/mock/lookups.mock'
 log.setLevel(log.levels.DEBUG)
 
 const preview: Preview = {
@@ -25,18 +25,18 @@ const preview: Preview = {
         <ThemeProvider theme={theme}>
           <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
             <CssBaseline />
-            <AppContextWrapper>
-              <LookupsContextWrapper>
+            <AppContextMock>
+              <LookupsContextMock>
                 <Story />
-              </LookupsContextWrapper>
-            </AppContextWrapper>
+              </LookupsContextMock>
+            </AppContextMock>
           </SnackbarProvider>
         </ThemeProvider>
       )
     },
   ],
 
-  tags: ['autodocs'],
+  tags: ['!autodocs'],
 }
 
 export default preview

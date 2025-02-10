@@ -1,8 +1,7 @@
 import { dirname, join } from 'path'
-import { env } from 'process'
 
 export default {
-  stories: [ '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 
   addons: [
     getAbsolutePath('@storybook/addon-links'),
