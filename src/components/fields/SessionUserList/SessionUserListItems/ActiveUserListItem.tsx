@@ -12,7 +12,7 @@ import {
   User,
   VehicleRoleEnum,
 } from '@regolithco/common'
-import { Group, RocketLaunch } from '@mui/icons-material'
+import { RocketLaunch } from '@mui/icons-material'
 import { alpha } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'

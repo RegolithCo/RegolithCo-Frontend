@@ -1,8 +1,6 @@
-import { BorderAll, CloudDownload, DataObject } from '@mui/icons-material'
-import { Avatar, Box, Button, Modal, Stack, Typography, useTheme } from '@mui/material'
+import { useTheme } from '@mui/material'
 import * as React from 'react'
-import { MUIRouterLink } from '../RouterLink'
-import { DialogEnum, SessionContext } from '../../context/session.context'
+import { SessionContext } from '../../context/session.context'
 import {
   calculateWorkOrder,
   createSafeFileName,
@@ -15,7 +13,6 @@ import { downloadFile } from '../../lib/utils'
 import dayjs from 'dayjs'
 import { DownloadModal } from './DownloadModal'
 import { LookupsContext } from '../../context/lookupsContext'
-import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 
 export type DownloadModalContainerProps = {

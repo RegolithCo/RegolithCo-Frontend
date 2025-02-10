@@ -199,7 +199,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
     const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
     const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
-    const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
+    // const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
     return gravityWellOptions.map((row, idr) => {
       let hide = false
@@ -210,7 +210,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
-      const isBlank = !row.hasRocks
+      // const isBlank = !row.hasRocks
 
       if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
       if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
@@ -221,7 +221,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
       const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
 
       let normUsers = 0
-      let normScans = 0
+      // let normScans = 0
       let normClusters = 0
 
       let users = 0
@@ -234,7 +234,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
         clusters = data.data[row.id].clusters
 
         normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
-        normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
+        // normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
         normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
       }
 

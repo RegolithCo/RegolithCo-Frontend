@@ -17,7 +17,7 @@ import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
 import { CollaborateLinkIcon, DownloadJSONIcon, ExportImageIcon } from '../../../icons/badges'
-import { GravityWellNameLookup, GravityWellNameRender } from '../../fields/GravityWellChooser'
+import { GravityWellNameLookup } from '../../fields/GravityWellChooser'
 
 export interface SesionHeaderProps {
   propA?: string

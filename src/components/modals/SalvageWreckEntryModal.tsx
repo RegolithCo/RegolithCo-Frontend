@@ -259,7 +259,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
   // This can be disabled for a whole bunch of reasons
   const disabled = false
 
-  const sellableAUECError = false
+  // const sellableAUECError = false
   return (
     <>
       <Dialog
@@ -280,7 +280,9 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
         <Tooltip
           title={
             <>
-              <Typography variant="caption">Values are using the maximum price in all systems for each element:</Typography>
+              <Typography variant="caption">
+                Values are using the maximum price in all systems for each element:
+              </Typography>
               <TableContainer>
                 <Table>
                   <TableHead>

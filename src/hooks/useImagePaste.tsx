@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import log from 'loglevel'
+// import log from 'loglevel'
 
 export const useImagePaste = (onImage: (image: string) => void, disabled?: boolean) => {
   const disabledRef = useRef<boolean>(!!disabled)

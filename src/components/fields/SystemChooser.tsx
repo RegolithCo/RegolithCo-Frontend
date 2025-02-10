@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { FormControl, InputLabel, MenuItem, Select, useTheme } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import { getSystemName, SystemEnum } from '@regolithco/common'
 
 export interface SystemChooserProps {
@@ -11,7 +11,6 @@ export interface SystemChooserProps {
 }
 
 export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, label, value, blankLabel }) => {
-  const theme = useTheme()
   const fLabel = label || 'System'
   return (
     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>

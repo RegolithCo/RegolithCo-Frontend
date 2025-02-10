@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Tooltip, Box } from '@mui/material'
+import { Table, TableHead, TableRow, TableCell, TableBody, useTheme, Box } from '@mui/material'
 import {
   CrewShare,
   ShareTypeEnum,

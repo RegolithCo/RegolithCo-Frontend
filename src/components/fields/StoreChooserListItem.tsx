@@ -19,7 +19,6 @@ import { MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { alpha } from '@mui/material'
 import { LookupsContext } from '../../context/lookupsContext'
-import { gql } from '@apollo/client'
 
 export interface StoreChooserListItemProps {
   cityStores: StoreChoice

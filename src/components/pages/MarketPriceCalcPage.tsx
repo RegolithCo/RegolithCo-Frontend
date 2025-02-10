@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useTheme } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { MarketPriceCalc } from '../calculators/MarketPriceCalc/MarketPriceCalc'
 

@@ -14,7 +14,7 @@ export const useWorkOrderRowContextMenu = (
   onOpenDeleteConfirm?: () => void
 ) => {
   const { getSafeName } = React.useContext(AppContext)
-  const { deleteWorkOrder, updateWorkOrder, workOrder } = useWorkOrders(order.sessionId, order.orderId)
+  const { updateWorkOrder, workOrder } = useWorkOrders(order.sessionId, order.orderId)
 
   const { contextMenuNode, handleContextMenu } = useSessionContextMenu(() =>
     workOrder

@@ -32,7 +32,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
   const workOrdersFormatted = formatCardNumber(allTime?.summary?.workOrders || 0)
   const rocksScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.rocks || 0)
   const wrecksScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.wrecks || 0)
-  const gemsScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.gems || 0)
+  // const gemsScoutedFormatted = formatCardNumber(allTime?.summary?.scouting?.gems || 0)
 
   return (
     <>
@@ -220,14 +220,16 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
             <CardMedia sx={{ textAlign: 'center', minHeight: 30, mx: 2 }}>
               {loading ? (
                 <CircularProgress size={20} />
-              ) : (
-                isText ?( <Textfit
+              ) : isText ? (
+                <Textfit
                   mode="single"
                   max={30}
                   style={{ fontFamily: fontFamilies.robotoMono, color: theme.palette.primary.light }}
                 >
                   {value}
-                </Textfit>) : value
+                </Textfit>
+              ) : (
+                value
               )}
             </CardMedia>
             <Typography

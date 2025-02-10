@@ -4,10 +4,9 @@ import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { PendingUserListItem } from './PendingUserListItem'
-import { Accordion, AccordionDetails, Avatar, Box, Divider, IconButton, List, Tooltip, Typography } from '@mui/material'
-import { ExpandLess, ExpandMore, Group } from '@mui/icons-material'
+import { Accordion, AccordionDetails, Avatar, Divider, IconButton, List, Tooltip } from '@mui/material'
+import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { stateColorsBGThunk } from './StateChip'
-import { fontFamilies } from '../../../../theme'
 
 export interface CrewListItemProps {
   captain: SessionUser

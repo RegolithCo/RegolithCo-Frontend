@@ -4,7 +4,6 @@ import { UserProfile, UserProfileInput, DestructuredSettings, validateSCName, Us
 import {
   Alert,
   AlertTitle,
-  Avatar,
   Box,
   Button,
   Checkbox,
@@ -168,7 +167,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
 }
 
 export const SurveyCorpsBanned: React.FC = () => {
-  const theme = useTheme()
+  // const theme = useTheme()
   return (
     <Alert severity="error" sx={{ mb: 2 }}>
       <AlertTitle>
@@ -209,7 +208,7 @@ export const SurveyCorpsBanned: React.FC = () => {
 }
 
 export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, navigate, updateUserProfile }) => {
-  const theme = useTheme()
+  // const theme = useTheme()
   const [consentBoxChecked, setConsentBoxChecked] = React.useState(false)
   const isElligible = Boolean(userProfile?.state === UserStateEnum.Verified && !userProfile?.isSurveyorBanned)
 

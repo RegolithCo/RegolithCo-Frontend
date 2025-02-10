@@ -8,9 +8,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   FormControlLabel,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -24,8 +22,8 @@ import {
   useTheme,
 } from '@mui/material'
 import { Stack } from '@mui/system'
-import { Cancel, Check, GroupAdd, Percent, PieChart, QuestionMark, Toll } from '@mui/icons-material'
-import { CrewShare, SessionRoleEnum, ShareTypeEnum, ShipRoleEnum, UserSuggest } from '@regolithco/common'
+import { Cancel, GroupAdd, Percent, PieChart, QuestionMark, Toll } from '@mui/icons-material'
+import { SessionRoleEnum, ShareTypeEnum, ShipRoleEnum, UserSuggest } from '@regolithco/common'
 import {
   SessionRoleColors,
   SessionRoleIcons,

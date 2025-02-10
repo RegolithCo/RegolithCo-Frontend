@@ -1,7 +1,7 @@
 import { ErrorCode, SessionStateEnum, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useDiscordGuilds } from '../../hooks/useDiscordGuilds'
+// import { useDiscordGuilds } from '../../hooks/useDiscordGuilds'
 import { useJoinSession } from '../../hooks/useJoinSession'
 import { useLogin } from '../../hooks/useOAuth2'
 import { PageLoader } from './PageLoader'

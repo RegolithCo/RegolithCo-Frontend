@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Dialog, IconButton, Typography, useTheme } fr
 import { AuthTypeEnum } from '@regolithco/common'
 import * as React from 'react'
 import { RockIcon } from '../../icons'
-import log from 'loglevel'
+// import log from 'loglevel'
 
 export type PasteDetectedModalProps = {
   open: boolean

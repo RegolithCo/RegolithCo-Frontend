@@ -228,7 +228,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     if (!gravityWellOptions || !maxMins || !data) return null
     const maxMinsBonus = maxMins['STAT_BONUS'] || { max: 1, min: 0 }
     const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
-    const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
+    // const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
     const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
@@ -241,7 +241,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
       const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
-      const isBlank = !row.hasRocks
+      // const isBlank = !row.hasRocks
 
       if (!rockTypeFilter.includes('SURFACE') && SurfaceWellTypes.includes(row.wellType)) hide = true
       if (!rockTypeFilter.includes('ASTEROID') && AsteroidWellTypes.includes(row.wellType)) hide = true
@@ -252,7 +252,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
 
       let normUsers = 0
-      let normScans = 0
+      // const normScans = 0
       let normClusters = 0
       let normClusterSize = 0
       let normRockMass = 0
@@ -275,7 +275,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
         clusters = data.data[row.id].clusters
 
         normUsers = calculateNormalizedProbability(users, maxMinsUsers.min, maxMinsUsers.max)
-        normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
+        // normScans = calculateNormalizedProbability(scans, maxMinScans.min, maxMinScans.max)
         normClusters = calculateNormalizedProbability(clusters, maxMinClusters.min, maxMinClusters.max)
         normClusterSize = calculateNormalizedProbability(
           data.data[row.id].clusterCount.max,

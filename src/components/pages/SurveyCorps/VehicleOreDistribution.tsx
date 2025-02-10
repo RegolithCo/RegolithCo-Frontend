@@ -103,7 +103,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const dataStore = React.useContext(LookupsContext)
 
   const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
-  const fgColors = ['#000000', '#ffffff', '#ffffff']
+  // const fgColors = ['#000000', '#ffffff', '#ffffff']
 
   React.useEffect(() => {
     if (!dataStore.ready) return
@@ -176,9 +176,9 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         hide = true
       }
 
-      const rowEven = idr % 2 === 0
+      // const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
-      const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
+      // const bgColor = rowSelected ? selectColor : rowEven ? 'rgba(34,34,34)' : 'rgb(39,39,39)'
 
       if (!rowSelected && filterSelected) return null
 
@@ -318,7 +318,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             let normProb: number | null = null
             let bgColor: string | undefined = undefined
 
-            const fgc = fgColors[colIdx]
+            // const fgc = fgColors[colIdx]
             const bgc = bgColors[colIdx]
             if (data && data.data && data.data[row.id] && data.data[row.id].ores[ore]) {
               prob = data.data[row.id].ores[ore].prob
@@ -518,7 +518,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
                 {sortedVehicleRowKeys.map((ore, colIdx) => {
                   // const colHovered = hover && hover[1] === colIdx
-                  const fgc = fgColors[colIdx]
+                  // const fgc = fgColors[colIdx]
                   const bgc = bgColors[colIdx]
                   const colHovered = hoverCol && hoverCol[0] === colIdx
 

@@ -50,8 +50,8 @@ import { ExportImageIcon } from '../../icons/badges'
 import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
 import { CaptureControl } from '../ocr/CaptureControl'
 import { LookupsContext } from '../../context/lookupsContext'
-import log from 'loglevel'
 import { useImagePaste } from '../../hooks/useImagePaste'
+// import log from 'loglevel'
 
 export interface WorkOrderModalProps {
   open: boolean

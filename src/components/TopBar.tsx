@@ -113,12 +113,12 @@ export interface TopBarProps {
 
 export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
   const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement; width: number }>(null)
-  const [openShareMenu, setShareOpen] = React.useState<HTMLElement | null>(null)
+
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { hideNames, setHideNames } = React.useContext(AppContext)
   const { maintenanceMode } = React.useContext(LoginContext)
-  const { isScreenSharing, stopScreenCapture, startScreenCapture } = React.useContext(ScreenshareContext)
+  const { isScreenSharing, stopScreenCapture } = React.useContext(ScreenshareContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
 
   const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {

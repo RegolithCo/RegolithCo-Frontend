@@ -22,7 +22,6 @@ import { ConfirmModal } from '../modals/ConfirmModal'
 import { CaptureStartScreen } from './CaptureStartScreen'
 import { CapturePreviewCrop } from './CapturePreviewCrop'
 import { useImagePaste } from '../../hooks/useImagePaste'
-import log from 'loglevel'
 import { ScreenshareContext } from '../../context/screenshare.context'
 import { CaptureTypeEnum } from './types'
 import { fontFamilies } from '../../theme'
@@ -51,7 +50,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
 
   const [helpOpen, setHelpOpen] = useState(false)
   useImagePaste(setRawImageUrl)
-  const { isScreenSharing, stopScreenCapture } = useContext(ScreenshareContext)
+  const { isScreenSharing } = useContext(ScreenshareContext)
   const theme = useTheme()
 
   // I need a media query to detect if this is a mobile device or a desktop

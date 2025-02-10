@@ -21,7 +21,7 @@ import {
 } from '@regolithco/common'
 import { createContext } from 'react'
 import log from 'loglevel'
-import { ScoutingFindTypenames, WorkOrderTypenames } from '../types'
+import { ScoutingFindTypenames } from '../types'
 
 type ObjectValues<T> = T[keyof T]
 export const DialogEnum = {

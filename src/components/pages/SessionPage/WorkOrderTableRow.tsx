@@ -81,7 +81,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
   const canEdit =
     myUserProfile?.userId === workOrder?.ownerId || amISessionOwner || workOrder.sellerscName === myUserProfile?.scName
 
-  const { orderType, crewShares } = workOrder
+  const { crewShares } = workOrder
   const shipOrder = workOrder as ShipMiningOrder
 
   // let stateIcon: React.ReactNode

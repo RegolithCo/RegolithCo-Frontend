@@ -106,10 +106,10 @@ export const SessionList: React.FC<SessionListProps> = ({
     }
   }, [loading, fetchMoreSessions])
 
-  const loadingPulse: SxProps<Theme> = {
-    animation: `${textPulse} 1s infinite ease`,
-    color: 'transparent',
-  }
+  // const loadingPulse: SxProps<Theme> = {
+  //   animation: `${textPulse} 1s infinite ease`,
+  //   color: 'transparent',
+  // }
 
   // Group sessions by YEAR[MONTH[DAY[]]]
   const sessionsByDate: Session[][][] = React.useMemo(() => {

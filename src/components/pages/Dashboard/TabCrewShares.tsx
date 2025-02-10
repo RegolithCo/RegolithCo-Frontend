@@ -9,6 +9,7 @@ import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 import { FetchMoreWithDate } from './FetchMoreSessionLoader'
 import { PayConfirmModal } from '../../modals/PayConfirmModal'
 import { MValue, MValueFormat } from '../../fields/MValue'
+import log from 'loglevel'
 
 export type WorkOrderLookup = Record<string, Record<string, WorkOrder>>
 
@@ -45,6 +46,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 })
                 return acc.concat(csReturns)
               } catch (e) {
+                log.error('Error in crewshare summary', e)
                 return acc
               }
             },

@@ -3,8 +3,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Alert,
-  AlertTitle,
   Button,
   ButtonGroup,
   Dialog,
@@ -25,9 +23,7 @@ import { UserAvatar } from '../../UserAvatar'
 import {
   Cancel,
   CheckCircle,
-  ChevronLeft,
   DeleteForever,
-  Expand,
   ExpandMore,
   GroupAdd,
   GroupRemove,
@@ -93,12 +89,12 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
   const iAmTheirCaptain = theirCaptainId === mySessionUser?.ownerId
   const theyOnMyCrew = theyOnAnyCrew && (iAmTheirCaptain || theirCaptainId === myCrewCaptainId)
 
-  let sessionRoleDisabled = true
-  if (isSessionAdmin || !session?.sessionSettings?.controlledSessionRole) sessionRoleDisabled = false
+  // let sessionRoleDisabled = true
+  // if (isSessionAdmin || !session?.sessionSettings?.controlledSessionRole) sessionRoleDisabled = false
 
-  let shipRoleDisabled = true
-  if (isSessionAdmin) shipRoleDisabled = false
-  else if (!session?.sessionSettings?.controlledShipRole && iAmTheirCaptain) shipRoleDisabled = false
+  // let shipRoleDisabled = true
+  // if (isSessionAdmin) shipRoleDisabled = false
+  // else if (!session?.sessionSettings?.controlledShipRole && iAmTheirCaptain) shipRoleDisabled = false
 
   return (
     <Dialog

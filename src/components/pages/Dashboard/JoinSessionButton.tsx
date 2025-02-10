@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Button, ButtonGroup, CircularProgress, MenuItem, Select, Stack, Typography, useTheme } from '@mui/material'
+import { Button, ButtonGroup, CircularProgress, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { AddCircle, RocketLaunch } from '@mui/icons-material'
 import { Session } from '@regolithco/common'
 import { ConfirmModal } from '../../modals/ConfirmModal'

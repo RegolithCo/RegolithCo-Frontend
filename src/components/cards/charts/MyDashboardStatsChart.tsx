@@ -5,7 +5,6 @@ import { Datum, Serie } from '@nivo/line'
 import { fontFamilies } from '../../../theme'
 import { StatsLineChart } from './StatsLineChart'
 import { WorkOrderSummaryLookup } from '../../pages/Dashboard/Dashboard.container'
-import log from 'loglevel'
 import dayjs, { Dayjs } from 'dayjs'
 import { Stack } from '@mui/system'
 

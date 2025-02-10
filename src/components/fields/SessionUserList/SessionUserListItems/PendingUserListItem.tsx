@@ -1,14 +1,12 @@
 import React, { useRef } from 'react'
 import { ListItem, ListItemAvatar, ListItemText, Typography, Stack } from '@mui/material'
-import { PendingUser, SessionRoleEnum, ShipRoleEnum } from '@regolithco/common'
+import { PendingUser } from '@regolithco/common'
 import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'
 import { AppContext } from '../../../../context/app.context'
 import { useSessionUserContextMenu } from '../SessionUserContextMenu'
-import { SessionRoleIconBadge } from '../../SessionRoleChooser'
-import { ShipRoleIconBadge } from '../../ShipRoleChooser'
 import { UserListItemRoleIcons } from './ActiveUserListItem'
 
 export interface PendingUserListItemProps {

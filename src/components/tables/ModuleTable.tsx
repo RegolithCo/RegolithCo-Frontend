@@ -27,7 +27,6 @@ import {
   LoadoutShipEnum,
   MiningGadgetEnum,
   MiningModuleEnum,
-  MiningStoreEnum,
   ObjectValues,
   Lookups,
   SystemEnum,
@@ -160,7 +159,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
     }
   }
 
-  const stores = Object.values(MiningStoreEnum)
+  // const stores = Object.values(MiningStoreEnum)
 
   const modTypeIcons: Record<string, React.ReactNode> = {
     A: <Chip label="Active" size="small" color="primary" />,

@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { Alert, Button, Container, Divider, Link, Typography, useTheme } from '@mui/material'
 import { useUserProfile } from '../../../hooks/useUserProfile'
-import { AppContext } from '../../../context/app.context'
+// import { AppContext } from '../../../context/app.context'
 import { LoginContext } from '../../../hooks/useOAuth2'
 import { UserProfile } from '@regolithco/common'
 import { SurveyCorpsIcon } from '../../../icons'
@@ -15,8 +15,8 @@ export interface SurveyCorpsAboutProps {
 
 export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile, isSmall }) => {
   const theme = useTheme()
-  const { hideNames, setHideNames } = React.useContext(AppContext)
-  const { maintenanceMode, isAuthenticated, isInitialized } = React.useContext(LoginContext)
+  // const { hideNames, setHideNames } = React.useContext(AppContext)
+  const { isAuthenticated } = React.useContext(LoginContext)
   const usrQries = useUserProfile()
 
   return (

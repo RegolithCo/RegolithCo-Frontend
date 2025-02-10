@@ -6,7 +6,7 @@ import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { TabSummaryStats } from './TabSummaryStats'
-import { AppContext } from '../../../context/app.context'
+// import { AppContext } from '../../../context/app.context'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 import { PayConfirmModal } from '../../modals/PayConfirmModal'
@@ -73,7 +73,7 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
   const theme = useTheme()
   const [sessionSummary, setSessionSummary] = React.useState<SessionBreakdown>()
 
-  const { hideNames, getSafeName } = React.useContext(AppContext)
+  // const { hideNames, getSafeName } = React.useContext(AppContext)
   const { session, mySessionUser, mutating, markCrewSharePaid, openWorkOrderModal } = React.useContext(SessionContext)
   const isSessionActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isSessionActive)

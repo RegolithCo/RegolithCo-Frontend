@@ -66,7 +66,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 export const TabScouting: React.FC<TabScoutingProps> = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const { session, openScoutingModal, createNewScoutingFind, setActiveModal } = React.useContext(SessionContext)
+  const { session, openScoutingModal, createNewScoutingFind } = React.useContext(SessionContext)
   const isActive = session?.state === SessionStateEnum.Active
   // Filtering for the accordions
   const [filterClosedScout, setFilterClosedScout] = React.useState(false)

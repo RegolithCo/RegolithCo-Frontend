@@ -72,7 +72,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
   onUpdateLoadout,
 }) => {
   const theme = useTheme()
-  const styles = stylesThunk(theme)
+
   const [statsArr, setStatsArr] = React.useState<(AllStats | null)[]>([])
   const dataStore = React.useContext(LookupsContext)
   const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup

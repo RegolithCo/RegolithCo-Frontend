@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ScoutingFindTypeEnum, Session, SessionSummary } from '@regolithco/common'
 import { Box, Chip, Stack, SxProps, Theme, Tooltip, Typography, useTheme } from '@mui/material'
-import { AccessTime, Factory, Toll } from '@mui/icons-material'
+import { AccessTime, Toll } from '@mui/icons-material'
 import { MValue, MValueFormat, MValueFormatter } from './MValue'
 import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
 import { fontFamilies } from '../../theme'
@@ -96,7 +96,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
     totalMembers,
     // allPaid,
     lastJobDone,
-    collectedSCU,
+    // collectedSCU,
     yieldSCU,
     refineries,
     scoutingFindsByType,

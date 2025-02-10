@@ -263,7 +263,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
   setOreTierFilter,
 }) => {
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  // const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   const sortedShipRowColors = useShipOreColors()
 

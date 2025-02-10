@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { UserProfile, Session, SessionStateEnum } from '@regolithco/common'
-import { Alert, AlertTitle, Box, FormControlLabel, Switch, Typography, useTheme } from '@mui/material'
+import { Box, FormControlLabel, Switch, Typography, useTheme } from '@mui/material'
 import { SessionList } from '../../fields/SessionList'
 import { Stack, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
