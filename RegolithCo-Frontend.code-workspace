@@ -4,10 +4,12 @@
       "name": "📱 React App",
       "path": "."
     },
+    // We can symlink this to the git repo to work on it concurrently
     {
       "name": "📦 common",
-      "path": "./node_modules/@regolithco/common/src"
-    },    
+      "path": "node_modules/@regolithco/"
+    },
+    // Helpful to have the schema there for you to reference
     {
       "name": "🧬 Schema",
       "path": "node_modules/@regolithco/common/GraphQL"
@@ -18,7 +20,7 @@
     "eslint.nodePath": ".yarn/sdks",
     "typescript.tsdk": "🏠 Home/.yarn/sdks/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
-    "window.title": "REGOLITH${separator}${activeEditorShort}${separator}${rootName}",
+    "window.title": "${rootName}${separator}${activeEditorShort}",
     "workbench.colorCustomizations": {
 			"titleBar.activeBackground": "#001768",
       "sideBar.background": "#242132",
@@ -45,9 +47,11 @@
   },
   "extensions": {
     "recommendations": [
-      "arcanis.vscode-zipfs",
       "dbaeumer.vscode-eslint",
-      "esbenp.prettier-vscode"
+      "esbenp.prettier-vscode",
+      "graphql.vscode-graphql",
+      "graphql.vscode-graphql-syntax",
+      "eriklynd.json-tools"
     ]
   }
 }

@@ -145,7 +145,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
               ...acc,
               !module.active && lastModule && lastModule.active ? (
                 <ListSubheader
-                  key="passive-subheader"
+                  key={`passive-subheader-${key}-${idx}`}
                   sx={{
                     backgroundColor: theme.palette.secondary.main,
                     color: theme.palette.secondary.contrastText,
