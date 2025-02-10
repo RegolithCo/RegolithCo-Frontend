@@ -66,6 +66,30 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
 
   if (!loadoutLookups || !dataStore.ready) return <div>Loading...</div>
 
+  const activeModules: MiningModuleEnum[] = Object.keys(loadoutLookups.modules)
+    .filter((key) => loadoutLookups.modules[key as MiningModuleEnum].active)
+    .map((key) => key as MiningModuleEnum)
+  const passiveModules: MiningModuleEnum[] = Object.keys(loadoutLookups.modules)
+    .filter((key) => !loadoutLookups.modules[key as MiningModuleEnum].active)
+    .map((key) => key as MiningModuleEnum)
+  // Sort first by size then by name
+  activeModules.sort((a, b) => {
+    const aMod = loadoutLookups.modules[a as MiningModuleEnum]
+    const bMod = loadoutLookups.modules[b as MiningModuleEnum]
+    // Now sort alphabetically by name
+    if (aMod.name > bMod.name) return 1
+    if (aMod.name < bMod.name) return -1
+    return 0
+  })
+  passiveModules.sort((a, b) => {
+    const aMod = loadoutLookups.modules[a as MiningModuleEnum]
+    const bMod = loadoutLookups.modules[b as MiningModuleEnum]
+    // Now sort alphabetically by name
+    if (aMod.name > bMod.name) return 1
+    if (aMod.name < bMod.name) return -1
+    return 0
+  })
+
   const moduleKeys: MiningModuleEnum[] = Object.keys(loadoutLookups.modules).map((key) => key as MiningModuleEnum)
   return (
     <Stack direction="row" spacing={1} paddingBottom={2}>
@@ -138,22 +162,38 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
           >
             Active Modules
           </ListSubheader>
-          {moduleKeys.reduce((acc, key, idx) => {
+          {activeModules.reduce((acc, key, idx) => {
             const module = loadoutLookups.modules[key as MiningModuleEnum] as MiningModule
-            const lastModule = idx > 0 ? loadoutLookups.modules[moduleKeys[idx - 1]] : null
+            if (!module.active) return acc
             return [
               ...acc,
-              !module.active && lastModule && lastModule.active ? (
-                <ListSubheader
-                  key={`passive-subheader-${key}-${idx}`}
-                  sx={{
-                    backgroundColor: theme.palette.secondary.main,
-                    color: theme.palette.secondary.contrastText,
-                  }}
-                >
-                  Passive Modules
-                </ListSubheader>
-              ) : null,
+              <MenuItem
+                key={key}
+                sx={{
+                  backgroundColor:
+                    idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
+                }}
+                value={module.code}
+                onMouseOut={() => onChange('', true, true)}
+                onMouseOver={() => onChange(module.code as MiningModuleEnum, true, true)}
+              >
+                <ModuleMenuItem moduleCode={key} />
+              </MenuItem>,
+            ]
+          }, [] as React.ReactNode[])}
+          <ListSubheader
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+            }}
+          >
+            Pssing Modules
+          </ListSubheader>
+          {passiveModules.reduce((acc, key, idx) => {
+            const module = loadoutLookups.modules[key as MiningModuleEnum] as MiningModule
+            if (module.active) return acc
+            return [
+              ...acc,
               <MenuItem
                 key={key}
                 sx={{

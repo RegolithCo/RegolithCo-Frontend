@@ -1,6 +1,6 @@
 #!/bin/bash
-set -e
-# set -x
+set -e # Exit with nonzero exit code if anything fails
+# set -x # Uncomment to debug this script
 
 if [ -z "${CLOUDFRONT_DISTRIBUTION}" ]; then
   echo "CLOUDFRONT_DISTRIBUTION is not set. Exiting."
