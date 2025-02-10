@@ -23,8 +23,11 @@ if (import.meta.env.MODE === 'development') {
    * @param authType
    */
   window.clearLookups = () => {
+    // Wipe away and re-fetch all the lookup data
     wipeLocalLookups()
   }
+
+  // Turn on extra logging
   window.toggleDevLogs = () => {
     if (log.getLevel() === log.levels.DEBUG) {
       log.setLevel(log.levels.INFO)
@@ -34,6 +37,14 @@ if (import.meta.env.MODE === 'development') {
       log.debug('Logging is set to DEBUG')
     }
   }
+
+  /**
+   * This function lets you impersonate users in the syste, THIS ONLY WORKS IN DEVELOPMENT
+   * AND ONLY WHEN YOU'RE RUNNING AGAINST A LOCALHOST API WITH DOCKER. Production and staging
+   * filter these headers out anyway.
+   * @param authId
+   * @param authType
+   */
   window.dev_user = (authId?: string, authType?: AuthTypeEnum) => {
     if (!authId) {
       delete DEV_HEADERS['dev_user']
