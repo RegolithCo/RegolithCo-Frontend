@@ -799,7 +799,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
                       },
                     }}
                   >
-                    Scan Bonus
+                    Score Bonus
                   </LongCellHeader>
                   {showExtendedStats && (
                     <LongCellHeader

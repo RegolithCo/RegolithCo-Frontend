@@ -1,3 +1,17 @@
+### February 11, 2025
+## 1.3.1 - Mining Loadout Calculator Updates for 4.0.1
+
+This is a small but vital update to the [loadout calculator](https://regolith.rocks/loadouts/calculator) and related tables. The mining loadout calculator has been broken for a while and the values were all from 3.23 so it was high time for an update. 
+
+- All module and laser stats have now been hooked up to **fetch from UEX API**. This should reduce the burden on regolith developers to maintain spreadsheets of stats and update them. It also puts the power to correct the tables in the user's hands through UEX's excellent data submission system.
+- **Module bonuses now stack** according to the latest PU behaviour in 4.0.1 (until they change it again and I have to **rewrite** it).
+- [Laser](https://regolith.rocks/loadouts/lasers) and [module](https://regolith.rocks/loadouts/modules) tables have been updated with the new table hotness. 
+- New **fullscreen mode** for the laser tables.
+
+If you see a number that looks wrong you can now submit a change to UEX (become a [data runner](https://uexcorp.space/data/home) today!) and Regolith will eventually consome that change.
+
+Many thanks to the Regolith data runners (lookin at you **Pomi,lightVen0m and Wellmeg7BR**) who tirelessly corrected so many of the values before this launch!
+
 ### February 7, 2025
 ## 1.2.4 - Lasers and Loadouts Rework
 

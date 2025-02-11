@@ -657,7 +657,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
                       },
                     }}
                   >
-                    Scan Bonus
+                    Score Bonus
                   </LongCellHeader>
                   {showExtendedStats && (
                     <LongCellHeader

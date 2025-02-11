@@ -164,7 +164,12 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
           <Link href="https://redmonstergaming.com/" target="_blank">
             original spreadsheet
           </Link>{' '}
-          with this data.
+          with this data. The current data is synched daily from UEX. If you see incorrect values let us know or you can
+          sign up to be a{' '}
+          <Link href="https://uexcorp.space/data/home" target="_blank">
+            UEX Data Runner
+          </Link>{' '}
+          and submit a report to get theme altered.
         </Typography>
       </>
     )

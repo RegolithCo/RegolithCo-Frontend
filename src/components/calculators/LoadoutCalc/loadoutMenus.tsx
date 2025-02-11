@@ -187,7 +187,7 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
               color: theme.palette.primary.contrastText,
             }}
           >
-            Pssing Modules
+            Passive Modules
           </ListSubheader>
           {passiveModules.reduce((acc, key, idx) => {
             const module = loadoutLookups.modules[key as MiningModuleEnum] as MiningModule
