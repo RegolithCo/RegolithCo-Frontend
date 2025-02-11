@@ -31,7 +31,8 @@ public/stats
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
-!.yarn/versions
+
+.yarn/versions
 
 # misc
 .DS_Store
