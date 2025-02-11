@@ -6,13 +6,13 @@ RUN apt-get update && apt-get install -y wget
 
 # Install Gatsby CLI and Yarn
 RUN npm install -g yarn dotenv-cli
+
 # Let's get the latest version of Yarn
 RUN corepack enable
 RUN yarn set version berry
 
 # Download .zshrc from remote address
-# RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 USER node
-RUN wget https://raw.githubusercontent.com/Riverscapes/environment/master/nar-ys.zsh-theme -O ~/.oh-my-zsh/custom/themes/nar-ys.zsh-theme
-RUN wget https://raw.githubusercontent.com/Riverscapes/environment/master/.aliases -O ~/.aliases
-RUN wget https://raw.githubusercontent.com/Riverscapes/environment/master/.zshrc -O ~/.zshrc
+COPY ./cfg/regolith-ys.zsh-theme ~/.oh-my-zsh/custom/themes/regolith-ys.zsh-theme
+COPY ./cfg/aliases ~/.aliases
+COPY ./cfg/zshrc ~/.zshrc

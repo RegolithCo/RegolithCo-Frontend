@@ -11,7 +11,7 @@
         "window.restoreWindows": "none"
       },
       "openFiles": [
-        "RegolithCo.code-workspace"
+        "RegolithCo-Frontend.code-workspace"
       ],
       "extensions": [
         "GitHub.copilot",
