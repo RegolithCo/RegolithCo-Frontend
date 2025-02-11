@@ -3,7 +3,7 @@ import { StoryFn, Meta } from '@storybook/react'
 
 import { ActivePopupMe as ActivePopupMeC, ActivePopupMeProps } from './ActivePopupMe'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
-import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/mock'
+import { fakeSession, fakeSessionUser, fakeUserProfile } from '@regolithco/common/dist/__mocks__'
 import { Session, SessionUser, User } from '@regolithco/common'
 import { useStorybookLookups } from '../../../hooks/useLookupStorybook'
 

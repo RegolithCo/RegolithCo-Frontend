@@ -8,7 +8,7 @@ import {
   fakeScoutingFinds,
   fakeShipClusterFind,
   fakeVehicleClusterFind,
-} from '@regolithco/common/dist/mock'
+} from '@regolithco/common/dist/__mocks__'
 import { Box } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 

@@ -7,7 +7,7 @@ import {
   fakeSCNameList,
   fakeSession,
   fakeUserProfile,
-} from '@regolithco/common/dist/mock'
+} from '@regolithco/common/dist/__mocks__'
 import { SessionContext, sessionContextDefault, SessionTabs } from '../../context/session.context'
 import { Session } from '@regolithco/common'
 import { useStorybookLookups } from '../../hooks/useLookupStorybook'

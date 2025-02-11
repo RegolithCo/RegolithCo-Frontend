@@ -7,7 +7,7 @@ import {
   fakeSalvageOrder,
   fakeShipMiningOrder,
   fakeVehicleMiningOrder,
-} from '@regolithco/common/dist/mock'
+} from '@regolithco/common/dist/__mocks__'
 import { ActivityEnum, WorkOrder } from '@regolithco/common'
 import { WorkOrderContext, workOrderContextDefaults } from '../../context/workOrder.context'
 import { useStorybookLookups } from '../../hooks/useLookupStorybook'

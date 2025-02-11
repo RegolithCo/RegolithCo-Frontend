@@ -5,7 +5,7 @@ import { WorkOrderAddFAB } from './WorkOrderAddFAB'
 import { ScoutingAddFAB } from './ScoutingAddFAB'
 import { Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { fakeSessionSettings } from '@regolithco/common/dist/mock'
+import { fakeSessionSettings } from '@regolithco/common/dist/__mocks__'
 import { ActivityEnum } from '@regolithco/common'
 
 export default {

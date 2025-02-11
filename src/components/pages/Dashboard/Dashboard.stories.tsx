@@ -2,7 +2,7 @@
 import { StoryFn, Meta } from '@storybook/react'
 
 import { Dashboard as DashboardC } from './Dashboard'
-// import { fakeUserProfile } from '@regolithco/common/dist/mock'
+// import { fakeUserProfile } from '@regolithco/common/dist/__mocks__'
 // import { User } from '@regolithco/common'
 // import log from 'loglevel'
 

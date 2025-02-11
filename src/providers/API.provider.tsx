@@ -1,14 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  HttpLink,
-  from,
-  NormalizedCacheObject,
-  split,
-  ApolloError,
-} from '@apollo/client'
+import React, { useMemo, useState } from 'react'
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, split, ApolloError } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
 import log from 'loglevel'
@@ -18,26 +9,45 @@ import {
   mergeSessionSettingsInplace,
   SessionSettings,
   SessionUser,
-  UserProfile,
-  UserStateEnum,
   SurveyData,
   scVersion,
   getEpochFromVersion,
 } from '@regolithco/common'
-import { StrictTypedTypePolicies, useGetUserProfileQuery } from '../schema'
+import { StrictTypedTypePolicies } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
-import { LoginContext, useOAuth2 } from './useOAuth2'
-import { LoginChoice } from '../components/modals/LoginChoice'
-import useLocalStorage from './useLocalStorage'
-import { LoginRefresh } from '../components/modals/LoginRefresh'
 import { devQueries, DEV_HEADERS } from '../lib/devFunctions'
-import { usePageVisibility } from './usePageVisibility'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { SnackbarKey, useSnackbar } from 'notistack'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
 import { DiscordIcon } from '../icons'
-import { CopyAll } from '@mui/icons-material'
+import { CopyAll, Replay } from '@mui/icons-material'
 import { fontFamilies } from '../theme'
+import { useOAuth2 } from '../hooks/useOAuth2'
+import { UserProfileProvider } from './UserProfile.provider'
+import { wipeLocalLookups } from '../lib/utils'
+
+const CURRENT_SC_VERSION = scVersion
+const CURRENT_SC_EPOCH = getEpochFromVersion(CURRENT_SC_VERSION)
+
+/**
+ * This is only here to show an error dialog provided by a snackbar
+ */
+export type ApolloErrorDialog = {
+  error: ApolloError
+  notisKey: SnackbarKey
+  timestamp: string
+  queryName: string
+}
+export type ApolloErrorDialogContext = {
+  errorDialog: ApolloErrorDialog | null
+  setErrorDialog: (error: ApolloErrorDialog | null) => void
+}
+export const ApolloErrorContext = React.createContext<ApolloErrorDialogContext>({
+  errorDialog: null,
+  setErrorDialog: () => {
+    throw new Error('Not implemented')
+  },
+})
 
 // Create HttpLinks for each endpoint
 const privateLink = new HttpLink({
@@ -71,29 +81,6 @@ const splitLink = split(
   publicLink,
   privateLink
 )
-
-const CURRENT_SC_VERSION = scVersion
-const CURRENT_SC_EPOCH = getEpochFromVersion(CURRENT_SC_VERSION)
-
-/**
- * This is only here to show an error dialog provided by a snackbar
- */
-export type ApolloErrorDialog = {
-  error: ApolloError
-  notisKey: SnackbarKey
-  timestamp: string
-  queryName: string
-}
-export type ApolloErrorDialogContext = {
-  errorDialog: ApolloErrorDialog | null
-  setErrorDialog: (error: ApolloErrorDialog | null) => void
-}
-export const ApolloErrorContext = React.createContext<ApolloErrorDialogContext>({
-  errorDialog: null,
-  setErrorDialog: () => {
-    throw new Error('Not implemented')
-  },
-})
 
 /**
  * The second component in the stack is the APIProvider. It sets up the Apollo client and passes it down to the next component
@@ -336,6 +323,18 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         </DialogContent>
         <DialogActions>
           <Button
+            startIcon={<Replay />}
+            color="info"
+            variant="contained"
+            size="large"
+            onClick={() => {
+              wipeLocalLookups()
+              window.location.reload()
+            }}
+          >
+            Try Reloading
+          </Button>
+          <Button
             startIcon={<CopyAll />}
             color="info"
             size="small"
@@ -378,123 +377,5 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         </UserProfileProvider>
       </ApolloErrorContext.Provider>
     </ApolloProvider>
-  )
-}
-
-interface UserProfileProviderProps {
-  children: React.ReactNode
-  apolloClient: ApolloClient<NormalizedCacheObject>
-  APIWorking?: boolean
-  maintenanceMode?: string
-}
-/**
- * Finallly, the third component in the stack goes and gets the user profile (if there is one)
- * @param param0
- * @returns
- */
-const UserProfileProvider: React.FC<UserProfileProviderProps> = ({
-  children,
-  apolloClient,
-  APIWorking,
-  maintenanceMode,
-}) => {
-  const { logOut, logIn, token, loginInProgress, authType, setAuthType, refreshPopupOpen, setRefreshPopupOpen } =
-    useOAuth2()
-  const [openPopup, setOpenPopup] = useState(false)
-  const isPageVisible = usePageVisibility()
-
-  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
-  const isAuthenticated = Boolean(token && token.length > 0)
-  const userProfileQry = useGetUserProfileQuery({
-    skip: !isAuthenticated,
-  })
-
-  // If the profile fails to fetch then try again in 5 seconds
-  React.useEffect(() => {
-    if (!isPageVisible || userProfileQry.loading || userProfileQry.data?.profile || !userProfileQry.error) {
-      userProfileQry.stopPolling()
-    }
-    if (!userProfileQry.data?.profile && userProfileQry.error) {
-      userProfileQry.startPolling(5000)
-    }
-    // Also stop polling when this component is unmounted
-    return () => {
-      userProfileQry.stopPolling()
-    }
-  }, [userProfileQry.data, userProfileQry.loading, userProfileQry.error])
-
-  useEffect(() => {
-    if (postLoginRedirect && isAuthenticated && Boolean(userProfileQry.data?.profile)) {
-      const newUrl = new URL(postLoginRedirect, window.location.origin)
-      setPostLoginRedirect(null)
-      window.location.href = newUrl.toString()
-    }
-  }, [postLoginRedirect, setPostLoginRedirect, userProfileQry])
-  useEffect(() => {
-    if (!token || (token.length === 0 && apolloClient)) {
-      // log.debug('User is not authenticated, clearing cache')
-      // Save the data you want to keep. This will save us having to redownload lookup data for unauthenticated users
-      // const dataToKeep = apolloClient.readQuery({ query: GetPublicLookupsDocument })
-      // // Clear the cache
-      // apolloClient.clearStore()
-      // // Write the data you want to keep back to the cache
-      // if (dataToKeep) {
-      //   apolloClient.writeQuery({ query: GetPublicLookupsDocument, data: dataToKeep })
-      // }
-    }
-  }, [token, apolloClient])
-
-  return (
-    <LoginContext.Provider
-      value={{
-        isAuthenticated,
-        APIWorking,
-        error: userProfileQry.error,
-        maintenanceMode,
-        isInitialized: Boolean(userProfileQry.data?.profile),
-        isVerified: Boolean(
-          userProfileQry.data?.profile?.userId && userProfileQry.data?.profile?.state === UserStateEnum.Verified
-        ),
-        userProfile: userProfileQry.data?.profile as UserProfile,
-        logIn,
-        refreshPopupOpen,
-        logOut: () => {
-          logOut()
-          log.debug('Signed out')
-          apolloClient.resetStore()
-        },
-        openPopup: (newLoginRedirect?: string) => {
-          // Set up a redirect for later look in <TopbarContainer /> for the code that actions this
-          // When the user returns
-          // I want the path relative to the base url using window.location.pathname
-          const relpath = window.location.pathname
-          setPostLoginRedirect(newLoginRedirect || relpath)
-
-          setOpenPopup(true)
-        },
-        refreshPopup: (
-          <LoginRefresh
-            open={refreshPopupOpen}
-            onClose={() => setRefreshPopupOpen(false)}
-            login={logIn}
-            logOut={logOut}
-            authType={authType}
-          />
-        ),
-        setRefreshPopupOpen: (isOpen: boolean) => setRefreshPopupOpen(isOpen),
-        popup: (
-          <LoginChoice
-            open={openPopup}
-            authType={authType}
-            setAuthType={setAuthType}
-            login={logIn}
-            onClose={() => setOpenPopup(false)}
-          />
-        ),
-        loading: loginInProgress || userProfileQry.loading,
-      }}
-    >
-      {children}
-    </LoginContext.Provider>
   )
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionJoin as SessionJoinComponent } from './SessionJoin'
-import { fakeSessionShare } from '@regolithco/common/dist/mock'
+import { fakeSessionShare } from '@regolithco/common/dist/__mocks__'
 
 export default {
   title: 'Pages/SessionJoin',

@@ -7,7 +7,7 @@ import {
   fakeVehicleMiningOrder,
   fakeSalvageOrder,
   fakeOtherOrder,
-} from '@regolithco/common/dist/mock'
+} from '@regolithco/common/dist/__mocks__'
 import log from 'loglevel'
 import { WorkOrder, RefineryMethodEnum, RefineryEnum, ActivityEnum } from '@regolithco/common'
 import { useStorybookLookups } from '../../../hooks/useLookupStorybook'

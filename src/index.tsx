@@ -5,7 +5,6 @@ import { ThemeProvider } from '@mui/material/styles'
 import { theme } from './theme'
 import reportWebVitals from './reportWebVitals'
 import log from 'loglevel'
-import { APIProvider } from './hooks/useLogin'
 import App from './App'
 import { SnackbarProvider } from 'notistack'
 import { MyAuthProvider } from './hooks/useOAuth2'
@@ -15,6 +14,7 @@ import { ErrorBoundary } from './Error'
 import { LookupsContextWrapper } from './context/lookupsContext'
 import config from './config'
 import { ScreenshareProvider } from './context/screenshare.context'
+import { APIProvider } from './providers/API.provider'
 
 if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan

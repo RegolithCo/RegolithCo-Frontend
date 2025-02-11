@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ActiveUserListItem as ActiveUserComponent, ActiveUserListItemProps } from './ActiveUserListItem'
-import { fakeSession, fakeSessionUser } from '@regolithco/common/dist/mock'
+import { fakeSession, fakeSessionUser } from '@regolithco/common/dist/__mocks__'
 import { List, Typography } from '@mui/material'
 import { Session, SessionUser, SessionUserStateEnum, User, UserStateEnum } from '@regolithco/common'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../../context/session.context'

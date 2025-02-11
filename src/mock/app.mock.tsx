@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { fakeUserProfile } from '@regolithco/common/dist/mock'
 import { AppContext, AppContextType } from '../context/app.context'
+import { fakeUserProfile } from '@regolithco/common/dist/__mocks__'
 
 const mockAppContext: AppContextType = {
   hideNames: false,

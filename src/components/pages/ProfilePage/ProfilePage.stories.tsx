@@ -2,7 +2,7 @@ import React from 'react'
 import { StoryFn, Meta } from '@storybook/react'
 
 import { ProfilePage as ProfilePageComponent } from './ProfilePage'
-import { fakeUserProfile, fakeVerifiedUserLookup } from '@regolithco/common/dist/mock'
+import { fakeUserProfile, fakeVerifiedUserLookup } from '@regolithco/common/dist/__mocks__'
 
 export default {
   title: 'Pages/ProfilePage',

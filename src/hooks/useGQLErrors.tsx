@@ -5,7 +5,8 @@ import log from 'loglevel'
 import { ErrorCode } from '@regolithco/common'
 import { IconButton } from '@mui/material'
 import { Close, Info } from '@mui/icons-material'
-import { ApolloErrorContext } from './useLogin'
+import { ApolloErrorContext } from '../providers/API.provider'
+
 /**
  * Just a handy hook to handle errors from queries and mutations
  *
