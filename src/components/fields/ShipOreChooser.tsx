@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { ShipOreEnum, getShipOreName } from '@regolithco/common'
+import { ShipOreEnum, getShipOreAbbrev } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { useShipOreColors } from '../../hooks/useShipOreColors'
 
@@ -89,7 +89,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
                 },
               }}
             >
-              {getShipOreName(shipOreKey).slice(0, 4)}
+              {getShipOreAbbrev(shipOreKey, 4)}
             </ToggleButton>
           </Grid>
         )

@@ -30,6 +30,7 @@ import {
   findPrice,
   FindSummary,
   getOreName,
+  getShipOreAbbrev,
   getShipOreName,
   jsRound,
   RockStateEnum,
@@ -143,6 +144,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
   sliderOreName: {
     fontFamily: fontFamilies.robotoMono,
+    textTransform: 'uppercase',
     fontWeight: 'bold',
   },
   icon: {
@@ -361,7 +363,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                   <TableBody>
                     {Object.entries(byOre || {}).map(([ore, { value: oreValue, volume: oreVolume }], idx) => (
                       <TableRow key={`tt-row-${idx}`}>
-                        <TableCell padding="none">{getShipOreName(ore as ShipOreEnum).slice(0, 4)}</TableCell>
+                        <TableCell padding="none">{getShipOreName(ore as ShipOreEnum)}</TableCell>
                         <TableCell padding="none" align="right">
                           <MValue value={oreVolume} />
                         </TableCell>
@@ -573,7 +575,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
                 >
                   <Box sx={{ flex: '1 0 10%' }}>
                     <Tooltip title={getOreName(ore.ore as AnyOreEnum)} placement="right">
-                      <Box sx={styles.sliderOreName}>{ore.ore?.slice(0, 4)}</Box>
+                      <Box sx={styles.sliderOreName}>{getShipOreAbbrev(ore.ore as ShipOreEnum, 4)}</Box>
                     </Tooltip>
                   </Box>
                   <Box sx={{ flex: '1 1 65%' }}>

@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { VehicleOreEnum, getVehicleOreName, findPrice } from '@regolithco/common'
+import { VehicleOreEnum, getVehicleOreName } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { blue, green } from '@mui/material/colors'
-import { LookupsContext } from '../../context/lookupsContext'
+import { useVehicleOreColors } from '../../hooks/useVehicleOreColors'
 
 export interface VehicleOreChooserProps {
   multiple?: boolean
@@ -26,45 +25,24 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
 }) => {
   const [selected, setSelected] = React.useState<VehicleOreEnum[]>(values || [])
   const theme = useTheme()
+  const vehicleOreColors = useVehicleOreColors()
   // If you pass undefined as values then it will be treated as an empty array
   // and we will treat this as buttons instead of toggle values
   const isToggleButtons = Array.isArray(values)
-  const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
-  const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
-  const fgColors = ['#000000', '#ffffff', '#ffffff']
-  // Sort descendng value
-
-  const dataStore = React.useContext(LookupsContext)
-
-  useEffect(() => {
-    const calcVehicleRowKeys = async () => {
-      const vehicleRowKeys = Object.values(VehicleOreEnum)
-      const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(dataStore, vehicleOreKey)))
-      const newSorted = [...vehicleRowKeys].sort((a, b) => {
-        const aPrice = prices[vehicleRowKeys.indexOf(a)]
-        const bPrice = prices[vehicleRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-      setSortedVehicleRowKeys(newSorted)
-    }
-    calcVehicleRowKeys()
-  }, [dataStore])
 
   return (
     <Grid container spacing={0.5}>
-      {sortedVehicleRowKeys.map((vehicleOreKey, rowIdx) => {
-        const fgc = fgColors[rowIdx]
-        const bgc = bgColors[rowIdx]
-        const active = isToggleButtons ? selected.includes(vehicleOreKey) : true
+      {vehicleOreColors.map(({ bg, fg, ore }, rowIdx) => {
+        const active = isToggleButtons ? selected.includes(ore) : true
         return (
           <Grid xs={3} key={`grid-${rowIdx}`}>
             <ToggleButton
-              value={vehicleOreKey}
+              value={ore}
               fullWidth
               tabIndex={-1}
               selected={active}
               size="small"
-              key={`tbutt-${vehicleOreKey}`}
+              key={`tbutt-${ore}`}
               onClick={(e, value) => {
                 onClick && onClick(value)
               }}
@@ -73,12 +51,12 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 if (isToggleButtons) {
                   if (!active) {
                     if (multiple) {
-                      newValue = [...selected, vehicleOreKey]
+                      newValue = [...selected, ore]
                     } else {
-                      newValue = [vehicleOreKey]
+                      newValue = [ore]
                     }
                   } else {
-                    newValue = selected.filter((v) => v !== vehicleOreKey)
+                    newValue = selected.filter((v) => v !== ore)
                   }
                   if (requireValue && newValue.length === 0) {
                     return
@@ -88,9 +66,9 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 onChange && onChange(newValue)
               }}
               sx={{
-                backgroundColor: alpha(bgc, 0.4),
+                backgroundColor: alpha(bg, 0.4),
                 border: '2px solid transparent',
-                color: fgc,
+                color: fg,
                 fontSize: {
                   xs: 12,
                   sm: 12,
@@ -103,13 +81,13 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                   opacity: 1,
                 },
                 '&.Mui-selected, &.Mui-selected:hover': {
-                  color: fgc,
+                  color: fg,
                   border: '2px solid white',
-                  backgroundColor: bgc,
+                  backgroundColor: bg,
                 },
               }}
             >
-              {getVehicleOreName(vehicleOreKey)}
+              {getVehicleOreName(ore)}
             </ToggleButton>
           </Grid>
         )
@@ -131,8 +109,8 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 p: 0,
               }}
               onChange={() => {
-                setSelected(sortedVehicleRowKeys)
-                onChange && onChange(sortedVehicleRowKeys)
+                setSelected(vehicleOreColors.map((v) => v.ore))
+                onChange && onChange(vehicleOreColors.map((v) => v.ore))
               }}
             >
               All

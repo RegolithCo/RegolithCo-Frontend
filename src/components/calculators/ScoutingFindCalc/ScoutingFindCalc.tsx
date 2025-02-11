@@ -22,6 +22,7 @@ import {
   Tooltip,
   Checkbox,
   Link,
+  useTheme,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -69,6 +70,7 @@ import { ShipRockEntryModal } from '../../modals/ShipRockEntryModal'
 import { SalvageWreckEntryModal } from '../../modals/SalvageWreckEntryModal'
 import { GravityWellChooser } from '../../fields/GravityWellChooser'
 import { SurveyScore } from './SurveyScore'
+import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -140,6 +142,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     fontWeight: 'bold',
   },
   numberBox: {
+    cursor: 'pointer',
     position: 'relative',
     textAlign: 'center',
     mt: 3,
@@ -172,6 +175,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   editButton: {
     position: 'absolute',
     top: -2,
+    textTransform: 'uppercase',
     color: theme.palette.primary.main,
     fontSize: 10,
     right: '50%',
@@ -188,14 +192,6 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     transform: 'translate(-50%, -50%)',
     textTransform: 'uppercase',
     fontWeight: 'bold',
-  },
-  gemName: {
-    color: theme.palette.primary.main,
-    textShadow: '1px 1px 3px #000, -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000',
-    fontSize: 30,
-    textTransform: 'uppercase',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   statsTable: {
     maxWidth: 340,
@@ -390,7 +386,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
       // scanComplete = hasScans && hasCount && vehicleFind.vehicleRocks.length === scoutingFind.clusterCount
       numScans = hasScans ? vehicleFind.vehicleRocks.length : 0
       Icon = GemIcon
-      itemName = plural ? 'Gems' : 'Gem'
+      itemName = plural ? 'Rocks' : 'Rock'
       break
   }
 
@@ -430,7 +426,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume
-
   return (
     <>
       <Grid
@@ -473,7 +468,12 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         <Grid container spacing={{ xs: 0, sm: 2 }} padding={{ xs: 0, sm: 2 }} xs={12}>
           {/* Hero card */}
           <Grid xs={12} sm={3} sx={styles.topRowGrid}>
-            <Box sx={styles.numberBox}>
+            <Box
+              sx={styles.numberBox}
+              onClick={() => {
+                enableEditButton && setEditCountModalOpen(true)
+              }}
+            >
               <Typography sx={styles.itemName}>{itemName}</Typography>
               <Badge overlap="circular" badgeContent={<Icon />} sx={styles.clusterCountBadge}>
                 <Avatar
@@ -483,25 +483,18 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   }}
                 >
                   {scoutingFind.clusterCount || 1}
-                  {enableEditButton && (
-                    <Button
-                      size="small"
-                      sx={styles.editButton}
-                      onClick={() => {
-                        setEditCountModalOpen(true)
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  )}
+                  {enableEditButton && <Typography sx={{ ...styles.editButton }}>Edit</Typography>}
                 </Avatar>
               </Badge>
             </Box>
-            {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle &&
-              vehicleFind.vehicleRocks[0] &&
-              vehicleFind.vehicleRocks[0].ores[0] && (
-                <Typography sx={styles.gemName}>{vehicleFind.vehicleRocks[0].ores[0].ore}</Typography>
-              )}
+            {scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle && (
+              <VehicleOreName
+                vehicleFind={vehicleFind}
+                onClick={() => {
+                  enableEditButton && setEditCountModalOpen(true)
+                }}
+              />
+            )}
             {!standalone && !isShare && (
               <Box>
                 <Typography
@@ -988,5 +981,34 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
         }}
       />
     </>
+  )
+}
+
+const VehicleOreName: React.FC<{ vehicleFind: VehicleClusterFind; onClick: () => void }> = ({
+  vehicleFind,
+  onClick,
+}) => {
+  const theme = useTheme()
+  const vehicleOreColors = useVehicleOreColors()
+  if (!vehicleFind.vehicleRocks[0]) return null
+  if (!vehicleFind.vehicleRocks[0].ores[0]) return null
+  const vehicleOreColor = vehicleOreColors.find((c) => c.ore === vehicleFind.vehicleRocks[0].ores[0].ore)
+  return (
+    <Button
+      onClick={onClick}
+      sx={{
+        fontSize: theme.typography.h6.fontSize,
+        margin: 0,
+        padding: 0,
+        textTransform: 'uppercase',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        backgroundColor: vehicleOreColor?.bg,
+        color: vehicleOreColor?.fg,
+      }}
+      variant="outlined"
+    >
+      {vehicleFind.vehicleRocks[0].ores[0].ore}
+    </Button>
   )
 }

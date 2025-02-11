@@ -13,7 +13,15 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { AnyOreEnum, OreSummary, StoreChoice, getOreName, Lookups, GravityWellTypeEnum } from '@regolithco/common'
+import {
+  AnyOreEnum,
+  OreSummary,
+  StoreChoice,
+  getOreName,
+  Lookups,
+  GravityWellTypeEnum,
+  getOreAbbrev,
+} from '@regolithco/common'
 import { MValueFormat } from '../fields/MValue'
 import { MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
@@ -64,12 +72,12 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   const oreSecondaries = React.useMemo(() => {
     return Object.keys(ores).map((ore, index) => {
       const found = !cityStores.missingOres.includes(ore as AnyOreEnum)
-      const oreName = getOreName(ore as AnyOreEnum)
+      const oreName = compact ? getOreAbbrev(ore as AnyOreEnum, 4) : getOreName(ore as AnyOreEnum)
       return (
         <Tooltip key={`tt-${index}`} title={found ? `${oreName} can be sold here` : `${oreName} cannot be sold here`}>
           <Chip
             key={index}
-            label={compact ? oreName.slice(0, 4) : oreName}
+            label={oreName}
             size="small"
             sx={{
               ...styles.tinyChips,

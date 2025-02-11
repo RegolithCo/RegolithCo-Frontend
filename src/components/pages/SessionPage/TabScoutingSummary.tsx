@@ -74,11 +74,19 @@ export const TabScoutingSummary: React.FC<TabScoutingSummaryProps> = ({ session,
         return sortOrder === 'asc' ? a.score - b.score : b.score - a.score
       } else return 0
     })
-    return table
+    return table.filter((row) => row.scans > 0 || row.clusterCount > 0 || row.score > 0)
   }, [session, sortBy, sortOrder])
 
   const noScores = dataTable.every((row) => row.score === 0)
-
+  if (dataTable.length === 0) {
+    return (
+      <Box sx={{ p: 5 }}>
+        <Typography variant="h5" align="center">
+          No scouting data available
+        </Typography>
+      </Box>
+    )
+  }
   return (
     <Box sx={{ p: 5 }}>
       <TableContainer>

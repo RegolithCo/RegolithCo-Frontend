@@ -3,6 +3,7 @@ import * as React from 'react'
 import {
   ActivityEnum,
   getRefineryName,
+  getShipOreAbbrev,
   getShipOreName,
   makeHumanIds,
   RefineryEnum,
@@ -353,7 +354,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                     const ore = order.shipOres.find((ore) => ore.ore === color.ore)
                                     if (!ore || ore.amt <= 0) return null
                                     const finalAmt = lookupVal.oreSummary[ore.ore]?.refined || ore.amt
-                                    const label = `${getShipOreName(ore.ore).slice(0, 4)}: ${Math.ceil(finalAmt / 100)} SCU`
+                                    const label = `${getShipOreAbbrev(ore.ore, 4)}: ${Math.ceil(finalAmt / 100)} SCU`
                                     const labelLong = `${getShipOreName(ore.ore)}: ${Math.ceil(finalAmt / 100)} SCU`
                                     return (
                                       <Grid2 key={ore.ore}>
