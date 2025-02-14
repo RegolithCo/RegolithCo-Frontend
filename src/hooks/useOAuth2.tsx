@@ -5,6 +5,9 @@ import useLocalStorage from './useLocalStorage'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
 import config from '../config'
+import axios from 'axios'
+import dayjs from 'dayjs'
+import { enqueueSnackbar } from 'notistack'
 
 let redirectUri: string = ''
 switch (import.meta.env.MODE) {
@@ -39,6 +42,10 @@ type UseOAuth2Return = IAuthContext & {
   setRefreshPopupOpen: (open: boolean) => void
 }
 
+const getExpiryTs = (expiresIn: number, shortenMin: number): number =>
+  // Set the expiry time to the current time plus the expiry time minus the shorten time
+  Date.now() + expiresIn * 1000 - shortenMin * 60 * 1000
+
 /**
  * This is a hook we use inside useLogin() to get the OAuth2 context
  * @returns
@@ -48,28 +55,81 @@ export const useOAuth2 = (): UseOAuth2Return => {
     useContext(LoginContextWrapper)
   const { tokenData, token, logIn, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
     useContext(AuthContext)
-  const googleTimerRef = React.useRef<NodeJS.Timeout>()
 
   const googleLogin = React.useCallback(
     useGoogleLogin({
-      onSuccess: (tokenResponse) => {
-        if (tokenResponse.access_token) {
-          if (refreshPopupOpen) setRefreshPopupOpen(false) // just in case
-          setGoogleToken(tokenResponse.access_token, tokenResponse.expires_in)
+      flow: 'auth-code',
+      onSuccess: async (tokenResponse) => {
+        try {
+          // Step 2: Send auth code to regolith backend for token exchange
+          // Note that it sues the same endpoint as the refresh token below
+          await axios
+            .post(config.googleAuth, {
+              authCode: tokenResponse.code,
+            })
+            .then((res) => {
+              const expiryTs = Date.now() + res.data.expires_in * 1000
+              // if the expiry is in the past then we have a problem
+              if (expiryTs < Date.now()) {
+                enqueueSnackbar('Error logging in with Google. Please try again.', { variant: 'error' })
+                log.error('Token expired before it was even set')
+                setGoogleToken(null)
+                logOut()
+              } else {
+                setGoogleToken({
+                  accessToken: res.data.access_token as string,
+                  refreshToken: res.data.refresh_token as string,
+                  expiryTs: getExpiryTs(res.data.expires_in, 5),
+                })
+                enqueueSnackbar('Successfully logged in with Google', { variant: 'success' })
+              }
+            })
+        } catch (error) {
+          enqueueSnackbar('Error logging in with Google. Please try again.', { variant: 'error' })
+          log.error('Error exchanging code for token:', error)
+          logOut()
         }
       },
+      onError: (error) => log.error('Google Login Failed:', error),
     }),
     [googleToken, setGoogleToken]
   )
 
+  // Step 3: Refresh token before access token expires
   React.useEffect(() => {
-    if (googleTimerRef.current) clearTimeout(googleTimerRef.current)
-    if (googleToken[1] && googleToken[1] > Date.now()) {
-      googleTimerRef.current = setTimeout(() => {
-        googleLogout()
-        setGoogleToken()
-        setRefreshPopupOpen(true)
-      }, googleToken[1] - Date.now())
+    if (!googleToken || !googleToken.refreshToken) return
+    const refreshAccessToken = async () => {
+      log.debug('Refreshing Google token', googleToken)
+      await axios
+        .post(config.googleAuth, { refreshToken: googleToken.refreshToken })
+        .then((res) => {
+          log.debug(`Refreshed Google token at ${dayjs().format('YYYY-MM-DD HH:mm:ss')} for ${googleToken}`, res.data)
+          if (!res.data.access_token) {
+            enqueueSnackbar('Error refreshing token. Please log in again.', { variant: 'error' })
+            throw new Error('No access token in response')
+          }
+          setGoogleToken({
+            accessToken: res.data.access_token,
+            refreshToken: res.data.refresh_token,
+            expiryTs: getExpiryTs(res.data.expires_in, 5),
+          })
+        })
+        .catch((error) => {
+          enqueueSnackbar('Error refreshing token. Please log in again.', { variant: 'error' })
+          log.error('Error refreshing token:', error.response?.data || error.message)
+          logOut()
+        })
+    }
+
+    // Refresh token 5 minutes before it's set to expire
+    const intervalValue = googleToken.expiryTs - Date.now() - 5 * 60 * 1000 // Set a timer for 5 minutes before expiry
+
+    if (googleToken.expiryTs < Date.now()) {
+      // If the token is already expired, refresh it immediately
+      refreshAccessToken()
+    } else {
+      const intervalObj = setInterval(refreshAccessToken, intervalValue)
+      return () => clearInterval(intervalObj)
     }
   }, [googleToken])
 
@@ -84,7 +144,7 @@ export const useOAuth2 = (): UseOAuth2Return => {
   }
   // Just do both.
   const fancyLogout = async () => {
-    setGoogleToken()
+    setGoogleToken(null)
     googleLogout()
     logOut()
     // Clear the localcache
@@ -100,7 +160,7 @@ export const useOAuth2 = (): UseOAuth2Return => {
       throw new Error('DEPPRECATED LOGIN')
     },
     tokenData,
-    token: authType === AuthTypeEnum.Google ? googleToken[0] : token,
+    token: authType === AuthTypeEnum.Google ? (googleToken?.accessToken as string) : token,
     error,
     idToken,
     authType,
@@ -113,11 +173,13 @@ export const useOAuth2 = (): UseOAuth2Return => {
   }
 }
 
+type GoogleTokenObject = { accessToken: string; refreshToken: string; expiryTs: number }
+
 type LoginSwitcherObj = {
   authType: AuthTypeEnum
   setAuthType: (authType: AuthTypeEnum) => void
-  googleToken: [token: string, expiry: number | null]
-  setGoogleToken: (token?: string, expiry?: number) => void
+  googleToken: GoogleTokenObject | null
+  setGoogleToken: (obj: GoogleTokenObject | null) => void
   refreshPopupOpen: boolean
   setRefreshPopupOpen: (open: boolean) => void
 }
@@ -131,8 +193,8 @@ export const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
   setAuthType: () => {
     //
   },
-  googleToken: ['', null],
-  setGoogleToken: (token?: string, expiry?: number) => {
+  googleToken: null,
+  setGoogleToken: (obj: GoogleTokenObject | null) => {
     //
   },
 })
@@ -146,10 +208,11 @@ export const LoginContextWrapper = React.createContext<LoginSwitcherObj>({
 export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Instead of state the authType is stored in local storage next to the other pkce keys.
   // This should persist the key with the other choices
+
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum>('ROCP_AuthType', AuthTypeEnum.Discord)
   const [authType, _setAuthType] = React.useState<AuthTypeEnum>(authTypeLS)
   const [refreshPopupOpen, setRefreshPopupOpen] = useState(false)
-  const [googleToken, _setGoogleToken] = useLocalStorage<[string, number | null]>('ROCP_GooToken', ['', null])
+  const [googleToken, _setGoogleToken] = useLocalStorage<GoogleTokenObject | null>('ROCP_GooToken', null)
 
   const setAuthType = (newAuthType: AuthTypeEnum) => {
     setAuthTypeLS(newAuthType)
@@ -173,9 +236,8 @@ export const MyAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) 
         googleToken,
         refreshPopupOpen,
         setRefreshPopupOpen,
-        setGoogleToken: (newToken?: string, expiry?: number) => {
-          const expires = expiry ? Date.now() + expiry * 1000 : null
-          _setGoogleToken([newToken || '', expires])
+        setGoogleToken: (obj: GoogleTokenObject | null) => {
+          _setGoogleToken(obj)
         },
       }}
     >

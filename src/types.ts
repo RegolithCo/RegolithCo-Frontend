@@ -6,6 +6,7 @@ export type Config = {
   stage: string
   apiUrlPub: string
   shareUrl: string
+  googleAuth: string
   googleClientId: string
   discordClientId: string
 }

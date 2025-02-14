@@ -10,6 +10,7 @@ const config: Config =
         apiUrl: import.meta.env.VITE_API_URL,
         stage: import.meta.env.VITE_STAGE,
         apiUrlPub: import.meta.env.VITE_API_URL_PUB,
+        googleAuth: import.meta.env.VITE_GOOGLE_AUTH,
         shareUrl: import.meta.env.VITE_SHARE_URL,
         googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
         discordClientId: import.meta.env.VITE_DISCORD_CLIENT_ID,

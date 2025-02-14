@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "dotenv -e .env.staging vite --mode staging",
+    "start:local": "dotenv -e .env.local vite --mode development",
     "build": "./scripts/fancyBuild.sh",
     "deploy": "./scripts/deploy.sh",
     "build:staging": "dotenv -e .env.staging -- ./scripts/fancyBuild.sh",
