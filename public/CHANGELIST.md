@@ -1,3 +1,12 @@
+### February 15, 2025
+## 1.3.2 - Google Auth Fix!
+
+This is a major rework of the authentication system that aims to fix some of the issues people were having, especially with Google Auth.
+
+- Google Auth should now refresh properly so you don't have to refresh it every hour
+- "Report Bug" Menu item added. Now you can report a bug directly from the app and it gets combined with a bunch of sexy context data, stack traces etc. to help us figure out what's going on.
+- Error reporting stack added. Hopefully this will let us track the issues people are having even if they aren't reported.
+
 ### February 11, 2025
 ## 1.3.1 - Mining Loadout Calculator Updates for 4.0.1
 
