@@ -50,39 +50,51 @@ export const OAuth2Provider: React.FC<React.PropsWithChildren> = ({ children }) 
     }
   }, [postLoginRedirect, setPostLoginRedirect])
 
-  return (
-    <LoginContext.Provider
-      value={{
-        authType: authTypeLS,
-        setAuthType: (authType: AuthTypeEnum | null) => {
-          setAuthTypeLS(authType)
-          if (!authType) {
-            wipeAuthStorage()
-          }
-        },
-        popupOpen,
-        postLoginRedirect,
-        closePopup: () => setPopupOpen(false),
-        setPopupOpen: (redirectUrl?: string) => {
-          log.debug(`Setting popup open with redirect: ${redirectUrl}`)
-          if (redirectUrl) setPostLoginRedirect(redirectUrl)
-          else setPostLoginRedirect(null)
-          setPopupOpen(true)
-        },
+  const authorizer = React.useMemo(() => {
+    switch (authTypeLS) {
+      case AuthTypeEnum.Discord:
+        return <DiscordAuthProvider setInnerState={setInnerState} />
+      case AuthTypeEnum.Google:
+        return <GoogleAuthProvider setInnerState={setInnerState} />
+      default:
+        return null
+    }
+  }, [authTypeLS, setInnerState])
 
-        // These get populated from within the LoginProvider
-        ...innerState,
-        authLogOut: () => {
-          innerState.authLogOut?.()
-          setInnerState(DEFAULT_INNER_LOGIN_CONTEXT)
-          setAuthTypeLS(null)
-          wipeAuthStorage()
-        },
-      }}
-    >
-      {authTypeLS === AuthTypeEnum.Discord ? <DiscordAuthProvider setInnerState={setInnerState} /> : null}
-      {authTypeLS === AuthTypeEnum.Google ? <GoogleAuthProvider setInnerState={setInnerState} /> : null}
-      {children}
-    </LoginContext.Provider>
+  return (
+    <>
+      {authorizer}
+      <LoginContext.Provider
+        value={{
+          authType: authTypeLS,
+          setAuthType: (authType: AuthTypeEnum | null) => {
+            setAuthTypeLS(authType)
+            if (!authType) {
+              wipeAuthStorage()
+            }
+          },
+          popupOpen,
+          postLoginRedirect,
+          closePopup: () => setPopupOpen(false),
+          setPopupOpen: (redirectUrl?: string) => {
+            log.debug(`Setting popup open with redirect: ${redirectUrl}`)
+            if (redirectUrl) setPostLoginRedirect(redirectUrl)
+            else setPostLoginRedirect(null)
+            setPopupOpen(true)
+          },
+
+          // These get populated from within the LoginProvider
+          ...innerState,
+          authLogOut: () => {
+            innerState.authLogOut?.()
+            setInnerState(DEFAULT_INNER_LOGIN_CONTEXT)
+            setAuthTypeLS(null)
+            wipeAuthStorage()
+          },
+        }}
+      >
+        {children}
+      </LoginContext.Provider>
+    </>
   )
 }

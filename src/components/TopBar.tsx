@@ -23,6 +23,7 @@ import {
 import { fontFamilies } from '../theme'
 import {
   AccountCircle,
+  BugReport,
   Calculate,
   Celebration,
   Coffee,
@@ -58,6 +59,7 @@ import { ProfileTabsEnum } from './pages/ProfilePage'
 import { Link } from 'react-router-dom'
 import { ScreenshareContext } from '../context/screenshare.context'
 import { LoginContext, UserProfileContext } from '../context/auth.context'
+import { feedbackIntegration } from '@sentry/react'
 
 export type MenuItemType = {
   path?: string
@@ -213,6 +215,29 @@ export const TopBar: React.FC = () => {
       name: 'About',
       icon: <Info />,
       children: [
+        {
+          name: 'Report a bug',
+          icon: <BugReport />,
+          action: async () => {
+            const feedback = feedbackIntegration({
+              colorScheme: 'dark',
+              showEmail: false,
+              isNameRequired: true,
+              isEmailRequired: false,
+              nameLabel: 'RSI Username',
+              namePlaceholder: 'miner-joe',
+              messagePlaceholder:
+                "What's the bug? What did you do to cause it? What did you expect? What happened instead?",
+              // messagePlaceholder
+              // Disable the injection of the default widget
+              autoInject: false,
+            })
+            const form = await feedback.createForm()
+            form.appendToDom()
+            form.open()
+          },
+        },
+        { isDivider: true },
         { path: '/about/general', name: 'About Regolith Co.', icon: <Info /> },
         { isDivider: true },
         { path: '/about/acknowledgements', name: 'Acknowledgements', icon: <Celebration /> },

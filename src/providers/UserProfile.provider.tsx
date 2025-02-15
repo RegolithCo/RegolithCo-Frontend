@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { UserStateEnum } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { usePageVisibility } from '../hooks/usePageVisibility'
 import { LoginContext, UserProfileContext } from '../context/auth.context'
+import * as Sentry from '@sentry/react'
 
 /**
  * Finallly, the third component in the stack goes and gets the user profile (if there is one)
@@ -16,6 +17,16 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
   const userProfileQry = useGetUserProfileQuery({
     skip: !isAuthenticated || loginLoading,
   })
+
+  useEffect(() => {
+    Sentry.setTag('Authenticated', isAuthenticated)
+    if (isAuthenticated && userProfileQry.data?.profile) {
+      Sentry.setUser({
+        id: userProfileQry.data?.profile?.userId,
+        username: userProfileQry.data?.profile?.scName,
+      })
+    }
+  }, [isAuthenticated, userProfileQry.data])
 
   // If the profile fails to fetch then try again in 5 seconds
   React.useEffect(() => {

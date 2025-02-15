@@ -2,6 +2,27 @@
 import { Config } from './types'
 
 // const is_dev = import.meta.env.MODE === 'development'
+export const getVersions = (): {
+  appVersion: string
+  commit: string
+  stage: string
+} => {
+  let appVersion = '0.0.0'
+  let commit = '0000000'
+  let stage = 'dev'
+  try {
+    appVersion = document.querySelector<HTMLMetaElement>('meta[name=version]')?.content || '0.0.0'
+    commit = document.querySelector<HTMLMetaElement>('meta[name=commit]')?.content || '0000000'
+    stage = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content || 'dev'
+  } catch (e) {
+    console.error(e)
+  }
+  return {
+    appVersion,
+    commit,
+    stage,
+  }
+}
 
 const config: Config =
   (window as any).CLIENT_CONFIG && !(window as any).CLIENT_CONFIG.note

@@ -2,6 +2,7 @@ import { ApolloLink, ServerError } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
 import { RetryLink } from '@apollo/client/link/retry'
 import { ErrorCode } from '@regolithco/common'
+import * as Sentry from '@sentry/react'
 
 // Log any GraphQL errors or network error that occurred
 export const retryLink = new RetryLink({
@@ -82,18 +83,42 @@ export type ErrorLinkThunk = (args: {
   logOut?: () => void
 }) => ApolloLink
 
+export class GQLError extends Error {
+  constructor(
+    qryName: string,
+    qryType: string,
+    message: string,
+    public details: Record<string, unknown>
+  ) {
+    super(message)
+    this.name = `GQLError ${qryType.toUpperCase()}::${qryName}`
+    Object.setPrototypeOf(this, GQLError.prototype)
+  }
+}
+
 export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorking, logOut }) =>
   onError(({ graphQLErrors, networkError, forward, operation }) => {
     if (graphQLErrors) {
-      // Wer handle this in useGQLErrors instead
-      // graphQLErrors.forEach((error) => {
-      //   if (ExceptList.includes(error.extensions.code as ErrorCode)) return
-      //   console.error(`❌ [GraphQL error]: ${JSON.stringify(error, null, 2)}`)
-      // })
+      const queryBody = operation.query.loc?.source.body
+      const queryMatch = queryBody?.match(/(query|mutation|document) (\w+).+/)
+      const [_wholeMatch, qryType, name] = queryMatch || []
+      graphQLErrors.forEach(({ message, locations, path }) => {
+        Sentry.captureException(
+          new GQLError(name, qryType, message, {
+            locations,
+            path,
+            operation,
+          }),
+          {
+            extra: { locations, path, operation, variables: operation.variables },
+          }
+        )
+      })
     }
     if (networkError) {
       try {
         const result = (networkError as ServerError).result
+        Sentry.captureException(networkError) // Capture the error with Sentry
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((result as Record<string, any>).extensions.code === ErrorCode.MAINENANCE_MODE) {
           setMaintenanceMode && setMaintenanceMode((result as Record<string, string>).message)

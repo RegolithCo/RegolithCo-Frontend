@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { AuthProvider, AuthContext, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import { getRedirectUrl } from './OAuth2.provider'
 import config from '../config'
-import { InnerLoginContextObj } from '../context/auth.context'
+import { InnerLoginContextObj, LoginContext } from '../context/auth.context'
 
 const getDiscordConfig = (): TAuthConfig => ({
   clientId: config.discordClientId,
@@ -25,13 +25,15 @@ export const DiscordAuthInner: React.FC<{ setInnerState: (obj: InnerLoginContext
   const { token, logIn, logOut, loginInProgress }: IAuthContext = useContext(AuthContext)
 
   useEffect(() => {
-    setInnerState({
+    const newState = {
       isAuthenticated: Boolean(token),
       loading: loginInProgress,
       token: token,
       authLogIn: logIn,
       authLogOut: logOut,
-    })
+    }
+    // Compare newState with outerCtx and only call setInnerState if they don't match
+    setInnerState(newState)
   }, [token, logIn, logOut, loginInProgress])
 
   return null
@@ -46,8 +48,9 @@ export const DiscordAuthInner: React.FC<{ setInnerState: (obj: InnerLoginContext
 export const DiscordAuthProvider: React.FC<{ setInnerState: (obj: InnerLoginContextObj) => void }> = ({
   setInnerState,
 }) => {
+  const discordConfig = React.useMemo(() => getDiscordConfig(), [])
   const discordAuth: TAuthConfig = {
-    ...getDiscordConfig(),
+    ...discordConfig,
     onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => {},
   }
 

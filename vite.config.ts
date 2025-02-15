@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import fs from 'fs'
 import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
   build: {
     outDir: 'build',
     sourcemap: true,
@@ -21,5 +21,14 @@ export default defineConfig(({ mode }) => ({
     //   cert: fs.readFileSync(path.resolve(__dirname, '.ssl/cert.pem')),
     // },
   },
+  plugins: [
+    react(),
+    // Put the Sentry vite plugin after all other plugins
+    sentryVitePlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      org: 'regolith-co',
+      project: 'regolith',
+    }),
+  ],
   logLevel: 'info', // Enable detailed logging
 }))

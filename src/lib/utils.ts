@@ -26,6 +26,7 @@ export const downloadFile = (data: string, finalFileName: string, fileType: stri
  */
 export const wipeAuthStorage = () => {
   deleteKeysWithPrefix('ROCP_')
+  deleteKeysWithPrefix('PKCE_')
   localStorage.removeItem('redirect_url')
 }
 

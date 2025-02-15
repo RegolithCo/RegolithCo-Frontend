@@ -1,5 +1,6 @@
 import { scVersion } from '@regolithco/common'
 import * as React from 'react'
+import { getVersions } from '../config'
 
 export type AppVersion = {
   appVersion: string
@@ -19,9 +20,8 @@ export const useVersions = () => {
   })
 
   React.useEffect(() => {
-    const appVersion = document.querySelector<HTMLMetaElement>('meta[name=version]')?.content
-    const commit = document.querySelector<HTMLMetaElement>('meta[name=commit]')?.content
-    const stage = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
+    const { appVersion, commit, stage } = getVersions()
+
     setVersion({
       appVersion: !appVersion || appVersion === '%VERSION%' ? '0.0.0' : appVersion,
       scVersion,
