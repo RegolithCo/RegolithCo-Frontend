@@ -1,8 +1,7 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { UserStateEnum } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { usePageVisibility } from '../hooks/usePageVisibility'
-import useLocalStorage from '../hooks/useLocalStorage'
 import { LoginContext, UserProfileContext } from '../context/auth.context'
 
 /**
@@ -13,8 +12,6 @@ import { LoginContext, UserProfileContext } from '../context/auth.context'
 export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { isAuthenticated, loading: loginLoading } = useContext(LoginContext)
   const isPageVisible = usePageVisibility()
-
-  const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
 
   const userProfileQry = useGetUserProfileQuery({
     skip: !isAuthenticated || loginLoading,
@@ -33,14 +30,6 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
       userProfileQry.stopPolling()
     }
   }, [userProfileQry.data, userProfileQry.loading, userProfileQry.error])
-
-  // useEffect(() => {
-  //   if (postLoginRedirect && isAuthenticated && !loginLoading && Boolean(userProfileQry.data?.profile)) {
-  //     const newUrl = new URL(postLoginRedirect, window.location.origin)
-  //     setPostLoginRedirect(null)
-  //     window.location.href = newUrl.toString()
-  //   }
-  // }, [postLoginRedirect, setPostLoginRedirect, userProfileQry])
 
   return (
     <UserProfileContext.Provider

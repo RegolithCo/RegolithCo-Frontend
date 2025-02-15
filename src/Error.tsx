@@ -1,6 +1,5 @@
 import React from 'react'
 import { useRouteError } from 'react-router-dom'
-import { BrowserRouter as Router } from 'react-router-dom'
 import log from 'loglevel'
 import { Typography, Container, Button, Divider } from '@mui/material'
 import { Box, Stack } from '@mui/system'
@@ -19,7 +18,7 @@ export function ErrorPage() {
   const error: any = useRouteError()
   log.error(error)
 
-  return <GenericError error={error as Error} errorInfo={error?.info as React.ErrorInfo} />
+  return <GenericErrorPage error={error as Error} errorInfo={error?.info as React.ErrorInfo} />
 }
 
 export interface GenericErrorProps {
@@ -27,7 +26,7 @@ export interface GenericErrorProps {
   errorInfo: React.ErrorInfo
 }
 
-export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) => {
+export const GenericErrorPage: React.FC<GenericErrorProps> = ({ error, errorInfo }) => {
   const { enqueueSnackbar } = useSnackbar()
 
   const handleReload = () => {
@@ -121,7 +120,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      return <GenericError error={this.state.error as Error} errorInfo={this.state.errorInfo as React.ErrorInfo} />
+      return <GenericErrorPage error={this.state.error as Error} errorInfo={this.state.errorInfo as React.ErrorInfo} />
     }
 
     return this.props.children

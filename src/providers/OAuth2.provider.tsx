@@ -1,16 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { AuthTypeEnum } from '@regolithco/common'
 import { GoogleAuthProvider } from './GoogleAuth.provider'
 import { DiscordAuthProvider } from './DiscordAuth.provider'
 import useLocalStorage from '../hooks/useLocalStorage'
-import {
-  DEFAULT_INNER_LOGIN_CONTEXT,
-  DEFAULT_LOGIN_CONTEXT,
-  InnerLoginContextObj,
-  LoginContext,
-} from '../context/auth.context'
+import { DEFAULT_INNER_LOGIN_CONTEXT, InnerLoginContextObj, LoginContext } from '../context/auth.context'
 import { wipeAuthStorage } from '../lib/utils'
 import log from 'loglevel'
+import { useNavigate } from 'react-router-dom'
 
 export const getRedirectUrl = () => {
   let redirectUri: string = ''
@@ -42,9 +38,17 @@ export const OAuth2Provider: React.FC<React.PropsWithChildren> = ({ children }) 
   // Instead of state the authType is stored in local storage next to the other pkce keys.
   // This should persist the key with the other choices
   const [popupOpen, setPopupOpen] = React.useState<boolean>(false)
+  const navigate = useNavigate()
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum | null>('ROCP_AuthType', null)
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
   const [innerState, setInnerState] = React.useState<InnerLoginContextObj>(DEFAULT_INNER_LOGIN_CONTEXT)
+
+  useEffect(() => {
+    if (postLoginRedirect && innerState.isAuthenticated && !innerState.loading) {
+      navigate(postLoginRedirect)
+      setPostLoginRedirect(null)
+    }
+  }, [postLoginRedirect, setPostLoginRedirect])
 
   return (
     <LoginContext.Provider
