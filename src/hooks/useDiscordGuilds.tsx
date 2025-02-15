@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import axios from 'axios'
 import { AuthTypeEnum, MyDiscordGuild } from '@regolithco/common'
 import log from 'loglevel'
-import { LoginContext, LoginContextWrapper } from '../context/auth.context'
+import { LoginContext } from '../context/auth.context'
 import useLocalStorage from './useLocalStorage'
 
 export type MyLocalStorageGuilds = {
@@ -11,8 +11,7 @@ export type MyLocalStorageGuilds = {
 }
 
 export const useDiscordGuilds = () => {
-  const { authType } = useContext(LoginContextWrapper)
-  const { token } = useContext(LoginContext)
+  const { token, authType } = useContext(LoginContext)
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<Error | null>(null)
   const [cached, setCached] = useLocalStorage<MyLocalStorageGuilds | null>('ROCP_myGuilds', null)

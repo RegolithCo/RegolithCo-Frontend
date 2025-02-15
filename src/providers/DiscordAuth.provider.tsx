@@ -1,9 +1,8 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { AuthProvider, AuthContext, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import { getRedirectUrl } from './OAuth2.provider'
-import { wipeAuthStorage } from '../lib/utils'
 import config from '../config'
-import { LoginContext, LoginContextWrapper } from '../context/auth.context'
+import { InnerLoginContextObj } from '../context/auth.context'
 
 const getDiscordConfig = (): TAuthConfig => ({
   clientId: config.discordClientId,
@@ -20,27 +19,22 @@ const getDiscordConfig = (): TAuthConfig => ({
  * @param param0
  * @returns
  */
-export const DiscordAuthInner: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { setAuthType } = useContext(LoginContextWrapper)
+export const DiscordAuthInner: React.FC<{ setInnerState: (obj: InnerLoginContextObj) => void }> = ({
+  setInnerState,
+}) => {
   const { token, logIn, logOut, loginInProgress }: IAuthContext = useContext(AuthContext)
 
-  return (
-    <LoginContext.Provider
-      value={{
-        isAuthenticated: !!token,
-        loading: loginInProgress,
-        token: token,
-        authLogIn: logIn,
-        authLogOut: () => {
-          logOut()
-          setAuthType(null)
-          wipeAuthStorage()
-        },
-      }}
-    >
-      {children}
-    </LoginContext.Provider>
-  )
+  useEffect(() => {
+    setInnerState({
+      isAuthenticated: Boolean(token),
+      loading: loginInProgress,
+      token: token,
+      authLogIn: logIn,
+      authLogOut: logOut,
+    })
+  }, [token, logIn, logOut, loginInProgress])
+
+  return null
 }
 
 /**
@@ -49,7 +43,9 @@ export const DiscordAuthInner: React.FC<React.PropsWithChildren> = ({ children }
  * @param param0
  * @returns
  */
-export const DiscordAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+export const DiscordAuthProvider: React.FC<{ setInnerState: (obj: InnerLoginContextObj) => void }> = ({
+  setInnerState,
+}) => {
   const discordAuth: TAuthConfig = {
     ...getDiscordConfig(),
     onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => {},
@@ -57,7 +53,7 @@ export const DiscordAuthProvider: React.FC<React.PropsWithChildren> = ({ childre
 
   return (
     <AuthProvider authConfig={discordAuth}>
-      <DiscordAuthInner>{children}</DiscordAuthInner>
+      <DiscordAuthInner setInnerState={setInnerState} />
     </AuthProvider>
   )
 }

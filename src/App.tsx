@@ -22,20 +22,23 @@ import { AppContext } from './context/app.context'
 import { LoginContext, UserProfileContext } from './context/auth.context'
 import { TopBar } from './components/TopBar'
 import { enqueueSnackbar } from 'notistack'
+import { Box } from '@mui/material'
+import log from 'loglevel'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 
 export const App: React.FC = () => {
-  const { isAuthenticated, loading } = useContext(LoginContext)
-  const { isInitialized, error } = React.useContext(UserProfileContext)
+  const { isAuthenticated } = useContext(LoginContext)
+  const { isInitialized, error: userError, loading: userLoading } = React.useContext(UserProfileContext)
   const { maintenanceMode } = React.useContext(AppContext)
   const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
-  const needIntervention = !loading && !error && isAuthenticated && !isInitialized
-  const isAutheticated = useRef(isAuthenticated)
+  const needIntervention = !userLoading && !userError && isAuthenticated && !isInitialized
+  const isAutheticated = useRef(false)
 
   useEffect(() => {
     if (isAuthenticated !== isAutheticated.current) {
+      log.debug('MARZIPAN:::INNER AUTH CHANGE', isAuthenticated)
       if (isAuthenticated) enqueueSnackbar('Welcome back!', { variant: 'success' })
       else enqueueSnackbar('Logging out', { variant: 'info' })
       isAutheticated.current = isAuthenticated
@@ -44,7 +47,7 @@ export const App: React.FC = () => {
 
   if (needIntervention)
     return (
-      <Router>
+      <>
         <TopBar />
         <AppWrapperContainer>
           <Routes>
@@ -60,11 +63,11 @@ export const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/verify  " replace />} />
           </Routes>
         </AppWrapperContainer>
-      </Router>
+      </>
     )
 
   return (
-    <Router>
+    <>
       <TopBar />
       <StagingWarning
         open={stagingWarningOpen}
@@ -74,17 +77,6 @@ export const App: React.FC = () => {
       />
       <AppWrapperContainer>
         <Routes>
-          {needIntervention && (
-            <Route
-              path="*"
-              element={
-                <AuthGate allowNoInit>
-                  <InitializeUserContainer />
-                </AuthGate>
-              }
-              errorElement={<ErrorPage />}
-            />
-          )}
           <Route path="/" element={<HomePageContainer />} errorElement={<ErrorPage />} />
 
           {/* about uses urls for tabs */}
@@ -249,9 +241,9 @@ export const App: React.FC = () => {
           )}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <div style={{ flex: '1 1' }} />
+        <Box style={{ flex: '1 1' }} />
       </AppWrapperContainer>
-    </Router>
+    </>
   )
 }
 

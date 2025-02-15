@@ -24,7 +24,7 @@ import { DiscordIcon } from '../icons'
 import { CopyAll, Replay } from '@mui/icons-material'
 import { fontFamilies } from '../theme'
 import { wipeLocalLookups } from '../lib/utils'
-import { LoginContext, LoginContextWrapper } from '../context/auth.context'
+import { LoginContext } from '../context/auth.context'
 import { AppContext } from '../context/app.context'
 
 const CURRENT_SC_VERSION = scVersion
@@ -89,8 +89,7 @@ const splitLink = split(
  * @returns
  */
 export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { authType } = useContext(LoginContextWrapper)
-  const { token, isAuthenticated, loading, authLogIn, authLogOut } = useContext(LoginContext)
+  const { authType, token, isAuthenticated, loading, authLogIn, authLogOut } = useContext(LoginContext)
   const [APIWorking, setAPIWorking] = useState(true)
   const [hideNames, setHideNames] = React.useState(false)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()

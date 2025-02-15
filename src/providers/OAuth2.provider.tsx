@@ -1,12 +1,16 @@
-import { AuthTypeEnum } from '@regolithco/common'
 import React from 'react'
-import log from 'loglevel'
+import { AuthTypeEnum } from '@regolithco/common'
 import { GoogleAuthProvider } from './GoogleAuth.provider'
 import { DiscordAuthProvider } from './DiscordAuth.provider'
 import useLocalStorage from '../hooks/useLocalStorage'
-import { DEFAULT_LOGIN_CONTEXT, LoginContext, LoginContextWrapper } from '../context/auth.context'
+import {
+  DEFAULT_INNER_LOGIN_CONTEXT,
+  DEFAULT_LOGIN_CONTEXT,
+  InnerLoginContextObj,
+  LoginContext,
+} from '../context/auth.context'
 import { wipeAuthStorage } from '../lib/utils'
-import { LoginChoice } from '../components/modals/LoginChoice'
+import log from 'loglevel'
 
 export const getRedirectUrl = () => {
   let redirectUri: string = ''
@@ -40,23 +44,10 @@ export const OAuth2Provider: React.FC<React.PropsWithChildren> = ({ children }) 
   const [popupOpen, setPopupOpen] = React.useState<boolean>(false)
   const [authTypeLS, setAuthTypeLS] = useLocalStorage<AuthTypeEnum | null>('ROCP_AuthType', null)
   const [postLoginRedirect, setPostLoginRedirect] = useLocalStorage<string | null>('ROCP_PostLoginRedirect', null)
-
-  const LoginProvider: React.FC<React.PropsWithChildren> = React.useMemo(() => {
-    if (authTypeLS === AuthTypeEnum.Discord) {
-      return () => <DiscordAuthProvider>{children}</DiscordAuthProvider>
-    } else if (authTypeLS === AuthTypeEnum.Google) {
-      return () => <GoogleAuthProvider>{children}</GoogleAuthProvider>
-    } else {
-      return () => {
-        return <LoginContext.Provider value={DEFAULT_LOGIN_CONTEXT}>{children}</LoginContext.Provider>
-      }
-    }
-  }, [authTypeLS])
-
-  log.info('MARZIPAN', { authTypeLS, LoginProvider: LoginProvider.name })
+  const [innerState, setInnerState] = React.useState<InnerLoginContextObj>(DEFAULT_INNER_LOGIN_CONTEXT)
 
   return (
-    <LoginContextWrapper.Provider
+    <LoginContext.Provider
       value={{
         authType: authTypeLS,
         setAuthType: (authType: AuthTypeEnum | null) => {
@@ -67,17 +58,27 @@ export const OAuth2Provider: React.FC<React.PropsWithChildren> = ({ children }) 
         },
         popupOpen,
         postLoginRedirect,
+        closePopup: () => setPopupOpen(false),
         setPopupOpen: (redirectUrl?: string) => {
+          log.debug(`Setting popup open with redirect: ${redirectUrl}`)
           if (redirectUrl) setPostLoginRedirect(redirectUrl)
           else setPostLoginRedirect(null)
           setPopupOpen(true)
         },
+
+        // These get populated from within the LoginProvider
+        ...innerState,
+        authLogOut: () => {
+          innerState.authLogOut?.()
+          setInnerState(DEFAULT_INNER_LOGIN_CONTEXT)
+          setAuthTypeLS(null)
+          wipeAuthStorage()
+        },
       }}
     >
-      {popupOpen && (
-        <LoginChoice open onClose={() => setPopupOpen(false)} authType={authTypeLS} setAuthType={setAuthTypeLS} />
-      )}
-      <LoginProvider>{children}</LoginProvider>
-    </LoginContextWrapper.Provider>
+      {authTypeLS === AuthTypeEnum.Discord ? <DiscordAuthProvider setInnerState={setInnerState} /> : null}
+      {authTypeLS === AuthTypeEnum.Google ? <GoogleAuthProvider setInnerState={setInnerState} /> : null}
+      {children}
+    </LoginContext.Provider>
   )
 }

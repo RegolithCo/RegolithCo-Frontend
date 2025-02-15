@@ -3,12 +3,19 @@ import { Alert, Box, Button, Modal, ToggleButton, ToggleButtonGroup, Typography,
 import { AuthTypeEnum } from '@regolithco/common'
 import * as React from 'react'
 import { DiscordIcon } from '../../icons/Discord'
+import { LoginContext } from '../../context/auth.context'
 
 export type LoginChoiceProps = {
   open?: boolean
   onClose: () => void
   authType: AuthTypeEnum | null
   setAuthType: (authType: AuthTypeEnum) => void
+  login?: () => void
+}
+
+export const LoginChoiceContainer: React.FC = () => {
+  const { authType, setAuthType, popupOpen, closePopup } = React.useContext(LoginContext)
+  return <LoginChoice open={popupOpen} onClose={closePopup} authType={authType} setAuthType={setAuthType} />
 }
 
 export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authType, setAuthType }) => {
@@ -80,7 +87,7 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
             my: 4,
           }}
           onClick={() => {
-            setAuthType(btnChoice!)
+            setAuthType(btnChoice)
             onClose()
           }}
           size="large"

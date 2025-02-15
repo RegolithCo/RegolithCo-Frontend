@@ -9,12 +9,14 @@ import App from './App'
 import { SnackbarProvider } from 'notistack'
 // import LogRocket from 'logrocket'
 import { ErrorBoundary } from './Error'
+import { BrowserRouter as Router } from 'react-router-dom'
 import { LookupsContextWrapper } from './context/lookupsContext'
 import config from './config'
 import { ScreenshareProvider } from './context/screenshare.context'
 import { APIProvider } from './providers/API.provider'
 import { OAuth2Provider } from './providers/OAuth2.provider'
 import { UserProfileProvider } from './providers/UserProfile.provider'
+import { LoginChoiceContainer } from './components/modals/LoginChoice'
 
 if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -30,25 +32,28 @@ if (config.stage !== 'production') {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline enableColorScheme />
-        <ErrorBoundary>
-          <OAuth2Provider>
-            <APIProvider>
-              <UserProfileProvider>
-                <ScreenshareProvider>
-                  <LookupsContextWrapper>
-                    <App />
-                  </LookupsContextWrapper>
-                </ScreenshareProvider>
-              </UserProfileProvider>
-            </APIProvider>
-          </OAuth2Provider>
-        </ErrorBoundary>
-      </SnackbarProvider>
-    </ThemeProvider>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider autoHideDuration={1300} maxSnack={4}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline enableColorScheme />
+          <ErrorBoundary>
+            <OAuth2Provider>
+              <APIProvider>
+                <UserProfileProvider>
+                  <ScreenshareProvider>
+                    <LookupsContextWrapper>
+                      <LoginChoiceContainer />
+                      <App />
+                    </LookupsContextWrapper>
+                  </ScreenshareProvider>
+                </UserProfileProvider>
+              </APIProvider>
+            </OAuth2Provider>
+          </ErrorBoundary>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </Router>
   </React.StrictMode>
 )
 

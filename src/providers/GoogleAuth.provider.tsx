@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { useGoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google'
 import log from 'loglevel'
 import axios from 'axios'
@@ -7,7 +7,7 @@ import { enqueueSnackbar } from 'notistack'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { wipeAuthStorage } from '../lib/utils'
 import config from '../config'
-import { LoginContext, LoginContextWrapper } from '../context/auth.context'
+import { InnerLoginContextObj } from '../context/auth.context'
 
 const getExpiryTs = (expiresIn: number, shortenMin: number): number =>
   // Set the expiry time to the current time plus the expiry time minus the shorten time
@@ -15,13 +15,13 @@ const getExpiryTs = (expiresIn: number, shortenMin: number): number =>
 
 type GoogleTokenObject = { accessToken: string; refreshToken: string; expiryTs: number }
 
-export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { authType, setAuthType } = useContext(LoginContextWrapper)
+export const GoogleAuthInner: React.FC<
+  React.PropsWithChildren & { isLoaded: boolean; setInnerState: (obj: InnerLoginContextObj) => void }
+> = ({ isLoaded, setInnerState }) => {
   const [googleAuth, setGoogleAuth] = useLocalStorage<GoogleTokenObject | null>('ROCP_GooToken', null)
 
   const fullLogout = () => {
     log.debug('GoogleAuth::Full Logout')
-    setAuthType(null)
     setGoogleAuth(null)
     googleLogout()
     wipeAuthStorage()
@@ -55,6 +55,13 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
                 refreshToken: res.data.refresh_token as string,
                 expiryTs: getExpiryTs(res.data.expires_in, 5),
               })
+              setInnerState({
+                isAuthenticated: true,
+                loading: false,
+                token: res.data.access_token,
+                authLogIn: googleLogin,
+                authLogOut: fullLogout,
+              })
             }
           })
       } catch (error) {
@@ -66,9 +73,13 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
     onError: (error) => log.error('Google Login Failed:', error),
   })
 
-  React.useLayoutEffect(() => {
-    if (googleLogin && (!googleAuth || !googleAuth.refreshToken)) googleLogin()
-  }, [googleLogin, googleAuth])
+  const triggerGoogleLogin = React.useCallback(() => {
+    if (googleLogin && isLoaded) googleLogin()
+  }, [googleLogin, isLoaded])
+
+  React.useEffect(() => {
+    triggerGoogleLogin()
+  }, [triggerGoogleLogin, isLoaded])
 
   React.useEffect(() => {
     if (!googleAuth || !googleAuth.refreshToken) return
@@ -108,23 +119,9 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
       const intervalObj = setInterval(refreshAccessToken, intervalValue)
       return () => clearInterval(intervalObj)
     }
-  }, [googleAuth, googleLogin, authType])
+  }, [googleAuth])
 
-  return (
-    <LoginContext.Provider
-      value={{
-        isAuthenticated: Boolean(googleAuth?.accessToken),
-        loading: false,
-        token: googleAuth?.accessToken || null,
-        authLogIn: googleLogin,
-        authLogOut: () => {
-          fullLogout()
-        },
-      }}
-    >
-      {children}
-    </LoginContext.Provider>
-  )
+  return null
 }
 
 /**
@@ -133,17 +130,23 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
  * @param param0
  * @returns
  */
-export const GoogleAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+export const GoogleAuthProvider: React.FC<{ setInnerState: (obj: InnerLoginContextObj) => void }> = ({
+  setInnerState,
+}) => {
   // Instead of state the authType is stored in local storage next to the other pkce keys.
   // This should persist the key with the other choices
+  const [isLoaded, setIsLoaded] = React.useState<boolean>(false)
 
   return (
     <GoogleOAuthProvider
       clientId={config.googleClientId}
       onScriptLoadError={() => log.error('GoogleAuth::Script Load Error')}
-      onScriptLoadSuccess={() => log.debug('GoogleAuth::Script Loaded')}
+      onScriptLoadSuccess={() => {
+        log.debug('GoogleAuth::Script Loaded')
+        setIsLoaded(true)
+      }}
     >
-      <GoogleAuthInner>{children}</GoogleAuthInner>
+      <GoogleAuthInner isLoaded={isLoaded} setInnerState={setInnerState} />
     </GoogleOAuthProvider>
   )
 }

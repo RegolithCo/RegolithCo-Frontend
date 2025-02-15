@@ -24,7 +24,7 @@ import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
 import { AppContext } from '../../context/app.context'
-import { LoginContext, LoginContextWrapper, UserProfileContext } from '../../context/auth.context'
+import { LoginContext, UserProfileContext } from '../../context/auth.context'
 
 export interface HomePageProps {
   navigate?: (path: string) => void
@@ -111,8 +111,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
   const { maintenanceMode } = React.useContext(AppContext)
   // const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   // const nowDate = new Date()
-  const { setPopupOpen } = React.useContext(LoginContextWrapper)
-  const { isAuthenticated } = React.useContext(LoginContext)
+  const { isAuthenticated, setPopupOpen } = React.useContext(LoginContext)
   const userCtx = React.useContext(UserProfileContext)
 
   return (

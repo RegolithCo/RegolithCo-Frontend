@@ -57,7 +57,7 @@ import { AppContext } from '../context/app.context'
 import { ProfileTabsEnum } from './pages/ProfilePage'
 import { Link } from 'react-router-dom'
 import { ScreenshareContext } from '../context/screenshare.context'
-import { LoginContext, LoginContextWrapper, UserProfileContext } from '../context/auth.context'
+import { LoginContext, UserProfileContext } from '../context/auth.context'
 
 export type MenuItemType = {
   path?: string
@@ -113,8 +113,7 @@ export const TopBar: React.FC = () => {
   const theme = useTheme()
   const styles = stylesThunk(theme)
   const { hideNames, setHideNames, maintenanceMode } = React.useContext(AppContext)
-  const { setPopupOpen } = React.useContext(LoginContextWrapper)
-  const { isAuthenticated, loading: loginLoading, authLogOut } = React.useContext(LoginContext)
+  const { isAuthenticated, loading: loginLoading, authLogOut, setPopupOpen } = React.useContext(LoginContext)
   const { isInitialized, isVerified, loading: profileLoading, myProfile, error } = React.useContext(UserProfileContext)
   const { isScreenSharing, stopScreenCapture } = React.useContext(ScreenshareContext)
   // const [shareOpen, setShareOpen] = React.useState(false)

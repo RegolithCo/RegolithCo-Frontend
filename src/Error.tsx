@@ -36,7 +36,7 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
   }
 
   return (
-    <Router>
+    <>
       <TopBar />
       <AppWrapperContainer>
         <PageWrapper title="ERROR: Something went wrong" maxWidth="lg">
@@ -91,7 +91,7 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
           </Container>
         </PageWrapper>
       </AppWrapperContainer>
-    </Router>
+    </>
   )
 }
 
