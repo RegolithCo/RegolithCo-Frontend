@@ -33,7 +33,7 @@ export const GoogleAuthInner: React.FC<
 
   const onSuccess = React.useCallback(
     (code: string) => {
-      log.debug('GoogleAuth::Token Response', code)
+      log.debug('GoogleAuth::Token Response good code')
       setInnerState({
         isAuthenticated: true,
         loading: true,
@@ -57,6 +57,7 @@ export const GoogleAuthInner: React.FC<
               log.error('GoogleAuth::Token expired before it was even set')
               fullLogout()
             } else {
+              log.debug(`GoogleAuth::Token Response good. Expiry in ${dayjs(expiryTs).fromNow()}`)
               handleChange({
                 accessToken: res.data.access_token as string,
                 refreshToken: res.data.refresh_token as string,
@@ -108,7 +109,7 @@ export const GoogleAuthInner: React.FC<
     const authCode = urlParams.get('code')
 
     if (googleAuth && googleAuth.accessToken && googleAuth.expiryTs > Date.now()) {
-      log.debug('GoogleAuth::Using existing valid token')
+      log.debug(`GoogleAuth::Using existing valid token which expires in ${dayjs(googleAuth.expiryTs).fromNow()}`)
       // We only update the inner state because the outer state is fine
       setInnerState({
         isAuthenticated: true,
@@ -137,14 +138,11 @@ export const GoogleAuthInner: React.FC<
         authLogIn: googleLogin,
         authLogOut: googleLogout,
       })
-      log.debug('Refreshing Google token', googleAuth)
+      log.debug('Refreshing Google token')
       await axios
         .post(config.googleAuth, { refreshToken: googleAuth.refreshToken })
         .then((res) => {
-          log.debug(
-            `Refreshed Google token at ${dayjs().format('YYYY-MM-DD HH:mm:ss')} for ${googleAuth}`,
-            JSON.stringify(res.data)
-          )
+          log.debug(`Refreshed Google token at ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`)
           if (!res.data.access_token) {
             enqueueSnackbar('Error refreshing token. Please log in again.', { variant: 'error' })
             fullLogout()
