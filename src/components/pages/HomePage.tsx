@@ -17,16 +17,16 @@ import { alpha } from '@mui/system'
 import * as React from 'react'
 
 import { PageWrapper } from '../PageWrapper'
-import { LoginContext, LoginContextObj } from '../../hooks/useOAuth2'
 import { SiteStats } from '../cards/SiteStats'
 import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import { fontFamilies, theme } from '../../theme'
 import { RouterLink } from '../fields/RouterLink'
 import { RegolithAlert } from '../../types'
 import { HomePageAlert } from '../HomePageAlert'
+import { AppContext } from '../../context/app.context'
+import { LoginContext, LoginContextWrapper, UserProfileContext } from '../../context/auth.context'
 
 export interface HomePageProps {
-  userCtx: LoginContextObj
   navigate?: (path: string) => void
   handleLogin?: () => void
   alerts?: RegolithAlert[]
@@ -107,10 +107,14 @@ const HomeCard: React.FC<{
   )
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Days, allTime, alerts, statsLoading }) => {
-  const { maintenanceMode } = React.useContext(LoginContext)
+export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTime, alerts, statsLoading }) => {
+  const { maintenanceMode } = React.useContext(AppContext)
   // const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   // const nowDate = new Date()
+  const { setPopupOpen } = React.useContext(LoginContextWrapper)
+  const { isAuthenticated } = React.useContext(LoginContext)
+  const userCtx = React.useContext(UserProfileContext)
+
   return (
     <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography
@@ -143,9 +147,9 @@ export const HomePage: React.FC<HomePageProps> = ({ userCtx, navigate, last30Day
           disabled={Boolean(maintenanceMode)}
           description="Organize your multi-crew, multi-ship mining adventure! Supports hand, vehicle and ship mining as well as scouting and salvaging."
           imgageUrl="images/sm/dashboard.jpg"
-          url={userCtx.isAuthenticated ? (userCtx.isInitialized ? '/session' : '/verify') : undefined}
+          url={isAuthenticated ? (userCtx.isInitialized ? '/session' : '/verify') : undefined}
           onClick={() => {
-            if (!userCtx.isAuthenticated) userCtx.openPopup && userCtx.openPopup('/session')
+            if (!isAuthenticated) setPopupOpen('/session')
           }}
         />
         <HomeCard

@@ -58,9 +58,9 @@ import {
 } from '@regolithco/common'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
-import { useLogin } from './useOAuth2'
 import log from 'loglevel'
 import { Reference, StoreObject } from '@apollo/client'
+import { UserProfileContext } from '../context/auth.context'
 
 type useSessionsReturn = {
   session?: Session
@@ -89,7 +89,7 @@ type useSessionsReturn = {
 }
 
 export const useSessions = (sessionId?: string): useSessionsReturn => {
-  const { userProfile } = useLogin()
+  const { myProfile } = React.useContext(UserProfileContext)
   const navigate = useNavigate()
   const [fetchPolicy, setFetchPolicy] = React.useState<'cache-only' | 'network-only'>('cache-only')
   const previousSessionId = React.useRef<string | null>(null)
@@ -271,7 +271,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       cache.evict({ id: sessionUser })
       // remove the entry from joinedSessionsQry
       cache.modify({
-        id: cache.identify(userProfile as UserProfile),
+        id: cache.identify(myProfile as UserProfile),
         fields: {
           joinedSessions(existingSessionsRefs, { readField }) {
             return existingSessionsRefs.items.filter((sessionRef: StoreObject | Reference) => {
@@ -638,8 +638,8 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       }).then()
     },
     resetDefaultUserSettings: () => {
-      if (!userProfile) return Promise.resolve()
-      const userSettings = userProfile?.sessionSettings as SessionSettings
+      if (!myProfile) return Promise.resolve()
+      const userSettings = myProfile?.sessionSettings as SessionSettings
       const newSettings = destructureSettings(userSettings)
 
       return updateSessionMutation[0]({

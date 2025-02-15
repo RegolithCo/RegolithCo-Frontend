@@ -5,9 +5,9 @@ import { PageWrapper } from '../PageWrapper'
 import { UserProfile, ScoutingFindTypeEnum, ScoutingFind, SessionUser, ScoutingFindStateEnum } from '@regolithco/common'
 import { dummySession, dummySessionUser, dummyUserProfile, newEmptyScoutingFind } from '../../lib/newObjectFactories'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
-import { useLogin } from '../../hooks/useOAuth2'
 import { ScoutingFindTypeChooser } from '../fields/ScoutingFindTypeChooser'
 import { scoutingFindStateThemes } from '../../theme'
+import { UserProfileContext } from '../../context/auth.context'
 
 export interface ClusterCalcPageProps {
   userProfile?: UserProfile
@@ -96,7 +96,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
 }
 
 export const ClusterCalcPageContainer: React.FC = () => {
-  const { userProfile } = useLogin()
+  const { myProfile } = React.useContext(UserProfileContext)
 
-  return <ClusterCalcPage userProfile={userProfile} />
+  return <ClusterCalcPage userProfile={myProfile as UserProfile} />
 }

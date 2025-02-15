@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useLogin } from '../../hooks/useOAuth2'
 import {
   GetLoadoutsDocument,
   GetLoadoutsQuery,
@@ -9,17 +8,18 @@ import {
   useGetLoadoutsQuery,
   useUpdateLoadoutMutation,
 } from '../../schema'
-import { MiningLoadout, MiningLoadoutInput, removeKeyRecursive } from '@regolithco/common'
+import { MiningLoadout, MiningLoadoutInput, removeKeyRecursive, UserProfile } from '@regolithco/common'
 import { LoadoutPage } from './LoadoutPage'
 import { noop } from 'lodash'
+import { UserProfileContext } from '../../context/auth.context'
 
 export const LoadoutPageContainer: React.FC = () => {
   const navigate = useNavigate()
-  const { isInitialized, userProfile } = useLogin()
+  const { isInitialized, myProfile } = React.useContext(UserProfileContext)
   const { tab, activeLoadout } = useParams()
 
   const loadoutsQuery = useGetLoadoutsQuery({
-    skip: !isInitialized || !userProfile,
+    skip: !isInitialized || !myProfile,
   })
 
   //   createLoadout
@@ -118,7 +118,7 @@ export const LoadoutPageContainer: React.FC = () => {
       tab={tab as string}
       isLoggedIn={isInitialized}
       loading={loading}
-      userProfile={userProfile}
+      userProfile={myProfile as UserProfile}
       activeLoadout={activeLoadout}
       createLoadout={createLoadout}
       updateLoadout={updateLoadout}

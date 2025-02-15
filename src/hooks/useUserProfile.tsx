@@ -24,8 +24,8 @@ import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 
 import { ApolloError } from '@apollo/client'
-import { useEffect } from 'react'
-import { useLogin } from './useOAuth2'
+import { useContext, useEffect } from 'react'
+import { LoginContext } from '../context/auth.context'
 // import LogRocket from 'logrocket'
 
 type useSessionsReturn = {
@@ -48,7 +48,7 @@ type useSessionsReturn = {
 }
 
 export const useUserProfile = (): useSessionsReturn => {
-  const ctx = useLogin()
+  const { logOut } = useContext(LoginContext)
   const navigate = useNavigate()
   const userProfileQry = useGetUserProfileQuery({
     // returnPartialData: true,
@@ -157,7 +157,7 @@ export const useUserProfile = (): useSessionsReturn => {
         refetchQueries: [GetUserProfileDocument],
       })
         .then(() => {
-          ctx.logOut()
+          if (logOut) logOut()
           localStorage.clear()
           navigate('/')
         })

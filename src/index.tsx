@@ -7,14 +7,14 @@ import reportWebVitals from './reportWebVitals'
 import log from 'loglevel'
 import App from './App'
 import { SnackbarProvider } from 'notistack'
-import { MyAuthProvider } from './hooks/useOAuth2'
 // import LogRocket from 'logrocket'
-import { AppContextWrapper } from './context/app.context'
 import { ErrorBoundary } from './Error'
 import { LookupsContextWrapper } from './context/lookupsContext'
 import config from './config'
 import { ScreenshareProvider } from './context/screenshare.context'
 import { APIProvider } from './providers/API.provider'
+import { OAuth2Provider } from './providers/OAuth2.provider'
+import { UserProfileProvider } from './providers/UserProfile.provider'
 
 if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -35,17 +35,17 @@ root.render(
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline enableColorScheme />
         <ErrorBoundary>
-          <MyAuthProvider>
+          <OAuth2Provider>
             <APIProvider>
-              <AppContextWrapper>
+              <UserProfileProvider>
                 <ScreenshareProvider>
                   <LookupsContextWrapper>
                     <App />
                   </LookupsContextWrapper>
                 </ScreenshareProvider>
-              </AppContextWrapper>
+              </UserProfileProvider>
             </APIProvider>
-          </MyAuthProvider>
+          </OAuth2Provider>
         </ErrorBoundary>
       </SnackbarProvider>
     </ThemeProvider>

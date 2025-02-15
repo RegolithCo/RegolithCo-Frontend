@@ -2,8 +2,8 @@ import React from 'react'
 import { AuthTypeEnum } from '@regolithco/common'
 import { StoryFn, Meta } from '@storybook/react'
 import log from 'loglevel'
-import { LoginContextObj } from '../../../hooks/useOAuth2'
 import { InitializeUser } from './InitializeUser'
+import { LoginContext, LoginContextObj } from '../../../context/auth.context'
 
 export default {
   title: 'Modals/InitializeUser',
@@ -14,7 +14,11 @@ export default {
   },
 } as Meta<typeof InitializeUser>
 
-const Template: StoryFn<typeof InitializeUser> = (args) => <InitializeUser {...args} />
+const Template: StoryFn<typeof InitializeUser> = (args) => (
+  <LoginContext.Provider value={loginCtxMock}>
+    <InitializeUser {...args} />
+  </LoginContext.Provider>
+)
 
 const fns = {
   backToPage: () => {
@@ -35,20 +39,8 @@ const fns = {
 }
 const loginCtxMock: LoginContextObj = {
   isAuthenticated: true,
-  isInitialized: false,
-  APIWorking: true,
-  isVerified: false,
   loading: false,
-  popup: null,
-  refreshPopupOpen: false,
-  refreshPopup: null,
-  setRefreshPopupOpen: () => {
-    log.info('setRefreshPopupOpen')
-  },
-
-  openPopup: () => {
-    log.info('openPopup')
-  },
+  token: 'SOME_TOKEN',
   logIn: (authType: AuthTypeEnum) => {
     log.info('signIn', authType)
   },
@@ -60,36 +52,18 @@ const loginCtxMock: LoginContextObj = {
 
 export const Initialize = Template.bind({})
 Initialize.args = {
-  loginCtx: {
-    ...loginCtxMock,
-    isAuthenticated: true,
-    isInitialized: false,
-    isVerified: false,
-  },
   loading: false,
   fns,
 }
 
 export const Verify = Template.bind({})
 Verify.args = {
-  loginCtx: {
-    ...loginCtxMock,
-    isAuthenticated: true,
-    isInitialized: true,
-    isVerified: false,
-  },
   loading: false,
   fns,
 }
 
 export const Done = Template.bind({})
 Done.args = {
-  loginCtx: {
-    ...loginCtxMock,
-    isAuthenticated: true,
-    isInitialized: true,
-    isVerified: true,
-  },
   loading: false,
   fns,
 }

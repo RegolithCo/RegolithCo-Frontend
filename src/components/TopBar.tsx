@@ -49,7 +49,6 @@ import {
   Verified,
 } from '@mui/icons-material'
 import { GemIcon, RockIcon, SurveyCorpsIcon } from '../icons'
-import { LoginContext, LoginContextObj } from '../hooks/useOAuth2'
 import { UserAvatar } from './UserAvatar'
 import { ModuleIcon } from '../icons/Module'
 import { TopBarMenu, TopBarMenuItem } from './TopBarMenu'
@@ -58,6 +57,7 @@ import { AppContext } from '../context/app.context'
 import { ProfileTabsEnum } from './pages/ProfilePage'
 import { Link } from 'react-router-dom'
 import { ScreenshareContext } from '../context/screenshare.context'
+import { LoginContext, LoginContextWrapper, UserProfileContext } from '../context/auth.context'
 
 export type MenuItemType = {
   path?: string
@@ -107,19 +107,19 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   toolbar: {},
 })
 
-export interface TopBarProps {
-  userCtx: LoginContextObj
-}
-
-export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
+export const TopBar: React.FC = () => {
   const [openMenu, setMenuOpen] = React.useState<null | { name: string; el: HTMLElement; width: number }>(null)
 
   const theme = useTheme()
   const styles = stylesThunk(theme)
-  const { hideNames, setHideNames } = React.useContext(AppContext)
-  const { maintenanceMode } = React.useContext(LoginContext)
+  const { hideNames, setHideNames, maintenanceMode } = React.useContext(AppContext)
+  const { setPopupOpen } = React.useContext(LoginContextWrapper)
+  const { isAuthenticated, loading: loginLoading, logOut } = React.useContext(LoginContext)
+  const { isInitialized, isVerified, loading: profileLoading, myProfile, error } = React.useContext(UserProfileContext)
   const { isScreenSharing, stopScreenCapture } = React.useContext(ScreenshareContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
+
+  const combinedLoading = loginLoading || profileLoading
 
   const handleOpenMenu = (name: string) => (event: React.MouseEvent<HTMLElement>) => {
     setMenuOpen({ name: name, el: event.currentTarget, width: event.currentTarget.clientWidth })
@@ -226,7 +226,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
   ]
 
   const profileMenu: MenuItemType[] = [
-    { path: `/${ProfileTabsEnum.PROFILE}`, name: 'My Profile', icon: <Person />, disabled: !userCtx.userProfile },
+    { path: `/${ProfileTabsEnum.PROFILE}`, name: 'My Profile', icon: <Person />, disabled: !myProfile },
     {
       path: `/${ProfileTabsEnum.SURVEY}`,
       name: 'Survey Corps',
@@ -242,44 +242,42 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
           }}
         />
       ),
-      disabled: !userCtx.userProfile,
+      disabled: !myProfile,
     },
-    { path: `/${ProfileTabsEnum.FRIENDS}`, name: 'Manage Friends', icon: <Group />, disabled: !userCtx.userProfile },
+    { path: `/${ProfileTabsEnum.FRIENDS}`, name: 'Manage Friends', icon: <Group />, disabled: !myProfile },
     {
       path: `/${ProfileTabsEnum.SESSION_DEFAULTS}`,
       name: 'Session Defaults',
       icon: <Settings />,
-      disabled: !userCtx.userProfile,
+      disabled: !myProfile,
     },
     {
       path: '/verify',
       name: 'Verify Account',
       icon: <Verified color="error" />,
-      show: userCtx.isInitialized && !userCtx.isVerified,
+      show: isInitialized && !isVerified,
     },
     { isDivider: true },
     {
       name: `Streaming Mode: ${hideNames ? 'ON' : 'OFF'}`,
       action: () => setHideNames(!hideNames),
       icon: hideNames ? <NoAccounts /> : <AccountCircle />,
-      disabled: !userCtx.userProfile,
+      disabled: !myProfile,
     },
     { isDivider: true },
     {
       path: '/',
       name: 'Logout',
       icon: <Logout />,
-      show: Boolean(userCtx.isAuthenticated),
+      show: Boolean(isAuthenticated && logOut),
       action: () => {
-        userCtx.logOut()
+        if (logOut) logOut()
       },
     },
   ]
 
   return (
     <AppBar position="static" sx={styles.appBar}>
-      {userCtx.popup}
-      {userCtx.refreshPopup}
       <Toolbar disableGutters sx={styles.toolbar}>
         <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
           <IconButton
@@ -414,7 +412,7 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
           </Tooltip>
         )}
         <Box sx={{ flexGrow: 0 }}>
-          {userCtx.isAuthenticated && hideNames && (
+          {isAuthenticated && hideNames && (
             <Tooltip title={`names disabled for streaming`}>
               <IconButton
                 color="inherit"
@@ -427,9 +425,9 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
               </IconButton>
             </Tooltip>
           )}
-          {userCtx.isAuthenticated && (
+          {isAuthenticated && (
             <>
-              {userCtx.loading ? (
+              {combinedLoading ? (
                 <CircularProgress color="secondary" thickness={7} />
               ) : (
                 <Button
@@ -441,16 +439,9 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
                     fontWeight: 'bold',
                     color: theme.palette.primary.contrastText,
                   }}
-                  endIcon={
-                    <UserAvatar
-                      size="medium"
-                      error={Boolean(userCtx.error)}
-                      user={userCtx.userProfile}
-                      privacy={hideNames}
-                    />
-                  }
+                  endIcon={<UserAvatar size="medium" error={Boolean(error)} user={myProfile} privacy={hideNames} />}
                 >
-                  {hideNames ? 'YOU' : userCtx.userProfile?.scName}
+                  {hideNames ? 'YOU' : myProfile?.scName}
                 </Button>
               )}
               <TopBarMenu
@@ -463,8 +454,8 @@ export const TopBar: React.FC<TopBarProps> = ({ userCtx }) => {
               />
             </>
           )}
-          {!maintenanceMode && !userCtx.isAuthenticated && (
-            <Button color="inherit" onClick={() => userCtx.openPopup()} startIcon={<Login />}>
+          {!maintenanceMode && !isAuthenticated && (
+            <Button color="inherit" onClick={() => setPopupOpen()} startIcon={<Login />}>
               Login
             </Button>
           )}

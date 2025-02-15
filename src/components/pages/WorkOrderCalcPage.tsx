@@ -6,7 +6,7 @@ import { UserSuggest, ActivityEnum, UserProfile, WorkOrder } from '@regolithco/c
 import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { WorkOrderTypeChooser } from '../fields/WorkOrderTypeChooser'
 import { dummySession, dummyUserProfile, newWorkOrderMaker } from '../../lib/newObjectFactories'
-import { useLogin } from '../../hooks/useOAuth2'
+import { UserProfileContext } from '../../context/auth.context'
 
 export interface WorkOrderCalcPageProps {
   userProfile?: UserProfile
@@ -136,7 +136,7 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
 }
 
 export const WorkOrderCalcPageContainer: React.FC = () => {
-  const { userProfile } = useLogin()
+  const { myProfile } = React.useContext(UserProfileContext)
 
-  return <WorkOrderCalcPage userProfile={userProfile} />
+  return <WorkOrderCalcPage userProfile={myProfile as UserProfile} />
 }

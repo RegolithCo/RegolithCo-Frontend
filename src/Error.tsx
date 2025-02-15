@@ -8,9 +8,9 @@ import { PageWrapper } from './components/PageWrapper'
 import { AppWrapperContainer } from './components/AppWrapper'
 import { DiscordIcon } from './icons'
 import { Replay } from '@mui/icons-material'
-import { TopBarContainer } from './components/TopBar.container'
 import { useSnackbar } from 'notistack'
 import { wipeLocalLookups } from './lib/utils'
+import { TopBar } from './components/TopBar'
 
 // const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
 
@@ -37,7 +37,7 @@ export const GenericError: React.FC<GenericErrorProps> = ({ error, errorInfo }) 
 
   return (
     <Router>
-      <TopBarContainer />
+      <TopBar />
       <AppWrapperContainer>
         <PageWrapper title="ERROR: Something went wrong" maxWidth="lg">
           <Container>

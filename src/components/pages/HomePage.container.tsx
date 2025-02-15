@@ -2,15 +2,12 @@ import { RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-
-import { useLogin } from '../../hooks/useOAuth2'
 import { HomePage } from './HomePage'
 import dayjs from 'dayjs'
 import log from 'loglevel'
 import { RegolithAlert } from '../../types'
 
 export const HomePageContainer: React.FC = () => {
-  const userCtx = useLogin()
   const navigate = useNavigate()
   const [last30Days, setLast30Days] = React.useState<RegolithMonthStats>()
   const [allTime, setAllTime] = React.useState<RegolithAllTimeStats>()
@@ -65,7 +62,6 @@ export const HomePageContainer: React.FC = () => {
 
   return (
     <HomePage
-      userCtx={userCtx}
       navigate={navigate}
       last30Days={last30Days}
       allTime={allTime}

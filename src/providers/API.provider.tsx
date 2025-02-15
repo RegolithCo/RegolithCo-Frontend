@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, split, ApolloError } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import config from '../config'
@@ -12,6 +12,7 @@ import {
   SurveyData,
   scVersion,
   getEpochFromVersion,
+  obfuscateUserId,
 } from '@regolithco/common'
 import { StrictTypedTypePolicies } from '../schema'
 import { errorLinkThunk, makeLogLink, retryLink } from '../lib/apolloLinks'
@@ -22,9 +23,9 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography }
 import { DiscordIcon } from '../icons'
 import { CopyAll, Replay } from '@mui/icons-material'
 import { fontFamilies } from '../theme'
-import { useOAuth2 } from '../hooks/useOAuth2'
-import { UserProfileProvider } from './UserProfile.provider'
 import { wipeLocalLookups } from '../lib/utils'
+import { LoginContext, LoginContextWrapper } from '../context/auth.context'
+import { AppContext } from '../context/app.context'
 
 const CURRENT_SC_VERSION = scVersion
 const CURRENT_SC_EPOCH = getEpochFromVersion(CURRENT_SC_VERSION)
@@ -88,20 +89,30 @@ const splitLink = split(
  * @returns
  */
 export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { token, loginInProgress, authType, logOut } = useOAuth2()
+  const { authType } = useContext(LoginContextWrapper)
+  const { token, isAuthenticated, loading, logIn, logOut } = useContext(LoginContext)
   const [APIWorking, setAPIWorking] = useState(true)
+  const [hideNames, setHideNames] = React.useState(false)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
   const [errorDialog, setErrorDialog] = useState<ApolloErrorDialog | null>(null)
   const { enqueueSnackbar } = useSnackbar()
+
+  const getSafeName = React.useCallback(
+    (scName?: string) => {
+      const finalName = scName || 'UNNAMEDUSER'
+      return hideNames ? obfuscateUserId(finalName) : finalName
+    },
+    [hideNames]
+  )
 
   const client = useMemo(() => {
     const authLink = setContext(async (_, { headers }) => {
       const finalHeaders: Record<string, string> = {
         ...headers,
-        authType: authType,
-        authorization: token ? `Bearer ${token}` : '',
         ...DEV_HEADERS,
       }
+      if (authType) finalHeaders.authType = authType
+      if (token) finalHeaders.token = token
       devQueries(finalHeaders)
       return { headers: finalHeaders }
     })
@@ -294,7 +305,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         } as StrictTypedTypePolicies,
       }),
     })
-  }, [token, loginInProgress, authType])
+  }, [token, loading, authType])
 
   // See useGQLErrors.tsx for the error handling
   const errorDialogEl = React.useMemo(() => {
@@ -364,18 +375,26 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   }, [errorDialog])
 
   return (
-    <ApolloProvider client={client}>
-      <ApolloErrorContext.Provider
-        value={{
-          errorDialog: errorDialog,
-          setErrorDialog: (error: ApolloErrorDialog | null) => setErrorDialog(error),
-        }}
-      >
-        {errorDialogEl}
-        <UserProfileProvider apolloClient={client} APIWorking={APIWorking} maintenanceMode={maintenanceMode}>
+    <AppContext.Provider
+      value={{
+        maintenanceMode,
+        APIWorking,
+        hideNames,
+        setHideNames,
+        getSafeName,
+      }}
+    >
+      <ApolloProvider client={client}>
+        <ApolloErrorContext.Provider
+          value={{
+            errorDialog: errorDialog,
+            setErrorDialog: (error: ApolloErrorDialog | null) => setErrorDialog(error),
+          }}
+        >
+          {errorDialogEl}
           {children}
-        </UserProfileProvider>
-      </ApolloErrorContext.Provider>
-    </ApolloProvider>
+        </ApolloErrorContext.Provider>
+      </ApolloProvider>
+    </AppContext.Provider>
   )
 }

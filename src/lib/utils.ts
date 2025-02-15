@@ -21,17 +21,29 @@ export const downloadFile = (data: string, finalFileName: string, fileType: stri
   a.remove()
 }
 
+/**
+ *
+ */
+export const wipeAuthStorage = () => {
+  deleteKeysWithPrefix('ROCP_')
+  localStorage.removeItem('redirect_url')
+}
+
+/**
+ *
+ */
 export const wipeLocalLookups = () => {
   // Wipe all local storage keys that start with 'LookupData:'
   // This should refresh all the lookups and price data
-  const lookupDataKeys = fetchLocalStorageKeys('LookupData:')
-  lookupDataKeys.forEach((key) => {
-    localStorage.removeItem(key)
-  })
+  deleteKeysWithPrefix('LookupData:')
 
   // Now remove all the Survey Corps data
-  const surveyDataKeys = fetchLocalStorageKeys('SurveyData:')
-  surveyDataKeys.forEach((key) => {
+  deleteKeysWithPrefix('SurveyData:')
+}
+
+export const deleteKeysWithPrefix = (prefix: string) => {
+  const keys = fetchLocalStorageKeys(prefix)
+  keys.forEach((key) => {
     localStorage.removeItem(key)
   })
 }

@@ -1,12 +1,11 @@
 import { ErrorCode, SessionStateEnum, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-// import { useDiscordGuilds } from '../../hooks/useDiscordGuilds'
 import { useJoinSession } from '../../hooks/useJoinSession'
-import { useLogin } from '../../hooks/useOAuth2'
 import { PageLoader } from './PageLoader'
 import { SessionJoin } from './SessionJoin'
 import { SessionNotFound } from './SessionPage/SessionNotFound'
+import { UserProfileContext } from '../../context/auth.context'
 
 export interface SessionJoinContainerProps {
   // joinId: string
@@ -26,7 +25,7 @@ export type SessionJoinError = ObjectValues<typeof SessionJoinError>
 
 export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   const { joinId } = useParams()
-  const { userProfile } = useLogin()
+  const { myProfile } = React.useContext(UserProfileContext)
   const navigate = useNavigate()
   // const { isDiscord, hasOneValid, myGuilds, loading: discordLoading } = useDiscordGuilds()
   const joinErrors: SessionJoinError[] = []
@@ -35,7 +34,7 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   // If you're not verified and the session requires it then nope
   if (
     sessionError === ErrorCode.SESSIONJOIN_NOT_VERIFIED ||
-    (!sessionShare?.allowUnverifiedUsers && userProfile?.state === UserStateEnum.Unverified)
+    (!sessionShare?.allowUnverifiedUsers && myProfile?.state === UserStateEnum.Unverified)
   ) {
     joinErrors.push(SessionJoinError.UnverifiedNotAllowd)
   }

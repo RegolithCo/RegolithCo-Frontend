@@ -3,6 +3,7 @@ import Avatar from '@mui/material/Avatar'
 import { Badge, SxProps, Theme, Tooltip, useTheme } from '@mui/material'
 import { Engineering, Error, PeopleAlt, Verified } from '@mui/icons-material'
 import { PendingUser, makeAvatar, User, UserProfile, UserStateEnum } from '@regolithco/common'
+import { GetUserProfileQuery } from '../schema'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   allbadge: {
@@ -70,7 +71,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
 })
 
 export interface UserAvatarProps {
-  user?: User | UserProfile
+  user?: User | GetUserProfileQuery['profile'] | UserProfile
   pendingUser?: PendingUser
   isFriend?: boolean
   error?: boolean

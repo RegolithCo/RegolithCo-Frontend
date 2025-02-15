@@ -17,30 +17,30 @@ const Template: StoryFn<typeof HomePageComponent> = (args) => <HomePageComponent
 
 export const HomePage = Template.bind({})
 HomePage.args = {
-  userCtx: {
-    logIn: () => {
-      console.log('sign in')
-    },
-    popup: null,
-    openPopup: () => {
-      console.log('open popup')
-    },
-    logOut: () => {
-      console.log('sign out')
-      return Promise.resolve()
-    },
-    refreshPopupOpen: false,
-    refreshPopup: null,
-    setRefreshPopupOpen: () => {
-      console.log('setRefreshPopupOpen')
-    },
-    isAuthenticated: true,
-    isInitialized: true,
-    isVerified: true,
-    APIWorking: true,
-    loading: false,
-    error: undefined,
-    maintenanceMode: undefined,
-    userProfile: fakeUserProfile(),
-  },
+  // userCtx: {
+  //   logIn: () => {
+  //     console.log('sign in')
+  //   },
+  //   popup: null,
+  //   openPopup: () => {
+  //     console.log('open popup')
+  //   },
+  //   logOut: () => {
+  //     console.log('sign out')
+  //     return Promise.resolve()
+  //   },
+  //   refreshPopupOpen: false,
+  //   refreshPopup: null,
+  //   setRefreshPopupOpen: () => {
+  //     console.log('setRefreshPopupOpen')
+  //   },
+  //   isAuthenticated: true,
+  //   isInitialized: true,
+  //   isVerified: true,
+  //   APIWorking: true,
+  //   loading: false,
+  //   error: undefined,
+  //   maintenanceMode: undefined,
+  //   userProfile: fakeUserProfile(),
+  // },
 }

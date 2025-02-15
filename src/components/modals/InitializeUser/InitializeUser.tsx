@@ -5,12 +5,10 @@ import { PageLoader } from '../../pages/PageLoader'
 import { SCUsernameField } from '../../fields/SCUsernameField'
 import { VerifyCodeField } from '../../fields/VerifyCodeField'
 import { UserProfile } from '@regolithco/common'
-import { LoginContextObj } from '../../../hooks/useOAuth2'
+import { LoginContext, UserProfileContext } from '../../../context/auth.context'
 
 export interface InitializeUserProps {
-  verifyOnly?: boolean
   userProfile?: UserProfile
-  loginCtx: LoginContextObj
   loading: boolean
   verifyError?: string
   fns: {
@@ -22,19 +20,16 @@ export interface InitializeUserProps {
   }
 }
 
-export const InitializeUser: React.FC<InitializeUserProps> = ({
-  loginCtx: login,
-  userProfile,
-  loading,
-  verifyError,
-  fns,
-  verifyOnly,
-}) => {
+export const InitializeUser: React.FC<InitializeUserProps> = ({ userProfile, verifyError, fns, loading }) => {
   const [userName, setUserName] = React.useState<string | null>()
-  const pageTitle = !login.isInitialized ? 'Initialize User' : 'Verify User'
+  const { isAuthenticated, logOut, loading: loginLoading } = React.useContext(LoginContext)
+  const { isInitialized, isVerified } = React.useContext(UserProfileContext)
+  const pageTitle = !isInitialized ? 'Initialize User' : 'Verify User'
   const redirectTimerRef = React.useRef<NodeJS.Timeout>()
 
-  if (!login.loading && login.isVerified) {
+  const verifyOnly = isAuthenticated && isInitialized && !isVerified
+
+  if (!loginLoading && !loading && isVerified) {
     // Wait 5 seconds and then redirect to the page they were on
     if (!redirectTimerRef.current) {
       redirectTimerRef.current = setTimeout(fns.backToPage, 5000)
@@ -57,15 +52,15 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
         <Step completed={true}>
           <StepButton color="inherit">Authenticate</StepButton>
         </Step>
-        <Step completed={login.isInitialized}>
+        <Step completed={isInitialized}>
           <StepButton color="inherit">Enter Username</StepButton>
         </Step>
-        <Step completed={login.isVerified}>
+        <Step completed={isVerified}>
           <StepButton color="inherit">Verify (Optional)</StepButton>
         </Step>
       </Stepper>
 
-      {!login.isInitialized && (
+      {!isInitialized && (
         <>
           <Typography sx={{ pt: 4 }}>
             Before you can use this logged-in section, you need to tell us your Star Citizen user name. This is so
@@ -83,7 +78,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
               color="secondary"
               size="large"
               onClick={() => {
-                login.logOut()
+                if (logOut) logOut()
                 fns.backToPage()
               }}
             >
@@ -109,7 +104,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({
           </Typography>
         </>
       )}
-      {!login.isVerified && userProfile && login.isInitialized && (
+      {!isVerified && userProfile && isInitialized && (
         <>
           {verifyError && (
             <Alert severity="error" sx={{ mt: 2 }}>

@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { AppWrapperContainer } from './components/AppWrapper'
 import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { HomePageContainer } from './components/pages/HomePage.container'
 import { AboutPageContainer } from './components/pages/AboutPage'
 import { ProfilePageContainer } from './components/pages/ProfilePage/ProfilePage.container'
-import { TopBarContainer } from './components/TopBar.container'
 import { SessionPageContainer } from './components/pages/SessionPage/SessionPage.container'
 import { InitializeUserContainer } from './components/modals/InitializeUser/InitializeUser.container'
 import { DataTablesPageContainer } from './components/pages/DataTablesPage'
@@ -12,7 +11,6 @@ import { AuthGate } from './components/pages/AuthGate'
 import { DashboardContainer, SessionDashTabsEnum } from './components/pages/Dashboard/Dashboard.container'
 import { WorkOrderCalcPageContainer } from './components/pages/WorkOrderCalcPage'
 import { ClusterCalcPage } from './components/pages/ClusterCalcPage'
-import { LoginContext, useLogin } from './hooks/useOAuth2'
 import { StagingWarning } from './components/modals/StagingWarning'
 import { LoadoutPageContainer } from './components/pages/LoadoutPage.container'
 import { MarketPriceCalcPage } from './components/pages/MarketPriceCalcPage'
@@ -20,20 +18,24 @@ import { SessionJoinContainer } from './components/pages/SessionJoin.container'
 import { ProfileTabsEnum } from './components/pages/ProfilePage'
 import { ErrorPage } from './Error'
 import { SurveyCorpsHomeContainer } from './components/pages/SurveyCorps'
+import { AppContext } from './context/app.context'
+import { LoginContext, UserProfileContext } from './context/auth.context'
+import { TopBar } from './components/TopBar'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 
 export const App: React.FC = () => {
-  const { isAuthenticated, isInitialized, loading, error } = useLogin()
-  const { maintenanceMode } = React.useContext(LoginContext)
+  const { isAuthenticated, loading } = useContext(LoginContext)
+  const { isVerified, isInitialized, error } = React.useContext(UserProfileContext)
+  const { maintenanceMode } = React.useContext(AppContext)
   const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
 
   if (needIntervention)
     return (
       <Router>
-        <TopBarContainer />
+        <TopBar />
         <AppWrapperContainer>
           <Routes>
             <Route
@@ -53,7 +55,7 @@ export const App: React.FC = () => {
 
   return (
     <Router>
-      <TopBarContainer />
+      <TopBar />
       <StagingWarning
         open={stagingWarningOpen}
         onClose={() => {

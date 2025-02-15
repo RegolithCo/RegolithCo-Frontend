@@ -1,12 +1,13 @@
 import { Typography } from '@mui/material'
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useLogin } from '../../hooks/useOAuth2'
 import { LoginButton } from '../LoginButton'
 import { PageWrapper } from '../PageWrapper'
 import { MaintenancePage } from './MaintenancePage'
 import { PageLoader } from './PageLoader.stories'
 import { ServiceDownPage } from './ServiceDownPage'
+import { AppContext } from '../../context/app.context'
+import { LoginContext, UserProfileContext } from '../../context/auth.context'
 
 export interface AuthGateProps {
   children: React.ReactNode
@@ -15,10 +16,13 @@ export interface AuthGateProps {
 }
 
 export const AuthGate: React.FC<AuthGateProps> = ({ allowNoInit, children, fallback }) => {
-  const { isAuthenticated, loading, isInitialized, APIWorking, maintenanceMode } = useLogin()
+  const { maintenanceMode, APIWorking } = React.useContext(AppContext)
+  const { isAuthenticated, loading: loginLoading } = React.useContext(LoginContext)
+  const { isInitialized, loading: profileLoading } = React.useContext(UserProfileContext)
 
   // Detect if localStorage has a redirect_url set and then redirect to it
   const redirect_url = localStorage.getItem('redirect_url')
+  const loading = loginLoading || profileLoading
 
   if (!APIWorking) {
     if (maintenanceMode) return <MaintenancePage msg={maintenanceMode} />

@@ -7,13 +7,13 @@ import { DiscordIcon } from '../../icons/Discord'
 export type LoginChoiceProps = {
   open?: boolean
   onClose: () => void
-  authType: AuthTypeEnum
+  authType: AuthTypeEnum | null
   setAuthType: (authType: AuthTypeEnum) => void
-  login: () => void
 }
 
-export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authType, setAuthType, login }) => {
+export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authType, setAuthType }) => {
   const theme = useTheme()
+  const [btnChoice, setBtnChoice] = React.useState<AuthTypeEnum>(authType || AuthTypeEnum.Discord)
   return (
     <Modal open={Boolean(open)} onClose={onClose}>
       <Box
@@ -35,7 +35,7 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
         </Typography>
         <ToggleButtonGroup
           size="small"
-          value={authType}
+          value={btnChoice}
           sx={{
             width: '100%',
             my: 4,
@@ -62,7 +62,7 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
           exclusive
           onChange={(e, value) => {
             if (value) {
-              setAuthType(value)
+              setBtnChoice(value)
             }
           }}
         >
@@ -80,8 +80,8 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
             my: 4,
           }}
           onClick={() => {
+            setAuthType(btnChoice!)
             onClose()
-            login()
           }}
           size="large"
           fullWidth
