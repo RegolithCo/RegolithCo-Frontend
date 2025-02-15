@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import log from 'loglevel'
 import { Config } from './types'
 
 // const is_dev = import.meta.env.MODE === 'development'
@@ -15,7 +16,7 @@ export const getVersions = (): {
     commit = document.querySelector<HTMLMetaElement>('meta[name=commit]')?.content || '0000000'
     stage = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content || 'dev'
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
   return {
     appVersion,

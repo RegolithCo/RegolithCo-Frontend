@@ -23,7 +23,6 @@ import { LoginContext, UserProfileContext } from './context/auth.context'
 import { TopBar } from './components/TopBar'
 import { enqueueSnackbar } from 'notistack'
 import { Box } from '@mui/material'
-import log from 'loglevel'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
@@ -38,7 +37,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated !== isAutheticated.current) {
-      log.debug('MARZIPAN:::INNER AUTH CHANGE', isAuthenticated)
       if (isAuthenticated) enqueueSnackbar('Welcome back!', { variant: 'success' })
       else enqueueSnackbar('Logging out', { variant: 'info' })
       isAutheticated.current = isAuthenticated

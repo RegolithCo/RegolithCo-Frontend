@@ -2,6 +2,7 @@ import * as React from 'react'
 import { TextField } from '@mui/material'
 import { yellow } from '@mui/material/colors'
 import { fontFamilies } from '../../theme'
+import log from 'loglevel'
 
 interface VerifyCodeFieldProps {
   code: string
@@ -22,7 +23,7 @@ export const VerifyCodeField: React.FC<VerifyCodeFieldProps> = ({ code }) => {
           setHelperText(' ')
         }, 4000)
       } catch (err) {
-        console.error('Failed to copy text: ', err)
+        log.error('Failed to copy text: ', err)
       }
     }
   }
