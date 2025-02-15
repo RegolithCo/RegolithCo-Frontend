@@ -34,13 +34,13 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
     }
   }, [userProfileQry.data, userProfileQry.loading, userProfileQry.error])
 
-  useEffect(() => {
-    if (postLoginRedirect && isAuthenticated && !loginLoading && Boolean(userProfileQry.data?.profile)) {
-      const newUrl = new URL(postLoginRedirect, window.location.origin)
-      setPostLoginRedirect(null)
-      window.location.href = newUrl.toString()
-    }
-  }, [postLoginRedirect, setPostLoginRedirect, userProfileQry])
+  // useEffect(() => {
+  //   if (postLoginRedirect && isAuthenticated && !loginLoading && Boolean(userProfileQry.data?.profile)) {
+  //     const newUrl = new URL(postLoginRedirect, window.location.origin)
+  //     setPostLoginRedirect(null)
+  //     window.location.href = newUrl.toString()
+  //   }
+  // }, [postLoginRedirect, setPostLoginRedirect, userProfileQry])
 
   return (
     <UserProfileContext.Provider

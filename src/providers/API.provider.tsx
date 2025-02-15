@@ -90,7 +90,7 @@ const splitLink = split(
  */
 export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { authType } = useContext(LoginContextWrapper)
-  const { token, isAuthenticated, loading, logIn, logOut } = useContext(LoginContext)
+  const { token, isAuthenticated, loading, authLogIn, authLogOut } = useContext(LoginContext)
   const [APIWorking, setAPIWorking] = useState(true)
   const [hideNames, setHideNames] = React.useState(false)
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
@@ -110,16 +110,16 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       const finalHeaders: Record<string, string> = {
         ...headers,
         ...DEV_HEADERS,
+        authorization: token ? `Bearer ${token}` : '',
       }
       if (authType) finalHeaders.authType = authType
-      if (token) finalHeaders.token = token
       devQueries(finalHeaders)
       return { headers: finalHeaders }
     })
 
     return new ApolloClient({
       link: from([
-        errorLinkThunk({ setAPIWorking, setMaintenanceMode, logOut }),
+        errorLinkThunk({ setAPIWorking, setMaintenanceMode, logOut: authLogOut }),
         retryLink,
         makeLogLink(log.debug),
         authLink,
@@ -305,7 +305,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         } as StrictTypedTypePolicies,
       }),
     })
-  }, [token, loading, authType])
+  }, [token, loading, authType, isAuthenticated])
 
   // See useGQLErrors.tsx for the error handling
   const errorDialogEl = React.useMemo(() => {

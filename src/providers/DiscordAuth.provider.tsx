@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import { AuthProvider, AuthContext, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
-import log from 'loglevel'
 import { getRedirectUrl } from './OAuth2.provider'
 import { wipeAuthStorage } from '../lib/utils'
 import config from '../config'
@@ -12,7 +11,7 @@ const getDiscordConfig = (): TAuthConfig => ({
   tokenEndpoint: 'https://discord.com/api/oauth2/token',
   redirectUri: getRedirectUrl(),
   autoLogin: true,
-  decodeToken: true,
+  decodeToken: false,
   scope: 'identify guilds',
 })
 
@@ -23,19 +22,7 @@ const getDiscordConfig = (): TAuthConfig => ({
  */
 export const DiscordAuthInner: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { setAuthType } = useContext(LoginContextWrapper)
-  const { tokenData, token, logIn, logOut, idToken, error, loginInProgress, idTokenData }: IAuthContext =
-    useContext(AuthContext)
-
-  log.info('MARZIPAN', {
-    tokenData,
-    token,
-    logIn,
-    logOut,
-    idToken,
-    error,
-    loginInProgress,
-    idTokenData,
-  })
+  const { token, logIn, logOut, loginInProgress }: IAuthContext = useContext(AuthContext)
 
   return (
     <LoginContext.Provider
@@ -43,8 +30,8 @@ export const DiscordAuthInner: React.FC<React.PropsWithChildren> = ({ children }
         isAuthenticated: !!token,
         loading: loginInProgress,
         token: token,
-        logIn,
-        logOut: () => {
+        authLogIn: logIn,
+        authLogOut: () => {
           logOut()
           setAuthType(null)
           wipeAuthStorage()
@@ -65,9 +52,12 @@ export const DiscordAuthInner: React.FC<React.PropsWithChildren> = ({ children }
 export const DiscordAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const discordAuth: TAuthConfig = {
     ...getDiscordConfig(),
-    autoLogin: false,
     onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => {},
   }
 
-  return <AuthProvider authConfig={discordAuth}>{children}</AuthProvider>
+  return (
+    <AuthProvider authConfig={discordAuth}>
+      <DiscordAuthInner>{children}</DiscordAuthInner>
+    </AuthProvider>
+  )
 }

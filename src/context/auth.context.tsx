@@ -28,8 +28,8 @@ export interface LoginContextObj {
   isAuthenticated: boolean
   loading: boolean
   token: string | null
-  logIn?: (authType: AuthTypeEnum) => void
-  logOut?: () => void
+  authLogIn?: (authType: AuthTypeEnum) => void
+  authLogOut?: () => void
 }
 
 export const DEFAULT_LOGIN_CONTEXT: LoginContextObj = {

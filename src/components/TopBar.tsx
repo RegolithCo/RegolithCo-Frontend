@@ -114,7 +114,7 @@ export const TopBar: React.FC = () => {
   const styles = stylesThunk(theme)
   const { hideNames, setHideNames, maintenanceMode } = React.useContext(AppContext)
   const { setPopupOpen } = React.useContext(LoginContextWrapper)
-  const { isAuthenticated, loading: loginLoading, logOut } = React.useContext(LoginContext)
+  const { isAuthenticated, loading: loginLoading, authLogOut } = React.useContext(LoginContext)
   const { isInitialized, isVerified, loading: profileLoading, myProfile, error } = React.useContext(UserProfileContext)
   const { isScreenSharing, stopScreenCapture } = React.useContext(ScreenshareContext)
   // const [shareOpen, setShareOpen] = React.useState(false)
@@ -269,9 +269,9 @@ export const TopBar: React.FC = () => {
       path: '/',
       name: 'Logout',
       icon: <Logout />,
-      show: Boolean(isAuthenticated && logOut),
+      show: Boolean(isAuthenticated && authLogOut),
       action: () => {
-        if (logOut) logOut()
+        if (authLogOut) authLogOut()
       },
     },
   ]

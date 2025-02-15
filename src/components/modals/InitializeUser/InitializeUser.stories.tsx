@@ -41,10 +41,10 @@ const loginCtxMock: LoginContextObj = {
   isAuthenticated: true,
   loading: false,
   token: 'SOME_TOKEN',
-  logIn: (authType: AuthTypeEnum) => {
+  authLogIn: (authType: AuthTypeEnum) => {
     log.info('signIn', authType)
   },
-  logOut: () => {
+  authLogOut: () => {
     log.info('signOut')
     return Promise.resolve()
   },

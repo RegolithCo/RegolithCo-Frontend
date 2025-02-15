@@ -48,7 +48,7 @@ type useSessionsReturn = {
 }
 
 export const useUserProfile = (): useSessionsReturn => {
-  const { logOut } = useContext(LoginContext)
+  const { authLogOut } = useContext(LoginContext)
   const navigate = useNavigate()
   const userProfileQry = useGetUserProfileQuery({
     // returnPartialData: true,
@@ -157,7 +157,7 @@ export const useUserProfile = (): useSessionsReturn => {
         refetchQueries: [GetUserProfileDocument],
       })
         .then(() => {
-          if (logOut) logOut()
+          if (authLogOut) authLogOut()
           localStorage.clear()
           navigate('/')
         })

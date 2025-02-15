@@ -1,5 +1,5 @@
 import { AuthTypeEnum } from '@regolithco/common'
-import React, { useEffect } from 'react'
+import React from 'react'
 import log from 'loglevel'
 import { GoogleAuthProvider } from './GoogleAuth.provider'
 import { DiscordAuthProvider } from './DiscordAuth.provider'
@@ -43,15 +43,17 @@ export const OAuth2Provider: React.FC<React.PropsWithChildren> = ({ children }) 
 
   const LoginProvider: React.FC<React.PropsWithChildren> = React.useMemo(() => {
     if (authTypeLS === AuthTypeEnum.Discord) {
-      return () => <GoogleAuthProvider>{children}</GoogleAuthProvider>
-    } else if (authTypeLS === AuthTypeEnum.Google) {
       return () => <DiscordAuthProvider>{children}</DiscordAuthProvider>
+    } else if (authTypeLS === AuthTypeEnum.Google) {
+      return () => <GoogleAuthProvider>{children}</GoogleAuthProvider>
     } else {
       return () => {
         return <LoginContext.Provider value={DEFAULT_LOGIN_CONTEXT}>{children}</LoginContext.Provider>
       }
     }
   }, [authTypeLS])
+
+  log.info('MARZIPAN', { authTypeLS, LoginProvider: LoginProvider.name })
 
   return (
     <LoginContextWrapper.Provider

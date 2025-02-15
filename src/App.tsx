@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { AppWrapperContainer } from './components/AppWrapper'
 import { BrowserRouter as Router, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { HomePageContainer } from './components/pages/HomePage.container'
@@ -21,16 +21,26 @@ import { SurveyCorpsHomeContainer } from './components/pages/SurveyCorps'
 import { AppContext } from './context/app.context'
 import { LoginContext, UserProfileContext } from './context/auth.context'
 import { TopBar } from './components/TopBar'
+import { enqueueSnackbar } from 'notistack'
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
 const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
 
 export const App: React.FC = () => {
   const { isAuthenticated, loading } = useContext(LoginContext)
-  const { isVerified, isInitialized, error } = React.useContext(UserProfileContext)
+  const { isInitialized, error } = React.useContext(UserProfileContext)
   const { maintenanceMode } = React.useContext(AppContext)
   const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
   const needIntervention = !loading && !error && isAuthenticated && !isInitialized
+  const isAutheticated = useRef(isAuthenticated)
+
+  useEffect(() => {
+    if (isAuthenticated !== isAutheticated.current) {
+      if (isAuthenticated) enqueueSnackbar('Welcome back!', { variant: 'success' })
+      else enqueueSnackbar('Logging out', { variant: 'info' })
+      isAutheticated.current = isAuthenticated
+    }
+  }, [isAuthenticated])
 
   if (needIntervention)
     return (

@@ -22,7 +22,7 @@ export interface InitializeUserProps {
 
 export const InitializeUser: React.FC<InitializeUserProps> = ({ userProfile, verifyError, fns, loading }) => {
   const [userName, setUserName] = React.useState<string | null>()
-  const { isAuthenticated, logOut, loading: loginLoading } = React.useContext(LoginContext)
+  const { isAuthenticated, authLogOut, loading: loginLoading } = React.useContext(LoginContext)
   const { isInitialized, isVerified } = React.useContext(UserProfileContext)
   const pageTitle = !isInitialized ? 'Initialize User' : 'Verify User'
   const redirectTimerRef = React.useRef<NodeJS.Timeout>()
@@ -78,7 +78,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({ userProfile, ver
               color="secondary"
               size="large"
               onClick={() => {
-                if (logOut) logOut()
+                if (authLogOut) authLogOut()
                 fns.backToPage()
               }}
             >

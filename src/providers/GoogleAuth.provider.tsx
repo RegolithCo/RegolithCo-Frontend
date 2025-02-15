@@ -16,20 +16,25 @@ const getExpiryTs = (expiresIn: number, shortenMin: number): number =>
 type GoogleTokenObject = { accessToken: string; refreshToken: string; expiryTs: number }
 
 export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { setAuthType } = useContext(LoginContextWrapper)
+  const { authType, setAuthType } = useContext(LoginContextWrapper)
   const [googleAuth, setGoogleAuth] = useLocalStorage<GoogleTokenObject | null>('ROCP_GooToken', null)
 
   const fullLogout = () => {
-    googleLogout()
-    setGoogleAuth(null)
+    log.debug('GoogleAuth::Full Logout')
     setAuthType(null)
+    setGoogleAuth(null)
+    googleLogout()
     wipeAuthStorage()
   }
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onNonOAuthError: (error) => log.error('Google Login Failed:', error),
+    onNonOAuthError: (error) => {
+      log.error('Google Login Failed:', error)
+      fullLogout()
+    },
     onSuccess: async (tokenResponse) => {
+      log.debug('GoogleAuth::Token Response', tokenResponse)
       try {
         // Step 2: Send auth code to regolith backend for token exchange
         // Note that it sues the same endpoint as the refresh token below
@@ -41,8 +46,8 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
             const expiryTs = Date.now() + res.data.expires_in * 1000
             // if the expiry is in the past then we have a problem
             if (expiryTs < Date.now()) {
-              enqueueSnackbar('Error logging in with Google. Please try again.', { variant: 'error' })
-              log.error('Token expired before it was even set')
+              enqueueSnackbar('GoogleAuth::Error logging in with Google. Please try again.', { variant: 'error' })
+              log.error('GoogleAuth::Token expired before it was even set')
               fullLogout()
             } else {
               setGoogleAuth({
@@ -50,17 +55,20 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
                 refreshToken: res.data.refresh_token as string,
                 expiryTs: getExpiryTs(res.data.expires_in, 5),
               })
-              enqueueSnackbar('Successfully logged in with Google', { variant: 'success' })
             }
           })
       } catch (error) {
-        enqueueSnackbar('Error logging in with Google. Please try again.', { variant: 'error' })
-        log.error('Error exchanging code for token:', error)
+        enqueueSnackbar('GoogleAuth::Error logging in with Google. Please try again.', { variant: 'error' })
+        log.error('GoogleAuth::Error exchanging Google code for token:', error)
         fullLogout()
       }
     },
     onError: (error) => log.error('Google Login Failed:', error),
   })
+
+  React.useLayoutEffect(() => {
+    if (googleLogin && (!googleAuth || !googleAuth.refreshToken)) googleLogin()
+  }, [googleLogin, googleAuth])
 
   React.useEffect(() => {
     if (!googleAuth || !googleAuth.refreshToken) return
@@ -100,7 +108,7 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
       const intervalObj = setInterval(refreshAccessToken, intervalValue)
       return () => clearInterval(intervalObj)
     }
-  }, [googleAuth])
+  }, [googleAuth, googleLogin, authType])
 
   return (
     <LoginContext.Provider
@@ -108,11 +116,9 @@ export const GoogleAuthInner: React.FC<React.PropsWithChildren> = ({ children })
         isAuthenticated: Boolean(googleAuth?.accessToken),
         loading: false,
         token: googleAuth?.accessToken || null,
-        logIn: googleLogin,
-        logOut: () => {
-          googleLogout()
-          setGoogleAuth(null)
-          wipeAuthStorage()
+        authLogIn: googleLogin,
+        authLogOut: () => {
+          fullLogout()
         },
       }}
     >
@@ -131,5 +137,13 @@ export const GoogleAuthProvider: React.FC<React.PropsWithChildren> = ({ children
   // Instead of state the authType is stored in local storage next to the other pkce keys.
   // This should persist the key with the other choices
 
-  return <GoogleOAuthProvider clientId={config.googleClientId}>{children}</GoogleOAuthProvider>
+  return (
+    <GoogleOAuthProvider
+      clientId={config.googleClientId}
+      onScriptLoadError={() => log.error('GoogleAuth::Script Load Error')}
+      onScriptLoadSuccess={() => log.debug('GoogleAuth::Script Loaded')}
+    >
+      <GoogleAuthInner>{children}</GoogleAuthInner>
+    </GoogleOAuthProvider>
+  )
 }
