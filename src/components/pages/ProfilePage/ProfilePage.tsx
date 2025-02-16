@@ -138,9 +138,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const [modalOpen, setModalOpen] = React.useState<ProfileModals | null>(null)
   const { hideNames, getSafeName } = React.useContext(AppContext)
-  const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>(
-    pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings'])
-  )
+  const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>({
+    ...pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings']),
+    surveyorGuild: userProfile?.surveyorGuild?.id,
+  })
   const [friend2remove, setFriend2remove] = React.useState<string>()
   const [showAPIKey, setShowAPIKey] = React.useState<boolean>(false)
 

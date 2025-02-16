@@ -541,6 +541,12 @@ export const UserProfileFragmentFragmentDoc = gql`
   plan
   apiKey
   state
+  discordGuilds {
+    id
+    name
+    iconUrl
+    hasPermission
+  }
   verifyCode
   sessionShipCode
   deliveryShipCode
@@ -556,6 +562,11 @@ export const UserProfileFragmentFragmentDoc = gql`
   surveyorScore
   isSurveyor
   isSurveyorBanned
+  surveyorGuild {
+    iconUrl
+    id
+    name
+  }
 }
     ${MiningLoadoutFragmentFragmentDoc}
 ${SessionSettingFragmentFragmentDoc}`;

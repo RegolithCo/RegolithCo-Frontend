@@ -1,18 +1,18 @@
 import React from 'react'
-import { Select, MenuItem, Avatar, FormControlLabel, Switch, Typography, InputLabel } from '@mui/material'
-import { DiscordGuildInput, MyDiscordGuild } from '@regolithco/common'
-import { Diversity3 } from '@mui/icons-material'
-import { Box, Stack } from '@mui/system'
+import { FormControlLabel, Switch, Typography, InputLabel } from '@mui/material'
+import { DiscordGuild, DiscordGuildInput, MyDiscordGuild } from '@regolithco/common'
+import { Stack } from '@mui/system'
+import { DiscordGuildChooser } from './DIscordGuildChooser'
 
 export interface DiscordServerControlProps {
-  lockToDiscordGuild?: DiscordGuildInput
+  discordGuild?: DiscordGuild
   options: MyDiscordGuild[]
   isDiscordEnabled: boolean
   onChange: (method?: DiscordGuildInput) => void
 }
 
 export const DiscordServerControl: React.FC<DiscordServerControlProps> = ({
-  lockToDiscordGuild,
+  discordGuild: lockToDiscordGuild,
   options,
   isDiscordEnabled,
   onChange,
@@ -22,8 +22,7 @@ export const DiscordServerControl: React.FC<DiscordServerControlProps> = ({
     <Stack gap={2} direction="column">
       <FormControlLabel
         checked={Boolean(lockToDiscordGuild)}
-        // disabled={!isDiscordEnabled || !hasOneValid}
-        disabled={true}
+        disabled={!isDiscordEnabled || !hasOneValid}
         control={
           <Switch
             onChange={(e) => {
@@ -54,44 +53,12 @@ export const DiscordServerControl: React.FC<DiscordServerControlProps> = ({
       )}
       {isDiscordEnabled && lockToDiscordGuild && <InputLabel id="label">Discord Server</InputLabel>}
       {isDiscordEnabled && lockToDiscordGuild && (
-        <Select
-          labelId="refineryMethod"
-          id="refineryMethod"
-          variant="standard"
-          size="small"
-          value={lockToDiscordGuild.id}
-          label="Discord Server"
-          fullWidth
-          renderValue={(selected) => {
-            const selectedOption = options.find((option) => option.id === selected)
-            return (
-              <Box display="flex" alignItems="center">
-                <Avatar src={selectedOption?.iconUrl || undefined} sx={{ width: 24, height: 24, marginRight: 1 }}>
-                  <Diversity3 color="primary" />
-                </Avatar>
-                {selectedOption?.name}
-              </Box>
-            )
-          }}
-          onChange={(event) => {
-            const chosenGuild = options.find((option) => option.id === event.target.value)
-            if (chosenGuild) {
-              const { hasPermission, ...chosenGuildWithoutPermission } = chosenGuild
-              onChange(chosenGuildWithoutPermission)
-            }
-          }}
-        >
-          {options.map((option) => (
-            // I want an option with the guild name and icon and a suffix that says (can post) if the permissions are correct
-            <MenuItem key={option.id} value={option.id} disabled={!option.hasPermission}>
-              <Avatar src={option.iconUrl || undefined} sx={{ width: 24, height: 24, marginRight: 1 }}>
-                <Diversity3 color="primary" />
-              </Avatar>
-              {option.name}
-              {option.hasPermission ? '' : ' (missing permissions)'}
-            </MenuItem>
-          ))}
-        </Select>
+        <DiscordGuildChooser
+          disabled={!isDiscordEnabled || !hasOneValid}
+          discordGuildId={lockToDiscordGuild?.id}
+          options={options}
+          onChange={onChange}
+        />
       )}
     </Stack>
   )

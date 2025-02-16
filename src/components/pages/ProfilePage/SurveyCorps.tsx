@@ -8,8 +8,10 @@ import {
   Button,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  InputLabel,
   Link,
   Stack,
   TextField,
@@ -20,6 +22,7 @@ import { DiscordIcon, SurveyCorpsIcon } from '../../../icons'
 import { fontFamilies } from '../../../theme'
 import { Check, MeetingRoom, ThumbUp } from '@mui/icons-material'
 import { ConfirmModal } from '../../modals/ConfirmModal'
+import { DiscordGuildChooser } from '../../fields/DIscordGuildChooser'
 
 export interface SurveyCorpsProps {
   userProfile?: UserProfile
@@ -31,6 +34,9 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
   const theme = useTheme()
   const [confirmLeave, setConfirmLeave] = React.useState(false)
   const [newLeaderboardName, setNewLeaderboardName] = React.useState<string>(userProfile?.surveyorName || '')
+  const [newLeaderboardGuild, setNewLeaderboardGuild] = React.useState<string | undefined>(
+    userProfile?.surveyorGuild?.id
+  )
   const isBanned = userProfile?.isSurveyorBanned
   const isEnlisted = userProfile?.isSurveyor && !isBanned
   const nameIsValid = newLeaderboardName.length === 0 || validateSCName(newLeaderboardName)
@@ -117,6 +123,49 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
               ),
             }}
           />
+          <Alert severity="info" sx={{ my: 2 }}>
+            <AlertTitle>Leaderboard Org / Guild</AlertTitle>
+            <Typography paragraph variant="body2">
+              You can choose one Discord server to associate all your points with. If you change this all your points go
+              with you.
+            </Typography>
+          </Alert>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Discord Server</InputLabel>
+            <DiscordGuildChooser
+              discordGuildId={newLeaderboardGuild}
+              onChange={(guild) => {
+                setNewLeaderboardGuild(guild?.id)
+              }}
+              allowNone={true}
+              disabled={!userProfile?.discordGuilds || userProfile?.discordGuilds.length === 0}
+              options={userProfile?.discordGuilds || []}
+              selectProps={{
+                endAdornment: (
+                  <Button
+                    variant="outlined"
+                    color="success"
+                    startIcon={<Check />}
+                    disabled={newLeaderboardGuild === userProfile?.surveyorGuild?.id}
+                    onClick={() => {
+                      updateUserProfile({ surveyorGuildId: newLeaderboardGuild })
+                    }}
+                  >
+                    Change
+                  </Button>
+                ),
+
+                size: 'medium',
+                variant: 'outlined',
+                sx: {
+                  '& .MuiSelect-root': {
+                    fontFamily: fontFamilies.robotoMono,
+                    fontSize: 30,
+                  },
+                },
+              }}
+            />
+          </FormControl>
 
           <Divider sx={{ my: 2 }} />
           <Typography paragraph variant="body2">

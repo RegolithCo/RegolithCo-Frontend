@@ -501,6 +501,12 @@ fragment UserProfileFragment on UserProfile {
   plan
   apiKey
   state
+  discordGuilds {
+    id
+    name
+    iconUrl
+    hasPermission
+  }
   verifyCode
   sessionShipCode
   deliveryShipCode
@@ -516,6 +522,11 @@ fragment UserProfileFragment on UserProfile {
   surveyorScore
   isSurveyor
   isSurveyorBanned
+  surveyorGuild {
+    iconUrl
+    id
+    name
+  }
 }
 
 fragment UserProfileLoadoutFragment on UserProfile {

@@ -8,10 +8,13 @@ import dayjs from 'dayjs'
 import { fontFamilies } from '../../theme'
 import { ArrowBack, Diversity3 } from '@mui/icons-material'
 import { Stack } from '@mui/system'
+import { GetUserProfileQuery } from '../../schema'
 
 export interface SessionJoinProps {
   sessionShare?: SessionShare
   loading: boolean
+  profile: GetUserProfileQuery['profile']
+  showGuilds: boolean
   joinSession: () => void
   navigate: (path: string) => void
   joinErrors: SessionJoinError[]
@@ -104,6 +107,9 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
               This session requires you to be logged into Regolith using Discord authentication.
             </Typography>
             {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
+            {/* {showGuilds && (
+              // <DiscordGuildList />
+            )} */}
           </Alert>
         )}
         {joinErrors.includes(SessionJoinError.NotInDiscordServer) && (

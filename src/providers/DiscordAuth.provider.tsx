@@ -2,7 +2,16 @@ import React, { useContext, useEffect } from 'react'
 import { AuthProvider, AuthContext, TAuthConfig, TRefreshTokenExpiredEvent, IAuthContext } from 'react-oauth2-code-pkce'
 import { getRedirectUrl } from './OAuth2.provider'
 import config from '../config'
-import { InnerLoginContextObj, LoginContext } from '../context/auth.context'
+import { InnerLoginContextObj } from '../context/auth.context'
+import * as Sentry from '@sentry/react'
+
+export class DiscordAuthError extends Error {
+  constructor(public details: Record<string, unknown>) {
+    super('Discord Authentication Error')
+    this.name = `DiscordAuthError`
+    Object.setPrototypeOf(this, DiscordAuthError.prototype)
+  }
+}
 
 const getDiscordConfig = (): TAuthConfig => ({
   clientId: config.discordClientId,
@@ -22,7 +31,21 @@ const getDiscordConfig = (): TAuthConfig => ({
 export const DiscordAuthInner: React.FC<{ setInnerState: (obj: InnerLoginContextObj) => void }> = ({
   setInnerState,
 }) => {
-  const { token, logIn, logOut, loginInProgress }: IAuthContext = useContext(AuthContext)
+  const { token, logIn, logOut, loginInProgress, error }: IAuthContext = useContext(AuthContext)
+
+  useEffect(() => {
+    if (error) {
+      Sentry.captureException(
+        new DiscordAuthError({
+          error,
+        }),
+        {
+          extra: { error },
+        }
+      )
+      console.error('DiscordAuthInner::Error', error)
+    }
+  }, [error])
 
   useEffect(() => {
     const newState = {

@@ -50,6 +50,12 @@ export type DiscordGuildFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type DiscordGuildInterfaceKeySpecifier = ('iconUrl' | 'id' | 'name' | DiscordGuildInterfaceKeySpecifier)[];
+export type DiscordGuildInterfaceFieldPolicy = {
+	iconUrl?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type LookupDataKeySpecifier = ('CIG' | 'UEX' | 'loadout' | LookupDataKeySpecifier)[];
 export type LookupDataFieldPolicy = {
 	CIG?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -114,6 +120,13 @@ export type MutationFieldPolicy = {
 	upsertSessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
 	userAPIKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	verifyUserProfile?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MyDiscordGuildKeySpecifier = ('hasPermission' | 'iconUrl' | 'id' | 'name' | MyDiscordGuildKeySpecifier)[];
+export type MyDiscordGuildFieldPolicy = {
+	hasPermission?: FieldPolicy<any> | FieldReadFunction<any>,
+	iconUrl?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type OtherOrderKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isSold' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'sellStore' | 'seller' | 'sellerUserId' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'version' | OtherOrderKeySpecifier)[];
 export type OtherOrderFieldPolicy = {
@@ -523,12 +536,13 @@ export type UserInterfaceFieldPolicy = {
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	userId?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserProfileKeySpecifier = ('apiKey' | 'avatarUrl' | 'createdAt' | 'deliveryShipCode' | 'friends' | 'isSurveyor' | 'isSurveyorBanned' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'plan' | 'scName' | 'sessionSettings' | 'sessionShipCode' | 'state' | 'surveyorName' | 'surveyorScore' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
+export type UserProfileKeySpecifier = ('apiKey' | 'avatarUrl' | 'createdAt' | 'deliveryShipCode' | 'discordGuilds' | 'friends' | 'isSurveyor' | 'isSurveyorBanned' | 'joinedSessions' | 'lastActive' | 'loadouts' | 'mySessions' | 'plan' | 'scName' | 'sessionSettings' | 'sessionShipCode' | 'state' | 'surveyorGuild' | 'surveyorName' | 'surveyorScore' | 'updatedAt' | 'userId' | 'userSettings' | 'verifyCode' | 'workOrders' | UserProfileKeySpecifier)[];
 export type UserProfileFieldPolicy = {
 	apiKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	avatarUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	createdAt?: FieldPolicy<any> | FieldReadFunction<any>,
 	deliveryShipCode?: FieldPolicy<any> | FieldReadFunction<any>,
+	discordGuilds?: FieldPolicy<any> | FieldReadFunction<any>,
 	friends?: FieldPolicy<any> | FieldReadFunction<any>,
 	isSurveyor?: FieldPolicy<any> | FieldReadFunction<any>,
 	isSurveyorBanned?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -541,6 +555,7 @@ export type UserProfileFieldPolicy = {
 	sessionSettings?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionShipCode?: FieldPolicy<any> | FieldReadFunction<any>,
 	state?: FieldPolicy<any> | FieldReadFunction<any>,
+	surveyorGuild?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyorName?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyorScore?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatedAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -690,6 +705,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | DiscordGuildKeySpecifier | (() => undefined | DiscordGuildKeySpecifier),
 		fields?: DiscordGuildFieldPolicy,
 	},
+	DiscordGuildInterface?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | DiscordGuildInterfaceKeySpecifier | (() => undefined | DiscordGuildInterfaceKeySpecifier),
+		fields?: DiscordGuildInterfaceFieldPolicy,
+	},
 	LookupData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupDataKeySpecifier | (() => undefined | LookupDataKeySpecifier),
 		fields?: LookupDataFieldPolicy,
@@ -701,6 +720,10 @@ export type StrictTypedTypePolicies = {
 	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
 		fields?: MutationFieldPolicy,
+	},
+	MyDiscordGuild?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MyDiscordGuildKeySpecifier | (() => undefined | MyDiscordGuildKeySpecifier),
+		fields?: MyDiscordGuildFieldPolicy,
 	},
 	OtherOrder?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | OtherOrderKeySpecifier | (() => undefined | OtherOrderKeySpecifier),

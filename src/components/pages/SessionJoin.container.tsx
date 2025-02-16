@@ -1,11 +1,11 @@
-import { ErrorCode, SessionStateEnum, UserStateEnum } from '@regolithco/common'
+import { AuthTypeEnum, ErrorCode, SessionStateEnum, UserStateEnum } from '@regolithco/common'
 import * as React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useJoinSession } from '../../hooks/useJoinSession'
 import { PageLoader } from './PageLoader'
 import { SessionJoin } from './SessionJoin'
 import { SessionNotFound } from './SessionPage/SessionNotFound'
-import { UserProfileContext } from '../../context/auth.context'
+import { LoginContext, UserProfileContext } from '../../context/auth.context'
 
 export interface SessionJoinContainerProps {
   // joinId: string
@@ -25,10 +25,11 @@ export type SessionJoinError = ObjectValues<typeof SessionJoinError>
 
 export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   const { joinId } = useParams()
+  const { authType } = React.useContext(LoginContext)
   const { myProfile } = React.useContext(UserProfileContext)
   const navigate = useNavigate()
-  // const { isDiscord, hasOneValid, myGuilds, loading: discordLoading } = useDiscordGuilds()
   const joinErrors: SessionJoinError[] = []
+  let showGuilds = false
 
   const { joinSession, loading, mutating, sessionError, sessionShare } = useJoinSession(joinId)
   // If you're not verified and the session requires it then nope
@@ -45,17 +46,19 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   if (sessionShare?.state === SessionStateEnum.Closed) {
     joinErrors.push(SessionJoinError.Closed)
   }
-  // if (sessionShare?.lockToDiscordGuild) {
-  //   const myGuild = myGuilds.find((guild) => guild.id === sessionShare?.lockToDiscordGuild?.id)
+  if (sessionShare?.lockToDiscordGuild) {
+    const myGuild = myProfile?.discordGuilds.find((guild) => guild.id === sessionShare?.lockToDiscordGuild?.id)
 
-  //   if (!isDiscord && !discordLoading) {
-  //     joinErrors.push(SessionJoinError.NeedDiscord)
-  //   } else if (!myGuild) {
-  //     joinErrors.push(SessionJoinError.NotInDiscordServer)
-  //   } else if (!myGuild.hasPermission) {
-  //     joinErrors.push(SessionJoinError.NotPermittedInDiscordServer)
-  //   }
-  // }
+    if (authType !== AuthTypeEnum.Discord) {
+      joinErrors.push(SessionJoinError.NeedDiscord)
+    } else if (!myGuild) {
+      joinErrors.push(SessionJoinError.NotInDiscordServer)
+      showGuilds = true
+    } else if (!myGuild.hasPermission) {
+      joinErrors.push(SessionJoinError.NotPermittedInDiscordServer)
+      showGuilds = true
+    }
+  }
   if (loading)
     // NO HOOKS BELOW HERE PLEASE
     return <PageLoader title="loading invitation..." loading />
@@ -67,6 +70,8 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   return (
     <SessionJoin
       sessionShare={sessionShare}
+      showGuilds={showGuilds}
+      profile={myProfile}
       joinSession={joinSession}
       navigate={navigate}
       loading={loading || mutating}

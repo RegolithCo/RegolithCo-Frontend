@@ -38,7 +38,7 @@ import {
   SessionStateEnum,
   UserSuggest,
   CrewShareTemplateInput,
-  DiscordGuildInput,
+  DiscordGuild,
 } from '@regolithco/common'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
@@ -53,10 +53,10 @@ import { fontFamilies } from '../../../theme'
 import { DialogEnum } from '../../../context/session.context'
 import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
 import { isEqual } from 'lodash'
-import { useDiscordGuilds } from '../../../hooks/useDiscordGuilds'
 import { DiscordServerControl } from '../../fields/DiscordServerControl'
 import { GravityWellChooser } from '../../fields/GravityWellChooser'
 import { SystemChooser } from '../../fields/SystemChooser'
+import { UserProfileContext } from '../../../context/auth.context'
 
 export interface SessionSettingsTabProps {
   // Use this for the session version
@@ -179,8 +179,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const [newSettings, setNewSettings] = React.useState<DestructuredSettings>(makeNewSettings(session, sessionSettings))
   const [nameValid, setNameValid] = React.useState(true)
   const [notevalid, setNoteValid] = React.useState(true)
+  const { myProfile } = React.useContext(UserProfileContext)
   const isDirty = React.useMemo(() => !isEqual(oldSettings, newSettings), [oldSettings, newSettings])
-  // const { isDiscord, error, loading: loadingDiscordGuilds, myGuilds } = useDiscordGuilds()
 
   React.useEffect(() => {
     const incomingSettings = makeNewSettings(session, sessionSettings)
@@ -544,7 +544,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   label="Require user verification to join."
                 />
                 <DiscordServerControl
-                  lockToDiscordGuild={newSettings.sessionSettings?.lockToDiscordGuild as DiscordGuildInput}
+                  discordGuild={newSettings.sessionSettings?.lockToDiscordGuild as DiscordGuild}
                   onChange={(guild) => {
                     setNewSettings({
                       ...newSettings,
@@ -554,10 +554,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       },
                     })
                   }}
-                  // isDiscordEnabled={isDiscord}
-                  // options={myGuilds}
-                  isDiscordEnabled={false}
-                  options={[]}
+                  isDiscordEnabled={Boolean(myProfile?.discordGuilds && myProfile.discordGuilds.length > 0)}
+                  options={myProfile?.discordGuilds || []}
                 />
 
                 {/* <FormControlLabel
