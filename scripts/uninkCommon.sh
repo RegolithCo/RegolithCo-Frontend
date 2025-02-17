@@ -8,5 +8,4 @@ COMMON_DIR="$WORKSPACE_DIR/../Common"
 
 rm -fr "$WORKSPACE_DIR/node_modules/@regolithco/common"
 
-ln -s "$COMMON_DIR" "$WORKSPACE_DIR/node_modules/@regolithco/common"
-echo "Linked @regolithco/common to $WORKSPACE_DIR/node_modules/@regolithco/common"
+yarn install

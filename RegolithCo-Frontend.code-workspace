@@ -7,7 +7,7 @@
     // We can symlink this to the git repo to work on it concurrently
     {
       "name": "📦 common",
-      "path": "node_modules/@regolithco/"
+      "path": "node_modules/@regolithco/common"
     },
     // Helpful to have the schema there for you to reference
     {

@@ -159,8 +159,6 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
     }
   }
 
-  // const stores = Object.values(MiningStoreEnum)
-
   const modTypeIcons: Record<string, React.ReactNode> = {
     A: <Chip label="Active" size="small" color="primary" />,
     P: <Chip label="Passive" size="small" color="secondary" />,
@@ -566,7 +564,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                     {columnGroups.includes(ColumnGroupEnum.Market) && (
                       <>
                         {filteredStores.map((store, colNum) => {
-                          const price = lm.prices[store.code as MiningModuleEnum] || 0
+                          const price = lm.prices[store.UEXID] || 0
                           return (
                             <TableCell
                               key={`${store}-${colNum}`}
@@ -586,7 +584,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                                 ) : (
                                   ''
                                 )
-                              ) : Object.keys(lm.prices).includes(store.code) ? (
+                              ) : Object.keys(lm.prices).includes(store.UEXID) ? (
                                 <Check color="success" />
                               ) : null}
                             </TableCell>
