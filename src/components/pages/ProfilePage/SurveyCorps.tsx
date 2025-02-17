@@ -124,7 +124,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
             }}
           />
           <Alert severity="info" sx={{ my: 2 }}>
-            <AlertTitle>Leaderboard Org / Guild</AlertTitle>
+            <AlertTitle>Leaderboard Org / Guild Allegiance</AlertTitle>
             <Typography paragraph variant="body2">
               You can choose one Discord server to associate all your points with. If you change this all your points go
               with you.

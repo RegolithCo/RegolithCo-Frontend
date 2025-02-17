@@ -54,6 +54,7 @@ export type SurveyDataTables = {
   shipRockClassByGravProb: SurveyData | null
   bonusMap: SurveyData | null
   leaderBoard: SurveyData | null
+  guildLeaderBoard: SurveyData | null
 }
 
 export const SurveyCorpsHomeContainer: React.FC = () => {
@@ -103,6 +104,13 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     },
     fetchPolicy: 'cache-first',
   })
+  const guildLeaderBoard = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'guildLeaderBoard',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
 
   const surveyData: SurveyDataTables = {
     vehicleProbs: vehicleProbs.data?.surveyData || null,
@@ -111,6 +119,7 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     shipRockClassByGravProb: shipRockClassByGravProb.data?.surveyData || null,
     bonusMap: bonusMap.data?.surveyData || null,
     leaderBoard: leaderBoard.data?.surveyData || null,
+    guildLeaderBoard: guildLeaderBoard.data?.surveyData || null,
   }
   return (
     <SurveyCorpsHome
@@ -147,7 +156,13 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   const [modalOpen, setModalOpen] = React.useState(false)
 
   const leaderBoard = React.useMemo(
-    () => <SurveyCorpsLeaderBoard data={surveyData?.leaderBoard} epoch={epoch} />,
+    () => (
+      <SurveyCorpsLeaderBoard
+        userBoard={surveyData?.leaderBoard}
+        epoch={epoch}
+        guildBoard={surveyData?.guildLeaderBoard}
+      />
+    ),
     [surveyData?.leaderBoard?.data]
   )
   const rockLocation = React.useMemo(
