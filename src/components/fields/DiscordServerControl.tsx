@@ -2,7 +2,7 @@ import React from 'react'
 import { FormControlLabel, Switch, Typography, InputLabel } from '@mui/material'
 import { DiscordGuild, DiscordGuildInput, MyDiscordGuild } from '@regolithco/common'
 import { Stack } from '@mui/system'
-import { DiscordGuildChooser } from './DIscordGuildChooser'
+import { DiscordGuildChooser } from './DiscordGuildChooser'
 
 export interface DiscordServerControlProps {
   discordGuild?: DiscordGuild

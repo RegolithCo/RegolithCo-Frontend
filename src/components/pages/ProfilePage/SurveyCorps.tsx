@@ -22,7 +22,7 @@ import { DiscordIcon, SurveyCorpsIcon } from '../../../icons'
 import { fontFamilies } from '../../../theme'
 import { Check, MeetingRoom, ThumbUp } from '@mui/icons-material'
 import { ConfirmModal } from '../../modals/ConfirmModal'
-import { DiscordGuildChooser } from '../../fields/DIscordGuildChooser'
+import { DiscordGuildChooser } from '../../fields/DiscordGuildChooser'
 
 export interface SurveyCorpsProps {
   userProfile?: UserProfile
