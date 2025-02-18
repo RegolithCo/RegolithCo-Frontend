@@ -11,6 +11,7 @@ import {
   Stack,
   Tab,
   Table,
+  TableBody,
   TableCell,
   TableContainer,
   TableHead,
@@ -173,48 +174,50 @@ const GuildBoard: React.FC<{ data: JSONObject[] }> = ({ data }) => {
         </TableHead>
 
         {/* LIST */}
-        {(data as []).map((entry: JSONObject, idx: number) => {
-          return (
-            <TableRow
-              key={idx}
-              sx={{
-                color: 'white',
-                backgroundColor: bgColors[idx],
-              }}
-            >
-              <TableCell>
-                <Avatar
-                  sx={{
-                    height: 30,
-                    width: 30,
-                    color: contrastColors[idx],
-                    fontSize: '1rem',
-                    border: `2px solid ${borderColors[idx]}`,
-                    backgroundColor: gradient[idx],
-                  }}
-                >
-                  {idx + 1}
-                </Avatar>
-              </TableCell>
-              <TableCell>
-                {entry['guild'] ? (
-                  <EntryGuild guild={entry['guild']} />
-                ) : (
-                  <em
-                    style={{
-                      color: theme.palette.text.secondary,
+        <TableBody>
+          {(data as []).map((entry: JSONObject, idx: number) => {
+            return (
+              <TableRow
+                key={idx}
+                sx={{
+                  color: 'white',
+                  backgroundColor: bgColors[idx],
+                }}
+              >
+                <TableCell>
+                  <Avatar
+                    sx={{
+                      height: 30,
+                      width: 30,
+                      color: contrastColors[idx],
+                      fontSize: '1rem',
+                      border: `2px solid ${borderColors[idx]}`,
+                      backgroundColor: gradient[idx],
                     }}
                   >
-                    None
-                  </em>
-                )}
-              </TableCell>
-              <TableCell align="right">
-                <Typography>{MValueFormatter(entry['score'], MValueFormat.number)}</Typography>
-              </TableCell>
-            </TableRow>
-          )
-        })}
+                    {idx + 1}
+                  </Avatar>
+                </TableCell>
+                <TableCell>
+                  {entry['guild'] ? (
+                    <EntryGuild guild={entry['guild']} />
+                  ) : (
+                    <em
+                      style={{
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      None
+                    </em>
+                  )}
+                </TableCell>
+                <TableCell align="right">
+                  <Typography>{MValueFormatter(entry['score'], MValueFormat.number)}</Typography>
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
       </Table>
     </TableContainer>
   )
@@ -276,45 +279,47 @@ const UserBoard: React.FC<{ data: JSONObject[] }> = ({ data }) => {
         </TableHead>
 
         {/* LIST */}
-        {(data as []).map((entry: JSONObject, idx: number) => (
-          <TableRow
-            key={idx}
-            sx={{
-              color: 'white',
-              backgroundColor: bgColors[idx],
-            }}
-          >
-            <TableCell>
-              <Avatar
-                sx={{
-                  height: 30,
-                  width: 30,
-                  color: contrastColors[idx],
-                  fontSize: '1rem',
-                  border: `2px solid ${borderColors[idx]}`,
-                  backgroundColor: gradient[idx],
-                }}
-              >
-                {idx + 1}
-              </Avatar>
-            </TableCell>
-            <TableCell>{entry['name']}</TableCell>
-            <TableCell>
-              {entry['guild'] ? (
-                <EntryGuild guild={entry['guild']} />
-              ) : (
-                <em
-                  style={{
-                    color: theme.palette.text.secondary,
+        <TableBody>
+          {(data as []).map((entry: JSONObject, idx: number) => (
+            <TableRow
+              key={idx}
+              sx={{
+                color: 'white',
+                backgroundColor: bgColors[idx],
+              }}
+            >
+              <TableCell>
+                <Avatar
+                  sx={{
+                    height: 30,
+                    width: 30,
+                    color: contrastColors[idx],
+                    fontSize: '1rem',
+                    border: `2px solid ${borderColors[idx]}`,
+                    backgroundColor: gradient[idx],
                   }}
                 >
-                  None
-                </em>
-              )}
-            </TableCell>
-            <TableCell align="right">{MValueFormatter(entry['score'], MValueFormat.number)}</TableCell>
-          </TableRow>
-        ))}
+                  {idx + 1}
+                </Avatar>
+              </TableCell>
+              <TableCell>{entry['name']}</TableCell>
+              <TableCell>
+                {entry['guild'] ? (
+                  <EntryGuild guild={entry['guild']} />
+                ) : (
+                  <em
+                    style={{
+                      color: theme.palette.text.secondary,
+                    }}
+                  >
+                    None
+                  </em>
+                )}
+              </TableCell>
+              <TableCell align="right">{MValueFormatter(entry['score'], MValueFormat.number)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
       </Table>
     </TableContainer>
   )
