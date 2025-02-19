@@ -164,7 +164,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   )
   const shipClassLocation = React.useMemo(
     () => <ShipClassLocation data={surveyData?.shipRockClassByGravProb} bonuses={surveyData?.bonusMap} />,
-    [surveyData?.bonusMap?.data, surveyData?.shipOreByGravProb?.data]
+    [surveyData?.bonusMap?.data, surveyData?.shipRockClassByGravProb?.data]
   )
 
   let pageContent: React.ReactNode = null

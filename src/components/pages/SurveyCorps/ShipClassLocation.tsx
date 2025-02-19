@@ -518,6 +518,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
     showExtendedStats,
   ])
 
+  if (!tableRows || !tableRows.length) return null
   return (
     <Box
       sx={{
