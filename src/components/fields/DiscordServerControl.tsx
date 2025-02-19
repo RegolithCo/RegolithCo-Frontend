@@ -30,7 +30,8 @@ export const DiscordServerControl: React.FC<DiscordServerControlProps> = ({
               if (e.target.checked) {
                 const myGuild = options.find((option) => option.hasPermission)
                 if (myGuild) {
-                  const { hasPermission, ...myGuildWithoutPermission } = myGuild
+                  // Strip out the __typename and hasPermission fields before sending
+                  const { __typename, hasPermission, ...myGuildWithoutPermission } = myGuild
                   onChange(myGuildWithoutPermission)
                 }
               } else {

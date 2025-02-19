@@ -32,7 +32,14 @@ if (config.stage !== 'production') {
 const versions = getVersions()
 Sentry.init({
   dsn: 'https://9f240841555f7364d65fb26d7c64b210@o4508823981391872.ingest.us.sentry.io/4508824003936256',
-  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration({
+      maskAllText: false,
+      blockAllMedia: false,
+      mask: ['.sentry-mask'],
+    }),
+  ],
   // Tracing
   environment: config.stage,
   tracesSampleRate: 1.0, //  Capture 100% of the transactions

@@ -71,7 +71,7 @@ export const useGQLErrors = (queries: QueryResult<any, any>[], mutations: Mutati
     })
     mutations.forEach(([_, { error }]) => {
       if (error) {
-        enqueueSnackbar('Error:' + (error.message || error.name), {
+        enqueueSnackbar('GraphQL Error' + (error.name || 'UNKNOWN ERROR'), {
           variant: 'error',
           autoHideDuration: errorDialog ? null : 5000,
           persist: Boolean(errorDialog),
