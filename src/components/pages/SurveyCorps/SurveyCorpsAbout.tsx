@@ -63,7 +63,6 @@ export const SurveyCorpsAbout: React.FC<SurveyCorpsAboutProps> = ({ userProfile,
           </Button>
         </Alert>
       )}
-      {!isAuthenticated && <Typography variant="caption">Login</Typography>}
       <Typography variant="h5" paragraph>
         FAQ:
       </Typography>

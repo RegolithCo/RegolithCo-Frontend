@@ -48,10 +48,11 @@ type useSessionsReturn = {
 }
 
 export const useUserProfile = (): useSessionsReturn => {
-  const { authLogOut } = useContext(LoginContext)
+  const { authLogOut, isAuthenticated } = useContext(LoginContext)
   const navigate = useNavigate()
   const userProfileQry = useGetUserProfileQuery({
     // returnPartialData: true,
+    skip: !isAuthenticated,
   })
 
   useEffect(() => {

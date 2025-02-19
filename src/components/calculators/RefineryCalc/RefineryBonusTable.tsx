@@ -198,6 +198,7 @@ export const RefineryBonusTable: React.FC = () => {
                 {hAxis.map(([, hAxisLabel, system], colIdx) => {
                   return (
                     <TableCell
+                      key={`col-${colIdx}`}
                       sx={{
                         backgroundColor:
                           colIdx % 2 === 0 ? systemColorMap[system] : darken(systemColorMap[system], 0.2),
