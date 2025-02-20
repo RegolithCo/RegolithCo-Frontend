@@ -94,7 +94,7 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
       }}
     >
       {allowNone && (
-        <MenuItem key={`refinery-none`} value={'NONE'}>
+        <MenuItem key={`refinery-none`} value={''}>
           None
         </MenuItem>
       )}

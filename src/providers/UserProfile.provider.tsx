@@ -25,6 +25,10 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
         id: userProfileQry.data?.profile?.userId,
         username: userProfileQry.data?.profile?.scName,
       })
+    } else {
+      Sentry.setUser({
+        username: 'Anonymous',
+      })
     }
   }, [isAuthenticated, userProfileQry.data])
 
