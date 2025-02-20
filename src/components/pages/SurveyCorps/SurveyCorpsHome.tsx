@@ -163,7 +163,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         guildBoard={surveyData?.guildLeaderBoard}
       />
     ),
-    [surveyData?.leaderBoard?.data]
+    [epoch, surveyData?.leaderBoard?.data, surveyData?.guildLeaderBoard?.data]
   )
   const rockLocation = React.useMemo(
     () => <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />,
