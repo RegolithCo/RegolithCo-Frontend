@@ -250,7 +250,7 @@ const UserBoard: React.FC<{ data: JSONObject[] }> = ({ data }) => {
     <TableContainer>
       <Table
         sx={{
-          '& *, & .MuiTypography-root': {
+          '& *, & .MuiTypography-root, & .MuiTableCell-root': {
             fontFamily: fontFamilies.robotoMono,
             fontWeight: 'bold',
           },
@@ -302,7 +302,16 @@ const UserBoard: React.FC<{ data: JSONObject[] }> = ({ data }) => {
                   {idx + 1}
                 </Avatar>
               </TableCell>
-              <TableCell>{entry['name']}</TableCell>
+              <TableCell
+                sx={{
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  textShadow: '1px 1px 1px black',
+                }}
+              >
+                {entry['name']}
+              </TableCell>
               <TableCell>
                 {entry['guild'] ? (
                   <EntryGuild guild={entry['guild']} />

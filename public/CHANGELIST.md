@@ -1,3 +1,10 @@
+### February 19, 2025
+## 1.3.3 - Org. Allegiances!
+
+Now you can choose a Discord org allegiance in the  :SurveyCorps:[Survey Corps](https://regolith.rocks/profile/survey). Your scores are still individually calculated but the org you've chosen will display next to your name on the leaderboard. A second leaderboard has been added to collect the scores for each org .
+
+Also the Org lock on sessions has now been re-enabled. You should once again be able to lock your sessions to only members of a given Discord org/guild.
+
 ### February 15, 2025
 ## 1.3.2 - Google Auth Fix!
 
