@@ -140,7 +140,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const { hideNames, getSafeName } = React.useContext(AppContext)
   const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>({
     ...pick(userProfile, ['deliveryShipCode', 'sessionShipCode', 'scName', 'userSettings']),
-    surveyorGuild: userProfile?.surveyorGuild?.id,
+    surveyorGuildId: userProfile?.surveyorGuild?.id,
   })
   const [friend2remove, setFriend2remove] = React.useState<string>()
   const [showAPIKey, setShowAPIKey] = React.useState<boolean>(false)
@@ -371,7 +371,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {activeTab === ProfileTabsEnum.SURVEY && (
           <Container sx={{ px: 2 }} maxWidth="sm">
             <Box sx={styles.section}>
-              <SurveyCorps updateUserProfile={updateUserProfile} userProfile={userProfile} navigate={navigate} />
+              <SurveyCorps
+                updateUserProfile={updateUserProfile}
+                userProfile={userProfile}
+                navigate={navigate}
+                loading={loading}
+              />
             </Box>
           </Container>
         )}

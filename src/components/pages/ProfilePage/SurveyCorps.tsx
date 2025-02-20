@@ -20,13 +20,14 @@ import {
 } from '@mui/material'
 import { DiscordIcon, SurveyCorpsIcon } from '../../../icons'
 import { fontFamilies } from '../../../theme'
-import { Check, MeetingRoom, ThumbUp } from '@mui/icons-material'
+import { MeetingRoom, Save, ThumbUp } from '@mui/icons-material'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { DiscordGuildChooser } from '../../fields/DiscordGuildChooser'
 
 export interface SurveyCorpsProps {
   userProfile?: UserProfile
   navigate?: (path: string) => void
+  loading?: boolean
   updateUserProfile: (userProfile: UserProfileInput, settings?: DestructuredSettings) => void
 }
 
@@ -88,7 +89,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
           </Alert>
           <TextField
             id="leaderboardName"
-            label="Leaderboard Name"
+            label="Choose a leaderboard name:"
             error={!nameIsValid}
             placeholder="Anonymous"
             helperText={!nameIsValid ? 'Invalid leaderboard name' : ''}
@@ -96,6 +97,8 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
             value={newLeaderboardName}
             // center the text and make it huge
             sx={{
+              background: 'black',
+
               '& input': {
                 fontFamily: fontFamilies.robotoMono,
                 color: theme.palette.primary.main,
@@ -111,14 +114,15 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
               endAdornment: (
                 <Button
                   variant="outlined"
-                  color="success"
-                  startIcon={<Check />}
+                  color="primary"
+                  startIcon={<Save />}
                   disabled={!nameIsValid || newLeaderboardName === userProfile?.surveyorName}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
                     updateUserProfile({ surveyorName: newLeaderboardName })
                   }}
                 >
-                  Change
+                  Update
                 </Button>
               ),
             }}
@@ -141,20 +145,6 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
               disabled={!userProfile?.discordGuilds || userProfile?.discordGuilds.length === 0}
               options={userProfile?.discordGuilds || []}
               selectProps={{
-                endAdornment: (
-                  <Button
-                    variant="outlined"
-                    color="success"
-                    startIcon={<Check />}
-                    disabled={newLeaderboardGuild === userProfile?.surveyorGuild?.id}
-                    onClick={() => {
-                      updateUserProfile({ surveyorGuildId: newLeaderboardGuild })
-                    }}
-                  >
-                    Change
-                  </Button>
-                ),
-
                 size: 'medium',
                 variant: 'outlined',
                 sx: {
@@ -165,6 +155,18 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
                 },
               }}
             />
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={newLeaderboardGuild === userProfile?.surveyorGuild?.id}
+              startIcon={<Save />}
+              onClick={(e) => {
+                e.preventDefault()
+                updateUserProfile({ surveyorGuildId: newLeaderboardGuild })
+              }}
+            >
+              Update
+            </Button>
           </FormControl>
 
           <Divider sx={{ my: 2 }} />

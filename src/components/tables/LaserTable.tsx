@@ -378,7 +378,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                   <>
                     {filteredStores.map((store, colNum) => (
                       <LongCellHeaderWrapped
-                        key={`${store.code}-${colNum}`}
+                        key={`${store.UEXID}-${colNum}`}
                         theme={theme}
                         first={colNum === 0}
                         hovered={Boolean(hoverCol && hoverCol[0] === colNum)}
@@ -608,7 +608,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     {columnGroups.includes(ColumnGroupEnum.Market) && (
                       <>
                         {filteredStores.map((store, colNum) => {
-                          const price = laser.prices[store.code as MiningLaserEnum] || 0
+                          const price = laser.prices[store.UEXID as MiningLaserEnum] || 0
                           return (
                             <TableCell
                               key={`${store}-${idr}-${colNum}`}
@@ -628,7 +628,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                                 ) : (
                                   ''
                                 )
-                              ) : Object.keys(laser.prices).includes(store.code) ? (
+                              ) : Object.keys(laser.prices).includes(store.UEXID) ? (
                                 <Check color="success" />
                               ) : null}
                             </TableCell>

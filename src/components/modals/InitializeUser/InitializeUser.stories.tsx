@@ -40,6 +40,18 @@ const fns = {
 const loginCtxMock: LoginContextObj = {
   isAuthenticated: true,
   loading: false,
+  closePopup: () => {
+    log.info('closePopup')
+  },
+  popupOpen: false,
+  setPopupOpen: () => {
+    log.info('setPopupOpen')
+  },
+  postLoginRedirect: null,
+  authType: AuthTypeEnum.Discord,
+  setAuthType: () => {
+    log.info('setAuthType')
+  },
   token: 'SOME_TOKEN',
   authLogIn: (authType: AuthTypeEnum) => {
     log.info('signIn', authType)
