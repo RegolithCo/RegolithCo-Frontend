@@ -25,4 +25,4 @@ version=$(node -p "require('./package.json').version")
 git commit -m "Bump version to $version"
 
 # Tag the commit with @packagename@version for each package
-git tag @regolithco/common@$version
+git tag @regolithco/react-app@$version
