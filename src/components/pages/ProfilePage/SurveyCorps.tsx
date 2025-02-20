@@ -28,10 +28,17 @@ export interface SurveyCorpsProps {
   userProfile?: UserProfile
   navigate?: (path: string) => void
   loading?: boolean
+  mutating?: boolean
   updateUserProfile: (userProfile: UserProfileInput, settings?: DestructuredSettings) => void
 }
 
-export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate, updateUserProfile }) => {
+export const SurveyCorps: React.FC<SurveyCorpsProps> = ({
+  userProfile,
+  navigate,
+  updateUserProfile,
+  loading,
+  mutating,
+}) => {
   const theme = useTheme()
   const [confirmLeave, setConfirmLeave] = React.useState(false)
   const [newLeaderboardName, setNewLeaderboardName] = React.useState<string>(userProfile?.surveyorName || '')
@@ -116,7 +123,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
                   variant="outlined"
                   color="primary"
                   startIcon={<Save />}
-                  disabled={!nameIsValid || newLeaderboardName === userProfile?.surveyorName}
+                  disabled={mutating || loading || !nameIsValid || newLeaderboardName === userProfile?.surveyorName}
                   onClick={(e) => {
                     e.preventDefault()
                     updateUserProfile({ surveyorName: newLeaderboardName })
@@ -134,15 +141,14 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
               with you.
             </Typography>
           </Alert>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Discord Server</InputLabel>
+          <Stack direction="row" spacing={2}>
             <DiscordGuildChooser
               discordGuildId={newLeaderboardGuild}
               onChange={(guild) => {
                 setNewLeaderboardGuild(guild?.id)
               }}
               allowNone={true}
-              disabled={!userProfile?.discordGuilds || userProfile?.discordGuilds.length === 0}
+              disabled={mutating || loading || !userProfile?.discordGuilds || userProfile?.discordGuilds.length === 0}
               options={userProfile?.discordGuilds || []}
               selectProps={{
                 size: 'medium',
@@ -158,7 +164,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
             <Button
               variant="contained"
               color="primary"
-              disabled={newLeaderboardGuild === userProfile?.surveyorGuild?.id}
+              disabled={mutating || loading || newLeaderboardGuild === userProfile?.surveyorGuild?.id}
               startIcon={<Save />}
               onClick={(e) => {
                 e.preventDefault()
@@ -167,7 +173,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({ userProfile, navigate,
             >
               Update
             </Button>
-          </FormControl>
+          </Stack>
 
           <Divider sx={{ my: 2 }} />
           <Typography paragraph variant="body2">

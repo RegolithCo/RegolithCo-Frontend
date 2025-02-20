@@ -72,6 +72,7 @@ export interface ProfilePageProps {
   userProfile?: UserProfile
   verifiedFriends: VerifiedUserLookup
   loading?: boolean
+  mutating?: boolean
   activeTab: ProfileTabsEnum
   setActiveTab: (tab: ProfileTabsEnum) => void
   navigate?: (path: string) => void
@@ -120,6 +121,7 @@ export const profileStylesThunk = (theme: Theme): Record<string, SxProps<Theme>>
 export const ProfilePage: React.FC<ProfilePageProps> = ({
   userProfile,
   loading,
+  mutating,
   activeTab,
   setActiveTab,
   verifiedFriends,
@@ -376,6 +378,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 userProfile={userProfile}
                 navigate={navigate}
                 loading={loading}
+                mutating={mutating}
               />
             </Box>
           </Container>
