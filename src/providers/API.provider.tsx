@@ -148,10 +148,10 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                   const version = getVersion()
                   const parsed = JSON.parse(cached)
 
-                  // If the data is older than an hour or the epoch has changed, we need to refresh
+                  // If the data is older than 30 minutes, we need to refresh
                   if (
                     version === storedVersion &&
-                    (epoch !== CURRENT_SC_EPOCH || Date.now() - Number(parsed.lastUpdated) < 60 * 60 * 1000)
+                    (epoch !== CURRENT_SC_EPOCH || Date.now() - Number(parsed.lastUpdated) < 30 * 60 * 1000)
                   ) {
                     // log.debug(`SurveyData CACHE HIT: ${epoch} ${dataName}`, parsed)
                     return parsed
