@@ -102,6 +102,7 @@ export const App: React.FC = () => {
               {/* Tables uses urls for tabs */}
               <Route path="/survey" element={<Navigate to="/survey/ores" replace />} />
               <Route path="/survey/:tab" element={<SurveyCorpsHomeContainer />} />
+              <Route path="/survey/:tab/:subtab" element={<SurveyCorpsHomeContainer />} />
 
               <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
               <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<ErrorPage />} />

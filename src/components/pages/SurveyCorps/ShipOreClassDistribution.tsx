@@ -29,6 +29,7 @@ import {
   DepositTypeEnum,
   getOreName,
   getRockTypeName,
+  getSystemName,
   JSONObject,
   OreTierEnum,
   OreTierNames,
@@ -36,6 +37,7 @@ import {
   ShipOreEnum,
   ShipOreTiers,
   SurveyData,
+  SystemEnum,
 } from '@regolithco/common'
 import { PeopleAlt, Refresh } from '@mui/icons-material'
 import Grid2 from '@mui/material/Unstable_Grid2'
@@ -54,6 +56,7 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   const [hoveredOre, setHoveredOre] = React.useState<ShipOreEnum | null>(null)
+  const [systemCode, setSystemCode] = React.useState<SystemEnum[]>([SystemEnum.Stanton, SystemEnum.Pyro])
   const [rockTypeFilter, setRockTypeFilter] = React.useState<('SURFACE' | 'ASTEROID')[]>(['SURFACE', 'ASTEROID'])
   const [oreTierFilter, setOreTierFilter] = React.useState<OreTierEnum[]>([
     OreTierEnum.STier,
@@ -61,7 +64,12 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
     OreTierEnum.BTier,
     OreTierEnum.CTier,
   ])
-  const tableData = data?.data || {}
+  const tableData = data?.data || {
+    [SystemEnum.Pyro]: {},
+    [SystemEnum.Stanton]: {},
+  }
+  const showStanton = systemCode.includes(SystemEnum.Stanton)
+  const showPyro = systemCode.includes(SystemEnum.Pyro)
 
   return (
     <Box
@@ -92,12 +100,41 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
           </Typography>
           <ToggleButtonGroup
             size="small"
+            value={systemCode}
+            onChange={(e, newSystems) => {
+              if (newSystems && newSystems.length > 0) {
+                setSystemCode(newSystems)
+              }
+            }}
+            aria-label="text alignment"
+          >
+            <ToggleButton
+              value={SystemEnum.Stanton}
+              aria-label="Stanton"
+              color="info"
+              sx={{
+                color: theme.palette.info.dark,
+              }}
+            >
+              Stanton
+            </ToggleButton>
+            <ToggleButton
+              value={SystemEnum.Pyro}
+              aria-label="Pyro"
+              color="primary"
+              sx={{
+                color: theme.palette.primary.dark,
+              }}
+            >
+              Pyro
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            size="small"
             value={rockTypeFilter}
             onChange={(_, newFilter) => {
-              if (newFilter) {
+              if (newFilter && newFilter.length > 0) {
                 setRockTypeFilter(newFilter)
-              } else {
-                setRockTypeFilter([])
               }
             }}
             aria-label="text alignment"
@@ -169,22 +206,46 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                     mr: 2,
                   }}
                 />
-                Asteroid Types
+                {getSystemName(SystemEnum.Stanton)} Asteroid Types
               </Typography>
-              <Grid2 width={'100%'} container spacing={4}>
-                {Object.values(AsteroidTypeEnum).map((type, idx) => (
-                  <Grid2 key={idx} width={'400px'}>
-                    <ClassCard
-                      className={type}
-                      data={tableData[type]}
-                      hoveredOre={hoveredOre}
-                      setHoveredOre={setHoveredOre}
-                      oreTierFilter={oreTierFilter}
-                      setOreTierFilter={setOreTierFilter}
-                    />
+              {showStanton && (
+                <>
+                  <SystemLabel system={SystemEnum.Stanton} />
+                  <Grid2 width={'100%'} container spacing={4}>
+                    {Object.values(AsteroidTypeEnum).map((type, idx) => (
+                      <Grid2 key={idx} width={'400px'}>
+                        <ClassCard
+                          className={type}
+                          data={tableData[SystemEnum.Stanton][type]}
+                          hoveredOre={hoveredOre}
+                          setHoveredOre={setHoveredOre}
+                          oreTierFilter={oreTierFilter}
+                          setOreTierFilter={setOreTierFilter}
+                        />
+                      </Grid2>
+                    ))}
                   </Grid2>
-                ))}
-              </Grid2>
+                </>
+              )}
+              {showPyro && (
+                <>
+                  <SystemLabel system={SystemEnum.Pyro} />
+                  <Grid2 width={'100%'} container spacing={4}>
+                    {Object.values(AsteroidTypeEnum).map((type, idx) => (
+                      <Grid2 key={idx} width={'400px'}>
+                        <ClassCard
+                          className={type}
+                          data={tableData[SystemEnum.Pyro][type]}
+                          hoveredOre={hoveredOre}
+                          setHoveredOre={setHoveredOre}
+                          oreTierFilter={oreTierFilter}
+                          setOreTierFilter={setOreTierFilter}
+                        />
+                      </Grid2>
+                    ))}
+                  </Grid2>
+                </>
+              )}
             </>
           )}
           {rockTypeFilter.includes('SURFACE') && (
@@ -207,22 +268,47 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                     mr: 2,
                   }}
                 />
-                Surface Deposit Types
+                {getSystemName(SystemEnum.Stanton)} Surface Deposit Types
               </Typography>
-              <Grid2 width={'100%'} container spacing={4}>
-                {Object.values(DepositTypeEnum).map((type, idx) => (
-                  <Grid2 key={idx} width={'400px'}>
-                    <ClassCard
-                      className={type}
-                      data={tableData[type]}
-                      hoveredOre={hoveredOre}
-                      setHoveredOre={setHoveredOre}
-                      oreTierFilter={oreTierFilter}
-                      setOreTierFilter={setOreTierFilter}
-                    />
+              {showStanton && (
+                <>
+                  <SystemLabel system={SystemEnum.Stanton} />
+                  <Grid2 width={'100%'} container spacing={4}>
+                    {Object.values(DepositTypeEnum).map((type, idx) => (
+                      <Grid2 key={idx} width={'400px'}>
+                        <ClassCard
+                          className={type}
+                          data={tableData[SystemEnum.Stanton][type]}
+                          hoveredOre={hoveredOre}
+                          setHoveredOre={setHoveredOre}
+                          oreTierFilter={oreTierFilter}
+                          setOreTierFilter={setOreTierFilter}
+                        />
+                      </Grid2>
+                    ))}
                   </Grid2>
-                ))}
-              </Grid2>
+                </>
+              )}
+              {showPyro && (
+                <>
+                  <SystemLabel system={SystemEnum.Pyro} />
+
+                  <Grid2 width={'100%'} container spacing={4}>
+                    {Object.values(DepositTypeEnum).map((type, idx) => (
+                      <Grid2 key={idx} width={'400px'}>
+                        <ClassCard
+                          className={type}
+                          data={tableData[SystemEnum.Pyro][type]}
+                          hoveredOre={hoveredOre}
+                          setHoveredOre={setHoveredOre}
+                          oreTierFilter={oreTierFilter}
+                          setOreTierFilter={setOreTierFilter}
+                        />
+                      </Grid2>
+                    ))}
+                  </Grid2>
+                </>
+              )}
             </>
           )}
         </Box>
@@ -242,6 +328,28 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
         </Typography>
       </Alert>
     </Box>
+  )
+}
+
+const SystemLabel: React.FC<{ system: SystemEnum }> = ({ system }) => {
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const color = system === SystemEnum.Stanton ? theme.palette.info.main : theme.palette.primary.main
+  return (
+    <Typography
+      variant={isSmall ? 'body2' : 'h4'}
+      sx={{
+        fontFamily: fontFamilies.robotoMono,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        color: color,
+        borderBottom: `2px solid ${color}`,
+        marginBottom: theme.spacing(2),
+        my: isSmall ? 2 : 5,
+      }}
+    >
+      {getSystemName(system)}
+    </Typography>
   )
 }
 

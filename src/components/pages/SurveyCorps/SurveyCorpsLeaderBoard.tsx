@@ -28,9 +28,13 @@ import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import { Diversity3, Person } from '@mui/icons-material'
 
+export type LeaderboardTabValues = 'user' | 'org'
+
 export interface SurveyCorpsLeaderBoardProps {
   // Props here
   epoch: ScVersionEpochEnum
+  tab: LeaderboardTabValues
+  setTabValue: (value: LeaderboardTabValues) => void
   userProfile?: UserProfile
   userBoard?: SurveyData | null
   guildBoard?: SurveyData | null
@@ -40,10 +44,12 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({
   userProfile,
   userBoard,
   guildBoard,
+  tab,
+  setTabValue,
   epoch,
 }) => {
+  const tabValue = !tab || tab.toLowerCase() === 'user' ? 'user' : 'org'
   const theme = useTheme()
-  const [tabValue, setTabValue] = React.useState<'USER' | 'ORG'>('USER')
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   const h4Size = isSmall ? 'h6' : 'h4'
   return (
@@ -80,15 +86,15 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({
           },
         }}
       >
-        <Tab label="By User" value={'USER'} icon={<Person />} iconPosition="start" />
-        <Tab label="By Org." value={'ORG'} icon={<Diversity3 />} iconPosition="start" />
+        <Tab label="By User" value={'user'} icon={<Person />} iconPosition="start" />
+        <Tab label="By Org." value={'org'} icon={<Diversity3 />} iconPosition="start" />
       </Tabs>
 
       {/* USER LEADERBOARD */}
-      {tabValue === 'USER' && <UserBoard data={(userBoard?.data as []) || []} />}
+      {tabValue === 'user' && <UserBoard data={(userBoard?.data as []) || []} />}
 
       {/* ORG LEADERBOARD */}
-      {tabValue === 'ORG' && <GuildBoard data={(guildBoard?.data as []) || []} />}
+      {tabValue === 'org' && <GuildBoard data={(guildBoard?.data as []) || []} />}
 
       <Alert severity="error" sx={{ my: 4 }}>
         <AlertTitle>Scores subject to change</AlertTitle>

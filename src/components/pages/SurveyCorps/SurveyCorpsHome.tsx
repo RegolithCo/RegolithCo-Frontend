@@ -25,12 +25,13 @@ import {
   scVersion,
   ScVersionEpochEnum,
   SurveyData,
+  SystemEnum,
 } from '@regolithco/common'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
 import { useGetPublicSurveyDataQuery } from '../../../schema'
 import { Close, CloudDownload, EmojiEvents, Explore, Fullscreen, ListAlt } from '@mui/icons-material'
-import { SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
+import { LeaderboardTabValues, SurveyCorpsLeaderBoard } from './SurveyCorpsLeaderBoard'
 import { VehicleOreDistribution } from './VehicleOreDistribution'
 import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
@@ -59,7 +60,7 @@ export type SurveyDataTables = {
 
 export const SurveyCorpsHomeContainer: React.FC = () => {
   const navigate = useNavigate()
-  const { tab } = useParams()
+  const { tab, subtab } = useParams()
   const [epoch, setEpoch] = React.useState(getEpochFromVersion(scVersion))
 
   const vehicleProbs = useGetPublicSurveyDataQuery({
@@ -126,6 +127,7 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
       navigate={navigate}
       loading={vehicleProbs.loading || shipOreByGravProb.loading || shipOreByRockClassProb.loading}
       tab={tab as SurveyTabsEnum}
+      subTab={subtab}
       surveyData={surveyData}
       epoch={epoch}
       setEpoch={setEpoch}
@@ -136,15 +138,17 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
 export interface SurveyCorpsHomeProps {
   loading?: boolean
   tab?: SurveyTabsEnum
+  subTab?: string
   epoch: ScVersionEpochEnum
   setEpoch: (epoch: ScVersionEpochEnum) => void
-  navigate?: (path: string) => void
+  navigate: (path: string) => void
   surveyData?: SurveyDataTables
 }
 
 export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   loading,
   tab,
+  subTab,
   navigate,
   surveyData,
   epoch,
@@ -159,11 +163,13 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
     () => (
       <SurveyCorpsLeaderBoard
         userBoard={surveyData?.leaderBoard}
-        epoch={epoch}
         guildBoard={surveyData?.guildLeaderBoard}
+        tab={subTab as LeaderboardTabValues}
+        setTabValue={(newTab) => navigate(`/survey/leaderboard/${newTab}`)}
+        epoch={epoch}
       />
     ),
-    [epoch, surveyData?.leaderBoard?.data, surveyData?.guildLeaderBoard?.data]
+    [epoch, subTab, surveyData?.leaderBoard?.data, surveyData?.guildLeaderBoard?.data]
   )
   const rockLocation = React.useMemo(
     () => <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />,

@@ -6,11 +6,12 @@ import { getSystemName, SystemEnum } from '@regolithco/common'
 export interface SystemChooserProps {
   value?: SystemEnum
   label?: string
+  disallowNone?: boolean
   blankLabel?: string
   onChange: (choice: SystemEnum | null) => void
 }
 
-export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, label, value, blankLabel }) => {
+export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, label, value, blankLabel, disallowNone }) => {
   const fLabel = label || 'System'
   return (
     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
@@ -27,9 +28,11 @@ export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, label, v
           onChange(newVal as SystemEnum)
         }}
       >
-        <MenuItem key={`systems-none`} value={''}>
-          {blankLabel || 'All Systems'}
-        </MenuItem>
+        {disallowNone && (
+          <MenuItem key={`systems-none`} value={''}>
+            {blankLabel || 'All Systems'}
+          </MenuItem>
+        )}
         {Object.values(SystemEnum).map((refinery) => (
           <MenuItem key={`refinery-${refinery}`} value={refinery}>
             {getSystemName(refinery)}
