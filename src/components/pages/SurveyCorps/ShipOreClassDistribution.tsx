@@ -46,6 +46,7 @@ import { RockIcon } from '../../../icons'
 import { useShipOreColors } from '../../../hooks/useShipOreColors'
 import { fontFamilies } from '../../../theme'
 import { OreTierColors } from './types'
+import { StaleLookups } from './StaleLookups'
 
 export interface ShipOreClassDistributionProps {
   data?: SurveyData | null
@@ -70,6 +71,10 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
   }
   const showStanton = systemCode.includes(SystemEnum.Stanton)
   const showPyro = systemCode.includes(SystemEnum.Pyro)
+
+  if (data && data.data && (!data.data[SystemEnum.Stanton] || !data.data[SystemEnum.Pyro])) {
+    return <StaleLookups />
+  }
 
   return (
     <Box
