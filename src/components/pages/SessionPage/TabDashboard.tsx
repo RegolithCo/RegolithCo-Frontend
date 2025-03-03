@@ -16,16 +16,18 @@ import {
   Zoom,
   Popper,
   useMediaQuery,
+  Tooltip,
 } from '@mui/material'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'
-import { ExpandMore } from '@mui/icons-material'
+import { ExpandMore, Podcasts } from '@mui/icons-material'
 import { WorkOrderTable } from './WorkOrderTable'
 import { ClusterCard } from '../../cards/ClusterCard'
 import { fontFamilies } from '../../../theme'
 import { SessionContext } from '../../../context/session.context'
 import { grey } from '@mui/material/colors'
 import { WorkOrderTableColsEnum } from './WorkOrderTableRow'
+import { ScanModal } from '../../modals/ScanModal'
 
 export interface TabDashboardProps {
   propA?: string
@@ -90,6 +92,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
   const theme = useTheme()
   const { session, createNewWorkOrder, createNewScoutingFind, openWorkOrderModal } = React.useContext(SessionContext)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
+  const [scanModalOpen, setScanModalOpen] = React.useState(false)
   const [[topExpanded, bottomExpanded], setExpanded] = React.useState([true, mediumUp])
 
   // Handlers for the SpeedDials
@@ -231,6 +234,18 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           Scouting ({scountingCounts[0]}/{scountingCounts[1]})
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
+        <Tooltip title="Signal Calculator">
+          <IconButton
+            color="inherit"
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation()
+              setScanModalOpen(true)
+            }}
+          >
+            <Podcasts />
+          </IconButton>
+        </Tooltip>
         <FormGroup
           onClick={(e) => {
             e.stopPropagation()
@@ -280,6 +295,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
             />
           </Popper>
         )}
+        {scanModalOpen && <ScanModal open={scanModalOpen} onClose={() => setScanModalOpen(false)} />}
       </Box>
     </Box>
   )

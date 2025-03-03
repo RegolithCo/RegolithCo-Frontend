@@ -4,6 +4,7 @@ import {
   Alert,
   AlertTitle,
   alpha,
+  Avatar,
   Box,
   Button,
   Card,
@@ -17,6 +18,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -39,7 +41,7 @@ import {
   SurveyData,
   SystemEnum,
 } from '@regolithco/common'
-import { PeopleAlt, Refresh } from '@mui/icons-material'
+import { PeopleAlt, Podcasts, Refresh } from '@mui/icons-material'
 import Grid2 from '@mui/material/Unstable_Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { RockIcon } from '../../../icons'
@@ -47,6 +49,9 @@ import { useShipOreColors } from '../../../hooks/useShipOreColors'
 import { fontFamilies } from '../../../theme'
 import { OreTierColors } from './types'
 import { StaleLookups } from './StaleLookups'
+import { yellow } from '@mui/material/colors'
+import * as signals from '../../../lib/signals'
+import { usesignals } from '../../../hooks/useSignals'
 
 export interface ShipOreClassDistributionProps {
   data?: SurveyData | null
@@ -59,6 +64,11 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
   const [hoveredOre, setHoveredOre] = React.useState<ShipOreEnum | null>(null)
   const [systemCode, setSystemCode] = React.useState<SystemEnum[]>([SystemEnum.Stanton, SystemEnum.Pyro])
   const [rockTypeFilter, setRockTypeFilter] = React.useState<('SURFACE' | 'ASTEROID')[]>(['SURFACE', 'ASTEROID'])
+  const [signalFilter, setSignalFilter] = React.useState<number>(0)
+  const possibilities = usesignals(
+    signalFilter,
+    rockTypeFilter.length === 0 ? rockTypeFilter[0] === 'ASTEROID' : undefined
+  )
   const [oreTierFilter, setOreTierFilter] = React.useState<OreTierEnum[]>([
     OreTierEnum.STier,
     OreTierEnum.ATier,
@@ -75,7 +85,7 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
   if (data && data.data && (!data.data[SystemEnum.Stanton] || !data.data[SystemEnum.Pyro])) {
     return <StaleLookups />
   }
-
+  const counts = [0, 0, 0, 0]
   return (
     <Box
       sx={{
@@ -172,11 +182,32 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
+          <TextField
+            label="Signal Filter"
+            variant="outlined"
+            size="small"
+            placeholder="(e.g. 1900)"
+            value={signalFilter || ''}
+            inputProps={{
+              sx: {
+                color: yellow[500],
+                fontFamily: fontFamilies.robotoMono,
+                fontWeight: 'bold',
+              },
+            }}
+            onChange={(e) => {
+              // if it's an integer
+              if (e.target.value.length === 0 || Number.isInteger(parseInt(e.target.value)))
+                setSignalFilter(parseInt(e.target.value))
+            }}
+          />
           <Box sx={{ flexGrow: 1 }} />
           <Button
             onClick={() => {
               setOreTierFilter([OreTierEnum.STier, OreTierEnum.ATier, OreTierEnum.BTier, OreTierEnum.CTier])
               setRockTypeFilter(['SURFACE', 'ASTEROID'])
+              setSystemCode([SystemEnum.Stanton, SystemEnum.Pyro])
+              setSignalFilter(0)
             }}
             color="error"
             variant="text"
@@ -211,24 +242,31 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                     mr: 2,
                   }}
                 />
-                {getSystemName(SystemEnum.Stanton)} Asteroid Types
+                Asteroid Types
               </Typography>
               {showStanton && (
                 <>
                   <SystemLabel system={SystemEnum.Stanton} />
                   <Grid2 width={'100%'} container spacing={4}>
-                    {Object.values(AsteroidTypeEnum).map((type, idx) => (
-                      <Grid2 key={idx} width={'400px'}>
-                        <ClassCard
-                          className={type}
-                          data={tableData[SystemEnum.Stanton][type]}
-                          hoveredOre={hoveredOre}
-                          setHoveredOre={setHoveredOre}
-                          oreTierFilter={oreTierFilter}
-                          setOreTierFilter={setOreTierFilter}
-                        />
-                      </Grid2>
-                    ))}
+                    {Object.values(AsteroidTypeEnum).map((type, idx) => {
+                      const multiplier = possibilities.asteroid[type] || 0
+                      if (signalFilter && signalFilter > 0 && !multiplier) return null
+                      counts[0]++
+                      return (
+                        <Grid2 key={idx} width={'400px'}>
+                          <ClassCard
+                            className={type}
+                            data={tableData[SystemEnum.Stanton][type]}
+                            hoveredOre={hoveredOre}
+                            setHoveredOre={setHoveredOre}
+                            oreTierFilter={oreTierFilter}
+                            setOreTierFilter={setOreTierFilter}
+                            multiplier={multiplier}
+                          />
+                        </Grid2>
+                      )
+                    })}
+                    {counts[0] === 0 && <NoRocksMatch />}
                   </Grid2>
                 </>
               )}
@@ -236,18 +274,25 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                 <>
                   <SystemLabel system={SystemEnum.Pyro} />
                   <Grid2 width={'100%'} container spacing={4}>
-                    {Object.values(AsteroidTypeEnum).map((type, idx) => (
-                      <Grid2 key={idx} width={'400px'}>
-                        <ClassCard
-                          className={type}
-                          data={tableData[SystemEnum.Pyro][type]}
-                          hoveredOre={hoveredOre}
-                          setHoveredOre={setHoveredOre}
-                          oreTierFilter={oreTierFilter}
-                          setOreTierFilter={setOreTierFilter}
-                        />
-                      </Grid2>
-                    ))}
+                    {Object.values(AsteroidTypeEnum).map((type, idx) => {
+                      const multiplier = possibilities.asteroid[type] || 0
+                      if (signalFilter && signalFilter > 0 && !multiplier) return null
+                      counts[1]++
+                      return (
+                        <Grid2 key={idx} width={'400px'}>
+                          <ClassCard
+                            className={type}
+                            data={tableData[SystemEnum.Pyro][type]}
+                            hoveredOre={hoveredOre}
+                            setHoveredOre={setHoveredOre}
+                            oreTierFilter={oreTierFilter}
+                            setOreTierFilter={setOreTierFilter}
+                            multiplier={multiplier}
+                          />
+                        </Grid2>
+                      )
+                    })}
+                    {counts[1] === 0 && <NoRocksMatch />}
                   </Grid2>
                 </>
               )}
@@ -273,24 +318,31 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                     mr: 2,
                   }}
                 />
-                {getSystemName(SystemEnum.Stanton)} Surface Deposit Types
+                Surface Deposit Types
               </Typography>
               {showStanton && (
                 <>
                   <SystemLabel system={SystemEnum.Stanton} />
                   <Grid2 width={'100%'} container spacing={4}>
-                    {Object.values(DepositTypeEnum).map((type, idx) => (
-                      <Grid2 key={idx} width={'400px'}>
-                        <ClassCard
-                          className={type}
-                          data={tableData[SystemEnum.Stanton][type]}
-                          hoveredOre={hoveredOre}
-                          setHoveredOre={setHoveredOre}
-                          oreTierFilter={oreTierFilter}
-                          setOreTierFilter={setOreTierFilter}
-                        />
-                      </Grid2>
-                    ))}
+                    {Object.values(DepositTypeEnum).map((type, idx) => {
+                      const multiplier = possibilities.deposit[type] || 0
+                      if (signalFilter && signalFilter > 0 && !multiplier) return null
+                      counts[2]++
+                      return (
+                        <Grid2 key={idx} width={'400px'}>
+                          <ClassCard
+                            className={type}
+                            data={tableData[SystemEnum.Stanton][type]}
+                            hoveredOre={hoveredOre}
+                            setHoveredOre={setHoveredOre}
+                            oreTierFilter={oreTierFilter}
+                            setOreTierFilter={setOreTierFilter}
+                            multiplier={multiplier}
+                          />
+                        </Grid2>
+                      )
+                    })}
+                    {counts[2] === 0 && <NoRocksMatch />}
                   </Grid2>
                 </>
               )}
@@ -299,18 +351,25 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                   <SystemLabel system={SystemEnum.Pyro} />
 
                   <Grid2 width={'100%'} container spacing={4}>
-                    {Object.values(DepositTypeEnum).map((type, idx) => (
-                      <Grid2 key={idx} width={'400px'}>
-                        <ClassCard
-                          className={type}
-                          data={tableData[SystemEnum.Pyro][type]}
-                          hoveredOre={hoveredOre}
-                          setHoveredOre={setHoveredOre}
-                          oreTierFilter={oreTierFilter}
-                          setOreTierFilter={setOreTierFilter}
-                        />
-                      </Grid2>
-                    ))}
+                    {Object.values(DepositTypeEnum).map((type, idx) => {
+                      const multiplier = possibilities.deposit[type] || 0
+                      if (signalFilter && signalFilter > 0 && !multiplier) return null
+                      counts[3]++
+                      return (
+                        <Grid2 key={idx} width={'400px'}>
+                          <ClassCard
+                            className={type}
+                            data={tableData[SystemEnum.Pyro][type]}
+                            hoveredOre={hoveredOre}
+                            setHoveredOre={setHoveredOre}
+                            oreTierFilter={oreTierFilter}
+                            setOreTierFilter={setOreTierFilter}
+                            multiplier={multiplier}
+                          />
+                        </Grid2>
+                      )
+                    })}
+                    {counts[3] === 0 && <NoRocksMatch />}
                   </Grid2>
                 </>
               )}
@@ -365,6 +424,7 @@ interface ClassCardProps {
   setHoveredOre: (ore: ShipOreEnum | null) => void
   oreTierFilter: OreTierEnum[]
   setOreTierFilter: (oreTierFilter: OreTierEnum[]) => void
+  multiplier?: number
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({
@@ -374,6 +434,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
   hoveredOre,
   oreTierFilter,
   setOreTierFilter,
+  multiplier,
 }) => {
   const theme = useTheme()
   // const isSmall = useMediaQuery(theme.breakpoints.down('md'))
@@ -387,205 +448,322 @@ const ClassCard: React.FC<ClassCardProps> = ({
   const ores = (data && data['ores']) || {}
 
   return (
-    <Card
-      elevation={1}
+    <Box
       sx={{
+        position: 'relative',
         height: '100%',
-        minHeight: oreTierFilter.length > 0 ? '400px' : '200px',
-        borderRadius: 3,
-        border: '1px solid #666666',
       }}
     >
-      <CardHeader
-        title={
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Typography
-              variant="h5"
-              sx={{
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-              }}
-            >
-              {getRockTypeName(className)}
-            </Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            {data && (
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems={'center'}
-                sx={{
-                  '& *': {
-                    color: theme.palette.text.secondary,
-                    fontSize: '1rem',
-                  },
-                }}
-              >
-                <Tooltip
-                  placement="top"
-                  title={`Based on ${(data && data['scans']) || 0} rock scans inside ${(data && data['clusters']) || 0} clusters`}
-                >
-                  <Stack direction="row" spacing={1} alignItems={'center'}>
-                    <RockIcon />
-                    <span>
-                      {(data && data['scans']) || 0} - {(data && data['clusters']) || 0}
-                    </span>
-                  </Stack>
-                </Tooltip>
-                <Tooltip placement="top" title={`Data collected by ${(data && data['users']) || 0} users`}>
-                  <Stack direction="row" spacing={1} alignItems={'center'}>
-                    <PeopleAlt />
-                    <span>{(data && data['users']) || 0}</span>
-                  </Stack>
-                </Tooltip>
-              </Stack>
-            )}
-          </Stack>
-        }
-      />
-      {!data && (
-        <CardContent>
-          <Typography
-            variant="overline"
-            component={'div'}
+      {multiplier ? (
+        <Tooltip title={`Expected this many rocks with the signal provided`}>
+          <Avatar
             sx={{
-              fontSize: '2rem',
-              color: alpha(theme.palette.text.secondary, 0.2),
-              width: '100%',
-              textAlign: 'center',
+              border: '2px solid black',
+              color: 'black',
+              backgroundColor: yellow[500],
+              position: 'absolute',
+              top: -15,
+              right: -15,
             }}
           >
-            No Data
-          </Typography>
-        </CardContent>
-      )}
-      {data && (
-        <CardContent
-          sx={{
-            '& *': {
-              fontSize: '0.8rem',
-            },
-          }}
-        >
-          <TableContainer>
-            <Table size="small" padding="none">
-              <TableHead>
-                <TableRow
+            x{multiplier}
+          </Avatar>
+        </Tooltip>
+      ) : null}
+
+      <Card
+        elevation={1}
+        sx={{
+          height: '100%',
+          minHeight: oreTierFilter.length > 0 ? '400px' : '200px',
+          borderRadius: 3,
+          border: '1px solid #666666',
+        }}
+      >
+        <CardHeader
+          title={
+            <Box>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Typography
+                  variant="h5"
                   sx={{
-                    borderBottom: '2px solid white',
+                    fontFamily: fontFamilies.robotoMono,
+                    fontWeight: 'bold',
                   }}
                 >
-                  <TableCell> </TableCell>
-                  <TableCell align="right">Min</TableCell>
-                  <TableCell align="right">Max</TableCell>
-                  <TableCell align="right">Med</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell>Cluster Rocks</TableCell>
-                  <TableCell align="right">{MValueFormatter(rocks.min, MValueFormat.number)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(rocks.max, MValueFormat.number)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(rocks.med, MValueFormat.number)}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Rock Mass (t)</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.min, MValueFormat.number_sm)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.max, MValueFormat.number_sm)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(mass.med, MValueFormat.number_sm)}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Instability</TableCell>
-                  <TableCell align="right">{MValueFormatter(inst.min, MValueFormat.number)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(inst.max, MValueFormat.number)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(inst.med, MValueFormat.number)}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Resistance</TableCell>
-                  <TableCell align="right">{MValueFormatter(res.min, MValueFormat.percent)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(res.max, MValueFormat.percent)}</TableCell>
-                  <TableCell align="right">{MValueFormatter(res.med, MValueFormat.percent)}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-            {oreTierFilter.length > 0 && (
-              <Table
-                size="small"
-                padding="none"
-                sx={{
-                  marginTop: '2rem',
-                }}
+                  {getRockTypeName(className)}
+                </Typography>
+                <Box sx={{ flexGrow: 1 }} />
+                {data && (
+                  <Stack
+                    direction="row"
+                    justifyContent={'space-between'}
+                    spacing={2}
+                    alignItems={'center'}
+                    sx={{
+                      '& *': {
+                        color: theme.palette.text.secondary,
+                        fontSize: '1rem',
+                      },
+                    }}
+                  >
+                    <Tooltip
+                      placement="top"
+                      title={`Based on ${(data && data['scans']) || 0} rock scans inside ${(data && data['clusters']) || 0} clusters`}
+                    >
+                      <Stack direction="row" spacing={1} alignItems={'center'}>
+                        <RockIcon />
+                        <span>
+                          {(data && data['scans']) || 0} / {(data && data['clusters']) || 0}
+                        </span>
+                      </Stack>
+                    </Tooltip>
+                    <Tooltip placement="top" title={`Data collected by ${(data && data['users']) || 0} users`}>
+                      <Stack direction="row" spacing={1} alignItems={'center'}>
+                        <PeopleAlt />
+                        <span>{(data && data['users']) || 0}</span>
+                      </Stack>
+                    </Tooltip>
+                  </Stack>
+                )}
+              </Stack>
+              <Tooltip
+                placement="right-start"
+                title={
+                  <Box>
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                      This is the scan signature for one rock. Cluster signatures will be a multiple of this number.
+                    </Typography>
+                    <TableContainer>
+                      <Table
+                        size="small"
+                        sx={{
+                          '& *': {
+                            color: yellow[500],
+                            fontFamily: fontFamilies.robotoMono,
+                            fontWeight: 'bold',
+                          },
+                          // Zebra stripe the table
+                          '& tr:nth-of-type(odd)': {
+                            backgroundColor: alpha(theme.palette.text.primary, 0.1),
+                          },
+                        }}
+                      >
+                        <TableHead>
+                          <TableRow>
+                            <TableCell padding="none" align="right" sx={{ pr: 2 }}>
+                              {getRockTypeName(className)}
+                            </TableCell>
+                            <TableCell padding="none" align="right">
+                              SIGNAL
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {Array(16)
+                            .fill(0)
+                            .map((_, idx) => (
+                              <TableRow key={idx}>
+                                <TableCell padding="none" align="right" sx={{ pr: 2 }}>
+                                  {idx + 1}x
+                                </TableCell>
+                                <TableCell padding="none" align="right">
+                                  {(signals.spaceRocks[className] || signals.depositRocks[className] || 0) * (idx + 1)}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                }
               >
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  sx={{ width: '100%' }}
+                  justifyContent={'flex-end'}
+                >
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems={'center'}
+                    sx={{
+                      '& *': {
+                        fontSize: theme.typography.body1.fontSize,
+                        color: yellow[500],
+                        fontFamily: fontFamilies.robotoMono,
+                        fontWeight: 'bold',
+                      },
+                    }}
+                  >
+                    <Podcasts />
+                    <span>{signals.spaceRocks[className] || signals.depositRocks[className]}</span>
+                  </Stack>
+                </Stack>
+              </Tooltip>
+            </Box>
+          }
+        />
+        {!data && (
+          <CardContent>
+            <Typography
+              variant="overline"
+              component={'div'}
+              sx={{
+                fontSize: '2rem',
+                color: alpha(theme.palette.text.secondary, 0.2),
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              No Data
+            </Typography>
+          </CardContent>
+        )}
+        {data && (
+          <CardContent
+            sx={{
+              '& *': {
+                fontSize: '0.8rem',
+              },
+            }}
+          >
+            <TableContainer>
+              <Table size="small" padding="none">
                 <TableHead>
                   <TableRow
                     sx={{
                       borderBottom: '2px solid white',
-                      '& .MuiTableCell-root': {
-                        whiteSpace: 'nowrap',
-                      },
                     }}
                   >
-                    <TableCell>Mineral</TableCell>
-                    <TableCell align="right">Prob</TableCell>
+                    <TableCell> </TableCell>
                     <TableCell align="right">Min</TableCell>
                     <TableCell align="right">Max</TableCell>
                     <TableCell align="right">Med</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody onMouseLeave={() => setHoveredOre(null)}>
-                  {data &&
-                    sortedShipRowColors.map((sortedOreColor, idx) => {
-                      if (!ores[sortedOreColor.ore]) return
-                      // Figure out if this ore should be shown
-                      const show = oreTierFilter.find((tier) => ShipOreTiers[tier].indexOf(sortedOreColor.ore) !== -1)
-                      if (!show) return
-
-                      const { prob, minPct, maxPct, medPct } = ores[sortedOreColor.ore] as {
-                        prob: number
-                        minPct: number
-                        maxPct: number
-                        medPct: number
-                      }
-                      return (
-                        <TableRow
-                          key={idx}
-                          onMouseEnter={() => setHoveredOre(sortedOreColor.ore)}
-                          sx={{
-                            position: 'relative',
-                            '&::after': {
-                              content: '""',
-                              display: hoveredOre === sortedOreColor.ore ? 'block' : 'none',
-                              position: 'absolute',
-                              top: 0,
-                              left: 0,
-                              width: '100%',
-                              height: '100%',
-                              border: '1px solid white',
-                              zIndex: 0,
-                              backgroundColor: sortedOreColor.bg,
-                              opacity: hoveredOre === sortedOreColor.ore ? 0.5 : 0,
-                            },
-                            '& .MuiTableCell-root': {
-                              px: 0.1,
-                              color: hoveredOre === sortedOreColor.ore ? 'white' : sortedOreColor.bg,
-                              fontWeight: hoveredOre === sortedOreColor.ore ? 'bold' : 'normal',
-                            },
-                          }}
-                        >
-                          <TableCell>{getOreName(sortedOreColor.ore)}</TableCell>
-                          <TableCell align="right">{MValueFormatter(prob, MValueFormat.percent)}</TableCell>
-                          <TableCell align="right">{MValueFormatter(minPct, MValueFormat.percent)}</TableCell>
-                          <TableCell align="right">{MValueFormatter(maxPct, MValueFormat.percent)}</TableCell>
-                          <TableCell align="right">{MValueFormatter(medPct, MValueFormat.percent)}</TableCell>
-                        </TableRow>
-                      )
-                    })}
+                <TableBody>
+                  <TableRow>
+                    <TableCell>Cluster Rocks</TableCell>
+                    <TableCell align="right">{MValueFormatter(rocks.min, MValueFormat.number)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(rocks.max, MValueFormat.number)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(rocks.med, MValueFormat.number)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Rock Mass (t)</TableCell>
+                    <TableCell align="right">{MValueFormatter(mass.min, MValueFormat.number_sm)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(mass.max, MValueFormat.number_sm)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(mass.med, MValueFormat.number_sm)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Instability</TableCell>
+                    <TableCell align="right">{MValueFormatter(inst.min, MValueFormat.number)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(inst.max, MValueFormat.number)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(inst.med, MValueFormat.number)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Resistance</TableCell>
+                    <TableCell align="right">{MValueFormatter(res.min, MValueFormat.percent)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(res.max, MValueFormat.percent)}</TableCell>
+                    <TableCell align="right">{MValueFormatter(res.med, MValueFormat.percent)}</TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
-            )}
-          </TableContainer>
-        </CardContent>
-      )}
-    </Card>
+              {oreTierFilter.length > 0 && (
+                <Table
+                  size="small"
+                  padding="none"
+                  sx={{
+                    marginTop: '2rem',
+                  }}
+                >
+                  <TableHead>
+                    <TableRow
+                      sx={{
+                        borderBottom: '2px solid white',
+                        '& .MuiTableCell-root': {
+                          whiteSpace: 'nowrap',
+                        },
+                      }}
+                    >
+                      <TableCell>Mineral</TableCell>
+                      <TableCell align="right">Prob</TableCell>
+                      <TableCell align="right">Min</TableCell>
+                      <TableCell align="right">Max</TableCell>
+                      <TableCell align="right">Med</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody onMouseLeave={() => setHoveredOre(null)}>
+                    {data &&
+                      sortedShipRowColors.map((sortedOreColor, idx) => {
+                        if (!ores[sortedOreColor.ore]) return
+                        // Figure out if this ore should be shown
+                        const show = oreTierFilter.find((tier) => ShipOreTiers[tier].indexOf(sortedOreColor.ore) !== -1)
+                        if (!show) return
+
+                        const { prob, minPct, maxPct, medPct } = ores[sortedOreColor.ore] as {
+                          prob: number
+                          minPct: number
+                          maxPct: number
+                          medPct: number
+                        }
+                        return (
+                          <TableRow
+                            key={idx}
+                            onMouseEnter={() => setHoveredOre(sortedOreColor.ore)}
+                            sx={{
+                              position: 'relative',
+                              '&::after': {
+                                content: '""',
+                                display: hoveredOre === sortedOreColor.ore ? 'block' : 'none',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                border: '1px solid white',
+                                zIndex: 0,
+                                backgroundColor: sortedOreColor.bg,
+                                opacity: hoveredOre === sortedOreColor.ore ? 0.5 : 0,
+                              },
+                              '& .MuiTableCell-root': {
+                                px: 0.1,
+                                color: hoveredOre === sortedOreColor.ore ? 'white' : sortedOreColor.bg,
+                                fontWeight: hoveredOre === sortedOreColor.ore ? 'bold' : 'normal',
+                              },
+                            }}
+                          >
+                            <TableCell>{getOreName(sortedOreColor.ore)}</TableCell>
+                            <TableCell align="right">{MValueFormatter(prob, MValueFormat.percent)}</TableCell>
+                            <TableCell align="right">{MValueFormatter(minPct, MValueFormat.percent)}</TableCell>
+                            <TableCell align="right">{MValueFormatter(maxPct, MValueFormat.percent)}</TableCell>
+                            <TableCell align="right">{MValueFormatter(medPct, MValueFormat.percent)}</TableCell>
+                          </TableRow>
+                        )
+                      })}
+                  </TableBody>
+                </Table>
+              )}
+            </TableContainer>
+          </CardContent>
+        )}
+      </Card>
+    </Box>
+  )
+}
+
+const NoRocksMatch: React.FC = () => {
+  return (
+    <Grid2 width={'100%'}>
+      <Typography
+        variant="subtitle1"
+        component="div"
+        sx={{ textAlign: 'center', color: 'text.secondary', fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}
+      >
+        No rock types match the filters above
+      </Typography>
+    </Grid2>
   )
 }
