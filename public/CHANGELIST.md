@@ -1,3 +1,15 @@
+### March 3
+## 1.3.5 Signal Calculator
+
+We've introduced scanning signal calculations in two places in the app. This should really help for the "Supply or Die" missions with everyone trying to find tin and ice inside I-type asteroids.
+
+1. In the session look for the new button on the Scouting title bar. This gives you a modal popup to enter your scanning signals.
+2. On the [Survey Corps Rock Type table](https://regolith.rocks/survey/rock_class). Look for the signal filter and enter your signal strength there to see which tock types match your signal
+
+### Bug fixes:
+
+- **FIXED**: The first gadget in the list didn't affect the loadout calculation
+
 ### February 19, 2025
 ## 1.3.3 - Org. Allegiances!
 
