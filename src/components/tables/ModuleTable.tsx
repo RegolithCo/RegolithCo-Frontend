@@ -569,7 +569,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -111)}
                         >
                           {
-                            // Convert value from decimal for % display to integer
+                            // Magic numbers: Convert value from decimal (for % display) to integer
                             lm.stats.uses && (lm.stats.uses - 1) * 100 > 0
                               ? MValueFormatter((lm.stats.uses - 1) * 100, MValueFormat.number)
                               : ' '
@@ -580,7 +580,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -112)}
                         >
                           {
-                            // Convert value from decimal for % display to integer
+                            // Magic numbers: Convert value from decimal (for % display) to integer
                             lm.stats.duration && (lm.stats.duration - 1) * 100 > 0
                               ? `${MValueFormatter((lm.stats.duration - 1) * 100, MValueFormat.number)}s`
                               : ' '
