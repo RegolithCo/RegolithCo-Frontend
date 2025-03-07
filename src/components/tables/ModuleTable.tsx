@@ -33,7 +33,7 @@ import {
 } from '@regolithco/common'
 import { Bolt, Check, ClearAll, Refresh, Store } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
-import { MValue, MValueFormat } from '../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, LongCellHeaderProps, StatsCell, tableStylesThunk } from './tableCommon'
 import { LookupsContext } from '../../context/lookupsContext'
 import { SystemColors } from '../pages/SurveyCorps/types'
@@ -349,6 +349,12 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                     <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -110)}>
                       Extract Power Mod
                     </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -111)}>
+                      Uses
+                    </LongCellHeaderWrapped>
+                    <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -112)}>
+                      Duration
+                    </LongCellHeaderWrapped>
                   </>
                 )}
                 {filteredValues.length > 0 && columnGroups.includes(ColumnGroupEnum.Market) && (
@@ -554,10 +560,32 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           theme={theme}
                           value={lm.stats.extrPowerMod}
                           maxMin={maxMin['extrPowerMod']}
-                          sx={Object.assign({}, styles.sectionDivider, topBorder)}
+                          sx={topBorder}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -110)}
                           reversed={BackwardStats.includes('powerMod')}
                         />
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, topBorder)}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -111)}
+                        >
+                          {
+                            // Convert value from decimal for % display to integer
+                            lm.stats.uses && (lm.stats.uses - 1) * 100 > 0
+                              ? MValueFormatter((lm.stats.uses - 1) * 100, MValueFormat.number)
+                              : ' '
+                          }
+                        </TableCell>
+                        <TableCell
+                          sx={Object.assign({}, styles.numericCell, styles.sectionDivider, topBorder)}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -112)}
+                        >
+                          {
+                            // Convert value from decimal for % display to integer
+                            lm.stats.duration && (lm.stats.duration - 1) * 100 > 0
+                              ? `${MValueFormatter((lm.stats.duration - 1) * 100, MValueFormat.number)}s`
+                              : ' '
+                          }
+                        </TableCell>
                       </>
                     )}
 
