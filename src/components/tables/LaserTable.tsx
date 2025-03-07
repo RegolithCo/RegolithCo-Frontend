@@ -557,6 +557,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                         </TableCell>
                         <TableCell
                           sx={Object.assign({}, styles.numericCell, styles.sectionDivider, rankColors['extrPower'])}
+                          onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -15)}
                         >
                           {laser.stats.extrPower}
                         </TableCell>
