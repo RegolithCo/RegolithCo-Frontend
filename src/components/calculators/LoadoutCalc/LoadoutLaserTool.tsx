@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { Card, CardContent, CardHeader, Stack, Typography, useTheme } from '@mui/material'
 import { ActiveMiningLaserLoadout, LoadoutLookup, Maybe, MiningLaserEnum, MiningModuleEnum } from '@regolithco/common'
 import { LaserChooserMenu, ModuleChooserMenu } from './loadoutMenus'
@@ -37,18 +37,23 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
     activeModuleSelectValues.push('')
   }
 
+  const previousLoadout = useRef(activeLaser)
+
   const onLaserChange = (laser: MiningLaserEnum | '', isActive: boolean, hover: boolean) => {
     if (laser === '') return onChange(null, hover)
-    onChange(
-      {
-        laser: laser as MiningLaserEnum,
-        laserActive: isActive,
-        modules: activeLaser?.modules || [],
-        modulesActive: activeLaser?.modulesActive || [],
-        __typename: 'ActiveMiningLaserLoadout',
-      },
-      hover
-    )
+    const loadout: ActiveMiningLaserLoadout = {
+      laser: laser as MiningLaserEnum,
+      laserActive: isActive,
+      modules: activeLaser?.modules || [],
+      modulesActive: activeLaser?.modulesActive || [],
+      __typename: 'ActiveMiningLaserLoadout',
+    }
+    onChange(loadout, hover)
+    if (!hover) previousLoadout.current = loadout
+  }
+
+  const onLaserClose = (isChanged: boolean) => {
+    if (!isChanged) onChange(previousLoadout.current, false)
   }
 
   const onModuleChange = (slotIdx: number) => (module: MiningModuleEnum | '', isActive: boolean, hover: boolean) => {
@@ -111,6 +116,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
           isShare={isShare}
           value={laserCode || null}
           onChange={onLaserChange}
+          onClose={onLaserClose}
           isOn={laserIsActive}
         />
         {slots > 0 ? (

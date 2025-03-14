@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { Box, ListSubheader, MenuItem, Select, Stack, Typography, lighten, useTheme } from '@mui/material'
 import {
   AllStats,
@@ -219,6 +219,7 @@ export interface LaserChooserMenuProps {
   isOn?: boolean
   isShare?: boolean
   onChange: (value: MiningLaserEnum | '', isActive: boolean, isHover: boolean) => void
+  onClose: (isChanged: boolean) => void
   readonly?: boolean
   laserSize: number
 }
@@ -227,6 +228,7 @@ const LASER_NO_MENU_STAT: (keyof AllStats)[] = ['shatterDamage', 'overchargeRate
 
 export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
   onChange,
+  onClose,
   value,
   laserSize,
   isOn,
@@ -252,6 +254,9 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
     if (laserA.name < laserB.name) return -1
     return 0
   })
+
+  const isChanged = useRef(false)
+  const isOpen = useRef(false)
 
   return (
     <Stack direction="row" spacing={1} paddingBottom={2}>
@@ -285,7 +290,16 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
               },
             },
           }}
-          onChange={(e) => onChange(e.target.value as MiningLaserEnum, true, false)}
+          onOpen={() => (isOpen.current = true)}
+          onChange={(e) => {
+            onChange(e.target.value as MiningLaserEnum, true, false)
+            isChanged.current = true
+          }}
+          onClose={() => {
+            isOpen.current = false
+            onClose(isChanged.current)
+            isChanged.current = false
+          }}
           renderValue={(laserCode) => {
             if (!laserCode) {
               return (
@@ -338,8 +352,12 @@ export const LaserChooserMenu: React.FC<LaserChooserMenuProps> = ({
               <MenuItem
                 key={`menu${key}-${idx}`}
                 value={key}
-                onMouseOut={() => onChange('', true, true)}
-                onMouseOver={() => onChange(key, true, true)}
+                onMouseOut={() => {
+                  if (isOpen.current) onChange('', true, true)
+                }}
+                onMouseOver={() => {
+                  if (isOpen.current) onChange(key, true, true)
+                }}
                 sx={{
                   backgroundColor:
                     idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
