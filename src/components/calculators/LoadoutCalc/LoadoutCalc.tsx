@@ -176,23 +176,16 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         ? { ...newLoadout }
         : miningLoadout || (await newMiningLoadout(dataStore, DEFAULT_SHIP, owner))
 
-      if (!newLoadout) _setNewLoadout(myNewLoadout)
-    }
-    asyncCalc()
-  }, [dataStore.ready])
-
-  useEffect(() => {
-    if (!dataStore.ready) return
-    const asyncCalc = async () => {
-      if (!newLoadout) return
-      const stats = await calcLoadoutStats(dataStore, newLoadout)
+      const stats = await calcLoadoutStats(dataStore, myNewLoadout)
       setStats(stats)
 
-      const activeLasers = (newLoadout.activeLasers as ActiveMiningLaserLoadout[]) || []
-      const laserSize = newLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
+      const activeLasers = (myNewLoadout.activeLasers as ActiveMiningLaserLoadout[]) || []
+      const laserSize = myNewLoadout.ship === LoadoutShipEnum.Mole ? 2 : 1
 
       setActiveLasers(activeLasers)
       setLaserSize(laserSize)
+
+      if (!newLoadout) _setNewLoadout(myNewLoadout)
     }
     asyncCalc()
   }, [dataStore.ready])
