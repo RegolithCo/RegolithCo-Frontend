@@ -366,7 +366,7 @@ export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   const loadoutLookups = dataStore.getLookup('loadout') as LoadoutLookup
   if (!dataStore.ready) return null
   const laser = loadoutLookups.lasers[laserCode as MiningLaserEnum]
-  const allPrices = (Object.values(laser.prices) as number[]) || [0]
+  const allPrices = (Object.values(laser.prices).filter((price) => price > 0) as number[]) || [0]
   const minPrice = Math.min(...allPrices)
 
   return (
@@ -420,7 +420,7 @@ export const ModuleMenuItem: React.FC<ModuleMenuItemProps> = ({ moduleCode }) =>
     loadoutLookups.modules[moduleCode as MiningModuleEnum] || loadoutLookups.gadgets[moduleCode as MiningGadgetEnum]
   if (!module) return null
   const isGadget = module.category === 'G'
-  const allPrices = (Object.values(module.prices) as number[]) || [0]
+  const allPrices = (Object.values(module.prices).filter((price) => price > 0) as number[]) || [0]
   const minPrice = Math.min(...allPrices)
   return (
     <>
