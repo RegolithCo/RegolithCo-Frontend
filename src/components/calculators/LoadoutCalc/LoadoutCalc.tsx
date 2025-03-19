@@ -118,14 +118,12 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const [editingName, setEditingName] = React.useState(false)
   const [shareModalOpen, setShareModalOpen] = React.useState(false)
   const [newLoadout, _setNewLoadout] = React.useState<MiningLoadout>()
-  // const [hoverLoadout, _setHoverLoadout] = React.useState<MiningLoadout | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
   const setNewLoadout = useCallback(
     async (sbl?: MiningLoadout) => {
       if (!newLoadout || isShare) return
-      // if (hoverLoadout) _setHoverLoadout(null)
       const finalLoadout = sbl || (await newMiningLoadout(dataStore, newLoadout.ship as LoadoutShipEnum, owner))
       const sanitizedLoadout = await sanitizeLoadout(dataStore, finalLoadout)
       _setNewLoadout(sanitizedLoadout)
@@ -145,9 +143,8 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const setHoverLoadout = useCallback(
     async (hl: MiningLoadout | null) => {
       if (isShare) return
-      if (hl === null) return //_setHoverLoadout(null)
+      if (hl === null) return
       const sanitizedLoadout = await sanitizeLoadout(dataStore, hl)
-      // _setHoverLoadout(sanitizedLoadout)
 
       const stats = await calcLoadoutStats(dataStore, sanitizedLoadout)
       setStats(stats)
