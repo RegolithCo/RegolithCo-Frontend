@@ -48,11 +48,13 @@ export interface ModuleChooserMenuProps {
   isShare?: boolean
   readonly?: boolean
   onChange: (value: MiningModuleEnum | '', isActive: boolean, isHover: boolean) => void
+  onClose: (isChanged: boolean) => void
   label: string
 }
 
 export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
   onChange,
+  onClose,
   value,
   isOn,
   locked,
@@ -90,6 +92,9 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
     return 0
   })
 
+  const isChanged = useRef(false)
+  const isOpen = useRef(false)
+
   const moduleKeys: MiningModuleEnum[] = Object.keys(loadoutLookups.modules).map((key) => key as MiningModuleEnum)
   return (
     <Stack direction="row" spacing={1} paddingBottom={2}>
@@ -124,7 +129,16 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
               },
             },
           }}
-          onChange={(e) => onChange(e.target.value as MiningModuleEnum, true, false)}
+          onOpen={() => (isOpen.current = true)}
+          onChange={(e) => {
+            onChange(e.target.value as MiningModuleEnum, true, false)
+            isChanged.current = true
+          }}
+          onClose={() => {
+            isOpen.current = false
+            onClose(isChanged.current)
+            isChanged.current = false
+          }}
           renderValue={(value) => {
             if (!value) {
               return (
@@ -174,8 +188,12 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
                     idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
                 }}
                 value={module.code}
-                onMouseOut={() => onChange('', true, true)}
-                onMouseOver={() => onChange(module.code as MiningModuleEnum, true, true)}
+                onMouseOut={() => {
+                  if (isOpen.current) onChange('', true, true)
+                }}
+                onMouseOver={() => {
+                  if (isOpen.current) onChange(module.code as MiningModuleEnum, true, true)
+                }}
               >
                 <ModuleMenuItem moduleCode={key} />
               </MenuItem>,
@@ -201,8 +219,12 @@ export const ModuleChooserMenu: React.FC<ModuleChooserMenuProps> = ({
                     idx % 2 === 0 ? theme.palette.background.paper : lighten(theme.palette.background.paper, 0.05),
                 }}
                 value={module.code}
-                onMouseOut={() => onChange('', true, true)}
-                onMouseOver={() => onChange(module.code as MiningModuleEnum, true, true)}
+                onMouseOut={() => {
+                  if (isOpen.current) onChange('', true, true)
+                }}
+                onMouseOver={() => {
+                  if (isOpen.current) onChange(module.code as MiningModuleEnum, true, true)
+                }}
               >
                 <ModuleMenuItem moduleCode={key} />
               </MenuItem>,

@@ -40,7 +40,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   const previousLoadout = useRef(activeLaser)
 
   const onLaserChange = (laser: MiningLaserEnum | '', isActive: boolean, hover: boolean) => {
-    if (laser === '') return onChange(null, hover)
+    if (laser === '') return onChange(hover ? previousLoadout.current : null, hover)
     const loadout: ActiveMiningLaserLoadout = {
       laser: laser as MiningLaserEnum,
       laserActive: isActive,
@@ -49,6 +49,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
       __typename: 'ActiveMiningLaserLoadout',
     }
     onChange(loadout, hover)
+    // If loadout actually changed, update previous loadout value
     if (!hover) previousLoadout.current = loadout
   }
 
@@ -58,6 +59,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
 
   const onModuleChange = (slotIdx: number) => (module: MiningModuleEnum | '', isActive: boolean, hover: boolean) => {
     if (!hasLaser) return onChange(null, hover)
+    if (module === '' && hover) return onChange(previousLoadout.current, hover)
 
     // If the laser is off, we can't change the modules
     const newModules = Array.from({ length: slots }).map((_, idx) => {
@@ -73,17 +75,21 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
       if (idx !== slotIdx) return thisActive
       else return isActive
     })
+    const loadout: ActiveMiningLaserLoadout = {
+      laser: laserCode as MiningLaserEnum,
+      laserActive: laserIsActive || false,
+      modules: newModules,
+      modulesActive: newModulesActive,
+      __typename: 'ActiveMiningLaserLoadout',
+    }
     // Now just check that this active m is the only one that's on
-    onChange(
-      {
-        laser: laserCode as MiningLaserEnum,
-        laserActive: laserIsActive || false,
-        modules: newModules,
-        modulesActive: newModulesActive,
-        __typename: 'ActiveMiningLaserLoadout',
-      },
-      hover
-    )
+    onChange(loadout, hover)
+    // If loadout actually changed, update previous loadout value
+    if (!hover) previousLoadout.current = loadout
+  }
+
+  const onModuleClose = (isChanged: boolean) => {
+    if (!isChanged) onChange(previousLoadout.current, false)
   }
 
   if (!dataStore.ready) return null
@@ -128,6 +134,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
             locked={!laserIsActive}
             label="Module 1"
             onChange={onModuleChange(0)}
+            onClose={onModuleClose}
           />
         ) : (
           <ModulePlaceholder />
@@ -141,6 +148,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
             locked={!laserIsActive}
             label="Module 2"
             onChange={onModuleChange(1)}
+            onClose={onModuleClose}
           />
         ) : (
           <ModulePlaceholder />
@@ -154,6 +162,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
             locked={!laserIsActive}
             label="Module 3"
             onChange={onModuleChange(2)}
+            onClose={onModuleClose}
           />
         ) : (
           <ModulePlaceholder />
