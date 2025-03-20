@@ -353,7 +353,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                       Uses
                     </LongCellHeaderWrapped>
                     <LongCellHeaderWrapped theme={theme} hovered={Boolean(hoverCol && hoverCol[0] === -112)}>
-                      Duration
+                      Duration (s)
                     </LongCellHeaderWrapped>
                   </>
                 )}
@@ -441,6 +441,9 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
 
                 const rowSelected = selected.includes(lm.code as MiningGadgetEnum | MiningModuleEnum)
                 const rowEven = idr % 2 === 0
+
+                const isActive = lm.category === 'Active'
+                console.log('marzipan', lm.stats)
 
                 const bgColor =
                   rowSelected && !filterSelected
@@ -565,7 +568,12 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           reversed={BackwardStats.includes('powerMod')}
                         />
                         <TableCell
-                          sx={Object.assign({}, styles.numericCell, topBorder)}
+                          align="center"
+                          sx={Object.assign(
+                            { color: theme.palette.primary.main, fontWeight: 'bold' },
+                            styles.numericCell,
+                            topBorder
+                          )}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -111)}
                         >
                           {
@@ -576,13 +584,18 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           }
                         </TableCell>
                         <TableCell
-                          sx={Object.assign({}, styles.numericCell, styles.sectionDivider, topBorder)}
+                          sx={Object.assign(
+                            { color: theme.palette.primary.main, fontWeight: 'bold' },
+                            styles.numericCell,
+                            styles.sectionDivider,
+                            topBorder
+                          )}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -112)}
                         >
                           {
                             // Magic numbers: Convert value from decimal (for % display) to integer
                             lm.stats.duration && (lm.stats.duration - 1) * 100 > 0
-                              ? `${MValueFormatter((lm.stats.duration - 1) * 100, MValueFormat.number)}s`
+                              ? `${MValueFormatter((lm.stats.duration - 1) * 100, MValueFormat.number)}`
                               : ' '
                           }
                         </TableCell>
