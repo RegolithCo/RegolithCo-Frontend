@@ -40,7 +40,7 @@ export const WorkOrderTypeChooser: React.FC<WorkOrderTypeChooserProps> = ({
     },
     {
       icon: <GemIcon />,
-      title: 'ROC / Hand',
+      title: 'ROC / FPS',
       description: 'Hadanite, Aphorite, Dolivine, Janalite....',
       value: ActivityEnum.VehicleMining,
     },

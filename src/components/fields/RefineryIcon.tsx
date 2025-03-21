@@ -2,17 +2,18 @@ import * as React from 'react'
 import { Badge, useTheme } from '@mui/material'
 import { Factory } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
+import { getRefineryAbbrev, RefineryEnum } from '@regolithco/common'
 
 export interface RefineryIconProps {
-  shortName: string
+  refinery: RefineryEnum
 }
 
-export const RefineryIcon: React.FC<RefineryIconProps> = ({ shortName }) => {
+export const RefineryIcon: React.FC<RefineryIconProps> = ({ refinery }) => {
   const theme = useTheme()
   return (
     <Badge
       color="primary"
-      badgeContent={shortName}
+      badgeContent={getRefineryAbbrev(refinery).toUpperCase()}
       sx={{
         border: `3px solid ${theme.palette.secondary.light}`,
         borderRadius: '50%',

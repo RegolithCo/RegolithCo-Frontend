@@ -204,7 +204,10 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                       return false
                     }
                   })
-
+                  const oreSummary = {
+                    processing: {},
+                    refined: {},
+                  }
                   return (
                     <TreeItem
                       key={refinery}
@@ -227,7 +230,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                       label={
                         <Stack alignItems="center" direction={'row'} spacing={2}>
                           <Box sx={{ flex: '0 0' }}>
-                            <RefineryIcon shortName={refinery} />
+                            <RefineryIcon refinery={refinery as RefineryEnum} />
                           </Box>
                           <Tooltip title={getRefineryName(refinery as RefineryEnum)} placement="top">
                             <Typography

@@ -9,13 +9,30 @@ import {
   getShipOreName,
   findPrice,
   getRefiningCost,
+  getRefineryAbbrev,
+  getRefineryName,
+  RefinerySystemMap,
+  SystemEnum,
 } from '@regolithco/common'
-import { TableContainer, Table, TableHead, TableRow, TableCell, useTheme, TableBody, Typography } from '@mui/material'
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  useTheme,
+  TableBody,
+  Typography,
+  darken,
+  alpha,
+  Tooltip,
+} from '@mui/material'
 import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { RefineryMetricEnum, RefineryPivotEnum } from './RefineryCalc'
 import { fontFamilies } from '../../../theme'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { SystemColors } from '../../pages/SurveyCorps/types'
 
 // vAxis={verticalAxis} hAxis={horizontalAxis} oreType={oreType} value={oreAmt}
 interface RefineryCalcTableProps {
@@ -58,11 +75,18 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       const tradeportData = ((await dataStore.getLookup('tradeportLookups')) || []).filter(
         ({ refinery }) => refinery === true
       )
-      const hAxis = Object.values(RefineryEnum).map((refVal) => [
+      const hAxisInner = Object.values(RefineryEnum).map((refVal) => [
         refVal as RefineryEnum,
-        (tradeportData.find(({ code }) => code.endsWith(refVal))?.name_short as string) || (refVal as string),
+        getRefineryAbbrev(refVal as RefineryEnum),
+        getRefineryName(refVal as RefineryEnum),
+        RefinerySystemMap[refVal as RefineryEnum],
       ])
-      hAxis.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
+      hAxisInner.sort((a, b) => {
+        // Sort by system first (stanton then pyro)
+        if (a[3] !== b[3]) return a[3] === SystemEnum.Stanton ? -1 : 1
+        // Then sort by nickname
+        return a[1].localeCompare(b[1])
+      })
 
       let vAxis: [ShipOreEnum | RefineryMethodEnum, string][] = []
       if (refMode === RefineryPivotEnum.oreType) {
@@ -90,7 +114,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
       const rows: [number | null, number | null][][] = await Promise.all(
         vAxis.map(async ([rowKey]) => {
           const cols: [number | null, number | null][] = await Promise.all(
-            hAxis.map(async ([colKey]) => {
+            hAxisInner.map(async ([colKey]) => {
               let outArr: [number | null, number | null] = [null, null]
 
               // We need to send the SCU in as cSCU for the calculation
@@ -140,7 +164,7 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
         })
       )
       setGridStatsArr(newGridStats)
-      setHAxis(hAxis)
+      setHAxis(hAxisInner)
       setVAxis(vAxis)
       setRows(rows)
     }
@@ -268,33 +292,36 @@ export const RefineryCalcTable: React.FC<RefineryCalcTableProps> = ({
               {refMode === RefineryPivotEnum.oreType && method && `${getRefineryMethodName(method)}`}
             </TableCell>
 
-            {hAxis.map(([, hAxisLabel], colIdx) => (
-              <TableCell
-                key={`collabel-${colIdx}`}
-                align="left"
-                valign="top"
-                sx={{
-                  px: 0.1,
-                  pl: 1,
-                  minWidth: '100px',
-                  textAlign: 'left',
-                  // Text align to the top
-                  verticalAlign: 'top',
-                  fontFamily: fontFamilies.robotoMono,
-                  background: colIdx % 2 === 0 ? '#000000' : '#222222',
-                  '& .MuiTableCell-root * ': {
-                    fontSize: '0.75rem!important',
-                  },
-                }}
-              >
-                <Typography variant="h5" sx={{ fontSize: '1.2rem' }} component="div">
-                  {hAxisLabel.split(' ')[0]}
-                </Typography>
-                <Typography variant="caption" sx={{ fontSize: '0.65rem' }} component="div">
-                  {hAxisLabel.split(' ').slice(1).join(' ')}
-                </Typography>
-              </TableCell>
-            ))}
+            {hAxis.map(([, hAxisLabel, fullname, system], colIdx) => {
+              const systemColorLight = SystemColors(theme)[system]
+              const systemColorDark = darken(SystemColors(theme)[system], 0.5)
+              return (
+                <TableCell
+                  key={`collabel-${colIdx}`}
+                  align="left"
+                  valign="top"
+                  sx={{
+                    px: 0.1,
+                    pl: 1,
+                    minWidth: '100px',
+                    textAlign: 'left',
+                    // Text align to the top
+                    verticalAlign: 'top',
+                    fontFamily: fontFamilies.robotoMono,
+                    background: alpha(colIdx % 2 === 0 ? systemColorLight : systemColorDark, 0.5),
+                    '& .MuiTableCell-root * ': {
+                      fontSize: '0.75rem!important',
+                    },
+                  }}
+                >
+                  <Tooltip title={`${system} - ${fullname}`} placement="top">
+                    <Typography variant="h5" sx={{ fontSize: '1.2rem' }} component="div">
+                      {hAxisLabel}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
+              )
+            })}
           </TableRow>
         </TableHead>
         <TableBody>

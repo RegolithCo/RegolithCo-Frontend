@@ -23,6 +23,9 @@ import {
   Checkbox,
   Link,
   useTheme,
+  PaletteColor,
+  keyframes,
+  alpha,
 } from '@mui/material'
 import {
   SalvageFind,
@@ -990,8 +993,41 @@ const VehicleOreName: React.FC<{ vehicleFind: VehicleClusterFind; onClick: () =>
 }) => {
   const theme = useTheme()
   const vehicleOreColors = useVehicleOreColors()
-  if (!vehicleFind.vehicleRocks[0]) return null
-  if (!vehicleFind.vehicleRocks[0].ores[0]) return null
+  if (!vehicleFind.vehicleRocks[0] || !vehicleFind.vehicleRocks[0].ores[0]) {
+    const pulse = (color: PaletteColor) => keyframes`
+    0% { 
+      box-shadow: 0 0 0 0 transparent; 
+      /* background-color: ${color.dark}  */
+    }
+    50% { 
+      box-shadow: 0 0 5px 5px ${alpha(color.light, 0.5)}; 
+      /* background-color: ${color.light}  */
+    }
+    100% { 
+      box-shadow: 0 0 0 0 transparent; 
+      /* background-color:  ${color.dark} */
+    }
+  `
+
+    return (
+      <Button
+        color="warning"
+        onClick={onClick}
+        sx={{
+          fontSize: theme.typography.h6.fontSize,
+          margin: 0,
+          padding: 0,
+          textTransform: 'uppercase',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          animation: `${pulse(theme.palette.warning)} 2s infinite`, // Apply the animation
+        }}
+        variant="outlined"
+      >
+        CHOOSE ORE
+      </Button>
+    )
+  }
   const vehicleOreColor = vehicleOreColors.find((c) => c.ore === vehicleFind.vehicleRocks[0].ores[0].ore)
   return (
     <Button

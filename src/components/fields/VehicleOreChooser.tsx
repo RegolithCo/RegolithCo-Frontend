@@ -1,6 +1,6 @@
 import React from 'react'
 import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
-import { VehicleOreEnum, getVehicleOreName } from '@regolithco/common'
+import { VehicleOreEnum, getVehicleOreAbbrev, getVehicleOreName } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { useVehicleOreColors } from '../../hooks/useVehicleOreColors'
 
@@ -87,7 +87,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
                 },
               }}
             >
-              {getVehicleOreName(ore)}
+              {getVehicleOreAbbrev(ore, 4)}
             </ToggleButton>
           </Grid>
         )

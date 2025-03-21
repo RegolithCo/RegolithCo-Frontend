@@ -119,7 +119,6 @@ export const TopBar: React.FC = () => {
   const { isAuthenticated, loading: loginLoading, authLogOut, setPopupOpen } = React.useContext(LoginContext)
   const { isInitialized, isVerified, loading: profileLoading, myProfile, error } = React.useContext(UserProfileContext)
   const { isScreenSharing, stopScreenCapture } = React.useContext(ScreenshareContext)
-  // const [shareOpen, setShareOpen] = React.useState(false)
 
   const combinedLoading = loginLoading || profileLoading
 
@@ -199,7 +198,7 @@ export const TopBar: React.FC = () => {
         },
         {
           path: '/survey/gems',
-          name: 'ROC / Hand Mining Ores',
+          name: 'ROC / FPS Mining Ores',
           icon: <GemIcon />,
         },
         {

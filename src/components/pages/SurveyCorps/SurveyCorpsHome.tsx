@@ -220,7 +220,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
       pageContent = vehicleOre
       downloadData = surveyData?.vehicleProbs?.data || null
       downloadDataFileName = `ROC-Hand-Mining_${downloadDataFileName}`
-      fullScreenName = 'ROC / Hand Mining'
+      fullScreenName = 'ROC / FPS Mining'
       break
     case SurveyTabsEnum.LEADERBOARD:
       pageContent = leaderBoard
@@ -287,7 +287,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
             <Tab label="Location" value={SurveyTabsEnum.SHIP_ORE} icon={<RockIcon />} />
             <Tab label="Type" value={SurveyTabsEnum.SHIP_ORE_CLASS} icon={<RockIcon />} />
             <Tab label="Type Loc." value={SurveyTabsEnum.SHIP_CLASS_LOCATION} icon={<RockIcon />} />
-            <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
+            <Tab label="ROC / FPS" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
             <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
           </Tabs>
         )
@@ -346,7 +346,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
                   </Badge>
                 }
               />
-              <Tab label="ROC / Hand" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
+              <Tab label="ROC / FPS" value={SurveyTabsEnum.VEHICLE_ORE} icon={<GemIcon />} />
               <Tab label="Leaderboard" value={SurveyTabsEnum.LEADERBOARD} icon={<EmojiEvents />} />
             </Tabs>
           )}

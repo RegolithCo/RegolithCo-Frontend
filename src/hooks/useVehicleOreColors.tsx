@@ -1,16 +1,25 @@
 import React, { useEffect } from 'react'
 import { VehicleOreEnum, findPrice } from '@regolithco/common'
 import { LookupsContext } from '../context/lookupsContext'
-import { blue, green } from '@mui/material/colors'
+import { blue, green, grey, red, teal } from '@mui/material/colors'
 
 export type SortedVehicleOreColor = { ore: VehicleOreEnum; fg: string; bg: string }
 export type SortedVehicleOreColors = SortedVehicleOreColor[]
 
+export const vehicleOreColorMap: Record<VehicleOreEnum, [string, string]> = {
+  [VehicleOreEnum.Janalite]: ['#fff200', '#000000'],
+  [VehicleOreEnum.Hadanite]: ['#ff00c3', '#ffffff'],
+  [VehicleOreEnum.Aphorite]: [blue[500], '#ffffff'],
+  [VehicleOreEnum.Dolivine]: [green[500], '#ffffff'],
+  [VehicleOreEnum.Beradom]: [blue[900], '#ffffff'],
+  [VehicleOreEnum.Glacosite]: [green[900], '#ffffff'],
+  [VehicleOreEnum.Feynmaline]: ['#970074', '#ffffff'],
+  [VehicleOreEnum.Jaclium]: [teal[400], '#ffffff'],
+  [VehicleOreEnum.Saldynium]: [grey[500], '#ffffff'],
+  [VehicleOreEnum.Carinite]: [red[500], '#ffffff'],
+}
 export const useVehicleOreColors = (): SortedVehicleOreColors => {
   const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
-
-  const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
-  const fgColors = ['#000000', '#ffffff', '#ffffff', '#ffffff']
 
   const dataStore = React.useContext(LookupsContext)
 
@@ -29,8 +38,8 @@ export const useVehicleOreColors = (): SortedVehicleOreColors => {
   }, [dataStore])
 
   return sortedVehicleRowKeys.map((vehicleOreKey, rowIdx) => {
-    const fgc = fgColors[rowIdx]
-    const bgc = bgColors[rowIdx]
+    const fgc = vehicleOreColorMap[vehicleOreKey][1]
+    const bgc = vehicleOreColorMap[vehicleOreKey][0]
     return { ore: vehicleOreKey, fg: fgc, bg: bgc } as SortedVehicleOreColor
   })
 }

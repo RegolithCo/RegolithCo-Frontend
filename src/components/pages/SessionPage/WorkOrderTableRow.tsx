@@ -187,7 +187,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.Refinery)) && (
         <TableCell align="center" onClick={onRowClickInner}>
-          {shipOrder.isRefined && shipOrder.refinery && <RefineryIcon shortName={shipOrder.refinery} />}
+          {shipOrder.isRefined && shipOrder.refinery && <RefineryIcon refinery={shipOrder.refinery} />}
         </TableCell>
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.OrderId)) && (

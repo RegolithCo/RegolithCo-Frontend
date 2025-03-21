@@ -258,7 +258,7 @@ export const SessionListSummary: React.FC<SessionListSummaryProps> = ({ session 
                   mr: 1,
                 }}
               />
-              <RefineryIcon shortName={refineries[0]} />
+              <RefineryIcon refinery={refineries[0]} />
               {refineries.length > 1 && `(+${refineries.length - 1})`}
               {lastJobDone && lastJobDone > 0 && (
                 <AccessTime
