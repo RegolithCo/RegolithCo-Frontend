@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import {
+  Alert,
   Badge,
   Box,
   Container,
@@ -25,7 +26,6 @@ import {
   scVersion,
   ScVersionEpochEnum,
   SurveyData,
-  SystemEnum,
 } from '@regolithco/common'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SurveyCorpsAbout } from './SurveyCorpsAbout'
@@ -37,6 +37,7 @@ import { TablePageWrapper } from '../../TablePageWrapper'
 import { ShipOreClassDistribution } from './ShipOreClassDistribution'
 import { ShipClassLocation } from './ShipClassLocation'
 import dayjs from 'dayjs'
+import useLocalStorage from '../../../hooks/useLocalStorage'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'ores',
@@ -58,10 +59,18 @@ export type SurveyDataTables = {
   guildLeaderBoard: SurveyData | null
 }
 
+const LATEST_EPOCH = getEpochFromVersion(scVersion)
+
 export const SurveyCorpsHomeContainer: React.FC = () => {
   const navigate = useNavigate()
   const { tab, subtab } = useParams()
-  const [epoch, setEpoch] = React.useState(getEpochFromVersion(scVersion))
+  const [epoch, setEpoch] = useLocalStorage('SURVEY_CORPS::Epoch', getEpochFromVersion(scVersion))
+
+  React.useEffect(() => {
+    if (!epoch || Object.values(ScVersionEpochEnum).indexOf(epoch) === -1) {
+      setEpoch(getEpochFromVersion(scVersion))
+    }
+  }, [epoch])
 
   const vehicleProbs = useGetPublicSurveyDataQuery({
     variables: {
@@ -156,6 +165,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
 }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const isOldEpoch = epoch !== LATEST_EPOCH
 
   const [modalOpen, setModalOpen] = React.useState(false)
 
@@ -295,6 +305,12 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
       loading={loading}
     >
       <Container maxWidth={'lg'} sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0' }}>
+        {isOldEpoch && (
+          <Alert severity="warning" sx={{ marginBottom: 2 }}>
+            You are currently looking at data from epoch <strong>{epoch}</strong> The latest epoch is{' '}
+            <strong>{LATEST_EPOCH}</strong>.{' '}
+          </Alert>
+        )}
         <Stack
           direction={{
             xs: 'column',
@@ -400,7 +416,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
           </Stack>
           {/* Epoch selector */}
           {!isSmall && (
-            <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)} disabled={true}>
+            <Select value={epoch} onChange={(e) => setEpoch(e.target.value as ScVersionEpochEnum)}>
               {Object.values(ScVersionEpochEnum).map((epoch) => (
                 <MenuItem key={epoch} value={epoch}>
                   Epoch: {epoch}

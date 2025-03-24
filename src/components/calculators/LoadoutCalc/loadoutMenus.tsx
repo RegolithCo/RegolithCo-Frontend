@@ -407,7 +407,7 @@ export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
   if (!dataStore.ready) return null
   const laser = loadoutLookups.lasers[laserCode as MiningLaserEnum]
   const allPrices = (Object.values(laser.prices).filter((price) => price > 0) as number[]) || [0]
-  const minPrice = Math.min(...allPrices)
+  const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : null
 
   return (
     <>
@@ -428,7 +428,7 @@ export const LaserMenuItem: React.FC<LaserMenuItemProps> = ({ laserCode }) => {
           <ModuleIcon style={{ fontSize: 15 }} /> {laser.slots}
         </Box>
         <Box sx={{ width: 50, textAlign: 'right', fontFamily: fontFamilies.robotoMono }}>
-          {MValueFormatter(minPrice, MValueFormat.currency_sm)}
+          {minPrice !== null ? MValueFormatter(minPrice, MValueFormat.currency_sm) : '--'}
         </Box>
         {toolMenuStatsOrder
           .filter(({ key }) => !LASER_NO_MENU_STAT.includes(key as keyof LaserLoadoutStats))

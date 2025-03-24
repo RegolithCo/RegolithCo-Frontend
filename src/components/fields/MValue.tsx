@@ -80,8 +80,10 @@ export const MValueFormatter = (
 
   // Miscellaneous types of values that may be non-numerical
   if (format === MValueFormat.string) finalVal = value as string
-  else if (isNaN(value as number)) finalVal = 'NaN'
-  else if (typeof value === 'undefined') finalVal = ''
+  else if (isNaN(Number(value))) return '--'
+  // check for the infinity case
+  else if (!isFinite(Number(value))) return '--'
+  else if (typeof value === 'undefined') return ''
   else if (value === null) finalVal = 'null'
 
   // Number: Just a number

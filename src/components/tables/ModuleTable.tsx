@@ -443,7 +443,6 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                 const rowEven = idr % 2 === 0
 
                 const isActive = lm.category === 'Active'
-                console.log('marzipan', lm.stats)
 
                 const bgColor =
                   rowSelected && !filterSelected
@@ -578,8 +577,8 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                         >
                           {
                             // Magic numbers: Convert value from decimal (for % display) to integer
-                            lm.stats.uses && (lm.stats.uses - 1) * 100 > 0
-                              ? MValueFormatter((lm.stats.uses - 1) * 100, MValueFormat.number)
+                            lm.stats.uses && lm.stats.uses > 0
+                              ? MValueFormatter(lm.stats.uses, MValueFormat.number)
                               : ' '
                           }
                         </TableCell>
@@ -594,8 +593,8 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                         >
                           {
                             // Magic numbers: Convert value from decimal (for % display) to integer
-                            lm.stats.duration && (lm.stats.duration - 1) * 100 > 0
-                              ? `${MValueFormatter((lm.stats.duration - 1) * 100, MValueFormat.number)}`
+                            lm.stats.duration && lm.stats.duration > 0
+                              ? `${MValueFormatter(lm.stats.duration, MValueFormat.number)}`
                               : ' '
                           }
                         </TableCell>

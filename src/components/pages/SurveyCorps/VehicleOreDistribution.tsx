@@ -7,11 +7,9 @@ import {
   Box,
   Button,
   Container,
-  darken,
   FormControlLabel,
   IconButton,
   Paper,
-  rgbToHex,
   Stack,
   Switch,
   Table,
@@ -28,12 +26,11 @@ import {
 import { getGravityWellOptions, GravityWellChooser, GravityWellNameRender } from '../../fields/GravityWellChooser'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { findPrice, GravityWell, GravityWellTypeEnum, Lookups, SurveyData, VehicleOreEnum } from '@regolithco/common'
+import { GravityWell, GravityWellTypeEnum, Lookups, SurveyData, VehicleOreEnum } from '@regolithco/common'
 import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
-import { blue, green } from '@mui/material/colors'
 import { hoverColor, selectBorderColor, selectColor } from './types'
-import Gradient from 'javascript-color-gradient'
+import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
 
 export interface VehicleOreDistributionProps {
   // Props here
@@ -45,7 +42,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const styles = tableStylesThunk(theme)
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const tContainerRef = React.useRef<HTMLDivElement>(null)
-  const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
   const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({})
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
@@ -101,24 +97,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   }, [])
 
   const dataStore = React.useContext(LookupsContext)
-
-  const bgColors = ['#fff200', '#ff00c3', blue[500], green[500]]
-  // const fgColors = ['#000000', '#ffffff', '#ffffff']
-
-  React.useEffect(() => {
-    if (!dataStore.ready) return
-    const calcVehicleRowKeys = async () => {
-      const vehicleRowKeys = Object.values(VehicleOreEnum)
-      const prices = await Promise.all(vehicleRowKeys.map((vehicleOreKey) => findPrice(dataStore, vehicleOreKey)))
-      const newSorted = [...vehicleRowKeys].sort((a, b) => {
-        const aPrice = prices[vehicleRowKeys.indexOf(a)]
-        const bPrice = prices[vehicleRowKeys.indexOf(b)]
-        return bPrice - aPrice
-      })
-      setSortedVehicleRowKeys(newSorted)
-    }
-    calcVehicleRowKeys()
-  }, [dataStore])
+  const sortedOreColors = useVehicleOreColors()
 
   const gravityWells = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
@@ -153,21 +132,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     }
     setMaxMins(retVal)
   }, [gravityWellOptions, data?.data, selected, filterSelected, gravityWellFilter])
-
-  const gradients = React.useMemo(() => {
-    return Object.values(sortedVehicleRowKeys).reduce(
-      (acc, color, idx) => {
-        const light = bgColors[idx]
-        const dark = rgbToHex(darken(light, 0.5))
-        acc[color] = new Gradient()
-          .setColorGradient(dark, light)
-          .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
-          .getColors()
-        return acc
-      },
-      {} as Record<string, string[]>
-    )
-  }, [sortedVehicleRowKeys])
 
   const tableRows = React.useMemo(() => {
     return gravityWellOptions.map((row, idr) => {
@@ -310,7 +274,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
           )}
 
           {/* Ore Tiers */}
-          {sortedVehicleRowKeys.map((ore, colIdx) => {
+          {sortedOreColors.map(({ ore, bg, fg }, colIdx) => {
             let prob: number | null = null
             let minNum: number | null = null
             let maxNum: number | null = null
@@ -318,8 +282,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
             let normProb: number | null = null
             let bgColor: string | undefined = undefined
 
-            // const fgc = fgColors[colIdx]
-            const bgc = bgColors[colIdx]
             if (data && data.data && data.data[row.id] && data.data[row.id].ores[ore]) {
               prob = data.data[row.id].ores[ore].prob
               minNum = data.data[row.id].ores[ore].minRocks
@@ -332,7 +294,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               const oreMin = maxMins[ore] && maxMins[ore].min !== null ? maxMins[ore].min : 0
               // The normalized value between 0 and 1 that prob is
               normProb = calculateNormalizedProbability(prob, oreMin, oreMax)
-              bgColor = gradients && gradients[ore] ? alpha(gradients[ore][normProb], 0.4) : undefined
+              bgColor = bg ? alpha(bg, 0.4) : undefined
             }
 
             return (
@@ -346,16 +308,16 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                 medianNum={medianNum}
                 showExtendedStats={showExtendedStats}
                 isNewTier={false}
-                oreColor={bgc}
+                oreColor={bg}
                 backgroundColor={bgColor}
-                handleMouseEnter={(e) => handleMouseEnter(e, 'primary', idr, colIdx, bgc)}
+                handleMouseEnter={(e) => handleMouseEnter(e, 'primary', idr, colIdx, bg)}
               />
             )
           })}
         </SurveyTableRow>
       )
     })
-  }, [data, sortedVehicleRowKeys, selected, filterSelected, showExtendedStats, gravityWellFilter])
+  }, [data, sortedOreColors, selected, filterSelected, showExtendedStats, gravityWellFilter])
 
   return (
     <Box
@@ -516,10 +478,10 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                   </LongCellHeader>
                 )}
 
-                {sortedVehicleRowKeys.map((ore, colIdx) => {
+                {sortedOreColors.map(({ ore, bg, fg }, colIdx) => {
                   // const colHovered = hover && hover[1] === colIdx
                   // const fgc = fgColors[colIdx]
-                  const bgc = bgColors[colIdx]
+                  const bgc = sortedOreColors.find((c) => c.ore === ore)?.bg
                   const colHovered = hoverCol && hoverCol[0] === colIdx
 
                   return (
@@ -532,7 +494,8 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                           fontSize: '1.2em',
                           fontWeight: colHovered ? 'bold' : undefined,
                           paddingLeft: theme.spacing(5),
-                          borderTop: colIdx === 0 ? `3px solid ${bgc}` : `1px solid ${alpha(bgc, 0.5)}`,
+                          borderTop:
+                            colIdx === 0 ? `3px solid ${bgc}` : `1px solid ${bgc ? alpha(bgc, 0.5) : 'transparent'}`,
                         },
                         '& *': {
                           color: bgc,

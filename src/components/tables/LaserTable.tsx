@@ -102,6 +102,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
       .filter((laser) => {
         if (shipFilter === LoadoutShipEnum.Mole) return laser.size === 2
         if (shipFilter === LoadoutShipEnum.Prospector) return laser.size === 1
+        if (shipFilter === LoadoutShipEnum.Roc) return laser.size === 0
         return true
       })
       .filter((laser) => {
@@ -196,6 +197,16 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         >
           <ToggleButton value={'ALL'} aria-label="left aligned">
             All
+          </ToggleButton>
+          <ToggleButton
+            value={LoadoutShipEnum.Roc}
+            aria-label="centered"
+            // color="de"
+            sx={{
+              color: theme.palette.grey[500],
+            }}
+          >
+            ROC
           </ToggleButton>
           <ToggleButton
             value={LoadoutShipEnum.Prospector}
@@ -478,6 +489,19 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                       ? theme.palette.background.paper
                       : theme.palette.background.default
 
+                let sizeChip = <Chip color="info" label="1" size="small" />
+                switch (laser.size) {
+                  case 0:
+                    sizeChip = <Chip label="0" size="small" />
+                    break
+                  case 1:
+                    sizeChip = <Chip color="info" label="1" size="small" />
+                    break
+                  case 2:
+                    sizeChip = <Chip color="success" label="2" size="small" />
+                    break
+                }
+
                 return (
                   <TableRow
                     key={`${laser.code}-${idr}`}
@@ -509,11 +533,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                       sx={styles.tinyCell}
                       onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -2)}
                     >
-                      {laser.size === 1 ? (
-                        <Chip color="info" label="1" size="small" />
-                      ) : (
-                        <Chip color="success" label="2" size="small" />
-                      )}
+                      {sizeChip}
                     </TableCell>
                     <TableCell
                       sx={Object.assign({}, styles.sectionDivider, styles.tinyCell)}
@@ -526,36 +546,42 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
                     {columnGroups.includes(ColumnGroupEnum.Base) && (
                       <>
                         <TableCell
+                          align="center"
                           sx={Object.assign({}, styles.numericCell, rankColors['optimumRange'])}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -10)}
                         >
                           {laser.stats.optimumRange}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={Object.assign({}, styles.numericCell, rankColors['maxRange'])}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -11)}
                         >
                           {laser.stats.maxRange}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={Object.assign({}, styles.numericCell, rankColors['minPowerPct'])}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -12)}
                         >
                           {MValueFormatter(laser.stats.minPowerPct, MValueFormat.percent)}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={Object.assign({}, styles.numericCell, rankColors['minPower'])}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -13)}
                         >
                           {laser.stats.minPower}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={Object.assign({}, styles.numericCell, rankColors['maxPower'])}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -14)}
                         >
                           {laser.stats.maxPower}
                         </TableCell>
                         <TableCell
+                          align="center"
                           sx={Object.assign({}, styles.numericCell, styles.sectionDivider, rankColors['extrPower'])}
                           onMouseEnter={(e) => handleMouseEnter(e, theme.palette.grey[100], idr, -15)}
                         >
