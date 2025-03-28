@@ -1,3 +1,8 @@
+### March 27
+## 1.3.6 4.1 Support
+
+4.1 brings us new minerals, new mining ships and a new Regolith Survey Epoch.
+
 ### March 3
 ## 1.3.5 Signal Calculator
 
