@@ -42,7 +42,7 @@ export const SalvagingOreTable: React.FC = () => {
 
       const newFinaltable: [number, number, number][] = newSorted.map((shipOreKey, rowIdx) => {
         const orePrice = priceLookups[shipOreKey]
-        const retVals = [orePrice, orePrice * 12, orePrice * 420]
+        const retVals = [orePrice, orePrice * 12, orePrice * 16, orePrice * 420]
         if (rowIdx === 0) {
           retVals.forEach((value) => rowStats.push({ max: value, min: value }))
         } else {
@@ -90,7 +90,15 @@ export const SalvagingOreTable: React.FC = () => {
                 12 SCU
               </Typography>
               <Typography variant="caption" component="div">
-                Full Vulture
+                Drake Vulture
+              </Typography>
+            </TableCell>
+            <TableCell align="left" valign="top" sx={{ backgroundColor: '#00000033' }}>
+              <Typography variant="h5" component="div">
+                16 SCU
+              </Typography>
+              <Typography variant="caption" component="div">
+                MISC Fortune
               </Typography>
             </TableCell>
             <TableCell align="left" valign="top" sx={{ backgroundColor: '#00000055' }}>
@@ -98,7 +106,7 @@ export const SalvagingOreTable: React.FC = () => {
                 420 SCU
               </Typography>
               <Typography variant="caption" component="div">
-                Full Reclaimer
+                Reclaimer
               </Typography>
             </TableCell>
           </TableRow>

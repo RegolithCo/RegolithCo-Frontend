@@ -11,7 +11,7 @@ export const VehicleOreTable: React.FC = () => {
   const [sortedVehicleRowKeys, setSortedVehicleRowKeys] = React.useState<VehicleOreEnum[]>([])
   const [bgColors, setBgColors] = React.useState<string[]>([])
   const [fgColors, setFgColors] = React.useState<string[]>([])
-  const [finalTable, setFinalTable] = React.useState<([number, number, number] | undefined)[]>()
+  const [finalTable, setFinalTable] = React.useState<([number, number, number, number] | undefined)[]>()
 
   const dataStore = React.useContext(LookupsContext)
 
@@ -31,11 +31,11 @@ export const VehicleOreTable: React.FC = () => {
         .getColors()
       const fgColors = bgColors.map((color) => theme.palette.getContrastText(color))
 
-      const table: [number, number, number][] = []
+      const table: [number, number, number, number][] = []
       for (const key of newSorted) {
         const orePrice = (await findPrice(dataStore, key as VehicleOreEnum)) / 1000
-        const retVals = [orePrice, orePrice * 800, orePrice * 3500]
-        table.push(retVals as [number, number, number])
+        const retVals = [orePrice, orePrice * 122, orePrice * 1200, orePrice * 3400]
+        table.push(retVals as [number, number, number, number])
       }
 
       setSortedVehicleRowKeys(newSorted)
@@ -50,7 +50,7 @@ export const VehicleOreTable: React.FC = () => {
 
   return (
     <TableContainer>
-      <Table sx={{ minWidth: 400, maxWidth: 460, mx: 'auto' }} size="small" aria-label="simple table">
+      <Table sx={{ minWidth: 600, maxWidth: 460, mx: 'auto' }} size="small" aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell sx={{ backgroundColor: '#00000033' }} />
@@ -64,18 +64,26 @@ export const VehicleOreTable: React.FC = () => {
             </TableCell>
             <TableCell align="left" valign="top" sx={{ backgroundColor: '#00000033' }}>
               <Typography variant="h5" component="div">
-                0.8 SCU
+                1/8 SCU
               </Typography>
               <Typography variant="caption" component="div">
-                Full ROC
+                ATLS GEO
+              </Typography>
+            </TableCell>
+            <TableCell align="left" valign="top" sx={{ backgroundColor: '#00000033' }}>
+              <Typography variant="h5" component="div">
+                1.2 SCU
+              </Typography>
+              <Typography variant="caption" component="div">
+                ROC
               </Typography>
             </TableCell>
             <TableCell align="left" valign="top" sx={{ backgroundColor: '#00000055' }}>
               <Typography variant="h5" component="div">
-                3.5 SCU
+                3.4 SCU
               </Typography>
               <Typography variant="caption" component="div">
-                Full ROC DS
+                ROC DS
               </Typography>
             </TableCell>
           </TableRow>

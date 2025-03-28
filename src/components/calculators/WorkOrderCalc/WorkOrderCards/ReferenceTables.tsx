@@ -19,15 +19,18 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
   switch (activity) {
     case ActivityEnum.ShipMining:
       rows.push([lups.find(({ UEXID }) => UEXID === '148') as Vehicle, 100, 'miningHold', 'cSCU'])
-      rows.push([lups.find(({ UEXID }) => UEXID === '14800') as Vehicle, 100, 'miningHold', 'cSCU'])
+      rows.push([lups.find(({ UEXID }) => UEXID === '251') as Vehicle, 100, 'miningHold', 'cSCU'])
+      // rows.push([lups.find(({ UEXID }) => UEXID === '14800') as Vehicle, 100, 'miningHold', 'cSCU'])
       rows.push([lups.find(({ UEXID }) => UEXID === '122') as Vehicle, 100, 'miningHold', 'cSCU'])
       break
     case ActivityEnum.VehicleMining:
       rows.push([lups.find(({ UEXID }) => UEXID === '168') as Vehicle, 1000, 'miningHold', 'mSCU'])
       rows.push([lups.find(({ UEXID }) => UEXID === '169') as Vehicle, 1000, 'miningHold', 'mSCU'])
+      rows.push([lups.find(({ UEXID }) => UEXID === '252') as Vehicle, 1000, 'miningHold', 'mSCU'])
       break
     case ActivityEnum.Salvage:
       rows.push([lups.find(({ UEXID }) => UEXID === '159') as Vehicle, 1, 'cargo', 'SCU'])
+      rows.push([lups.find(({ UEXID }) => UEXID === '234') as Vehicle, 1, 'cargo', 'SCU'])
       rows.push([lups.find(({ UEXID }) => UEXID === '201') as Vehicle, 1, 'cargo', 'SCU'])
       break
     default:
@@ -35,6 +38,7 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
   }
   if (!dataStore.ready) return <div>Loading...</div>
   if (!show) return null
+  console.log(rows)
   return (
     <TableContainer
       sx={{ border: '1px solid', my: 2, borderRadius: 2, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}

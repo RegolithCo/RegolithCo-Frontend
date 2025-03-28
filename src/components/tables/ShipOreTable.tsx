@@ -110,7 +110,7 @@ export const ShipOreTable: React.FC = () => {
                 32 SCU
               </Typography>
               <Typography variant="caption" component="div">
-                Full Prospector
+                MISC Prospector / Drake Golem
               </Typography>
             </TableCell>
             <TableCell align="left" colSpan={2} valign="top" sx={{ backgroundColor: '#00000055' }}>
@@ -118,7 +118,7 @@ export const ShipOreTable: React.FC = () => {
                 96 SCU
               </Typography>
               <Typography variant="caption" component="div">
-                Full Argo Mole
+                Argo Mole
               </Typography>
             </TableCell>
           </TableRow>
