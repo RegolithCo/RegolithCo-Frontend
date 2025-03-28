@@ -577,7 +577,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                         >
                           {
                             // Magic numbers: Convert value from decimal (for % display) to integer
-                            lm.stats.uses && lm.stats.uses > 0
+                            !isActive && lm.stats.uses && lm.stats.uses > 0
                               ? MValueFormatter(lm.stats.uses, MValueFormat.number)
                               : ' '
                           }
@@ -593,7 +593,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                         >
                           {
                             // Magic numbers: Convert value from decimal (for % display) to integer
-                            lm.stats.duration && lm.stats.duration > 0
+                            !isActive && lm.stats.duration && lm.stats.duration > 0
                               ? `${MValueFormatter(lm.stats.duration, MValueFormat.number)}`
                               : ' '
                           }
