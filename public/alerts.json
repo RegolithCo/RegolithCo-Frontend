@@ -1,14 +1,8 @@
 [
   {
-    "title": "UEX 2.0 Price sync complete!", 
-    "endDate": "2024-05-25",
-    "severity": "success",
-    "message": "Price syncing scripts have now been updated to work with [UEX's new API 2.0](https://uexcorp.space). Price syncing will now resume as normal on a regular schedule (hourly-ish)."
-  },
-  {
-    "title": "Account Verification DISABLED until further notice", 
-    "endDate": "2024-05-25",
-    "severity": "error",
-    "message": "[CIG announced on spectrum](https://robertsspaceindustries.com/spectrum/community/SC/forum/50259/thread/why-rsi-profile-pages-are-now-gated-behind-login/6858872) that they have disabled public accounts and so Regolith cannot verify your handle until further notice. We very much hope that this is temporary."
+    "title": "New Epoch! 4.1 has arrived.", 
+    "endDate": "2025-04-10",
+    "severity": "info",
+    "message": "Star Citizen 4.1 has a lot of mining changes so it's time for a new Survey epoch. This means new leaderboards and new mining data. While we wait for the new data to flow in you can still set your epoch back to 4.0 to look at the the old values."
   }
 ]
