@@ -53,6 +53,7 @@ import {
   calculateSurveyFind,
   GravityWell,
   Lookups,
+  RockStateEnum,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -895,7 +896,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 setEditScanModalOpen([-1, false])
               }
             }}
-            shipRock={editScanModalOpen[1] as ShipRock}
+            shipRock={
+              (editScanModalOpen[1] as ShipRock) ||
+              ({
+                mass: 0,
+                ores: [],
+                res: 0,
+                inst: 0,
+                state: RockStateEnum.Depleted,
+                __typename: 'ShipRock',
+              } as ShipRock)
+            }
           />
         )}
       {scoutingFind.clusterType === ScoutingFindTypeEnum.Salvage &&
