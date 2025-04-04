@@ -217,8 +217,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
       ? shipRock
       : { state: RockStateEnum.Ready, mass: 0, rockType: defaultRockType, ores: [], __typename: 'ShipRock' }
   )
-  const [instTextValue, setInstTextValue] = React.useState<string>(shipRock?.inst ? shipRock.inst.toString() : '')
-  const [resTextValue, setResTextValue] = React.useState<string>(shipRock?.res ? (shipRock.res * 100).toString() : '')
+  const [instTextValue, setInstTextValue] = React.useState<string>(shipRock?.inst ? shipRock.inst.toFixed(2) : '')
+  const [resTextValue, setResTextValue] = React.useState<string>(shipRock?.res ? (shipRock.res * 100).toFixed(0) : '')
 
   const instabilkityF = instTextValue.length > 0 ? parseFloat(instTextValue) : null
   const instabilityError =
