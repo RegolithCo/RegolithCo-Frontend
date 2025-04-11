@@ -7,9 +7,11 @@ import {
   Box,
   Button,
   Container,
+  darken,
   FormControlLabel,
   IconButton,
   Paper,
+  rgbToHex,
   Stack,
   Switch,
   Table,
@@ -31,18 +33,28 @@ import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { hoverColor, selectBorderColor, selectColor } from './types'
 import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
+import { fontFamilies } from '../../../theme'
+import { calculateNormalizedProbability } from './ShipOreDistribution'
+import Gradient from 'javascript-color-gradient'
 
 export interface VehicleOreDistributionProps {
   // Props here
   data?: SurveyData | null
+  bonuses?: SurveyData | null
 }
 
-export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ data }) => {
+export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ data, bonuses }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const tContainerRef = React.useRef<HTMLDivElement>(null)
-  const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({})
+  const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({
+    STAT_BONUS: { max: 1, min: 1 },
+    STAT_USERS: { max: 0, min: 0 },
+    STAT_SCANS: { max: 0, min: 0 },
+    STAT_CLUSTERS: { max: 0, min: 0 },
+    STAT_CLUSTER_SIZE: { max: 0, min: 0 },
+  })
   // Filters
   const [selected, setSelected] = React.useState<string[]>([])
   // Hover state: [colNum, left, width, color]
@@ -79,6 +91,20 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     }, 100)
   }, [])
 
+  const gradients = React.useMemo(() => {
+    const retVal = {}
+    // A generic one for statistics
+    const statsLight = theme.palette.info.main
+    const statsDark = rgbToHex(darken(theme.palette.info.dark, 0.5))
+    retVal['STATS'] = new Gradient()
+      .setColorGradient(statsDark, statsLight)
+      .setMidpoint(100) // 100 is the number of colors to generate. Should be enough stops for our ores
+      .getColors()
+      .map((color) => alpha(color, 0.4))
+
+    return retVal
+  }, [])
+
   const handleMouseEnter = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>, tier, idr, colIdx, bgc) => {
     if (tBodyRef.current) {
       // Get the left of the table
@@ -111,7 +137,13 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   // Calculate the max and min values for each ore
   React.useEffect(() => {
     // prepopulate the maxMins array
-    const retVal: Record<string, { max: number | null; min: number | null }> = {}
+    const retVal: Record<string, { max: number | null; min: number | null }> = {
+      STAT_BONUS: { max: 1, min: 1 },
+      STAT_USERS: { max: 0, min: 0 },
+      STAT_SCANS: { max: 0, min: 0 },
+      STAT_CLUSTERS: { max: 0, min: 0 },
+      STAT_CLUSTER_SIZE: { max: 0, min: 0 },
+    }
     if (data?.data && gravityWellOptions) {
       gravityWellOptions
         .filter((row) => {
@@ -120,6 +152,13 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         })
         .forEach((row) => {
           const dataCols = data?.data || {}
+
+          // Calculate the bonus
+          const bonusCols = bonuses?.data || {}
+          const bonus = bonusCols[row.id] || 1
+          const oldBonusMax = retVal['STAT_BONUS'].max || 0
+          retVal['STAT_BONUS'].max = Math.max(oldBonusMax, bonus)
+
           // Then the ores
           Object.values(VehicleOreEnum).forEach((ore, idy) => {
             const prob = dataCols[row.id]?.ores[ore]?.prob
@@ -131,14 +170,22 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         })
     }
     setMaxMins(retVal)
-  }, [gravityWellOptions, data?.data, selected, filterSelected, gravityWellFilter])
+  }, [gravityWellOptions, data?.data, bonuses?.data, selected, filterSelected, gravityWellFilter])
 
   const tableRows = React.useMemo(() => {
+    if (!gravityWellOptions || !maxMins || !data) return null
+    const maxMinsBonus = maxMins['STAT_BONUS'] || { max: 1, min: 0 }
+
     return gravityWellOptions.map((row, idr) => {
       let hide = false
       if (gravityWellFilter && row.id !== gravityWellFilter && !row.parents.includes(gravityWellFilter)) {
         hide = true
       }
+
+      const bonus = bonuses && bonuses.data && bonuses.data[row.id] ? bonuses.data[row.id] : 1
+
+      // The normalized value between 0 and 1 that prob is
+      const normBonus = calculateNormalizedProbability(bonus, maxMinsBonus.min, maxMinsBonus.max)
 
       // const rowEven = idr % 2 === 0
       const rowSelected = selected.includes(row.id)
@@ -214,6 +261,40 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
               </IconButton>
             </Tooltip>
             <GravityWellNameRender options={row} />
+          </TableCell>
+
+          {/* --------- SCAN BONUS CELL --------- */}
+          <TableCell
+            sx={{
+              textAlign: 'center',
+              fontFamily: fontFamilies.robotoMono,
+              borderLeft: `3px solid ${theme.palette.info.main}`,
+              backgroundColor: row.hasRocks && normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
+            }}
+            onMouseEnter={(e) => {
+              if (tBodyRef.current) {
+                // Get the left of the table
+                const tableRect = tBodyRef.current.getBoundingClientRect()
+                const tableLeft = tableRect.left
+                const tableTop = tableRect.top
+                // Get the left and wdith of this tableCell
+                const rect = e.currentTarget.getBoundingClientRect()
+                const left = rect.left - tableLeft
+                const width = rect.width
+                setHoverCol([-1, left, width, theme.palette.info.main])
+                const top = rect.top - tableTop
+                const height = rect.height
+                setHoverRow([idr, top, height, theme.palette.info.main])
+              }
+            }}
+          >
+            {row.hasRocks && (
+              <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
+                <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
+                  {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
+                </Typography>
+              </Tooltip>
+            )}
           </TableCell>
 
           {showExtendedStats && (
@@ -431,6 +512,23 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
                 >
                   Gravity Well
                 </TableCell>
+                <LongCellHeader
+                  sx={{
+                    backgroundColor: 'transparent',
+                    borderBottom:
+                      hoverCol && hoverCol[0] === -1
+                        ? `3px solid ${theme.palette.info.main}`
+                        : `3px solid ${hoverColor}`,
+                    '& .MuiTypography-caption': {
+                      fontSize: '1.2em',
+                      fontWeight: hoverCol && hoverCol[0] === -1 ? 'bold' : undefined,
+                      paddingLeft: theme.spacing(5),
+                      borderTop: `3px solid ${theme.palette.info.main}`,
+                    },
+                  }}
+                >
+                  Score Bonus
+                </LongCellHeader>
                 {showExtendedStats && (
                   <LongCellHeader
                     sx={{
@@ -580,15 +678,6 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       </Paper>
     </Box>
   )
-}
-
-const calculateNormalizedProbability = (prob: number, oreMin: number, oreMax: number): number => {
-  // Normalize the probability to a percentage and round to the nearest integer
-  if (oreMax === oreMin) return 99
-  const normProb = Math.round((100 * (prob - oreMin)) / (oreMax - oreMin)) - 1
-  if (normProb > 100) return 99
-  if (normProb < 0) return 0
-  return normProb
 }
 
 interface SurveyTableRowProps extends React.PropsWithChildren {

@@ -393,7 +393,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   Friends ({userProfile.friends.length})
                 </Typography>
                 <Typography paragraph variant="body2" sx={{ p: 1, px: 2 }}>
-                  Add your the names of people you mine with regularly so they are easy to add to your sessions.
+                  Add the names of people you mine with regularly so they are easy to add to your sessions.
                 </Typography>
                 <Box sx={styles.sectionBody}>
                   <MentionedUserList

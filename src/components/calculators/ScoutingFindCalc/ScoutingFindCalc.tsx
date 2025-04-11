@@ -75,6 +75,7 @@ import { SalvageWreckEntryModal } from '../../modals/SalvageWreckEntryModal'
 import { GravityWellChooser } from '../../fields/GravityWellChooser'
 import { SurveyScore } from './SurveyScore'
 import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
+import { SessionContext } from '../../../context/session.context'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -314,11 +315,13 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
     score: 0,
     rawScore: 0,
     possible: 0,
+    areaBonus: 1,
     warnings: [],
     errors: [],
   })
+  const { myUserProfile } = React.useContext(SessionContext)
   const [summary, setSummary] = React.useState<FindClusterSummary>()
-  const { getSafeName, myUserProfile } = React.useContext(AppContext)
+  const { getSafeName } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
 
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | SalvageWreck | false>(false)

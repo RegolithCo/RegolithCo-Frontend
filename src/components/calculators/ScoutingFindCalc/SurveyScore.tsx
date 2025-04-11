@@ -3,6 +3,7 @@ import { Typography, Stack, useTheme, Button, Link, Dialog, Box, DialogTitle, Di
 import { ScoutingFindStateEnum, SurveyFindScore } from '@regolithco/common'
 import { SurveyCorpsIcon } from '../../../icons'
 import { HelpOutline } from '@mui/icons-material'
+import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 
 // Object.values(ScoutingFindStateEnum)
 export const SCOUTING_FIND_STATE_NAMES: ScoutingFindStateEnum[] = [
@@ -40,7 +41,8 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
           color: theme.palette[color].main,
         }}
       >
-        Survey Score: {scoreObj.score}/{scoreObj.possible}
+        Survey Score: {MValueFormatter(scoreObj.score, MValueFormat.number, 0)}/
+        {MValueFormatter(scoreObj.possible, MValueFormat.number, 0)}
       </Button>
       <Dialog
         open={explainOpen}
@@ -59,7 +61,8 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
           <Stack direction="row" spacing={1} alignItems={'center'}>
             <SurveyCorpsIcon sx={{ fontSize: 50 }} />
             <Typography variant="h5">
-              Survey Corps Score: {scoreObj.score}/{scoreObj.possible}
+              Survey Corps Score: {MValueFormatter(scoreObj.score, MValueFormat.number, 0)}/
+              {MValueFormatter(scoreObj.possible, MValueFormat.number, 0)}
             </Typography>
           </Stack>
         </DialogTitle>
@@ -70,9 +73,11 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
               each complete scan and subtracting points for each error or warning. These points will go toward your
               leaderboard score.
             </p>
+            <p>The bonus for this area is at {MValueFormatter(scoreObj.areaBonus, MValueFormat.number, 2)}</p>
             <p>
-              In this case there are <strong>{scoreObj.possible}</strong> possible points of which you have earned{' '}
-              <strong>{scoreObj.score}</strong>.
+              In this case there are <strong>{MValueFormatter(scoreObj.possible, MValueFormat.number, 0)}</strong>{' '}
+              possible points of which you have earned{' '}
+              <strong>{MValueFormatter(scoreObj.score, MValueFormat.number, 0)}</strong>.
             </p>
           </Typography>
           {scoreObj.errors.length > 0 && (

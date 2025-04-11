@@ -1,4 +1,3 @@
-import { UserProfile } from '@regolithco/common'
 import { createContext } from 'react'
 import log from 'loglevel'
 
@@ -6,7 +5,6 @@ export interface AppContextType {
   hideNames: boolean
   setHideNames: (hideNames: boolean) => void
   getSafeName: (scName?: string) => string
-  myUserProfile?: UserProfile
   maintenanceMode?: string
   APIWorking?: boolean
 }

@@ -55,6 +55,7 @@ export type SurveyDataTables = {
   shipOreByRockClassProb: SurveyData | null
   shipRockClassByGravProb: SurveyData | null
   bonusMap: SurveyData | null
+  bonusMapROC: SurveyData | null
   leaderBoard: SurveyData | null
   guildLeaderBoard: SurveyData | null
 }
@@ -107,6 +108,13 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     },
     fetchPolicy: 'cache-first',
   })
+  const bonusMapROC = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'bonusMap.roc',
+      epoch,
+    },
+    fetchPolicy: 'cache-first',
+  })
   const leaderBoard = useGetPublicSurveyDataQuery({
     variables: {
       dataName: 'leaderBoard',
@@ -128,6 +136,7 @@ export const SurveyCorpsHomeContainer: React.FC = () => {
     shipOreByRockClassProb: shipOreByRockClassProb.data?.surveyData || null,
     shipRockClassByGravProb: shipRockClassByGravProb.data?.surveyData || null,
     bonusMap: bonusMap.data?.surveyData || null,
+    bonusMapROC: bonusMapROC.data?.surveyData || null,
     leaderBoard: leaderBoard.data?.surveyData || null,
     guildLeaderBoard: guildLeaderBoard.data?.surveyData || null,
   }
@@ -190,7 +199,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
     [surveyData?.shipOreByRockClassProb?.data]
   )
   const vehicleOre = React.useMemo(
-    () => <VehicleOreDistribution data={surveyData?.vehicleProbs} />,
+    () => <VehicleOreDistribution data={surveyData?.vehicleProbs} bonuses={surveyData?.bonusMapROC} />,
     [surveyData?.vehicleProbs?.data]
   )
   const shipClassLocation = React.useMemo(

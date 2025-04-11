@@ -322,7 +322,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
               textAlign: 'center',
               fontFamily: fontFamilies.robotoMono,
               borderLeft: `3px solid ${theme.palette.info.main}`,
-              backgroundColor: normBonus ? gradients['BONUS'][normBonus] : 'rgba(0,0,0,0)',
+              backgroundColor: row.hasRocks && normBonus ? gradients['BONUS'][normBonus] : 'rgba(0,0,0,0)',
             }}
             onMouseEnter={(e) => {
               if (tBodyRef.current) {
@@ -341,11 +341,13 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
               }
             }}
           >
-            <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
-              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
-                {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
-              </Typography>
-            </Tooltip>
+            {row.hasRocks && (
+              <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
+                <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
+                  {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
+                </Typography>
+              </Tooltip>
+            )}
           </TableCell>
 
           {/* --------- ROCKS / CLUSTERS CELL --------- */}

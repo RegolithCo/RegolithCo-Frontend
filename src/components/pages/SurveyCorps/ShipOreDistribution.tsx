@@ -381,7 +381,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               textAlign: 'center',
               fontFamily: fontFamilies.robotoMono,
               borderLeft: `3px solid ${theme.palette.info.main}`,
-              backgroundColor: normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
+              backgroundColor: row.hasRocks && normBonus ? gradients['STATS'][normBonus] : 'rgba(0,0,0,0)',
             }}
             onMouseEnter={(e) => {
               if (tBodyRef.current) {
@@ -400,11 +400,13 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
               }
             }}
           >
-            <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
-              <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
-                {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
-              </Typography>
-            </Tooltip>
+            {row.hasRocks && (
+              <Tooltip title={`The bonus multiplier you get for scanning in this gravity well.`} placement="top">
+                <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }} component="div">
+                  {MValueFormatter(bonus, MValueFormat.number, 1) + 'X'}
+                </Typography>
+              </Tooltip>
+            )}
           </TableCell>
 
           {/* --------- ROCKS / CLUSTERS CELL --------- */}
@@ -975,7 +977,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   )
 }
 
-const calculateNormalizedProbability = (prob: number, oreMin: number | null, oreMax: number | null): number => {
+export const calculateNormalizedProbability = (prob: number, oreMin: number | null, oreMax: number | null): number => {
   if (oreMin === oreMax) return 99
   if (oreMin === null || oreMax === null) return 0
   // Normalize the probability to a percentage and round to the nearest integer

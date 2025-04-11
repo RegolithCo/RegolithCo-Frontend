@@ -292,7 +292,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 {Object.keys(oweMeShares).length === 0 && (
                   <Alert severity="info">
                     <AlertTitle>No Crew Shares</AlertTitle>
-                    You don't owe any crew shares to anyone.
+                    Nobody owes you any crew shares.
                   </Alert>
                 )}
                 {Object.entries(oweMeShares).map(([scName, { amt, shares, workOrders }]) => {
