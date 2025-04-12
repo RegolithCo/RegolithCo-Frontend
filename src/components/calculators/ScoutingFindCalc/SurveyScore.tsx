@@ -16,19 +16,36 @@ export const SCOUTING_FIND_STATE_NAMES: ScoutingFindStateEnum[] = [
 
 export interface SurveyScoreProps {
   scoreObj: SurveyFindScore
+  includeInSurvey: boolean
 }
 
 /**
  * @param param0
  * @returns
  */
-export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
+export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj, includeInSurvey }) => {
   const theme = useTheme()
   const [explainOpen, setExplainOpen] = React.useState(false)
   const percentSuccess = (scoreObj.score / scoreObj.possible) * 100
   let color = 'success'
   if (scoreObj.errors.length > 0 || percentSuccess < 50) color = 'error'
   else if (scoreObj.warnings.length > 0 || percentSuccess < 100) color = 'warning'
+
+  if (!includeInSurvey) {
+    return (
+      <Button
+        fullWidth
+        onClick={() => setExplainOpen(true)}
+        size="small"
+        disabled
+        sx={{
+          color: theme.palette.text.primary,
+        }}
+      >
+        Not In Survey
+      </Button>
+    )
+  }
 
   return (
     <>
@@ -41,7 +58,9 @@ export const SurveyScore: React.FC<SurveyScoreProps> = ({ scoreObj }) => {
           color: theme.palette[color].main,
         }}
       >
-        Survey Score: {MValueFormatter(scoreObj.score, MValueFormat.number, 0)}/
+        Area Bonus: {MValueFormatter(scoreObj.areaBonus, MValueFormat.number, 2)}
+        <br />
+        Final Score: {MValueFormatter(scoreObj.score, MValueFormat.number, 0)}/
         {MValueFormatter(scoreObj.possible, MValueFormat.number, 0)}
       </Button>
       <Dialog

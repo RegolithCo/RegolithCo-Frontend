@@ -27,6 +27,7 @@ import Gradient from 'javascript-color-gradient'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import { Diversity3, Person } from '@mui/icons-material'
+import { Box } from '@mui/system'
 
 export type LeaderboardTabValues = 'user' | 'org'
 
@@ -53,75 +54,90 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   const h4Size = isSmall ? 'h6' : 'h4'
   return (
-    <Container
-      maxWidth="md"
+    <Box
       sx={{
-        pt: 4,
         overflow: 'hidden',
         overflowY: 'auto',
         height: '100%',
       }}
     >
-      <Typography
-        variant={h4Size}
-        paragraph
+      <Container
+        maxWidth="md"
         sx={{
-          borderBottom: '1px solid white',
+          pt: 4,
         }}
       >
-        Survey Corps Leaderboard
-      </Typography>
-      <Typography variant={'overline'} paragraph sx={{}}>
-        epoch {epoch}
-      </Typography>
-
-      <Tabs
-        value={tabValue}
-        onChange={(_, newValue) => setTabValue(newValue)}
-        variant={isSmall ? 'fullWidth' : 'standard'}
-        sx={{
-          mb: 4,
-          '& .MuiTabs-indicator': {
-            backgroundColor: theme.palette.primary.main,
-          },
-        }}
-      >
-        <Tab label="By User" value={'user'} icon={<Person />} iconPosition="start" />
-        <Tab label="By Org." value={'org'} icon={<Diversity3 />} iconPosition="start" />
-      </Tabs>
-
-      {/* USER LEADERBOARD */}
-      {tabValue === 'user' && <UserBoard data={(userBoard?.data as []) || []} />}
-
-      {/* ORG LEADERBOARD */}
-      {tabValue === 'org' && <GuildBoard data={(guildBoard?.data as []) || []} />}
-
-      <Alert severity="error" sx={{ my: 4 }}>
-        <AlertTitle>Scores subject to change</AlertTitle>
-        <Typography variant="body1" paragraph>
-          Scoring equations are still being developed so expect these numbers to jump around a bit in the next few
-          weeks. Ranks shouldn't change much since an update to the scoring system will apply to all data simultaneously
-          but this is tricky so the Regolith staff thanks you for your patience while we figure this out.
+        <Typography
+          variant={h4Size}
+          paragraph
+          sx={{
+            borderBottom: '1px solid white',
+          }}
+        >
+          Survey Corps Leaderboard
         </Typography>
-      </Alert>
+        <Typography variant={'overline'} paragraph sx={{}}>
+          epoch {epoch}
+        </Typography>
 
-      <Alert severity="info" sx={{ my: 4 }}>
-        <AlertTitle>Leaderboard</AlertTitle>
-        <Typography variant="body1" paragraph>
-          When you scan rocks for the Survey Corps you get a score based on completeness, accuracy and data need.
-        </Typography>
-        <Typography variant="body1" paragraph>
-          The leaderboard updates every hour (ish)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          The names here are chosen by the user and may or may not be their real name. Users are free to remain
-          anonymous as well if they want.
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Your leaderboard name and Org. allegiance can be set on your <Link href="/profile/survey">profile</Link>.
-        </Typography>
-      </Alert>
-    </Container>
+        {userProfile?.isSurveyor && (
+          <Typography variant={'body1'} paragraph sx={{ mb: 2 }}>
+            You are a Survey Corps member! Your current score is{' '}
+            <strong style={{ color: theme.palette.primary.main }}>
+              {MValueFormatter(userProfile?.surveyorScore, MValueFormat.number)}
+            </strong>
+          </Typography>
+        )}
+
+        <Tabs
+          value={tabValue}
+          onChange={(_, newValue) => setTabValue(newValue)}
+          variant={isSmall ? 'fullWidth' : 'standard'}
+          sx={{
+            mb: 4,
+            '& .MuiTabs-indicator': {
+              backgroundColor: theme.palette.primary.main,
+            },
+          }}
+        >
+          <Tab label="By User" value={'user'} icon={<Person />} iconPosition="start" />
+          <Tab label="By Org." value={'org'} icon={<Diversity3 />} iconPosition="start" />
+        </Tabs>
+
+        {/* USER LEADERBOARD */}
+        {tabValue === 'user' && <UserBoard data={(userBoard?.data as []) || []} />}
+
+        {/* ORG LEADERBOARD */}
+        {tabValue === 'org' && <GuildBoard data={(guildBoard?.data as []) || []} />}
+
+        <Alert severity="error" sx={{ my: 4 }}>
+          <AlertTitle>Scores subject to change</AlertTitle>
+          <Typography variant="body1" paragraph>
+            Scoring equations are still being developed so expect these numbers to jump around a bit in the next few
+            weeks. Ranks shouldn't change much since an update to the scoring system will apply to all data
+            simultaneously but this is tricky so the Regolith staff thanks you for your patience while we figure this
+            out.
+          </Typography>
+        </Alert>
+
+        <Alert severity="info" sx={{ my: 4 }}>
+          <AlertTitle>Leaderboard</AlertTitle>
+          <Typography variant="body1" paragraph>
+            When you scan rocks for the Survey Corps you get a score based on completeness, accuracy and data need.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            The leaderboard updates every hour (ish)
+          </Typography>
+          <Typography variant="body1" paragraph>
+            The names here are chosen by the user and may or may not be their real name. Users are free to remain
+            anonymous as well if they want.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Your leaderboard name and Org. allegiance can be set on your <Link href="/profile/survey">profile</Link>.
+          </Typography>
+        </Alert>
+      </Container>
+    </Box>
   )
 }
 

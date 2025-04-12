@@ -22,6 +22,7 @@ import {
   ShipOreEnum,
   ShipRock,
   ShipRockCapture,
+  VehicleClusterFind,
 } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
@@ -159,6 +160,12 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
 
   if (!scoutingFind) return null
 
+  const vehicleFind = newScoutingFind as VehicleClusterFind
+
+  const disableSave =
+    newScoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle &&
+    (!vehicleFind?.vehicleRocks || vehicleFind?.vehicleRocks.length === 0)
+
   const styles = stylesThunk(theme)
   return (
     <ThemeProvider theme={theme}>
@@ -267,6 +274,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
               variant="contained"
               size={isSmall ? 'small' : 'large'}
               startIcon={isSmall ? undefined : isNew ? <Create /> : <Save />}
+              disabled={disableSave}
               onClick={() => {
                 onChange(newScoutingFind)
                 onClose()

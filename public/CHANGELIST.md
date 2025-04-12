@@ -1,3 +1,21 @@
+### April 12
+## 1.3.7 The bonus situation...
+
+### Features:
+
+- Bonuses are now a little more nuanced. 
+    - Areas with insufficient data get a multiplier of 2.0 and after that the 
+    - Areas with enough data get bonuses between 1.0 and 2.0 depending on the amount of data in the gravity well it sits in. (planetary body, gravity well, etc.)
+- Leaderboard now shows your Survey Corps score, even if you didn't make the top 100 leaderboard.
+- The scan bonus is now in the tooltip and in the popup on the scouting find entry form and should update correctly.
+
+### Bug Fixes:
+
+- Fixed: OCR not picking up resistances of 0.
+- Fixed: OCR Numerical precision error.
+- Fixed: User scores not being written to user profiles correctly.
+- Fixed: A few little UI bugs.
+
 ### March 27
 ## 1.3.6 4.1 Support
 

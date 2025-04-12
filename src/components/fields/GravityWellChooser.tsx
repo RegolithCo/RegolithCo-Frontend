@@ -1,25 +1,35 @@
 import * as React from 'react'
 
-import { Autocomplete, MenuItem, Stack, TextField, Typography, useTheme } from '@mui/material'
+import { Autocomplete, MenuItem, Stack, TextField, Tooltip, Typography, useTheme } from '@mui/material'
 import { GravityWell, GravityWellTypeEnum, Lookups, SystemEnum } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
 import { Bedtime, Brightness5, GolfCourse, Language } from '@mui/icons-material'
 import { RockIcon } from '../../icons'
 import { GravityWellOptions } from '../../types'
+import { MValueFormat, MValueFormatter } from './MValue'
 
 export interface GravityWellChooserProps {
   wellId: string | null
   filterToSystem?: SystemEnum | null
   onClick: (choice: string | null) => void
+  bonuses?: Record<string, number>
   isSmall?: boolean
 }
 
-export const GravityWellNameRender: React.FC<{ options: GravityWellOptions }> = ({ options }) => {
+export const GravityWellNameRender: React.FC<{ options: GravityWellOptions; bonus?: number }> = ({
+  options,
+  bonus,
+}) => {
   const { color, icon, label } = (options || {}) as GravityWellOptions
   return (
-    <Stack style={{ color }} direction="row" spacing={2} alignItems="center">
+    <Stack sx={{ color, width: '100%' }} direction="row" spacing={2} alignItems="center">
       {icon}
-      <Typography>{label}</Typography>
+      <Typography component={'div'} flex={1}>
+        {label}
+      </Typography>
+      <Tooltip title="Scanning Area Bonus">
+        <Typography variant={'caption'}>{MValueFormatter(bonus, MValueFormat.number, 2)}</Typography>
+      </Tooltip>
     </Stack>
   )
 }
@@ -137,7 +147,7 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
   return planetOptions
 }
 
-export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick, wellId, filterToSystem }) => {
+export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick, wellId, filterToSystem, bonuses }) => {
   const theme = useTheme()
 
   const dataStore = React.useContext(LookupsContext)
@@ -204,7 +214,6 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
           return found.every((f) => f)
         })
       }}
-      // getOptionLabel={(option) => option.label}
       renderOption={(props, option, { selected }) => {
         const { key, ...rest } = props
         const spacing: number = (option.depth || 0) * 2
@@ -218,7 +227,10 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
               backgroundColor: selected ? theme.palette.action.selected : 'transparent',
             }}
           >
-            <GravityWellNameRender options={option} />
+            <GravityWellNameRender
+              options={option}
+              bonus={bonuses && bonuses[option.id] ? bonuses[option.id] : undefined}
+            />
           </MenuItem>
         )
       }}

@@ -38,6 +38,7 @@ import { ShipOreClassDistribution } from './ShipOreClassDistribution'
 import { ShipClassLocation } from './ShipClassLocation'
 import dayjs from 'dayjs'
 import useLocalStorage from '../../../hooks/useLocalStorage'
+import { useUserProfile } from '../../../hooks/useUserProfile'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'ores',
@@ -174,6 +175,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
 }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const { userProfile } = useUserProfile()
   const isOldEpoch = epoch !== LATEST_EPOCH
 
   const [modalOpen, setModalOpen] = React.useState(false)
@@ -181,6 +183,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
   const leaderBoard = React.useMemo(
     () => (
       <SurveyCorpsLeaderBoard
+        userProfile={userProfile}
         userBoard={surveyData?.leaderBoard}
         guildBoard={surveyData?.guildLeaderBoard}
         tab={subTab as LeaderboardTabValues}
@@ -188,7 +191,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
         epoch={epoch}
       />
     ),
-    [epoch, subTab, surveyData?.leaderBoard?.data, surveyData?.guildLeaderBoard?.data]
+    [epoch, subTab, surveyData?.leaderBoard?.data, surveyData?.guildLeaderBoard?.data, userProfile]
   )
   const rockLocation = React.useMemo(
     () => <ShipOreDistribution bonuses={surveyData?.bonusMap} data={surveyData?.shipOreByGravProb} />,

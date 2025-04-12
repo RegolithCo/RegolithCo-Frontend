@@ -54,6 +54,8 @@ import {
   GravityWell,
   Lookups,
   RockStateEnum,
+  getEpochFromVersion,
+  scVersion,
 } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
@@ -76,6 +78,7 @@ import { GravityWellChooser } from '../../fields/GravityWellChooser'
 import { SurveyScore } from './SurveyScore'
 import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
 import { SessionContext } from '../../../context/session.context'
+import { useGetPublicSurveyDataQuery } from '../../../schema'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -289,6 +292,8 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   },
 })
 
+const LATEST_EPOCH = getEpochFromVersion(scVersion)
+
 /**
  * This is the wrpaper for all the types of things scouts can find
  * @param param0
@@ -323,6 +328,48 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
   const [summary, setSummary] = React.useState<FindClusterSummary>()
   const { getSafeName } = React.useContext(AppContext)
   const dataStore = React.useContext(LookupsContext)
+
+  const bonusMap = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'bonusMap',
+      epoch: LATEST_EPOCH,
+    },
+    fetchPolicy: 'cache-first',
+  })
+  const bonusMapROC = useGetPublicSurveyDataQuery({
+    variables: {
+      dataName: 'bonusMap.roc',
+      epoch: LATEST_EPOCH,
+    },
+    fetchPolicy: 'cache-first',
+  })
+
+  const bonusesMap = React.useMemo(() => {
+    if (!scoutingFind.includeInSurvey || !myUserProfile.isSurveyor) return
+    if (scoutingFind.clusterType === ScoutingFindTypeEnum.Ship) return bonusMap.data?.surveyData?.data
+    if (scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle) return bonusMapROC.data?.surveyData?.data
+  }, [myUserProfile, scoutingFind, bonusMap.data, bonusMapROC.data])
+
+  // We need to recalculate the score when the area changes
+  React.useEffect(() => {
+    let bonus = 1
+    if (
+      scoutingFind &&
+      scoutingFind.gravityWell &&
+      scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle &&
+      bonusesMap
+    ) {
+      try {
+        bonus = bonusesMap[scoutingFind.gravityWell]
+
+        if (onChange && bonus !== scoutingFind.surveyBonus) {
+          onChange && onChange({ ...scoutingFind, surveyBonus: bonus })
+        }
+      } catch (e) {
+        console.log('Error getting bonus map ROC', e)
+      }
+    }
+  }, [scoutingFind, bonusesMap, onChange])
 
   const [addScanModalOpen, setAddScanModalOpen] = React.useState<ShipRock | SalvageWreck | false>(false)
   const [editScanModalOpen, setEditScanModalOpen] = React.useState<[number, ShipRock | SalvageWreck | false]>([
@@ -566,11 +613,6 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       mt: 1,
                       cursor: includeInSurveyEnabled ? 'pointer' : 'not-allowed',
                     }}
-                    onClick={() => {
-                      if (includeInSurveyEnabled) {
-                        if (onChange) onChange({ ...scoutingFind, includeInSurvey: !scoutingFind.includeInSurvey })
-                      }
-                    }}
                   >
                     <SurveyCorpsIcon
                       sx={{
@@ -583,10 +625,17 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       size="small"
                       checked={Boolean(scoutingFind?.includeInSurvey)}
                       disabled={!includeInSurveyEnabled}
+                      onClick={() => {
+                        if (includeInSurveyEnabled) {
+                          if (onChange) onChange({ ...scoutingFind, includeInSurvey: !scoutingFind.includeInSurvey })
+                        }
+                      }}
                     />
                   </Typography>
                 </Tooltip>
-                {iAmOwner && scoutingFind?.includeInSurvey && <SurveyScore scoreObj={scoreObj} />}
+                {iAmOwner && (
+                  <SurveyScore scoreObj={scoreObj} includeInSurvey={Boolean(scoutingFind?.includeInSurvey)} />
+                )}
               </Box>
             )}
           </Grid>
@@ -717,6 +766,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                   onChange && onChange({ ...scoutingFind, gravityWell: gWell })
                 }}
                 wellId={scoutingFind.gravityWell || null}
+                bonuses={bonusesMap}
                 filterToSystem={null}
               />
             )}
