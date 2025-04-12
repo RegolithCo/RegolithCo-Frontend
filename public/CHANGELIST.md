@@ -13,6 +13,7 @@
 
 - Fixed: OCR not picking up resistances of 0.
 - Fixed: OCR Numerical precision error.
+- Fixed: Some gadgets not reporting instability correctly.
 - Fixed: User scores not being written to user profiles correctly.
 - Fixed: A few little UI bugs.
 

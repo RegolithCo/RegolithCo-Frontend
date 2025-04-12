@@ -12,7 +12,10 @@
       "webRoot": "${workspaceFolder}/src",
       "sourceMaps": true, // Ensure source maps are enabled
       "trace": true, // Optional: Enable tracing for debugging issues
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**",
+        "!${workspaceFolder}/node_modules/@regolithco/common/**",
+      ]
     }, 
     {
       "name": "📖 Storybook Debug",
