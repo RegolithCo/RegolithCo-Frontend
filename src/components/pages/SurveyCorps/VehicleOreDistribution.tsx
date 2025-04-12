@@ -398,7 +398,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         </SurveyTableRow>
       )
     })
-  }, [data, sortedOreColors, selected, filterSelected, showExtendedStats, gravityWellFilter])
+  }, [data, bonuses, sortedOreColors, selected, filterSelected, showExtendedStats, gravityWellFilter])
 
   return (
     <Box

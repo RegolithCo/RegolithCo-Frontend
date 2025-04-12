@@ -511,6 +511,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
   }, [
     gravityWellOptions,
     data,
+    bonuses,
     gradients,
     maxMins,
     rockTypeFilter,

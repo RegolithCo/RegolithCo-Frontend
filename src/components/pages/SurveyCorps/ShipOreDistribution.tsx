@@ -630,6 +630,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
   }, [
     gravityWellOptions,
     data,
+    bonuses,
     gradients,
     maxMins,
     oreTierFilter,
