@@ -956,7 +956,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                 ores: [],
                 res: 0,
                 inst: 0,
-                state: RockStateEnum.Depleted,
+                state: RockStateEnum.Ready,
                 __typename: 'ShipRock',
               } as ShipRock)
             }
