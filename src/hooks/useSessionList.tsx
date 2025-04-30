@@ -9,12 +9,10 @@ import {
 import {
   defaultSessionName,
   mergeSessionSettings,
-  PaginatedSessions,
   RefineryEnum,
   RefineryMethodEnum,
   SalvageOreEnum,
   Session,
-  SessionSettings,
   ShipOreEnum,
   UserProfile,
   VehicleOreEnum,
@@ -25,7 +23,6 @@ import dayjs from 'dayjs'
 
 import { useSnackbar } from 'notistack'
 import React, { useEffect } from 'react'
-import log from 'loglevel'
 
 type useSessionsReturn = {
   mySessions?: UserProfile['mySessions']
@@ -39,203 +36,124 @@ type useSessionsReturn = {
   createSession: () => void
 }
 
-/**
- * Returns a timestamp 15 days ago and rounded to the start of the month from the last item in the list
- * @param items
- * @returns
- */
 const getNewPaginationDate = (items?: Session[]): number => {
-  if (!items || items.length === 0) return dayjs().subtract(15, 'days').startOf('month').valueOf()
-  const lastDate = items?.[items.length - 1]?.createdAt
-  return lastDate
+  if (!items?.length) return dayjs().subtract(15, 'days').startOf('month').valueOf()
+  return items[items.length - 1].createdAt
 }
 
 export const useSessionList = (): useSessionsReturn => {
   const navigate = useNavigate()
-  const userProfileQry = useGetUserProfileQuery()
-  // set the date to the start of the month as of 15 days ago
-  const [paginationDate, _setPaginationDate] = React.useState<number>(getNewPaginationDate())
   const { enqueueSnackbar } = useSnackbar()
+
+  const userProfileQry = useGetUserProfileQuery()
+  const [paginationDate, _setPaginationDate] = React.useState<number>(getNewPaginationDate())
 
   const setPaginationDate = (timestamp: number) => {
     if (timestamp < paginationDate) _setPaginationDate(timestamp)
   }
 
+  const mySessionsDoneRef = React.useRef(false)
+  const joinedSessionsDoneRef = React.useRef(false)
+
   const mySessionsQry = useGetMyUserSessionsQuery({
-    variables: {
-      nextToken: null,
-    },
-    onCompleted: (data) => {
-      const items = data.profile?.mySessions?.items || []
-      if (items.length > 0) {
-        setPaginationDate(items[items.length - 1]?.createdAt)
-      }
-    },
+    variables: { nextToken: null },
     notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
+    onCompleted: (data) => {
+      const items: Session[] = (data.profile?.mySessions?.items as Session[]) || []
+      if (items.length > 0) setPaginationDate(getNewPaginationDate(items))
+    },
   })
 
   const joinedSessionsQry = useGetJoinedUserSessionsQuery({
-    variables: {
-      nextToken: null,
-    },
+    variables: { nextToken: null },
     notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
   })
 
   const createSessionMutation = useCreateSessionMutation({
     update: (cache, { data }) => {
-      // Add this session to the mySessionsQry list
-      const mySessions = cache.readQuery({
+      const existing = cache.readQuery<GetMyUserSessionsQuery>({
         query: GetMyUserSessionsDocument,
-        variables: {
-          nextToken: null,
-        },
+        variables: { nextToken: null },
       })
-      if (!mySessions) return
-      const newMySessions = mySessions as GetMyUserSessionsQuery
+      if (!existing || !data?.createSession) return
 
+      const items = existing.profile?.mySessions?.items || []
       cache.writeQuery({
         query: GetMyUserSessionsDocument,
-        variables: {
-          nextToken: null,
-        },
+        variables: { nextToken: null },
         data: {
-          ...mySessions,
           profile: {
-            ...newMySessions.profile,
+            ...existing.profile,
             mySessions: {
-              ...(newMySessions.profile?.mySessions || {}),
-              items: [
-                ...(newMySessions.profile?.mySessions?.items || []),
-                {
-                  ...data?.createSession,
-                },
-              ],
+              ...existing.profile?.mySessions,
+              items: [...items, data.createSession],
             },
           },
         },
       })
-      // consle.log('cache updated')
     },
-
     onCompleted: (data) => {
       enqueueSnackbar('Session created', { variant: 'success' })
       navigate(`/session/${data.createSession?.sessionId}`)
     },
   })
 
-  // We want to paginate query until
-  useEffect(() => {
-    const monthFetchQuery = async (query: typeof mySessionsQry) => {
-      if (!joinedSessionsQry.data?.profile?.joinedSessions?.nextToken) return
-      if (query.loading || query.data?.profile?.mySessions?.items.length === 0) {
-        log.debug(
-          'NEWPAGINATE',
-          `Nothing to do because loading: ${query.loading} or items.length: ${query.data?.profile?.mySessions?.items.length} is 0`
-        )
-        return
-      }
-      const items = mySessionsQry.data?.profile?.mySessions?.items || []
-      // If we are not loading and the last session is newer than the pagination date fetch more until it is
-      if (items[items.length - 1]?.createdAt && items[items.length - 1]?.createdAt > paginationDate) {
-        log.debug(
-          'NEWPAGINATE',
-          `fetching more sessions because date: ${items[items.length - 1]?.createdAt} is after ${paginationDate}`
-        )
-        mySessionsQry.fetchMore({
-          variables: {
-            nextToken: mySessionsQry.data?.profile?.mySessions?.nextToken,
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev
-            const oldList = (prev.profile?.mySessions as PaginatedSessions) || {}
-            const newList = (fetchMoreResult.profile?.mySessions as PaginatedSessions) || {}
-            const oldListFiltered = (oldList.items || []).filter((s) => s?.sessionId !== newList.items?.[0]?.sessionId)
+  const fetchMoreGeneric = (
+    query: typeof mySessionsQry,
+    doneRef: React.MutableRefObject<boolean>,
+    key: 'mySessions' | 'joinedSessions'
+  ) => {
+    const nextToken = query.data?.profile?.[key]?.nextToken
+    if (!nextToken || doneRef.current) return
 
-            if (newList.items.length > 0) {
-              setPaginationDate(newList.items?.[newList.items.length - 1]?.createdAt)
-            }
-            return {
-              ...prev,
-              profile: {
-                ...(prev.profile as UserProfile),
-                mySessions: {
-                  ...oldList,
-                  items: [...oldListFiltered, ...(newList?.items || [])],
-                  nextToken: newList?.nextToken,
-                },
-              },
-            }
+    query.fetchMore({
+      variables: { nextToken },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult?.profile?.[key]?.nextToken) doneRef.current = true
+        const oldList = prev.profile?.[key] || { items: [] }
+        const newList = fetchMoreResult.profile?.[key] || { items: [] }
+
+        const dedupedItems = [
+          ...oldList.items.filter((s) => !newList.items.find((n) => n.sessionId === s.sessionId)),
+          ...newList.items,
+        ]
+
+        if (newList.items.length > 0) {
+          const lastDate = newList.items[newList.items.length - 1].createdAt
+          setPaginationDate(lastDate)
+        }
+
+        return {
+          ...prev,
+          profile: {
+            ...prev.profile,
+            [key]: {
+              ...oldList,
+              items: dedupedItems,
+              nextToken: newList.nextToken,
+            },
           },
-        })
-      }
-    }
-    monthFetchQuery(mySessionsQry)
-    monthFetchQuery(joinedSessionsQry)
+        } as GetMyUserSessionsQuery
+      },
+    })
+  }
+
+  useEffect(() => {
+    fetchMoreGeneric(mySessionsQry, mySessionsDoneRef, 'mySessions')
+    fetchMoreGeneric(joinedSessionsQry, joinedSessionsDoneRef, 'joinedSessions')
   }, [paginationDate, mySessionsQry, joinedSessionsQry])
 
   const fetchMoreSessions = () => {
-    if (mySessionsQry.data?.profile?.mySessions?.nextToken) {
-      mySessionsQry.fetchMore({
-        variables: {
-          nextToken: mySessionsQry.data?.profile?.mySessions?.nextToken,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev
-          const oldList = (prev.profile?.mySessions as PaginatedSessions) || {}
-          const newList = (fetchMoreResult.profile?.mySessions as PaginatedSessions) || {}
-          const oldListFiltered = (oldList.items || []).filter((s) => s?.sessionId !== newList.items?.[0]?.sessionId)
-          if (newList.items.length > 0) {
-            setPaginationDate(newList.items?.[newList.items.length - 1]?.createdAt)
-          }
-          return {
-            ...prev,
-            profile: {
-              ...(prev.profile as UserProfile),
-              mySessions: {
-                ...oldList,
-                items: [...oldListFiltered, ...(newList?.items || [])],
-                nextToken: newList?.nextToken,
-              },
-            },
-          }
-        },
-      })
-    }
-    if (joinedSessionsQry.data?.profile?.joinedSessions?.nextToken) {
-      joinedSessionsQry.fetchMore({
-        variables: {
-          nextToken: joinedSessionsQry.data?.profile?.joinedSessions?.nextToken,
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev
-          const oldList = (prev.profile?.joinedSessions as PaginatedSessions) || {}
-          const newList = (fetchMoreResult.profile?.joinedSessions as PaginatedSessions) || {}
-          if (newList.items.length > 0) {
-            setPaginationDate(newList.items?.[newList.items.length - 1]?.createdAt)
-          }
-          return {
-            ...prev,
-            profile: {
-              ...(prev.profile as UserProfile),
-              joinedSessions: {
-                ...oldList,
-                items: [...(oldList?.items || []), ...(newList?.items || [])],
-                nextToken: newList?.nextToken,
-              },
-            },
-          }
-        },
-      })
-    }
+    fetchMoreGeneric(mySessionsQry, mySessionsDoneRef, 'mySessions')
+    fetchMoreGeneric(joinedSessionsQry, joinedSessionsDoneRef, 'joinedSessions')
   }
 
   const queries = [userProfileQry, mySessionsQry, joinedSessionsQry]
   const mutations = [createSessionMutation]
-
   const loading = queries.some((q) => q.loading)
-  const mutating = mutations.some((m) => m[1].loading)
+  const mutating = mutations.some(([, state]) => state.loading)
 
   useGQLErrors(queries, mutations)
 
@@ -246,22 +164,16 @@ export const useSessionList = (): useSessionsReturn => {
     setPaginationDate,
     fetchMoreSessions,
     allLoaded:
-      mySessionsQry.data?.profile?.mySessions?.nextToken === null &&
-      joinedSessionsQry.data?.profile?.joinedSessions?.nextToken === null,
+      !mySessionsQry.data?.profile?.mySessions?.nextToken &&
+      !joinedSessionsQry.data?.profile?.joinedSessions?.nextToken,
     loading,
     mutating,
     createSession: () => {
-      const userSessionDefaults: SessionSettings = userProfileQry.data?.profile?.sessionSettings || {
-        __typename: 'SessionSettings',
-      }
-      // Here are some sensible defaults for a new session
+      const userSessionDefaults = userProfileQry.data?.profile?.sessionSettings || { __typename: 'SessionSettings' }
       const initialSessionSettings = mergeSessionSettings(
         {
           allowUnverifiedUsers: true,
           specifyUsers: false,
-          // activity,
-          // gravityWell,
-          // location,
           lockedFields: [],
           workOrderDefaults: {
             includeTransferFee: true,
@@ -283,10 +195,7 @@ export const useSessionList = (): useSessionsReturn => {
 
       createSessionMutation[0]({
         variables: {
-          session: {
-            mentionedUsers: [],
-            name: defaultSessionName(),
-          },
+          session: { mentionedUsers: [], name: defaultSessionName() },
           ...initialSessionSettings,
         },
         refetchQueries: [GetMyUserSessionsDocument],
