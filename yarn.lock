@@ -22,7 +22,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.12.11, @apollo/client@npm:^3.13.1":
+"@apollo/client@npm:^3.13.1":
   version: 3.13.1
   resolution: "@apollo/client@npm:3.13.1"
   dependencies:
@@ -55,6 +55,42 @@ __metadata:
     subscriptions-transport-ws:
       optional: true
   checksum: a9968ec889c6beeb5718adea58e9ed4d0072c0bacf322ebf8a4bc644b732925f976a47a927b2845d43c8c452f2871e8af607aa7b8e4dab5eb2e5da9e2c801619
+  languageName: node
+  linkType: hard
+
+"@apollo/client@npm:^3.13.8":
+  version: 3.13.8
+  resolution: "@apollo/client@npm:3.13.8"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    "@wry/caches": ^1.0.0
+    "@wry/equality": ^0.5.6
+    "@wry/trie": ^0.5.0
+    graphql-tag: ^2.12.6
+    hoist-non-react-statics: ^3.3.2
+    optimism: ^0.18.0
+    prop-types: ^15.7.2
+    rehackt: ^0.1.0
+    symbol-observable: ^4.0.0
+    ts-invariant: ^0.10.3
+    tslib: ^2.3.0
+    zen-observable-ts: ^1.2.5
+  peerDependencies:
+    graphql: ^15.0.0 || ^16.0.0
+    graphql-ws: ^5.5.5 || ^6.0.3
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 39f058c2681aaa1f95275d8e856976fb1e15f30bdac33758d3cf3c8dc08f111c1cdfa3a30a777ad1088b950cb94336197a81d136a43faa7470cbf2c9746f53ce
   languageName: node
   linkType: hard
 
@@ -3365,18 +3401,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@regolithco/common@npm:^1.3.5":
-  version: 1.3.5
-  resolution: "@regolithco/common@npm:1.3.5"
+"@regolithco/common@npm:^1.3.6":
+  version: 1.3.6
+  resolution: "@regolithco/common@npm:1.3.6"
   dependencies:
-    "@apollo/client": ^3.12.11
+    "@apollo/client": ^3.13.8
     blob: ^0.1.0
     buffer: ^6.0.3
     dayjs: ^1.11.13
     lodash: ^4.17.21
     loglevel: ^1.9.2
     numeral: ^2.0.6
-  checksum: ed02c7ebe2be48e720b4b3d31af92ad1262f61b7852c03ac45bb8227bb56610552b9b69197a2679f1dbc99d1e7de462b2160bc9fd5e208b00cdff15b28b62101
+  checksum: 9121e935478a31e3979845b877cdbce154aed0989f30c9e332770a8198a4a69ae84a354f19429ae277d8bafeff78c4243712a82bb97f2c249ff585ae7ead570c
   languageName: node
   linkType: hard
 
@@ -3408,7 +3444,7 @@ __metadata:
     "@nivo/line": ^0.87.0
     "@nivo/pie": ^0.87.0
     "@react-oauth/google": ^0.12.1
-    "@regolithco/common": ^1.3.5
+    "@regolithco/common": ^1.3.6
     "@sentry/react": ^9.1.0
     "@sentry/vite-plugin": ^3.1.2
     "@storybook/addon-actions": ^8.6.12
