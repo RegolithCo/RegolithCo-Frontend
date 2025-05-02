@@ -24,8 +24,11 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
       rows.push([lups.find(({ UEXID }) => UEXID === '122') as Vehicle, 100, 'miningHold', 'cSCU'])
       break
     case ActivityEnum.VehicleMining:
+      // ROC
       rows.push([lups.find(({ UEXID }) => UEXID === '168') as Vehicle, 1000, 'miningHold', 'mSCU'])
+      // ROC-DS
       rows.push([lups.find(({ UEXID }) => UEXID === '169') as Vehicle, 1000, 'miningHold', 'mSCU'])
+      // ATLS
       rows.push([lups.find(({ UEXID }) => UEXID === '252') as Vehicle, 1000, 'miningHold', 'mSCU'])
       break
     case ActivityEnum.Salvage:
@@ -38,7 +41,7 @@ export const ReferenceTables: React.FC<ReferenceTablesProps> = ({ activity }) =>
   }
   if (!dataStore.ready) return <div>Loading...</div>
   if (!show) return null
-  console.log(rows)
+
   return (
     <TableContainer
       sx={{ border: '1px solid', my: 2, borderRadius: 2, fontFamily: fontFamilies.robotoMono, fontWeight: 'bold' }}

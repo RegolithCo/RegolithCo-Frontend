@@ -22,7 +22,7 @@ import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import { useSnackbar } from 'notistack'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 
 type useSessionsReturn = {
   mySessions?: UserProfile['mySessions']
@@ -145,10 +145,10 @@ export const useSessionList = (): useSessionsReturn => {
     fetchMoreGeneric(joinedSessionsQry, joinedSessionsDoneRef, 'joinedSessions')
   }, [paginationDate, mySessionsQry, joinedSessionsQry])
 
-  const fetchMoreSessions = () => {
+  const fetchMoreSessions = useCallback(() => {
     fetchMoreGeneric(mySessionsQry, mySessionsDoneRef, 'mySessions')
     fetchMoreGeneric(joinedSessionsQry, joinedSessionsDoneRef, 'joinedSessions')
-  }
+  }, [])
 
   const queries = [userProfileQry, mySessionsQry, joinedSessionsQry]
   const mutations = [createSessionMutation]

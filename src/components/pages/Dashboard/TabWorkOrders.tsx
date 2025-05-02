@@ -89,17 +89,16 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
     let currYear = today.year()
     let currMonth = today.month()
     let yearMonthArr: WorkOrder[] = []
-
+    woByDate.push(yearMonthArr)
     workOrders.forEach((workOrder) => {
       const woDate = dayjs(workOrder.createdAt)
       const woYear = woDate.year()
       const woMonth = woDate.month()
-      const woDay = woDate.date()
       if (woYear === currYear && woMonth === currMonth) {
         yearMonthArr.push(workOrder)
       } else {
-        woByDate.push(yearMonthArr)
         yearMonthArr = []
+        woByDate.push(yearMonthArr)
         currYear = woYear
         currMonth = woMonth
       }

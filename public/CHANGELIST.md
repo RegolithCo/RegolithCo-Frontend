@@ -1,3 +1,13 @@
+### May 2
+## 1.3.8 Bug fixing
+
+This is just a small patch to address some bugs.
+
+- Discord guild (orgs) membership was not refreshing and getting stuck. THis has hopefully been fixed and will now poll more often.
+- There was a serious bug which can cause an infinite loading loop on the Dashboard.
+- Workorders on the workorder tab were sometimes not loading properly.
+
+
 ### April 12
 ## 1.3.7 The bonus situation...
 
