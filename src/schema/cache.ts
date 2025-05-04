@@ -651,10 +651,11 @@ export type WorkOrderDefaultsFieldPolicy = {
 	shipOres?: FieldPolicy<any> | FieldReadFunction<any>,
 	vehicleOres?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type WorkOrderExpenseKeySpecifier = ('amount' | 'name' | WorkOrderExpenseKeySpecifier)[];
+export type WorkOrderExpenseKeySpecifier = ('amount' | 'name' | 'ownerScName' | WorkOrderExpenseKeySpecifier)[];
 export type WorkOrderExpenseFieldPolicy = {
 	amount?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	ownerScName?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type WorkOrderInterfaceKeySpecifier = ('createdAt' | 'crewShares' | 'expenses' | 'failReason' | 'includeTransferFee' | 'isSold' | 'note' | 'orderId' | 'orderType' | 'owner' | 'ownerId' | 'sellStore' | 'seller' | 'sellerUserId' | 'sellerscName' | 'session' | 'sessionId' | 'shareAmount' | 'state' | 'updatedAt' | 'version' | WorkOrderInterfaceKeySpecifier)[];
 export type WorkOrderInterfaceFieldPolicy = {

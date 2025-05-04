@@ -17,6 +17,8 @@ import {
   Theme,
   Alert,
   AlertTitle,
+  IconButton,
+  Stack,
 } from '@mui/material'
 import {
   ActivityEnum,
@@ -50,7 +52,8 @@ import { fontFamilies } from '../../../../theme'
 import { RefineryProgress } from '../../../fields/RefineryProgress'
 import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
 import { LookupsContext } from '../../../../context/lookupsContext'
-import { TableView } from '@mui/icons-material'
+import { Help, TableView } from '@mui/icons-material'
+import { OreCardHelpModal } from './OreCardHelpModal'
 
 export type OreCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -58,14 +61,13 @@ export type OreCardProps = WorkOrderCalcProps & {
 
 const stylesThunk = (theme: Theme, isCalculator?: boolean): Record<string, SxProps<Theme>> => ({
   title: {
-    display: 'flex',
     fontFamily: fontFamilies.robotoMono,
     overflow: 'hidden',
     fontWeight: 'bold',
     fontSize: {
-      xs: '0.7rem',
-      md: '0.8rem',
-      lg: '0.9rem',
+      xs: '0.8rem',
+      md: '0.9rem',
+      lg: '1rem',
     },
   },
   cardContent: {
@@ -102,6 +104,7 @@ export const OreCard: React.FC<OreCardProps> = ({
   const theme = useTheme()
   const styles = stylesThunk(theme, isCalculator)
   const [editCell, setEditCell] = React.useState<[string, boolean]>()
+  const [helpDialogOpen, setHelpDialogOpen] = React.useState<boolean>(false)
   const dataStore = React.useContext(LookupsContext)
   const [oreTableRows, setOreTableRows] = React.useState<[string, { collected: number; refined: number }][]>([])
   const editCellOre = editCell ? editCell[0] : null
@@ -179,29 +182,43 @@ export const OreCard: React.FC<OreCardProps> = ({
           backgroundColor: theme.palette.secondary.light,
         }}
         title={
-          <Box sx={styles.title}>
-            {(workOrder.orderType !== ActivityEnum.ShipMining || !shipOrder.isRefined) && (
-              <>
-                {workOrder.orderType === ActivityEnum.ShipMining && 'Raw Ore'}
-                {workOrder.orderType === ActivityEnum.VehicleMining && 'Mineable Gems'}
-                {workOrder.orderType === ActivityEnum.Salvage && 'Salvage'}
-              </>
-            )}
-            {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
-              <RefineryControl
-                value={shipOrder.refinery || RefineryEnum.Arcl1}
-                filterToSystem={systemFilter}
-                disabled={!isEditing || isRefineryLocked}
-                onChange={(refinery) => {
-                  refinery && onChange({ ...shipOrder, refinery })
-                }}
-              />
-            )}
-          </Box>
+          <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} sx={{}}>
+            <Typography sx={styles.title}>
+              {workOrder.orderType === ActivityEnum.VehicleMining && 'Mineable Gems'}
+              {workOrder.orderType === ActivityEnum.Salvage && 'Salvage'}
+              {workOrder.orderType === ActivityEnum.ShipMining && 'Ship Ores / Refining'}
+            </Typography>
+            <IconButton onClick={() => setHelpDialogOpen(true)} size="small" sx={{ ml: 'auto' }} color="inherit">
+              <Help />
+            </IconButton>
+          </Stack>
         }
         subheaderTypographyProps={{ color: 'inherit' }}
       />
       <CardContent sx={styles.cardContent}>
+        {workOrder.orderType === ActivityEnum.ShipMining && (
+          <RefineryControl
+            value={shipOrder.isRefined ? shipOrder.refinery : undefined}
+            noneLabel="No Refinery (Sell Raw Ore)"
+            filterToSystem={systemFilter}
+            disabled={!isEditing || isRefineryLocked}
+            allowNone
+            onChange={(refinery) => {
+              const defaultShareRefinedValue = shipOrder.isRefined
+                ? shipOrder.shareRefinedValue
+                : templateJob?.shareRefinedValue
+
+              onChange({
+                ...shipOrder,
+                isRefined: !!refinery,
+                shareRefinedValue: !!refinery && defaultShareRefinedValue,
+                method: shipOrder.method || RefineryMethodEnum.DinyxSolventation,
+                refinery: shipOrder.refinery || RefineryEnum.Arcl1,
+              } as ShipMiningOrder)
+            }}
+          />
+        )}
+
         {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
           <RefineryMethodControl
             value={shipOrder.method || RefineryMethodEnum.DinyxSolventation}
@@ -211,6 +228,9 @@ export const OreCard: React.FC<OreCardProps> = ({
             }}
           />
         )}
+        <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
+          Ore Chooser:
+        </Typography>
         {isEditing && workOrder.orderType === ActivityEnum.ShipMining && (
           <ShipOreChooser
             multiple
@@ -498,6 +518,11 @@ export const OreCard: React.FC<OreCardProps> = ({
           />
         )}
       </CardContent>
+
+      {/* HELP DIALOG */}
+      {helpDialogOpen && (
+        <OreCardHelpModal workOrder={workOrder} isEditing={isEditing} onClose={() => setHelpDialogOpen(false)} />
+      )}
     </Card>
   )
 }

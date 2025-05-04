@@ -164,6 +164,7 @@ fragment WorkOrderBaseFragment on WorkOrderInterface {
   expenses {
     amount
     name
+    ownerScName
   }
   isSold
   ... on ShipMiningOrder {

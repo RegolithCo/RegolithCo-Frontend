@@ -382,6 +382,7 @@ export const WorkOrderBaseFragmentFragmentDoc = gql`
   expenses {
     amount
     name
+    ownerScName
   }
   isSold
   ... on ShipMiningOrder {
@@ -2702,6 +2703,7 @@ export const CaptureRefineryOrderDocument = gql`
     expenses {
       amount
       name
+      ownerScName
     }
     processDurationS
     refinery

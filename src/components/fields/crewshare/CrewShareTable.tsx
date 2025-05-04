@@ -11,6 +11,7 @@ import {
 } from '@regolithco/common'
 import { CrewShareTableRow } from './CrewShareTableRow'
 import { UserPicker } from '../UserPicker'
+import { fontFamilies } from '../../../theme'
 // import log from 'loglevel'
 
 export interface CrewShareTableProps {
@@ -75,7 +76,16 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
     >
       <Table size="small">
         <TableHead>
-          <TableRow>
+          <TableRow
+            sx={{
+              '& .MuiTableCell-root': {
+                color: theme.palette.text.secondary,
+                fontFamily: fontFamilies.robotoMono,
+                fontSize: theme.typography.caption.fontSize,
+                fontWeight: 'bold',
+              },
+            }}
+          >
             <TableCell align="left" colSpan={3}>
               Username
             </TableCell>

@@ -8,18 +8,17 @@ import {
   Box,
   Chip,
   useTheme,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   List,
   IconButton,
   Tooltip,
   ListItem,
   ListItemText,
   Button,
-  Link,
   Menu,
   MenuItem,
+  FormControlLabel,
+  Switch,
+  FormGroup,
 } from '@mui/material'
 import Numeral from 'numeral'
 import {
@@ -44,15 +43,11 @@ import {
   CheckBox,
   CheckBoxOutlineBlank,
   ChevronLeft,
-  ExpandMore,
   GroupAdd,
   Help,
-  Percent,
-  PieChart,
   RestartAlt,
   Store,
   TableView,
-  Toll,
 } from '@mui/icons-material'
 import { CrewShareTable } from '../../../fields/crewshare/CrewShareTable'
 import { StoreChooserModal } from '../../../modals/StoreChooserModal'
@@ -67,6 +62,8 @@ import { SessionContext } from '../../../../context/session.context'
 import { ShipRoleCounts, shipRoleOptions } from '../../../fields/ShipRoleChooser'
 import { SessionRoleCounts, sessionRoleOptions } from '../../../fields/SessionRoleChooser'
 import { RoleCrewShareAddModal } from '../../../modals/RoleCrewShareAddModal'
+import { ChooseSellerModal } from '../../../modals/ChooseSellerModal'
+import { ExpenseCardHelpModal } from './ExpenseCardHelpModal'
 
 // import log from 'loglevel'
 
@@ -82,6 +79,8 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   isEditing,
   isShare,
   isCalculator,
+  isMine,
+  isNew,
   onChange,
   markCrewSharePaid,
   onDeleteCrewShare,
@@ -93,10 +92,17 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const dataStore = React.useContext(LookupsContext)
   const { captains, crewHierarchy, session } = React.useContext(SessionContext)
 
+  const [helpDialogOpen, setHelpDialogOpen] = React.useState<boolean>(false)
+
   const [addMenuOpen, setAddMenuOpen] = useState<HTMLElement | null>(null)
   const [addMenuOpen2, setAddMenuOpen2] = useState<(HTMLElement | null)[]>([null, null, null])
 
   const [addByRoleOpen, setAddByRoleOpen] = useState<ShipRoleEnum | SessionRoleEnum | null>(null)
+
+  const [isSellerNameModalOpen, setIsSellerNameModalOpen] = React.useState(false)
+
+  const isShareRefinedValueLocked = (templateJob?.lockedFields || [])?.includes('shareRefinedValue')
+  const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
@@ -189,21 +195,26 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             backgroundColor: theme.palette.secondary.light,
           }}
           title={
-            <Box
-              sx={{
-                display: 'flex',
-                fontFamily: fontFamilies.robotoMono,
-                fontWeight: 'bold',
-                fontSize: {
-                  xs: '0.8rem',
-                  md: '0.9rem',
-                  lg: '1rem',
-                },
-                lineHeight: 1,
-              }}
-            >
-              Shares
-            </Box>
+            <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} sx={{}}>
+              <Typography
+                sx={{
+                  fontFamily: fontFamilies.robotoMono,
+                  fontWeight: 'bold',
+                  fontSize: {
+                    xs: '0.8rem',
+                    md: '0.9rem',
+                    lg: '1rem',
+                  },
+                  lineHeight: 1,
+                }}
+              >
+                Selling & Profit Sharing
+              </Typography>
+
+              <IconButton onClick={() => setHelpDialogOpen(true)} size="small" sx={{ ml: 'auto' }} color="inherit">
+                <Help />
+              </IconButton>
+            </Stack>
           }
           subheaderTypographyProps={{ color: 'iherit' }}
         />
@@ -405,6 +416,113 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               p: 0,
             }}
           />
+
+          <Stack direction="row" spacing={1} sx={{ mb: 2 }} alignItems="center" justifyContent="right">
+            <FormGroup>
+              <Tooltip
+                placement="right"
+                title={
+                  <>
+                    <Typography variant="overline" gutterBottom>
+                      Alternate Seller
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      If you are creating this work order on behalf of someone else select this option and then choose
+                      or type their name.
+                    </Typography>
+                  </>
+                }
+              >
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={Boolean(workOrder.sellerscName && workOrder.sellerscName.length > 0)}
+                      disabled={!isEditing}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        if (event.target.checked) {
+                          // setIsSellerNameModalOpen(true)
+                        } else {
+                          // De-assign the seller
+                          // setIsSellerNameModalOpen(false)
+                          if (workOrder.sellerscName) {
+                            const newCrewShares = (workOrder.crewShares || []).map((share) => {
+                              // If this is a new workorder then we want to uncheck the paid box when we change the seller
+                              let paid = share.state
+                              if (workOrder.sellerscName && share.payeeScName === workOrder.sellerscName && isNew) {
+                                paid = false
+                              }
+                              return {
+                                ...share,
+                                state: paid,
+                              }
+                            })
+                            if (!newCrewShares.find((share) => share.payeeScName === workOrder.owner?.scName)) {
+                              if (workOrder.owner?.scName)
+                                newCrewShares.push({
+                                  payeeScName: workOrder.owner?.scName,
+                                  state: true,
+                                  shareType: ShareTypeEnum.Share,
+                                  createdAt: Date.now(),
+                                  updatedAt: Date.now(),
+                                  orderId: workOrder.orderId,
+                                  sessionId: workOrder.sessionId,
+                                  share: 1,
+                                  __typename: 'CrewShare',
+                                })
+                            }
+                            onChange({
+                              ...workOrder,
+                              sellerscName: null,
+                              crewShares: newCrewShares,
+                            })
+                          }
+                        }
+                      }}
+                    />
+                  }
+                  label={workOrder.sellerscName ? `Alternate Seller: (${workOrder.sellerscName})` : `Alternate Seller`}
+                />
+              </Tooltip>
+              {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
+                <Tooltip
+                  placement="right"
+                  title={
+                    <>
+                      <Typography variant="overline" gutterBottom>
+                        Share Refined Value
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        If this is off you will share only what you get from the refinery direct sale kiosk. and you
+                        will keep the remainder.
+                      </Typography>
+                      <Typography variant="caption" gutterBottom>
+                        This could be useful if your crew wants to be paid in advance. In this case the owner of the
+                        order takes all the risk of delivering the ore to market.{' '}
+                        {isEditing && isShareRefinedValueLocked ? '(LOCKED BY SESSION OWNER)' : ''}
+                      </Typography>
+                    </>
+                  }
+                >
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={Boolean(shipOrder.shareRefinedValue)}
+                        disabled={!isEditing || isShareRefinedValueLocked}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          onChange({
+                            ...shipOrder,
+                            shareRefinedValue: event.target.checked,
+                          } as ShipMiningOrder)
+                        }}
+                      />
+                    }
+                    label="Share Refined Value"
+                  />
+                </Tooltip>
+              )}
+            </FormGroup>
+          </Stack>
           {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && !shipOrder.shareRefinedValue && (
             <Box
               sx={{
@@ -445,21 +563,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component="div">
             Expenses:
           </Typography>
-          {workOrder.orderType === ActivityEnum.ShipMining && !isShare && (
-            <Typography
-              variant="caption"
-              sx={{ fontSize: 10, textAlign: 'center' }}
-              color="error"
-              component="div"
-              paragraph
-            >
-              NOTE: Refinery fees must be entered manually until{' '}
-              <Link href="https://regolith.rocks/about/release-notes" target="_blank" sx={{ color: 'red' }}>
-                further notice
-              </Link>
-              .
-            </Typography>
-          )}
           <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} onChange={onChange} />
 
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
@@ -713,58 +816,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             summary={finalSummary}
             userSuggest={userSuggest}
           />
-          {!isShare && (
-            <Accordion sx={{ mt: 3 }} disableGutters>
-              <AccordionSummary color="info" expandIcon={<ExpandMore color="inherit" />}>
-                <Help sx={{ mr: 2 }} color="inherit" /> About Shares
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography component="div" variant="overline">
-                  Notes
-                </Typography>
-                <Typography variant="caption" component="ul">
-                  <li>Users are not verified. Any valid Star Citizen username will work.</li>
-                  <li>Any remaining money is assigned back to the owner.</li>
-                  <li>The owner does not pay any transfer fees (obviously).</li>
-                </Typography>
-
-                <Typography component="div" variant="overline">
-                  Share Types
-                </Typography>
-                <Typography variant="caption" component="ul" sx={{ listStyle: 'none', pl: 0.5 }}>
-                  <li>
-                    <Chip icon={<Toll />} label="Flat Rate" color="default" size="small" sx={{ mr: 1 }} />
-                    User gets a flat rate of the total payouts. moTransfer fees are not deducted from these.
-                    <br />
-                    Good for:
-                    <ul>
-                      <li>Fixed price security contracts</li>
-                      <li>Finder's fees</li>
-                      <li>
-                        Paying Ransoms.
-                        <em>"Hey, a dangerous verse is no excuse for an unbalanced ledger."</em>
-                      </li>
-                    </ul>
-                  </li>
-                  <li>
-                    <Chip icon={<Percent />} label="Percentage" color="default" size="small" sx={{ mr: 1 }} />
-                    User gets a percentage of the total payouts after the flat rates have been deducted.
-                  </li>
-                  <li>
-                    <Chip icon={<PieChart />} label="Equal Share" color="default" size="small" sx={{ mr: 1 }} />
-                    After the flat rates and percentages have been deducted. Whatever is left is divided up. The number
-                    corresponds to the number of "shares" a user has.
-                    <br />
-                    <br />
-                    <em>
-                      Example: If Susan has 2 shares and Bob has 1 share, Susan will get 2/3 of the remainder and Bob
-                      will get 1/3 since there are 3 shares total.
-                    </em>
-                  </li>
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          )}
         </CardContent>
       </Card>
       {compositeAddOpen && (
@@ -838,6 +889,48 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             })
           }}
         />
+      )}
+      {isSellerNameModalOpen && (
+        <ChooseSellerModal
+          open
+          onChange={(seller: string) => {
+            const newCrewShares = (workOrder.crewShares || []).map((share) => {
+              // If this is a new workorder then we want to uncheck the paid box for the USER when we change the seller
+              let paid = share.state
+              if (share.payeeScName === workOrder.owner?.scName && isNew) {
+                paid = false
+              }
+              return {
+                ...share,
+                state: paid,
+              }
+            })
+            if (!newCrewShares.find((share) => share.payeeScName === seller)) {
+              newCrewShares.push({
+                payeeScName: seller,
+                state: true,
+                shareType: ShareTypeEnum.Share,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                orderId: workOrder.orderId,
+                sessionId: workOrder.sessionId,
+                share: 1,
+                __typename: 'CrewShare',
+              })
+            }
+            onChange({
+              ...workOrder,
+              sellerscName: seller,
+              crewShares: newCrewShares,
+            })
+          }}
+          onClose={() => setIsSellerNameModalOpen(false)}
+          disableList={workOrder.owner?.scName ? [workOrder.owner?.scName] : []}
+          userSuggest={userSuggest}
+        />
+      )}
+      {helpDialogOpen && (
+        <ExpenseCardHelpModal onClose={() => setHelpDialogOpen(false)} workOrder={workOrder} isEditing={isEditing} />
       )}
       <StoreChooserModal
         open={storeChooserOpen}

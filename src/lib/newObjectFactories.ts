@@ -246,6 +246,7 @@ export function newWorkOrderMaker(
     expenses.push({
       amount: 0,
       name: 'Refinery Fee',
+      ownerScName: owner.scName,
       __typename: 'WorkOrderExpense',
     })
   }

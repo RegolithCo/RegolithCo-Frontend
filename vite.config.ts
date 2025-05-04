@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => ({
     outDir: 'build',
     sourcemap: true,
   },
+
   server: {
     // host: true, // Listen on all network interfaces (0.0.0.0)
     port: 3000,
@@ -20,6 +21,9 @@ export default defineConfig(({ mode }) => ({
     //   key: fs.readFileSync(path.resolve(__dirname, '.ssl/key.pem')),
     //   cert: fs.readFileSync(path.resolve(__dirname, '.ssl/cert.pem')),
     // },
+  },
+  optimizeDeps: {
+    exclude: ['@regolithco/common'],
   },
   plugins: [
     react(),

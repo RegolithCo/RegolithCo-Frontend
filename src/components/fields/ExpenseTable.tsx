@@ -11,8 +11,13 @@ import {
   TextField,
   Button,
   Tooltip,
+  TableHead,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Switch,
 } from '@mui/material'
-import { jsRound, WorkOrder, WorkOrderExpense, WorkOrderSummary } from '@regolithco/common'
+import { jsRound, WorkOrder, WorkOrderDefaults, WorkOrderExpense, WorkOrderSummary } from '@regolithco/common'
 import { AddCircle, Cancel } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import Numeral from 'numeral'
@@ -27,48 +32,35 @@ export interface ExpenseTableProps {
   isEditing?: boolean
   isShare?: boolean
   summary: WorkOrderSummary
+  templateJob?: WorkOrderDefaults
 }
-
-// const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
-//   gridContainer: {
-//     [theme.breakpoints.up('md')]: {},
-//     '& .MuiTableCell-root *': {
-//       [theme.breakpoints.down('sm')]: {
-//         border: '1px solid red',
-//         fontSize: '0.2rem',
-//       },
-//     },
-//   },
-// })
 
 export type ExpenseRow = Omit<WorkOrderExpense, '__typename'> & { idx: number }
 
-export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, onChange, isEditing, isShare }) => {
+export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, onChange, isEditing, templateJob }) => {
   const theme = useTheme()
   // const styles = stylesThunk(theme)
   const [editingRow, setEditingRow] = React.useState<number | null>(null)
   const customExpenses = workOrder.expenses || []
   const expenses: ExpenseRow[] = []
-  // if ((workOrder as ShipMiningOrder).isRefined && summary?.refiningCost) {
-  //   expenses.push({
-  //     name: 'Refining Cost',
-  //     amount: summary?.refiningCost as number,
-  //     idx: -2,
-  //   })
-  // }
+
+  const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
+
   let hasTransferFee = false
   if (workOrder.includeTransferFee && summary.transferFees > 0) {
     hasTransferFee = true
     expenses.push({
       name: 'moTRADER',
       amount: (summary?.transferFees as number) > -1 ? (summary.transferFees as number) || 0 : 0,
+      ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
       idx: -1,
     })
   }
-  customExpenses.forEach(({ name, amount }, idx) => {
+  customExpenses.forEach(({ name, amount, ownerScName }, idx) => {
     expenses.push({
       name,
       amount,
+      ownerScName,
       idx,
     })
   })
@@ -86,6 +78,29 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
       }}
     >
       <Table size="small">
+        <TableHead>
+          <TableRow
+            sx={{
+              '& .MuiTableCell-root': {
+                color: theme.palette.text.secondary,
+                fontFamily: fontFamilies.robotoMono,
+                fontSize: theme.typography.caption.fontSize,
+                fontWeight: 'bold',
+              },
+            }}
+          >
+            <TableCell scope="row" sx={{ fontWeight: 'bold' }}>
+              Claimant
+            </TableCell>
+            <TableCell scope="row" sx={{ fontWeight: 'bold' }}>
+              Expense Name
+            </TableCell>
+            <TableCell scope="row" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+              {isEditing ? 'Amount' : 'Total'}
+            </TableCell>
+            {isEditing && <TableCell padding="none"></TableCell>}
+          </TableRow>
+        </TableHead>
         <TableBody>
           {expenses.length === 0 && (
             <TableRow>
@@ -96,7 +111,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
               </TableCell>
             </TableRow>
           )}
-          {expenses.map(({ name, amount, idx }) => {
+          {expenses.map(({ name, amount, ownerScName, idx }) => {
             const isMoTraderRow = hasTransferFee && idx === -1
             return (
               <TableRow
@@ -109,6 +124,22 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                   setEditingRow(idx)
                 }}
               >
+                <TableCell scope="row">
+                  <ExpenseClaimant
+                    scName={ownerScName}
+                    options={workOrder.crewShares?.map((e) => e.payeeScName) || []}
+                    isEditing={!!isEditing}
+                    onCancel={() => setEditingRow(null)}
+                    onChange={(val) => {
+                      const newExpenses = [...(workOrder.expenses || [])]
+                      newExpenses[idx] = { ...newExpenses[idx], ownerScName: val } // Create a new object
+                      onChange({
+                        ...workOrder,
+                        expenses: newExpenses,
+                      })
+                    }}
+                  />
+                </TableCell>
                 <TableCell scope="row">
                   <ExpenseRowName
                     name={name}
@@ -176,6 +207,48 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
           })}
           {isEditing && (
             <TableRow>
+              <TableCell
+                scope="row"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
+                <Tooltip
+                  placement="right"
+                  title={
+                    <>
+                      <Typography variant="overline" gutterBottom>
+                        Subtract Transfer Fee
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Subtract the moTrader transfer fee from the total value.
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        If this is off the OWNER will pay all the 0.5% moTRADER transfer fees.{' '}
+                        {isEditing && isIncludeTransferFeeLocked ? '(LOCKED BY SESSION OWNER)' : ''}
+                      </Typography>
+                    </>
+                  }
+                >
+                  <FormControlLabel
+                    color="text.secondary"
+                    control={
+                      <Switch
+                        size="small"
+                        checked={Boolean(workOrder.includeTransferFee)}
+                        disabled={!isEditing || isIncludeTransferFeeLocked}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          onChange({
+                            ...workOrder,
+                            includeTransferFee: event.target.checked,
+                          })
+                        }}
+                      />
+                    }
+                    label="Subtract Transfer Fee"
+                  />
+                </Tooltip>
+              </TableCell>
               <TableCell component="th" scope="row" sx={{ textAlign: 'right' }} colSpan={3}>
                 <Tooltip
                   placement="left"
@@ -200,6 +273,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                           {
                             name: '',
                             amount: 0,
+                            ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
                             __typename: 'WorkOrderExpense',
                           },
                         ]
@@ -370,5 +444,44 @@ const ExpenseRowAmount: React.FC<{
         p: 0,
       }}
     />
+  )
+}
+
+const ExpenseClaimant: React.FC<{
+  scName: string
+  options: string[]
+  isEditing: boolean
+  onChange: (val: string) => void
+  onCancel: () => void
+}> = ({ scName, isEditing, options, onChange, onCancel }) => {
+  const theme = useTheme()
+  // const styles = stylesThunk(theme)
+
+  if (!isEditing) return scName
+
+  return (
+    <Select
+      fullWidth
+      autoFocus
+      disabled={!isEditing}
+      size="small"
+      variant="standard"
+      value={scName}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' || e.key === 'Enter' || e.key === 'Tab') {
+          onCancel()
+        }
+      }}
+      onChange={(e) => {
+        const value = e.target.value
+        onChange(value)
+      }}
+    >
+      {options.map((option) => (
+        <MenuItem key={option} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
   )
 }

@@ -4,7 +4,8 @@ import { RefineryEnum, SystemEnum, SystemRefineries, getRefineryName, getSystemN
 import { fontFamilies } from '../../theme'
 
 export interface RefineryControlProps {
-  value?: RefineryEnum
+  value?: RefineryEnum | null
+  noneLabel?: string
   onChange: (refinery?: RefineryEnum) => void
   settingsScreen?: boolean
   filterToSystem?: SystemEnum | null
@@ -16,6 +17,7 @@ const DISABLE_LIST: RefineryEnum[] = []
 
 export const RefineryControl: React.FC<RefineryControlProps> = ({
   value,
+  noneLabel,
   settingsScreen,
   disabled,
   filterToSystem,
@@ -50,42 +52,29 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
       labelId="refineryChoice"
       id="refineryChoice"
       variant="standard"
+      size="small"
       disabled={disabled}
+      displayEmpty
+      placeholder={noneLabel || 'None'}
       value={value ? value : allowNone ? '' : RefineryEnum.Arcl1}
       sx={
         !settingsScreen
           ? {
-              p: 0,
               color: 'inherit',
               fontFamily: fontFamilies.robotoMono,
+              fontSize: {
+                xs: '0.8rem',
+                md: '0.9rem',
+                lg: '1rem',
+              },
               fontWeight: 'bold',
-              borderBottom: '1px solid',
-              '&.MuiInput-root::before': {
-                borderBottom: 'none',
-              },
-              '& input': {
-                p: 0,
-                m: 0,
-              },
-              '& .MuiSvgIcon-root': {
-                color: 'inherit',
-              },
               '& .MuiSelect-select': {
-                color: 'inherit',
-                lineHeight: 1,
-                fontSize: {
-                  xs: '0.8rem',
-                  md: '0.9rem',
-                  lg: '1rem',
-                },
-                mx: 1,
-                my: 0,
-                p: 0,
+                mx: 2,
+                my: 1,
               },
             }
           : {}
       }
-      label="Refinery"
       fullWidth
       onChange={(event) => {
         const newVal = event.target.value
@@ -95,7 +84,7 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
     >
       {allowNone && (
         <MenuItem key={`refinery-none`} value={''}>
-          None
+          {noneLabel ? noneLabel : 'None'}
         </MenuItem>
       )}
       {missingItem && (

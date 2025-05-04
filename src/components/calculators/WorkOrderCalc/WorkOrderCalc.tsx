@@ -13,7 +13,7 @@ import {
 } from '@regolithco/common'
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
-import { DetailsCard } from './WorkOrderCards/DetailsCard'
+// import { DetailsCard } from './WorkOrderCards/DetailsCard'
 import { OreCard } from './WorkOrderCards/OreCard'
 import { LookupsContext } from '../../../context/lookupsContext'
 
@@ -74,7 +74,6 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
   const [summary, setSummary] = React.useState<WorkOrderSummary | null>(null)
   const styles = workOrderStylesThunk(theme)
   const dataStore = React.useContext(LookupsContext)
-  // const { lookupData: summary, lookupLoading } = useAsyncLookupData(calculateWorkOrder, [props.workOrder])
 
   useEffect(() => {
     if (!dataStore.ready) return
@@ -98,23 +97,23 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
           marginY={{ xs: 0, sm: 1, md: 2, lg: 3 }}
           sx={styles.container}
         >
-          <Grid xs={12} sm={12} md={3} lg={3} sx={styles.gridCss}>
+          {/* <Grid xs={12} sm={12} md={3} lg={3} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
-          </Grid>
-          <Grid xs={12} sm={12} md={4} lg={4} sx={styles.gridCss}>
+          </Grid> */}
+          <Grid xs={12} sm={12} md={5} lg={5} sx={styles.gridCss}>
             <OreCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
-          <Grid xs={12} sm={12} md={5} lg={5} sx={styles.gridCss}>
+          <Grid xs={12} sm={12} md={7} lg={7} sx={styles.gridCss}>
             <ExpensesSharesCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
         </Grid>
       )}
       {workOrder.orderType === ActivityEnum.Other && (
         <Grid container spacing={{ md: 1, lg: 2 }} margin={0} sx={styles.container}>
-          <Grid xs={12} sm={12} md={6} lg={4} sx={styles.gridCss}>
+          {/* <Grid xs={12} sm={12} md={6} lg={4} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
-          </Grid>
-          <Grid xs={12} sm={12} md={6} lg={8} sx={styles.gridCss}>
+          </Grid> */}
+          <Grid xs={12} sm={12} md={6} lg={6} sx={styles.gridCss}>
             <ExpensesSharesCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
         </Grid>

@@ -159,6 +159,7 @@ query captureRefineryOrder($imgUrl: String!){
   expenses {
     amount
     name
+    ownerScName
   }
   processDurationS
   refinery
