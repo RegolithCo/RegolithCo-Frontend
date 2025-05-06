@@ -668,7 +668,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
 
       const filteredExpenses = (expenses || [])
         .filter(({ name }) => name && name.trim().length > 0)
-        .map(({ name, amount }) => ({ name, amount }))
+        .map(({ name, amount, ownerScName }) => ({ name, amount, ownerScName }))
       const workOrderInput: WorkOrderInput = {
         includeTransferFee,
         isRefined,

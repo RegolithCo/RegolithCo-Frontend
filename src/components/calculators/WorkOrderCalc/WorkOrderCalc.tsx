@@ -92,7 +92,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
       {workOrder.orderType !== ActivityEnum.Other && (
         <Grid
           container
-          spacing={{ md: 1, lg: 2 }}
+          spacing={{ md: 2, lg: 3 }}
           marginX={{ xs: 0, sm: 0, md: 0, lg: 1 }}
           marginY={{ xs: 0, sm: 1, md: 2, lg: 3 }}
           sx={styles.container}
@@ -109,7 +109,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
         </Grid>
       )}
       {workOrder.orderType === ActivityEnum.Other && (
-        <Grid container spacing={{ md: 1, lg: 2 }} margin={0} sx={styles.container}>
+        <Grid container spacing={{ md: 2, lg: 3 }} margin={0} sx={styles.container}>
           {/* <Grid xs={12} sm={12} md={6} lg={4} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
           </Grid> */}

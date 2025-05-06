@@ -27,12 +27,14 @@ import { MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { alpha } from '@mui/material'
 import { LookupsContext } from '../../context/lookupsContext'
+import { ArrowRight, Check, CheckCircle, TapAndPlay, Warning } from '@mui/icons-material'
 
 export interface StoreChooserListItemProps {
   cityStores: StoreChoice
   ores: OreSummary
   onClick: (storeChoice: StoreChoice) => void
   compact?: boolean
+  textOnly?: boolean
   disabled?: boolean
   isSelected?: boolean
   isMax?: boolean
@@ -56,6 +58,7 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
   onClick,
   disabled,
   compact,
+  textOnly,
   isSelected,
   isMax,
 }) => {
@@ -107,6 +110,67 @@ export const StoreChooserListItem: React.FC<StoreChooserListItemProps> = ({
       ?.label || ''
   const city = cityStores.city || ''
   // Price is the sum of all the prices
+
+  if (textOnly) {
+    const retVal = [
+      systemName.slice(0, 2),
+      planetName,
+      satellite,
+      city,
+      cityStores.name_short,
+      MValueFormatter(finalPrice, MValueFormat.currency_sm),
+    ].filter(Boolean)
+    const color = cityStores.missingOres.length > 0 ? theme.palette.error.main : theme.palette.text.primary
+    return (
+      <>
+        <Stack
+          direction={'row'}
+          spacing={1}
+          alignItems="center"
+          justifyContent="flex-end"
+          width={'100%'}
+          divider={<ArrowRight />}
+        >
+          {retVal.map((item, index) => {
+            const isLast = index === retVal.length - 1
+            return (
+              <Typography
+                key={`text-only-${index}`}
+                variant="body2"
+                component={'div'}
+                sx={{
+                  color: isLast ? priceColor || theme.palette.success.main : color,
+                  fontSize: '0.8rem',
+                  fontFamily: fontFamilies.robotoMono,
+                }}
+              >
+                {item}
+              </Typography>
+            )
+          })}
+        </Stack>
+        {cityStores.missingOres.length > 0 ? (
+          <Tooltip title={`This store does not buy all ores: ${cityStores.missingOres.join(', ')}`}>
+            <Warning
+              sx={{
+                color: theme.palette.error.main,
+                fontSize: '1.2rem',
+              }}
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip title="This store buys all ores">
+            <CheckCircle
+              sx={{
+                color: theme.palette.success.main,
+                fontSize: '1.2rem',
+              }}
+            />
+          </Tooltip>
+        )}
+      </>
+    )
+  }
 
   const contents = (
     <>

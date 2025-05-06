@@ -70,7 +70,7 @@ const styleThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
         borderRadius: 0,
         minHeight: '100vh',
       },
-      backgroundColor: '#282828',
+      backgroundColor: '#333333',
       backgroundImage: 'none',
       display: 'flex',
       flexDirection: 'column',

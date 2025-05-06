@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -8,17 +8,11 @@ import {
   Box,
   Chip,
   useTheme,
-  List,
   IconButton,
   Tooltip,
-  ListItem,
-  ListItemText,
   Button,
-  Menu,
-  MenuItem,
   FormControlLabel,
   Switch,
-  FormGroup,
 } from '@mui/material'
 import Numeral from 'numeral'
 import {
@@ -27,24 +21,21 @@ import {
   WorkOrderSummary,
   findAllStoreChoices,
   jsRound,
-  CrewShare,
-  ShareTypeEnum,
   StoreChoice,
-  SessionRoleEnum,
-  ShipRoleEnum,
   calculateWorkOrder,
   WorkOrder,
+  WorkOrderExpense,
+  validateSCName,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
 import {
-  ArrowDropDown,
+  AddCircle,
   Cancel,
   CheckBox,
   CheckBoxOutlineBlank,
-  ChevronLeft,
-  GroupAdd,
   Help,
+  Info,
   RestartAlt,
   Store,
   TableView,
@@ -58,14 +49,13 @@ import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
 import { LookupsContext } from '../../../../context/lookupsContext'
-import { SessionContext } from '../../../../context/session.context'
-import { ShipRoleCounts, shipRoleOptions } from '../../../fields/ShipRoleChooser'
-import { SessionRoleCounts, sessionRoleOptions } from '../../../fields/SessionRoleChooser'
-import { RoleCrewShareAddModal } from '../../../modals/RoleCrewShareAddModal'
-import { ChooseSellerModal } from '../../../modals/ChooseSellerModal'
 import { ExpenseCardHelpModal } from './ExpenseCardHelpModal'
+import { SellerPicker } from '../../../fields/SellerPicker'
+import { UEXHelpDialog } from './UEXHelpModal'
+import { DeleteModal } from '../../../modals/DeleteModal'
 
 // import log from 'loglevel'
+const MAXIMUM_EXPENSES = 20
 
 export type ExpensesSharesCardProps = WorkOrderCalcProps & {
   summary: WorkOrderSummary
@@ -90,19 +80,12 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 }) => {
   const theme = useTheme()
   const dataStore = React.useContext(LookupsContext)
-  const { captains, crewHierarchy, session } = React.useContext(SessionContext)
+  const [clearConfirmOpen, setClearConfirmOpen] = React.useState<boolean>(false)
 
   const [helpDialogOpen, setHelpDialogOpen] = React.useState<boolean>(false)
-
-  const [addMenuOpen, setAddMenuOpen] = useState<HTMLElement | null>(null)
-  const [addMenuOpen2, setAddMenuOpen2] = useState<(HTMLElement | null)[]>([null, null, null])
-
-  const [addByRoleOpen, setAddByRoleOpen] = useState<ShipRoleEnum | SessionRoleEnum | null>(null)
-
-  const [isSellerNameModalOpen, setIsSellerNameModalOpen] = React.useState(false)
+  const [UEXHelpDialogOpen, setUEXHelpDialogOpen] = React.useState<boolean>(false)
 
   const isShareRefinedValueLocked = (templateJob?.lockedFields || [])?.includes('shareRefinedValue')
-  const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   const [storeChooserOpen, setStoreChooserOpen] = useState<boolean>(false)
   const [compositeAddOpen, setCompositeAddOpen] = useState<boolean>(false)
@@ -113,6 +96,9 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
   const useScrollerRef = React.useRef<HTMLDivElement>(null)
   const shipOrder = workOrder as ShipMiningOrder
+
+  const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + amount, 0)
+  const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   useEffect(() => {
     const calcMyStoreChoice = async () => {
@@ -150,26 +136,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 
   const shareAmountIsSet = typeof workOrder.shareAmount !== 'undefined' && workOrder.shareAmount !== null
 
-  const { shipRoleCounts, sessionRoleCounts } = useMemo(() => {
-    if (!userSuggest) return { shipRoleCounts: {} as ShipRoleCounts, sessionRoleCounts: {} as SessionRoleCounts }
-    const shipRoleCounts = Object.values(ShipRoleEnum).reduce((acc, shipRole) => {
-      return {
-        ...acc,
-        [shipRole]: Object.values(userSuggest).filter((usr) => usr.shipRole && usr.shipRole === shipRole).length,
-      }
-    }, {} as ShipRoleCounts)
-
-    const sessionRoleCounts = Object.values(SessionRoleEnum).reduce((acc, sessionRole) => {
-      return {
-        ...acc,
-        [sessionRole]: Object.values(userSuggest).filter((usr) => usr.sessionRole && usr.sessionRole === sessionRole)
-          .length,
-      }
-    }, {} as SessionRoleCounts)
-
-    return { shipRoleCounts, sessionRoleCounts }
-  }, [userSuggest])
-
   // Update the share amount but only if the user has not already edited it
   useEffect(() => {
     if (!myStoreChoice) {
@@ -195,7 +161,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             backgroundColor: theme.palette.secondary.light,
           }}
           title={
-            <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} sx={{}}>
+            <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
               <Typography
                 sx={{
                   fontFamily: fontFamilies.robotoMono,
@@ -228,30 +194,104 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           }}
         >
           {workOrder.orderType !== ActivityEnum.Other && (
-            <>
-              <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-                Sell Price Estimate:
-              </Typography>
-              <List dense>
-                {storeChoices.length > 0 && myStoreChoice ? (
-                  <StoreChooserListItem
-                    onClick={() => isEditing && setStoreChooserOpen(true)}
-                    ores={summary.oreSummary}
-                    compact
-                    disabled={!isEditing}
-                    isSelected={isEditing}
-                    cityStores={myStoreChoice}
-                    isMax={!workOrder.sellStore}
-                    priceColor={theme.palette.success.main}
-                  />
-                ) : (
-                  <ListItem>
-                    <ListItemText primary="No stores found" />
-                  </ListItem>
-                )}
-              </List>
-            </>
+            <Box sx={{ position: 'relative' }}>
+              <IconButton
+                size="small"
+                color="info"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  setUEXHelpDialogOpen(true)
+                }}
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  top: 0,
+                }}
+              >
+                <Info />
+              </IconButton>
+              <Button
+                disabled={!isEditing || storeChoices.length === 0 || !myStoreChoice}
+                fullWidth
+                component={Box}
+                color="info"
+                variant={isEditing ? 'outlined' : 'text'}
+                onClick={() => isEditing && setStoreChooserOpen(true)}
+                sx={{
+                  borderWidth: 3,
+                  '&:hover': {
+                    borderWidth: 3,
+                  },
+                  display: 'flex',
+                  textAlign: 'left',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component={'div'}>
+                  Best Price (UEX):
+                </Typography>
+                <Stack direction={'row'} spacing={1} alignItems="center">
+                  {storeChoices.length > 0 && myStoreChoice ? (
+                    <StoreChooserListItem
+                      onClick={() => isEditing && setStoreChooserOpen(true)}
+                      ores={summary.oreSummary}
+                      textOnly
+                      disabled={!isEditing}
+                      isSelected={isEditing}
+                      cityStores={myStoreChoice}
+                      isMax={!workOrder.sellStore}
+                      priceColor={theme.palette.success.main}
+                    />
+                  ) : (
+                    <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="default">
+                      No Stores Found
+                    </Typography>
+                  )}
+                </Stack>
+              </Button>
+            </Box>
           )}
+
+          <Tooltip
+            placement="right"
+            title={
+              <>
+                <Typography variant="overline" gutterBottom>
+                  Seller
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  This is whoever is selling the assets. This is the person who is responsible for payouts.
+                </Typography>
+              </>
+            }
+          >
+            <SellerPicker
+              disabled={!allowEdit || !isEditing}
+              value={workOrder.sellerscName || (workOrder.owner?.scName as string)}
+              onChange={(addName) => {
+                if (!addName || addName === workOrder.sellerscName) return
+                if (validateSCName(addName) === false) {
+                  return
+                } else if (addName === workOrder.owner?.scName) {
+                  onChange({
+                    ...workOrder,
+                    sellerscName: null,
+                  })
+                } else {
+                  onChange({
+                    ...workOrder,
+                    sellerscName: addName,
+                  })
+                }
+              }}
+              userSuggest={userSuggest}
+              includeFriends
+              includeMentioned
+            />
+          </Tooltip>
 
           {workOrder.orderType === ActivityEnum.Other ? (
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
@@ -417,83 +457,31 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             }}
           />
 
-          <Stack direction="row" spacing={1} sx={{ mb: 2 }} alignItems="center" justifyContent="right">
-            <FormGroup>
-              <Tooltip
-                placement="right"
-                title={
-                  <>
-                    <Typography variant="overline" gutterBottom>
-                      Alternate Seller
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      If you are creating this work order on behalf of someone else select this option and then choose
-                      or type their name.
-                    </Typography>
-                  </>
-                }
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={Boolean(workOrder.sellerscName && workOrder.sellerscName.length > 0)}
-                      disabled={!isEditing}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        if (event.target.checked) {
-                          // setIsSellerNameModalOpen(true)
-                        } else {
-                          // De-assign the seller
-                          // setIsSellerNameModalOpen(false)
-                          if (workOrder.sellerscName) {
-                            const newCrewShares = (workOrder.crewShares || []).map((share) => {
-                              // If this is a new workorder then we want to uncheck the paid box when we change the seller
-                              let paid = share.state
-                              if (workOrder.sellerscName && share.payeeScName === workOrder.sellerscName && isNew) {
-                                paid = false
-                              }
-                              return {
-                                ...share,
-                                state: paid,
-                              }
-                            })
-                            if (!newCrewShares.find((share) => share.payeeScName === workOrder.owner?.scName)) {
-                              if (workOrder.owner?.scName)
-                                newCrewShares.push({
-                                  payeeScName: workOrder.owner?.scName,
-                                  state: true,
-                                  shareType: ShareTypeEnum.Share,
-                                  createdAt: Date.now(),
-                                  updatedAt: Date.now(),
-                                  orderId: workOrder.orderId,
-                                  sessionId: workOrder.sessionId,
-                                  share: 1,
-                                  __typename: 'CrewShare',
-                                })
-                            }
-                            onChange({
-                              ...workOrder,
-                              sellerscName: null,
-                              crewShares: newCrewShares,
-                            })
-                          }
-                        }
-                      }}
-                    />
-                  }
-                  label={workOrder.sellerscName ? `Alternate Seller: (${workOrder.sellerscName})` : `Alternate Seller`}
-                />
-              </Tooltip>
-              {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && (
+          {workOrder.orderType === ActivityEnum.ShipMining && (
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+              {shipOrder.isRefined && !shipOrder.shareRefinedValue && (
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="GrayText">
+                    Estimated Unrefined Value:
+                  </Typography>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Typography variant="overline" color="GrayText">
+                    {MValueFormatter(summary.unrefinedValue, MValueFormat.currency)}
+                  </Typography>
+                </Stack>
+              )}
+              <Box sx={{ flexGrow: 1 }} />
+              {shipOrder.isRefined && (
                 <Tooltip
-                  placement="right"
+                  placement="top"
                   title={
                     <>
                       <Typography variant="overline" gutterBottom>
-                        Share Refined Value
+                        Share Unrefined Value
                       </Typography>
                       <Typography variant="body1" gutterBottom>
-                        If this is off you will share only what you get from the refinery direct sale kiosk. and you
-                        will keep the remainder.
+                        Select this option to divide your crew shares based on the estimated price of what your ore
+                        would sell for unrefined (even though you're refining and selling at a TDD).
                       </Typography>
                       <Typography variant="caption" gutterBottom>
                         This could be useful if your crew wants to be paid in advance. In this case the owner of the
@@ -504,302 +492,148 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   }
                 >
                   <FormControlLabel
+                    sx={{
+                      '& .MuiTypography-root': {
+                        fontFamily: fontFamilies.robotoMono,
+                        fontSize: 10,
+                        color: theme.palette.text.secondary,
+                      },
+                    }}
                     control={
                       <Switch
                         size="small"
-                        checked={Boolean(shipOrder.shareRefinedValue)}
+                        checked={Boolean(!shipOrder.shareRefinedValue)}
                         disabled={!isEditing || isShareRefinedValueLocked}
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                           onChange({
                             ...shipOrder,
-                            shareRefinedValue: event.target.checked,
+                            shareRefinedValue: !event.target.checked,
                           } as ShipMiningOrder)
                         }}
                       />
                     }
-                    label="Share Refined Value"
+                    label="Share Unrefined Value"
                   />
                 </Tooltip>
               )}
-            </FormGroup>
+            </Stack>
+          )}
+
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+            <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component="div">
+              Expenses:
+            </Typography>
+
+            {isEditing && (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Tooltip
+                  placement="left"
+                  title={
+                    workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
+                      ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
+                      : 'Add a custom expense'
+                  }
+                >
+                  <span>
+                    <Button
+                      size="small"
+                      color="primary"
+                      startIcon={<AddCircle />}
+                      disabled={Boolean(workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES)}
+                      onClick={() => {
+                        const newExpenses: WorkOrderExpense[] = [
+                          ...(workOrder.expenses || []),
+                          {
+                            name: '',
+                            amount: 0,
+                            ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
+                            __typename: 'WorkOrderExpense',
+                          },
+                        ]
+                        onChange({
+                          ...workOrder,
+                          expenses: newExpenses,
+                        })
+                      }}
+                    >
+                      Add Expense
+                    </Button>
+                  </span>
+                </Tooltip>
+                <Tooltip
+                  placement="left"
+                  title={
+                    workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
+                      ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
+                      : 'Add a custom expense'
+                  }
+                >
+                  <span>
+                    <Button
+                      size="small"
+                      color="error"
+                      startIcon={<Cancel />}
+                      disabled={!(workOrder?.expenses && workOrder?.expenses.length >= 0)}
+                      onClick={() => setClearConfirmOpen(true)}
+                    >
+                      Clear All
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Stack>
+            )}
           </Stack>
-          {workOrder.orderType === ActivityEnum.ShipMining && shipOrder.isRefined && !shipOrder.shareRefinedValue && (
-            <Box
-              sx={{
-                border: `1px solid ${theme.palette.grey[500]}`,
-                borderRadius: 3,
-                mt: 0.5,
-                mb: 2,
-                p: 0.5,
-                px: 1,
-              }}
-            >
+          <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} onChange={onChange} />
+          {isEditing && (
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="right">
               <Tooltip
+                placement="left"
                 title={
-                  <Box>
-                    <Typography variant="overline" component="div">
-                      Estimated Unrefined Value?
+                  <>
+                    <Typography variant="overline" gutterBottom>
+                      Include moTrader Fees
                     </Typography>
-                    <Typography variant="caption">
-                      When you <strong>deselect</strong> "Share Refined Value" your crew shares will be divided based on
-                      the estimated price of what your ore would sell for unrefined (even though you're refining and
-                      selling at a TDD).
+                    <Typography variant="body1" gutterBottom>
+                      Include the moTrader transfer fees as a reimbursable expense.
                     </Typography>
-                  </Box>
+                    <Typography variant="body2" gutterBottom>
+                      If this is off the OWNER will pay all the 0.5% moTRADER transfer fees.{' '}
+                      {isEditing && isIncludeTransferFeeLocked ? '(LOCKED BY SESSION OWNER)' : ''}
+                    </Typography>
+                  </>
                 }
               >
-                <Stack direction="row" spacing={1}>
-                  <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="GrayText">
-                    Estimated Unrefined Value:
-                  </Typography>
-                  <Box sx={{ flexGrow: 1 }} />
-                  <Typography variant="overline" color="GrayText">
-                    {MValueFormatter(summary.unrefinedValue, MValueFormat.currency)}
-                  </Typography>
-                </Stack>
+                <FormControlLabel
+                  sx={{
+                    '& .MuiTypography-root': {
+                      fontFamily: fontFamilies.robotoMono,
+                      fontSize: 10,
+                      color: theme.palette.text.secondary,
+                    },
+                  }}
+                  control={
+                    <Switch
+                      size="small"
+                      checked={Boolean(workOrder.includeTransferFee)}
+                      disabled={!isEditing || isIncludeTransferFeeLocked}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange({
+                          ...workOrder,
+                          includeTransferFee: event.target.checked,
+                        })
+                      }}
+                    />
+                  }
+                  label="Include moTrader Transfer Fee"
+                />
               </Tooltip>
-            </Box>
+            </Stack>
           )}
-          <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component="div">
-            Expenses:
-          </Typography>
-          <ExpenseTable workOrder={workOrder} summary={summary} isEditing={isEditing} onChange={onChange} />
 
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
             <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-              Shares:
+              Profit Shares:
             </Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            {isEditing && (
-              <>
-                {!isCalculator && userSuggest && (
-                  <Button
-                    size="small"
-                    color="primary"
-                    startIcon={<GroupAdd />}
-                    endIcon={<ArrowDropDown />}
-                    onClick={(e) => setAddMenuOpen(e.currentTarget)}
-                  >
-                    Group Add
-                  </Button>
-                )}
-                {addMenuOpen && userSuggest && (
-                  <Menu
-                    anchorEl={addMenuOpen}
-                    open
-                    onClose={() => setAddMenuOpen(null)}
-                    slotProps={{
-                      paper: {
-                        style: {
-                          // backgroundColor: theme.palette.primary.main,
-                          // color: theme.palette.primary.contrastText,
-                        },
-                      },
-                    }}
-                  >
-                    <MenuItem
-                      sx={{ pl: 3 }}
-                      onClick={() => {
-                        const newShares: string[] = Object.entries(userSuggest)
-                          .reduce((acc, [scName, entry]) => {
-                            if (entry.named || entry.session) {
-                              acc.push(scName)
-                            }
-                            return acc
-                          }, [] as string[])
-                          .filter((scName) => {
-                            return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
-                          })
-
-                        // Make sure we have something to add
-                        if (newShares.length === 0) return
-                        onChange({
-                          ...workOrder,
-                          crewShares: [
-                            ...(workOrder.crewShares || []),
-                            ...newShares.map((payeeScName) => {
-                              return {
-                                payeeScName,
-                                payeeUserId: userSuggest[payeeScName].userId,
-                                shareType: ShareTypeEnum.Share,
-                                share: 1,
-                                note: null,
-                                createdAt: Date.now(),
-                                orderId: workOrder.orderId,
-                                sessionId: workOrder.sessionId,
-                                updatedAt: Date.now(),
-                                state: false,
-                                __typename: 'CrewShare',
-                              } as CrewShare
-                            }),
-                          ],
-                        })
-                        setAddMenuOpen(null)
-                      }}
-                    >
-                      Everyone
-                    </MenuItem>
-                    <MenuItem
-                      selected={!!addMenuOpen2[0]}
-                      sx={{ pl: 0 }}
-                      disabled={captains.length === 0}
-                      onClick={(e) => {
-                        setAddMenuOpen2([e.currentTarget, null, null])
-                      }}
-                    >
-                      <ChevronLeft sx={{ opacity: addMenuOpen2[0] ? 1 : 0.1 }} />
-                      Crew
-                    </MenuItem>
-                    {addMenuOpen2[0] && (
-                      <Menu
-                        anchorEl={addMenuOpen2[0]}
-                        open
-                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        onClose={() => setAddMenuOpen2([null, null, null])}
-                      >
-                        {captains.map((captain) => {
-                          const captainId = captain.ownerId
-                          const captainScNAme = captain.owner?.scName as string
-                          return (
-                            <MenuItem
-                              key={captainId}
-                              sx={{
-                                '&:hover': {
-                                  backgroundColor: theme.palette.primary.dark,
-                                  color: theme.palette.primary.contrastText,
-                                },
-                              }}
-                              onClick={() => {
-                                const { activeIds, innactiveSCNames } = crewHierarchy[captainId]
-                                const userIdMap = activeIds.reduce((acc, activeId) => {
-                                  const crewMemeber = session?.activeMembers?.items.find((m) => m.ownerId === activeId)
-                                  if (!crewMemeber) return acc
-                                  return {
-                                    ...acc,
-                                    [crewMemeber?.ownerId as string]: crewMemeber?.owner?.scName,
-                                  }
-                                }, {})
-                                const crewNames: string[] = [
-                                  captainScNAme,
-                                  ...innactiveSCNames,
-                                  ...activeIds.map(
-                                    (id) =>
-                                      session?.activeMembers?.items.find((m) => m.ownerId === id)?.owner
-                                        ?.scName as string
-                                  ),
-                                ]
-                                  .filter((scName) => scName)
-                                  .filter((scName) => {
-                                    return !workOrder.crewShares?.find((cs) => cs.payeeScName === scName)
-                                  })
-
-                                // Make sure we have something to add
-                                if (crewNames.length === 0) return
-                                onChange({
-                                  ...workOrder,
-                                  crewShares: [
-                                    ...(workOrder.crewShares || []),
-                                    ...crewNames.map(
-                                      (payeeScName) =>
-                                        ({
-                                          payeeScName,
-                                          payeeUserId: userIdMap[payeeScName],
-                                          shareType: ShareTypeEnum.Share,
-                                          share: 1,
-                                          note: null,
-                                          createdAt: Date.now(),
-                                          orderId: workOrder.orderId,
-                                          sessionId: workOrder.sessionId,
-                                          updatedAt: Date.now(),
-                                          state: false,
-                                          __typename: 'CrewShare',
-                                        }) as CrewShare
-                                    ),
-                                  ],
-                                })
-
-                                // Make sure to close the menu
-                                setAddMenuOpen(null)
-                                setAddMenuOpen2([null, null, null])
-                              }}
-                            >
-                              Add <strong style={{ marginLeft: '10px' }}>{captainScNAme}</strong>'s crew
-                            </MenuItem>
-                          )
-                        })}
-                      </Menu>
-                    )}
-                    <MenuItem
-                      selected={!!addMenuOpen2[1]}
-                      sx={{ pl: 0 }}
-                      onClick={(e) => {
-                        setAddMenuOpen2([null, e.currentTarget, null])
-                      }}
-                    >
-                      <ChevronLeft sx={{ opacity: addMenuOpen2[1] ? 1 : 0.1 }} />
-                      Session Role
-                    </MenuItem>
-                    {addMenuOpen2[1] && (
-                      <Menu
-                        anchorEl={addMenuOpen2[1]}
-                        open
-                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        onClose={() => setAddMenuOpen2([null, null, null])}
-                      >
-                        {sessionRoleOptions(sessionRoleCounts, true, (role) => {
-                          setAddByRoleOpen(role as SessionRoleEnum)
-                          setAddMenuOpen(null)
-                          setAddMenuOpen2([null, null, null])
-                        })}
-                      </Menu>
-                    )}
-                    <MenuItem
-                      selected={!!addMenuOpen2[2]}
-                      sx={{ pl: 0 }}
-                      onClick={(e) => {
-                        setAddMenuOpen2([null, null, e.currentTarget])
-                      }}
-                    >
-                      <ChevronLeft sx={{ opacity: addMenuOpen2[2] ? 1 : 0.1 }} />
-                      Ship Role
-                    </MenuItem>
-                    {addMenuOpen2[2] && (
-                      <Menu
-                        anchorEl={addMenuOpen2[2]}
-                        open
-                        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        onClose={() => setAddMenuOpen2([null, null, null])}
-                      >
-                        {shipRoleOptions(shipRoleCounts, true, (role) => {
-                          setAddByRoleOpen(role as ShipRoleEnum)
-                          setAddMenuOpen(null)
-                          setAddMenuOpen2([null, null, null])
-                        })}
-                      </Menu>
-                    )}
-                  </Menu>
-                )}
-
-                <Button
-                  size="small"
-                  color="error"
-                  // down arrow on the end
-                  startIcon={<Cancel />}
-                  onClick={() => {
-                    const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
-                    onChange({
-                      ...workOrder,
-                      crewShares: workOrder.crewShares?.filter((cs) => cs.payeeScName === ownerSCName) || [],
-                    })
-                  }}
-                >
-                  Clear All
-                </Button>
-              </>
-            )}
           </Stack>
           {/* The actual control for the crew shares */}
           <CrewShareTable
@@ -810,6 +644,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             allowPay={allowPay}
             templateJob={templateJob}
             onChange={onChange}
+            isCalculator={isCalculator}
             markCrewSharePaid={markCrewSharePaid}
             onDeleteCrewShare={onDeleteCrewShare}
             workOrder={workOrder}
@@ -855,83 +690,31 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           }}
         />
       )}
-      {addByRoleOpen && (
-        <RoleCrewShareAddModal
-          open={!!addByRoleOpen}
-          userSuggest={userSuggest}
-          role={addByRoleOpen}
-          onClose={() => setAddByRoleOpen(null)}
-          onConfirm={({ scNames, share, shareType }) => {
-            if (!userSuggest) return
-            const newShares = (workOrder.crewShares || []).filter((cs) => !scNames.includes(cs.payeeScName))
-            // Now we have to build and merge new crewshares for these users
-            onChange({
-              ...workOrder,
-              crewShares: [
-                ...newShares,
-                ...scNames.map((payeeScName) => {
-                  return {
-                    createdAt: Date.now(),
-                    updatedAt: Date.now(),
-                    orderId: workOrder.orderId,
-                    sessionId: workOrder.sessionId,
-                    payeeScName,
-                    payeeUserId: userSuggest[payeeScName].userId,
-                    note: `Added by role: ${addByRoleOpen}`,
-                    state: false,
-                    // These two are set
-                    shareType,
-                    share,
-                    __typename: 'CrewShare',
-                  } as CrewShare
-                }),
-              ],
-            })
-          }}
-        />
-      )}
-      {isSellerNameModalOpen && (
-        <ChooseSellerModal
-          open
-          onChange={(seller: string) => {
-            const newCrewShares = (workOrder.crewShares || []).map((share) => {
-              // If this is a new workorder then we want to uncheck the paid box for the USER when we change the seller
-              let paid = share.state
-              if (share.payeeScName === workOrder.owner?.scName && isNew) {
-                paid = false
-              }
-              return {
-                ...share,
-                state: paid,
-              }
-            })
-            if (!newCrewShares.find((share) => share.payeeScName === seller)) {
-              newCrewShares.push({
-                payeeScName: seller,
-                state: true,
-                shareType: ShareTypeEnum.Share,
-                createdAt: Date.now(),
-                updatedAt: Date.now(),
-                orderId: workOrder.orderId,
-                sessionId: workOrder.sessionId,
-                share: 1,
-                __typename: 'CrewShare',
-              })
-            }
-            onChange({
-              ...workOrder,
-              sellerscName: seller,
-              crewShares: newCrewShares,
-            })
-          }}
-          onClose={() => setIsSellerNameModalOpen(false)}
-          disableList={workOrder.owner?.scName ? [workOrder.owner?.scName] : []}
-          userSuggest={userSuggest}
-        />
-      )}
+
       {helpDialogOpen && (
         <ExpenseCardHelpModal onClose={() => setHelpDialogOpen(false)} workOrder={workOrder} isEditing={isEditing} />
       )}
+      {clearConfirmOpen && (
+        <DeleteModal
+          open
+          title="Clear All Expenses"
+          confirmBtnText="Clear All"
+          message={
+            <Typography>
+              Are you sure you want to clear all expenses? This will remove all custom expenses and cannot be undone.
+            </Typography>
+          }
+          onClose={() => setClearConfirmOpen(false)}
+          onConfirm={() => {
+            onChange({
+              ...workOrder,
+              expenses: [],
+            })
+            setClearConfirmOpen(false)
+          }}
+        />
+      )}
+      {UEXHelpDialogOpen && <UEXHelpDialog onClose={() => setUEXHelpDialogOpen(false)} />}
       <StoreChooserModal
         open={storeChooserOpen}
         onClose={() => setStoreChooserOpen(false)}

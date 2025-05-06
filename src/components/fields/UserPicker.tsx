@@ -91,7 +91,6 @@ export const UserPicker: React.FC<UserPickerProps> = ({
           (disableList || []).find((cs) => cs.toLowerCase() === option[0].toLowerCase()) !== undefined
         }
         options={Object.entries(userSuggest || {})}
-        sx={{ my: 1 }}
         renderInput={(params) => (
           <TextField
             variant="standard"
@@ -104,7 +103,7 @@ export const UserPicker: React.FC<UserPickerProps> = ({
               color: 'primary',
               startAdornment: <PersonAdd color="primary" sx={{ mr: 2 }} />,
             }}
-            label={label || 'Add User'}
+            label={label !== undefined ? label : 'Add User'}
           />
         )}
         filterOptions={(options, params) => {

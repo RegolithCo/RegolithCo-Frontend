@@ -5,14 +5,16 @@ import { UserPicker } from '../fields/UserPicker'
 import { UserSuggest, validateSCName } from '@regolithco/common'
 
 export interface ChooseSellerModalProps {
+  scName: string
   open: boolean
   disableList?: string[]
   onClose: () => void
-  onChange: (newValue: string) => void
+  onChange: (newScName: string) => void
   userSuggest?: UserSuggest
 }
 
 export const ChooseSellerModal: React.FC<ChooseSellerModalProps> = ({
+  scName,
   open,
   disableList,
   userSuggest,
@@ -23,16 +25,16 @@ export const ChooseSellerModal: React.FC<ChooseSellerModalProps> = ({
   const [valid, setValid] = React.useState<boolean>(false)
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>Choose Seller</DialogTitle>
       <DialogContent>
         <Typography variant="body1">
-          If you are not the one selling this order you can choose who will be doing the selling. This can be either
-          someone who is already in the session, a friend or just a valid SC username. If the user then joins the
-          session they will have permissions to change it and the ability to "claim" the work order.
+          This is whoever is selling the assets. This is the person who is responsible for payouts. It defaults to the
+          person who created the work order.
         </Typography>
         <UserPicker
           label="Choose the Seller"
+          initialValue={scName}
           toolTip="If the seller is not you then choose who will do the selling."
           onChange={(newScName: string) => {
             const valid = validateSCName(newScName as string)

@@ -9,22 +9,17 @@ import {
   Typography,
   IconButton,
   TextField,
-  Button,
   Tooltip,
   TableHead,
   Select,
   MenuItem,
-  FormControlLabel,
-  Switch,
 } from '@mui/material'
 import { jsRound, WorkOrder, WorkOrderDefaults, WorkOrderExpense, WorkOrderSummary } from '@regolithco/common'
-import { AddCircle, Cancel } from '@mui/icons-material'
+import { Cancel } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
 import Numeral from 'numeral'
 import { MValue, MValueFormat } from './MValue'
 import log from 'loglevel'
-
-const MAXIMUM_EXPENSES = 10
 
 export interface ExpenseTableProps {
   workOrder: WorkOrder
@@ -43,8 +38,6 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
   const [editingRow, setEditingRow] = React.useState<number | null>(null)
   const customExpenses = workOrder.expenses || []
   const expenses: ExpenseRow[] = []
-
-  const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   let hasTransferFee = false
   if (workOrder.includeTransferFee && summary.transferFees > 0) {
@@ -89,15 +82,13 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
               },
             }}
           >
-            <TableCell scope="row" sx={{ fontWeight: 'bold' }}>
+            <TableCell scope="row" sx={{ fontWeight: 'bold' }} width={200}>
               Claimant
             </TableCell>
             <TableCell scope="row" sx={{ fontWeight: 'bold' }}>
-              Expense Name
+              Expense
             </TableCell>
-            <TableCell scope="row" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
-              {isEditing ? 'Amount' : 'Total'}
-            </TableCell>
+            <TableCell scope="row" sx={{ textAlign: 'right', fontWeight: 'bold' }}></TableCell>
             {isEditing && <TableCell padding="none"></TableCell>}
           </TableRow>
         </TableHead>
@@ -117,7 +108,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
               <TableRow
                 key={`expensesRows-${idx}`}
                 sx={{
-                  background: isMoTraderRow ? '#44444477' : 'transparent',
+                  background: isMoTraderRow ? '#35353577' : 'transparent',
                 }}
                 onClick={() => {
                   if (!isEditing || isMoTraderRow) return
@@ -128,7 +119,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                   <ExpenseClaimant
                     scName={ownerScName}
                     options={workOrder.crewShares?.map((e) => e.payeeScName) || []}
-                    isEditing={!!isEditing}
+                    isEditing={!isMoTraderRow && !!isEditing}
                     onCancel={() => setEditingRow(null)}
                     onChange={(val) => {
                       const newExpenses = [...(workOrder.expenses || [])]
@@ -205,101 +196,26 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
               </TableRow>
             )
           })}
-          {isEditing && (
-            <TableRow>
+
+          {expenses.length >= 1 && (
+            <TableRow
+              sx={{
+                '& .MuiTableCell-root': {
+                  pt: 1,
+                  borderTop: `2px solid ${theme.palette.secondary.dark}`,
+                  borderBottom: 'none',
+                },
+              }}
+            >
               <TableCell
                 scope="row"
+                colSpan={2}
                 sx={{
                   fontWeight: 'bold',
+                  color: theme.palette.text.secondary,
                 }}
               >
-                <Tooltip
-                  placement="right"
-                  title={
-                    <>
-                      <Typography variant="overline" gutterBottom>
-                        Subtract Transfer Fee
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        Subtract the moTrader transfer fee from the total value.
-                      </Typography>
-                      <Typography variant="body2" gutterBottom>
-                        If this is off the OWNER will pay all the 0.5% moTRADER transfer fees.{' '}
-                        {isEditing && isIncludeTransferFeeLocked ? '(LOCKED BY SESSION OWNER)' : ''}
-                      </Typography>
-                    </>
-                  }
-                >
-                  <FormControlLabel
-                    color="text.secondary"
-                    control={
-                      <Switch
-                        size="small"
-                        checked={Boolean(workOrder.includeTransferFee)}
-                        disabled={!isEditing || isIncludeTransferFeeLocked}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                          onChange({
-                            ...workOrder,
-                            includeTransferFee: event.target.checked,
-                          })
-                        }}
-                      />
-                    }
-                    label="Subtract Transfer Fee"
-                  />
-                </Tooltip>
-              </TableCell>
-              <TableCell component="th" scope="row" sx={{ textAlign: 'right' }} colSpan={3}>
-                <Tooltip
-                  placement="left"
-                  title={
-                    workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
-                      ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
-                      : 'Add a custom expense'
-                  }
-                >
-                  <span>
-                    <Button
-                      size="small"
-                      endIcon={<AddCircle />}
-                      color="secondary"
-                      sx={{
-                        fontSize: 10,
-                      }}
-                      disabled={Boolean(workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES)}
-                      onClick={() => {
-                        const newExpenses: WorkOrderExpense[] = [
-                          ...(workOrder.expenses || []),
-                          {
-                            name: '',
-                            amount: 0,
-                            ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
-                            __typename: 'WorkOrderExpense',
-                          },
-                        ]
-                        onChange({
-                          ...workOrder,
-                          expenses: newExpenses,
-                        })
-                      }}
-                    >
-                      Add Expense
-                    </Button>
-                  </span>
-                </Tooltip>
-              </TableCell>
-            </TableRow>
-          )}
-          {expenses.length > 1 && (
-            <TableRow>
-              <TableCell
-                scope="row"
-                sx={{
-                  fontWeight: 'bold',
-                  color: theme.palette.error.dark,
-                }}
-              >
-                Total Expenses
+                Total Expenses:
               </TableCell>
               <TableCell scope="row" sx={{ textAlign: 'right' }}>
                 <MValue value={totalExpenses * -1} format={MValueFormat.currency} />
@@ -477,6 +393,11 @@ const ExpenseClaimant: React.FC<{
         onChange(value)
       }}
     >
+      <Box sx={{ px: 2, py: 1, backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+          Existing Crew Share Holders:
+        </Typography>
+      </Box>
       {options.map((option) => (
         <MenuItem key={option} value={option}>
           {option}
