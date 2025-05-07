@@ -204,6 +204,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   setUEXHelpDialogOpen(true)
                 }}
                 sx={{
+                  zIndex: 1000,
                   position: 'absolute',
                   right: 0,
                   top: 0,
@@ -598,7 +599,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           {isEditing && (
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="right">
               <Tooltip
-                placement="bottom-start"
+                placement="bottom"
                 title={
                   <>
                     <Typography variant="overline" gutterBottom>
