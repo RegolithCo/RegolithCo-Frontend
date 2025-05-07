@@ -25,7 +25,7 @@ import {
   calculateWorkOrder,
   WorkOrder,
   WorkOrderExpense,
-  validateSCName,
+  ShareTypeEnum,
 } from '@regolithco/common'
 import { WorkOrderCalcProps } from '../WorkOrderCalc'
 import { fontFamilies } from '../../../../theme'
@@ -272,20 +272,31 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
               disabled={!allowEdit || !isEditing}
               value={workOrder.sellerscName || (workOrder.owner?.scName as string)}
               onChange={(addName) => {
-                if (!addName || addName === workOrder.sellerscName) return
-                if (validateSCName(addName) === false) {
-                  return
-                } else if (addName === workOrder.owner?.scName) {
-                  onChange({
-                    ...workOrder,
-                    sellerscName: null,
-                  })
-                } else {
-                  onChange({
-                    ...workOrder,
-                    sellerscName: addName,
-                  })
+                if (!addName || addName.toLowerCase() === workOrder.sellerscName?.toLowerCase()) return
+                const isOwner = addName.toLowerCase() === workOrder.owner?.scName.toLowerCase()
+                const newOrder: WorkOrder = {
+                  ...workOrder,
+                  sellerscName: isOwner ? null : addName,
                 }
+                if (!workOrder.crewShares?.find((cs) => cs.payeeScName === addName)) {
+                  // if it's not there then add them as a crew share
+                  newOrder.crewShares = [
+                    ...(workOrder.crewShares || []),
+                    {
+                      sessionId: workOrder.sessionId,
+                      orderId: workOrder.orderId,
+                      payeeScName: addName,
+                      shareType: ShareTypeEnum.Share,
+                      share: 1,
+                      note: null,
+                      createdAt: Date.now(),
+                      updatedAt: Date.now(),
+                      state: true,
+                      __typename: 'CrewShare',
+                    },
+                  ]
+                }
+                onChange(newOrder)
               }}
               userSuggest={userSuggest}
               includeFriends
@@ -587,7 +598,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
           {isEditing && (
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="right">
               <Tooltip
-                placement="left"
+                placement="bottom-start"
                 title={
                   <>
                     <Typography variant="overline" gutterBottom>

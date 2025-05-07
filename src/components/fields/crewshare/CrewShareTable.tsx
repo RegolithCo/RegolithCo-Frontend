@@ -31,6 +31,7 @@ import { SessionContext } from '../../../context/session.context'
 import { ShipRoleCounts, shipRoleOptions } from '../ShipRoleChooser'
 import { SessionRoleCounts, sessionRoleOptions } from '../SessionRoleChooser'
 import { RoleCrewShareAddModal } from '../../modals/RoleCrewShareAddModal'
+import { DeleteModal } from '../../modals/DeleteModal'
 // import log from 'loglevel'
 
 export interface CrewShareTableProps {
@@ -68,6 +69,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   // const styles = stylesThunk(theme)
   const [keyCounter, setKeyCounter] = React.useState(0)
   const [addByRoleOpen, setAddByRoleOpen] = useState<ShipRoleEnum | SessionRoleEnum | null>(null)
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
 
   const { captains, crewHierarchy, session } = React.useContext(SessionContext)
 
@@ -382,11 +384,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
                 // down arrow on the end
                 startIcon={<Cancel />}
                 onClick={() => {
-                  const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
-                  onChange({
-                    ...workOrder,
-                    crewShares: workOrder.crewShares?.filter((cs) => cs.payeeScName === ownerSCName) || [],
-                  })
+                  setClearConfirmOpen(true)
                 }}
               >
                 Clear All
@@ -438,6 +436,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
               <CrewShareTableRow
                 key={`crewShare-${idx}`}
                 crewShare={crewShare}
+                expenses={workOrder.expenses || []}
                 isMe={crewShare.payeeScName === workOrder.owner?.scName}
                 isShare={isShare}
                 userSuggest={userSuggest}
@@ -470,6 +469,27 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
           </TableBody>
         </Table>
       </Box>
+      {clearConfirmOpen && (
+        <DeleteModal
+          open={clearConfirmOpen}
+          title="Clear All Crew Shares"
+          message="Are you sure you want to clear all crew shares? This will wipe out any crew shares (except the seller) as well as any expenses that belong to them."
+          onClose={() => setClearConfirmOpen(false)}
+          onConfirm={() => {
+            const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
+            onChange({
+              ...workOrder,
+              crewShares: workOrder.crewShares?.filter((cs) => cs.payeeScName === ownerSCName) || [],
+              expenses: workOrder.expenses?.filter((ex) => {
+                return ex.ownerScName === ownerSCName
+              }),
+            })
+
+            setClearConfirmOpen(false)
+          }}
+        />
+      )}
+
       {addByRoleOpen && (
         <RoleCrewShareAddModal
           open={!!addByRoleOpen}

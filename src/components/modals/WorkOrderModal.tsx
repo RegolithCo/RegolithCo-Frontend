@@ -379,6 +379,9 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
                 setNewWorkOrder({
                   ...newWorkOrder,
                   crewShares: (newWorkOrder.crewShares || [])?.filter((share) => share.payeeScName !== scName),
+                  expenses: (newWorkOrder.expenses || [])?.filter(
+                    (expense) => expense.ownerScName.toLowerCase() !== scName.toLowerCase()
+                  ),
                 })
               }}
               workOrder={newWorkOrder}

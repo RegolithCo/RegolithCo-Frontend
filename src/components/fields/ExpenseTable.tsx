@@ -119,7 +119,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                   <ExpenseClaimant
                     scName={ownerScName}
                     options={workOrder.crewShares?.map((e) => e.payeeScName) || []}
-                    isEditing={!isMoTraderRow && !!isEditing}
+                    isEditing={Boolean(isEditing && !isMoTraderRow && editingRow === idx)}
                     onCancel={() => setEditingRow(null)}
                     onChange={(val) => {
                       const newExpenses = [...(workOrder.expenses || [])]

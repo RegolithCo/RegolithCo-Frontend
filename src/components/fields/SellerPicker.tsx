@@ -48,9 +48,11 @@ export const SellerPicker: React.FC<SellerPickerProps> = ({
       color="primary"
       disabled={disabled}
       multiple={false}
-      disableClearable
       value={value}
+      disableClearable
       blurOnSelect
+      fullWidth
+      freeSolo
       inputValue={inputValue}
       PaperComponent={(props) => (
         <Paper {...props}>
@@ -79,12 +81,7 @@ export const SellerPicker: React.FC<SellerPickerProps> = ({
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue)
-        if (newInputValue === '') {
-          onChange && onChange('')
-        }
       }}
-      fullWidth
-      freeSolo
       getOptionLabel={(option) => {
         if (option === null) return ''
         if (typeof option === 'string') return option
@@ -146,12 +143,13 @@ export const SellerPicker: React.FC<SellerPickerProps> = ({
         return filtered
       }}
       onChange={(event, option) => {
-        if (option === null || option === '' || !validateSCName(option as string)) {
+        const addName = typeof option === 'string' ? option.trim() : Array.isArray(option) ? option[0] : ''
+        if (addName === null || addName === '' || !validateSCName(addName as string)) {
           setInputValue(value)
-          return
+          return value
+        } else {
+          onChange && onChange(addName)
         }
-        const addName = typeof option === 'string' ? option : Array.isArray(option) ? option[0] : ''
-        onChange && onChange(addName)
       }}
     />
   )

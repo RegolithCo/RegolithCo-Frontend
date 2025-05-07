@@ -21,6 +21,7 @@ import {
   ShareTypeToolTip,
   SessionRoleEnum,
   ShipRoleEnum,
+  WorkOrderExpense,
 } from '@regolithco/common'
 import { Toll as TollIcon, PieChart as PieChartIcon, Percent, Cancel, Description, NoteAdd } from '@mui/icons-material'
 import { MValue, MValueFormat } from '../MValue'
@@ -32,9 +33,11 @@ import { AppContext } from '../../../context/app.context'
 import { SessionRoleIconBadge } from '../SessionRoleChooser'
 import { ShipRoleIconBadge } from '../ShipRoleChooser'
 import { debounce } from 'lodash'
+import { DeleteModal } from '../../modals/DeleteModal'
 
 export type CrewShareTableRowProps = {
   crewShare: CrewShare
+  expenses: WorkOrderExpense[]
   payoutSummary: ShareAmtArr
   remainder: number
   numSharesTotal: number
@@ -55,6 +58,7 @@ export type CrewShareTableRowProps = {
 
 export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   crewShare,
+  expenses,
   payoutSummary,
   isMe,
   isSeller,
@@ -76,6 +80,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   const { getSafeName } = React.useContext(AppContext)
   const [editingShare, setEditingShare] = React.useState<boolean>(false)
   const [openNoteDialog, setOpenNoteDialog] = React.useState<boolean>(false)
+  const [confirmDeleteCrewShareExpense, setConfirmDeleteCrewShareExpense] = React.useState<boolean>(false)
 
   const paid = Boolean(isSeller ? true : crewShare?.state)
 
@@ -179,7 +184,17 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
           {isEditing && (
             <TableCell align="center" padding="none" width={30}>
               {!isSeller && !isMandatory && (
-                <IconButton size="small" color="error" onClick={onDelete}>
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => {
+                    if (expenses.find((expense) => expense.ownerScName === crewShare.payeeScName)) {
+                      setConfirmDeleteCrewShareExpense(true)
+                    } else {
+                      onDelete()
+                    }
+                  }}
+                >
                   <Cancel />
                 </IconButton>
               )}
@@ -188,16 +203,36 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
         </TableRow>
       </Tooltip>
 
+      {confirmDeleteCrewShareExpense && (
+        <DeleteModal
+          open
+          title="Delete Crew Share"
+          confirmBtnText="Delete"
+          message={
+            <Typography>
+              This crew share has one or more expenses associated with it. Are you sure you want to delete them?
+            </Typography>
+          }
+          onClose={() => setConfirmDeleteCrewShareExpense(false)}
+          onConfirm={() => {
+            onDelete()
+            setConfirmDeleteCrewShareExpense(false)
+          }}
+        />
+      )}
+
       {/* NOTE DIALOG */}
-      <NoteAddDialog
-        title={`Note for: ${getSafeName(crewShare.payeeScName)}`}
-        open={openNoteDialog}
-        onClose={() => setOpenNoteDialog(false)}
-        note={crewShare.note as string}
-        onChange={(note) => {
-          onChange({ ...crewShare, note })
-        }}
-      />
+      {openNoteDialog && (
+        <NoteAddDialog
+          title={`Note for: ${getSafeName(crewShare.payeeScName)}`}
+          open
+          onClose={() => setOpenNoteDialog(false)}
+          note={crewShare.note as string}
+          onChange={(note) => {
+            onChange({ ...crewShare, note })
+          }}
+        />
+      )}
     </>
   )
 }
