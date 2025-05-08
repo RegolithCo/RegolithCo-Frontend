@@ -3,8 +3,8 @@ import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
 import { ActivityEnum, ScoutingFindTypeEnum, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
-import { TravelExplore } from '@mui/icons-material'
-import { Badge, Fab, FabProps, keyframes, useTheme } from '@mui/material'
+import { PostAdd } from '@mui/icons-material'
+import { Badge, FabProps, keyframes, useTheme } from '@mui/material'
 
 const actions = [
   {
@@ -36,9 +36,10 @@ export interface ScoutingAddFABProps {
 export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings, onClick, fabProps }) => {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const locked = actions.map(({ activityId }) => {
-    return sessionSettings && sessionSettings.activity && sessionSettings.activity !== activityId
-  })
+  const defaultAction = sessionSettings?.activity
+    ? actions.find((a) => a.activityId === sessionSettings?.activity)
+    : null
+  const locked: boolean = Boolean(sessionSettings?.lockedFields && sessionSettings?.lockedFields.includes('activity'))
 
   const pulse = keyframes`
   0% { box-shadow: 0 0 0 0 transparent; }
@@ -46,45 +47,19 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
   100% { box-shadow: 0 0 0 0 transparent; }
 `
 
-  // If there's only one action unlocked then just return a normal fab
-  if (locked.filter((l) => !l).length === 1) {
-    const action = actions.find((a, idx) => !locked[idx])
-    if (!action) return null
-    return (
-      <Fab
-        color="secondary"
-        onClick={() => {
-          onClick && onClick(action.scoutingType)
-          setOpen(false)
-        }}
-        sx={{
-          position: 'absolute',
-          bottom: 16,
-          right: 16,
-          '& .MuiBadge-badge': {
-            right: 0,
-            fontSize: 20,
-            backgroundColor: 'transparent',
-            bottom: 0,
-          },
-          boxShadow: '0 0 0 0 transparent',
-          animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
-        }}
-        {...(fabProps || {})}
-      >
-        <Badge badgeContent={'+'} color="primary">
-          {action?.icon}
-        </Badge>
-      </Fab>
-    )
-  }
-
   return (
     <SpeedDial
       ariaLabel="Add scouting find"
       onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
+      onOpen={!locked ? () => setOpen(true) : undefined}
+      onClick={
+        defaultAction
+          ? () => {
+              onClick && onClick(defaultAction.scoutingType)
+              setOpen(false)
+            }
+          : undefined
+      }
       FabProps={{
         color: 'secondary',
         ...fabProps,
@@ -103,24 +78,39 @@ export const ScoutingAddFAB: React.FC<ScoutingAddFABProps> = ({ sessionSettings,
           boxShadow: '0 0 0 0 transparent',
           animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
         },
+        '& .MuiBadge-badge': {
+          right: 0,
+          fontSize: 20,
+          backgroundColor: 'transparent',
+          bottom: 0,
+        },
       }}
-      icon={<TravelExplore color="inherit" />}
+      icon={
+        defaultAction ? (
+          <Badge badgeContent={'+'} color="primary">
+            {defaultAction?.icon}
+          </Badge>
+        ) : (
+          <PostAdd color="inherit" />
+        )
+      }
     >
-      {actions
-        .filter((_, idx) => !locked[idx])
-        .map((action) => (
-          <SpeedDialAction
-            key={action.scoutingType}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            tooltipOpen
-            onClick={() => {
-              onClick && onClick(action.scoutingType)
-              setOpen(false)
-            }}
-            color="primary"
-          />
-        ))}
+      {!locked &&
+        actions
+          .filter(({ activityId }, idx) => activityId !== defaultAction?.activityId && !locked)
+          .map((action) => (
+            <SpeedDialAction
+              key={action.scoutingType}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              tooltipOpen
+              onClick={() => {
+                onClick && onClick(action.scoutingType)
+                setOpen(false)
+              }}
+              color="primary"
+            />
+          ))}
     </SpeedDial>
   )
 }

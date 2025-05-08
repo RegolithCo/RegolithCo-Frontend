@@ -2,7 +2,7 @@ import * as React from 'react'
 import { SxProps, Theme, Typography, TypographyProps } from '@mui/material'
 import Numeral from 'numeral'
 import dayjs from 'dayjs'
-import { readableMilliseconds } from '@regolithco/common'
+import { getTimezoneStr, readableMilliseconds } from '@regolithco/common'
 
 type ObjectValues<T> = T[keyof T]
 
@@ -141,7 +141,8 @@ export const MValueFormatter = (
     finalVal = readableMilliseconds(value as number, false, false)
   } else if (format === MValueFormat.dateTime) {
     // Format date to be more readable
-    finalVal = dayjs(value as number).format('MMM D h:mma')
+    const dateVal = dayjs(value as number).format('MMM D h:mma')
+    finalVal = `${dateVal} ${getTimezoneStr()}`
   } else if (format === MValueFormat.volSCU) {
     const val = value as number
     const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimalsSm(value as number, true)

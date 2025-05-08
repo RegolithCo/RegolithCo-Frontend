@@ -296,26 +296,36 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
           {isShare ? (
             <TableCell align="left" onClick={onRowClickInner}>
               {summary.completionTime && (
-                <Typography>
-                  {dayjs(
+                <MValue
+                  value={
                     shipOrder.processStartTime
                       ? shipOrder.processStartTime + (shipOrder.processDurationS || 0) * 1000
                       : undefined
-                  ).format('MMM D, h:mm a')}{' '}
-                  ({getTimezoneStr()})
-                </Typography>
+                  }
+                  format={MValueFormat.dateTime}
+                />
               )}
             </TableCell>
           ) : (
             <TableCell align="left" onClick={onRowClickInner}>
               {summary.completionTime && summary.completionTime > Date.now() ? (
                 <CountdownTimer
+                  typoProps={{
+                    color: theme.palette.text.secondary,
+                  }}
                   startTime={shipOrder.processStartTime as number}
                   totalTime={(shipOrder.processDurationS || 0) * 1000}
                   useMValue
                 />
               ) : (
-                <MValue value={workOrder.createdAt} format={MValueFormat.dateTime} />
+                <MValue
+                  value={
+                    summary.completionTime && shipOrder.processStartTime
+                      ? shipOrder.processStartTime + (shipOrder.processDurationS || 0) * 1000
+                      : workOrder.createdAt
+                  }
+                  format={MValueFormat.dateTime}
+                />
               )}
             </TableCell>
           )}

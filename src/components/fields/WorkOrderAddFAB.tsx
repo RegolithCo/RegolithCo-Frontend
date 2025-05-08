@@ -4,7 +4,7 @@ import SpeedDialAction from '@mui/material/SpeedDialAction'
 import { ActivityEnum, getActivityName, SessionSettings } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { AccountBalance, PostAdd } from '@mui/icons-material'
-import { Badge, Fab, FabProps, keyframes, useTheme } from '@mui/material'
+import { Badge, FabProps, keyframes, useTheme } from '@mui/material'
 
 const actions = [
   {
@@ -30,55 +30,30 @@ export interface WorkOrderAddFABProps {
 export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSettings, fabProps, onClick }) => {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const locked = actions.map(({ activityId }) => {
-    return sessionSettings && sessionSettings.activity && sessionSettings.activity !== activityId
-  })
-
+  const defaultAction = sessionSettings?.activity
+    ? actions.find((a) => a.activityId === sessionSettings?.activity)
+    : null
+  const locked: boolean = Boolean(sessionSettings?.lockedFields && sessionSettings?.lockedFields.includes('activity'))
   const pulse = keyframes`
   0% { box-shadow: 0 0 0 0 transparent; }
   70% { box-shadow: 0 0 10px 10px  ${theme.palette.warning.light}44; }
   100% { box-shadow: 0 0 0 0 transparent; }
 `
 
-  // If there's only one action unlocked then just return a normal fab
-  if (locked.filter((l) => !l).length === 1) {
-    const action = actions.find((a, idx) => !locked[idx])
-    if (!action) return null
-    return (
-      <Fab
-        color="primary"
-        onClick={() => {
-          onClick && onClick(action.activityId)
-          setOpen(false)
-        }}
-        sx={{
-          position: 'absolute',
-          bottom: 16,
-          right: 16,
-          '& .MuiBadge-badge': {
-            right: 0,
-            fontSize: 20,
-            backgroundColor: 'transparent',
-            bottom: 0,
-          },
-          boxShadow: '0 0 0 0 transparent',
-          animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
-        }}
-        {...(fabProps || {})}
-      >
-        <Badge badgeContent={'+'} color="primary">
-          {action?.icon}
-        </Badge>
-      </Fab>
-    )
-  }
-
   return (
     <SpeedDial
       ariaLabel="Work order add"
       onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
+      onOpen={!locked ? () => setOpen(true) : undefined}
+      onClick={
+        defaultAction
+          ? () => {
+              onClick && onClick(defaultAction.activityId)
+              setOpen(false)
+            }
+          : undefined
+      }
+      open={!locked && open}
       FabProps={{
         color: 'secondary',
         ...fabProps,
@@ -97,24 +72,39 @@ export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSetting
           animation: !fabProps?.disabled ? `${pulse} 2s infinite` : '',
           boxShadow: '0 0 0 0 transparent',
         },
+        '& .MuiBadge-badge': {
+          right: 0,
+          fontSize: 20,
+          backgroundColor: 'transparent',
+          bottom: 0,
+        },
       }}
-      icon={<PostAdd color="inherit" />}
+      icon={
+        defaultAction ? (
+          <Badge badgeContent={'+'} color="primary">
+            {defaultAction?.icon}
+          </Badge>
+        ) : (
+          <PostAdd color="inherit" />
+        )
+      }
     >
-      {actions
-        .filter((_, idx) => !locked[idx])
-        .map((action) => (
-          <SpeedDialAction
-            key={action.activityId}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            tooltipOpen
-            onClick={() => {
-              onClick && onClick(action.activityId)
-              setOpen(false)
-            }}
-            color="primary"
-          />
-        ))}
+      {!locked &&
+        actions
+          .filter(({ activityId }, idx) => activityId !== defaultAction?.activityId && !locked)
+          .map((action) => (
+            <SpeedDialAction
+              key={action.activityId}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              tooltipOpen
+              onClick={() => {
+                onClick && onClick(action.activityId)
+                setOpen(false)
+              }}
+              color="primary"
+            />
+          ))}
     </SpeedDial>
   )
 }

@@ -204,7 +204,24 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
   const displayValue: Session = Object.assign({}, session, newSession)
 
   // Conveneince methods for merging
-  const setNewMergeLockedFields = (fieldName: string, isChecked: boolean) => {
+  const setSessionLocked = (fieldName: string, isChecked: boolean) => {
+    let newLockedFields = newSettings?.sessionSettings?.lockedFields || []
+    if (isChecked) {
+      newLockedFields = [...newLockedFields, fieldName]
+    } else {
+      newLockedFields = newLockedFields.filter((f) => f !== fieldName)
+    }
+    setNewSettings({
+      ...newSettings,
+      sessionSettings: {
+        ...newSettings.sessionSettings,
+        lockedFields: Array.from(new Set(newLockedFields)),
+      },
+    })
+  }
+
+  // Conveneince methods for merging
+  const setWorkOrderDefaultsLocked = (fieldName: string, isChecked: boolean) => {
     let newLockedFields = newSettings.workOrderDefaults?.lockedFields || []
     if (isChecked) {
       newLockedFields = [...newLockedFields, fieldName]
@@ -420,7 +437,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
 
             <Box sx={styles.section}>
               <Typography component="div" sx={styles.sectionTitle}>
-                Activity Type
+                Default Activity Type
               </Typography>
               <Box sx={styles.section}>
                 <Box sx={{ px: { xs: 1, sm: 2, md: 2 }, py: 2 }}>
@@ -433,18 +450,35 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                         sessionSettings: {
                           ...newSettings.sessionSettings,
                           activity: newActivity,
+                          lockedFields: !newActivity
+                            ? (newSettings.sessionSettings?.lockedFields || []).filter((f) => f !== 'activity')
+                            : newSettings.sessionSettings?.lockedFields,
                         },
                       })
                     }}
                   />
-                </Box>
-
-                {newSettings.sessionSettings?.activity && (
-                  <Typography variant="caption" component="div" gutterBottom color="primary" sx={{ mb: 2 }}>
-                    Users will only be able to add workorders and scouting activities for "
-                    {getActivityName(newSettings.sessionSettings?.activity)}".
+                  <FormControlLabel
+                    sx={{
+                      py: 1,
+                      px: 1,
+                    }}
+                    checked={Boolean(newSettings?.sessionSettings?.lockedFields?.includes('activity'))}
+                    control={
+                      <Switch
+                        disabled={!newSettings.sessionSettings?.activity}
+                        icon={<LockOpen />}
+                        checkedIcon={<Lock />}
+                        onChange={(e) => setSessionLocked('activity', e.target.checked)}
+                      />
+                    }
+                    label="Exclusive?"
+                  />
+                  <Typography variant="caption" component="div" gutterBottom sx={{ mb: 2 }}>
+                    Selecting an activity type will set the default work order type to match that activity. Enabling the
+                    "Exclusive" option will restrict users from creating work orders or scouting finds for any other
+                    activity type.
                   </Typography>
-                )}
+                </Box>
               </Box>
             </Box>
             <Box sx={styles.section}>
@@ -490,7 +524,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     <Switch
                       icon={<LockOpen />}
                       checkedIcon={<Lock />}
-                      onChange={(e) => setNewMergeLockedFields('crewShares', e.target.checked)}
+                      onChange={(e) => setWorkOrderDefaultsLocked('crewShares', e.target.checked)}
                     />
                   }
                   label="Make these rows mandatory?"
@@ -683,7 +717,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                         icon={<LockOpen />}
                         checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('includeTransferFee'))}
                         checkedIcon={<Lock />}
-                        onChange={(e) => setNewMergeLockedFields('includeTransferFee', e.target.checked)}
+                        onChange={(e) => setWorkOrderDefaultsLocked('includeTransferFee', e.target.checked)}
                       />
                     </ListItemSecondaryAction>
                   </ListItem>
@@ -714,7 +748,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                             icon={<LockOpen />}
                             checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('isRefined'))}
                             checkedIcon={<Lock />}
-                            onChange={(e) => setNewMergeLockedFields('isRefined', e.target.checked)}
+                            onChange={(e) => setWorkOrderDefaultsLocked('isRefined', e.target.checked)}
                           />
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -745,7 +779,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                                   newSettings.workOrderDefaults?.lockedFields?.includes('shareRefinedValue')
                                 )}
                                 checkedIcon={<Lock />}
-                                onChange={(e) => setNewMergeLockedFields('shareRefinedValue', e.target.checked)}
+                                onChange={(e) => setWorkOrderDefaultsLocked('shareRefinedValue', e.target.checked)}
                               />
                             </ListItemSecondaryAction>
                           </ListItem>
@@ -774,7 +808,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                                 icon={<LockOpen />}
                                 checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('refinery'))}
                                 checkedIcon={<Lock />}
-                                onChange={(e) => setNewMergeLockedFields('refinery', e.target.checked)}
+                                onChange={(e) => setWorkOrderDefaultsLocked('refinery', e.target.checked)}
                               />
                             </ListItemSecondaryAction>
                           </ListItem>
@@ -801,7 +835,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                                 icon={<LockOpen />}
                                 checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('method'))}
                                 checkedIcon={<Lock />}
-                                onChange={(e) => setNewMergeLockedFields('method', e.target.checked)}
+                                onChange={(e) => setWorkOrderDefaultsLocked('method', e.target.checked)}
                               />
                             </ListItemSecondaryAction>
                           </ListItem>
