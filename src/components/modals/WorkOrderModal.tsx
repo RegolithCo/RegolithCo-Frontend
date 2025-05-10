@@ -259,12 +259,14 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     })
   }
 
+  const isOther = newWorkOrder.orderType === ActivityEnum.Other
+
   // const maxWidth = 500
   return (
     <Dialog
       open={open}
       onClose={handleConfirmClose}
-      maxWidth="lg"
+      maxWidth={isOther ? 'sm' : 'lg'}
       fullWidth
       fullScreen={!mediumUp}
       disableEscapeKeyDown={isEditing}

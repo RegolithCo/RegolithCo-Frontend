@@ -723,7 +723,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                   </ListItem>
 
                   {(!newSettings.sessionSettings?.activity ||
-                    newSettings.sessionSettings?.activity === ActivityEnum.ShipMining) && (
+                    (newSettings.sessionSettings.lockedFields?.includes('activity') &&
+                      newSettings.sessionSettings?.activity === ActivityEnum.ShipMining)) && (
                     <>
                       <ListItem>
                         <FormControlLabel
@@ -844,7 +845,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     </>
                   )}
                   {(!newSettings.sessionSettings?.activity ||
-                    newSettings.sessionSettings?.activity === ActivityEnum.ShipMining) && (
+                    (newSettings.sessionSettings.lockedFields?.includes('activity') &&
+                      newSettings.sessionSettings?.activity === ActivityEnum.ShipMining)) && (
                     <ListItem>
                       <Box sx={{ width: '100%' }}>
                         <Typography variant="caption">Default Vehicle Ore Rows</Typography>
@@ -865,7 +867,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     </ListItem>
                   )}
                   {(!newSettings.sessionSettings?.activity ||
-                    newSettings.sessionSettings?.activity === ActivityEnum.VehicleMining) && (
+                    (newSettings.sessionSettings.lockedFields?.includes('activity') &&
+                      newSettings.sessionSettings?.activity === ActivityEnum.VehicleMining)) && (
                     <ListItem>
                       <Box sx={{ width: '100%' }}>
                         <Typography variant="caption">Default Vehicle Ore Rows</Typography>
@@ -883,7 +886,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     </ListItem>
                   )}
                   {(!newSettings.sessionSettings?.activity ||
-                    newSettings.sessionSettings?.activity === ActivityEnum.Salvage) && (
+                    (newSettings.sessionSettings.lockedFields?.includes('activity') &&
+                      newSettings.sessionSettings?.activity === ActivityEnum.Salvage)) && (
                     <ListItem>
                       <Box sx={{ width: '100%' }}>
                         <Typography variant="caption">Default Salvage Material Rows</Typography>

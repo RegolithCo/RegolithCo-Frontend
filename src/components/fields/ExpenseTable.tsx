@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import {
   Table,
   TableRow,
@@ -20,6 +20,7 @@ import { fontFamilies } from '../../theme'
 import Numeral from 'numeral'
 import { MValue, MValueFormat } from './MValue'
 import log from 'loglevel'
+import { debounce } from 'lodash'
 
 export interface ExpenseTableProps {
   workOrder: WorkOrder
@@ -36,8 +37,23 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
   const theme = useTheme()
   // const styles = stylesThunk(theme)
   const [editingRow, setEditingRow] = React.useState<number | null>(null)
-  const customExpenses = workOrder.expenses || []
+  const [workingVal, setWorkingVal] = React.useState<WorkOrderExpense[]>(workOrder.expenses || [])
   const expenses: ExpenseRow[] = []
+
+  useEffect(() => {
+    if (workOrder.expenses) {
+      setWorkingVal(workOrder.expenses)
+    }
+  }, [workOrder.expenses])
+
+  // Inside the ExpenseTable component
+  const debouncedOnChange = useMemo(
+    () =>
+      debounce((updatedWorkOrder: WorkOrder) => {
+        onChange(updatedWorkOrder)
+      }, 300), // Adjust the debounce delay as needed (e.g., 300ms)
+    [onChange]
+  )
 
   let hasTransferFee = false
   if (workOrder.includeTransferFee && summary.transferFees > 0) {
@@ -49,7 +65,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
       idx: -1,
     })
   }
-  customExpenses.forEach(({ name, amount, ownerScName }, idx) => {
+  workingVal.forEach(({ name, amount, ownerScName }, idx) => {
     expenses.push({
       name,
       amount,
@@ -86,9 +102,11 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
               Claimant
             </TableCell>
             <TableCell scope="row" sx={{ fontWeight: 'bold' }}>
-              Expense
+              Expense Name
             </TableCell>
-            <TableCell scope="row" sx={{ textAlign: 'right', fontWeight: 'bold' }}></TableCell>
+            <TableCell scope="row" sx={{ textAlign: 'right', fontWeight: 'bold' }}>
+              Amount
+            </TableCell>
             {isEditing && <TableCell padding="none"></TableCell>}
           </TableRow>
         </TableHead>
@@ -124,7 +142,8 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                     onChange={(val) => {
                       const newExpenses = [...(workOrder.expenses || [])]
                       newExpenses[idx] = { ...newExpenses[idx], ownerScName: val } // Create a new object
-                      onChange({
+                      setWorkingVal(newExpenses)
+                      debouncedOnChange({
                         ...workOrder,
                         expenses: newExpenses,
                       })
@@ -139,7 +158,8 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                     onChange={(val) => {
                       const newExpenses = [...(workOrder.expenses || [])]
                       newExpenses[idx] = { ...newExpenses[idx], name: val } // Create a new object
-                      onChange({
+                      setWorkingVal(newExpenses)
+                      debouncedOnChange({
                         ...workOrder,
                         expenses: newExpenses,
                       })
@@ -154,7 +174,8 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                     onChange={(val) => {
                       const newExpenses = [...(workOrder.expenses || [])]
                       newExpenses[idx] = { ...newExpenses[idx], amount: val } // Create a new object
-                      onChange({
+                      setWorkingVal(newExpenses)
+                      debouncedOnChange({
                         ...workOrder,
                         expenses: newExpenses,
                       })
@@ -173,7 +194,8 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                             e.preventDefault()
                             const newExpenses = [...(workOrder.expenses || [])]
                             newExpenses.splice(idx, 1)
-                            onChange({
+                            setWorkingVal(newExpenses)
+                            debouncedOnChange({
                               ...workOrder,
                               expenses: newExpenses,
                             })

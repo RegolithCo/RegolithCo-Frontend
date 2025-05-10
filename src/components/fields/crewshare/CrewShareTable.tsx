@@ -475,6 +475,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
           title="Clear All Crew Shares"
           message="Are you sure you want to clear all crew shares? This will wipe out any crew shares (except the seller) as well as any expenses that belong to them."
           onClose={() => setClearConfirmOpen(false)}
+          confirmBtnText="Clear All"
           onConfirm={() => {
             const ownerSCName = workOrder.sellerscName ? workOrder.sellerscName : workOrder.owner?.scName
             onChange({

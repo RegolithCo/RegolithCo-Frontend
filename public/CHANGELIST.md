@@ -6,7 +6,7 @@
 In order to support 4.1.1 the work order calculator has had a significant renovation.
 
 - Expenses can now have "claimants" to support the new multi-crew features in 4.1.1. This means every expense can be reimbursed to a different user as long as they are listed in the crew-shares of that work order. Example: the person who repairs the ship is not the person who refines the ore who is not the person who sells it.  
-- Removed the left panel. It was wasted space and the controls on it look better when they're integrated into the rest of the form
+- Removed the left panel. It was wasted space and the controls on it look better when they're integrated into the rest of the form.
 - Reworked the UEX best price area to be tighter and more friendly.
 - The "Default Activity Type" setting behaviour has been changed so changes the default activity type for the buttons on the session page and then you can additionally choose to lock it down as well to prevent work orders and scouting finds with a different type from being created.
 
@@ -14,6 +14,7 @@ In order to support 4.1.1 the work order calculator has had a significant renova
 
 - Completion date for refined jobs was wronglyu showing the work order creation date instead of the completion date.
 - Vehicle orders SCU sums were 10x too big on the work order table.
+- Survey Corps Tables: On the ROC/FPS table the "Clusters Scanned" value was showing the wrong number. 
 
 
 ### May 2

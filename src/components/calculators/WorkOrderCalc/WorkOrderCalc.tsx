@@ -110,10 +110,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
       )}
       {workOrder.orderType === ActivityEnum.Other && (
         <Grid container spacing={{ md: 2, lg: 3 }} margin={0} sx={styles.container}>
-          {/* <Grid xs={12} sm={12} md={6} lg={4} sx={styles.gridCss}>
-            <DetailsCard {...props} sx={styles.cardCss} />
-          </Grid> */}
-          <Grid xs={12} sm={12} md={6} lg={6} sx={styles.gridCss}>
+          <Grid xs={12} sm={12} md={12} lg={12} sx={styles.gridCss}>
             <ExpensesSharesCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
         </Grid>

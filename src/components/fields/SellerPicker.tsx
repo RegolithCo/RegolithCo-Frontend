@@ -106,7 +106,7 @@ export const SellerPicker: React.FC<SellerPickerProps> = ({
             color: 'primary',
             startAdornment: (
               <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary">
-                Seller:
+                Seller / Purser:
               </Typography>
             ),
             sx: {

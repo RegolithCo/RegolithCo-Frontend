@@ -232,7 +232,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                 }}
               >
                 <Typography variant="overline" sx={{ fontWeight: 'bold' }} color="secondary" component={'div'}>
-                  Best Price (UEX):
+                  Market Price (UEX):
                 </Typography>
                 <Stack direction={'row'} spacing={1} alignItems="center">
                   {storeChoices.length > 0 && myStoreChoice ? (

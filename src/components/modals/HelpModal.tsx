@@ -21,23 +21,24 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose, title, children, 
       {...props}
       sx={{
         '& .MuiDialog-paper': {
-          borderRadius: 10,
-          boxShadow: `0px 0px 10px 5px ${theme.palette.info.light}, 0px 0px 30px 20px black`,
+          borderRadius: 3,
+          boxShadow: `0px 0px 100px 50px black`,
           background: theme.palette.background.default,
           border: `6px solid ${theme.palette.info.main}`,
         },
       }}
     >
       <DialogTitle
+        variant="h6"
         sx={{
           background: theme.palette.info.main,
           color: theme.palette.info.contrastText,
         }}
       >
         {typeof title === 'string' ? (
-          <>
+          <Stack direction="row" alignItems="center">
             <Help sx={{ mr: 2 }} color="inherit" /> {title}
-          </>
+          </Stack>
         ) : (
           title
         )}

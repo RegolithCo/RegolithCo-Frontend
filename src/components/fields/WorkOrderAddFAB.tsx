@@ -98,7 +98,9 @@ export const WorkOrderAddFAB: React.FC<WorkOrderAddFABProps> = ({ sessionSetting
               icon={action.icon}
               tooltipTitle={action.name}
               tooltipOpen
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onClick && onClick(action.activityId)
                 setOpen(false)
               }}
