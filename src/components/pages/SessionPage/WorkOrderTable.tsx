@@ -169,22 +169,46 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
             )}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Ores)) && <TableCell>Ores</TableCell>}
             {(!columns || columns.includes(WorkOrderTableColsEnum.Volume)) && (
-              <TableCell align="right">Yield</TableCell>
+              <TableCell align="right">
+                <Tooltip placement="top" title={<>Yielded Ore Volume (SCU)</>}>
+                  <span>Yield</span>
+                </Tooltip>
+              </TableCell>
             )}
-            {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && <TableCell align="right">Gross</TableCell>}
-            {(!columns || columns.includes(WorkOrderTableColsEnum.Net)) && <TableCell align="right">Net</TableCell>}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && (
+              <TableCell align="right">
+                <Tooltip placement="top" title={<>Work Order Gross Profit (Total revenue from sale)</>}>
+                  <span>Gross</span>
+                </Tooltip>
+              </TableCell>
+            )}
+            {(!columns || columns.includes(WorkOrderTableColsEnum.Net)) && (
+              <TableCell align="right">
+                <Tooltip placement="top" title={<>Work Order Net Profit (Total profit after expenses)</>}>
+                  <span>Net</span>
+                </Tooltip>
+              </TableCell>
+            )}
             {(!columns || columns.includes(WorkOrderTableColsEnum.FinishedTime)) && (
               <TableCell align="left">
-                <Tooltip title="Finished At / Time left">
+                <Tooltip placement="top" title="Finished At / Time left">
                   <AccessTime />
                 </Tooltip>
               </TableCell>
             )}
             {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Sold)) && (
-              <TableCell align="center">Sold</TableCell>
+              <TableCell align="center">
+                <Tooltip placement="top" title="Is this work order sold?">
+                  <span>Sold</span>
+                </Tooltip>
+              </TableCell>
             )}
             {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Paid)) && (
-              <TableCell align="center">Paid</TableCell>
+              <TableCell align="center">
+                <Tooltip placement="top" title="Crew shares paid / Total Crew Shares">
+                  <span>Paid/Shares</span>
+                </Tooltip>
+              </TableCell>
             )}
           </TableRow>
         </TableHead>

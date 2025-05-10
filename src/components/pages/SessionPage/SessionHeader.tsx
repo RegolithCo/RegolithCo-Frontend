@@ -29,7 +29,7 @@ export const sessionSubtitleArr = (session: Session, protect: boolean): (string 
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
   if (sessionSettings.gravityWell)
-    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameLookup code={sessionSettings.gravityWell} />)
+    subtitleArr.push(protect ? 'UNDISCLOSED' : <GravityWellNameLookup code={sessionSettings.gravityWell} simple />)
   if (sessionSettings.location) subtitleArr.push(protect ? 'UNDISCLOSED' : getLocationName(sessionSettings.location))
   return subtitleArr
 }

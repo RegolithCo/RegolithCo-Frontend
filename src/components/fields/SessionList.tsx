@@ -391,8 +391,9 @@ export const SessionListMonth: React.FC<SessionListMonthProps> = ({ yearMonthArr
                                     component="div"
                                     variant="overline"
                                     color="text.secondary"
-                                    fontSize={'0.5rem'}
-                                    mb={1}
+                                    sx={{
+                                      fontSize: '0.5rem',
+                                    }}
                                   >
                                     {subtitleArr.map((subtitle, i) => (
                                       <React.Fragment key={i}>

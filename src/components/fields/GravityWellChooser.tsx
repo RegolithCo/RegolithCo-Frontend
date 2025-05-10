@@ -16,25 +16,29 @@ export interface GravityWellChooserProps {
   isSmall?: boolean
 }
 
-export const GravityWellNameRender: React.FC<{ options: GravityWellOptions; bonus?: number }> = ({
+export const GravityWellNameRender: React.FC<{ options: GravityWellOptions; bonus?: number; simple?: boolean }> = ({
   options,
   bonus,
+  simple,
 }) => {
   const { color, icon, label } = (options || {}) as GravityWellOptions
+  if (simple) return label
   return (
     <Stack sx={{ color, width: '100%' }} direction="row" spacing={2} alignItems="center">
       {icon}
       <Typography component={'div'} flex={1}>
         {label}
       </Typography>
-      <Tooltip title="Scanning Area Bonus">
-        <Typography variant={'caption'}>{MValueFormatter(bonus, MValueFormat.number, 2)}</Typography>
-      </Tooltip>
+      {bonus && (
+        <Tooltip title="Scanning Area Bonus">
+          <Typography variant={'caption'}>{MValueFormatter(bonus, MValueFormat.number, 2)}</Typography>
+        </Tooltip>
+      )}
     </Stack>
   )
 }
 
-export const GravityWellNameLookup: React.FC<{ code: string }> = ({ code }) => {
+export const GravityWellNameLookup: React.FC<{ code: string; simple: boolean }> = ({ code, simple }) => {
   const dataStore = React.useContext(LookupsContext)
   const userTheme = useTheme()
   if (!dataStore.ready) return null
@@ -61,7 +65,7 @@ export const GravityWellNameLookup: React.FC<{ code: string }> = ({ code }) => {
       hasGems: false,
       hasRocks: false,
     } as GravityWellOptions)
-  return <GravityWellNameRender options={well as GravityWellOptions} />
+  return <GravityWellNameRender options={well as GravityWellOptions} simple={simple} />
 }
 
 export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[] => {

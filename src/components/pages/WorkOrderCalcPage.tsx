@@ -79,6 +79,8 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
           minHeight: 700,
           overflowX: 'hidden',
           overflowY: 'visible',
+          margin: '0 auto',
+          maxWidth: activeWorkOrder.orderType === ActivityEnum.Other ? 550 : '100%',
         }}
       >
         <WorkOrderCalc

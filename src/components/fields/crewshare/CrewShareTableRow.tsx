@@ -224,7 +224,7 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
       {/* NOTE DIALOG */}
       {openNoteDialog && (
         <NoteAddDialog
-          title={`Note for: ${getSafeName(crewShare.payeeScName)}`}
+          title={`Note for / about: ${getSafeName(crewShare.payeeScName)}`}
           open
           onClose={() => setOpenNoteDialog(false)}
           note={crewShare.note as string}

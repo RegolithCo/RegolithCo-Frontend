@@ -372,7 +372,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     aUEC
                   </Typography>
                   {isEditing && (
-                    <Tooltip title="Composite add">
+                    <Tooltip placement="right" title="Composite add tool">
                       <IconButton size="small" onClick={() => setCompositeAddOpen(true)}>
                         <TableView color="primary" />
                       </IconButton>
@@ -538,60 +538,38 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
 
             {isEditing && (
               <Stack direction="row" spacing={1} alignItems="center">
-                <Tooltip
-                  placement="left"
-                  title={
-                    workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
-                      ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
-                      : 'Add a custom expense'
-                  }
+                <Button
+                  size="small"
+                  color="primary"
+                  startIcon={<AddCircle />}
+                  disabled={Boolean(workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES)}
+                  onClick={() => {
+                    const newExpenses: WorkOrderExpense[] = [
+                      ...(workOrder.expenses || []),
+                      {
+                        name: '',
+                        amount: 0,
+                        ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
+                        __typename: 'WorkOrderExpense',
+                      },
+                    ]
+                    onChange({
+                      ...workOrder,
+                      expenses: newExpenses,
+                    })
+                  }}
                 >
-                  <span>
-                    <Button
-                      size="small"
-                      color="primary"
-                      startIcon={<AddCircle />}
-                      disabled={Boolean(workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES)}
-                      onClick={() => {
-                        const newExpenses: WorkOrderExpense[] = [
-                          ...(workOrder.expenses || []),
-                          {
-                            name: '',
-                            amount: 0,
-                            ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
-                            __typename: 'WorkOrderExpense',
-                          },
-                        ]
-                        onChange({
-                          ...workOrder,
-                          expenses: newExpenses,
-                        })
-                      }}
-                    >
-                      Add Expense
-                    </Button>
-                  </span>
-                </Tooltip>
-                <Tooltip
-                  placement="left"
-                  title={
-                    workOrder?.expenses && workOrder?.expenses.length >= MAXIMUM_EXPENSES
-                      ? `${MAXIMUM_EXPENSES} custom expenses is the maximum`
-                      : 'Add a custom expense'
-                  }
+                  Add Expense
+                </Button>
+                <Button
+                  size="small"
+                  color="error"
+                  startIcon={<Cancel />}
+                  disabled={!(workOrder?.expenses && workOrder?.expenses.length >= 0)}
+                  onClick={() => setClearConfirmOpen(true)}
                 >
-                  <span>
-                    <Button
-                      size="small"
-                      color="error"
-                      startIcon={<Cancel />}
-                      disabled={!(workOrder?.expenses && workOrder?.expenses.length >= 0)}
-                      onClick={() => setClearConfirmOpen(true)}
-                    >
-                      Clear All
-                    </Button>
-                  </span>
-                </Tooltip>
+                  Clear All
+                </Button>
               </Stack>
             )}
           </Stack>

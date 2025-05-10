@@ -261,35 +261,15 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
       )}
 
       {(!columns || columns.includes(WorkOrderTableColsEnum.Gross)) && (
-        <Tooltip
-          title={
-            <>
-              Work Order Gross Profit (Total revenue from sale):
-              <br />
-              {MValueFormatter(workOrderGrossShareAmt, MValueFormat.currency)}
-            </>
-          }
-        >
-          <TableCell align="right" onClick={onRowClickInner}>
-            <MValue value={workOrderGrossShareAmt} format={MValueFormat.currency_sm} />
-          </TableCell>
-        </Tooltip>
+        <TableCell align="right" onClick={onRowClickInner}>
+          <MValue value={workOrderGrossShareAmt} format={MValueFormat.currency_sm} />
+        </TableCell>
       )}
 
       {(!columns || columns.includes(WorkOrderTableColsEnum.Net)) && (
-        <Tooltip
-          title={
-            <>
-              Work Order Net Profit (Gross Minus Fees/Expenses/costs):
-              <br />
-              {MValueFormatter(workOrderNetShareAmt, MValueFormat.currency)}
-            </>
-          }
-        >
-          <TableCell align="right" onClick={onRowClickInner}>
-            <MValue value={workOrderNetShareAmt} format={MValueFormat.currency_sm} />
-          </TableCell>
-        </Tooltip>
+        <TableCell align="right" onClick={onRowClickInner}>
+          <MValue value={workOrderNetShareAmt} format={MValueFormat.currency_sm} />
+        </TableCell>
       )}
       {(!columns || columns.includes(WorkOrderTableColsEnum.FinishedTime)) && (
         <>
@@ -349,7 +329,7 @@ export const WorkOrderTableRow: React.FC<WorkOrderTableRowProps> = ({
       )}
       {!isShare && (!columns || columns.includes(WorkOrderTableColsEnum.Paid)) && (
         <TableCell align="center" padding="checkbox" onClick={onRowClickInner}>
-          <Tooltip title={`All crew shares ${isPaid ? 'are' : 'are NOT'} paid`}>
+          <Tooltip placement="right" title={`All crew shares ${isPaid ? 'are' : 'are NOT'} paid`}>
             {numCrewShares > 1 ? (
               <Typography>
                 {numPaid}/{(workOrder.crewShares || []).length}

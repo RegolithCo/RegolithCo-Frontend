@@ -188,7 +188,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
               WorkOrderTableColsEnum.Activity,
               WorkOrderTableColsEnum.Refinery,
               WorkOrderTableColsEnum.OrderId,
-              WorkOrderTableColsEnum.Shares,
+              // WorkOrderTableColsEnum.Shares,
               WorkOrderTableColsEnum.Ores,
               WorkOrderTableColsEnum.Volume,
               WorkOrderTableColsEnum.Gross,

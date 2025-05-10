@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material'
+import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, useTheme } from '@mui/material'
 import { MAX_NOTE_LENGTH } from '@regolithco/common'
 
 export type NoteAddDialogProps = {
@@ -11,6 +11,7 @@ export type NoteAddDialogProps = {
 }
 
 export const NoteAddDialog: React.FC<NoteAddDialogProps> = ({ open, note, title, onClose, onChange }) => {
+  const theme = useTheme()
   const [newNote, setNewNote] = React.useState<string>(note || '')
   // const [noteValid, setNoteValid] = React.useState<boolean>(true)
 
@@ -18,13 +19,31 @@ export const NoteAddDialog: React.FC<NoteAddDialogProps> = ({ open, note, title,
     <Dialog
       open={Boolean(open)}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="xs"
       fullWidth
       aria-labelledby="closeDelete"
       aria-describedby="closeDelete"
+      sx={{
+        '& .MuiDialog-paper': {
+          borderRadius: 3,
+          boxShadow: `0px 0px 100px 50px black`,
+          background: theme.palette.background.default,
+          border: `6px solid ${theme.palette.secondary.main}`,
+        },
+      }}
     >
-      <DialogTitle id="alert-dialog-title">{title || 'Add Note'}</DialogTitle>
-      <DialogContent>
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{
+          py: 0,
+          px: 3,
+          background: theme.palette.secondary.main,
+          color: theme.palette.secondary.contrastText,
+        }}
+      >
+        {title || 'Add Note'}
+      </DialogTitle>
+      <DialogContent sx={{}}>
         <TextField
           id="outlined-multiline-flexible"
           multiline
@@ -48,7 +67,7 @@ export const NoteAddDialog: React.FC<NoteAddDialogProps> = ({ open, note, title,
             }
             setNewNote(newValue)
           }}
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, mt: 4 }}
           placeholder="Enter a note..."
           maxRows={4}
         />
