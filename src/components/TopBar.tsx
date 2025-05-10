@@ -74,12 +74,12 @@ export type MenuItemType = {
 }
 
 const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
-const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
+const IS_STAGING = STAGE === 'staging'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   appBar: {
     fontFamily: fontFamilies.robotoMono,
-    bgcolor: yellow[700],
+    bgcolor: IS_STAGING ? '#ff4242' : yellow[700],
     color: '#000',
     px: 2,
     [theme.breakpoints.down('sm')]: {
@@ -93,6 +93,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     mr: 1,
   },
   siteName: {
+    position: 'relative',
     mr: 2,
     cursor: 'pointer',
     fontFamily: fontFamilies.robotoMono,
@@ -362,6 +363,24 @@ export const TopBar: React.FC = () => {
         </Box>
         {/* This is our mini menu for mobile */}
         <RockIcon sx={styles.siteIcon} />
+        {IS_STAGING && (
+          <Box
+            sx={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              top: 10,
+              left: 0,
+              fontSize: '0.5rem',
+              color: 'black',
+              // textShadow: '0 0 5px white; 0 0 10px white',
+              fontFamily: fontFamilies.robotoMono,
+              // transform: 'rotate(-20deg) translateY(-50%)',
+              fontWeight: 700,
+            }}
+          >
+            [TEST SERVER]
+          </Box>
+        )}
         <Typography variant="h5" noWrap component={Link} to="/" sx={styles.siteName}>
           Regolith Co.
         </Typography>
@@ -424,7 +443,6 @@ export const TopBar: React.FC = () => {
         {/* Debugger for oauth token expiry */}
         {/* Profile icon, username and badge */}
         <div style={{ flexGrow: 1 }} />
-        {IS_STAGING && '[TEST SERVER]'}
         {isScreenSharing && (
           <Tooltip title="Stop sharing screens with Regolith">
             <IconButton

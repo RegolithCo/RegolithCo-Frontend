@@ -79,6 +79,7 @@ import { SurveyScore } from './SurveyScore'
 import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
 import { SessionContext } from '../../../context/session.context'
 import { useGetPublicSurveyDataQuery } from '../../../schema'
+import log from 'loglevel'
 dayjs.extend(relativeTime)
 
 // Object.values(ScoutingFindStateEnum)
@@ -366,7 +367,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           onChange && onChange({ ...scoutingFind, surveyBonus: bonus })
         }
       } catch (e) {
-        console.log('Error getting bonus map ROC', e)
+        log.error('Error getting bonus map ROC', e)
       }
     }
   }, [scoutingFind, bonusesMap, onChange])

@@ -43,6 +43,7 @@ import { WorkOrderTableColsEnum } from '../SessionPage/WorkOrderTableRow'
 import { FetchMoreSessionLoader, FetchMoreWithDate } from './FetchMoreSessionLoader'
 import { CountdownTimer } from '../../calculators/WorkOrderCalc/CountdownTimer'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
+import log from 'loglevel'
 
 export const TabWorkOrders: React.FC<DashboardProps> = ({
   userProfile,
@@ -199,7 +200,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                       const woLookup = workOrderSummaries[wo.sessionId][wo.orderId]
                       return !woLookup.completionTime || woLookup.completionTime < Date.now()
                     } catch (e) {
-                      console.log(e)
+                      log.error(e)
                       return false
                     }
                   })
@@ -287,7 +288,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                         try {
                           lookupVal = workOrderSummaries[order.sessionId][order.orderId]
                         } catch {
-                          console.log('Error looking up order summary')
+                          log.error('Error looking up order summary')
                         }
                         const completionTime = lookupVal?.completionTime || 0
                         const isProcessing = completionTime && completionTime > Date.now()

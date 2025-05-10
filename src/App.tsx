@@ -24,14 +24,10 @@ import { TopBar } from './components/TopBar'
 import { enqueueSnackbar } from 'notistack'
 import { Box } from '@mui/material'
 
-const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
-const IS_STAGING = !STAGE || STAGE === 'dev' || STAGE === 'staging'
-
 export const App: React.FC = () => {
   const { isAuthenticated } = useContext(LoginContext)
   const { isInitialized, error: userError, loading: userLoading } = React.useContext(UserProfileContext)
   const { maintenanceMode } = React.useContext(AppContext)
-  const [stagingWarningOpen, setStagingWarningOpen] = React.useState<boolean>(IS_STAGING)
   const needIntervention = !userLoading && !userError && isAuthenticated && !isInitialized
   const isAutheticated = useRef(false)
 
@@ -67,12 +63,7 @@ export const App: React.FC = () => {
   return (
     <>
       <TopBar />
-      <StagingWarning
-        open={stagingWarningOpen}
-        onClose={() => {
-          setStagingWarningOpen(false)
-        }}
-      />
+      <StagingWarning />
       <AppWrapperContainer>
         <Routes>
           <Route path="/" element={<HomePageContainer />} errorElement={<ErrorPage />} />

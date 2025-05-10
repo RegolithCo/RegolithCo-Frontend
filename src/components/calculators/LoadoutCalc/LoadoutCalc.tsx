@@ -203,9 +203,9 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
           backgroundImage: 'none',
           background: 'none',
           height: '100%',
-          overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         <CardHeader
@@ -251,25 +251,15 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         />
         <CardContent
           sx={{
-            height: '100%',
             overflow: 'hidden',
             overflowY: 'auto',
             display: 'flex',
+            flexGrow: 1,
           }}
         >
-          <Grid container spacing={3} sx={{}}>
+          <Grid container spacing={3} sx={{ my: 1, mx: 2 }}>
             {/* This grid has the lasers and the stats */}
-            <Grid
-              xs={12}
-              sm={12}
-              md={isShare ? 12 : 8}
-              sx={{
-                border: {
-                  // xs: '1px solid blue',
-                  // md: '1px solid red',
-                },
-              }}
-            >
+            <Grid xs={12} sm={12} md={isShare ? 12 : 8}>
               <Grid container spacing={3} rowSpacing={3}>
                 <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                   <LoadoutLaserTool
@@ -346,14 +336,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 </ToolGrid>
               </Grid>
             </Grid>
-            <Grid
-              container
-              xs={12}
-              sm={12}
-              md={isShare ? 12 : 4}
-              sx={{ display: 'flex', flexDirection: isShare ? 'row' : 'column' }}
-              spacing={2}
-            >
+            <Grid container xs={12} sm={12} md={isShare ? 12 : 4} spacing={2}>
               <Grid xs={isShare ? 8 : 12}>{stats && <LoadoutCalcStats stats={stats} />}</Grid>
               {stats && (
                 <Grid xs={isShare ? 4 : 12}>

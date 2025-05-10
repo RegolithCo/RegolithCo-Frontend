@@ -150,7 +150,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
           <ModuleTable
             onAddToLoadout={(module) => {
               // TODO: Implement this
-              console.log('NOT IMPLEMENTED: Add to loadout', module)
+              log.error('NOT IMPLEMENTED: Add to loadout', module)
             }}
           />
         )}

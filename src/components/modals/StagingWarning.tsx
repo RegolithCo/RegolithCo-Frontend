@@ -2,18 +2,20 @@ import * as React from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme, Link } from '@mui/material'
 import { BugReport, Cake, Warning } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
+import useLocalStorage from '../../hooks/useLocalStorage'
 
-export interface StagingWarningProps {
-  open: boolean
-  onClose: () => void
-}
+const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
+const IS_STAGING = STAGE === 'dev' || STAGE === '%STAGE%' || STAGE === 'staging'
 
-export const StagingWarning: React.FC<StagingWarningProps> = ({ open, onClose }) => {
+export const StagingWarning: React.FC = () => {
   const theme = useTheme()
+  const [lastDismissTestWarning, setDismissTestWarning] = useLocalStorage<number>('DISMISS_TEST_WARNING', 0)
+
+  if (!IS_STAGING) return null
+  if (lastDismissTestWarning > new Date().getTime() - 1000 * 60 * 60) return null // 1 hour
   return (
     <Dialog
-      open={open}
-      onClose={onClose}
+      open
       maxWidth="sm"
       fullWidth
       sx={{
@@ -60,8 +62,17 @@ export const StagingWarning: React.FC<StagingWarningProps> = ({ open, onClose })
       </DialogContent>
       <DialogActions>
         <div style={{ flexGrow: 1 }} />
-        <Button color="error" size="large" onClick={onClose} startIcon={<BugReport />} endIcon={<BugReport />}>
-          I Understand! Let's go find some bugs!!!!
+        <Button
+          color="error"
+          // size="large"
+          variant="contained"
+          onClick={() => {
+            setDismissTestWarning(new Date().getTime())
+          }}
+          startIcon={<BugReport />}
+          // endIcon={<BugReport />}
+        >
+          I Understand
         </Button>
         <div style={{ flexGrow: 1 }} />
       </DialogActions>
