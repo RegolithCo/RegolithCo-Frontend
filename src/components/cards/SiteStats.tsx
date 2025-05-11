@@ -56,7 +56,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           scale={lossFormatted[1]}
           subText="aUEC Lost"
           tooltip={`${MValueFormatter(
-            allTime?.summary?.grossProfitaUEC || 0,
+            allTime?.summary?.lossaUEC || 0,
             MValueFormat.number
           )} aUEC Lost due to crashes, piracy etc.`}
           loading={statsLoading}
