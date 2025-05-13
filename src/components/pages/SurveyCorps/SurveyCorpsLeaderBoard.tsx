@@ -5,6 +5,7 @@ import {
   AlertTitle,
   alpha,
   Avatar,
+  Button,
   Container,
   darken,
   Link,
@@ -26,8 +27,9 @@ import { DiscordGuild, JSONObject, ScVersionEpochEnum, SurveyData, UserProfile }
 import Gradient from 'javascript-color-gradient'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
-import { Diversity3, Person } from '@mui/icons-material'
+import { BugReport, Diversity3, Person, QuestionMarkSharp } from '@mui/icons-material'
 import { Box } from '@mui/system'
+import { HelpModal } from '../../modals/HelpModal'
 
 export type LeaderboardTabValues = 'user' | 'org'
 
@@ -138,6 +140,57 @@ export const SurveyCorpsLeaderBoard: React.FC<SurveyCorpsLeaderBoardProps> = ({
         </Alert>
       </Container>
     </Box>
+  )
+}
+
+const MissingGuild: React.FC = () => {
+  const [helpOpen, setHelpOpen] = React.useState(false)
+
+  return (
+    <>
+      <Tooltip title={'Missing Discord Guild. Click for instructions to fix'}>
+        <Button
+          startIcon={<BugReport />}
+          endIcon={<QuestionMarkSharp />}
+          onClick={() => setHelpOpen(true)}
+          variant="text"
+          size="small"
+        >
+          Missing Discord Guild Info
+        </Button>
+      </Tooltip>
+      {helpOpen && (
+        <HelpModal title="Missing Discord Guild Info" onClose={() => setHelpOpen(false)}>
+          <Box>
+            <Typography variant="h5" paragraph>
+              Why is this happening?
+            </Typography>
+            <Typography variant="body1" paragraph>
+              Regolith caches the names of Discord guilds for a while to reduce the load on the discord API.
+              Occasionally these records time-out.
+            </Typography>
+            <Typography variant="body1" paragraph color="info.main">
+              This is not a problem with your guild allegiance. You just need to reload the cached value.
+            </Typography>
+            <Typography variant="h5" paragraph>
+              How do I fix? (TL;DR):
+            </Typography>
+            <Typography variant="body1" paragraph component="ol">
+              <li>When any user from this org logs into Regolith that should trigger a cache rebuild.</li>
+              <li>You may have to wait up to an hour for the leaderboard scraper to update.</li>
+              <li>Return to the leaderboard and reload the page.</li>
+            </Typography>
+            <Typography variant="body1" paragraph>
+              There is now a more permanent fix in place for this issue so once your org name is back it should persist
+              going forward
+            </Typography>
+            <Typography variant="body1" paragraph>
+              After this, if you are still noticing a problem please let us know.
+            </Typography>
+          </Box>
+        </HelpModal>
+      )}
+    </>
   )
 }
 
@@ -357,6 +410,7 @@ const UserBoard: React.FC<{ data: JSONObject[] }> = ({ data }) => {
 }
 
 const EntryGuild: React.FC<{ guild: DiscordGuild }> = ({ guild }) => {
+  if (guild && guild.name === 'NOT_FOUND') return <MissingGuild />
   return (
     <Tooltip title={guild.name}>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%', overflow: 'hidden' }}>
