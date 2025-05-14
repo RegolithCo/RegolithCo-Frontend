@@ -213,7 +213,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                 isRefined: !!refinery,
                 shareRefinedValue: !!refinery && defaultShareRefinedValue,
                 method: shipOrder.method || RefineryMethodEnum.DinyxSolventation,
-                refinery: shipOrder.refinery || RefineryEnum.Arcl1,
+                refinery: refinery || RefineryEnum.Arcl1,
               } as ShipMiningOrder)
             }}
           />
