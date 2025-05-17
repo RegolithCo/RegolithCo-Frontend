@@ -27,7 +27,6 @@ import {
 } from '@mui/material'
 import {
   ActivityEnum,
-  getActivityName,
   DestructuredSettings,
   destructureSettings,
   LocationEnum,

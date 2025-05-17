@@ -28,7 +28,7 @@ export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, label, v
           onChange(newVal as SystemEnum)
         }}
       >
-        {disallowNone && (
+        {!disallowNone && (
           <MenuItem key={`systems-none`} value={''}>
             {blankLabel || 'All Systems'}
           </MenuItem>
