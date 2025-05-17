@@ -1,3 +1,15 @@
+### May 17
+## 1.3.10 - Patches, Fixes and new locations
+
+This is just a small incremental patch to fix some bugs and a 86 new mining locations for Star Citizen 4.1.1
+
+- FIXED: Added a warning for missing discord guild names
+- FIXED: a problem with the statistics calculator
+- FIXED: The system chooser now renders with more depth
+- FIXED: Deselect system is now working properly
+- FIXED: a problem with the refinery selection
+- FIXED: an issue with the OCR where exisiting clusters won't show the latest rock after a scan
+
 ### May 3
 ## 1.3.9 - Work Order Form Overhail and 4.1.1 Support
 
