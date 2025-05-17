@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Autocomplete, MenuItem, Stack, TextField, Tooltip, Typography, useTheme } from '@mui/material'
 import { GravityWell, GravityWellTypeEnum, Lookups, SystemEnum } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
-import { Bedtime, Brightness5, GolfCourse, Language } from '@mui/icons-material'
+import { Bedtime, Brightness5, GolfCourse, Language, ScatterPlotOutlined } from '@mui/icons-material'
 import { RockIcon } from '../../icons'
 import { GravityWellOptions } from '../../types'
 import { MValueFormat, MValueFormatter } from './MValue'
@@ -116,6 +116,15 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
             })
           })
         systemLookup
+          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === planet.id)
+          .forEach((clusterInner, idx) => {
+            acc.push({
+              ...clusterInner,
+              color: theme.palette.success.main,
+              icon: <ScatterPlotOutlined />,
+            })
+          })
+        systemLookup
           .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.SATELLITE && parent === planet.id)
           .forEach((sat, idx) => {
             acc.push({
@@ -142,8 +151,17 @@ export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[]
         acc.push({
           ...cluster,
           color: theme.palette.success.main,
-          icon: <Bedtime />,
+          icon: <ScatterPlotOutlined />,
         })
+        systemLookup
+          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === cluster.id)
+          .forEach((clusterInner, idx) => {
+            acc.push({
+              ...clusterInner,
+              color: theme.palette.success.main,
+              icon: <ScatterPlotOutlined />,
+            })
+          })
       })
 
     return acc

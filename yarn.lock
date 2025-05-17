@@ -3468,9 +3468,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@regolithco/common@npm:^1.3.9":
-  version: 1.3.9
-  resolution: "@regolithco/common@npm:1.3.9"
+"@regolithco/common@npm:^1.3.10":
+  version: 1.3.10
+  resolution: "@regolithco/common@npm:1.3.10"
   dependencies:
     "@apollo/client": ^3.13.8
     blob: ^0.1.0
@@ -3479,7 +3479,7 @@ __metadata:
     lodash: ^4.17.21
     loglevel: ^1.9.2
     numeral: ^2.0.6
-  checksum: aaed5ffa385faa5132299902e83e0ed58eee6b28945a1fa73f3dba6007e0e35c72deb461eeeeb70baa879af30bdd2029515a757ef82c13dfc25f5cb5e79fd96b
+  checksum: cd438f32a77693780f90e3105b6fedec3bc34ae1ca137b751219f6cee214e5bd16c0b1749433af977bc66382d9b8b23b8d78cbdf00793d49f3b544bdab1bbdb1
   languageName: node
   linkType: hard
 
@@ -3511,7 +3511,7 @@ __metadata:
     "@nivo/line": ^0.87.0
     "@nivo/pie": ^0.87.0
     "@react-oauth/google": ^0.12.2
-    "@regolithco/common": ^1.3.9
+    "@regolithco/common": ^1.3.10
     "@sentry/react": ^9.19.0
     "@sentry/vite-plugin": ^3.4.0
     "@storybook/addon-actions": ^8.6.12

@@ -298,8 +298,8 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     </Stack>
                   </Box>
                   <Typography component="div" variant="caption" paragraph>
-                    Sessions close automatically after 48 hours but can be re-opened. You can still edit work orders on
-                    a closed session.
+                    Sessions close automatically after 48 hours of innactivity but they can be re-opened. You can still
+                    edit work orders on a closed session.
                   </Typography>
                 </Box>
               )}
