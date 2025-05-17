@@ -271,6 +271,21 @@ const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] =>
       value: dayjs('2024-12-19').startOf(rounding).toDate(),
       legend: '4.0',
     },
+    {
+      // 4.0 live
+      value: dayjs('2025-01-29').startOf(rounding).toDate(),
+      legend: '4.0.1',
+    },
+    {
+      // 4.0 live
+      value: dayjs('2025-03-28').startOf(rounding).toDate(),
+      legend: '4.1',
+    },
+    {
+      // 4.0 live
+      value: dayjs('2025-05-13').startOf(rounding).toDate(),
+      legend: 'Invictus 4.1.1',
+    },
   ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
 
   // If this is DAILY then also add all the sundays
