@@ -48,7 +48,14 @@ const HomeCard: React.FC<{
   const theme = useTheme()
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return url ? <RouterLink to={!disabled ? url : ''}>{children}</RouterLink> : <>{children}</>
+    const target = url?.startsWith('http') ? '_blank' : undefined
+    return url ? (
+      <RouterLink to={!disabled ? url : ''} target={target}>
+        {children}
+      </RouterLink>
+    ) : (
+      <>{children}</>
+    )
   }
 
   return (
@@ -192,6 +199,13 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
           description="Data tables to compare refineries."
           imgageUrl="images/sm/market.jpg"
           url="/tables/ore"
+        />
+        <HomeCard
+          title="Merchandise"
+          disabled={Boolean(maintenanceMode)}
+          description="Support Regolith with sexy merch!."
+          imgageUrl="images/sm/merch.jpg"
+          url="https://shop.regolith.rocks"
         />
       </Grid>
       {/* STATS */}
