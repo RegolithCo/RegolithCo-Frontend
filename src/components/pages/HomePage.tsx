@@ -203,8 +203,8 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
         <HomeCard
           title="Merchandise"
           disabled={Boolean(maintenanceMode)}
-          description="Support Regolith with sexy merch!."
-          imgageUrl="images/sm/merch.jpg"
+          description="Support Regolith with sexy merch!"
+          imgageUrl="images/sm/merch.png"
           url="https://shop.regolith.rocks"
         />
       </Grid>
