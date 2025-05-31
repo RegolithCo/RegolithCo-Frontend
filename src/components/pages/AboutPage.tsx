@@ -37,7 +37,7 @@ import log from 'loglevel'
 import { ExportImageIcon } from '../../icons/badges'
 import { YoutubeEmbed } from '../fields/YoutubeEmbed'
 import { AboutPageFAQ } from './AboutPageFAQ'
-// import { PatreonButton } from '../fields/PatreonButton'
+import { RockIcon } from '../../icons'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -73,6 +73,7 @@ export interface AboutPageProps {
 const TabIndex = {
   General: 'general',
   HelpUs: 'support-us',
+  MiningResouces: 'resources',
   GetHelp: 'get-help',
   FAQ: 'faq',
   Thanks: 'acknowledgements',
@@ -106,6 +107,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
     case TabIndex.HelpUs:
       finalTitle = 'Support Regolith'
       break
+    case TabIndex.MiningResouces:
+      finalTitle = 'Mining Resources'
+      break
     case TabIndex.GetHelp:
       finalTitle = 'Get Help'
       break
@@ -136,17 +140,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           navigate && navigate(`/about/${newValue}`)
         }}
       >
-        <Tab label="General" icon={<Info />} value={TabIndex.General} />
+        <Tab label="About" icon={<RockIcon />} value={TabIndex.General} />
+        <Tab label="Help / FAQ" icon={<QuestionAnswer />} value={TabIndex.FAQ} />
+        <Tab label="Learn to Mine" icon={<RockIcon />} value={TabIndex.MiningResouces} />
         <Tab label="Thanks" icon={<Celebration />} value={TabIndex.Thanks} />
-        <Tab label="FAQ" icon={<QuestionAnswer />} value={TabIndex.FAQ} />
-        <Tab label="Get Help" icon={<HelpCenter />} value={TabIndex.GetHelp} />
         <Tab label="Support Us" icon={<Coffee />} value={TabIndex.HelpUs} />
         <Tab label="Release Notes" icon={<NewReleases />} value={TabIndex.ReleaseNotes} />
       </Tabs>
       {finalTab === TabIndex.General && (
         <Box sx={{ mb: 3 }}>
           <Card elevation={20} sx={styles.card}>
-            <CardHeader title="About" />
+            <CardHeader title="About Regolith Co." />
             <CardContent>
               <Typography paragraph>
                 Regolith Co. is a fansite dedicated to helping Star Citizen players mine, organize, share, and scout
@@ -263,7 +267,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <Typography paragraph>There are a number of ways you can help support Regolith Co.</Typography>
 
             <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
-              1. Help with server costs
+              1. Donate to Help with server costs
             </Typography>
             <Typography paragraph>
               Everyone can use this site for free, hopefully forever. However,{' '}
@@ -302,7 +306,24 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             </Stack>
             <Divider sx={{ mb: 3 }} />
             <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
-              2. Spread the word
+              2. Buy some merch
+            </Typography>
+            <Typography paragraph>
+              If you want to support Regolith Co. and get something in return, you can buy some sexy merch from our{' '}
+              <Link href="https://shop.regolith.rocks" target="_blank">
+                store
+              </Link>
+              . We have a range of products including t-shirts, mugs, and more.
+            </Typography>
+            <Link href="https://shop.regolith.rocks" target="_blank">
+              <img
+                src="/images/sm/merch.png"
+                alt="Regolith Co. Merchandise"
+                style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}
+              />
+            </Link>
+            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+              3. Spread the word
             </Typography>
             <Typography paragraph>
               Regolith is a community-driven app and we don't do a lot of outreach. If you like the site, tell your
@@ -391,43 +412,27 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
         </Box>
       )}
 
-      {/* GET HELP TAB ============================= */}
-      {finalTab === TabIndex.GetHelp && (
+      {/* Mining Resources Tab ============================= */}
+      {finalTab === TabIndex.MiningResouces && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
-              Report Bugs / Get Help
+              Mining Resources
             </Typography>
-            <Typography paragraph>Join the Discord server for help, support, bugs, feature requests etc.</Typography>
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              divider={<Divider orientation="vertical" flexItem />}
-              spacing={2}
-              sx={{ width: '100%', mb: 3 }}
-            >
-              <Button
-                startIcon={<DiscordIcon />}
-                variant="contained"
-                color="primary"
-                // fullWidth
-                sx={{ fontSize: '1rem', p: 2 }}
-                href="https://discord.gg/6TKSYHNJha"
-                target="_blank"
-              >
-                Join Discord Server
-              </Button>
-              {/* <Button
-                startIcon={<Twitter />}
-                variant="contained"
-                color="info"
-                fullWidth
-                sx={{ fontSize: '1rem', p: 2 }}
-                href="https://twitter.com/RegolithCo"
-                target="_blank"
-              >
-                @RegolithCo
-              </Button> */}
-            </Stack>
+            <Typography paragraph>Here are some resources to help you learn how to mine in the verse.</Typography>
+          </Paper>
+          <Paper elevation={5} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+              The Definitive Mining Tutorial Series
+            </Typography>
+            <Typography paragraph>
+              <Link href="https://redmonstergaming.com/" target="_blank">
+                RedMonsterSC
+              </Link>{' '}
+              goes deep with this mining tutorial series which provides an in-depth guide on how to become an expert at
+              Mining in Star Citizen.
+            </Typography>
+            <YoutubeEmbed embedId="videoseries?si=2FdIyIW5Zs9upHiC&amp;list=PLMd2J1iNJCMdZ1hTEqNKvaCSufAyg5pKK" />
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
             <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
@@ -441,6 +446,16 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               we now have a youtube video explaining the basics of Regolith Co. Check it out!
             </Typography>
             <YoutubeEmbed embedId="ZnjenWj_ZQ8" />
+          </Paper>
+          <Paper elevation={5} sx={styles.innerPaper}>
+            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+              Other Videos Featuring Regolith Co.
+            </Typography>
+            <Typography paragraph>
+              We maintaina playlist of youtube videos that feature Regolith Co. in some way. If you have a video
+              featuring Regolith Co. please let us know and we will add it to the playlist.
+            </Typography>
+            <YoutubeEmbed embedId="videoseries?si=3LIXUP3xO73KPo6o&amp;list=PLLYsQIOsUJ17tXqwNRL39zOSkVS-hWmcT" />
           </Paper>
         </Box>
       )}

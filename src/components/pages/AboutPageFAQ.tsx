@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Box, Button, Link, Paper, SxProps, Theme, Typography, useTheme } from '@mui/material'
+import { Box, Button, Divider, Link, Paper, Stack, SxProps, Theme, Typography, useTheme } from '@mui/material'
 import { DiscordIcon } from '../../icons/Discord'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
@@ -37,6 +37,44 @@ export const AboutPageFAQ: React.FC = () => {
         },
       }}
     >
+      <Paper elevation={5} sx={styles.innerPaper}>
+        <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+          Report Bugs / Get Help
+        </Typography>
+        <Typography paragraph>Join the Discord server for help, support, bugs, feature requests etc.</Typography>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={2}
+          sx={{ width: '100%', mb: 3 }}
+        >
+          <Button
+            startIcon={<DiscordIcon />}
+            variant="contained"
+            color="primary"
+            // fullWidth
+            sx={{ fontSize: '1rem', p: 2 }}
+            href="https://discord.gg/6TKSYHNJha"
+            target="_blank"
+          >
+            Join Discord Server
+          </Button>
+          {/* <Button
+                startIcon={<Twitter />}
+                variant="contained"
+                color="info"
+                fullWidth
+                sx={{ fontSize: '1rem', p: 2 }}
+                href="https://twitter.com/RegolithCo"
+                target="_blank"
+              >
+                @RegolithCo
+              </Button> */}
+        </Stack>
+      </Paper>
+      <Typography variant="h4" gutterBottom>
+        Frequently Asked Questions
+      </Typography>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
           Login isn't working for me!
