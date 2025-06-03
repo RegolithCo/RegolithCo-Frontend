@@ -31,7 +31,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { ContentCopy, Edit, Verified, Visibility, VisibilityOff } from '@mui/icons-material'
+import { ContentCopy, Cookie, Edit, Verified, Visibility, VisibilityOff } from '@mui/icons-material'
 import { RemoveUserModal } from '../../modals/RemoveUserModal'
 import { ChangeUsernameModal } from '../../modals/ChangeUsernameModal'
 import { DeleteProfileModal } from '../../modals/DeleteProfileModal'
@@ -48,6 +48,8 @@ import { ConfirmModal } from '../../modals/ConfirmModal'
 import config from '../../../config'
 import { SurveyCorps } from './SurveyCorps'
 import { wipeLocalLookups } from '../../../lib/utils'
+import { useConsentCookie } from '../../../lib/analytics'
+import { AnalyticsContext } from '../../Analytics'
 
 export const ProfileTabsEnum = {
   PROFILE: 'profile',
@@ -138,6 +140,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const theme = useTheme()
   const styles = profileStylesThunk(theme)
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
+  const { consent, setConsent } = React.useContext(AnalyticsContext)
+
   const [modalOpen, setModalOpen] = React.useState<ProfileModals | null>(null)
   const { hideNames, getSafeName } = React.useContext(AppContext)
   const [newUserProfile, setNewUserProfile] = React.useState<UserProfileInput>({
@@ -326,46 +330,63 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   </ListItem>
                 </List>
               </Box>
+              {consent || 'unset'}
             </Box>
 
             {/* Delete Profile */}
-            <Box
-              sx={{
-                border: '1px solid #666',
-                backgroundColor: '#333',
-                padding: 1,
-                fontSize: '0.8rem',
-                textAlign: 'center',
-                fontFamily: fontFamilies.robotoMono,
-              }}
-            >
-              USERID:{hideNames ? '[[REDACTED]]' : userProfile.userId}
-            </Box>
+            <Box sx={styles.section}>
+              <Typography component="div" sx={styles.sectionTitle}>
+                Account Administration
+              </Typography>
+              <Box
+                sx={{
+                  border: '1px solid #666',
+                  backgroundColor: '#333',
+                  padding: 1,
+                  fontSize: '0.8rem',
+                  textAlign: 'center',
+                  fontFamily: fontFamilies.robotoMono,
+                }}
+              >
+                USERID:{hideNames ? '[[REDACTED]]' : userProfile.userId}
+              </Box>
 
-            <div style={{ flexGrow: 1 }} />
-            <Button
-              fullWidth
-              color="warning"
-              disabled={loading}
-              variant="outlined"
-              onClick={() => {
-                wipeLocalLookups()
-                window.location.reload()
-              }}
-              sx={{ mt: 4 }}
-            >
-              Wipe Lookup Cache
-            </Button>
-            <Button
-              fullWidth
-              color="error"
-              disabled={loading}
-              variant="outlined"
-              onClick={() => setModalOpen(ProfileModals.DeleteProfile)}
-              sx={{ mt: 4 }}
-            >
-              Permanently Delete Profile
-            </Button>
+              <div style={{ flexGrow: 1 }} />
+              <Button
+                fullWidth
+                color="warning"
+                disabled={loading}
+                startIcon={<Cookie />}
+                variant="outlined"
+                onClick={() => setConsent(null)}
+                sx={{ mt: 4 }}
+              >
+                Reset Analytics Cookie Choice (Currently: {consent === 'granted' ? 'Allowed' : 'No Tracking'})
+              </Button>
+              <Button
+                fullWidth
+                color="warning"
+                disabled={loading}
+                variant="outlined"
+                onClick={() => {
+                  wipeLocalLookups()
+                  window.location.reload()
+                }}
+                sx={{ mt: 4 }}
+              >
+                Wipe Lookup Cache
+              </Button>
+              <Button
+                fullWidth
+                color="error"
+                disabled={loading}
+                variant="outlined"
+                onClick={() => setModalOpen(ProfileModals.DeleteProfile)}
+                sx={{ mt: 4 }}
+              >
+                Permanently Delete Profile
+              </Button>
+            </Box>
           </Container>
         )}
 

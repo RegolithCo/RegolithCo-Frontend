@@ -18,6 +18,7 @@ import { OAuth2Provider } from './providers/OAuth2.provider'
 import { UserProfileProvider } from './providers/UserProfile.provider'
 import { LoginChoiceContainer } from './components/modals/LoginChoice'
 import * as Sentry from '@sentry/react'
+import { AnalyticsContextProvider, GDPRDialog } from './components/Analytics'
 
 if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
@@ -68,12 +69,15 @@ root.render(
             <OAuth2Provider>
               <APIProvider>
                 <UserProfileProvider>
-                  <ScreenshareProvider>
-                    <LookupsContextWrapper>
-                      <LoginChoiceContainer />
-                      <App />
-                    </LookupsContextWrapper>
-                  </ScreenshareProvider>
+                  <AnalyticsContextProvider>
+                    <ScreenshareProvider>
+                      <LookupsContextWrapper>
+                        <LoginChoiceContainer />
+                        <App />
+                      </LookupsContextWrapper>
+                    </ScreenshareProvider>
+                    <GDPRDialog />
+                  </AnalyticsContextProvider>
                 </UserProfileProvider>
               </APIProvider>
             </OAuth2Provider>

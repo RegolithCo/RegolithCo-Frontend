@@ -7,6 +7,7 @@ import { UserProfile } from '@regolithco/common'
 export const ProfilePageContainer: React.FC = () => {
   const navigate = useNavigate()
   const userProfileQueries = useUserProfile()
+
   const location = useLocation()
 
   const activeTab = location.pathname

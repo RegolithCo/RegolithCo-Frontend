@@ -30,7 +30,7 @@ const config: Config =
     ? (window as any).CLIENT_CONFIG
     : {
         apiUrl: import.meta.env.VITE_API_URL,
-        stage: import.meta.env.VITE_STAGE,
+        stage: import.meta.env.VITE_STAGE || 'development',
         apiUrlPub: import.meta.env.VITE_API_URL_PUB,
         googleAuth: import.meta.env.VITE_GOOGLE_AUTH,
         shareUrl: import.meta.env.VITE_SHARE_URL,
