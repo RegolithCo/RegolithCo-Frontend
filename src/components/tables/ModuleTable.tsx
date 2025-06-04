@@ -37,6 +37,7 @@ import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LongCellHeader, LongCellHeaderProps, StatsCell, tableStylesThunk } from './tableCommon'
 import { LookupsContext } from '../../context/lookupsContext'
 import { SystemColors } from '../pages/SurveyCorps/types'
+import { useQueryParams, useURLArrayState, useURLState } from '../../hooks/useURLState'
 
 export interface ModuleTableProps {
   onAddToLoadout: (module: MiningModuleEnum | MiningGadgetEnum) => void
@@ -51,7 +52,6 @@ type ColumnGroupEnum = ObjectValues<typeof ColumnGroupEnum>
 export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   const theme = useTheme()
   const styles = tableStylesThunk(theme)
-  const [categoryFilter, setCategoryFilter] = React.useState<string[]>(['A', 'P', 'G'])
   const dataStore = React.useContext(LookupsContext)
 
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
@@ -62,11 +62,43 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
   // Hover state: [colNum, top, height, color]
   const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
 
-  const [selected, setSelected] = React.useState<(MiningGadgetEnum | MiningModuleEnum)[]>([])
-  const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
-  const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
-  const [filterSystem, setFilterSystem] = React.useState<SystemEnum | null>(null)
-  const [showPrices, setShowPrices] = React.useState<boolean>(false)
+  const { resetQueryValues } = useQueryParams()
+  const [categoryFilter, setCategoryFilter] = useURLArrayState<string>('c', ['A', 'P', 'G'], undefined, (qryVal) =>
+    ['A', 'P', 'G'].includes(qryVal as string) ? (qryVal as string) : null
+  )
+
+  const [columnGroups, setColumnGroups] = useURLArrayState<ColumnGroupEnum>(
+    'g',
+    Object.values(ColumnGroupEnum),
+    undefined,
+    (qryVal) =>
+      Object.values(ColumnGroupEnum).includes(qryVal as ColumnGroupEnum) ? (qryVal as ColumnGroupEnum) : null
+  )
+  const [showPrices, setShowPrices] = useURLState<boolean>(
+    'p',
+    false,
+    (v) => (v ? '1' : ''),
+    (v) => v === '1'
+  )
+  const [selected, setSelected] = useURLArrayState<MiningGadgetEnum | MiningModuleEnum>('s', [], undefined, (qryVal) =>
+    [...Object.values(MiningGadgetEnum), ...Object.values(MiningModuleEnum)].includes(
+      qryVal as MiningGadgetEnum | MiningModuleEnum
+    )
+      ? (qryVal as MiningGadgetEnum | MiningModuleEnum)
+      : null
+  )
+
+  const [filterSelected, setFilterSelected] = useURLState<boolean>(
+    'fs',
+    false,
+    (v) => (v ? '1' : ''),
+    (v) => v === '1'
+  )
+
+  const [filterSystem, setFilterSystem] = useURLState<SystemEnum | null>('fsys', null, undefined, (value) => {
+    if (value === 'ALL' || !Object.values(SystemEnum).includes(value as SystemEnum)) return null
+    return (value as SystemEnum) || null
+  })
 
   const [filteredValues, filteredStores] = React.useMemo(() => {
     if (!dataStore.ready) return [[], []]
@@ -278,8 +310,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
         />
         <Button
           onClick={() => {
-            setSelected([])
-            setFilterSelected(false)
+            resetQueryValues(['s', 'fs'])
           }}
           variant="text"
           size="small"
@@ -290,12 +321,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
         </Button>
         <Button
           onClick={() => {
-            setSelected([])
-            setFilterSelected(false)
-            setShowPrices(false)
-            setFilterSystem(null)
-            setCategoryFilter(['A', 'P', 'G'])
-            setColumnGroups([ColumnGroupEnum.Buffs, ColumnGroupEnum.Market])
+            resetQueryValues()
           }}
           color="error"
           variant="text"

@@ -38,6 +38,7 @@ import { fontFamilies } from '../../theme'
 import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { LookupsContext } from '../../context/lookupsContext'
 import { SystemColors } from '../pages/SurveyCorps/types'
+import { useQueryParams, useURLArrayState, useURLState } from '../../hooks/useURLState'
 
 export interface LaserTableProps {
   onAddToLoadout: (module: MiningLaserEnum) => void
@@ -62,12 +63,41 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
   // Hover state: [colNum, top, height, color]
   const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
 
-  const [selected, setSelected] = React.useState<MiningLaserEnum[]>([])
-  const [columnGroups, setColumnGroups] = React.useState<ColumnGroupEnum[]>(Object.values(ColumnGroupEnum))
-  const [filterSystem, setFilterSystem] = React.useState<SystemEnum | null>(null)
-  const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
-  const [showPrices, setShowPrices] = React.useState<boolean>(false)
-  const [shipFilter, setShipFilter] = React.useState<LoadoutShipEnum | null>(null)
+  const { resetQueryValues } = useQueryParams()
+
+  const [shipFilter, setShipFilter] = useURLState<LoadoutShipEnum | null>('shp', null, undefined, (qryVal) => {
+    if (qryVal === 'ALL' || !Object.values(LoadoutShipEnum).includes(qryVal as LoadoutShipEnum)) return null
+    return (qryVal as LoadoutShipEnum) || null
+  })
+  const [columnGroups, setColumnGroups] = useURLArrayState<ColumnGroupEnum>(
+    'g',
+    Object.values(ColumnGroupEnum),
+    undefined,
+    (qryVal) =>
+      Object.values(ColumnGroupEnum).includes(qryVal as ColumnGroupEnum) ? (qryVal as ColumnGroupEnum) : null
+  )
+  const [showPrices, setShowPrices] = useURLState<boolean>(
+    'p',
+    false,
+    (v) => (v ? '1' : ''),
+    (v) => v === '1'
+  )
+
+  const [selected, setSelected] = useURLArrayState<MiningLaserEnum>('s', [], undefined, (qryVal) =>
+    Object.values(MiningLaserEnum).includes(qryVal as MiningLaserEnum) ? (qryVal as MiningLaserEnum) : null
+  )
+
+  const [filterSelected, setFilterSelected] = useURLState<boolean>(
+    'fs',
+    false,
+    (v) => (v ? '1' : ''),
+    (v) => v === '1'
+  )
+
+  const [filterSystem, setFilterSystem] = useURLState<SystemEnum | null>('fsys', null, undefined, (value) => {
+    if (value === 'ALL' || !Object.values(SystemEnum).includes(value as SystemEnum)) return null
+    return (value as SystemEnum) || null
+  })
 
   const dataStore = React.useContext(LookupsContext)
 
@@ -300,8 +330,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         />
         <Button
           onClick={() => {
-            setSelected([])
-            setFilterSelected(false)
+            resetQueryValues(['s', 'fs'])
           }}
           variant="text"
           size="small"
@@ -311,12 +340,7 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
         </Button>
         <Button
           onClick={() => {
-            setSelected([])
-            setFilterSelected(false)
-            setShipFilter(null)
-            setShowPrices(false)
-            setFilterSystem(null)
-            setColumnGroups(Object.values(ColumnGroupEnum))
+            resetQueryValues()
           }}
           color="error"
           variant="text"
