@@ -21,6 +21,7 @@ import { getShipOreName, RefineryMethodEnum, getRefineryMethodName, ShipOreEnum 
 import { RefineryCalcTable } from './RefineryCalcTable'
 import { fontFamilies } from '../../../theme'
 import { Box } from '@mui/system'
+import { useURLState } from '../../../hooks/useURLState'
 
 type ObjectValues<T> = T[keyof T]
 
@@ -43,10 +44,35 @@ export type RefineryMetricEnum = ObjectValues<typeof RefineryMetricEnum>
 
 export const RefineryCalc: React.FC = () => {
   const [oreAmt, setOre] = React.useState<string>('32')
-  const [oreType, setOreType] = React.useState<ShipOreEnum>(ShipOreEnum.Quantanium)
-  const [method, setMethod] = React.useState<RefineryMethodEnum>(RefineryMethodEnum.DinyxSolventation)
-  const [refMetric, setRefMetric] = React.useState<RefineryMetricEnum>(RefineryMetricEnum.netProfit)
-  const [refMode, setRefMode] = React.useState<RefineryPivotEnum>(RefineryPivotEnum.method)
+
+  const [oreType, setOreType] = useURLState<ShipOreEnum>('oreType', ShipOreEnum.Quantanium, undefined, (qryVal) =>
+    Object.values(ShipOreEnum).includes(qryVal as ShipOreEnum) ? (qryVal as ShipOreEnum) : null
+  )
+
+  const [method, setMethod] = useURLState<RefineryMethodEnum>(
+    'method',
+    RefineryMethodEnum.DinyxSolventation,
+    undefined,
+    (qryVal) =>
+      Object.values(RefineryMethodEnum).includes(qryVal as RefineryMethodEnum) ? (qryVal as RefineryMethodEnum) : null
+  )
+
+  const [refMetric, setRefMetric] = useURLState<RefineryMetricEnum>(
+    'metric',
+    RefineryMetricEnum.netProfit,
+    undefined,
+    (qryVal) =>
+      Object.values(RefineryMetricEnum).includes(qryVal as RefineryMetricEnum) ? (qryVal as RefineryMetricEnum) : null
+  )
+
+  const [refMode, setRefMode] = useURLState<RefineryPivotEnum>(
+    'refMode',
+    RefineryPivotEnum.method,
+    undefined,
+    (qryVal) =>
+      Object.values(RefineryPivotEnum).includes(qryVal as RefineryPivotEnum) ? (qryVal as RefineryPivotEnum) : null
+  )
+
   const oreValid = isUndefined(oreAmt) || oreAmt === null || Number(oreAmt) >= 0
   const reset = () => {
     setOre('32')

@@ -98,7 +98,7 @@ export function useURLState<T>(
   const setValue = (newValue: T | ((prev: T) => T)) => {
     const nextValue = typeof newValue === 'function' ? (newValue as (prev: T) => T)(value as T) : newValue
     const serializedValue = serializer(nextValue)
-    if (serializedValue === null || serializedValue === undefined) {
+    if (nextValue === initialValue || serializedValue === null || serializedValue === undefined) {
       setQueryValue(urlKey, null)
     } else {
       setQueryValue(urlKey, serializedValue)
