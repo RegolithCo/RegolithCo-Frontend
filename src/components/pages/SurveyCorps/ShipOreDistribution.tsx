@@ -35,6 +35,7 @@ import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import Gradient from 'javascript-color-gradient'
+import { useQueryParams, useURLArrayState, useURLState } from '../../../hooks/useURLState'
 
 export interface ShipOreDistributionProps {
   // Props here
@@ -57,22 +58,39 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
     STAT_ROCK_MASS: { max: 0, min: 0 },
   })
   // Filters
-  const [selected, setSelected] = React.useState<string[]>([])
+  // const [selected, setSelected] = React.useState<string[]>([])
   // Hover state: [colNum, left, width, color]
   const [hoverCol, setHoverCol] = React.useState<[number, number, number, string] | null>(null)
   // Hover state: [colNum, top, height, color]
   const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
 
-  const [oreTierFilter, setOreTierFilter] = React.useState<OreTierEnum[]>([
+  const { resetQueryValues } = useQueryParams()
+
+  const [selected, setSelected] = useURLArrayState<string>('s', [])
+
+  const [filterSelected, setFilterSelected] = useURLState<boolean>(
+    'fs',
+    false,
+    (v) => (v ? '1' : ''),
+    (v) => v === '1'
+  )
+
+  const [showExtendedStats, setShowExtendedStats] = useURLState<boolean>(
+    'adv',
+    false,
+    (v) => (v ? '1' : ''),
+    (v) => v === '1'
+  )
+
+  const [gravityWellFilter, setGravityWellFilter] = useURLState<string | null>('gw', null)
+  const [rockTypeFilter, setRockTypeFilter] = useURLArrayState<'SURFACE' | 'ASTEROID'>('rt', ['SURFACE', 'ASTEROID'])
+
+  const [oreTierFilter, setOreTierFilter] = useURLArrayState<OreTierEnum>('ot', [
     OreTierEnum.STier,
     OreTierEnum.ATier,
     OreTierEnum.BTier,
     OreTierEnum.CTier,
   ])
-  const [showExtendedStats, setShowExtendedStats] = React.useState<boolean>(false)
-  const [rockTypeFilter, setRockTypeFilter] = React.useState<('SURFACE' | 'ASTEROID')[]>(['SURFACE', 'ASTEROID'])
-  const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
-  const [gravityWellFilter, setGravityWellFilter] = React.useState<string | null>(null)
 
   const dataStore = React.useContext(LookupsContext)
 
@@ -301,7 +319,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
       // Only render this option if the
       return (
         <SurveyTableRow
-          key={row.id}
+          key={`${row.id}-${idr}`}
           gravWell={row}
           handleRowClick={handleRowClick}
           idx={idr}
@@ -721,8 +739,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
           <Button
             onClick={() => {
-              setSelected([])
-              setFilterSelected(false)
+              resetQueryValues(['s', 'fs'])
             }}
             variant="text"
             size="small"
@@ -733,10 +750,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           <Box sx={{ flexGrow: 1 }} />
           <Button
             onClick={() => {
-              setSelected([])
-              setFilterSelected(false)
-              setGravityWellFilter(null)
-              setOreTierFilter([OreTierEnum.STier, OreTierEnum.ATier, OreTierEnum.BTier, OreTierEnum.CTier])
+              resetQueryValues()
             }}
             color="error"
             variant="text"
