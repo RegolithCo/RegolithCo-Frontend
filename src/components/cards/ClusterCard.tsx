@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Card from '@mui/material/Card'
-import { keyframes } from '@mui/system'
-import { Avatar, Box, ThemeProvider, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, ThemeProvider, Tooltip, Typography, keyframes } from '@mui/material'
 import {
   Article,
   Check,

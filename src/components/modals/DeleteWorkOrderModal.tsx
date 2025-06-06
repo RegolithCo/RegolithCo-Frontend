@@ -18,11 +18,11 @@ export const DeleteWorkOrderModal: React.FC<DeleteWorkOrderModalProps> = ({ open
     <DeleteModal
       message={
         <>
-          <Typography paragraph>
+          <Typography component="p" gutterBottom>
             Deleting this work order will remove it from the system. This action cannot be undone.
           </Typography>
           {!isSessionActive && (
-            <Typography color="error" paragraph>
+            <Typography color="error" component="p" gutterBottom>
               <strong>This session has ended!</strong> If you delete this work order you will not be able to re-add it.
             </Typography>
           )}

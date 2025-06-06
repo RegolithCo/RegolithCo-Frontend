@@ -4,10 +4,10 @@ import { Navigate } from 'react-router-dom'
 import { LoginButton } from '../LoginButton'
 import { PageWrapper } from '../PageWrapper'
 import { MaintenancePage } from './MaintenancePage'
-import { PageLoader } from './PageLoader.stories'
 import { ServiceDownPage } from './ServiceDownPage'
 import { AppContext } from '../../context/app.context'
 import { LoginContext, UserProfileContext } from '../../context/auth.context'
+import { PageLoader } from './PageLoader'
 
 export interface AuthGateProps {
   children: React.ReactNode
@@ -36,7 +36,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ allowNoInit, children, fallb
     if (fallback) return fallback as React.ReactElement
     return (
       <PageWrapper title="Please login">
-        <Typography paragraph>The URL you are trying to reach requires that you authenticate</Typography>
+        <Typography component="p" gutterBottom>
+          The URL you are trying to reach requires that you authenticate
+        </Typography>
         <LoginButton />
       </PageWrapper>
     )

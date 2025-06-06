@@ -1,7 +1,16 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from '@mui/material'
 import React from 'react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+  Box,
+} from '@mui/material'
 import { getOreName, getRefineryMethodName, getRefineryName, ShipMiningOrderCapture } from '@regolithco/common'
-import { Box } from '@mui/system'
 import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'

@@ -2,12 +2,11 @@ import * as React from 'react'
 
 import { defaultSessionName, DiscordGuild, getActivityName, SessionShare } from '@regolithco/common'
 import { PageWrapper } from '../PageWrapper'
-import { Alert, AlertTitle, Avatar, Box, Button, Paper, Typography, useTheme } from '@mui/material'
+import { Alert, AlertTitle, Avatar, Box, Button, Paper, Typography, useTheme, Stack } from '@mui/material'
 import { SessionJoinError } from './SessionJoin.container'
 import dayjs from 'dayjs'
 import { fontFamilies } from '../../theme'
 import { ArrowBack, Diversity3 } from '@mui/icons-material'
-import { Stack } from '@mui/system'
 import { GetUserProfileQuery } from '../../schema'
 
 export interface SessionJoinProps {
@@ -63,7 +62,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
 
   return (
     <PageWrapper title="Session Join" loading={loading} maxWidth="md">
-      <Typography variant="body1" component="div" paragraph>
+      <Typography variant="body1" component="div" gutterBottom>
         This is a session that you have been invited to join.
       </Typography>
       <Paper elevation={5} sx={{ p: 3, border: '1px solid white', borderRadius: 3 }}>
@@ -95,7 +94,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
         {joinErrors.includes(SessionJoinError.NotOnList) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>This session is by invite only and you are not on the list</AlertTitle>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               If you are in contact with the session owner ask them to add you to the Inactive user list.
             </Typography>
           </Alert>
@@ -103,7 +102,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
         {joinErrors.includes(SessionJoinError.NeedDiscord) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>Discord Server Membership Required</AlertTitle>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               This session requires you to be logged into Regolith using Discord authentication.
             </Typography>
             {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
@@ -115,7 +114,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
         {joinErrors.includes(SessionJoinError.NotInDiscordServer) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>Not in Discord Server</AlertTitle>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               This session requires you to be a member of a specific Discord server to join.
             </Typography>
             {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
@@ -124,7 +123,7 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
         {joinErrors.includes(SessionJoinError.NotPermittedInDiscordServer) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>Not Permitted in Discord Server</AlertTitle>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               You are a member of the required Discord server but do not have permission to join a voice channel.
             </Typography>
             {sessionShare?.lockToDiscordGuild && <DiscordGuildDisplay guild={sessionShare?.lockToDiscordGuild} />}
@@ -134,13 +133,15 @@ export const SessionJoin: React.FC<SessionJoinProps> = ({
         {joinErrors.includes(SessionJoinError.UnverifiedNotAllowd) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>Only verified users are allowed to join this session</AlertTitle>
-            <Typography paragraph>The user has requested that only verified users join this session</Typography>
+            <Typography component="p" gutterBottom>
+              The user has requested that only verified users join this session
+            </Typography>
           </Alert>
         )}
         {joinErrors.includes(SessionJoinError.Closed) && (
           <Alert severity="error" sx={{ my: 2 }}>
             <AlertTitle>Session Closed</AlertTitle>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               This session has been closed either deliberately or due to inactivity and is no longer accepting new
               users.
             </Typography>

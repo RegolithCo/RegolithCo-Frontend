@@ -33,7 +33,7 @@ export const ServiceDownPage: React.FC = () => {
 
   return (
     <PageWrapper title="Service Down">
-      <Typography variant="body1" component="p" gutterBottom paragraph>
+      <Typography variant="body1" component="p" gutterBottom>
         The Regolith Co. service is currently experiencing a temporary outagse. In most cases reloading the website will
         fix this problem.
       </Typography>

@@ -72,7 +72,7 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
         </FormControl>
 
         <MUIDatePicker
-          slotProps={{ field: { sx: { width: '100%' } } }}
+          sx={{ width: '100%' }}
           minDate={dayjs('2023-03-01')}
           disableFuture
           disabled={preset !== DatePresetsEnum.CUSTOM}
@@ -85,7 +85,7 @@ export const StatsDatePicker: React.FC<StatsDatePickerProps> = ({
         <MUIDatePicker
           minDate={dayjs('2023-03-01')}
           disableFuture
-          slotProps={{ field: { sx: { width: '100%' } } }}
+          sx={{ width: '100%' }}
           disabled={preset !== DatePresetsEnum.CUSTOM}
           label="To Date"
           value={toDate}

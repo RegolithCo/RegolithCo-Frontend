@@ -12,11 +12,11 @@ import {
   ToggleButtonGroup,
   Typography,
   useTheme,
+  Box,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
 import { User, SessionUserStateEnum, SessionUser, SessionStateEnum, ShipLookups } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
-import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { Cancel, Delete, Logout } from '@mui/icons-material'

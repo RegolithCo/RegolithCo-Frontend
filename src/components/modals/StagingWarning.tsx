@@ -44,7 +44,7 @@ export const StagingWarning: React.FC = () => {
         THIS IS A TEST SERVER!!!
       </DialogTitle>
       <DialogContent>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           You are currently looking at a <strong style={{ color: theme.palette.error.light }}>TEST</strong> server for
           <strong style={{ color: theme.palette.error.light }}>TESTING</strong> Regolith. Please be aware that any{' '}
           <strong style={{ color: theme.palette.error.light }}>TEST</strong>
@@ -52,11 +52,13 @@ export const StagingWarning: React.FC = () => {
           will) be lost at any time because of all the{' '}
           <strong style={{ color: theme.palette.error.light }}>TESTING</strong>
         </Typography>
-        <Typography paragraph variant="caption">
+        <Typography gutterBottom variant="caption">
           ...also the <Cake sx={{ fontSize: '1em' }} /> is a lie.
         </Typography>
-        <Typography paragraph>If you are looking for the live version of Regolith please visit: </Typography>
-        <Typography paragraph variant="h6" align="center">
+        <Typography component="p" gutterBottom>
+          If you are looking for the live version of Regolith please visit:{' '}
+        </Typography>
+        <Typography gutterBottom variant="h6" align="center">
           <Link href="https://regolith.rocks">https://regolith.rocks</Link>
         </Typography>
       </DialogContent>

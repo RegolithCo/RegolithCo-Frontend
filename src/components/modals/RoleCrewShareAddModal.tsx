@@ -20,8 +20,8 @@ import {
   TextField,
   Typography,
   useTheme,
+  Stack,
 } from '@mui/material'
-import { Stack } from '@mui/system'
 import { Cancel, GroupAdd, Percent, PieChart, QuestionMark, Toll } from '@mui/icons-material'
 import { SessionRoleEnum, ShareTypeEnum, ShipRoleEnum, UserSuggest } from '@regolithco/common'
 import {

@@ -1,12 +1,11 @@
 import * as React from 'react'
-import { useTheme, Typography, Box, FormControlLabel, Switch } from '@mui/material'
+import { useTheme, Typography, Box, FormControlLabel, Switch, Stack } from '@mui/material'
 import { ObjectValues, ScoutingFind, ScoutingFindTypeEnum, Session, WorkOrder } from '@regolithco/common'
-import { Datum, Serie } from '@nivo/line'
+import { ComputedDatum, LineSeries } from '@nivo/line'
 import { fontFamilies } from '../../../theme'
 import { StatsLineChart } from './StatsLineChart'
 import { WorkOrderSummaryLookup } from '../../pages/Dashboard/Dashboard.container'
 import dayjs, { Dayjs } from 'dayjs'
-import { Stack } from '@mui/system'
 
 const MAX_VALUES = 80
 
@@ -60,7 +59,7 @@ export const MyDashboardStatsChart: React.FC<MyDashboardStatsChartProps> = ({
             d.y = 0
             return
           }
-          d.y = (d.val || 0) / max
+          d.y = (typeof d.y === 'number' ? d.y : 0) / max
         })
       })
     }
@@ -72,7 +71,7 @@ export const MyDashboardStatsChart: React.FC<MyDashboardStatsChartProps> = ({
             d.y = 0
             return
           }
-          d.y = (d.val || 0) / max
+          d.y = (typeof d.y === 'number' ? d.y : 0) / max
         })
       })
     }
@@ -174,7 +173,7 @@ export function formatChartData(
   fromDate: Dayjs,
   toDate: Dayjs,
   chartResolution: ChartResolutionsEnum
-): { activityData: Serie[]; financeData: Serie[] } {
+): { activityData: LineSeries[]; financeData: LineSeries[] } {
   // Make the apporpriate buckets as an ordered dictionary
   const buckets: string[] = []
   const emptyActivityObject = Object.keys(ACTIVITY_LINES).reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {})
@@ -247,14 +246,14 @@ export function formatChartData(
     })
 
   // Now flatten everything down to a simple aray of dates and values
-  const activityDict: Record<string, Serie> = Object.keys(ACTIVITY_LINES).reduce(
+  const activityDict: Record<string, LineSeries> = Object.keys(ACTIVITY_LINES).reduce(
     (acc, cur) => ({
       ...acc,
       [cur]: { id: ACTIVITY_LINES[cur].label, color: ACTIVITY_LINES[cur].color, data: [] },
     }),
     {}
   )
-  const financeDict: Record<string, Serie> = Object.keys(FINANCE_LINES).reduce(
+  const financeDict: Record<string, LineSeries> = Object.keys(FINANCE_LINES).reduce(
     (acc, cur) => ({ ...acc, [cur]: { id: FINANCE_LINES[cur].label, color: FINANCE_LINES[cur].color, data: [] } }),
     {}
   )
@@ -271,8 +270,7 @@ export function formatChartData(
             x: new Date(date + 'T00:00:00'),
             // random value between 10 and 16
             y: value,
-            val: value,
-          } as Datum,
+          },
         ],
       }
     })
@@ -287,8 +285,7 @@ export function formatChartData(
             x: new Date(date + 'T00:00:00'),
             // random value between 10 and 16
             y: value,
-            val: value,
-          } as Datum,
+          },
         ],
       }
     })

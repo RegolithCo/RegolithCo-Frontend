@@ -9,7 +9,7 @@ type UseCountDownReturn = {
 
 export const useCountdown = (startTime?: number, totalTimeMs?: number, paused?: boolean): UseCountDownReturn => {
   const [remainingTime, setRemainingTime] = React.useState<number>(0)
-  const timerRef = React.useRef<NodeJS.Timeout>()
+  const timerRef = React.useRef<NodeJS.Timeout>({} as NodeJS.Timeout)
 
   // Means thisis a refinery process
   const hasTime = typeof totalTimeMs !== 'undefined' && totalTimeMs > 0

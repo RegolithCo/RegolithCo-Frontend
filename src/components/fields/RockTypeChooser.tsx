@@ -41,7 +41,7 @@ export const RockTypeChooser: React.FC<RockTypeChooserProps> = ({ onChange, valu
         },
       }}
       onChange={(event) => {
-        const newVal = event.target.value
+        const newVal = event.target.value as RockType | ''
         if (newVal === '') return onChange(null)
         onChange(newVal as RockType)
       }}

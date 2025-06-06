@@ -11,6 +11,7 @@ import {
   CardContent,
   CardHeader,
   Container,
+  Grid,
   Stack,
   Table,
   TableBody,
@@ -42,7 +43,6 @@ import {
   SystemEnum,
 } from '@regolithco/common'
 import { PeopleAlt, Podcasts, Refresh } from '@mui/icons-material'
-import Grid2 from '@mui/material/Unstable_Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { RockIcon } from '../../../icons'
 import { useShipOreColors } from '../../../hooks/useShipOreColors'
@@ -247,13 +247,13 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
               {showStanton && (
                 <>
                   <SystemLabel system={SystemEnum.Stanton} />
-                  <Grid2 width={'100%'} container spacing={4}>
+                  <Grid width={'100%'} container spacing={4}>
                     {Object.values(AsteroidTypeEnum).map((type, idx) => {
                       const multiplier = possibilities.asteroid[type] || 0
                       if (signalFilter && signalFilter > 0 && !multiplier) return null
                       counts[0]++
                       return (
-                        <Grid2 key={idx} width={'400px'}>
+                        <Grid key={idx} width={'400px'}>
                           <ClassCard
                             className={type}
                             data={tableData[SystemEnum.Stanton][type]}
@@ -263,23 +263,23 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                             setOreTierFilter={setOreTierFilter}
                             multiplier={multiplier}
                           />
-                        </Grid2>
+                        </Grid>
                       )
                     })}
                     {counts[0] === 0 && <NoRocksMatch />}
-                  </Grid2>
+                  </Grid>
                 </>
               )}
               {showPyro && (
                 <>
                   <SystemLabel system={SystemEnum.Pyro} />
-                  <Grid2 width={'100%'} container spacing={4}>
+                  <Grid width={'100%'} container spacing={4}>
                     {Object.values(AsteroidTypeEnum).map((type, idx) => {
                       const multiplier = possibilities.asteroid[type] || 0
                       if (signalFilter && signalFilter > 0 && !multiplier) return null
                       counts[1]++
                       return (
-                        <Grid2 key={idx} width={'400px'}>
+                        <Grid key={idx} width={'400px'}>
                           <ClassCard
                             className={type}
                             data={tableData[SystemEnum.Pyro][type]}
@@ -289,11 +289,11 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                             setOreTierFilter={setOreTierFilter}
                             multiplier={multiplier}
                           />
-                        </Grid2>
+                        </Grid>
                       )
                     })}
                     {counts[1] === 0 && <NoRocksMatch />}
-                  </Grid2>
+                  </Grid>
                 </>
               )}
             </>
@@ -323,13 +323,13 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
               {showStanton && (
                 <>
                   <SystemLabel system={SystemEnum.Stanton} />
-                  <Grid2 width={'100%'} container spacing={4}>
+                  <Grid width={'100%'} container spacing={4}>
                     {Object.values(DepositTypeEnum).map((type, idx) => {
                       const multiplier = possibilities.deposit[type] || 0
                       if (signalFilter && signalFilter > 0 && !multiplier) return null
                       counts[2]++
                       return (
-                        <Grid2 key={idx} width={'400px'}>
+                        <Grid key={idx} width={'400px'}>
                           <ClassCard
                             className={type}
                             data={tableData[SystemEnum.Stanton][type]}
@@ -339,24 +339,24 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                             setOreTierFilter={setOreTierFilter}
                             multiplier={multiplier}
                           />
-                        </Grid2>
+                        </Grid>
                       )
                     })}
                     {counts[2] === 0 && <NoRocksMatch />}
-                  </Grid2>
+                  </Grid>
                 </>
               )}
               {showPyro && (
                 <>
                   <SystemLabel system={SystemEnum.Pyro} />
 
-                  <Grid2 width={'100%'} container spacing={4}>
+                  <Grid width={'100%'} container spacing={4}>
                     {Object.values(DepositTypeEnum).map((type, idx) => {
                       const multiplier = possibilities.deposit[type] || 0
                       if (signalFilter && signalFilter > 0 && !multiplier) return null
                       counts[3]++
                       return (
-                        <Grid2 key={idx} width={'400px'}>
+                        <Grid key={idx} width={'400px'}>
                           <ClassCard
                             className={type}
                             data={tableData[SystemEnum.Pyro][type]}
@@ -366,11 +366,11 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                             setOreTierFilter={setOreTierFilter}
                             multiplier={multiplier}
                           />
-                        </Grid2>
+                        </Grid>
                       )
                     })}
                     {counts[3] === 0 && <NoRocksMatch />}
-                  </Grid2>
+                  </Grid>
                 </>
               )}
             </>
@@ -379,7 +379,7 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
       )}
       <Alert severity="info" sx={{ borderRadius: 0, mt: 4 }}>
         <AlertTitle>Glossary</AlertTitle>
-        <Typography variant="body2" paragraph component="div">
+        <Typography variant="body2" component="div" gutterBottom>
           <ul>
             <li>
               <strong>Prob:</strong> The probability of finding this ore in a given rock of this type
@@ -756,7 +756,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
 
 const NoRocksMatch: React.FC = () => {
   return (
-    <Grid2 width={'100%'}>
+    <Grid width={'100%'}>
       <Typography
         variant="subtitle1"
         component="div"
@@ -764,6 +764,6 @@ const NoRocksMatch: React.FC = () => {
       >
         No rock types match the filters above
       </Typography>
-    </Grid2>
+    </Grid>
   )
 }

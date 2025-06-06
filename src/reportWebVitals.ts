@@ -1,10 +1,10 @@
 const reportWebVitals = () => {
-  import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB }) => {
+  import('web-vitals').then(({ onCLS, onFCP, onLCP, onTTFB, onINP }) => {
     onCLS(console.log)
-    onFID(console.log)
     onFCP(console.log)
     onLCP(console.log)
     onTTFB(console.log)
+    onINP(console.log)
   })
 }
 

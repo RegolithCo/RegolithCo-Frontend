@@ -1,7 +1,6 @@
 import * as React from 'react'
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
-import { Stack } from '@mui/system'
+import { Stack, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
 import { Cancel, Delete } from '@mui/icons-material'
 
 export interface DeleteModalProps {

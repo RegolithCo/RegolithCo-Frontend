@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme, Stack } from '@mui/material'
 import { fontFamilies } from '../../theme'
-import { Stack } from '@mui/system'
 import { MiningLoadout } from '@regolithco/common'
 import { ImageDownloadComponent } from '../sharing/ImageDownloadComponent'
 import { LoadoutCalc } from '../../components/calculators/LoadoutCalc/LoadoutCalc'

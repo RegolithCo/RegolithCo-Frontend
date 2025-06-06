@@ -1,7 +1,6 @@
 import React from 'react'
-import { Stack } from '@mui/material'
+import { Stack, Box, Theme, useTheme } from '@mui/material'
 import { getSessionUserStateName, ScoutingFind, SessionUserStateEnum } from '@regolithco/common'
-import { Box, Theme, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { makeSessionUrls } from '../../../../lib/routingUrls'
 import { fontFamilies } from '../../../../theme'

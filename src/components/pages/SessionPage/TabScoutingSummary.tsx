@@ -21,9 +21,9 @@ import {
   Tooltip,
   Typography,
   useTheme,
+  Stack,
 } from '@mui/material'
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
-import { Stack } from '@mui/system'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { UserAvatar } from '../../UserAvatar'
 import { AppContext } from '../../../context/app.context'

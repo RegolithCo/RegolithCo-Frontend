@@ -10,6 +10,7 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
+  Stack,
   useTheme,
 } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
@@ -22,7 +23,6 @@ import { ModuleIcon } from '../../icons/Module'
 import { MiningLoadout, UserProfile } from '@regolithco/common'
 import log from 'loglevel'
 import { MyLoadouts } from './MyLoadouts'
-import { Stack } from '@mui/system'
 
 export interface LoadoutPageProps {
   tab: string

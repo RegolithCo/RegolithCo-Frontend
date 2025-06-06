@@ -3,10 +3,10 @@ import { StoryFn, Meta } from '@storybook/react'
 
 import { SessionUserList as SessionUserListComponent, SessionUserListProps } from './SessionUserList'
 import { fakeSession, fakeUserProfile } from '@regolithco/common/dist/__mocks__'
-import { Box } from '@mui/system'
 import { SessionContext, sessionContextDefault, SessionContextType } from '../../../context/session.context'
 import { Session } from '@regolithco/common'
 import { useStorybookLookups } from '../../../hooks/useLookupStorybook'
+import { Box } from '@mui/material'
 
 export default {
   title: 'UserList/UserList',

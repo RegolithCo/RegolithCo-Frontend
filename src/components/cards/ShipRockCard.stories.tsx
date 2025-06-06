@@ -4,8 +4,7 @@ import { StoryFn, Meta } from '@storybook/react'
 import { ClusterCard } from './ClusterCard'
 import { SalvageFind, ScoutingFindStateEnum, ShipClusterFind, VehicleClusterFind } from '@regolithco/common'
 import { fakeSalvageFind, fakeShipClusterFind, fakeVehicleClusterFind } from '@regolithco/common/dist/__mocks__'
-import { Box } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { Box, Grid } from '@mui/material'
 
 interface AllThreeProps {
   shipClusterFind: ShipClusterFind

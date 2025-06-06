@@ -27,13 +27,12 @@ import { useScoutingFind } from '../../../hooks/useScouting'
 import { DialogEnum, SessionContext, SessionTabs } from '../../../context/session.context'
 import { ScoutingFindContext } from '../../../context/scoutingFind.context'
 import { ScoutingFindModal } from '../../modals/ScoutingFindModal'
-import { ThemeProvider } from '@mui/system'
 import { WorkOrderContext } from '../../../context/workOrder.context'
 import { LoadoutCalc } from '../../calculators/LoadoutCalc/LoadoutCalc'
 import { WorkOrderModal } from '../../modals/WorkOrderModal'
 import { workOrderStateThemes } from '../../../theme'
 import { DeleteModal } from '../../modals/DeleteModal'
-import { DialogContentText, Typography } from '@mui/material'
+import { DialogContentText, ThemeProvider, Typography } from '@mui/material'
 import { CollaborateModal } from '../../modals/CollaborateModal'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import { newEmptyScoutingFind, newWorkOrderMaker } from '../../../lib/newObjectFactories'
@@ -567,11 +566,13 @@ export const SessionPageContainer: React.FC = () => {
           cancelBtnText="Cancel"
           message={
             <DialogContentText id="alert-dialog-description" component={'div'}>
-              <Typography paragraph>
+              <Typography component="p" gutterBottom>
                 Closing a session will lock it and prevent new items or users from being added. Items can still be
                 edited and deleted though and Crew shares can still be marked paid.
               </Typography>
-              <Typography paragraph>You can always re-open it.</Typography>
+              <Typography component="p" gutterBottom>
+                You can always re-open it.
+              </Typography>
             </DialogContentText>
           }
           open={activeModal === DialogEnum.CLOSE_SESSION}
@@ -609,7 +610,7 @@ export const SessionPageContainer: React.FC = () => {
           title="Leave the session? Are you sure?"
           message={
             <>
-              <Typography paragraph>
+              <Typography component="p" gutterBottom>
                 In general <strong>DO NOT LEAVE SESSIONS</strong> unless you don't want to participate anymore.
               </Typography>
               <Typography paragraph color="error">

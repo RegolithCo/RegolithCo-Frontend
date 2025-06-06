@@ -6,6 +6,7 @@ import {
   Typography,
   TextField,
   Box,
+  Stack,
   Chip,
   useTheme,
   IconButton,
@@ -45,7 +46,6 @@ import { StoreChooserModal } from '../../../modals/StoreChooserModal'
 import { StoreChooserListItem } from '../../../fields/StoreChooserListItem'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
 import { ExpenseTable } from '../../../fields/ExpenseTable'
-import { Stack } from '@mui/system'
 import { CompositeAddModal } from '../../../modals/CompositeAddModal'
 import { ConfirmModal } from '../../../modals/ConfirmModal'
 import { LookupsContext } from '../../../../context/lookupsContext'
@@ -94,7 +94,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const [myStoreChoice, setMyStoreChoice] = useState<StoreChoice>()
   const [finalSummary, setFinalSummary] = useState<WorkOrderSummary>(summary)
   const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
-  const useScrollerRef = React.useRef<HTMLDivElement>(null)
+  const useScrollerRef = React.useRef<HTMLDivElement>({} as HTMLDivElement)
   const shipOrder = workOrder as ShipMiningOrder
 
   const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + amount, 0)
@@ -386,11 +386,11 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                     <Tooltip
                       title={
                         <Box sx={{ px: 0.5 }}>
-                          <Typography paragraph>
+                          <Typography component="p" gutterBottom>
                             This price comes from the store estimate above: {myStoreChoice.name_short} =
                             {MValueFormatter(myStoreChoice.price, MValueFormat.currency)}
                           </Typography>
-                          <Typography paragraph>
+                          <Typography component="p" gutterBottom>
                             You can either keep this estimate or change it to the actual sell price when you make your
                             delivery run.
                           </Typography>

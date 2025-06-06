@@ -1,5 +1,4 @@
-import { Box, useMediaQuery, useTheme } from '@mui/material'
-import { SxProps, Theme } from '@mui/system'
+import { Box, useMediaQuery, useTheme, SxProps, Theme } from '@mui/material'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 import { Copyright } from './Copyright'

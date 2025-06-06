@@ -1,5 +1,4 @@
-import { Theme } from '@mui/material'
-import { lighten } from '@mui/system'
+import { Theme, lighten } from '@mui/material'
 import { ObjectValues, ShipOreEnum, SystemEnum } from '@regolithco/common'
 
 export const OreTierEnum = {

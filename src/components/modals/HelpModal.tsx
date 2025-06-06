@@ -1,7 +1,6 @@
 import React, { PropsWithChildren } from 'react'
-import { useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogProps } from '@mui/material'
+import { useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogProps, Stack } from '@mui/material'
 import { Help } from '@mui/icons-material'
-import { Stack } from '@mui/system'
 
 export type HelpModalProps = PropsWithChildren & {
   title: string | React.ReactNode

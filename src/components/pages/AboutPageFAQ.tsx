@@ -38,10 +38,12 @@ export const AboutPageFAQ: React.FC = () => {
       }}
     >
       <Paper elevation={5} sx={styles.innerPaper}>
-        <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+        <Typography variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
           Report Bugs / Get Help
         </Typography>
-        <Typography paragraph>Join the Discord server for help, support, bugs, feature requests etc.</Typography>
+        <Typography component="p" gutterBottom>
+          Join the Discord server for help, support, bugs, feature requests etc.
+        </Typography>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           divider={<Divider orientation="vertical" flexItem />}
@@ -140,7 +142,7 @@ export const AboutPageFAQ: React.FC = () => {
             Discord Server
           </Button>
         </Box>
-        {/* <Typography gutterBottom paragraph>
+        {/* <Typography gutterBottom component="p" gutterBottom>
           If you're not a discord user, you can also{' '}
           <Link href="https://twitter.com/RegolithCo" target="_blank">
             hit us up on twitter
@@ -167,7 +169,9 @@ export const AboutPageFAQ: React.FC = () => {
             </li>
           </ul>
         </Typography>
-        <Typography paragraph>(BTW, if you're reading this CIG then we'd love to hear from you!)</Typography>
+        <Typography component="p" gutterBottom>
+          (BTW, if you're reading this CIG then we'd love to hear from you!)
+        </Typography>
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
@@ -178,7 +182,9 @@ export const AboutPageFAQ: React.FC = () => {
           CIG and third-party developers though so we might lag the official patches a bit while we try to get our data
           and equations working with the new meta.
         </Typography>
-        <Typography paragraph>(BTW, if you're reading this CIG then we'd love to hear from you!)</Typography>
+        <Typography component="p" gutterBottom>
+          (BTW, if you're reading this CIG then we'd love to hear from you!)
+        </Typography>
       </Paper>
       <Paper elevation={5} sx={styles.innerPaper}>
         <Typography variant="h5" gutterBottom>
@@ -209,7 +215,7 @@ export const AboutPageFAQ: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           "Will this tool always be free?"
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           First off, this is not about profit other than getting miners paid in aUEC. It is a passion project that I
           created for myself, my friends and my Org (
           <Link href="https://robertsspaceindustries.com/orgs/UEMC" target="_blank">
@@ -222,7 +228,7 @@ export const AboutPageFAQ: React.FC = () => {
           </strong>{' '}
           Sort of a nice problem to have, but I'll cross that bridge when/if we get there.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Feel free to use the site as much as you'd like totally free. If you'd like to contribute towards server costs
           or buy me a coffee on{' '}
           <Link href="https://ko-fi.com/regolithco" target="_blank">
@@ -239,11 +245,11 @@ export const AboutPageFAQ: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           "Will there be data wipes?"
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           <strong>Yes!</strong> Star Citizen wipes their database when they patch and so will Regolith Co. If that's a
           problem for you then be sure to regularly download your sessions to either a CSV or JSON files.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Why do we do this? It's just easier than migrating all the numbers in the database to their new values. Or
           trying to support multiple versions of Star Citizen's mercurial alpha nature.
         </Typography>
@@ -252,22 +258,22 @@ export const AboutPageFAQ: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           "What about privacy / security?"
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           We don't collect any identifying data beyond your Star Citizen username (optional) and your discord or google
           id to enable login. Any other information in the site is only what you choose to add.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           <strong>The passwords</strong> you used (Google or Discord) to log in are not stored in any way by Regolith.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           <strong>The data</strong> you enter into this tool will be used to calculate stats and interesting metrics but
           we will never single-out or expose individual data about any user without their express consent.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Currently we don't use Google analytics or any other tracking tools but that might change at some point to
           help track and estimate my server needs.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           If you have concerns about putting sensitive information in here then please{' '}
           <strong>
             <em>just don't</em>

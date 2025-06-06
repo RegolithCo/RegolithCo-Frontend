@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, SxProps, Theme, Box, Button } from '@mui/material'
+import { Typography, SxProps, Theme, Box, Button, Grid } from '@mui/material'
 import {
   ScoutingFind,
   ShipClusterFind,
@@ -11,7 +11,6 @@ import {
 } from '@regolithco/common'
 import { RockIcon } from '../../../icons'
 import { AddCircle } from '@mui/icons-material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipRockCard } from '../../cards/ShipRockCard'
 import { scoutingFindStateThemes } from '../../../theme'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
@@ -86,7 +85,7 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
     clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
 
   return (
-    <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
+    <Grid container paddingX={2} size={{ xs: 12 }} sx={styles.bottomRowGrid}>
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex' }}>
           <Typography variant="overline" component="div">
@@ -128,7 +127,7 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
             newOres.sort((a, b) => (b.percent || 0) - (a.percent || 0))
             const newRock = { ...rock, ores: newOres }
             return (
-              <Grid key={idx} xs={6} sm={4} md={3}>
+              <Grid key={idx} size={{ xs: 6, sm: 4, md: 3 }}>
                 <ShipRockCard
                   rock={newRock}
                   rockValue={summary.byRock && summary.byRock.length > idx ? summary.byRock[idx].value : undefined}
@@ -152,7 +151,7 @@ export const ScoutingFindRocks: React.FC<ScoutingFindRocksProps> = ({
             )
           })}
           {placeholderItems.map((_, idx) => (
-            <Grid key={idx} xs={6} sm={4} md={3}>
+            <Grid key={idx} size={{ xs: 6, sm: 4, md: 3 }}>
               <EmptyScanCard
                 Icon={RockIcon}
                 deleteDisabled={!shipFind.clusterCount || shipFind.clusterCount <= 1}

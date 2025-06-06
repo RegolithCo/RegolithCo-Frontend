@@ -1,10 +1,4 @@
-import {
-  Box,
-  Typography,
-
-  // useTheme
-} from '@mui/material'
-import { SxProps, Theme } from '@mui/system'
+import { Box, Typography, SxProps, Theme } from '@mui/material'
 import React from 'react'
 
 const styles: Record<string, SxProps<Theme>> = {
@@ -20,7 +14,7 @@ const styles: Record<string, SxProps<Theme>> = {
   },
 }
 
-export const ShareWrapper = ({ children }: { children: React.ReactNode }): JSX.Element => {
+export const ShareWrapper = ({ children }: { children: React.ReactNode }): React.JSX.Element => {
   // const theme = useTheme()
   return (
     <Box

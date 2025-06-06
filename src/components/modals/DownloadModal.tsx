@@ -47,7 +47,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
             Download Session
           </Typography>
         </Stack>
-        <Typography id="modal-modal-title" variant="body1" component="div" paragraph>
+        <Typography id="modal-modal-title" variant="body1" component="div" gutterBottom>
           Download the session data as a JSON file.
         </Typography>
         <Typography variant="overline" component="div">
@@ -134,7 +134,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
           </Button>
         )}
 
-        <Typography variant="caption" component="div" paragraph>
+        <Typography variant="caption" component="div" gutterBottom>
           Regolith is now <MUIRouterLink localUrl="/profile/api">API enabled</MUIRouterLink>. If you'd rather fetch data
           programmatically, you can use the API to get the data you need.
         </Typography>

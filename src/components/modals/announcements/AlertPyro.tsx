@@ -49,8 +49,10 @@ export const AlertPyro: React.FC<Alert319Props> = ({ open, onClose }) => {
         3.21, 3.21.1, 3.22 and the road to Pyro
       </DialogTitle>
       <DialogContent>
-        <Typography paragraph>CitizenCon 2023 was very exciting for many reasons:</Typography>
-        <Typography paragraph component="div" variant="caption">
+        <Typography component="p" gutterBottom>
+          CitizenCon 2023 was very exciting for many reasons:
+        </Typography>
+        <Typography component="div" gutterBottom variant="caption">
           <ul>
             <li>Pyro!</li>
             <li>New ships</li>
@@ -58,7 +60,7 @@ export const AlertPyro: React.FC<Alert319Props> = ({ open, onClose }) => {
             <li>Server meshing</li>
           </ul>
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Now that Squadron 42 is feature complete it is widely thought that a lot of that effort will be focused back
           on the persistent universe. <strong>THIS IS A GOOD THING</strong> ... but it does mean that we're going to see
           a lot of changes while Pyro, server meshing and a bunch of SQ42 features make their way into the PU. over.
@@ -66,18 +68,18 @@ export const AlertPyro: React.FC<Alert319Props> = ({ open, onClose }) => {
         <Typography paragraph fontWeight={'bold'}>
           What does this mean for Regolith?
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Probably good things in the long term but a lot of work and potential change in the short term. We're going to
           need to find new ways to adapt to changing conditions and parameters.{' '}
         </Typography>
-        <Typography paragraph component="div">
+        <Typography component="div" gutterBottom>
           We'll do our best to keep everyone updated but for now our focus needs to be two-fold:
           <ol>
             <li>Keeping the current version of Regolith useful to the most number of people from now until 4.0</li>
             <li>Preparing a new branch (Regolithocati?) to try to keep up with the new changes.</li>
           </ol>
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Also it's probably a good bet that 4.0 will be a complete PU reset so if that happens Regolith will also
           likely do a complete wipe of server data so we don't have to support legacy code.
         </Typography>

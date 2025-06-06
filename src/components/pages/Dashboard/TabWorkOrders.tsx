@@ -26,8 +26,11 @@ import {
   Tooltip,
   Typography,
   useTheme,
+  Grid,
+  alpha,
+  Box,
+  Stack,
 } from '@mui/material'
-import { alpha, Box, Stack } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 import { WorkOrderTable } from '../SessionPage/WorkOrderTable'
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
@@ -36,7 +39,6 @@ import { Done, DoneAll, OpenInNew } from '@mui/icons-material'
 import { DashboardProps } from './Dashboard'
 import { AppContext } from '../../../context/app.context'
 import { useShipOreColors } from '../../../hooks/useShipOreColors'
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { RefineryIcon } from '../../fields/RefineryIcon'
 import dayjs from 'dayjs'
 import { WorkOrderTableColsEnum } from '../SessionPage/WorkOrderTableRow'
@@ -347,7 +349,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                     {MValueFormatter(lookupVal?.yieldSCU || 0, MValueFormat.volSCU, 0)}
                                   </Typography>
                                 </Tooltip>
-                                <Grid2 sx={{ flex: '0 1 60%' }} container spacing={1}>
+                                <Grid sx={{ flex: '0 1 60%' }} container spacing={1}>
                                   {totalSCU === 0 && (
                                     <Typography variant="caption" color="error">
                                       No Ore Listed
@@ -360,7 +362,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                     const label = `${getShipOreAbbrev(ore.ore, 4)}: ${Math.ceil(finalAmt / 100)} SCU`
                                     const labelLong = `${getShipOreName(ore.ore)}: ${Math.ceil(finalAmt / 100)} SCU`
                                     return (
-                                      <Grid2 key={ore.ore}>
+                                      <Grid key={ore.ore}>
                                         <Tooltip title={labelLong} placement="top">
                                           <Chip
                                             label={label}
@@ -379,10 +381,10 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                             }}
                                           />
                                         </Tooltip>
-                                      </Grid2>
+                                      </Grid>
                                     )
                                   })}
-                                </Grid2>
+                                </Grid>
                                 <Box sx={{ flexGrow: 1 }} />
                                 {isProcessing ? (
                                   <Stack alignItems={'center'}>

@@ -72,7 +72,7 @@ export const RefineryMethodControl: React.FC<RefineryMethodProps> = ({
       label="Method"
       fullWidth
       onChange={(event) => {
-        if (event.target.value === '') return onChange()
+        if ((event.target.value as RefineryMethodEnum | '') === '') return onChange()
         onChange(event.target.value as RefineryMethodEnum)
       }}
     >

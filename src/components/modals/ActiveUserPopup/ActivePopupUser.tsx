@@ -10,11 +10,11 @@ import {
   Stack,
   Typography,
   useTheme,
+  Box,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
 import { MiningLoadout, PendingUser, PendingUserInput, SessionUser, ShipLookups, User } from '@regolithco/common'
 import { UserAvatar } from '../../UserAvatar'
-import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { SessionContext } from '../../../context/session.context'

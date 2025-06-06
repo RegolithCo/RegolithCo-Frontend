@@ -13,14 +13,14 @@ import {
   Typography,
   InputAdornment,
   Alert,
+  Box,
+  Grid,
 } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2'
-// import log from 'loglevel'
 import { isUndefined } from 'lodash'
 import { getShipOreName, RefineryMethodEnum, getRefineryMethodName, ShipOreEnum } from '@regolithco/common'
 import { RefineryCalcTable } from './RefineryCalcTable'
 import { fontFamilies } from '../../../theme'
-import { Box } from '@mui/system'
+
 import { useURLState } from '../../../hooks/useURLState'
 
 type ObjectValues<T> = T[keyof T]
@@ -92,7 +92,7 @@ export const RefineryCalc: React.FC = () => {
     <Box>
       <Grid container spacing={2} margin={1}>
         {/* ROW 1 */}
-        <Grid xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           {refMode === RefineryPivotEnum.method ? (
             <FormControl fullWidth>
               <InputLabel id="vaxis-labelinput">Ore Type</InputLabel>
@@ -146,7 +146,7 @@ export const RefineryCalc: React.FC = () => {
           )}
         </Grid>
 
-        <Grid xs={9} sm={4}>
+        <Grid size={{ xs: 9, sm: 4 }}>
           <TextField
             id="scu-basic"
             label="Volume"
@@ -174,7 +174,7 @@ export const RefineryCalc: React.FC = () => {
             helperText={!oreValid ? 'Must be a positive number' : ''}
           />
         </Grid>
-        <Grid xs={3} sm={2}>
+        <Grid size={{ xs: 3, sm: 2 }}>
           <Button variant="contained" onClick={reset}>
             RESET
           </Button>
@@ -182,7 +182,7 @@ export const RefineryCalc: React.FC = () => {
 
         {/* ROW 2 */}
 
-        <Grid xs={12} sm={3}>
+        <Grid size={{ xs: 12, sm: 3 }}>
           <FormControl>
             <FormLabel id="metric-label">
               <Typography color="secondary" sx={{ fontSize: 18, borderBottom: '1px solid' }}>
@@ -206,7 +206,7 @@ export const RefineryCalc: React.FC = () => {
           </FormControl>
         </Grid>
 
-        <Grid xs={12} sm={3}>
+        <Grid size={{ xs: 12, sm: 3 }}>
           <FormControl>
             <FormLabel id="metric-label">
               <Typography color="secondary" sx={{ fontSize: 18, borderBottom: '1px solid' }}>
@@ -249,7 +249,7 @@ export const RefineryCalc: React.FC = () => {
           </FormControl>
         </Grid>
 
-        <Grid xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           {showWarning && (
             <Alert severity="warning">
               NOTE: Ever since 3.20 the <strong>time</strong> and <strong>cost</strong> bonuses of individual refineries

@@ -10,7 +10,7 @@ interface VerifyCodeFieldProps {
 
 export const VerifyCodeField: React.FC<VerifyCodeFieldProps> = ({ code }) => {
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout>({} as NodeJS.Timeout)
 
   const [helperText, setHelperText] = React.useState(' ')
   const handleClick = async () => {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { SxProps, Theme, useTheme } from '@mui/material'
+import { SxProps, Theme, useTheme, Grid } from '@mui/material'
 
 import {
   calculateWorkOrder,
@@ -11,7 +11,6 @@ import {
   WorkOrderSummary,
   SystemEnum,
 } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ExpensesSharesCard } from './WorkOrderCards/ExpensesSharesCard'
 // import { DetailsCard } from './WorkOrderCards/DetailsCard'
 import { OreCard } from './WorkOrderCards/OreCard'
@@ -100,17 +99,17 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
           {/* <Grid xs={12} sm={12} md={3} lg={3} sx={styles.gridCss}>
             <DetailsCard {...props} sx={styles.cardCss} />
           </Grid> */}
-          <Grid xs={12} sm={12} md={5} lg={5} sx={styles.gridCss}>
+          <Grid size={{ xs: 12, sm: 12, md: 5, lg: 5 }} sx={styles.gridCss}>
             <OreCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
-          <Grid xs={12} sm={12} md={7} lg={7} sx={styles.gridCss}>
+          <Grid size={{ xs: 12, sm: 12, md: 5, lg: 5 }} sx={styles.gridCss}>
             <ExpensesSharesCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
         </Grid>
       )}
       {workOrder.orderType === ActivityEnum.Other && (
         <Grid container spacing={{ md: 2, lg: 3 }} margin={0} sx={styles.container}>
-          <Grid xs={12} sm={12} md={12} lg={12} sx={styles.gridCss}>
+          <Grid size={{ xs: 12 }} sx={styles.gridCss}>
             <ExpensesSharesCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
         </Grid>

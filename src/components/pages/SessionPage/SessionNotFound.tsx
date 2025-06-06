@@ -11,10 +11,10 @@ export const SessionNotFound: React.FC<SessionNotFound> = ({ action }) => {
   return (
     <PageWrapper title="Session Not Found" maxWidth="md">
       <Paper elevation={5} sx={{ p: 3, border: '1px solid white', borderRadius: 3 }}>
-        <Typography variant="subtitle1" component="div" paragraph>
+        <Typography variant="subtitle1" component="div" gutterBottom>
           Either this session does not exist or you have not joined it using a valid share link.
         </Typography>
-        <Typography variant="subtitle1" component="div" paragraph>
+        <Typography variant="subtitle1" component="div" gutterBottom>
           If you are trying to join a session make sure you use a link that looks like:
         </Typography>
         <code>

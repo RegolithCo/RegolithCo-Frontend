@@ -14,8 +14,9 @@ import {
   ToggleButtonGroup,
   Typography,
   useTheme,
+  Stack,
+  SxProps,
 } from '@mui/material'
-import { Stack, SxProps } from '@mui/system'
 import { theme as defaultTheme } from '../../theme'
 import { Agriculture, Cancel, PanTool, Save } from '@mui/icons-material'
 import { ScoutingFindTypeEnum, VehicleOreEnum } from '@regolithco/common'

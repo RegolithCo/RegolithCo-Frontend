@@ -24,6 +24,7 @@ import {
   Link,
   useTheme,
   PaletteColor,
+  Grid,
   keyframes,
   alpha,
 } from '@mui/material'
@@ -60,7 +61,6 @@ import {
 import { ClawIcon, GemIcon, RockIcon, SurveyCorpsIcon } from '../../../icons'
 import { EmojiPeople, ExitToApp, NoteAdd, RocketLaunch, SvgIconComponent } from '@mui/icons-material'
 import { MValueFormat, MValueFormatter, findDecimalsSm } from '../../fields/MValue'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ScoutingClusterCountModal } from '../../modals/ScoutingClusterCountModal'
 import { fontFamilies, scoutingFindStateThemes } from '../../../theme'
 import { ScoutingFindUserList } from './ScoutingFindUserList'
@@ -520,9 +520,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           </Box>
         )}
         {/* Top row grid */}
-        <Grid container spacing={{ xs: 0, sm: 2 }} padding={{ xs: 0, sm: 2 }} xs={12}>
+        <Grid container spacing={{ xs: 0, sm: 2 }} padding={{ xs: 0, sm: 2 }} size={{ xs: 12 }}>
           {/* Hero card */}
-          <Grid xs={12} sm={3} sx={styles.topRowGrid}>
+          <Grid size={{ xs: 12, sm: 3 }} sx={styles.topRowGrid}>
             <Box
               sx={styles.numberBox}
               onClick={() => {
@@ -641,7 +641,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
             )}
           </Grid>
           {/* Cluster stats */}
-          <Grid xs={12} sm={standalone || isShare ? 9 : 4.5} sx={styles.topRowGrid}>
+          <Grid size={{ xs: 12, sm: standalone || isShare ? 9 : 4.5 }} sx={styles.topRowGrid}>
             <Typography variant="overline" component="div">
               Cluster Stats
             </Typography>
@@ -794,7 +794,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
           </Grid>
           {/* Actions and attendance */}
           {!standalone && !isShare && (
-            <Grid xs={12} sm={4.5} sx={styles.topRowGrid}>
+            <Grid size={{ xs: 12, sm: 4.5 }} sx={styles.topRowGrid}>
               {!standalone && joinScoutingFind && leaveScoutingFind && (
                 <Box sx={styles.stateBtnGrp}>
                   <Typography variant="overline" component="div">

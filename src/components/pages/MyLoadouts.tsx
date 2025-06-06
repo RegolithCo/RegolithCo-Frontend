@@ -14,6 +14,7 @@ import {
   alpha,
   useTheme,
   PaletteColor,
+  Grid,
 } from '@mui/material'
 import { Delete } from '@mui/icons-material'
 import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
@@ -35,7 +36,6 @@ import dayjs from 'dayjs'
 import { MODMAP, statsOrder } from '../calculators/LoadoutCalc/LoadoutCalcStats'
 import { LoadoutStat } from '../calculators/LoadoutCalc/LoadoutStat'
 import { MValue, MValueFormat } from '../fields/MValue'
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { LookupsContext } from '../../context/lookupsContext'
 import { fontFamilies } from '../../theme'
 
@@ -260,7 +260,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
                       flexDirection: 'row',
                     }}
                   >
-                    <Grid2
+                    <Grid
                       container
                       sx={{
                         width: '100%',
@@ -275,7 +275,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
                             ? stats[MODMAP[key as keyof AllStats] as keyof AllStats]
                             : undefined
                           return (
-                            <Grid2 sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
+                            <Grid sx={{ width: 90 }} key={`stat-${key}-${idx}`}>
                               <LoadoutStat
                                 label={label}
                                 key={`key-${key}-${idy}`}
@@ -286,10 +286,10 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
                                 value={stats[key as keyof AllStats]}
                                 reversed={BackwardStats.includes(key)}
                               />
-                            </Grid2>
+                            </Grid>
                           )
                         })}
-                    </Grid2>
+                    </Grid>
                   </Box>
                 </Stack>
                 <Box sx={{ flex: '0 0 5%' }}>

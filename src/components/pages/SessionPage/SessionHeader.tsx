@@ -9,10 +9,19 @@ import {
   smartDate,
   SessionStateEnum,
 } from '@regolithco/common'
-import { Box, IconButton, Stack, Theme, Tooltip, Typography, useTheme } from '@mui/material'
-import { SxProps, useMediaQuery } from '@mui/system'
+import {
+  Box,
+  IconButton,
+  Stack,
+  Theme,
+  Tooltip,
+  Typography,
+  useTheme,
+  SxProps,
+  useMediaQuery,
+  Grid,
+} from '@mui/material'
 import { fontFamilies } from '../../../theme'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SessionState } from '../../SessionState'
 import { DialogEnum, SessionContext } from '../../../context/session.context'
 import { AppContext } from '../../../context/app.context'
@@ -23,8 +32,8 @@ export interface SesionHeaderProps {
   propA?: string
 }
 
-export const sessionSubtitleArr = (session: Session, protect: boolean): (string | JSX.Element)[] => {
-  const subtitleArr: (string | JSX.Element)[] = []
+export const sessionSubtitleArr = (session: Session, protect: boolean): (string | React.JSX.Element)[] => {
+  const subtitleArr: (string | React.JSX.Element)[] = []
   const sessionSettings: Partial<SessionSettings> = session.sessionSettings || {}
   // Some contextual subtitle stuff
   if (sessionSettings.activity) subtitleArr.push(getActivityName(sessionSettings.activity))
@@ -94,8 +103,8 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
 
   return (
     <Box sx={{ cursor: 'pointer', ...styles.container }}>
-      <Grid xs={12} container sx={styles.gridInside}>
-        <Grid xs={12} sm={12} md={8}>
+      <Grid size={{ xs: 12 }} container sx={styles.gridInside}>
+        <Grid size={{ xs: 12, sm: 12, md: 8 }}>
           {/* Title and button */}
           <Typography
             variant="h4"
@@ -146,7 +155,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
                     }
                     return acc
                   },
-                  [] as (string | JSX.Element)[]
+                  [] as (string | React.JSX.Element)[]
                 )}
               </Stack>
             )}
@@ -166,7 +175,7 @@ export const SessionHeader: React.FC<SesionHeaderProps> = () => {
         </Grid>
         {/* Start and end date box */}
         {mediumUp && (
-          <Grid xs={12} sm={12} md={4} sx={styles.gridInsideDates}>
+          <Grid size={{ xs: 12, sm: 12, md: 4 }} sx={styles.gridInsideDates}>
             <Box sx={{ display: 'flex' }}>
               {/* SHARE BUTTON */}
               <div style={{ flex: '1 1' }} />

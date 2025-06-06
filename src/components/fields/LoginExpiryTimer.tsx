@@ -5,7 +5,7 @@ import log from 'loglevel'
 export const LoginExpiryTimer: React.FC = () => {
   const [expiryTime, setExpiryTime] = React.useState<number>(0)
   const [tickChecker, setTickChecker] = React.useState<number>(0)
-  const timerRef = React.useRef<NodeJS.Timeout>()
+  const timerRef = React.useRef<NodeJS.Timeout>({} as NodeJS.Timeout)
   const nowDate = Date.now()
 
   useEffect(() => {

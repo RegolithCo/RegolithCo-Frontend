@@ -14,8 +14,8 @@ import {
   Link,
   Typography,
   useTheme,
+  Stack,
 } from '@mui/material'
-import { Stack } from '@mui/system'
 import { Cancel, Cookie } from '@mui/icons-material'
 import { LoginContext } from '../context/auth.context'
 import config from '../config'

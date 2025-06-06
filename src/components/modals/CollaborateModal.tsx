@@ -10,10 +10,10 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Stack,
 } from '@mui/material'
 import { ShareUrlField } from '../fields/ShareUrlField'
 import { fontFamilies } from '../../theme'
-import { Stack } from '@mui/system'
 import { CollaborateLinkIcon, ExportImageIcon } from '../../icons/badges'
 
 export interface CollaborateModalProps {

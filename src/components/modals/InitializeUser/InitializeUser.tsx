@@ -25,7 +25,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({ userProfile, ver
   const { isAuthenticated, authLogOut, loading: loginLoading } = React.useContext(LoginContext)
   const { isInitialized, isVerified } = React.useContext(UserProfileContext)
   const pageTitle = !isInitialized ? 'Initialize User' : 'Verify User'
-  const redirectTimerRef = React.useRef<NodeJS.Timeout>()
+  const redirectTimerRef = React.useRef<NodeJS.Timeout>({} as NodeJS.Timeout)
 
   const verifyOnly = isAuthenticated && isInitialized && !isVerified
 
@@ -96,7 +96,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({ userProfile, ver
             </Button>
           </Box>
           <Divider sx={{ my: 2 }} />
-          <Typography paragraph>
+          <Typography component="p" gutterBottom>
             <em>
               Note: You can still use all the calculators without signing in. This is just for the collaborative mining
               sessions.

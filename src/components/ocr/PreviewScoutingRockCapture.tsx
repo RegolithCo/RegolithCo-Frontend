@@ -1,7 +1,16 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from '@mui/material'
 import React from 'react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+  Box,
+} from '@mui/material'
 import { getOreName, getRockTypeName, ShipRockCapture } from '@regolithco/common'
-import { Box } from '@mui/system'
 import { fontFamilies } from '../../theme'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 
@@ -154,7 +163,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
           </Table>
         </TableContainer>
       </Box>
-      <Typography variant="caption" color="text.secondary" paragraph>
+      <Typography variant="caption" color="text.secondary" component="p" gutterBottom>
         <strong>Note:</strong> Inert Materials are never captured, only calculated.
       </Typography>
       <Typography variant="caption" color="primary">

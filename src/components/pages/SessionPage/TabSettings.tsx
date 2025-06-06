@@ -12,7 +12,7 @@ import {
   keyframes,
   List,
   ListItem,
-  ListItemSecondaryAction,
+  Grid,
   MenuItem,
   PaletteColor,
   Select,
@@ -40,7 +40,6 @@ import {
   DiscordGuild,
 } from '@regolithco/common'
 import { WorkOrderTypeChooser } from '../../fields/WorkOrderTypeChooser'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Delete, Lock, LockOpen, Person, PlayArrow, RestartAlt, Save, StopCircle } from '@mui/icons-material'
 import { RefineryControl } from '../../fields/RefineryControl'
 import { RefineryMethodControl } from '../../fields/RefiningMethodControl'
@@ -242,7 +241,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
       {/* Here's our scrollbox */}
       <Box sx={styles.tabContainerInner}>
         <Grid container sx={styles.gridContainer} spacing={3}>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box sx={styles.section}>
               {session && (
                 <Box sx={styles.section}>
@@ -297,7 +296,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       )}
                     </Stack>
                   </Box>
-                  <Typography component="div" variant="caption" paragraph>
+                  <Typography component="div" variant="caption" gutterBottom>
                     Sessions close automatically after 48 hours of innactivity but they can be re-opened. You can still
                     edit work orders on a closed session.
                   </Typography>
@@ -350,7 +349,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       helperText={`${(displayValue.note || '').length} / 255`}
                       value={displayValue.note || ''}
                     />
-                    <Typography variant="caption" paragraph component="div" color="secondary.dark">
+                    <Typography variant="caption" component="div" gutterBottom color="secondary.dark">
                       NOTE: <strong>name</strong> and <strong>note</strong> appear in the share meta link so don't put
                       any secrets or identifying info if you're worried about pirates seeing it.
                     </Typography>
@@ -405,7 +404,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       </Select>
                     </FormControl>
                   </Stack>
-                  <Typography variant="caption" paragraph component="div">
+                  <Typography variant="caption" component="div" gutterBottom>
                     (Optional) You can indicate where the mining is going to happen. These settings are not enforced in
                     any way and are only visible to active session members.
                   </Typography>
@@ -423,11 +422,11 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       })
                     }}
                   />
-                  <Typography variant="caption" paragraph component="div">
+                  <Typography variant="caption" component="div" gutterBottom>
                     This will filter the REFINERIES and GRAVITY WELLS to only the selected system. Prices and Market
                     lookups are not filtered.
                   </Typography>
-                  <Typography variant="caption" paragraph component="div" color="primary.main">
+                  <Typography variant="caption" component="div" gutterBottom color="primary.main">
                     NOTE: If you plan on mining, refining and/or selling in different systems it's best to leave blank.
                   </Typography>
                 </Box>
@@ -532,7 +531,7 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
             </Box>
           </Grid>
           {/* Work oreder defaults */}
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box sx={styles.section}>
               <Typography component="div" sx={styles.sectionTitle}>
                 Session Join permissions
@@ -693,7 +692,16 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                     },
                   }}
                 >
-                  <ListItem>
+                  <ListItem
+                    secondaryAction={
+                      <Checkbox
+                        icon={<LockOpen />}
+                        checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('includeTransferFee'))}
+                        checkedIcon={<Lock />}
+                        onChange={(e) => setWorkOrderDefaultsLocked('includeTransferFee', e.target.checked)}
+                      />
+                    }
+                  >
                     <FormControlLabel
                       checked={Boolean(newSettings.workOrderDefaults?.includeTransferFee)}
                       control={
@@ -711,21 +719,22 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                       }
                       label="Subtract transfer fee"
                     />
-                    <ListItemSecondaryAction>
-                      <Checkbox
-                        icon={<LockOpen />}
-                        checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('includeTransferFee'))}
-                        checkedIcon={<Lock />}
-                        onChange={(e) => setWorkOrderDefaultsLocked('includeTransferFee', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
                   </ListItem>
 
                   {(!newSettings.sessionSettings?.activity ||
                     (newSettings.sessionSettings.lockedFields?.includes('activity') &&
                       newSettings.sessionSettings?.activity === ActivityEnum.ShipMining)) && (
                     <>
-                      <ListItem>
+                      <ListItem
+                        secondaryAction={
+                          <Checkbox
+                            icon={<LockOpen />}
+                            checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('isRefined'))}
+                            checkedIcon={<Lock />}
+                            onChange={(e) => setWorkOrderDefaultsLocked('isRefined', e.target.checked)}
+                          />
+                        }
+                      >
                         <FormControlLabel
                           checked={Boolean(newSettings.workOrderDefaults?.isRefined)}
                           control={
@@ -743,18 +752,21 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                           }
                           label="Use Refinery"
                         />
-                        <ListItemSecondaryAction>
-                          <Checkbox
-                            icon={<LockOpen />}
-                            checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('isRefined'))}
-                            checkedIcon={<Lock />}
-                            onChange={(e) => setWorkOrderDefaultsLocked('isRefined', e.target.checked)}
-                          />
-                        </ListItemSecondaryAction>
                       </ListItem>
                       {newSettings.workOrderDefaults?.isRefined && (
                         <>
-                          <ListItem>
+                          <ListItem
+                            secondaryAction={
+                              <Checkbox
+                                icon={<LockOpen />}
+                                checked={Boolean(
+                                  newSettings.workOrderDefaults?.lockedFields?.includes('shareRefinedValue')
+                                )}
+                                checkedIcon={<Lock />}
+                                onChange={(e) => setWorkOrderDefaultsLocked('shareRefinedValue', e.target.checked)}
+                              />
+                            }
+                          >
                             <FormControlLabel
                               checked={Boolean(newSettings.workOrderDefaults?.shareRefinedValue)}
                               control={
@@ -772,19 +784,18 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                               }
                               label="Share refined value"
                             />
-                            <ListItemSecondaryAction>
-                              <Checkbox
-                                icon={<LockOpen />}
-                                checked={Boolean(
-                                  newSettings.workOrderDefaults?.lockedFields?.includes('shareRefinedValue')
-                                )}
-                                checkedIcon={<Lock />}
-                                onChange={(e) => setWorkOrderDefaultsLocked('shareRefinedValue', e.target.checked)}
-                              />
-                            </ListItemSecondaryAction>
                           </ListItem>
 
-                          <ListItem>
+                          <ListItem
+                            secondaryAction={
+                              <Checkbox
+                                icon={<LockOpen />}
+                                checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('refinery'))}
+                                checkedIcon={<Lock />}
+                                onChange={(e) => setWorkOrderDefaultsLocked('refinery', e.target.checked)}
+                              />
+                            }
+                          >
                             <FormControl fullWidth variant="standard" sx={{ px: 2 }}>
                               <InputLabel id="gwell">Default Refinery</InputLabel>
                               <RefineryControl
@@ -803,16 +814,17 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                                 value={newSettings.workOrderDefaults?.refinery || undefined}
                               />
                             </FormControl>
-                            <ListItemSecondaryAction>
+                          </ListItem>
+                          <ListItem
+                            secondaryAction={
                               <Checkbox
                                 icon={<LockOpen />}
-                                checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('refinery'))}
+                                checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('method'))}
                                 checkedIcon={<Lock />}
-                                onChange={(e) => setWorkOrderDefaultsLocked('refinery', e.target.checked)}
+                                onChange={(e) => setWorkOrderDefaultsLocked('method', e.target.checked)}
                               />
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                          <ListItem>
+                            }
+                          >
                             <FormControl fullWidth variant="standard" sx={{ px: 2 }}>
                               <InputLabel id="gwell">Default Refining Method</InputLabel>
                               <RefineryMethodControl
@@ -830,14 +842,6 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
                                 value={newSettings.workOrderDefaults?.method || undefined}
                               />
                             </FormControl>
-                            <ListItemSecondaryAction>
-                              <Checkbox
-                                icon={<LockOpen />}
-                                checked={Boolean(newSettings.workOrderDefaults?.lockedFields?.includes('method'))}
-                                checkedIcon={<Lock />}
-                                onChange={(e) => setWorkOrderDefaultsLocked('method', e.target.checked)}
-                              />
-                            </ListItemSecondaryAction>
                           </ListItem>
                         </>
                       )}

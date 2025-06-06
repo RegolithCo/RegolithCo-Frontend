@@ -9,7 +9,7 @@ export const StaleLookups: React.FC = () => {
     <Container maxWidth={'sm'} sx={{ mt: 10 }}>
       <Alert severity="warning" sx={{ borderRadius: 0 }}>
         <AlertTitle>Stale Lookup Data</AlertTitle>
-        <Typography variant="body2" paragraph component="div">
+        <Typography variant="body2" component="div" gutterBottom>
           The data on this page is from an older version of the survey. You can try wiping your local lookups. If it
           doesn't work please try again in a few minutes.
         </Typography>

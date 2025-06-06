@@ -1,13 +1,22 @@
 import * as React from 'react'
-import { useTheme, SxProps, Theme, Card, Typography, CardMedia, Tooltip, CircularProgress } from '@mui/material'
+import {
+  useTheme,
+  SxProps,
+  Theme,
+  Card,
+  Typography,
+  CardMedia,
+  Tooltip,
+  CircularProgress,
+  Stack,
+  Grid,
+} from '@mui/material'
 import { formatCardNumber, RegolithAllTimeStats, RegolithMonthStats } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { Textfit } from 'react-textfit'
 import { MValueFormat, MValueFormatter } from '../fields/MValue'
 import { DailyMonthlyChart } from './charts/DailyMonthlyChart'
 import { OrePieChart } from './charts/OrePieChart'
 import { fontFamilies } from '../../theme'
-import { Stack } from '@mui/system'
 
 export interface SiteStatsProps {
   last30Days?: RegolithMonthStats
@@ -105,7 +114,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
       </Grid>
       <Grid spacing={3} container sx={{ width: '100%' }}>
         {!statsLoading && (
-          <Grid xs={12} my={3}>
+          <Grid my={3} size={{ xs: 12 }}>
             <DailyMonthlyChart
               last30Days={last30Days}
               allTime={allTime}
@@ -125,7 +134,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           </Grid>
         )} */}
         {!statsLoading && (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
             <OrePieChart
               title="Activity Types"
               activityTypes={allTime?.summary?.workOrderTypes}
@@ -134,7 +143,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           </Grid>
         )}
         {!statsLoading && (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
             <OrePieChart
               title="Ship Ores"
               groupThreshold={0.04}
@@ -144,7 +153,7 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           </Grid>
         )}
         {!statsLoading && (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
             <OrePieChart
               title="Refining Methods"
               groupThreshold={0.04}
@@ -154,17 +163,17 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
           </Grid>
         )}
         {!statsLoading && (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
             <OrePieChart title="Vehicle Ores" ores={allTime?.summary?.vehicleOres} loading={statsLoading} />
           </Grid>
         )}
         {!statsLoading && (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
             <OrePieChart title="Salvage Ores" ores={allTime?.summary?.salvageOres} loading={statsLoading} />
           </Grid>
         )}
         {!statsLoading && (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid size={{ xs: 12, sm: 6, md: 6 }}>
             <OrePieChart title="Failure Reasons" ores={allTime?.summary?.failReasons} loading={statsLoading} />
           </Grid>
         )}
@@ -197,9 +206,7 @@ export const SiteStatsCard: React.FC<SiteStatsCardProps> = ({ value, subText, sc
   const isText = typeof value === 'string' || typeof value === 'number'
   return (
     <Grid
-      xs={6}
-      sm={4}
-      md={3}
+      size={{ xs: 6, sm: 4, md: 3 }}
       sx={{
         '& *': {
           whiteSpace: 'nowrap',

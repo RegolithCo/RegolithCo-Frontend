@@ -1,10 +1,9 @@
 import React from 'react'
 import { PendingUser, SessionUser } from '@regolithco/common'
-import { useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { ActiveUserListItem } from './ActiveUserListItem'
 import { PendingUserListItem } from './PendingUserListItem'
-import { Accordion, AccordionDetails, Avatar, Divider, IconButton, List, Tooltip } from '@mui/material'
+import { Accordion, AccordionDetails, Avatar, Divider, IconButton, List, Tooltip, useTheme } from '@mui/material'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { stateColorsBGThunk } from './StateChip'
 

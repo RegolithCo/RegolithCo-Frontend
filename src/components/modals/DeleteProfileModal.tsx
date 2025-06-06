@@ -46,12 +46,14 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({ open, sc
     <Dialog open={open} onClose={onClose}>
       <DialogTitle color="error">DANGER: Delete User Account</DialogTitle>
       <DialogContent>
-        <Typography paragraph>Your user profile and login will be cleaned up.</Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
+          Your user profile and login will be cleaned up.
+        </Typography>
+        <Typography component="p" gutterBottom>
           Additionally you can choose to completely delete all sessions and work orders you created in OTHER peopl's
           sessions. There is no harm in leaving those behind though, especially if others would find it useful.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           If you don't check this box all your past work will be left behind and attributed to a user named
           "DELETED_USER".
         </Typography>

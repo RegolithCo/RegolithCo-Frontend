@@ -7,10 +7,10 @@ import {
   DialogTitle,
   Link,
   Stack,
+  Box,
   Typography,
   useTheme,
 } from '@mui/material'
-import { Box } from '@mui/system'
 import React from 'react'
 
 // export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {

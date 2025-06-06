@@ -11,9 +11,9 @@ import {
   Tooltip,
   Typography,
   useTheme,
+  Stack,
 } from '@mui/material'
 import { useCaptureRefineryOrderLazyQuery, useCaptureShipRockScanLazyQuery } from '../../schema'
-import { Stack } from '@mui/system'
 import { ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
 import { Check, Clear, Replay, TipsAndUpdatesOutlined } from '@mui/icons-material'
 import { CameraHelpDialog } from './CameraHelpDialog'

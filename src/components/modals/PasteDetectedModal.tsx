@@ -46,10 +46,10 @@ export const PasteDetectedModal: React.FC<PasteDetectedModalProps> = ({
         >
           <Close />
         </IconButton>
-        <Typography id="modal-modal-title" variant="h6" component="h2" paragraph>
+        <Typography id="modal-modal-title" variant="h6" component="h2" gutterBottom>
           Pasted Image Detected:
         </Typography>
-        <Typography id="modal-modal-title" variant="body1" component="div" paragraph>
+        <Typography id="modal-modal-title" variant="body1" component="div" gutterBottom>
           What kind of item would you like to create?:
         </Typography>
         <ButtonGroup

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
-import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
+import { alpha, ToggleButton, Tooltip, useTheme, Grid } from '@mui/material'
 import { SalvageOreEnum, findPrice } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { LookupsContext } from '../../context/lookupsContext'
 
 export interface SalvageOreChooserProps {
@@ -61,7 +60,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
         const bgc = bgColors[rowIdx]
         const active = isToggleButtons ? selected.includes(salvageOreKey) : true
         return (
-          <Grid xs={3} key={`grid-${rowIdx}`}>
+          <Grid size={{ xs: 3 }} key={`grid-${rowIdx}`}>
             <ToggleButton
               value={salvageOreKey}
               fullWidth
@@ -117,7 +116,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
         )
       })}
       {multiple && showAllBtn && (
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Tooltip title="Select all ores">
             <ToggleButton
               value={''}
@@ -143,7 +142,7 @@ export const SalvageOreChooser: React.FC<SalvageOreChooserProps> = ({
         </Grid>
       )}
       {!requireValue && showNoneBtn && (
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Tooltip title="Remove all selected ores">
             <ToggleButton
               value={''}

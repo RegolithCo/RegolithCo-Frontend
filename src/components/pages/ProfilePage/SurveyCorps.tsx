@@ -80,16 +80,16 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({
       )}
       {!isBanned && isEnlisted && (
         <Box>
-          <Typography paragraph variant="body2">
+          <Typography gutterBottom variant="body2">
             You are currently enlisted with the Regolith Survey Corps. Thank you for your service!
           </Typography>
           <Alert severity="info" sx={{ my: 2 }}>
             <AlertTitle>Leaderboard Name</AlertTitle>
-            <Typography paragraph variant="body2">
+            <Typography gutterBottom variant="body2">
               This is the name that will appear on the leaderboard. It can be the same as your username or different if
               you don't want to be identified. You can also leave it blank and it will show as Anonymous.
             </Typography>
-            <Typography paragraph variant="body2" color="error">
+            <Typography gutterBottom variant="body2" color="error">
               <strong>Warning:</strong> If you choose a name that crosses a line into offensive and/or abusive you will
               be banned from the leaderboard. Please be cool about this.
             </Typography>
@@ -136,7 +136,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({
           />
           <Alert severity="info" sx={{ my: 2 }}>
             <AlertTitle>Leaderboard Org / Guild Allegiance</AlertTitle>
-            <Typography paragraph variant="body2">
+            <Typography gutterBottom variant="body2">
               You can choose one Discord server to associate all your points with. If you change this all your points go
               with you.
             </Typography>
@@ -176,7 +176,7 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({
           </Stack>
 
           <Divider sx={{ my: 2 }} />
-          <Typography paragraph variant="body2">
+          <Typography gutterBottom variant="body2">
             If you no longer wish to be a part of the Survey Corps you can de-enlist here:
           </Typography>
           <Button
@@ -198,15 +198,15 @@ export const SurveyCorps: React.FC<SurveyCorpsProps> = ({
             title="Leave the Survey Corps?"
             message={
               <Stack direction="column" spacing={2}>
-                <Typography paragraph variant="body2">
+                <Typography gutterBottom variant="body2">
                   Are you sure you want to leave the Survey Corps? You will lose your leaderboard status and your data
                   will no longer be considered in the global stats.
                 </Typography>
-                <Typography paragraph variant="body2">
+                <Typography gutterBottom variant="body2">
                   Any data you have already submitted will remain in the system but you are free to remove individual
                   clusters and scans from consideration if you wish.
                 </Typography>
-                <Typography paragraph variant="body2">
+                <Typography gutterBottom variant="body2">
                   You can re-enlist at any time if you change your mind.
                 </Typography>
               </Stack>
@@ -230,23 +230,23 @@ export const SurveyCorpsBanned: React.FC = () => {
       <AlertTitle>
         <strong>You have been banned!</strong>
       </AlertTitle>
-      <Typography paragraph variant="body2">
+      <Typography gutterBottom variant="body2">
         You have been banned from being a prospector on Regolith. This means your scouting data will not be considered
         in the global stats and your name will not appear on the leaderboard. You are free to continue using the rest of
         Regolith as usual.
       </Typography>
-      <Typography paragraph variant="subtitle1">
+      <Typography gutterBottom variant="subtitle1">
         <em>"Why did this Happen?"</em>
       </Typography>
-      <Typography paragraph variant="body2">
+      <Typography gutterBottom variant="body2">
         We use a combination of algorithms and human moderators to detect and prevent insertion of bad/erroneous data
         into the system. If your scouting submissions deviated too far from what is considered to be reasonable it is
         flagged.
       </Typography>
-      <Typography paragraph variant="body2">
+      <Typography gutterBottom variant="body2">
         This can also happen if you choose a leaderboard name that is abusive, offensive or inappropriate.
       </Typography>
-      <Typography paragraph variant="body2">
+      <Typography gutterBottom variant="body2">
         <strong>Mistakes DO happen</strong>. If you believe this is an error please contact us on Discord and we're
         usually pretty reasonable about it.
       </Typography>
@@ -271,18 +271,18 @@ export const SurveyCorpsEnlist: React.FC<SurveyCorpsProps> = ({ userProfile, nav
 
   return (
     <Box>
-      <Typography paragraph variant="body2">
+      <Typography gutterBottom variant="body2">
         Not sure if this is for you? You can read more about the Survey Corps <Link href="/survey/about">here</Link>.
       </Typography>
 
-      <Typography paragraph variant="overline" color="primary">
+      <Typography gutterBottom variant="overline" color="primary">
         Terms and Conditions
       </Typography>
-      <Typography paragraph variant="body2">
+      <Typography gutterBottom variant="body2">
         By enlisting with the Regolith Survey Corps you agree to the following. Failure to comply with these terms may
         result in a ban from the leaderboard and/or the survey corps.
       </Typography>
-      <Typography paragraph variant="body2" component="div">
+      <Typography gutterBottom variant="body2" component="div">
         <ul>
           <li>
             You will not submit scouting data that is knowingly false, misleading, or otherwise intended to harm the

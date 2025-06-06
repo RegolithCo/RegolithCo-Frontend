@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Typography, SxProps, Theme, Box, Button } from '@mui/material'
+import { Typography, SxProps, Theme, Box, Button, Grid } from '@mui/material'
 import {
   ScoutingFind,
   RockStateEnum,
@@ -13,7 +13,6 @@ import {
 } from '@regolithco/common'
 import { ClawIcon } from '../../../icons'
 import { AddCircle } from '@mui/icons-material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { scoutingFindStateThemes } from '../../../theme'
 import { EmptyScanCard } from '../../cards/EmptyScanCard'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -87,7 +86,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
     clusterCount > 0 && clusterCount > numScans ? Array.from({ length: clusterCount - numScans }, (_, i) => 1) : []
 
   return (
-    <Grid container paddingX={2} xs={12} sx={styles.bottomRowGrid}>
+    <Grid container paddingX={2} size={{ xs: 12 }} sx={styles.bottomRowGrid}>
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex' }}>
           <Typography variant="overline" component="div">
@@ -121,7 +120,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
         >
           {(salvageFind.wrecks || []).map((wreck, idx) => {
             return (
-              <Grid key={idx} xs={6} sm={4} md={3}>
+              <Grid key={idx} size={{ xs: 6, sm: 4, md: 3 }}>
                 <SalvageWreckCard
                   wreck={wreck}
                   wreckValue={summary.byRock && summary.byRock.length > idx ? summary.byRock[idx].value : undefined}
@@ -145,7 +144,7 @@ export const ScoutingFindWrecks: React.FC<ScoutingFindWrecksProps> = ({
             )
           })}
           {placeholderItems.map((_, idx) => (
-            <Grid key={idx} xs={6} sm={4} md={3}>
+            <Grid key={idx} size={{ xs: 6, sm: 4, md: 3 }}>
               <EmptyScanCard
                 Icon={ClawIcon}
                 deleteDisabled={!salvageFind.clusterCount || salvageFind.clusterCount <= 1}

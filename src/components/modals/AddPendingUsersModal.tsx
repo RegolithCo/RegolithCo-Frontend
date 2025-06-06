@@ -1,7 +1,6 @@
 import * as React from 'react'
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material'
-import { Stack } from '@mui/system'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme, Stack } from '@mui/material'
 import { Cancel, Check } from '@mui/icons-material'
 import { SessionContext } from '../../context/session.context'
 import { UserPicker } from '../fields/UserPicker'

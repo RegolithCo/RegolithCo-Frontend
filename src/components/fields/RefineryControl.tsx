@@ -55,7 +55,6 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
       size="small"
       disabled={disabled}
       displayEmpty
-      placeholder={noneLabel || 'None'}
       value={value ? value : allowNone ? '' : RefineryEnum.Arcl1}
       sx={
         !settingsScreen
@@ -77,7 +76,7 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
       }
       fullWidth
       onChange={(event) => {
-        const newVal = event.target.value
+        const newVal = event.target.value as RefineryEnum | ''
         if (allowNone && newVal === '') return onChange()
         onChange(newVal as RefineryEnum)
       }}
@@ -122,7 +121,7 @@ export const RefineryControl: React.FC<RefineryControlProps> = ({
               )
             })
             return acc
-          }, [] as JSX.Element[])}
+          }, [] as React.JSX.Element[])}
     </Select>
   )
 }

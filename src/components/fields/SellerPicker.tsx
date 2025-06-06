@@ -1,9 +1,8 @@
 import React from 'react'
-import { Autocomplete, Paper, TextField, Typography, createFilterOptions } from '@mui/material'
+import { Autocomplete, Paper, TextField, Typography, createFilterOptions, Box } from '@mui/material'
 import { UserSuggest, validateSCName } from '@regolithco/common'
 import { UserListItem } from './UserListItem'
 import { fontFamilies } from '../../theme'
-import { Box } from '@mui/system'
 import { validate } from 'numeral'
 // import log from 'loglevel'
 

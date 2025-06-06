@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Box } from '@mui/material'
+import { Box, Theme, ThemeProvider } from '@mui/material'
 import { ScoutingFind, ScoutingFindStateEnum } from '@regolithco/common'
-import { Theme, ThemeProvider } from '@mui/system'
 import { scoutingFindStateThemes } from '../../theme'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 

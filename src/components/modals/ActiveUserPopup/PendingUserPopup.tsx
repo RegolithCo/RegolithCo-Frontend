@@ -13,10 +13,10 @@ import {
   Stack,
   Typography,
   useTheme,
+  Box,
 } from '@mui/material'
 import { fontFamilies } from '../../../theme'
 import { PendingUser, PendingUserInput, SessionUser, ShipLookups } from '@regolithco/common'
-import { Box } from '@mui/system'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import { UserAvatar } from '../../UserAvatar'
@@ -238,23 +238,23 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
             <Typography variant="overline">What is a "pending" user?</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="caption" paragraph component="div">
+            <Typography variant="caption" component="div" gutterBottom>
               Pending users have been added to the session or one of its work orders but have not yet logged in and
               joined.
             </Typography>
-            <Typography variant="caption" paragraph component="div">
+            <Typography variant="caption" component="div" gutterBottom>
               They are added to the session automatically when you add them to a work order or manually using the ADD
               button at the top of the members list.
             </Typography>
-            <Typography variant="caption" paragraph component="div">
+            <Typography variant="caption" component="div" gutterBottom>
               You can set your session to only allow pending users to join and use this as a sort of "invite only" list
               to prevent random people with the share URL from joining.
             </Typography>
-            <Typography variant="subtitle1" paragraph>
+            <Typography variant="subtitle1" component="p" gutterBottom>
               <CheckCircle color="success" sx={{ mr: 1 }} />
               Pending users CAN
             </Typography>
-            <Typography variant="caption" paragraph component="div">
+            <Typography variant="caption" component="div" gutterBottom>
               <ul>
                 <li>Be on your crew.</li>
                 <li>Be mentioned in work orders.</li>
@@ -264,11 +264,11 @@ export const PendingUserPopup: React.FC<PendingUserPopupProps> = ({ open, onClos
                 </li>
               </ul>
             </Typography>
-            <Typography variant="subtitle1" paragraph>
+            <Typography variant="subtitle1" component="p" gutterBottom>
               <Cancel color="error" sx={{ mr: 1 }} />
               Pending users CANNOT
             </Typography>
-            <Typography variant="caption" paragraph component="div">
+            <Typography variant="caption" component="div" gutterBottom>
               <ul>
                 <li>Be captains of a crew.</li>
                 <li>Create work orders or scouting finds.</li>

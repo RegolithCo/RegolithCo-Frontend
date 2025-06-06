@@ -1,11 +1,9 @@
 import * as React from 'react'
-import { Typography, Tab, Tabs, useTheme, Theme, Alert, useMediaQuery } from '@mui/material'
-import { Box, SxProps } from '@mui/system'
+import { Typography, Tab, Tabs, useTheme, Theme, Alert, useMediaQuery, Box, SxProps, Grid } from '@mui/material'
 import { PageWrapper } from '../PageWrapper'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ShipOreTable } from '../tables/ShipOreTable'
 
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { RefineryBonusTable } from '../calculators/RefineryCalc/RefineryBonusTable'
 import { RefineryCalc } from '../calculators/RefineryCalc'
 import { ObjectValues } from '@regolithco/common'
@@ -52,7 +50,7 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
   const finalTab = typeof tab === 'undefined' ? DataTabsEnum.ORE : tab
   return (
     <PageWrapper title="Data Tables" maxWidth="lg">
-      <Typography paragraph>
+      <Typography component="p" gutterBottom>
         Use these calculators to figure out where you should take your hard-won ore. You can also use Regolith's{' '}
         <Link to="/market-price" style={{ color: theme.palette.primary.main, textDecoration: 'underline' }}>
           Market Price Calculator
@@ -123,19 +121,19 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
       )}
       {tab === DataTabsEnum.MARKET && (
         <Grid container spacing={4} margin={{ xs: 0, sm: 1, md: 2 }}>
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="h4" sx={{ borderBottom: '1px solid', mb: 4 }}>
               Ship Mining
             </Typography>
             <ShipOreTable />
           </Grid>
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="h4" sx={{ borderBottom: '1px solid', mb: 4 }}>
               Salvaging
             </Typography>
             <SalvagingOreTable />
           </Grid>
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="h4" sx={{ borderBottom: '1px solid', mb: 4 }}>
               ROC Mining
             </Typography>

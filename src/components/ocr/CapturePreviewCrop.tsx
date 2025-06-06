@@ -58,7 +58,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
 }) => {
   const theme = useTheme()
   const cropRef = React.useRef<ReactCrop>(null)
-  const videoRef = React.useRef<HTMLVideoElement>(null)
+  const videoRef = React.useRef<HTMLVideoElement>({} as HTMLVideoElement)
   const [storedVal, setStoredVal] = useLocalStorage<CropLookups>('crops', defaultCrops)
   // Do a deep compare of storedCrops to the defaultCrops using lodash and detect if there's difference
   const isDifferentCrop = useMemo(() => !isEqual(storedVal, defaultCrops), [storedVal])

@@ -1,8 +1,7 @@
 import React from 'react'
-import { Box, Typography, useTheme } from '@mui/material'
+import { Box, Grid, Typography, useTheme } from '@mui/material'
 import { AllStats, BackwardStats } from '@regolithco/common'
 import { LoadoutStat } from './LoadoutStat'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 
 export interface LoadoutCalcStatsProps {
   stats: AllStats

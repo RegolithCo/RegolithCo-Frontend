@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { ScoutingFindStateEnum, SessionStateEnum } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import {
   Box,
   FormControlLabel,
@@ -17,6 +16,7 @@ import {
   Popper,
   useMediaQuery,
   Tooltip,
+  Grid,
 } from '@mui/material'
 import { ScoutingAddFAB } from '../../fields/ScoutingAddFAB'
 import { WorkOrderAddFAB } from '../../fields/WorkOrderAddFAB'

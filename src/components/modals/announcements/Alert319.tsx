@@ -49,24 +49,24 @@ export const Alert319: React.FC<Alert319Props> = ({ open, onClose }) => {
         3.19 and the new Meta
       </DialogTitle>
       <DialogContent>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Star Citizen 3.19 is here and with it a complete rework of the mining meta. In general this is all great news,
           very welcome and long overdue but it comes with a few downsides for tool developers.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           The biggest issue for 3rd-party tool developers is the removal of information sets from the game XML files. In
           the past we used these files to harvest price data, refinery yield calculations etc. As the Star Citizen
           universe becomes more dynamic these values will be stored server-side and subject to change via in-game
           forces.
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           Again, we love that the universe is becoming more dynamic but without a public API wour tools need the data to
           be hand collected to work.{' '}
           <strong>
             CIG, if you're reading this we would love a public API for things like prices and store inventories.
           </strong>
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" gutterBottom>
           At Regolith we are going to try to evolve to keep up with these changes so here are the broad strokes.
           <ul>
             <li>

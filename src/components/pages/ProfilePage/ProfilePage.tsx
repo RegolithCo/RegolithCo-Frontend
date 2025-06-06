@@ -30,6 +30,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Theme,
 } from '@mui/material'
 import { ContentCopy, Cookie, Edit, Verified, Visibility, VisibilityOff } from '@mui/icons-material'
 import { RemoveUserModal } from '../../modals/RemoveUserModal'
@@ -41,14 +42,12 @@ import { pick } from 'lodash'
 import { fontFamilies } from '../../../theme'
 import { SessionSettingsTab } from './../SessionPage/TabSettings'
 import { VehicleChooser } from '../../fields/VehicleChooser'
-import { Theme } from '@mui/system'
 import { AppContext } from '../../../context/app.context'
 import { UserAvatar } from '../../UserAvatar'
 import { ConfirmModal } from '../../modals/ConfirmModal'
 import config from '../../../config'
 import { SurveyCorps } from './SurveyCorps'
 import { wipeLocalLookups } from '../../../lib/utils'
-import { useConsentCookie } from '../../../lib/analytics'
 import { AnalyticsContext } from '../../Analytics'
 
 export const ProfileTabsEnum = {
@@ -316,7 +315,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 Avatar
               </Typography>
               <Box sx={styles.sectionBody}>
-                <Typography paragraph variant="body2">
+                <Typography gutterBottom variant="body2">
                   For now you can only choose to use the Avatar from your login account (or not).
                 </Typography>
 
@@ -413,7 +412,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <Typography component="div" sx={styles.sectionTitle}>
                   Friends ({userProfile.friends.length})
                 </Typography>
-                <Typography paragraph variant="body2" sx={{ p: 1, px: 2 }}>
+                <Typography gutterBottom variant="body2" sx={{ p: 1, px: 2 }}>
                   Add the names of people you mine with regularly so they are easy to add to your sessions.
                 </Typography>
                 <Box sx={styles.sectionBody}>
@@ -424,7 +423,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     addToList={addFriend}
                     removeFriend={removeFriend}
                   />
-                  <Typography paragraph variant="caption" sx={{ p: 1, pt: 3, px: 2 }} component="div">
+                  <Typography gutterBottom variant="caption" sx={{ p: 1, pt: 3, px: 2 }} component="div">
                     NOTES:
                     <ul>
                       <li>Friends are not notified and this is not linked to their account in any way.</li>
@@ -439,7 +438,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Box>
             )}
             {hideNames && (
-              <Typography paragraph variant="overline" sx={{ p: 1, px: 2, textAlign: 'center' }}>
+              <Typography gutterBottom variant="overline" sx={{ p: 1, px: 2, textAlign: 'center' }}>
                 You cannot see your friend list while streaming mode is on.
               </Typography>
             )}
@@ -499,7 +498,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 Session Defaults
               </Typography>
               <Alert severity="info" sx={{ mt: 2 }}>
-                <Typography paragraph variant="body2">
+                <Typography gutterBottom variant="body2">
                   These settings will be used as your session defaults. You can always override them when you create a
                   session. Changing these settings will not affect existing sessions.
                 </Typography>
@@ -578,7 +577,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Stack>
               {userProfile.apiKey && userProfile.plan === UserPlanEnum.Admin && (
                 <Alert severity="warning" sx={{ mt: 2 }}>
-                  <Typography paragraph variant="body2">
+                  <Typography gutterBottom variant="body2">
                     Feel free to use the API for your own projects. If you are using API calls regularly we'd really
                     appreciate your support to cover our server costs. If you haven't already please consider becoming a
                     supporter on{' '}
@@ -595,11 +594,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </Typography>
             </Box>
             <Box sx={styles.sectionBody}>
-              <Typography paragraph variant="body2">
+              <Typography gutterBottom variant="body2">
                 <strong>DO NOT SHARE YOUR API TOKEN OR MAKE IT PUBLIC IN ANY WAY</strong>. Anyone with this code has
                 full access to your <em>(and only your)</em> Regolith Account.
               </Typography>
-              <Typography paragraph variant="body2">
+              <Typography gutterBottom variant="body2">
                 To use the Regolith API you need to include your API key in the header of your requests as follows:
               </Typography>
               <Box
@@ -614,20 +613,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <pre>POST: {config.apiUrl}</pre>
                 <pre>{`Headers: {"x-api-key": "YOUR_TOKEN_HERE"}`}</pre>
                 <pre>{`Body (JSON):{"query":"query {\n  profile {\n    userId\n    scName\n    avatarUrl\n    createdAt\n    updatedAt\n  }\n}"}`}</pre>
-                <Typography paragraph variant="caption">
+                <Typography gutterBottom variant="caption">
                   (If you're sending this in as a raw string you'll need to collapse the line breaks into a single line
                   using '\n')
                 </Typography>
               </Box>
 
-              <Typography paragraph variant="body2">
+              <Typography gutterBottom variant="body2">
                 The base level is capped at 3,600 requests per day. If you need more, please contact us on{' '}
                 <Link href="https://discord.gg/6TKSYHNJha" target="_blank">
                   Discord
                 </Link>
                 .
               </Typography>
-              <Typography paragraph variant="body2">
+              <Typography gutterBottom variant="body2">
                 The Regolith API uses{' '}
                 <Link href="https://graphql.org/" target="_blank" rel="noreferrer">
                   GraphQL
@@ -636,7 +635,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 using a type system you define for your data. It is an alternative to <strong>REST</strong> and it is
                 self-documenting.
               </Typography>
-              <Typography paragraph variant="body2">
+              <Typography gutterBottom variant="body2">
                 You can use tools like{' '}
                 <Link href="https://www.postman.com/" target="_blank" rel="noreferrer">
                   Postman

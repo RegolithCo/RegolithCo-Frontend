@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useTheme, Typography, Box, RadioGroup, FormControlLabel, Radio } from '@mui/material'
 import { ObjectValues, RegolithStatsSummary, RegolithMonthStats, RegolithAllTimeStats } from '@regolithco/common'
-import { Serie } from '@nivo/line'
+import { LineSeries } from '@nivo/line'
 import { fontFamilies } from '../../../theme'
 import { isUndefined } from 'lodash'
 import { StatsLineChart } from './StatsLineChart'
@@ -116,7 +116,7 @@ export function formatChartData(
   chartResolution: ChartResolutionsEnum,
   chartType: 'workOrders' | 'scouting',
   maxVals?: number
-): Serie[] {
+): LineSeries[] {
   if (!stats) return []
   let keys = Object.keys(stats)
   keys.sort((a, b) => (new Date(a) > new Date(b) ? 1 : -1))
@@ -126,11 +126,10 @@ export function formatChartData(
     keys = keys.splice(keys.length - maxVals, keys.length)
   }
 
-  const series: Serie[] = []
+  const series: LineSeries[] = []
   Object.entries(chartType === 'scouting' ? SCOUTING_LINES : WORK_ORDER_LINES).forEach(([key, { label, color }]) => {
-    const serie: Serie = {
+    const serie: LineSeries = {
       id: label,
-      color,
       data: keys.map((k) => {
         const dateVal = chartResolution === ChartTypesEnum.MONTH ? new Date(k + 'T00:00:00') : new Date(k + 'T00:00:00')
         // If the dateval is the current month and the month is not over then we need to pro-rate the value
@@ -164,7 +163,7 @@ export function formatChartData(
         d.y = 0
         return
       }
-      d.y = (d.val || 0) / max
+      d.y = (typeof d.y === 'number' ? d.y : 0) / max
     })
 
     series.push(serie)

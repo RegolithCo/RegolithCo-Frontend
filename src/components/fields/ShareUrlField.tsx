@@ -9,7 +9,7 @@ interface ShareUrlFieldProps {
 
 export const ShareUrlField: React.FC<ShareUrlFieldProps> = ({ code }) => {
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout>(null)
 
   const [helperText, setHelperText] = React.useState(' ')
   const handleClick = async () => {

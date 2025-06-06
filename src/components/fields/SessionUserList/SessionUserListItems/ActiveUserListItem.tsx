@@ -1,5 +1,15 @@
 import React, { useRef } from 'react'
-import { ListItem, ListItemAvatar, ListItemText, Tooltip, Stack, Typography, useTheme, IconButton } from '@mui/material'
+import {
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Tooltip,
+  Stack,
+  Typography,
+  useTheme,
+  IconButton,
+  alpha,
+} from '@mui/material'
 import {
   getSessionUserStateName,
   MiningLoadout,
@@ -13,7 +23,6 @@ import {
   VehicleRoleEnum,
 } from '@regolithco/common'
 import { RocketLaunch } from '@mui/icons-material'
-import { alpha } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { StateChip } from './StateChip'

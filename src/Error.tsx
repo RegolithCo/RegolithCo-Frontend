@@ -1,8 +1,7 @@
 import React from 'react'
 import { useRouteError } from 'react-router-dom'
 import log from 'loglevel'
-import { Typography, Container, Button, Divider } from '@mui/material'
-import { Box, Stack } from '@mui/system'
+import { Typography, Container, Button, Divider, Box, Stack } from '@mui/material'
 import { PageWrapper } from './components/PageWrapper'
 import { AppWrapperContainer } from './components/AppWrapper'
 import { DiscordIcon } from './icons'
@@ -42,7 +41,7 @@ export const GenericErrorPage: React.FC<GenericErrorProps> = ({ error, errorInfo
         <PageWrapper title="ERROR: Something went wrong" maxWidth="lg">
           <Container>
             <Typography variant="overline">Regolith Error</Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               Try reloading the page. It may fix the issue. If this error persists, please consider copying the error
               and pasting it in our `report-bugs` channel on Discord.
             </Typography>
@@ -98,7 +97,7 @@ export const GenericErrorPage: React.FC<GenericErrorProps> = ({ error, errorInfo
                 Discord Server
               </Button>
             </Stack>
-            <Typography paragraph fontStyle={'italic'}>
+            <Typography component="p" gutterBottom fontStyle={'italic'}>
               <strong>NOTE:</strong> We get detailed reports of all crashes including this one so you don't NEED to
               report this bug unless you feel there's something special about it.
             </Typography>

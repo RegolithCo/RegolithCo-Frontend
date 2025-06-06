@@ -11,10 +11,10 @@ import {
   SxProps,
   Theme,
   Typography,
+  Stack,
   useTheme,
 } from '@mui/material'
 import { OreSummary, findAllStoreChoices, StoreChoice } from '@regolithco/common'
-import { Stack } from '@mui/system'
 import Gradient from 'javascript-color-gradient'
 import { Cancel, ResetTv } from '@mui/icons-material'
 import { StoreChooserListItem } from '../fields/StoreChooserListItem'

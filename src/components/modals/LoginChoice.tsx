@@ -69,10 +69,10 @@ export const LoginChoice: React.FC<LoginChoiceProps> = ({ open, onClose, authTyp
           </Button>
         </Stack>
         <Alert severity="info">
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" component="p" gutterBottom>
             We use Discord and Google to authenticate you. We do not store any of your personal information.
           </Typography>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" component="p" gutterBottom>
             Each method will create a separate account so please be consistent with which one you choose (unless you
             want multiple accounts).
           </Typography>

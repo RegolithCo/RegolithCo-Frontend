@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
-import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
+import { alpha, ToggleButton, Tooltip, useTheme, Grid } from '@mui/material'
 import { ShipOreEnum, getShipOreAbbrev } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { useShipOreColors } from '../../hooks/useShipOreColors'
 
 export interface ShipOreChooserProps {
@@ -41,7 +40,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
       {sortedShipRowColors.map(({ ore: shipOreKey, fg: fgc, bg: bgc }, rowIdx) => {
         const active = isToggleButtons ? selected.includes(shipOreKey) : true
         return (
-          <Grid xs={2} key={`orechooserow-${rowIdx}`}>
+          <Grid size={{ xs: 2 }} key={`orechooserow-${rowIdx}`}>
             <ToggleButton
               value={shipOreKey}
               fullWidth
@@ -96,7 +95,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
       })}
       {multiple && showAllBtn && (
         // {multiple && showAllBtn && (
-        <Grid xs={2}>
+        <Grid size={{ xs: 2 }}>
           <Tooltip title="Select all ores">
             <ToggleButton
               value={''}
@@ -124,7 +123,7 @@ export const ShipOreChooser: React.FC<ShipOreChooserProps> = ({
         </Grid>
       )}
       {!requireValue && showNoneBtn && (
-        <Grid xs={2}>
+        <Grid size={{ xs: 2 }}>
           <Tooltip title="Remove all selected ores">
             <ToggleButton
               value={''}

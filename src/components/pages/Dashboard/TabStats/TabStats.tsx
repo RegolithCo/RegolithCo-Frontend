@@ -1,7 +1,6 @@
 import * as React from 'react'
 import dayjs, { Dayjs } from 'dayjs'
-import { Typography, useTheme } from '@mui/material'
-import { alpha, Box, Stack } from '@mui/system'
+import { Typography, useTheme, alpha, Box, Stack, Grid } from '@mui/material'
 import { fontFamilies } from '../../../../theme'
 import { DashboardProps } from '../Dashboard'
 import { DatePresetsEnum, DatePresetStrings, StatsDatePicker } from './StatsDatePicker'
@@ -16,7 +15,6 @@ import {
   VehicleOreEnum,
   WorkOrder,
 } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { SiteStatsCard } from '../../../cards/SiteStats'
 import { OrePieChart } from '../../../cards/charts/OrePieChart'
 import { MValueFormat, MValueFormatter } from '../../../fields/MValue'
@@ -443,12 +441,12 @@ export const TabStats: React.FC<DashboardProps> = ({
         </Grid>
         <Grid spacing={3} container sx={{ width: '100%' }}>
           {!loading && (
-            <Grid xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <OrePieChart title="Activity Types" activityTypes={activityPie} loading={Boolean(loading)} />
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <OrePieChart
                 title="Ship Ores"
                 groupThreshold={0.04}
@@ -458,7 +456,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <OrePieChart
                 title="Vehicle Ores"
                 ores={vehicleOrePie as RegolithStatsSummary['vehicleOres']}
@@ -467,7 +465,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <OrePieChart
                 title="Salvage Ores"
                 ores={salvageOrePie as RegolithStatsSummary['salvageOres']}
@@ -476,7 +474,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <OrePieChart
                 title="Refining Processes"
                 activityTypes={refiningProcesses as RegolithStatsSummary['refineryMethod']}
@@ -485,7 +483,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <OrePieChart
                 title="Refineries"
                 activityTypes={refineries as RegolithStatsSummary['refineries']}
@@ -494,7 +492,7 @@ export const TabStats: React.FC<DashboardProps> = ({
             </Grid>
           )}
           {!loading && (
-            <Grid xs={12} my={3}>
+            <Grid size={{ xs: 12 }} my={3}>
               <MyDashboardStatsChart
                 sessions={[...mySessions, ...joinedSessions]}
                 workOrderSummaries={workOrderSummaries}

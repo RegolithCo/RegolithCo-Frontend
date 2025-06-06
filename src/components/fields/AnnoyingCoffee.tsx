@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { Box, Button, useMediaQuery, useTheme } from '@mui/material'
-import { alpha, keyframes } from '@mui/system'
+import { Box, Button, useMediaQuery, useTheme, alpha, keyframes } from '@mui/material'
 
 export type AnnoyingCoffeeProps = {
   show?: boolean

@@ -11,9 +11,9 @@ import {
   IconButton,
   TextField,
   Typography,
+  Stack,
   useTheme,
 } from '@mui/material'
-import { Stack } from '@mui/system'
 import { Add, Cancel, Check } from '@mui/icons-material'
 import { jsRound } from '@regolithco/common'
 import { fontFamilies } from '../../theme'

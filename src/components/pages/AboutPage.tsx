@@ -152,11 +152,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           <Card elevation={20} sx={styles.card}>
             <CardHeader title="About Regolith Co." />
             <CardContent>
-              <Typography paragraph>
+              <Typography component="p" gutterBottom>
                 Regolith Co. is a fansite dedicated to helping Star Citizen players mine, organize, share, and scout
                 together.
               </Typography>
-              <Typography paragraph>
+              <Typography component="p" gutterBottom>
                 It was developed by myself. Hello! I'm Raychaser and I am a software developer and a Star Citizen
                 backer. I have been playing Star Citizen since 2020. I am a member of the{' '}
                 <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
@@ -169,7 +169,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           <Card elevation={20} sx={styles.card}>
             <CardHeader title="Regolith Co. Mission Statement" />
             <CardContent>
-              <Typography paragraph variant={'body2'} color={'text.secondary'}>
+              <Typography gutterBottom variant={'body2'} color={'text.secondary'}>
                 "Regolith Co. is dedicated to advancing the frontiers of space exploration by fostering collaboration,
                 innovation, and resource sharing within the space mining industry. Our mission is to unite and empower
                 space miners, enabling them to explore and utilize celestial bodies, while promoting sustainable
@@ -182,7 +182,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           <Card elevation={20} sx={styles.card}>
             <CardHeader title="Disclaimer" />
             <CardContent>
-              <Typography paragraph>
+              <Typography component="p" gutterBottom>
                 Space mining is an inherently dangerous activity. Regolith Co. cannot be held responsible for any
                 injuries, deaths, or other unfortunate incidents, (hilarious or otherwise) that may occur while using
                 our services. These include, but are not limited to:
@@ -264,18 +264,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.HelpUs && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography paragraph>There are a number of ways you can help support Regolith Co.</Typography>
+            <Typography component="p" gutterBottom>
+              There are a number of ways you can help support Regolith Co.
+            </Typography>
 
-            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+            <Typography color="secondary" variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
               1. Donate to Help with server costs
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               Everyone can use this site for free, hopefully forever. However,{' '}
               <strong style={{ color: theme.palette.secondary.dark }}>server costs are real</strong>. If you use
               Regolith and are seeking a way to help keep the lights on and feed the hungry AWS beast, your support
               would be amazing!
             </Typography>
-            <Typography paragraph variant="subtitle1">
+            <Typography gutterBottom variant="subtitle1">
               Any amount at all is a big help! (
               <Link href="https://ko-fi.com/regolithco" target="_blank">
                 open Ko-fi donation page in new tab
@@ -305,10 +307,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Box> */}
             </Stack>
             <Divider sx={{ mb: 3 }} />
-            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+            <Typography color="secondary" variant="h5" gutterBottom sx={{ borderBottom: '1px solid', mt: 3 }}>
               2. Buy some merch
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               If you want to support Regolith Co. and get something in return, you can buy some sexy merch from our{' '}
               <Link href="https://shop.regolith.rocks" target="_blank">
                 store
@@ -322,14 +324,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}
               />
             </Link>
-            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+            <Typography color="secondary" variant="h5" gutterBottom sx={{ borderBottom: '1px solid', mt: 3 }}>
               3. Spread the word
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               Regolith is a community-driven app and we don't do a lot of outreach. If you like the site, tell your
               friends, tell your family. Hell, tell your cat Fluffles!
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               If you feel really inspired, share and brag about your mining sessions on social media. Regolith has share
               buttons ({' '}
               <ExportImageIcon
@@ -348,10 +350,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               images all have the our site URL at the bottom.
             </Typography>
             <Divider sx={{ mb: 3 }} />
-            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+            <Typography color="secondary" variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
               3. Join the Discord / Become a tester
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               Join the Discord server for help, support, bugs, feature requests etc. You can also use a self-assigned
               role to become a tester and get early access to new features and help find bugs before they get out into
               the world.
@@ -374,10 +376,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Button>
             </Box>
             <Divider sx={{ mb: 3 }} />
-            <Typography color="secondary" variant="h5" paragraph sx={{ borderBottom: '1px solid', mt: 3 }}>
+            <Typography color="secondary" variant="h5" gutterBottom sx={{ borderBottom: '1px solid', mt: 3 }}>
               4. Star Citizen Referral Code
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               If you're looking for a way to support the site and you don't already have a Star Citizen account, you can
               use our referral code when you create your account. You'll get 5000 aUEC (spacebucks) and we'll get a
               referral point.
@@ -416,16 +418,18 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       {finalTab === TabIndex.MiningResouces && (
         <Box sx={{ mb: 3 }}>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+            <Typography variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
               Mining Resources
             </Typography>
-            <Typography paragraph>Here are some resources to help you learn how to mine in the verse.</Typography>
+            <Typography component="p" gutterBottom>
+              Here are some resources to help you learn how to mine in the verse.
+            </Typography>
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+            <Typography variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
               The Definitive Mining Tutorial Series
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               <Link href="https://redmonstergaming.com/" target="_blank">
                 RedMonsterSC
               </Link>{' '}
@@ -435,10 +439,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <YoutubeEmbed embedId="videoseries?si=2FdIyIW5Zs9upHiC&amp;list=PLMd2J1iNJCMdZ1hTEqNKvaCSufAyg5pKK" />
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+            <Typography variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
               Tutorial Video by RedMonsterSC
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               Thanks to{' '}
               <Link href="https://redmonstergaming.com/" target="_blank">
                 RedMonsterSC
@@ -448,10 +452,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             <YoutubeEmbed embedId="ZnjenWj_ZQ8" />
           </Paper>
           <Paper elevation={5} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph sx={{ borderBottom: '1px solid' }}>
+            <Typography variant="h5" gutterBottom sx={{ borderBottom: '1px solid' }}>
               Other Videos Featuring Regolith Co.
             </Typography>
-            <Typography paragraph>
+            <Typography component="p" gutterBottom>
               We maintaina playlist of youtube videos that feature Regolith Co. in some way. If you have a video
               featuring Regolith Co. please let us know and we will add it to the playlist.
             </Typography>
@@ -468,12 +472,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
             </Typography>
           </Paper>
           <Paper elevation={10} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph>
+            <Typography variant="h5" component="p" gutterBottom>
               <Link href="https://uexcorp.space/" target="_blank">
                 UEXCorp
               </Link>
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               When 3.19 dropped all the prices disappeared from the client XML and we had to scramble to find new ones.
               UEXCorp was gracious to allow us to use their data. If you're looking to help them out you can donate to
               their efforts either with money or{' '}
@@ -485,12 +489,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           </Paper>
 
           <Paper elevation={10} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph>
+            <Typography variant="h5" component="p" gutterBottom>
               <Link href="https://redmonstergaming.com/" target="_blank">
                 RedMonsterSC
               </Link>
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               RedMonsterSC is a Star Citizen content creator on{' '}
               <Link href="https://www.youtube.com/@RedMonsterSC" target="_blank">
                 YouTube
@@ -499,7 +503,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               Regolith. In particular his spreadsheet for the loadout meta for 3.20 and beyond was instrumental in the
               development of Regolith's own loadout tool.
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               RedMonsterSC also runs the Red Legion Org. for Star Citizen miners who are interested in the industrial
               profession.
             </Typography>
@@ -524,17 +528,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
                 <ListItemText primary="Red Legion Org." secondary="Star Citizen Mining org on Discord" />
               </ListItemButton>
             </List>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               RedMonsterSC has also created an amazing video guide for Regolith and you can find it here:
             </Typography>
             <YoutubeEmbed embedId="ZnjenWj_ZQ8" />
           </Paper>
 
           <Paper elevation={10} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph>
+            <Typography variant="h5" component="p" gutterBottom>
               UEMC Miners, Board and Foremen
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               A big thanks to the{' '}
               <Link href="https://robertsspaceindustries.com/orgs/uemc" target="_blank">
                 United Earth Mining Corporation (UEMC)
@@ -561,14 +565,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
           </Paper>
 
           <Paper elevation={10} sx={styles.innerPaper}>
-            <Typography variant="h5" paragraph>
+            <Typography variant="h5" component="p" gutterBottom>
               Regolith Discord Community
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               Our discord community is pretty new but it is growing. I am so grateful for the support and feedback from
               the community. Thank you!
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               <Link href="https://discord.gg/6TKSYHNJha" target="_blank">
                 Join us today
               </Link>{' '}

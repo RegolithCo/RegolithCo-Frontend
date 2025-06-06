@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useTheme, Typography, Paper, Toolbar } from '@mui/material'
+import { useTheme, Typography, Paper, Toolbar, Stack, SxProps, Theme, Grid } from '@mui/material'
 import {
   ActivityEnum,
   calculateWorkOrder,
@@ -12,9 +12,7 @@ import dayjs from 'dayjs'
 
 import { ExpensesSharesCard } from '../calculators/WorkOrderCalc/WorkOrderCards/ExpensesSharesCard'
 import { noop } from 'lodash'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { OreCard } from '../calculators/WorkOrderCalc/WorkOrderCards/OreCard'
-import { Stack, SxProps, Theme } from '@mui/system'
 import { AccountBalance, SvgIconComponent } from '@mui/icons-material'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
@@ -154,10 +152,10 @@ export const WorkOrderShare: React.FC<WorkOrderShareProps> = ({ workOrder, setti
         </Stack>
       </Toolbar>
       <Grid container spacing={2} sx={styles.container}>
-        <Grid xs={5} sx={styles.gridCss}>
+        <Grid size={{ xs: 5 }} sx={styles.gridCss}>
           <OreCard onChange={noop} isShare summary={summary} workOrder={workOrder} sx={styles.cardCss} />
         </Grid>
-        <Grid xs={7} sx={styles.gridCss}>
+        <Grid size={{ xs: 7 }} sx={styles.gridCss}>
           <ExpensesSharesCard onChange={noop} isShare summary={summary} workOrder={workOrder} sx={styles.cardCss} />
         </Grid>
       </Grid>

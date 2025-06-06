@@ -7,7 +7,8 @@ import {
   CardHeader,
   Dialog,
   FormControlLabel,
-  Grid2Props,
+  Grid,
+  GridProps,
   IconButton,
   PaletteColor,
   Stack,
@@ -30,7 +31,6 @@ import {
   ActiveMiningLaserLoadout,
   AllStats,
 } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { Close, Delete, Edit, Refresh, Save } from '@mui/icons-material'
 import { fontFamilies } from '../../../theme'
@@ -69,23 +69,27 @@ interface ToolGridProps {
 }
 
 const ToolGrid: React.FC<ToolGridProps> = ({ ship, children, isShare }) => {
-  const gridProps: Grid2Props =
+  const gridProps: GridProps =
     ship === LoadoutShipEnum.Mole
       ? isShare
-        ? { xs: 3 }
+        ? { size: { xs: 3 } }
         : {
-            xs: 12,
-            sm: 6,
-            md: 6,
-            lg: 4,
+            size: {
+              xs: 12,
+              sm: 6,
+              md: 6,
+              lg: 4,
+            },
           }
       : isShare
-        ? { xs: 3 }
+        ? { size: { xs: 3 } }
         : {
-            xs: 12,
-            sm: 6,
-            md: 6,
-            lg: 4,
+            size: {
+              xs: 12,
+              sm: 6,
+              md: 6,
+              lg: 4,
+            },
           }
   return <Grid {...gridProps}>{children}</Grid>
 }
@@ -259,7 +263,13 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
         >
           <Grid container spacing={3} sx={{ my: 1, mx: 2 }}>
             {/* This grid has the lasers and the stats */}
-            <Grid xs={12} sm={12} md={isShare ? 12 : 8}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+                md: isShare ? 12 : 8,
+              }}
+            >
               <Grid container spacing={3} rowSpacing={3}>
                 <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                   <LoadoutLaserTool
@@ -336,10 +346,28 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 </ToolGrid>
               </Grid>
             </Grid>
-            <Grid container xs={12} sm={12} md={isShare ? 12 : 4} spacing={2}>
-              <Grid xs={isShare ? 8 : 12}>{stats && <LoadoutCalcStats stats={stats} />}</Grid>
+            <Grid
+              container
+              size={{
+                xs: 12,
+                sm: 12,
+                md: isShare ? 12 : 4,
+              }}
+              spacing={2}
+            >
+              <Grid
+                size={{
+                  xs: isShare ? 12 : 8,
+                }}
+              >
+                {stats && <LoadoutCalcStats stats={stats} />}
+              </Grid>
               {stats && (
-                <Grid xs={isShare ? 4 : 12}>
+                <Grid
+                  size={{
+                    xs: isShare ? 4 : 12,
+                  }}
+                >
                   <Box
                     sx={{
                       py: 2,
@@ -465,10 +493,10 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
           title="Too many loadouts"
           message={
             <>
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" component="p" gutterBottom>
                 You have reached the maximum number of loadouts (20). Please delete some before creating more.
               </Typography>
-              <Typography variant="caption" paragraph>
+              <Typography variant="caption" component="p" gutterBottom>
                 If you think this app needs more than 20, please get in touch and let us know. It was an arbitrary
                 decision to make things nice for the developers. We can change it if there is demand.
               </Typography>

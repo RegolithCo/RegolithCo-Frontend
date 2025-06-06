@@ -5,15 +5,15 @@ import {
   CardContent,
   CardMedia,
   Divider,
+  Grid,
   Link,
   Paper,
   Stack,
   Tooltip,
   Typography,
   useTheme,
+  alpha,
 } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import { alpha } from '@mui/system'
 import * as React from 'react'
 
 import { PageWrapper } from '../PageWrapper'
@@ -60,9 +60,11 @@ const HomeCard: React.FC<{
 
   return (
     <Grid
-      xs={12}
-      sm={6}
-      md={4}
+      size={{
+        xs: 12,
+        sm: 6,
+        md: 4,
+      }}
       sx={{
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.5 : 1,

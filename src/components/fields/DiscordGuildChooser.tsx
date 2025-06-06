@@ -1,8 +1,7 @@
 import React from 'react'
-import { Select, MenuItem, Avatar, SelectProps } from '@mui/material'
+import { Select, MenuItem, Avatar, SelectProps, Box } from '@mui/material'
 import { DiscordGuildInput, MyDiscordGuild } from '@regolithco/common'
 import { Diversity3 } from '@mui/icons-material'
-import { Box } from '@mui/system'
 
 export interface DiscordGuildChooserProps {
   discordGuildId?: string

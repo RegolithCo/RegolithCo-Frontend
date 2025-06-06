@@ -17,10 +17,11 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Box,
+  Stack,
 } from '@mui/material'
 import { SvgIconComponent, Diversity3, AccountBalance } from '@mui/icons-material'
 import { fontFamilies } from '../../theme'
-import { Box, Stack } from '@mui/system'
 import { SessionContext } from '../../context/session.context'
 import dayjs from 'dayjs'
 import {
@@ -181,7 +182,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
       </DialogTitle>
       <DialogContent>
         <Alert severity="info" variant="filled" sx={{ mb: 2, color: 'white' }}>
-          <Typography variant="body1" paragraph>
+          <Typography variant="body1" component="p" gutterBottom>
             You can download an image snapshot of all or part of this session to share on social media, Discord etc. If
             you want to collaborate and invite people to your session use the invite icon (<Diversity3 />) instead.
           </Typography>
@@ -248,7 +249,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScout
                       <InputLabel id="demo-simple-select-label">Select a Work Order</InputLabel>
                       <Select
                         label={'Select a Work Order'}
-                        placeholder="Select a Work Order"
                         value={activeWorkOrderId || ''}
                         onChange={(e) => {
                           setActiveWorkOrderId(e.target.value as string)

@@ -1,9 +1,8 @@
 import React from 'react'
-import { MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Box, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { SessionUser, MiningLoadout } from '@regolithco/common'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
-import { Box } from '@mui/system'
 dayjs.extend(relativeTime)
 
 export interface LoadoutSelectPRops {

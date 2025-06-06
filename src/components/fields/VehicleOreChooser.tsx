@@ -1,7 +1,6 @@
 import React from 'react'
-import { alpha, ToggleButton, Tooltip, useTheme } from '@mui/material'
+import { alpha, ToggleButton, Tooltip, useTheme, Grid } from '@mui/material'
 import { VehicleOreEnum, getVehicleOreAbbrev, getVehicleOreName } from '@regolithco/common'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { useVehicleOreColors } from '../../hooks/useVehicleOreColors'
 
 export interface VehicleOreChooserProps {
@@ -35,7 +34,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
       {vehicleOreColors.map(({ bg, fg, ore }, rowIdx) => {
         const active = isToggleButtons ? selected.includes(ore) : true
         return (
-          <Grid xs={3} key={`grid-${rowIdx}`}>
+          <Grid size={{ xs: 3 }} key={`grid-${rowIdx}`}>
             <ToggleButton
               value={ore}
               fullWidth
@@ -93,7 +92,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
         )
       })}
       {multiple && showAllBtn && (
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Tooltip title="Select all ores">
             <ToggleButton
               value={''}
@@ -119,7 +118,7 @@ export const VehicleOreChooser: React.FC<VehicleOreChooserProps> = ({
         </Grid>
       )}
       {!requireValue && showNoneBtn && (
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Tooltip title="Remove all selected ores">
             <ToggleButton
               value={''}

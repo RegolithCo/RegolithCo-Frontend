@@ -2,13 +2,13 @@ import * as React from 'react'
 import { Typography, Box } from '@mui/material'
 import { ObjectValues } from '@regolithco/common'
 import { CartesianMarkerProps, linearGradientDef } from '@nivo/core'
-import { ResponsiveLine, Serie, LineSvgProps } from '@nivo/line'
+import { ResponsiveLine, LineSeries, LineSvgProps } from '@nivo/line'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import dayjs, { Dayjs } from 'dayjs'
 // import log from 'loglevel'
 
 export interface StatsLineChartProps {
-  chartData: Serie[]
+  chartData: LineSeries[]
   resolution: ChartResolutionsEnum
   chartFormat?: string
   loading?: boolean
@@ -53,10 +53,16 @@ export const StatsLineChart: React.FC<StatsLineChartProps> = ({ chartData, loadi
             },
           },
           markers: {
-            fontSize: '10',
             lineColor: 'white',
-            textColor: 'white',
             lineStrokeWidth: 1,
+            text: {
+              fontFamily: 'sans-serif',
+              fontSize: 10,
+              fill: 'white',
+              outlineWidth: 0,
+              outlineColor: 'transparent',
+              outlineOpacity: 1,
+            },
           },
           crosshair: {
             line: {
@@ -127,11 +133,11 @@ export const StatsLineChart: React.FC<StatsLineChartProps> = ({ chartData, loadi
                   <div
                     key={point.id}
                     style={{
-                      color: point.serieColor,
+                      color: point.color,
                       padding: '3px 0',
                     }}
                   >
-                    <strong>{point.serieId}: </strong>
+                    <strong>{point.id}: </strong>
                     <span>
                       {MValueFormatter((point.data as unknown as { val: string }).val, MValueFormat.number_sm, 0)}
                     </span>
@@ -187,7 +193,7 @@ export const StatsLineChart: React.FC<StatsLineChartProps> = ({ chartData, loadi
   )
 }
 
-const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps['markers'] => {
+const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps<LineSeries>['markers'] => {
   // If it's MONTH Then we should go from march 2023 to now. if it's daily then it should be the last 30 days
   const startDate: dayjs.Dayjs = chartType === ChartTypesEnum.MONTH ? dayjs('2023-03-01') : dayjs().subtract(30, 'days')
   const endDate: dayjs.Dayjs = dayjs()

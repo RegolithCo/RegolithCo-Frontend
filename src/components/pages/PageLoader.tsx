@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Theme, Typography, useTheme } from '@mui/material'
+import { Theme, Typography, useTheme, Box, keyframes } from '@mui/material'
 import { RockIcon } from '../../icons'
-import { Box, keyframes } from '@mui/system'
 import { fontFamilies } from '../../theme'
 
 export interface PageLoaderProps {

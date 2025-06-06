@@ -3,8 +3,7 @@ import React from 'react'
 
 import { WorkOrderAddFAB } from './WorkOrderAddFAB'
 import { ScoutingAddFAB } from './ScoutingAddFAB'
-import { Typography } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { Typography, Grid } from '@mui/material'
 import { fakeSessionSettings } from '@regolithco/common/dist/__mocks__'
 import { ActivityEnum } from '@regolithco/common'
 
@@ -15,19 +14,19 @@ export default {
 
 const Template = () => (
   <Grid container>
-    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} xs={3}>
+    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} size={{ xs: 3 }}>
       <Typography>ScoutingAddFAB</Typography>
       <ScoutingAddFAB />
     </Grid>
-    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} xs={3}>
+    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} size={{ xs: 3 }}>
       <Typography>ScoutingAddFAB Locked</Typography>
       <ScoutingAddFAB sessionSettings={fakeSessionSettings({ activity: ActivityEnum.ShipMining })} />
     </Grid>
-    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} xs={3}>
+    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} size={{ xs: 3 }}>
       <Typography>WorkOrderAddFAB</Typography>
       <WorkOrderAddFAB />
     </Grid>
-    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} xs={3}>
+    <Grid sx={{ height: 500, border: '1px solid', position: 'relative' }} size={{ xs: 3 }}>
       <Typography>WorkOrderAddFAB Locked</Typography>
       <WorkOrderAddFAB sessionSettings={fakeSessionSettings({ activity: ActivityEnum.ShipMining })} />
     </Grid>

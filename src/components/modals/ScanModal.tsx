@@ -15,10 +15,10 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Stack,
 } from '@mui/material'
 import { fontFamilies, theme } from '../../theme'
 import { usesignals } from '../../hooks/useSignals'
-import { Stack } from '@mui/system'
 import { yellow } from '@mui/material/colors'
 import { AsteroidTypeEnum, DepositTypeEnum, getAsteroidTypeName, getDepositTypeName } from '@regolithco/common'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'

@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
-import { ListItem, ListItemAvatar, ListItemText, Typography, Stack } from '@mui/material'
+import { ListItem, ListItemAvatar, ListItemText, Typography, Stack, alpha, useTheme } from '@mui/material'
 import { PendingUser } from '@regolithco/common'
-import { alpha, useTheme } from '@mui/system'
 import { SessionContext } from '../../../../context/session.context'
 import { UserAvatar } from '../../../UserAvatar'
 import { fontFamilies } from '../../../../theme'

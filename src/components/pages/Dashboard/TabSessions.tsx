@@ -1,9 +1,8 @@
 import * as React from 'react'
 
 import { UserProfile, Session, SessionStateEnum } from '@regolithco/common'
-import { Box, FormControlLabel, Switch, Typography, useTheme } from '@mui/material'
+import { Box, FormControlLabel, Switch, Typography, useTheme, Stack, useMediaQuery } from '@mui/material'
 import { SessionList } from '../../fields/SessionList'
-import { Stack, useMediaQuery } from '@mui/system'
 import { fontFamilies } from '../../../theme'
 
 export interface TabSessionsProps {

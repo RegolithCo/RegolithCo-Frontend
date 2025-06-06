@@ -24,6 +24,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Stack,
 } from '@mui/material'
 import {
   AnyOreEnum,
@@ -42,7 +43,6 @@ import {
 } from '@regolithco/common'
 import { ShipOreChooser } from '../fields/ShipOreChooser'
 import { RockIcon } from '../../icons'
-import { Stack } from '@mui/system'
 import { MValue, MValueFormat } from '../fields/MValue'
 import { fontFamilies, theme as themeOrig } from '../../theme'
 import { Cancel, Delete, Save } from '@mui/icons-material'
@@ -210,7 +210,9 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [activeOrePercentText, setActiveOrePercentText] = React.useState<[number, string] | null>(null)
-  const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement>>>({})
+  const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement | null>>>(
+    {} as Record<string, React.RefObject<HTMLInputElement | null>>
+  )
 
   const [newShipRock, _setNewShipRock] = React.useState<ShipRock>(
     !isNew && shipRock

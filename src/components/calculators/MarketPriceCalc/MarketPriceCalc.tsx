@@ -8,6 +8,11 @@ import {
   IconButton,
   LinearProgress,
   Link,
+  Box,
+  Stack,
+  SxProps,
+  Theme,
+  Grid,
   List,
   ListItem,
   ListItemText,
@@ -15,7 +20,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { Box, Stack, SxProps, Theme } from '@mui/system'
 import {
   ActivityEnum,
   findAllStoreChoices,
@@ -27,7 +31,6 @@ import {
 } from '@regolithco/common'
 import { StoreChooserListItem } from '../../fields/StoreChooserListItem'
 import Gradient from 'javascript-color-gradient'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import { ShipOreChooser } from '../../fields/ShipOreChooser'
 import { VehicleOreChooser } from '../../fields/VehicleOreChooser'
 import { SalvageOreChooser } from '../../fields/SalvageOreChooser'
@@ -62,7 +65,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
   const dataStore = React.useContext(LookupsContext)
-  const [storeEls, setStoreEls] = React.useState<JSX.Element[]>([])
+  const [storeEls, setStoreEls] = React.useState<React.JSX.Element[]>([])
   const [oreSummary, setOreSummary] = React.useState<OreSummary>({})
   const [oreTotal, setOreTotal] = React.useState<number>(0)
   const [ores, setOres] = React.useState<OreStateType>({
@@ -132,7 +135,12 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
         </Typography>
       </Alert>
       <Grid container spacing={4}>
-        <Grid xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Box sx={{ mb: 2 }}>
             <FormControl fullWidth>
               <FormLabel
@@ -308,7 +316,12 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
             />
           </Box>
         </Grid>
-        <Grid xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Box>
             <Typography
               sx={{

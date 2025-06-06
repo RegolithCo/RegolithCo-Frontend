@@ -23,7 +23,7 @@ export const SystemChooser: React.FC<SystemChooserProps> = ({ onChange, label, v
         value={value || ''}
         label={fLabel}
         onChange={(event) => {
-          const newVal = event.target.value
+          const newVal = event.target.value as SystemEnum | ''
           if (newVal === '') return onChange(null)
           onChange(newVal as SystemEnum)
         }}

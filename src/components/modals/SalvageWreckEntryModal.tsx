@@ -25,6 +25,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Stack,
+  Grid,
 } from '@mui/material'
 import {
   AnyOreEnum,
@@ -36,9 +38,7 @@ import {
   SalvageWreckOre,
   WreckStateEnum,
 } from '@regolithco/common'
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 import { ClawIcon } from '../../icons'
-import { Stack } from '@mui/system'
 import { MValue, MValueFormat } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { Cancel, Delete, Rocket, Save } from '@mui/icons-material'
@@ -192,7 +192,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
     [key in SalvageOreEnum]?: number
   }>({})
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
-  const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement>>>({})
+  const [inputRefs, setInputRefs] = React.useState<Record<string, React.RefObject<HTMLInputElement | null>>>({})
   const sortOres = React.useCallback((ores: SalvageWreckOre[]): SalvageWreckOre[] => {
     const newOres = [...(ores || [])]
     newOres.sort((a, b) => {
@@ -346,8 +346,8 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
           <Alert severity="warning">
             <Typography variant="caption">All values are meant to be rough estimates and totally optional.</Typography>
           </Alert>
-          <Grid2 container spacing={2} paddingX={0} sx={styles.compositionGrid}>
-            <Grid2 xs={5}>
+          <Grid container spacing={2} paddingX={0} sx={styles.compositionGrid}>
+            <Grid size={{ xs: 5 }}>
               <ToggleButtonGroup
                 value={newWreck.isShip}
                 exclusive
@@ -370,8 +370,8 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                   Panel
                 </ToggleButton>
               </ToggleButtonGroup>
-            </Grid2>
-            <Grid2 xs={7}>
+            </Grid>
+            <Grid size={{ xs: 7 }}>
               <VehicleChooser
                 label="Ship being salvaged"
                 disabled={!newWreck.isShip}
@@ -380,8 +380,8 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                   setNewWreck({ ...newWreck, shipCode: newVehicle ? newVehicle.UEXID : null })
                 }}
               />
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
           <Typography variant="overline" sx={styles.headTitles} component="div">
             Composition
           </Typography>

@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Breakpoint, Container, Paper, SxProps, Typography } from '@mui/material'
+import { Breakpoint, Container, Paper, SxProps, Typography, Theme, useTheme } from '@mui/material'
 import { PageLoader } from './pages/PageLoader'
-import { Theme, useTheme } from '@mui/system'
 import { fontFamilies } from '../theme'
 
 export interface PageWrapperProps {

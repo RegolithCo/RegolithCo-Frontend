@@ -14,8 +14,8 @@ import {
   Tooltip,
   useMediaQuery,
   useTheme,
+  SxProps,
 } from '@mui/material'
-import { SxProps } from '@mui/system'
 import {
   AdminPanelSettings,
   ArrowBack,

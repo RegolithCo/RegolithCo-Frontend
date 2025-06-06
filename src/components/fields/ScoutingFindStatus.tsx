@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { ScoutingFindTypeEnum } from '@regolithco/common'
-import { useTheme } from '@mui/system'
 import { ClawIcon, GemIcon, RockIcon } from '../../icons'
 import { SvgIconComponent } from '@mui/icons-material'
-import { Chip, Tooltip } from '@mui/material'
+import { Chip, Tooltip, useTheme } from '@mui/material'
 import { fontFamilies } from '../../theme'
 
 interface WorkOrderStatusProps {

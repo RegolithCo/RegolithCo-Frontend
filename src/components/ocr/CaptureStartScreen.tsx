@@ -9,12 +9,12 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  Stack,
   useTheme,
 } from '@mui/material'
 import React, { useContext } from 'react'
 import { CaptureTypeTitle } from './CaptureControl'
 import { AddPhotoAlternate, ContentPaste, PrivacyTip, ScreenShare, StopScreenShare } from '@mui/icons-material'
-import { Stack } from '@mui/system'
 import { PrivacyDialog } from './PrivacyDialog'
 import { ScreenshareContext } from '../../context/screenshare.context'
 import { CaptureTypeEnum } from './types'
@@ -37,7 +37,7 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
     <Box sx={{ py: 3 }}>
       {/* There are 3 ways to capture data from Star citizen into regolith: Screen sharing, Uploading a screenshot or pasting into this window */}
 
-      <Typography variant="body1" paragraph>
+      <Typography variant="body1" component="p" gutterBottom>
         Regolith can interpret screenshots so that you can automatically{' '}
         <strong>{CaptureTypeTitle[captureType]}</strong> data into Regolith. There are 3 ways to capture data from Star
         Citizen into Regolith:
@@ -104,7 +104,7 @@ export const CaptureStartScreen: React.FC<CaptureStartScreenProps> = ({ captureT
             primary="2. Copy & Paste a Screenshot / Image"
             secondary={
               <Stack spacing={1}>
-                <Typography variant="body2" paragraph component="div">
+                <Typography variant="body2" component="div" gutterBottom>
                   Inside Star citizen use <KeyShortcut keyStr="Alt + PrintScreen" /> to copy a screenshot to your
                   clipboard. Then in Regolith use <KeyShortcut keyStr="Ctrl + V" />
                   or <KeyShortcut keyStr="Strg + V" /> to paste a screenshot into this window.{' '}

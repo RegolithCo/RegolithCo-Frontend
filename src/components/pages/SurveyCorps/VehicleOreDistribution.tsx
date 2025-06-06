@@ -666,11 +666,11 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
         </TableContainer>
         <Alert severity="info" sx={{ borderRadius: 0, mt: 4 }}>
           <AlertTitle>Legend:</AlertTitle>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" component="p" gutterBottom>
             The percentages in the table cells represent the probability that a cluster you find will be of that type.
           </Typography>
           {showExtendedStats && (
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" gutterBottom>
               The numbers in the form of "Median (Min - Max)" are the number of rocks in a cluster of that type
             </Typography>
           )}

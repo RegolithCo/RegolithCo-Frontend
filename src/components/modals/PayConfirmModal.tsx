@@ -23,7 +23,7 @@ export const PayConfirmModal: React.FC<PayConfirmModalProps> = ({ onClose, onCon
       title="Mark All Shares Paid?"
       message={
         <>
-          <Typography variant="body1" component="div" paragraph>
+          <Typography variant="body1" component="div" gutterBottom>
             Are you sure you want to mark all {payConfirm?.crewShares.length} shares to{' '}
             <strong>{getSafeName(payConfirm?.payeeUserSCName)}</strong> as paid?
           </Typography>

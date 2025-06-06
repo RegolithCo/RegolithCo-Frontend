@@ -1,10 +1,9 @@
 import * as React from 'react'
 
-import { Button, ButtonGroup, CircularProgress, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Button, ButtonGroup, CircularProgress, MenuItem, Select, Stack, Typography, Box } from '@mui/material'
 import { AddCircle, RocketLaunch } from '@mui/icons-material'
 import { Session } from '@regolithco/common'
 import { ConfirmModal } from '../../modals/ConfirmModal'
-import { Box } from '@mui/system'
 
 export interface JoinSessionButtonProps {
   sessions: Session[]
@@ -56,13 +55,15 @@ export const JoinSessionButton: React.FC<JoinSessionButtonProps> = ({
     sessCtl = (
       <ButtonGroup size="medium" variant="contained">
         <Select
-          placeholder="Join an existing session (2 available)"
           size="small"
           // fullWidth
           value={currentSelection || 'NOPE'}
           onChange={(e) => setCurrentSelection(e.target.value)}
           disabled={sessions.length < 2 || loading}
         >
+          <MenuItem disabled value="">
+            Join an existing session ({sessions.length} available)
+          </MenuItem>
           {sessions.map(({ sessionId, name }, idx) => (
             <MenuItem key={`btn-${idx}`} value={sessionId}>
               {name}

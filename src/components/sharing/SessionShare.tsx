@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { useTheme, Typography, Paper, Toolbar } from '@mui/material'
+import { useTheme, Typography, Paper, Toolbar, Stack, SxProps, Theme } from '@mui/material'
 import { defaultSessionName, getTimezoneStr, Session, SessionBreakdown, sessionReduce } from '@regolithco/common'
 import dayjs from 'dayjs'
 
-import { Stack, SxProps, Theme } from '@mui/system'
 import { RockIcon } from '../../icons'
 import { fontFamilies } from '../../theme'
 import { TabSummaryStats } from '../pages/SessionPage/TabSummaryStats'
