@@ -1,5 +1,5 @@
 import React from 'react'
-import { Select, MenuItem, Avatar, SelectProps, Box } from '@mui/material'
+import { Select, MenuItem, Avatar, SelectProps, Box, Menu } from '@mui/material'
 import { DiscordGuildInput, MyDiscordGuild } from '@regolithco/common'
 import { Diversity3 } from '@mui/icons-material'
 
@@ -52,9 +52,13 @@ export const DiscordGuildChooser: React.FC<DiscordGuildChooserProps> = ({
       }}
       {...selectProps}
     >
-      {allowNone && (
+      {allowNone ? (
         <MenuItem value="">
           <em>None</em>
+        </MenuItem>
+      ) : (
+        <MenuItem value="" disabled>
+          <em>Choose a Discord Server</em>
         </MenuItem>
       )}
       {options.map((option) => (
