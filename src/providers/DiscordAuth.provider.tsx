@@ -34,6 +34,7 @@ export const DiscordAuthInner: React.FC<{ setInnerState: (obj: InnerLoginContext
   const { token, logIn, logOut, loginInProgress, error }: IAuthContext = useContext(AuthContext)
 
   useEffect(() => {
+    if (config.stage !== 'production') return
     if (error) {
       Sentry.captureException(
         new DiscordAuthError({

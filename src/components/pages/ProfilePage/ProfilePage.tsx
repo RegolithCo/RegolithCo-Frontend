@@ -353,7 +353,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <div style={{ flexGrow: 1 }} />
               <Button
                 fullWidth
-                color="warning"
+                color="info"
                 disabled={loading}
                 startIcon={<Cookie />}
                 variant="outlined"

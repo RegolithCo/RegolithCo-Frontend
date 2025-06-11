@@ -178,9 +178,9 @@ export const GDPRDialog: React.FC = () => {
               page.
             </Typography>
             <Typography variant="body2" component={'div'} my={2}>
-              We appreciate your privacy and understand that not everyone is comfortable with tracking but we want to
-              balance that with the need to improve the site based on user feedback. If you have any questions or
-              concerns, please feel free to reach out to us.
+              We appreciate your privacy and understand that not everyone is comfortable with analytics cookies but we
+              want to balance that with the need to improve the site. If you have any questions or concerns, please feel
+              free to reach out to us.
             </Typography>
           </FAQ>
 

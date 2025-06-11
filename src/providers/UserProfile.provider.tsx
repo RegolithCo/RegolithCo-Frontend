@@ -4,6 +4,7 @@ import { useGetUserProfileQuery } from '../schema'
 import { usePageVisibility } from '../hooks/usePageVisibility'
 import { LoginContext, UserProfileContext } from '../context/auth.context'
 import * as Sentry from '@sentry/react'
+import config from '../config'
 
 /**
  * Finallly, the third component in the stack goes and gets the user profile (if there is one)
@@ -19,6 +20,7 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
   })
 
   useEffect(() => {
+    if (config.stage !== 'production') return
     Sentry.setTag('Authenticated', isAuthenticated)
     if (isAuthenticated && userProfileQry.data?.profile) {
       Sentry.setUser({

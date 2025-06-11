@@ -3,6 +3,7 @@ import { onError } from '@apollo/client/link/error'
 import { RetryLink } from '@apollo/client/link/retry'
 import { ErrorCode } from '@regolithco/common'
 import * as Sentry from '@sentry/react'
+import config from '../config'
 
 // Log any GraphQL errors or network error that occurred
 export const retryLink = new RetryLink({
@@ -98,7 +99,7 @@ export class GQLError extends Error {
 
 export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorking, logOut }) =>
   onError(({ graphQLErrors, networkError, forward, operation }) => {
-    if (graphQLErrors) {
+    if (graphQLErrors && config.stage !== 'production') {
       const queryBody = operation.query.loc?.source.body
       const queryMatch = queryBody?.match(/(query|mutation|document) (\w+).+/)
       const [_wholeMatch, qryType, name] = queryMatch || []
@@ -118,7 +119,7 @@ export const errorLinkThunk: ErrorLinkThunk = ({ setMaintenanceMode, setAPIWorki
     if (networkError) {
       try {
         const result = (networkError as ServerError).result
-        Sentry.captureException(networkError) // Capture the error with Sentry
+        // Sentry.captureException(networkError) // Capture the error with Sentry
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((result as Record<string, any>).extensions.code === ErrorCode.MAINENANCE_MODE) {
           setMaintenanceMode && setMaintenanceMode((result as Record<string, string>).message)

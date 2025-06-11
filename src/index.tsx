@@ -26,36 +26,38 @@ if (config.stage !== 'production') {
   log.debug('Logging is set to enable all')
   // LogRocket.init('xiwxu9/regolith')
   log.debug(`Logging is set to all for stage ${config.stage}`)
+  const versions = getVersions()
+
+  // Disabling Sentry in non-production environments
+  Sentry.init({
+    dsn: 'https://9f240841555f7364d65fb26d7c64b210@o4508823981391872.ingest.us.sentry.io/4508824003936256',
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration({
+        maskAllText: false,
+        blockAllMedia: false,
+        mask: ['.sentry-mask'],
+      }),
+    ],
+    // Tracing
+    environment: config.stage,
+    tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+    tracePropagationTargets: [
+      'localhost',
+      'http://127.0.0.1:7009/api',
+      'https://api.regolith.rocks/staging',
+      'https://api.regolith.rocks',
+    ],
+    release: `regolith@${versions.appVersion}`,
+    // Session Replay
+    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  })
 } else {
   log.setLevel('info')
   log.info(`Logging is set to info for stage ${config.stage}`)
 }
-const versions = getVersions()
-Sentry.init({
-  dsn: 'https://9f240841555f7364d65fb26d7c64b210@o4508823981391872.ingest.us.sentry.io/4508824003936256',
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration({
-      maskAllText: false,
-      blockAllMedia: false,
-      mask: ['.sentry-mask'],
-    }),
-  ],
-  // Tracing
-  environment: config.stage,
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: [
-    'localhost',
-    'http://127.0.0.1:7009/api',
-    'https://api.regolith.rocks/staging',
-    'https://api.regolith.rocks',
-  ],
-  release: `regolith@${versions.appVersion}`,
-  // Session Replay
-  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-})
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
