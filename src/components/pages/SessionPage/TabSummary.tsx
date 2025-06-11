@@ -11,6 +11,7 @@ import { LookupsContext } from '../../../context/lookupsContext'
 import { ConfirmModalState, OwingListItem } from '../../fields/OwingListItem'
 import { PayConfirmModal } from '../../modals/PayConfirmModal'
 import { TabScoutingSummary } from './TabScoutingSummary'
+import { TabRefinedOreSummary } from './TabRefinedOreSummary'
 
 export interface TabSummaryProps {
   propA?: string
@@ -119,6 +120,9 @@ export const TabSummary: React.FC<TabSummaryProps> = () => {
         sessionUser={mySessionUser}
       />
       <Box sx={{ mb: 2 }} />
+
+      <Typography sx={styles.sectionTitle}>Ore Summary</Typography>
+      <TabRefinedOreSummary session={session as Session} />
 
       <Typography sx={styles.sectionTitle}>Scouting Summary</Typography>
       <TabScoutingSummary session={session as Session} />

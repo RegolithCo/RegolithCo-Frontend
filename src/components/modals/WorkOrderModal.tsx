@@ -39,6 +39,8 @@ import {
   Delete,
   DocumentScanner,
   Edit,
+  Error,
+  NewReleases,
   Save,
   SvgIconComponent,
 } from '@mui/icons-material'
@@ -52,6 +54,7 @@ import { DeleteWorkOrderModal } from './DeleteWorkOrderModal'
 import { CaptureControl } from '../ocr/CaptureControl'
 import { LookupsContext } from '../../context/lookupsContext'
 import { useImagePaste } from '../../hooks/useImagePaste'
+import { WorkOrderFailModal } from './WorkOrderFailModal'
 // import log from 'loglevel'
 
 export interface WorkOrderModalProps {
@@ -151,6 +154,8 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
     userSuggest,
   } = React.useContext(WorkOrderContext)
   const dataStore = React.useContext(LookupsContext)
+  const [isFailModalOpen, setIsFailModalOpen] = React.useState(false)
+
   const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder>(workOrder)
   const [isEditing, setIsEditing] = React.useState<boolean>(Boolean(isNew))
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState<boolean>(false)
@@ -441,13 +446,39 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           {allowEdit && deleteWorkOrder && (
             <Tooltip title={'PERMANENTLY Delete this work order'} placement="top">
               <Button
-                variant="contained"
+                variant="outlined"
                 size={isSmall ? 'small' : 'large'}
                 startIcon={<Delete />}
                 onClick={() => setDeleteConfirmModal(true)}
                 color="error"
+                sx={{
+                  backgroundColor: 'black',
+                }}
               >
                 Delete
+              </Button>
+            </Tooltip>
+          )}
+          {allowEdit && failWorkOrder && (
+            <Tooltip
+              title={!workOrder.failReason ? 'Mark this work order as failed' : 'Reset this work order fail status'}
+              placement="top"
+            >
+              <Button
+                variant="contained"
+                size={isSmall ? 'small' : 'large'}
+                startIcon={<NewReleases />}
+                onClick={() => {
+                  if (!workOrder.failReason) {
+                    setIsFailModalOpen(true)
+                  } else {
+                    // Un-fail please
+                    failWorkOrder && failWorkOrder()
+                  }
+                }}
+                color="error"
+              >
+                {!workOrder.failReason ? 'Failed' : 'Reset Fail'}
               </Button>
             </Tooltip>
           )}
@@ -514,6 +545,13 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
         confirmBtnText="Discard"
         cancelIcon={<BackHand />}
         confirmIcon={<Delete />}
+      />
+      <WorkOrderFailModal
+        open={isFailModalOpen}
+        onClose={() => setIsFailModalOpen(false)}
+        onChoose={(reason: string) => {
+          failWorkOrder && failWorkOrder(reason)
+        }}
       />
     </Dialog>
   )

@@ -9,7 +9,7 @@ import { BugReport, Replay } from '@mui/icons-material'
 import { useSnackbar } from 'notistack'
 import { wipeLocalLookups } from './lib/utils'
 import { TopBar } from './components/TopBar'
-import { feedbackIntegration } from '@sentry/react'
+// import { feedbackIntegration } from '@sentry/react'
 
 // const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
 
@@ -57,7 +57,7 @@ export const GenericErrorPage: React.FC<GenericErrorProps> = ({ error, errorInfo
               <Button startIcon={<Replay />} color="info" variant="contained" size="large" onClick={handleReload}>
                 Try Reloading
               </Button>
-              <Button
+              {/* <Button
                 startIcon={<BugReport />}
                 variant="contained"
                 color="error"
@@ -84,7 +84,7 @@ export const GenericErrorPage: React.FC<GenericErrorProps> = ({ error, errorInfo
                 }}
               >
                 Report Bug
-              </Button>
+              </Button> */}
               <Button
                 startIcon={<DiscordIcon />}
                 variant="contained"

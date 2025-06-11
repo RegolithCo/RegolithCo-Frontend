@@ -36,6 +36,7 @@ import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import Gradient from 'javascript-color-gradient'
 import { useQueryParams, useURLArrayState, useURLState } from '../../../hooks/useURLState'
+import { debounce } from 'lodash'
 
 export interface ShipOreDistributionProps {
   // Props here
@@ -141,6 +142,8 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
 
   const gravityWellOptions = React.useMemo(() => getGravityWellOptions(theme, gravityWells), [gravityWells])
 
+  const debouncedSetMaxMins = React.useMemo(() => debounce(setMaxMins, 300), [])
+
   React.useEffect(() => {
     // prepopulate the maxMins array
 
@@ -213,7 +216,7 @@ export const ShipOreDistribution: React.FC<ShipOreDistributionProps> = ({ data, 
           })
         })
     }
-    setMaxMins(retVal)
+    debouncedSetMaxMins(retVal)
   }, [gravityWellOptions, data?.data, bonuses?.data, rockTypeFilter, filterSelected, selected, gravityWellFilter])
 
   const gradients = React.useMemo(() => {

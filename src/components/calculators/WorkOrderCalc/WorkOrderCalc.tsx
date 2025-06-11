@@ -37,6 +37,7 @@ export interface WorkOrderCalcProps {
 
 const workOrderStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   container: {
+    width: '100%',
     [theme.breakpoints.up('md')]: {
       flex: '1 1',
       overflowX: 'hidden',
@@ -91,7 +92,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
       {workOrder.orderType !== ActivityEnum.Other && (
         <Grid
           container
-          spacing={{ md: 2, lg: 3 }}
+          columnSpacing={{ sm: 0, md: 2, lg: 3 }}
           marginX={{ xs: 0, sm: 0, md: 0, lg: 1 }}
           marginY={{ xs: 0, sm: 1, md: 2, lg: 3 }}
           sx={styles.container}
@@ -102,7 +103,7 @@ export const WorkOrderCalc: React.FC<WorkOrderCalcProps> = (props) => {
           <Grid size={{ xs: 12, sm: 12, md: 5, lg: 5 }} sx={styles.gridCss}>
             <OreCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
-          <Grid size={{ xs: 12, sm: 12, md: 5, lg: 5 }} sx={styles.gridCss}>
+          <Grid size={{ xs: 12, sm: 12, md: 7, lg: 7 }} sx={styles.gridCss}>
             <ExpensesSharesCard summary={summary} {...props} sx={styles.cardCss} />
           </Grid>
         </Grid>

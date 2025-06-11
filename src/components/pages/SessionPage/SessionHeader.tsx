@@ -63,6 +63,7 @@ const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
     // border: '1px solid red',
   },
   gridInside: {
+    width: '100%',
     [theme.breakpoints.up('md')]: {},
     // border: '1px solid blue',
   },

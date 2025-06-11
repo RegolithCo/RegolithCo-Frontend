@@ -46,15 +46,14 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
-          <Button color="error" onClick={onClose} variant="contained" startIcon={<Cancel />}>
+          <Button color="primary" onClick={onClose} variant="outlined" startIcon={<Cancel />}>
             {cancelBtnText || 'Cancel'}
           </Button>
           <div style={{ flexGrow: 1 }} />
           <Button
             color="error"
             startIcon={<Delete />}
-            sx={{ background: theme.palette.background.paper }}
-            variant="outlined"
+            variant="contained"
             onClick={() => {
               onConfirm()
               onClose()
