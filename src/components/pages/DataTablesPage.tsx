@@ -9,11 +9,27 @@ import { RefineryCalc } from '../calculators/RefineryCalc'
 import { ObjectValues } from '@regolithco/common'
 import { VehicleOreTable } from '../tables/VehicleOreTable'
 import { SalvagingOreTable } from '../tables/SalvagingOreTable'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 export const DataTablesPageContainer: React.FC = () => {
   const navigate = useNavigate()
   const { tab } = useParams()
-
+  let title = 'Data Tables'
+  switch (tab) {
+    case DataTabsEnum.ORE:
+      title = 'Data Tables - Ore Calculator'
+      break
+    case DataTabsEnum.REFINERY:
+      title = 'Data Tables - Refinery Bonuses'
+      break
+    case DataTabsEnum.MARKET:
+      title = 'Data Tables - Market Prices'
+      break
+    default:
+      title = 'Data Tables'
+      break
+  }
+  useBrowserTitle(title)
   return <DataTablesPage navigate={navigate} tab={tab as DataTabsEnum} />
 }
 

@@ -38,6 +38,7 @@ import { ExportImageIcon } from '../../icons/badges'
 import { YoutubeEmbed } from '../fields/YoutubeEmbed'
 import { AboutPageFAQ } from './AboutPageFAQ'
 import { RockIcon } from '../../icons'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 const stylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   innerPaper: {
@@ -122,6 +123,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
     default:
       break
   }
+  useBrowserTitle(finalTitle)
 
   return (
     <PageWrapper title={finalTitle} maxWidth="md" sx={{ marginLeft: { lg: '7%' } }}>

@@ -39,6 +39,7 @@ import { ShipClassLocation } from './ShipClassLocation'
 import dayjs from 'dayjs'
 import useLocalStorage from '../../../hooks/useLocalStorage'
 import { useUserProfile } from '../../../hooks/useUserProfile'
+import { useBrowserTitle } from '../../../hooks/useBrowserTitle'
 
 export const SurveyTabsEnum = {
   SHIP_ORE: 'ores',
@@ -249,6 +250,7 @@ export const SurveyCorpsHome: React.FC<SurveyCorpsHomeProps> = ({
       fullScreenName = 'Leaderboard'
       break
   }
+  useBrowserTitle(`Survey Corps - ${fullScreenName || 'Regolith Survey Corps'}`)
 
   const iconSize = isSmall ? 24 : 48
   return (

@@ -40,6 +40,7 @@ import { Cancel } from '@mui/icons-material'
 import { LookupsContext } from '../../../context/lookupsContext'
 import { throttle } from 'lodash'
 import numeral from 'numeral'
+import { useBrowserTitle } from '../../../hooks/useBrowserTitle'
 
 export interface MarketPriceCalc {
   propA?: string
@@ -65,6 +66,7 @@ export const MarketPriceCalc: React.FC<MarketPriceCalc> = ({ propA }) => {
   const theme = useTheme()
   const styles = styleThunk(theme)
   const dataStore = React.useContext(LookupsContext)
+  useBrowserTitle(`Market Price Calculator`)
   const [storeEls, setStoreEls] = React.useState<React.JSX.Element[]>([])
   const [oreSummary, setOreSummary] = React.useState<OreSummary>({})
   const [oreTotal, setOreTotal] = React.useState<number>(0)

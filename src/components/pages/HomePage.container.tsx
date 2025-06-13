@@ -6,6 +6,7 @@ import { HomePage } from './HomePage'
 import dayjs from 'dayjs'
 import log from 'loglevel'
 import { RegolithAlert } from '../../types'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 export const HomePageContainer: React.FC = () => {
   const navigate = useNavigate()
@@ -13,7 +14,7 @@ export const HomePageContainer: React.FC = () => {
   const [allTime, setAllTime] = React.useState<RegolithAllTimeStats>()
 
   const [alerts, setAlerts] = React.useState<RegolithAlert[]>([])
-
+  useBrowserTitle()
   React.useEffect(() => {
     // Loop over all the possible keys of StatsObjectSummary and fetch them
     // Suffix the URL with query params of ?cachebust=YYYY-MM-DD-HH

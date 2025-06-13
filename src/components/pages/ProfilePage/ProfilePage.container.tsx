@@ -3,6 +3,7 @@ import { ProfilePage, ProfileTabsEnum } from './ProfilePage'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useUserProfile } from '../../../hooks/useUserProfile'
 import { UserProfile } from '@regolithco/common'
+import { useBrowserTitle } from '../../../hooks/useBrowserTitle'
 
 export const ProfilePageContainer: React.FC = () => {
   const navigate = useNavigate()
@@ -14,6 +15,28 @@ export const ProfilePageContainer: React.FC = () => {
     .split('/')
     .filter((path) => path && path.length)
     .join('/') as ProfileTabsEnum
+
+  let pageTitle = 'Profile'
+  switch (activeTab) {
+    case ProfileTabsEnum.PROFILE:
+      break
+    case ProfileTabsEnum.API:
+      pageTitle = 'Profile - API'
+      break
+    case ProfileTabsEnum.FRIENDS:
+      pageTitle = 'Profile - Friends'
+      break
+    case ProfileTabsEnum.SESSION_DEFAULTS:
+      pageTitle = 'Profile - Session Defaults'
+      break
+    case ProfileTabsEnum.SURVEY:
+      pageTitle = 'Profile - Survey Corps'
+      break
+    default:
+      return null
+  }
+
+  useBrowserTitle(pageTitle)
 
   return (
     <ProfilePage

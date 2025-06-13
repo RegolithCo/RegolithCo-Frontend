@@ -6,6 +6,7 @@ import { SCUsernameField } from '../../fields/SCUsernameField'
 import { VerifyCodeField } from '../../fields/VerifyCodeField'
 import { UserProfile } from '@regolithco/common'
 import { LoginContext, UserProfileContext } from '../../../context/auth.context'
+import { useBrowserTitle } from '../../../hooks/useBrowserTitle'
 
 export interface InitializeUserProps {
   userProfile?: UserProfile
@@ -26,6 +27,7 @@ export const InitializeUser: React.FC<InitializeUserProps> = ({ userProfile, ver
   const { isInitialized, isVerified } = React.useContext(UserProfileContext)
   const pageTitle = !isInitialized ? 'Initialize User' : 'Verify User'
   const redirectTimerRef = React.useRef<NodeJS.Timeout>({} as NodeJS.Timeout)
+  useBrowserTitle(pageTitle)
 
   const verifyOnly = isAuthenticated && isInitialized && !isVerified
 

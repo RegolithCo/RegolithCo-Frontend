@@ -50,6 +50,7 @@ import { PasteDetectedModal } from '../../modals/PasteDetectedModal'
 import { ScreenshareContext } from '../../../context/screenshare.context'
 import { SessionPoller } from './SessionPoller'
 import useLocalStorage from '../../../hooks/useLocalStorage'
+import { useBrowserTitle } from '../../../hooks/useBrowserTitle'
 
 export const SessionPageContainer: React.FC = () => {
   const { sessionId, orderId: modalOrderId, tab, scoutingFindId: modalScoutingFindId } = useParams()
@@ -259,6 +260,35 @@ export const SessionPageContainer: React.FC = () => {
     setPastedImgUrl(image)
     setActiveModal(DialogEnum.PASTE_DETECTED)
   }, pasteDisabled)
+
+  let browserTitle = ''
+  switch (tab) {
+    case SessionTabs.DASHBOARD:
+      browserTitle = `Session Dashboard`
+      break
+    case SessionTabs.USERS:
+      browserTitle = `Session Users`
+      break
+    case SessionTabs.WORK_ORDERS:
+      browserTitle = `Session Work Orders`
+      break
+    case SessionTabs.SCOUTING:
+      browserTitle = `Session Scouting`
+      break
+    case SessionTabs.SUMMARY:
+      browserTitle = `Session Summary`
+      break
+    case SessionTabs.SETTINGS:
+      browserTitle = `Session Settings`
+      break
+    case SessionTabs.ROLES:
+      browserTitle = `Session Roles`
+      break
+    default:
+      browserTitle = `Session`
+      break
+  }
+  useBrowserTitle(browserTitle)
 
   // NO HOOKS BELOW HERE PLEASE
   if (sessionQueries.loading && !sessionQueries.session) return <PageLoader title="loading session..." loading />

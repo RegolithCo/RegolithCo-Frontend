@@ -12,12 +12,31 @@ import { MiningLoadout, MiningLoadoutInput, removeKeyRecursive, UserProfile } fr
 import { LoadoutPage } from './LoadoutPage'
 import { noop } from 'lodash'
 import { UserProfileContext } from '../../context/auth.context'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 export const LoadoutPageContainer: React.FC = () => {
   const navigate = useNavigate()
   const { isInitialized, myProfile } = React.useContext(UserProfileContext)
   const { tab, activeLoadout } = useParams()
-
+  let title = 'Loadouts'
+  switch (tab) {
+    case 'my':
+      title = 'My Loadouts'
+      break
+    case 'calculator':
+      title = 'Loadout Calculator'
+      break
+    case 'lasers':
+      title = 'Loadout Lasers'
+      break
+    case 'modules':
+      title = 'Loadout Modules'
+      break
+    default:
+      title = 'Loadouts'
+      break
+  }
+  useBrowserTitle(title)
   const loadoutsQuery = useGetLoadoutsQuery({
     skip: !isInitialized || !myProfile,
   })

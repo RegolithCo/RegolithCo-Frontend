@@ -6,6 +6,7 @@ import { PageLoader } from './PageLoader'
 import { SessionJoin } from './SessionJoin'
 import { SessionNotFound } from './SessionPage/SessionNotFound'
 import { LoginContext, UserProfileContext } from '../../context/auth.context'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 export interface SessionJoinContainerProps {
   // joinId: string
@@ -30,6 +31,7 @@ export const SessionJoinContainer: React.FC<SessionJoinContainerProps> = () => {
   const navigate = useNavigate()
   const joinErrors: SessionJoinError[] = []
   let showGuilds = false
+  useBrowserTitle('Join Session')
 
   const { joinSession, loading, mutating, sessionError, sessionShare } = useJoinSession(joinId)
   // If you're not verified and the session requires it then nope

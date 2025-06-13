@@ -8,6 +8,7 @@ import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { ScoutingFindTypeChooser } from '../fields/ScoutingFindTypeChooser'
 import { scoutingFindStateThemes } from '../../theme'
 import { UserProfileContext } from '../../context/auth.context'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 export interface ClusterCalcPageProps {
   userProfile?: UserProfile
@@ -22,6 +23,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
   const owner = userProfile || dummyUserProfile()
   const session = dummySession(owner)
   const sessionUser: SessionUser = dummySessionUser(owner)
+  useBrowserTitle(`Cluster Calculator`)
 
   const activeScoutingFind = React.useMemo(() => {
     if (clusters && clusters[activeScoutingFindType]) return clusters && clusters[activeScoutingFindType]

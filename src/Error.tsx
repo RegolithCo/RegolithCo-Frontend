@@ -9,6 +9,7 @@ import { BugReport, Replay } from '@mui/icons-material'
 import { useSnackbar } from 'notistack'
 import { wipeLocalLookups } from './lib/utils'
 import { TopBar } from './components/TopBar'
+import { useBrowserTitle } from './hooks/useBrowserTitle'
 // import { feedbackIntegration } from '@sentry/react'
 
 // const basename = import.meta.env.MODE === 'development' ? '/regolithco' : '/'
@@ -28,7 +29,7 @@ export interface GenericErrorProps {
 
 export const GenericErrorPage: React.FC<GenericErrorProps> = ({ error, errorInfo }) => {
   const { enqueueSnackbar } = useSnackbar()
-
+  useBrowserTitle('Error - Regolith')
   const handleReload = () => {
     wipeLocalLookups()
     window.location.reload()

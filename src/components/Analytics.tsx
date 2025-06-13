@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom'
-import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useRef } from 'react'
 import { ConsentStatus, initGA, trackEvent, trackPageview, useConsentCookie } from '../lib/analytics'
 import {
   Accordion,
@@ -22,6 +22,7 @@ import {
 import { Cancel, Cookie, ExpandCircleDown } from '@mui/icons-material'
 import { LoginContext } from '../context/auth.context'
 import config from '../config'
+import { debounce } from 'lodash'
 
 /**
  * The AppContext is anything (settings, themes etc.) that is shared across the app.
@@ -50,6 +51,7 @@ export const AnalyticsContext = createContext<{
  */
 export const AnalyticsContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const location = useLocation() // THIS IS WHY THIS COMPONENT MUST BE INSIDE THE ROUTER
+  const windowTitleRef = useRef<string>(document.title) // Store the initial title to track changes
   const { consent, setConsent } = useConsentCookie()
   const { isAuthenticated, authType } = useContext(LoginContext)
 
@@ -61,15 +63,42 @@ export const AnalyticsContextProvider: React.FC<PropsWithChildren> = ({ children
     }
   }, [consent, isAuthenticated, authType])
 
+  // Make sure we debounce the tracking of page views and only fire the last event
+  const trackPageViewDebounced = useCallback(debounce(trackPageview, 1000), [])
+
   // GOOGLE ANALYTICS Tracks every page view automatically
   useEffect(() => {
     if (consent === 'granted')
-      trackPageview(location.pathname, {
+      trackPageViewDebounced(location.pathname, {
         stage: config.stage,
         isAuthenticated,
         authType: authType || 'none',
       })
-  }, [consent, location.pathname])
+  }, [consent, location.pathname, windowTitleRef, isAuthenticated, authType, trackPageViewDebounced])
+
+  // Track window title changes too
+  useEffect(() => {
+    // Select the <title> element
+    const titleElement = document.querySelector('title')
+
+    if (!titleElement) return
+
+    // Create a MutationObserver to watch for changes to the <title>
+    const observer = new MutationObserver(() => {
+      // Fire the analytics event whenever the title changes
+      if (windowTitleRef.current !== document.title) {
+        windowTitleRef.current = document.title
+      }
+    })
+
+    // Start observing the <title> element for changes
+    observer.observe(titleElement, { childList: true })
+
+    // Cleanup the observer when the component unmounts
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
 
   const handleTrackEvent = (action: string, category: string, label?: string) => {
     if (consent === 'granted') {

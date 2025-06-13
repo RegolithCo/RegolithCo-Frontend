@@ -7,6 +7,7 @@ import { WorkOrderCalc } from '../calculators/WorkOrderCalc'
 import { WorkOrderTypeChooser } from '../fields/WorkOrderTypeChooser'
 import { dummySession, dummyUserProfile, newWorkOrderMaker } from '../../lib/newObjectFactories'
 import { UserProfileContext } from '../../context/auth.context'
+import { useBrowserTitle } from '../../hooks/useBrowserTitle'
 
 export interface WorkOrderCalcPageProps {
   userProfile?: UserProfile
@@ -19,6 +20,8 @@ export const WorkOrderCalcPage: React.FC<WorkOrderCalcPageProps> = ({ userProfil
   const [activeActivity, setActiveActivity] = React.useState<ActivityEnum>(ActivityEnum.ShipMining)
   const owner = userProfile || dummyUserProfile()
   const session = dummySession(owner)
+
+  useBrowserTitle(`Work Order Calculator`)
 
   // dumb
   const activeWorkOrder = React.useMemo(() => {

@@ -24,6 +24,7 @@ import {
   useMarkCrewSharePaidMutation,
 } from '../../../schema'
 import dayjs, { Dayjs } from 'dayjs'
+import { useBrowserTitle } from '../../../hooks/useBrowserTitle'
 
 export const tabUrl = (
   tab: SessionDashTabsEnum,
@@ -250,6 +251,26 @@ export const DashboardContainer: React.FC = () => {
     }
     calcWorkOrders()
   }, [dataStore, userQueries.userProfile, useSessionListQueries.joinedSessions, useSessionListQueries.mySessions])
+
+  let title = 'Dashboard'
+  switch (tabStr) {
+    case SessionDashTabsEnum.sessions:
+      title = 'Sessions Dashboard'
+      break
+    case SessionDashTabsEnum.workOrders:
+      title = 'Work Orders Dashboard'
+      break
+    case SessionDashTabsEnum.crewShares:
+      title = 'Crew Shares Dashboard'
+      break
+    case SessionDashTabsEnum.stats:
+      title = 'Stats Dashboard'
+      break
+    default:
+      title = 'Dashboard'
+      break
+  }
+  useBrowserTitle(title)
 
   return (
     <Dashboard
