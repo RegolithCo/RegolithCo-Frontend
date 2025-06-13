@@ -1,4 +1,5 @@
-### June 13
+### June 13, 2025
+## 1.4.0 - UI Framework Upgrade and Google Analytics
 
 There's still work to do for the 4.2 update and **this is not that**. Before we get to the good stuff we needed a major update to the UI framework and the underlying version of the code engine. While it (hopefully) shouldn't look too different under the hood it's a massive upgrade! Big thanks to the testers for helping me find bugs.
 
