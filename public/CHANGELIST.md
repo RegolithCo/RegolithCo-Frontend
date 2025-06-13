@@ -5,6 +5,7 @@ There's still work to do for the 4.2 update and **this is not that**. Before we 
 One of the big additions is adding Google Analytics. This project has grown to the point where we need to know how much traffic we're getting so we can provision resources and plan for the future. Participation is totally optional. 
 
 - NEW: Ore summary on the session summary screen.
+- REMOVED: Bug reporting feature. Bug reports were not being received properly so we're going to rely on discord for all bug reports going forward.
 - FIXED: Returned the "Fail Work order" functionlity.
 
 ### May 17, 2025
