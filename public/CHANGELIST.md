@@ -1,10 +1,11 @@
-### June 11
+### June 13
 
-There's still work to do for the 4.2 update and this is not that. Before we got t to the good stuff we needed a major update to the UI framework and the underlying version of the code engine underneath the app. While it (hopefully) shouldn't look too different under the hood it's a massive upgrade!
+There's still work to do for the 4.2 update and **this is not that**. Before we get to the good stuff we needed a major update to the UI framework and the underlying version of the code engine. While it (hopefully) shouldn't look too different under the hood it's a massive upgrade! Big thanks to the testers for helping me find bugs.
 
-One of the big additions is adding Google Analytics. This project has grown to the point where we need to know how much traffic is hitting so we can provision resources and plan for the future. Participation is totally optional. 
+One of the big additions is adding Google Analytics. This project has grown to the point where we need to know how much traffic we're getting so we can provision resources and plan for the future. Participation is totally optional. 
 
-- FIXED: Returned the "Fail Work order" functionlity
+- NEW: Ore summary on the session summary screen.
+- FIXED: Returned the "Fail Work order" functionlity.
 
 ### May 17, 2025
 ## 1.3.10 - Patches, Fixes and new locations
