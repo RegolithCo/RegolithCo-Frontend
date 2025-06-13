@@ -240,7 +240,7 @@ const TabVolumeCell: React.FC<{ value: number; activity: ActivityEnum; rounded?:
   let formatter: MValueFormat = MValueFormat.volSCU
   switch (activity) {
     case ActivityEnum.ShipMining:
-      multiplier = 1000 // Ship mining uses SCU
+      multiplier = 100 // Ship mining uses SCU
       formatter = MValueFormat.volSCU
       break
     case ActivityEnum.VehicleMining:

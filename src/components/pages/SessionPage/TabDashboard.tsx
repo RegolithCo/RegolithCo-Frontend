@@ -76,6 +76,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
     // border: '10px solid green',
     pt: 1,
     pb: 8,
+    px: 2,
     maxHeight: '100%',
     overflowX: 'hidden',
     overflowY: 'auto',
@@ -231,7 +232,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
           />
         </IconButton>
         <Typography>
-          Scouting ({scountingCounts[0]}/{scountingCounts[1]})
+          Scouting Finds ({scountingCounts[0]}/{scountingCounts[1]})
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         <Tooltip title="Signal Calculator">
@@ -270,7 +271,7 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
         sx={{ ...styles.collapse, flex: bottomExpanded ? `1 1 ${topExpanded ? '48%' : '90%'}` : '0 0 0' }}
       >
         <Box sx={styles.sectionContent}>
-          <Grid container spacing={3} margin={0} sx={styles.cardGridContainer}>
+          <Grid container spacing={2} margin={0} sx={styles.cardGridContainer}>
             {filteredScouts.map((scouting, idx) => {
               return (
                 <Grid key={`scoutingfind-${idx}`}>
