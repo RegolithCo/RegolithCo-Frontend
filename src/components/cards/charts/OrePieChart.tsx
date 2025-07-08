@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useTheme, Box, Typography, alpha, darken } from '@mui/material'
+import { useTheme, Box, Typography, alpha, darken, Stack } from '@mui/material'
 import { jsRound, RegolithStatsSummary } from '@regolithco/common'
 import { MayHaveLabel, ResponsivePie } from '@nivo/pie'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
@@ -136,16 +136,22 @@ export const OrePieChart: React.FC<OrePieChartProps> = ({ title, ores, activityT
               return (
                 <Box
                   sx={{
+                    border: '1px solid white',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    minWidth: 250,
                     backgroundColor: alpha(theme.palette.background.paper, 0.6),
+                    // blur
+                    backdropFilter: 'blur(5px)',
                     borderRadius: 1,
                   }}
                 >
-                  <Typography variant="h6">{datum.label}</Typography>
-                  <Typography variant="h6">{`${jsRound(datum.value * 100, 0)}%`}</Typography>
+                  <Stack direction="row" spacing={1}>
+                    <Typography variant="h6">{datum.label}</Typography>
+                    <Typography variant="h6">{`${jsRound(datum.value * 100, 0)}%`}</Typography>
+                  </Stack>
                   {ores && (
                     <Typography variant="h6">
                       {MValueFormatter(

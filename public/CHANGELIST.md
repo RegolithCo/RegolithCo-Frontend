@@ -1,3 +1,15 @@
+### July 8, 2025
+## 1.4.1 - Maintenance release
+
+This is a small release with a few important bug fixes.
+
+- FIXED: Survey Calculator script has been rebuilt to use nearly a quarter of the RAM it was using before. Furthermore the RAM usage should remain stable even with large numbers of scans. 
+- FIXED: Summary tab was not reimbursing claimants under certain circumstances.
+- FIXED: Chart tooltips are now showing again
+- FIXED: Work orders on the Dashboard tab can now be closed even when the page is loading.
+- FIXED: Overcharge rate now showing the correct color for its statistics.
+- FIXED: Ice found in Stanton now shows up as an error.
+
 ### June 13, 2025
 ## 1.4.0 - UI Framework Upgrade and Google Analytics
 

@@ -117,34 +117,36 @@ export const StatsLineChart: React.FC<StatsLineChartProps> = ({ chartData, loadi
         sliceTooltip={({ slice }) => {
           const sliceDate = slice.points[0].data.x as Date
           return (
-            <div
-              style={{
+            <Box
+              sx={{
+                color: 'white',
                 background: 'black',
                 padding: '9px 12px',
                 border: '1px solid #ccc',
+                minWidth: '250px',
               }}
             >
               <Typography variant="caption" sx={{ color: 'white' }}>
                 {resolution === ChartTypesEnum.MONTH && `${months[sliceDate.getMonth()]} ${sliceDate.getFullYear()}`}
                 {resolution === ChartTypesEnum.DAY && (slice.points[0].data.x as Date).toDateString()}
               </Typography>
-              <div style={{ color: 'black' }}>
+              <div style={{ color: 'white' }}>
                 {slice.points.map((point) => (
                   <div
                     key={point.id}
                     style={{
-                      color: point.color,
+                      color: point.seriesColor,
                       padding: '3px 0',
                     }}
                   >
-                    <strong>{point.id}: </strong>
+                    <strong>{point.seriesId}: </strong>
                     <span>
                       {MValueFormatter((point.data as unknown as { val: string }).val, MValueFormat.number_sm, 0)}
                     </span>
                   </div>
                 ))}
               </div>
-            </div>
+            </Box>
           )
         }}
         axisLeft={null}

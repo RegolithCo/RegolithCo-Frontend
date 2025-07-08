@@ -420,7 +420,7 @@ export const TabWorkOrders: React.FC<DashboardProps> = ({
                                         size="small"
                                         color="secondary"
                                         startIcon={<Done />}
-                                        disabled={loading}
+                                        // disabled={loading}
                                         onClick={() => deliverWorkOrders([order])}
                                       >
                                         Mark Sold
