@@ -36,6 +36,7 @@ import {
   WorkOrderExpense,
   DataStore,
   UserPlanEnum,
+  DEFAULT_GOLEM_LASER,
 } from '@regolithco/common'
 
 export function profile2User(profile: UserProfile): User {
@@ -414,15 +415,27 @@ export async function newMiningLoadout(
   ship: LoadoutShipEnum,
   userProfile: UserProfile
 ): Promise<MiningLoadout> {
-  const activeLasers = await Promise.all(
-    ship === LoadoutShipEnum.Mole
-      ? [
-          newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
-          newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
-          newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
-        ]
-      : [newMiningLoadoutActiveLaser(ds, DEFAULT_PROSPECTOR_LASER)]
-  )
+  const activeLasersPromises: Promise<ActiveMiningLaserLoadout>[] = []
+
+  switch (ship) {
+    case LoadoutShipEnum.Mole:
+      activeLasersPromises.push(
+        newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
+        newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER),
+        newMiningLoadoutActiveLaser(ds, DEFAULT_MOLE_LASER)
+      )
+      break
+    case LoadoutShipEnum.Prospector:
+      activeLasersPromises.push(newMiningLoadoutActiveLaser(ds, DEFAULT_PROSPECTOR_LASER))
+      break
+    case LoadoutShipEnum.Golem:
+      activeLasersPromises.push(newMiningLoadoutActiveLaser(ds, DEFAULT_GOLEM_LASER))
+      break
+    default:
+      throw new Error(`Unknown ship type: ${ship}`)
+  }
+
+  const activeLasers = await Promise.all(activeLasersPromises)
   return {
     name: 'New Loadout',
     loadoutId: 'NEWLOADOUT',

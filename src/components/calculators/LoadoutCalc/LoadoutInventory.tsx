@@ -70,7 +70,9 @@ export const LoadoutInventory: React.FC<LoadoutInventoryProps> = ({ loadout, onC
     >
       <CardHeader
         title={'Inventory'}
-        titleTypographyProps={{ variant: 'subtitle1' }}
+        slotProps={{
+          title: { variant: 'subtitle1', sx: { fontWeight: 'bold' } },
+        }}
         sx={{
           fontWeight: 'bold',
           fontSize: '1.2rem',

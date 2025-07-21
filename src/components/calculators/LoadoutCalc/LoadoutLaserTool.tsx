@@ -10,6 +10,7 @@ export interface LoadoutLaserRowProps {
   label: string
   isShare?: boolean
   readonly?: boolean
+  laserLocked?: boolean // Golem has a laser you can't change.
   onChange: (laser: ActiveMiningLaserLoadout | null, hover: boolean) => void
 }
 
@@ -20,6 +21,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
   isShare,
   onChange,
   readonly,
+  laserLocked,
 }) => {
   const theme = useTheme()
 
@@ -105,7 +107,9 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
     >
       <CardHeader
         title={label}
-        titleTypographyProps={{ variant: 'subtitle1' }}
+        slotProps={{
+          title: { variant: 'subtitle1', sx: { fontWeight: 'bold' } },
+        }}
         sx={{
           fontWeight: 'bold',
           fontSize: '1.2rem',
@@ -118,7 +122,7 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
       <CardContent>
         <LaserChooserMenu
           laserSize={laserSize}
-          readonly={readonly}
+          readonly={readonly || laserLocked}
           isShare={isShare}
           value={laserCode || null}
           onChange={onLaserChange}

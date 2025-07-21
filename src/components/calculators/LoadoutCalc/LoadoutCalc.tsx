@@ -125,6 +125,8 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
   const [includeStockPrices, setIncludeStockPrices] = React.useState(false)
 
+  const laserReadonly = readonly || newLoadout?.ship === LoadoutShipEnum.Golem
+
   const setNewLoadout = useCallback(
     async (sbl?: MiningLoadout) => {
       if (!newLoadout || isShare) return
@@ -275,6 +277,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   <LoadoutLaserTool
                     activeLaser={activeLasers[0]}
                     readonly={readonly}
+                    laserLocked={laserReadonly}
                     isShare={isShare}
                     laserSize={laserSize}
                     label={laserSize < 2 ? 'Laser' : 'Front Turret'}
@@ -300,6 +303,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                       laserSize={laserSize}
                       isShare={isShare}
                       readonly={readonly}
+                      laserLocked={laserReadonly}
                       label="Port Turret"
                       onChange={(currAl, isHover) => {
                         if (isHover) {
@@ -324,6 +328,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                       laserSize={laserSize}
                       isShare={isShare}
                       readonly={readonly}
+                      laserLocked={laserReadonly}
                       label="Starboard Turret"
                       onChange={(currAl, isHover) => {
                         if (isHover) {
@@ -560,6 +565,13 @@ export const ShipChooser: React.FC<ShipChooserProps> = ({ onChange, ship: value,
         sx={makeButtonTheme(value === LoadoutShipEnum.Mole, theme.palette.success)}
       >
         Mole
+      </ToggleButton>
+      <ToggleButton
+        value={LoadoutShipEnum.Golem}
+        aria-label="right aligned"
+        sx={makeButtonTheme(value === LoadoutShipEnum.Golem, theme.palette.success)}
+      >
+        Golem
       </ToggleButton>
     </ToggleButtonGroup>
   )
