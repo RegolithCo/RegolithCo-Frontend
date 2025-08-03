@@ -1,3 +1,11 @@
+### August 3, 2025
+## 1.4.2 - Golem Added
+
+- The Golem has finally been added to the loadout calculator.
+- The ore summary on the session summary screen has been updated to round correctly.
+- Some users were having issues with their survey scores not updating correctly. This has been fixed.
+
+
 ### July 8, 2025
 ## 1.4.1 - Maintenance release
 
