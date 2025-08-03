@@ -37,7 +37,7 @@ export interface TabRefinedOreSummaryProps {
   isShare?: boolean
 }
 
-type IndexedOreTableRow = { oreEnum: AnyOreEnum; collected: number; refined: number }
+type IndexedOreTableRow = { oreEnum: AnyOreEnum; collected: number; refined: number; refinedNoround?: number }
 type IndexedOreSummary = Record<AnyOreEnum, IndexedOreTableRow>
 
 const OreSummaryTableColsEnum = {
@@ -71,10 +71,11 @@ export const TabRefinedOreSummary: React.FC<TabRefinedOreSummaryProps> = ({ sess
     const oreSummaries: IndexedOreSummary = (orderSummaries || []).reduce((acc, woSumm, idx) => {
       for (const [oreEnum, { collected, refined }] of Object.entries(woSumm.oreSummary || {})) {
         if (!acc[oreEnum]) {
-          acc[oreEnum] = { oreEnum: oreEnum as AnyOreEnum, collected: 0, refined: 0 }
+          acc[oreEnum] = { oreEnum: oreEnum as AnyOreEnum, collected: 0, refined: 0, refinedNoround: 0 }
         }
         acc[oreEnum].collected += collected
-        acc[oreEnum].refined += Math.ceil(refined / 1000) * 1000 // Round up to nearest SCU
+        acc[oreEnum].refined += Math.ceil(refined / 100) * 100 // Round up to nearest SCU
+        acc[oreEnum].refinedNoround += refined
       }
       return acc
     }, {} as IndexedOreSummary)
@@ -87,6 +88,7 @@ export const TabRefinedOreSummary: React.FC<TabRefinedOreSummaryProps> = ({ sess
         oreEnum: row.oreEnum,
         collected: row.collected,
         refined: row.refined,
+        refinedNoround: row.refinedNoround,
       }))
   }, [orderSummaries])
 
