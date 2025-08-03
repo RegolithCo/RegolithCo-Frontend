@@ -15,6 +15,7 @@ import {
   useTheme,
   PaletteColor,
   Grid,
+  ChipProps,
 } from '@mui/material'
 import { Delete } from '@mui/icons-material'
 import { LoadoutCalc } from '../calculators/LoadoutCalc/LoadoutCalc'
@@ -38,6 +39,7 @@ import { LoadoutStat } from '../calculators/LoadoutCalc/LoadoutStat'
 import { MValue, MValueFormat } from '../fields/MValue'
 import { LookupsContext } from '../../context/lookupsContext'
 import { fontFamilies } from '../../theme'
+import { ReactNode } from 'react'
 
 dayjs.extend(relativeTime)
 
@@ -119,6 +121,27 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
 
   if (!dataStore.ready) return <div>Loading Lookups...</div>
 
+  function getShipChip(ship: LoadoutShipEnum): React.ReactNode {
+    let shipColor: ChipProps['color'] = 'info'
+    switch (ship) {
+      case LoadoutShipEnum.Mole:
+        shipColor = 'primary'
+        break
+      case LoadoutShipEnum.Prospector:
+        shipColor = 'secondary'
+        break
+        break
+      case LoadoutShipEnum.Golem:
+        shipColor = 'error'
+        break
+      default:
+        shipColor = 'info'
+    }
+    return (
+      <Chip size="small" label={ship} variant="outlined" color={shipColor} sx={{ width: 120, fontWeight: 'bold' }} />
+    )
+  }
+
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 2 }}>
@@ -160,11 +183,7 @@ export const MyLoadouts: React.FC<MyLoadoutsProps> = ({
                       {loadout.name}
                     </Typography>
                     <Stack spacing={1}>
-                      {loadout.ship === LoadoutShipEnum.Mole ? (
-                        <Chip size="small" label="Mole" color="success" sx={{ width: 100 }} />
-                      ) : (
-                        <Chip size="small" label="Prospector" color="info" sx={{ width: 100 }} />
-                      )}
+                      {getShipChip(loadout.ship)}
                       <Typography variant="caption">{dayjs(loadout.createdAt).fromNow()}</Typography>
                       <Typography>
                         <MValue value={stats?.priceNoStock} format={MValueFormat.currency_sm} />
