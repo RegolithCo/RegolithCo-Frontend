@@ -500,10 +500,6 @@ export type ShipRockOreFieldPolicy = {
 	ore?: FieldPolicy<any> | FieldReadFunction<any>,
 	percent?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type SubscriptionKeySpecifier = ('apiSubscription' | SubscriptionKeySpecifier)[];
-export type SubscriptionFieldPolicy = {
-	apiSubscription?: FieldPolicy<any> | FieldReadFunction<any>
-};
 export type SurveyDataKeySpecifier = ('data' | 'dataName' | 'epoch' | 'lastUpdated' | SurveyDataKeySpecifier)[];
 export type SurveyDataFieldPolicy = {
 	data?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -853,10 +849,6 @@ export type StrictTypedTypePolicies = {
 	ShipRockOre?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ShipRockOreKeySpecifier | (() => undefined | ShipRockOreKeySpecifier),
 		fields?: ShipRockOreFieldPolicy,
-	},
-	Subscription?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | SubscriptionKeySpecifier | (() => undefined | SubscriptionKeySpecifier),
-		fields?: SubscriptionFieldPolicy,
 	},
 	SurveyData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SurveyDataKeySpecifier | (() => undefined | SurveyDataKeySpecifier),
