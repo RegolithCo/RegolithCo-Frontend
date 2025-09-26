@@ -1,4 +1,4 @@
-### September 26, 2025
+### November 10, 2025
 ## 1.4.3 - Discord Permissions fix
 
 Lots of folks were having issues with the discord permissions and org membership stuff. This was mainly because of how differently each Discord guild is managed and set up, which made it difficult to find common permissions that we could use as "enough" to grant access. The Discord permissions needed to set allegiance to the Survey Corps have been relaxed and we've switched from an "AND" policy to an "OR" policy to try and catch more cases.
