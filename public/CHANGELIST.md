@@ -1,3 +1,12 @@
+### November 19, 2025
+## 1.4.4 - NYX!
+
+This is just a quick patch to add the Nyx system and associated resource
+
+- New Epoch: New system means a new set of distributions so the glorious new epoch of 4.4 is upon us! Everybody warm up your scanners.
+- New Ores! Savrilium, Lindinium, and Torite have been added!
+- New refineries: Levski and Nyx-Stanton Gateway 
+
 ### November 10, 2025
 ## 1.4.3 - Discord Permissions fix
 
