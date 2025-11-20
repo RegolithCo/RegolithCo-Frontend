@@ -12,31 +12,8 @@ export type OreTierEnum = ObjectValues<typeof OreTierEnum>
 export const SystemColors: (theme: Theme) => Record<SystemEnum, string> = (theme: Theme) => ({
   [SystemEnum.Stanton]: theme.palette.info.main,
   [SystemEnum.Pyro]: theme.palette.error.main,
+  [SystemEnum.Nyx]: theme.palette.info.light,
 })
-
-export const ShipOreTiers: Record<OreTierEnum, ShipOreEnum[]> = {
-  [OreTierEnum.STier]: [ShipOreEnum.Quantanium, ShipOreEnum.Stileron, ShipOreEnum.Riccite],
-  [OreTierEnum.ATier]: [ShipOreEnum.Taranite, ShipOreEnum.Bexalite, ShipOreEnum.Gold],
-  [OreTierEnum.BTier]: [
-    ShipOreEnum.Laranite,
-    ShipOreEnum.Borase,
-    ShipOreEnum.Beryl,
-    ShipOreEnum.Agricium,
-    ShipOreEnum.Hephaestanite,
-  ],
-  [OreTierEnum.CTier]: [
-    ShipOreEnum.Tungsten,
-    ShipOreEnum.Titanium,
-    ShipOreEnum.Silicon,
-    ShipOreEnum.Iron,
-    ShipOreEnum.Quartz,
-    ShipOreEnum.Corundum,
-    ShipOreEnum.Copper,
-    ShipOreEnum.Tin,
-    ShipOreEnum.Aluminum,
-    ShipOreEnum.Ice,
-  ],
-}
 
 export const OreTierColors: Record<OreTierEnum, string> = {
   [OreTierEnum.STier]: 'success',

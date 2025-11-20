@@ -26,10 +26,10 @@ import {
   useTheme,
 } from '@mui/material'
 import { getGravityWellOptions, GravityWellChooser, GravityWellNameRender } from '../../fields/GravityWellChooser'
-import { hoverColor, OreTierColors, OreTierEnum, selectBorderColor, selectColor, ShipOreTiers } from './types'
+import { hoverColor, OreTierColors, OreTierEnum, selectBorderColor, selectColor } from './types'
 import { LongCellHeader, tableStylesThunk } from '../../tables/tableCommon'
 import { LookupsContext } from '../../../context/lookupsContext'
-import { GravityWell, Lookups, OreTierNames, SurveyData } from '@regolithco/common'
+import { GravityWell, Lookups, OreTierNames, SurveyData, ShipOreTiers } from '@regolithco/common'
 import { ClearAll, FilterAlt, FilterAltOff, Refresh } from '@mui/icons-material'
 import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'

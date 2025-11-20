@@ -16,6 +16,7 @@ export const useShipOreColors = (): SortedShipOreColors => {
   const quaColors = ['#f700ff', '#ffffff']
   const stilColors = ['#f700ff', '#ffffff']
   const riccitColors = ['#f700ff', '#ffffff']
+  const savrilColors = ['#f700ff', '#ffffff']
   const innertColors = ['#848484', '#000000']
 
   const dataStore = React.useContext(LookupsContext)
@@ -63,6 +64,10 @@ export const useShipOreColors = (): SortedShipOreColors => {
     if (shipOreKey === ShipOreEnum.Riccite) {
       fgc = riccitColors[1] || '#000'
       bgc = riccitColors[0] || '#fff'
+    }
+    if (shipOreKey === ShipOreEnum.Savrilium) {
+      fgc = savrilColors[1] || '#000'
+      bgc = savrilColors[0] || '#fff'
     }
     if (shipOreKey === ShipOreEnum.Inertmaterial) {
       fgc = innertColors[1] || '#fff'
