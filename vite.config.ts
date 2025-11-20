@@ -23,7 +23,10 @@ export default defineConfig(({ mode }) => ({
     // },
   },
   optimizeDeps: {
+    // Exclude our linked common package but explicitly include 'buffer'
+    // so that Vite pre-bundles it and provides proper ESM named exports.
     exclude: ['@regolithco/common'],
+    include: ['buffer'],
   },
   plugins: [
     react(),

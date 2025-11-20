@@ -26,6 +26,7 @@ import Gradient from 'javascript-color-gradient'
 import { MValue, MValueFormat } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import { LookupsContext } from '../../../context/lookupsContext'
+import { SystemColors } from '../../pages/SurveyCorps/types'
 
 type GridStats = { max: number | null; min: number | null }
 
@@ -43,10 +44,7 @@ export const RefineryBonusTable: React.FC = () => {
   ])
 
   const bgColorArr = ['#b93327', '#000000', '#229f63']
-  const systemColorMap = {
-    [SystemEnum.Stanton]: theme.palette.info.dark,
-    [SystemEnum.Pyro]: theme.palette.error.dark,
-  }
+  const systemColorMap = SystemColors(theme)
   const bgColors = new Gradient()
     .setColorGradient(...bgColorArr)
     .setMidpoint(101) // 100 is the number of colors to generate. Should be enough stops for our ores
