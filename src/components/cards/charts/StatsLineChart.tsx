@@ -294,6 +294,26 @@ const getMarkers = (chartType: ChartResolutionsEnum): LineSvgProps<LineSeries>['
       value: dayjs('2025-05-13').startOf(rounding).toDate(),
       legend: 'Invictus 4.1.1',
     },
+    {
+      value: dayjs('2025-07-18').startOf(rounding).toDate(),
+      legend: 'Invictus 4.2.1',
+    },
+    {
+      value: dayjs('2025-08-22').startOf(rounding).toDate(),
+      legend: 'Invictus 4.3',
+    },
+    {
+      value: dayjs('2025-09-13').startOf(rounding).toDate(),
+      legend: 'Invictus 4.3.1',
+    },
+    {
+      value: dayjs('2025-10-17').startOf(rounding).toDate(),
+      legend: 'Invictus 4.3.2',
+    },
+    {
+      value: dayjs('2025-11-19').startOf(rounding).toDate(),
+      legend: 'Invictus 4.4',
+    },
   ].filter((m) => m.value >= startDate.toDate() && m.value <= endDate.toDate())
 
   // If this is DAILY then also add all the sundays
