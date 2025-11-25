@@ -75,7 +75,7 @@ export function useQueryParams() {
         )
       )
     },
-    [setSearchParams]
+    [query, setSearchParams]
   )
 
   return { query, setQuery, setQueryValue, resetQueryValues }
@@ -83,6 +83,20 @@ export function useQueryParams() {
 
 type Parser<T> = (value: string | null) => T | null
 type Serializer<T> = (value: T) => string | null
+
+const normalizeQueryValue = (value: QueryValue): (string | null)[] => {
+  if (value == null) return []
+  if (Array.isArray(value)) return value
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((segment) => segment.trim())
+      .filter((segment) => segment.length > 0)
+  }
+  return []
+}
+
+const isNonNullable = <T,>(value: T | null | undefined): value is T => value !== null && value !== undefined
 
 export function useURLState<T>(
   urlKey: string,
@@ -117,25 +131,24 @@ export function useURLArrayState<T>(
   const { query, setQueryValue } = useQueryParams()
 
   // Sort the default value to ensure consistent order
-  initialValue = useMemo(() => initialValue.sort(), [initialValue])
+  const defaultValue = useMemo(() => [...initialValue].sort(), [initialValue])
 
-  const value: T[] = (
-    query[key]
-      ? Array.isArray(query[key])
-        ? query[key].map(parser)
-        : [parser(query[key] as string | null)]
-      : initialValue
-  ).filter((v) => v !== undefined && v !== null)
+  const parsedFromQuery = normalizeQueryValue(query[key])
+    .map((item) => parser(item))
+    .filter(isNonNullable)
+
+  const value: T[] = parsedFromQuery.length > 0 ? [...parsedFromQuery].sort() : defaultValue
 
   const setValue = (newValue: T[] | ((prev: T[]) => T[])) => {
-    const nextValue = typeof newValue === 'function' ? (newValue as (prev: T[]) => T[])(value) : newValue
-    // Sort the next value to ensure consistent order
-    nextValue.sort()
+    const resolvedValue = typeof newValue === 'function' ? (newValue as (prev: T[]) => T[])(value) : newValue
+    const filteredNextValue = resolvedValue.filter(isNonNullable)
+    const sortedNextValue = [...filteredNextValue].sort()
 
     // Do a deep comparison to check if the value has changed
-    const isDefault = nextValue.length === initialValue.length && nextValue.every((v, i) => v === initialValue[i])
+    const isDefault =
+      sortedNextValue.length === defaultValue.length && sortedNextValue.every((v, i) => v === defaultValue[i])
 
-    const serializedValue = isDefault ? null : nextValue.filter((v) => v !== undefined && v !== null).map(serializer)
+    const serializedValue = isDefault ? null : sortedNextValue.map(serializer)
     setQueryValue(key, serializedValue)
   }
 

@@ -42,6 +42,21 @@ import { AsteroidWellTypes, SurfaceWellTypes } from '../../../types'
 import { MValueFormat, MValueFormatter } from '../../fields/MValue'
 import { fontFamilies } from '../../../theme'
 import Gradient from 'javascript-color-gradient'
+import { useQueryParams, useURLArrayState, useURLState } from '../../../hooks/useURLState'
+
+const URL_KEYS = {
+  selected: 'sel',
+  filterSelected: 'flt',
+  gravityWell: 'gw',
+  rockTypes: 'rt',
+  advanced: 'adv',
+} as const
+
+const ROCK_TYPE_DEFAULTS: ('SURFACE' | 'ASTEROID')[] = ['SURFACE', 'ASTEROID']
+const EMPTY_SELECTION: string[] = []
+
+const parseRockTypeFilterValue = (value: string | null) =>
+  value === 'SURFACE' || value === 'ASTEROID' ? (value as 'SURFACE' | 'ASTEROID') : null
 
 export interface ShipClassLocationProps {
   // Props here
@@ -57,47 +72,80 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
   const tContainerRef = React.useRef<HTMLDivElement>(null)
 
   const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({})
+  const { resetQueryValues } = useQueryParams()
   // Filters
-  const [selected, setSelected] = React.useState<string[]>([])
+  const [selected, setSelected] = useURLArrayState<string>(URL_KEYS.selected, EMPTY_SELECTION)
   // Hover state: [colNum, left, width, color]
   const [hoverCol, setHoverCol] = React.useState<[number, number, number, string] | null>(null)
   // Hover state: [colNum, top, height, color]
   const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
 
-  const [showExtendedStats, setShowExtendedStats] = React.useState<boolean>(false)
-  const [rockTypeFilter, setRockTypeFilter] = React.useState<('SURFACE' | 'ASTEROID')[]>(['SURFACE', 'ASTEROID'])
-  const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
-  const [gravityWellFilter, setGravityWellFilter] = React.useState<string | null>(null)
+  const [showExtendedStats, setShowExtendedStats] = useURLState<boolean>(
+    URL_KEYS.advanced,
+    false,
+    (value) => (value ? '1' : ''),
+    (value) => value === '1'
+  )
+  const [rockTypeFilter, setRockTypeFilter] = useURLArrayState<'SURFACE' | 'ASTEROID'>(
+    URL_KEYS.rockTypes,
+    ROCK_TYPE_DEFAULTS,
+    (value) => value,
+    parseRockTypeFilterValue
+  )
+  const [filterSelected, setFilterSelected] = useURLState<boolean>(
+    URL_KEYS.filterSelected,
+    false,
+    (value) => (value ? '1' : ''),
+    (value) => value === '1'
+  )
+  const [gravityWellFilter, setGravityWellFilter] = useURLState<string | null>(
+    URL_KEYS.gravityWell,
+    null,
+    (value) => value,
+    (value) => value
+  )
 
   const dataStore = React.useContext(LookupsContext)
 
-  const handleRowClick = React.useCallback((gravWellId: string) => {
-    setSelected((prev) => {
-      if (prev.includes(gravWellId)) {
-        return prev.filter((id) => id !== gravWellId)
-      }
-      const newSelected = [...prev, gravWellId]
-      if (newSelected.length === 0 && filterSelected) {
-        setFilterSelected(false)
-      }
-      return newSelected
-    })
-  }, [])
+  const handleRowClick = React.useCallback(
+    (gravWellId: string) => {
+      setSelected((prev) => {
+        if (prev.includes(gravWellId)) {
+          const updatedSelection = prev.filter((id) => id !== gravWellId)
+          if (updatedSelection.length === 0 && filterSelected) {
+            setFilterSelected(false)
+          }
+          return updatedSelection
+        }
+        return [...prev, gravWellId]
+      })
+    },
+    [filterSelected, setFilterSelected, setSelected]
+  )
 
-  const handleGravityWellFilter = React.useCallback((newGrav: string | null) => {
-    setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
-    // if tContainerRef exists scroll to the top
-    setTimeout(() => {
-      if (tContainerRef.current) {
-        tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
-      }
-    }, 100)
-  }, [])
+  const handleGravityWellFilter = React.useCallback(
+    (newGrav: string | null) => {
+      setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
+      // if tContainerRef exists scroll to the top
+      setTimeout(() => {
+        if (tContainerRef.current) {
+          tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
+        }
+      }, 100)
+    },
+    [setGravityWellFilter]
+  )
 
   const gravityWells = React.useMemo(
     () => dataStore.getLookup('gravityWellLookups') as Lookups['gravityWellLookups'],
     [dataStore]
   ) as GravityWell[]
+
+  React.useEffect(() => {
+    if (filterSelected && selected.length === 0) {
+      resetQueryValues([URL_KEYS.filterSelected])
+    }
+  }, [filterSelected, resetQueryValues, selected.length])
 
   const handleMouseEnter = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>, oreKey, idr, colNum) => {
     if (tBodyRef.current) {
@@ -197,7 +245,6 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
     if (!gravityWellOptions || !maxMins || !data) return null
     const maxMinsBonus = maxMins['STAT_BONUS'] || { max: 1, min: 0 }
     const maxMinsUsers = maxMins['STAT_USERS'] || { max: 1, min: 0 }
-    const maxMinScans = maxMins['STAT_SCANS'] || { max: 1, min: 0 }
     const maxMinClusters = maxMins['STAT_CLUSTERS'] || { max: 1, min: 0 }
     // const maxMinClusterSize = maxMins['STAT_CLUSTER_SIZE'] || { max: 1, min: 0 }
 
@@ -582,8 +629,7 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
 
           <Button
             onClick={() => {
-              setSelected([])
-              setFilterSelected(false)
+              resetQueryValues([URL_KEYS.selected, URL_KEYS.filterSelected])
             }}
             variant="text"
             size="small"
@@ -594,9 +640,13 @@ export const ShipClassLocation: React.FC<ShipClassLocationProps> = ({ data, bonu
           <Box sx={{ flexGrow: 1 }} />
           <Button
             onClick={() => {
-              setSelected([])
-              setFilterSelected(false)
-              setGravityWellFilter(null)
+              resetQueryValues([
+                URL_KEYS.selected,
+                URL_KEYS.filterSelected,
+                URL_KEYS.gravityWell,
+                URL_KEYS.rockTypes,
+                URL_KEYS.advanced,
+              ])
             }}
             color="error"
             variant="text"

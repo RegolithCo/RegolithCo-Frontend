@@ -52,6 +52,35 @@ import { StaleLookups } from './StaleLookups'
 import { yellow } from '@mui/material/colors'
 import * as signals from '../../../lib/signals'
 import { usesignals } from '../../../hooks/useSignals'
+import { useQueryParams, useURLArrayState, useURLState } from '../../../hooks/useURLState'
+
+const URL_KEYS = {
+  systems: 'socdSys',
+  rockTypes: 'socdRt',
+  oreTiers: 'socdOt',
+  signal: 'socdSig',
+} as const
+
+const ROCK_TYPE_DEFAULTS: ('SURFACE' | 'ASTEROID')[] = ['SURFACE', 'ASTEROID']
+const ORE_TIER_DEFAULTS: OreTierEnum[] = [OreTierEnum.STier, OreTierEnum.ATier, OreTierEnum.BTier, OreTierEnum.CTier]
+const SYSTEM_DEFAULTS: SystemEnum[] = [SystemEnum.Stanton, SystemEnum.Pyro, SystemEnum.Nyx]
+
+const parseRockTypeFilterValue = (value: string | null) =>
+  value === 'SURFACE' || value === 'ASTEROID' ? (value as 'SURFACE' | 'ASTEROID') : null
+
+const parseOreTierValue = (value: string | null) =>
+  value && Object.values(OreTierEnum).includes(value as OreTierEnum) ? (value as OreTierEnum) : null
+
+const parseSystemValue = (value: string | null) =>
+  value && Object.values(SystemEnum).includes(value as SystemEnum) ? (value as SystemEnum) : null
+
+const serializeNumber = (value: number) => (Number.isFinite(value) && value > 0 ? String(value) : '')
+
+const parseSignalValue = (value: string | null) => {
+  if (!value) return 0
+  const parsed = parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : 0
+}
 
 export interface ShipOreClassDistributionProps {
   data?: SurveyData | null
@@ -60,27 +89,40 @@ export interface ShipOreClassDistributionProps {
 export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> = ({ data }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const { resetQueryValues } = useQueryParams()
 
   const [hoveredOre, setHoveredOre] = React.useState<ShipOreEnum | null>(null)
-  const [systemCode, setSystemCode] = React.useState<SystemEnum[]>([SystemEnum.Stanton, SystemEnum.Pyro])
-  const [rockTypeFilter, setRockTypeFilter] = React.useState<('SURFACE' | 'ASTEROID')[]>(['SURFACE', 'ASTEROID'])
-  const [signalFilter, setSignalFilter] = React.useState<number>(0)
+  const [systemCode, setSystemCode] = useURLArrayState<SystemEnum>(
+    URL_KEYS.systems,
+    SYSTEM_DEFAULTS,
+    (value) => value,
+    parseSystemValue
+  )
+  const [rockTypeFilter, setRockTypeFilter] = useURLArrayState<'SURFACE' | 'ASTEROID'>(
+    URL_KEYS.rockTypes,
+    ROCK_TYPE_DEFAULTS,
+    (value) => value,
+    parseRockTypeFilterValue
+  )
+  const [signalFilter, setSignalFilter] = useURLState<number>(URL_KEYS.signal, 0, serializeNumber, parseSignalValue)
   const possibilities = usesignals(
     signalFilter,
     rockTypeFilter.length === 0 ? rockTypeFilter[0] === 'ASTEROID' : undefined
   )
-  const [oreTierFilter, setOreTierFilter] = React.useState<OreTierEnum[]>([
-    OreTierEnum.STier,
-    OreTierEnum.ATier,
-    OreTierEnum.BTier,
-    OreTierEnum.CTier,
-  ])
+  const [oreTierFilter, setOreTierFilter] = useURLArrayState<OreTierEnum>(
+    URL_KEYS.oreTiers,
+    ORE_TIER_DEFAULTS,
+    (value) => value,
+    parseOreTierValue
+  )
   const tableData = data?.data || {
     [SystemEnum.Pyro]: {},
     [SystemEnum.Stanton]: {},
+    [SystemEnum.Nyx]: {},
   }
   const showStanton = systemCode.includes(SystemEnum.Stanton)
   const showPyro = systemCode.includes(SystemEnum.Pyro)
+  const showNyx = systemCode.includes(SystemEnum.Nyx)
 
   if (data && data.data && (!data.data[SystemEnum.Stanton] || !data.data[SystemEnum.Pyro])) {
     return <StaleLookups />
@@ -127,21 +169,34 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
               value={SystemEnum.Stanton}
               aria-label="Stanton"
               color="info"
+              title="Stanton System"
               sx={{
                 color: theme.palette.info.dark,
               }}
             >
-              Stanton
+              ST
             </ToggleButton>
             <ToggleButton
               value={SystemEnum.Pyro}
               aria-label="Pyro"
               color="primary"
+              title="Pyro System"
               sx={{
                 color: theme.palette.primary.dark,
               }}
             >
-              Pyro
+              PY
+            </ToggleButton>
+            <ToggleButton
+              value={SystemEnum.Nyx}
+              aria-label="Nyx"
+              color="info"
+              title="Nyx System"
+              sx={{
+                color: theme.palette.info.light,
+              }}
+            >
+              NX
             </ToggleButton>
           </ToggleButtonGroup>
           <ToggleButtonGroup
@@ -196,18 +251,21 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
               },
             }}
             onChange={(e) => {
-              // if it's an integer
-              if (e.target.value.length === 0 || Number.isInteger(parseInt(e.target.value)))
-                setSignalFilter(parseInt(e.target.value))
+              const nextValue = e.target.value
+              if (nextValue.length === 0) {
+                setSignalFilter(0)
+                return
+              }
+              const parsed = parseInt(nextValue, 10)
+              if (Number.isInteger(parsed)) {
+                setSignalFilter(parsed)
+              }
             }}
           />
           <Box sx={{ flexGrow: 1 }} />
           <Button
             onClick={() => {
-              setOreTierFilter([OreTierEnum.STier, OreTierEnum.ATier, OreTierEnum.BTier, OreTierEnum.CTier])
-              setRockTypeFilter(['SURFACE', 'ASTEROID'])
-              setSystemCode([SystemEnum.Stanton, SystemEnum.Pyro])
-              setSignalFilter(0)
+              resetQueryValues()
             }}
             color="error"
             variant="text"
@@ -296,6 +354,33 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                   </Grid>
                 </>
               )}
+              {showNyx && (
+                <>
+                  <SystemLabel system={SystemEnum.Nyx} />
+                  <Grid width={'100%'} container spacing={4}>
+                    {Object.values(AsteroidTypeEnum).map((type, idx) => {
+                      const multiplier = possibilities.asteroid[type] || 0
+                      if (signalFilter && signalFilter > 0 && !multiplier) return null
+                      if (!tableData[SystemEnum.Nyx] || !tableData[SystemEnum.Nyx][type]) return null
+                      counts[1]++
+                      return (
+                        <Grid key={idx} width={'400px'}>
+                          <ClassCard
+                            className={type}
+                            data={tableData[SystemEnum.Nyx][type]}
+                            hoveredOre={hoveredOre}
+                            setHoveredOre={setHoveredOre}
+                            oreTierFilter={oreTierFilter}
+                            setOreTierFilter={setOreTierFilter}
+                            multiplier={multiplier}
+                          />
+                        </Grid>
+                      )
+                    })}
+                    {counts[1] === 0 && <NoRocksMatch />}
+                  </Grid>
+                </>
+              )}
             </>
           )}
           {rockTypeFilter.includes('SURFACE') && (
@@ -360,6 +445,34 @@ export const ShipOreClassDistribution: React.FC<ShipOreClassDistributionProps> =
                           <ClassCard
                             className={type}
                             data={tableData[SystemEnum.Pyro][type]}
+                            hoveredOre={hoveredOre}
+                            setHoveredOre={setHoveredOre}
+                            oreTierFilter={oreTierFilter}
+                            setOreTierFilter={setOreTierFilter}
+                            multiplier={multiplier}
+                          />
+                        </Grid>
+                      )
+                    })}
+                    {counts[3] === 0 && <NoRocksMatch />}
+                  </Grid>
+                </>
+              )}
+              {showNyx && (
+                <>
+                  <SystemLabel system={SystemEnum.Nyx} />
+
+                  <Grid width={'100%'} container spacing={4}>
+                    {Object.values(DepositTypeEnum).map((type, idx) => {
+                      const multiplier = possibilities.deposit[type] || 0
+                      if (signalFilter && signalFilter > 0 && !multiplier) return null
+                      if (!tableData[SystemEnum.Nyx] || !tableData[SystemEnum.Nyx][type]) return null
+                      counts[3]++
+                      return (
+                        <Grid key={idx} width={'400px'}>
+                          <ClassCard
+                            className={type}
+                            data={tableData[SystemEnum.Nyx][type]}
                             hoveredOre={hoveredOre}
                             setHoveredOre={setHoveredOre}
                             oreTierFilter={oreTierFilter}

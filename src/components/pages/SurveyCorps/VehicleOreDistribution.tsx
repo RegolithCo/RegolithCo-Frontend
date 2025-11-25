@@ -36,6 +36,19 @@ import { useVehicleOreColors } from '../../../hooks/useVehicleOreColors'
 import { fontFamilies } from '../../../theme'
 import { calculateNormalizedProbability } from './ShipOreDistribution'
 import Gradient from 'javascript-color-gradient'
+import { useQueryParams, useURLArrayState, useURLState } from '../../../hooks/useURLState'
+
+const URL_KEYS = {
+  selected: 'sel',
+  filterSelected: 'ft',
+  gravityWell: 'gw',
+  advanced: 'adv',
+} as const
+
+const EMPTY_SELECTION: string[] = []
+
+const serializeBool = (value: boolean) => (value ? '1' : '')
+const parseBool = (value: string | null) => value === '1'
 
 export interface VehicleOreDistributionProps {
   // Props here
@@ -48,6 +61,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
   const styles = tableStylesThunk(theme)
   const tBodyRef = React.useRef<HTMLTableSectionElement>(null)
   const tContainerRef = React.useRef<HTMLDivElement>(null)
+  const { resetQueryValues } = useQueryParams()
   const [maxMins, setMaxMins] = React.useState<Record<string, { max: number | null; min: number | null }>>({
     STAT_BONUS: { max: 1, min: 1 },
     STAT_USERS: { max: 0, min: 0 },
@@ -56,40 +70,63 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
     STAT_CLUSTER_SIZE: { max: 0, min: 0 },
   })
   // Filters
-  const [selected, setSelected] = React.useState<string[]>([])
+  const [selected, setSelected] = useURLArrayState<string>(URL_KEYS.selected, EMPTY_SELECTION)
   // Hover state: [colNum, left, width, color]
   const [hoverCol, setHoverCol] = React.useState<[number, number, number, string] | null>(null)
   // Hover state: [colNum, top, height, color]
   const [hoverRow, setHoverRow] = React.useState<[number, number, number, string] | null>(null)
 
-  const [filterSelected, setFilterSelected] = React.useState<boolean>(false)
-  const [showExtendedStats, setShowExtendedStats] = React.useState<boolean>(false)
-  const [gravityWellFilter, setGravityWellFilter] = React.useState<string | null>(null)
+  const [filterSelected, setFilterSelected] = useURLState<boolean>(
+    URL_KEYS.filterSelected,
+    false,
+    serializeBool,
+    parseBool
+  )
+  const [showExtendedStats, setShowExtendedStats] = useURLState<boolean>(
+    URL_KEYS.advanced,
+    false,
+    serializeBool,
+    parseBool
+  )
+  const [gravityWellFilter, setGravityWellFilter] = useURLState<string | null>(
+    URL_KEYS.gravityWell,
+    null,
+    (value) => value,
+    (value) => value
+  )
 
-  const handleRowClick = React.useCallback((gravWellId: string) => {
-    setSelected((prev) => {
-      if (prev.includes(gravWellId)) {
-        return prev.filter((id) => id !== gravWellId)
-      }
-      const newSelected = [...prev, gravWellId]
-      if (newSelected.length === 0 && filterSelected) {
-        setFilterSelected(false)
-      }
-      return newSelected
-    })
-  }, [])
+  React.useEffect(() => {
+    if (filterSelected && selected.length === 0) {
+      resetQueryValues([URL_KEYS.filterSelected])
+    }
+  }, [filterSelected, resetQueryValues, selected.length])
 
-  const handleGravityWellFilter = React.useCallback((newGrav: string | null) => {
-    setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
-    setHoverCol(null)
-    setHoverRow(null)
-    // if tContainerRef exists scroll to the top
-    setTimeout(() => {
-      if (tContainerRef.current) {
-        tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
-      }
-    }, 100)
-  }, [])
+  const handleRowClick = React.useCallback(
+    (gravWellId: string) => {
+      setSelected((prev) => {
+        if (prev.includes(gravWellId)) {
+          return prev.filter((id) => id !== gravWellId)
+        }
+        return [...prev, gravWellId]
+      })
+    },
+    [setSelected]
+  )
+
+  const handleGravityWellFilter = React.useCallback(
+    (newGrav: string | null) => {
+      setGravityWellFilter((prev) => (prev === newGrav ? null : newGrav))
+      setHoverCol(null)
+      setHoverRow(null)
+      // if tContainerRef exists scroll to the top
+      setTimeout(() => {
+        if (tContainerRef.current) {
+          tContainerRef.current.scrollTo({ top: 0, behavior: 'instant' })
+        }
+      }, 100)
+    },
+    [setGravityWellFilter]
+  )
 
   const gradients = React.useMemo(() => {
     const retVal = {}
@@ -450,8 +487,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
 
           <Button
             onClick={() => {
-              setSelected([])
-              setFilterSelected(false)
+              resetQueryValues([URL_KEYS.selected, URL_KEYS.filterSelected])
             }}
             variant="text"
             size="small"
@@ -462,8 +498,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
           <Box sx={{ flexGrow: 1 }} />
           <Button
             onClick={() => {
-              setSelected([])
-              setFilterSelected(false)
+              resetQueryValues([URL_KEYS.selected, URL_KEYS.filterSelected, URL_KEYS.gravityWell, URL_KEYS.advanced])
               handleGravityWellFilter(null)
             }}
             color="error"
