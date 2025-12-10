@@ -127,6 +127,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                       inputProps={{
                         sx: {
                           color: theme.palette.secondary.main,
+                          textAlign: 'right',
                         },
                       }}
                     />
@@ -153,7 +154,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                       onChange={(newRes) => handleUpdate({ res: newRes || undefined })}
                       format={MValueFormat.percent}
                       suffix="%"
-                      inputProps={{ sx: { color: theme.palette.secondary.main } }}
+                      inputProps={{ sx: { color: theme.palette.secondary.main, textAlign: 'right' } }}
                     />
                   </TableCell>
                 </TableRow>
@@ -178,7 +179,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                       onChange={(newInst) => handleUpdate({ inst: newInst || undefined })}
                       format={MValueFormat.decimal}
                       precision={2}
-                      inputProps={{ sx: { color: theme.palette.secondary.main } }}
+                      inputProps={{ sx: { color: theme.palette.secondary.main, textAlign: 'right' } }}
                     />
                   </TableCell>
                 </TableRow>
@@ -189,7 +190,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
           <TableContainer
             sx={{
               mt: 5,
-              maxWidth: 300,
+              maxWidth: '100%',
             }}
           >
             <Table size="small">
@@ -223,7 +224,18 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                         textAlign: 'center',
                       }}
                     >
-                      {percent !== undefined ? MValueFormatter(percent || 0, MValueFormat.percent, 2) : <NotFound />}
+                      <MValue
+                        value={percent}
+                        format={MValueFormat.percent}
+                        decimals={2}
+                        suffix="%"
+                        onChange={(newVal) => {
+                          const newOres = [...shipRock.ores]
+                          newOres[i] = { ...newOres[i], percent: newVal }
+                          handleUpdate({ ores: newOres })
+                        }}
+                        inputProps={{ sx: { textAlign: 'right', color: theme.palette.secondary.main } }}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -240,7 +252,7 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
                     </TableCell>
                     <TableCell
                       sx={{
-                        textAlign: 'center',
+                        textAlign: 'right',
                         fontStyle: 'italic',
                         color: theme.palette.text.secondary,
                       }}
@@ -271,13 +283,5 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
         or crop.
       </Typography>
     </Box>
-  )
-}
-
-const NotFound: React.FC = () => {
-  return (
-    <Typography variant="body1" color={'error'}>
-      Not Found
-    </Typography>
   )
 }

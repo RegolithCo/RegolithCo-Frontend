@@ -1,3 +1,3 @@
 #!/bin/bash
 
-yarn up @regolithco/common
+yarn upgrade @regolithco/common

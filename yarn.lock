@@ -2700,9 +2700,9 @@
     "@react-spring/types" "~10.0.3"
 
 "@regolithco/common@^1.4.7":
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/@regolithco/common/-/common-1.4.7.tgz#4e333b06dfc8597deef60a126ed3253925665d59"
-  integrity sha512-aNUmF2/PpjB2ma4OON9q0KqSfzidK5KV/nb/Pw0w49LpVz7owq0wC6DpTtgh2w004g7gAnXWQcMi/0L7f5nvqQ==
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/@regolithco/common/-/common-1.4.8.tgz#00e150fb46b0cd68ac5b1da6fd11f290fab59a42"
+  integrity sha512-XeEIa0MWqoA6lPGHlOejBS61gAHMBfhdof/upBMYwcr+SgQTm46WFqA5uimcOnJ/wOsCh0wLPYkMTBgadQv+Cg==
   dependencies:
     "@apollo/client" "^3.14.0"
     blob "^0.1.0"

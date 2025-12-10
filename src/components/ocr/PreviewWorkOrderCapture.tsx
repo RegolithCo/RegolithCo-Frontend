@@ -199,7 +199,7 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
 
           <TableContainer
             sx={{
-              maxWidth: 320,
+              maxWidth: '100%',
               mt: 5,
             }}
           >
@@ -211,7 +211,6 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                   }}
                 >
                   <TableCell>Ore</TableCell>
-                  <TableCell>Raw</TableCell>
                   <TableCell sx={{ textAlign: 'center' }}>Yield</TableCell>
                 </TableRow>
               </TableHead>
@@ -227,10 +226,6 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                     >
                       {getOreName(ore)}
                     </TableCell>
-                    <TableCell>
-                      {!yieldVal && !amt && <NotFound />}
-                      {amt !== undefined ? MValueFormatter(amt, MValueFormat.volcSCU, 0) : <NotRelevant />}
-                    </TableCell>
                     <TableCell
                       sx={{
                         textAlign: 'right',
@@ -239,8 +234,17 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                         fontWeight: 'bold',
                       }}
                     >
-                      {!yieldVal && !amt && <NotFound />}
-                      {yieldVal !== undefined ? MValueFormatter(yieldVal, MValueFormat.volcSCU, 0) : <NotRelevant />}
+                      <MValue
+                        value={yieldVal}
+                        onChange={(newYield) => {
+                          const newOres = [...order.shipOres]
+                          newOres[i] = { ...newOres[i], yield: newYield }
+                          handleUpdate({ shipOres: newOres })
+                        }}
+                        format={MValueFormat.volcSCU}
+                        decimals={0}
+                        inputProps={{ sx: { textAlign: 'right', color: theme.palette.secondary.dark } }}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

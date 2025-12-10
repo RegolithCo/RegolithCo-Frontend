@@ -187,8 +187,11 @@ export const MValue: React.FC<MValueProps> = ({
 
   if (onChange) {
     const isPercent = format === MValueFormat.percent
-    const displayValue = isPercent && typeof value === 'number' ? value * 100 : value
-
+    let displayValue = isPercent && typeof value === 'number' ? value * 100 : value
+    // Now apply decimals if needed
+    if (decimals && displayValue && typeof displayValue === 'number') {
+      displayValue = parseFloat(displayValue.toFixed(decimals))
+    }
     return (
       <TextField
         value={displayValue || ''}
@@ -207,6 +210,7 @@ export const MValue: React.FC<MValueProps> = ({
         }}
         slotProps={{
           input: {
+            ...inputProps,
             endAdornment: suffix ? (
               <InputAdornment
                 position="end"
@@ -218,17 +222,16 @@ export const MValue: React.FC<MValueProps> = ({
               </InputAdornment>
             ) : undefined,
             sx: {
-              ...(inputProps?.sx || {}),
               fontSize: 'inherit',
               fontFamily: 'inherit',
               fontWeight: 'inherit',
               textAlign: 'right',
+              ...(inputProps?.sx || {}),
+              '& input': {
+                textAlign: 'inherit',
+              },
             },
-            ...inputProps,
           },
-        }}
-        sx={{
-          width: 80,
         }}
       />
     )

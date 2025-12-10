@@ -189,10 +189,8 @@ export type PendingUserFieldPolicy = {
 	sessionRole?: FieldPolicy<any> | FieldReadFunction<any>,
 	shipRole?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('captureRefineryOrder' | 'captureShipRockScan' | 'crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'surveyData' | 'user' | 'workOrder' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'surveyData' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
-	captureRefineryOrder?: FieldPolicy<any> | FieldReadFunction<any>,
-	captureShipRockScan?: FieldPolicy<any> | FieldReadFunction<any>,
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
 	lookups?: FieldPolicy<any> | FieldReadFunction<any>,
 	profile?: FieldPolicy<any> | FieldReadFunction<any>,
