@@ -26,6 +26,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.8",
+    "@gutenye/ocr-browser": "^1.4.8",
+    "@gutenye/ocr-node": "^1.4.8",
     "@mui/icons-material": "^7.3.2",
     "@mui/lab": "^7.0.0-beta.17",
     "@mui/material": "^7.3.2",
@@ -36,6 +38,7 @@
     "@nivo/pie": "^0.99.0",
     "@react-oauth/google": "^0.12.2",
     "@regolithco/common": "^1.4.7",
+    "@regolithco/ocr": "^1.0.1",
     "@sentry/react": "^9.44.0",
     "@sentry/vite-plugin": "^3.6.1",
     "axios": "^1.12.2",
@@ -50,6 +53,8 @@
     "loglevel": "^1.9.2",
     "notistack": "^3.0.2",
     "numeral": "^2.0.6",
+    "onnxruntime-node": "^1.23.2",
+    "onnxruntime-web": "^1.23.2",
     "qrcode.react": "^4.2.0",
     "query-string": "^9.3.1",
     "react": "^19.1.1",
@@ -119,7 +124,8 @@
     "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "vite-plugin-static-copy": "^3.1.4"
   },
   "overrides": {
     "react-refresh": "0.11.0"

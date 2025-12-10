@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { sentryVitePlugin } from '@sentry/vite-plugin'
-import fs from 'fs'
-import path from 'path'
+// import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -29,13 +28,29 @@ export default defineConfig(({ mode }) => ({
     include: ['buffer'],
   },
   plugins: [
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'node_modules/onnxruntime-web/dist/*.wasm',
+          dest: './ort',
+        },
+        {
+          src: 'node_modules/onnxruntime-web/dist/*.mjs',
+          dest: './ort',
+        },
+        {
+          src: 'node_modules/@gutenye/ocr-models/assets/*',
+          dest: 'assets/models',
+        },
+      ],
+    }),
     react(),
     // Put the Sentry vite plugin after all other plugins
-    sentryVitePlugin({
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: 'regolith-co',
-      project: 'regolith',
-    }),
+    // sentryVitePlugin({
+    //   authToken: process.env.SENTRY_AUTH_TOKEN,
+    //   org: 'regolith-co',
+    //   project: 'regolith',
+    // }),
   ],
   logLevel: 'info', // Enable detailed logging
 }))

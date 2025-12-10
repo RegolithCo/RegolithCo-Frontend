@@ -9,10 +9,14 @@
       "name": "📦 common",
       "path": "node_modules/@regolithco/common"
     },
+    {
+      "name": "📦 OCR",
+      "path": "node_modules/@regolithco/common"
+    },
     // Helpful to have the schema there for you to reference
     {
       "name": "🧬 Schema",
-      "path": "node_modules/@regolithco/common/GraphQL"
+      "path": "node_modules/@regolithco/ocr"
     } 
   ],
   "settings": {

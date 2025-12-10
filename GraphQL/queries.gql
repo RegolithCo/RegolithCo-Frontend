@@ -1,4 +1,3 @@
-
 query getUserProfile {
   profile {
     ...UserProfileFragment
@@ -11,7 +10,6 @@ query getLoadouts {
   }
 }
 
-
 query getSessionUser($sessionId: ID!) {
   sessionUser(sessionId: $sessionId) {
     ...SessionUserFragment
@@ -23,7 +21,7 @@ query getMyUserSessions($nextToken: String) {
     userId
     mySessions(nextToken: $nextToken) {
       items {
-       ...SessionFragment
+        ...SessionFragment
       }
       nextToken
     }
@@ -34,13 +32,12 @@ query getJoinedUserSessions($nextToken: String) {
     userId
     joinedSessions(nextToken: $nextToken) {
       items {
-       ...SessionFragment
+        ...SessionFragment
       }
       nextToken
     }
   }
 }
-
 
 query getUser($userId: ID!) {
   user(userId: $userId) {
@@ -60,26 +57,26 @@ query getSessionUpdates($sessionId: ID!, $lastCheck: String!) {
     eventName
     eventDate
     data {
-      ...on WorkOrderInterface {
+      ... on WorkOrderInterface {
         ...WorkOrderBaseFragment
         workOrderState: state
       }
-      ...on ScoutingFindInterface {
+      ... on ScoutingFindInterface {
         ...ScoutingFindBaseFragment
         attendance {
           ...SessionUserFragment
         }
         scoutingState: state
       }
-      ...on CrewShare {
+      ... on CrewShare {
         ...CrewShareBaseFragment
         crewShareState: state
       }
-      ...on SessionUser {
+      ... on SessionUser {
         ...SessionUserBaseFragment
         sessionUserState: state
       }
-      ...on Session {
+      ... on Session {
         ...SessionBaseFragment
         sessionState: state
       }
@@ -106,7 +103,7 @@ query getSessionScouting($sessionId: ID!, $nextToken: String) {
     ...SessionScoutingFragment
   }
 }
-query getSessionActiveMembers($sessionId: ID!, $nextToken: String ) {
+query getSessionActiveMembers($sessionId: ID!, $nextToken: String) {
   session(sessionId: $sessionId) {
     ...SessionActiveMembersFragment
   }
@@ -116,7 +113,6 @@ query getSessionWorkOrders($sessionId: ID!, $nextToken: String) {
     ...SessionWorkOrdersFragment
   }
 }
-
 
 query getWorkOrder($orderId: ID!, $sessionId: ID!) {
   workOrder(sessionId: $sessionId, orderId: $orderId) {
@@ -130,7 +126,6 @@ query getScoutingFind($scoutingFindId: ID!, $sessionId: ID!) {
   }
 }
 
-
 query getCrewShares($sessionId: ID!, $orderId: ID, $nextToken: String) {
   crewShares(sessionId: $sessionId, orderId: $orderId, nextToken: $nextToken) {
     items {
@@ -140,39 +135,39 @@ query getCrewShares($sessionId: ID!, $orderId: ID, $nextToken: String) {
   }
 }
 ###################################################
-# Capture Queries 
+# Capture Queries
 ###################################################
-query captureShipRockScan($imgUrl: String!){
-  captureShipRockScan(imgUrl: $imgUrl) {
-    mass
-    inst
-    rockType
-    res
-    ores {
-      ore
-      percent
-    }
-  }
-}
-query captureRefineryOrder($imgUrl: String!){
-  captureRefineryOrder(imgUrl: $imgUrl) {
-  expenses {
-    amount
-    name
-    ownerScName
-  }
-  processDurationS
-  refinery
-  method
-  shipOres {
-    amt
-    ore
-    yield
-  }
-  }
-}
+# query captureShipRockScan($imgUrl: String!){
+#   captureShipRockScan(imgUrl: $imgUrl) {
+#     mass
+#     inst
+#     rockType
+#     res
+#     ores {
+#       ore
+#       percent
+#     }
+#   }
+# }
+# query captureRefineryOrder($imgUrl: String!){
+#   captureRefineryOrder(imgUrl: $imgUrl) {
+#   expenses {
+#     amount
+#     name
+#     ownerScName
+#   }
+#   processDurationS
+#   refinery
+#   method
+#   shipOres {
+#     amt
+#     ore
+#     yield
+#   }
+#   }
+# }
 
-# NOTE: The getPublic in the name is what makes it use the public API 
+# NOTE: The getPublic in the name is what makes it use the public API
 query getPublicSurveyData($epoch: String!, $dataName: String!) {
   surveyData(epoch: $epoch, dataName: $dataName) {
     epoch
@@ -183,10 +178,10 @@ query getPublicSurveyData($epoch: String!, $dataName: String!) {
 }
 
 ###################################################
-# Public Queries 
+# Public Queries
 ###################################################
 
-# NOTE: The getPublic in the name is what makes it use the public API 
+# NOTE: The getPublic in the name is what makes it use the public API
 query getPublicLookups {
   lookups {
     CIG {

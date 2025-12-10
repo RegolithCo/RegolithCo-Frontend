@@ -124,7 +124,9 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         authLink,
         splitLink,
       ]),
-      connectToDevTools: import.meta.env.MODE === 'development',
+      devtools: {
+        enabled: import.meta.env.MODE === 'development',
+      },
       cache: new InMemoryCache({
         possibleTypes: {
           WorkOrderInterface: ['VehicleMiningOrder', 'OtherOrder', 'SalvageOrder', 'ShipMiningOrder'],

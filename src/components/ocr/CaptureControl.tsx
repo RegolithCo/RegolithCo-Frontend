@@ -13,8 +13,12 @@ import {
   useTheme,
   Stack,
 } from '@mui/material'
-import { useCaptureRefineryOrderLazyQuery, useCaptureShipRockScanLazyQuery } from '../../schema'
+import { env } from 'onnxruntime-web'
+import { parseShipMiningOrder, parseShipRock } from '@regolithco/ocr'
 import { ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
+
+// Configure WASM path to root
+env.wasm.wasmPaths = '/ort/'
 import { Check, Clear, Replay, TipsAndUpdatesOutlined } from '@mui/icons-material'
 import { CameraHelpDialog } from './CameraHelpDialog'
 import { DeviceTypeEnum, useDeviceType } from '../../hooks/useDeviceType'
@@ -90,12 +94,9 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
     input.click()
   }
 
-  const [qryRefineryOrder, { loading: refineryOrderLoading, error: refineryOrderError, data: refineryOrderData }] =
-    useCaptureRefineryOrderLazyQuery()
-  const [qryShipRockScan, { loading: shipRockScanLoading, error: shipRockScanError, data: shipRockScanData }] =
-    useCaptureShipRockScanLazyQuery()
+  const [processing, setProcessing] = useState(false)
 
-  const loading = refineryOrderLoading || shipRockScanLoading
+  const loading = processing
 
   const handleOnCapture = () => {
     if (captureType === CaptureTypeEnum.SHIP_ROCK) {
@@ -108,12 +109,8 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
 
   // If we have an error, show it
   useEffect(() => {
-    if (refineryOrderError || shipRockScanError) {
-      setShowError(refineryOrderError?.message || shipRockScanError?.message || 'Scan Could not be captured')
-    } else {
-      setShowError(null)
-    }
-  }, [refineryOrderError, shipRockScanError])
+    // Error handling moved to onSubmit
+  }, [])
 
   const isCaptureStage = !rawImageUrl && !isScreenSharing && !data && !showError
   const isCropStage = (!!rawImageUrl || isScreenSharing) && !data && !showError
@@ -262,41 +259,35 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                 }}
                 chooseFileClick={handleFileDialogClick}
                 captureType={captureType}
-                onSubmit={(newUrl) => {
+                onSubmit={async (newUrl) => {
                   if (newUrl) {
                     setSubmittedImageUrl(newUrl)
-                    if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
-                      qryRefineryOrder({
-                        variables: {
-                          imgUrl: newUrl,
-                        },
-                        onCompleted: (data) => {
-                          if (data.captureRefineryOrder) {
-                            setData(data.captureRefineryOrder)
-                            if (rawImageUrl) setRawImageUrl(null)
-                            setSubmittedImageUrl(null)
-                          } else {
-                            setShowError('Scan Could not be captured')
-                          }
-                        },
-                        fetchPolicy: 'no-cache',
-                      })
-                    } else if (captureType === CaptureTypeEnum.SHIP_ROCK) {
-                      qryShipRockScan({
-                        variables: {
-                          imgUrl: newUrl,
-                        },
-                        onCompleted: (data) => {
-                          if (data.captureShipRockScan) {
-                            setData(data.captureShipRockScan || null)
-                            if (rawImageUrl) setRawImageUrl(null)
-                            setSubmittedImageUrl(null)
-                          } else {
-                            setShowError('Scan Could not be captured')
-                          }
-                        },
-                        fetchPolicy: 'no-cache',
-                      })
+                    setProcessing(true)
+                    try {
+                      if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
+                        const result = await parseShipMiningOrder(newUrl)
+                        if (result) {
+                          setData(result)
+                          if (rawImageUrl) setRawImageUrl(null)
+                          // setSubmittedImageUrl(null)
+                        } else {
+                          setShowError('Scan Could not be captured')
+                        }
+                      } else if (captureType === CaptureTypeEnum.SHIP_ROCK) {
+                        const result = await parseShipRock(newUrl)
+                        if (result) {
+                          setData(result)
+                          if (rawImageUrl) setRawImageUrl(null)
+                          // setSubmittedImageUrl(null)
+                        } else {
+                          setShowError('Scan Could not be captured')
+                        }
+                      }
+                    } catch (e) {
+                      const msg = e instanceof Error ? e.message : 'Scan Could not be captured'
+                      setShowError(msg)
+                    } finally {
+                      setProcessing(false)
                     }
                   }
                 }}
@@ -312,7 +303,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                   justifyContent: 'center',
                 }}
               >
-                <PreviewWorkOrderCapture order={data as ShipMiningOrderCapture} />
+                <PreviewWorkOrderCapture order={data as ShipMiningOrderCapture} imageUrl={submittedImageUrl} />
               </Box>
             )}
             {data && data.__typename === 'ShipRockCapture' && (
@@ -324,7 +315,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                   justifyContent: 'center',
                 }}
               >
-                <PreviewScoutingRockCapture shipRock={data as ShipRockCapture} />
+                <PreviewScoutingRockCapture shipRock={data as ShipRockCapture} imageUrl={submittedImageUrl} />
               </Box>
             )}
             {isVerifyStage && (

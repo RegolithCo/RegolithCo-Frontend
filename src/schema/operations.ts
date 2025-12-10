@@ -714,20 +714,6 @@ export type GetCrewSharesQueryVariables = types.Exact<{
 
 export type GetCrewSharesQuery = { __typename: 'Query', crewShares?: { __typename: 'PaginatedCrewShares', nextToken?: string | null, items: Array<{ __typename: 'CrewShare', state?: boolean | null, sessionId: string, payeeScName: string, payeeUserId?: string | null, orderId: string, shareType: types.ShareTypeEnum, share: number, note?: string | null, createdAt: any, updatedAt: any }> } | null };
 
-export type CaptureShipRockScanQueryVariables = types.Exact<{
-  imgUrl: types.Scalars['String']['input'];
-}>;
-
-
-export type CaptureShipRockScanQuery = { __typename: 'Query', captureShipRockScan?: { __typename: 'ShipRockCapture', mass: number, inst?: number | null, rockType?: any | null, res?: number | null, ores: Array<{ __typename: 'ShipRockOre', ore: types.ShipOreEnum, percent: number }> } | null };
-
-export type CaptureRefineryOrderQueryVariables = types.Exact<{
-  imgUrl: types.Scalars['String']['input'];
-}>;
-
-
-export type CaptureRefineryOrderQuery = { __typename: 'Query', captureRefineryOrder?: { __typename: 'ShipMiningOrderCapture', processDurationS?: number | null, refinery?: types.RefineryEnum | null, method?: types.RefineryMethodEnum | null, expenses?: Array<{ __typename: 'WorkOrderExpense', amount: number, name: string, ownerScName: string }> | null, shipOres: Array<{ __typename: 'RefineryRowCapture', amt?: number | null, ore: types.ShipOreEnum, yield?: number | null }> } | null };
-
 export type GetPublicSurveyDataQueryVariables = types.Exact<{
   epoch: types.Scalars['String']['input'];
   dataName: types.Scalars['String']['input'];
