@@ -11,11 +11,13 @@ import {
 
 export interface RockTypeChooserProps {
   value?: RockType | null
+  hideLabel?: boolean
   onChange: (choice: RockType | null) => void
   filter?: 'asteroid' | 'deposit'
+  color?: string
 }
 
-export const RockTypeChooser: React.FC<RockTypeChooserProps> = ({ onChange, value, filter }) => {
+export const RockTypeChooser: React.FC<RockTypeChooserProps> = ({ onChange, value, filter, hideLabel, color }) => {
   const theme = useTheme()
 
   return (
@@ -25,19 +27,20 @@ export const RockTypeChooser: React.FC<RockTypeChooserProps> = ({ onChange, valu
       labelId="rockId"
       size="small"
       value={value || ''}
-      label="Rock Class"
+      label={hideLabel ? '' : 'Rock Class'}
       // I need an adornment inside the select
-      startAdornment={<InputAdornment position="start">Rock Class</InputAdornment>}
+      startAdornment={hideLabel ? undefined : <InputAdornment position="start">Rock Class</InputAdornment>}
       // Now center the text inside the select
       sx={{
         '& .MuiSelect-select': {
           textAlign: 'right',
+          color: color,
         },
         '& .MuiSelect-selectMenu': {
           textAlign: 'right',
         },
         '& .MuiSelect-select:focus': {
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: color ? undefined : theme.palette.background.paper,
         },
       }}
       onChange={(event) => {

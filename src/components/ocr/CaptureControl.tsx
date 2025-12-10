@@ -61,13 +61,11 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
   const isPhone = useDeviceType() === DeviceTypeEnum.PHONE
 
   const [currDevice, setCurrDevice] = React.useState<MediaDeviceInfo>()
-  const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([])
 
   // Get the list of devices and populate our chooser
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const videoDevices = devices.filter((device) => device.kind === 'videoinput')
-      setDevices(videoDevices)
       if (!currDevice && videoDevices.length > 0) {
         setCurrDevice(videoDevices[0])
       }
@@ -123,7 +121,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
       fullScreen={isPhone}
       fullWidth
       sx={{}}
-      maxWidth="md"
+      maxWidth={isVerifyStage ? 'lg' : 'md'}
       onClose={onClose}
       slotProps={{
         backdrop: {
@@ -225,7 +223,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                 zIndex: 5,
               }}
             >
-              <CircularProgress size={100} thickness={10} color="secondary" />
+              <CircularProgress size={100} thickness={20} color="secondary" />
               <Typography
                 variant="h6"
                 sx={{
@@ -239,7 +237,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                   transform: 'translate(-50%, -50%)',
                 }}
               >
-                Submitting...
+                Detecting...
               </Typography>
             </Box>
           </Box>
@@ -303,7 +301,11 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                   justifyContent: 'center',
                 }}
               >
-                <PreviewWorkOrderCapture order={data as ShipMiningOrderCapture} imageUrl={submittedImageUrl} />
+                <PreviewWorkOrderCapture
+                  order={data as ShipMiningOrderCapture}
+                  imageUrl={submittedImageUrl}
+                  onChange={(newData) => setData(newData)}
+                />
               </Box>
             )}
             {data && data.__typename === 'ShipRockCapture' && (
@@ -315,7 +317,11 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                   justifyContent: 'center',
                 }}
               >
-                <PreviewScoutingRockCapture shipRock={data as ShipRockCapture} imageUrl={submittedImageUrl} />
+                <PreviewScoutingRockCapture
+                  shipRock={data as ShipRockCapture}
+                  imageUrl={submittedImageUrl}
+                  onChange={(newData) => setData(newData)}
+                />
               </Box>
             )}
             {isVerifyStage && (

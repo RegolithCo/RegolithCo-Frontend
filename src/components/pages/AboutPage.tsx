@@ -638,8 +638,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
       <Typography variant="caption" paragraph sx={{ p: 1, m: 1 }}>
         Regolith Co. is a Star Citizen fansite, not affiliated with the Cloud Imperium group of companies in any way.
         All content on this site not authored by its host or users is property of their respective owners. Star
-        Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights
-        LLC.
+        Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC.
       </Typography>
     </PageWrapper>
   )

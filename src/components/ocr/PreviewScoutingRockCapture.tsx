@@ -10,19 +10,30 @@ import {
   useTheme,
   Box,
 } from '@mui/material'
-import { getOreName, getRockTypeName, ShipRockCapture } from '@regolithco/common'
+import { getOreName, ShipRockCapture } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
-import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
+import { RockTypeChooser } from '../fields/RockTypeChooser'
 
 export interface PreviewScoutingRockCaptureProps {
   shipRock: ShipRockCapture
   imageUrl?: string | null
+  onChange: (val: ShipRockCapture) => void
 }
 
-export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProps> = ({ shipRock, imageUrl }) => {
+export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProps> = ({
+  shipRock,
+  imageUrl,
+  onChange,
+}) => {
   const theme = useTheme()
   const totalOres = shipRock ? shipRock.ores.reduce((acc, ore) => acc + ore.percent, 0) : 0
   const inertMaterial = totalOres >= 0 && totalOres <= 1 ? 1 - totalOres : 0
+
+  const handleUpdate = (updates: Partial<ShipRockCapture>) => {
+    onChange({ ...shipRock, ...updates })
+  }
+
   return (
     <Box
       sx={{
@@ -62,43 +73,115 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
         >
           <TableContainer
             sx={{
-              maxWidth: 300,
+              maxWidth: '100%',
             }}
           >
             <Table size="small">
               <TableBody>
-                <PreviewRow
-                  heading="Rock Class"
-                  value={
-                    shipRock.rockType !== undefined && shipRock.rockType !== null ? (
-                      getRockTypeName(shipRock.rockType)
-                    ) : (
-                      <NotFound />
-                    )
-                  }
-                />
-                <PreviewRow
-                  heading="Mass"
-                  value={
-                    shipRock.mass !== undefined && shipRock.mass !== null ? shipRock.mass.toFixed(0) : <NotFound />
-                  }
-                />
-                <PreviewRow
-                  heading="Resistance"
-                  value={
-                    shipRock.res !== undefined && shipRock.res !== null ? (
-                      MValueFormatter(shipRock.res || 0, MValueFormat.percent)
-                    ) : (
-                      <NotFound />
-                    )
-                  }
-                />
-                <PreviewRow
-                  heading="Instability"
-                  value={
-                    shipRock.inst !== undefined && shipRock.inst !== null ? shipRock.inst?.toFixed(2) : <NotFound />
-                  }
-                />
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text',
+                    }}
+                  >
+                    Rock Class
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: theme.palette.secondary.main,
+                      textAlign: 'right',
+                    }}
+                  >
+                    <RockTypeChooser
+                      value={shipRock.rockType}
+                      hideLabel
+                      color={theme.palette.secondary.main}
+                      onChange={(newType) => handleUpdate({ rockType: newType || undefined })}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text',
+                    }}
+                  >
+                    Mass
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: theme.palette.secondary.main,
+                      textAlign: 'right',
+                    }}
+                  >
+                    <MValue
+                      value={shipRock.mass}
+                      onChange={(newMass) => handleUpdate({ mass: newMass || undefined })}
+                      format={MValueFormat.decimal}
+                      precision={0}
+                      suffix="kg"
+                      inputProps={{
+                        sx: {
+                          color: theme.palette.secondary.main,
+                        },
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text',
+                    }}
+                  >
+                    Resistance
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: theme.palette.secondary.main,
+                      textAlign: 'right',
+                    }}
+                  >
+                    <MValue
+                      value={shipRock.res}
+                      onChange={(newRes) => handleUpdate({ res: newRes || undefined })}
+                      format={MValueFormat.percent}
+                      suffix="%"
+                      inputProps={{ sx: { color: theme.palette.secondary.main } }}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text',
+                    }}
+                  >
+                    Instability
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: theme.palette.secondary.main,
+                      textAlign: 'right',
+                    }}
+                  >
+                    <MValue
+                      value={shipRock.inst}
+                      onChange={(newInst) => handleUpdate({ inst: newInst || undefined })}
+                      format={MValueFormat.decimal}
+                      precision={2}
+                      inputProps={{ sx: { color: theme.palette.secondary.main } }}
+                    />
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
@@ -196,30 +279,5 @@ const NotFound: React.FC = () => {
     <Typography variant="body1" color={'error'}>
       Not Found
     </Typography>
-  )
-}
-
-const PreviewRow: React.FC<{ heading: React.ReactNode; value: React.ReactNode }> = ({ heading, value }) => {
-  const theme = useTheme()
-  return (
-    <TableRow>
-      <TableCell
-        sx={{
-          fontFamily: fontFamilies.robotoMono,
-          fontWeight: 'bold',
-          color: 'text',
-        }}
-      >
-        {heading}
-      </TableCell>
-      <TableCell
-        sx={{
-          color: theme.palette.secondary.main,
-          textAlign: 'center',
-        }}
-      >
-        {value}
-      </TableCell>
-    </TableRow>
   )
 }

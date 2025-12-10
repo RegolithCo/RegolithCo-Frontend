@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { SxProps, Theme, Typography, TypographyProps } from '@mui/material'
+import { SxProps, Theme, Typography, TypographyProps, TextField, InputAdornment } from '@mui/material'
 import Numeral from 'numeral'
 import dayjs from 'dayjs'
 import { getTimezoneStr, readableMilliseconds } from '@regolithco/common'
@@ -21,6 +21,7 @@ export const MValueFormat = {
   durationS: 'durationS',
   dateTime: 'dateTime',
   string: 'string',
+  decimal: 'decimal',
 } as const
 export type MValueFormat = ObjectValues<typeof MValueFormat>
 
@@ -52,6 +53,7 @@ export const countDecimals = (value: number, maxAllowedDecimals: number): number
 export interface MValueProps {
   value?: number | string | React.ReactNode | null
   onClick?: () => void
+  onChange?: (val: number) => void
   decimals?: number
   maxDecimals?: number
   approx?: boolean
@@ -60,6 +62,13 @@ export interface MValueProps {
     sx?: SxProps<Theme>
     component?: unknown
   }
+  inputProps?: {
+    sx?: SxProps<Theme>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any
+  }
+  suffix?: string
+  precision?: number
 }
 
 export const MValueAddUnit = (value: string, unit: string): React.ReactNode => {
@@ -87,7 +96,7 @@ export const MValueFormatter = (
   else if (value === null) finalVal = 'null'
 
   // Number: Just a number
-  if (!format || format === MValueFormat.number) {
+  if (!format || format === MValueFormat.number || format === MValueFormat.decimal) {
     let finalDecimals = 0
     if (decimals) finalDecimals = decimals
     else if (maxDecimals) finalDecimals = countDecimals(value as number, maxDecimals)
@@ -162,20 +171,73 @@ export const MValueFormatter = (
 export const MValue: React.FC<MValueProps> = ({
   value,
   onClick,
+  onChange,
   decimals,
   maxDecimals,
   format = MValueFormat.number,
   approx,
   typoProps,
+  inputProps,
+  suffix,
+  precision, // Used for formatting but also relevant for displaying the value in the input? - Actually 'decimals' handles format.
 }) => {
   const finalVal = MValueFormatter(value, format, decimals, maxDecimals)
   const internalTypoProps: TypographyProps = {}
   if (format === MValueFormat.currency && (value as number) < 0) internalTypoProps.color = 'error'
 
+  if (onChange) {
+    const isPercent = format === MValueFormat.percent
+    const displayValue = isPercent && typeof value === 'number' ? value * 100 : value
+
+    return (
+      <TextField
+        value={displayValue || ''}
+        variant="standard"
+        size="small"
+        onChange={(e) => {
+          let val = parseFloat(e.target.value)
+          // Allow empty string to mean 0 or undefined? For now let's just pass number.
+          if (!isNaN(val)) {
+            if (isPercent) val = val / 100
+            onChange(val)
+          } else if (e.target.value === '') {
+            // Handle clear as 0
+            onChange(0)
+          }
+        }}
+        slotProps={{
+          input: {
+            endAdornment: suffix ? (
+              <InputAdornment
+                position="end"
+                sx={{
+                  ...(inputProps?.sx || {}),
+                }}
+              >
+                {suffix}
+              </InputAdornment>
+            ) : undefined,
+            sx: {
+              ...(inputProps?.sx || {}),
+              fontSize: 'inherit',
+              fontFamily: 'inherit',
+              fontWeight: 'inherit',
+              textAlign: 'right',
+            },
+            ...inputProps,
+          },
+        }}
+        sx={{
+          width: 80,
+        }}
+      />
+    )
+  }
+
   return (
     <Typography onClick={onClick} variant="tablecell" {...internalTypoProps} {...typoProps}>
       {approx && '~'}
-      {finalVal}
+      {finalVal} {suffix && <span style={{ fontSize: '0.7em' }}>{suffix}</span>}
     </Typography>
   )
 }

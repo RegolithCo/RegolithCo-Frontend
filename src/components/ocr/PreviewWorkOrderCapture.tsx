@@ -10,19 +10,26 @@ import {
   useTheme,
   Box,
 } from '@mui/material'
-import { getOreName, getRefineryMethodName, getRefineryName, ShipMiningOrderCapture } from '@regolithco/common'
-import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
-import { MValueFormat, MValueFormatter } from '../fields/MValue'
+import { getOreName, ShipMiningOrderCapture } from '@regolithco/common'
+import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
+import { RefineryControl } from '../fields/RefineryControl'
+import { RefineryMethodControl } from '../fields/RefiningMethodControl'
+import { CountdownTimer } from '../calculators/WorkOrderCalc/CountdownTimer'
 
 export interface PreviewWorkOrderCapturePRops {
   order: ShipMiningOrderCapture
   imageUrl?: string | null
+  onChange: (val: ShipMiningOrderCapture) => void
 }
 
-export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = ({ order, imageUrl }) => {
+export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = ({ order, imageUrl, onChange }) => {
   const theme = useTheme()
-  console.log('MARZIPAN', imageUrl)
+  console.log('MARZIPAN', order)
+  const handleUpdate = (updates: Partial<ShipMiningOrderCapture>) => {
+    onChange({ ...order, ...updates })
+  }
+
   return (
     <Box
       sx={{
@@ -60,31 +67,121 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
             alignItems: 'center',
           }}
         >
-          <TableContainer sx={{ maxWidth: 450 }}>
+          <TableContainer sx={{ maxWidth: '100%' }}>
             <Table size="small">
               <TableBody>
-                <PreviewRow
-                  heading="Refinery"
-                  value={order.refinery ? getRefineryName(order.refinery) : <NotFound />}
-                />
-                <PreviewRow
-                  heading="Method"
-                  value={order.method ? getRefineryMethodName(order.method) : <NotFound />}
-                />
-                <PreviewRow
-                  heading="Cost"
-                  value={
-                    order.expenses && order.expenses.length > 0 ? (
-                      MValueFormatter(order.expenses[0].amount, MValueFormat.currency)
-                    ) : (
-                      <NotFound />
-                    )
-                  }
-                />
-                <PreviewRow
-                  heading="Time"
-                  value={
-                    order.processDurationS && order.processDurationS > 0 ? (
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Refinery
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      textAlign: 'right',
+                      color: theme.palette.secondary.dark,
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      minWidth: 150,
+                    }}
+                  >
+                    <RefineryControl
+                      value={order.refinery}
+                      onChange={(newRefinery) => handleUpdate({ refinery: newRefinery })}
+                      allowNone
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Method
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      textAlign: 'right',
+                      color: theme.palette.secondary.dark,
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      minWidth: 150,
+                    }}
+                  >
+                    <RefineryMethodControl
+                      value={order.method || undefined}
+                      onChange={(newMethod) => handleUpdate({ method: newMethod })}
+                      allowNone
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Cost
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      textAlign: 'right',
+                      color: theme.palette.secondary.dark,
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    <MValue
+                      value={order.expenses && order.expenses.length > 0 ? order.expenses[0].amount : 0}
+                      onChange={(newCost) => {
+                        // We only support editing the first expense (cost)
+                        const newExpenses = order.expenses ? [...order.expenses] : []
+                        if (newExpenses.length === 0) {
+                          newExpenses.push({
+                            amount: newCost || 0,
+                            __typename: 'WorkOrderExpense',
+                            name: 'Initial Cost',
+                            ownerScName: '',
+                          })
+                        } else {
+                          newExpenses[0] = { ...newExpenses[0], amount: newCost || 0 }
+                        }
+                        handleUpdate({ expenses: newExpenses })
+                      }}
+                      format={MValueFormat.currency}
+                      inputProps={{ sx: { textAlign: 'right' } }}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Time (sec)
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      textAlign: 'right',
+                      color: theme.palette.secondary.dark,
+                      fontFamily: fontFamilies.robotoMono,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {order.processDurationS && order.processDurationS > 0 ? (
                       <CountdownTimer
                         startTime={Date.now()}
                         totalTime={order.processDurationS * 1000 + 20}
@@ -93,9 +190,9 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                       />
                     ) : (
                       <NotFound />
-                    )
-                  }
-                />
+                    )}
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
@@ -166,33 +263,6 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
         or crop.
       </Typography>
     </Box>
-  )
-}
-
-const PreviewRow: React.FC<{ heading: React.ReactNode; value: React.ReactNode }> = ({ heading, value }) => {
-  const theme = useTheme()
-  return (
-    <TableRow>
-      <TableCell
-        sx={{
-          fontFamily: fontFamilies.robotoMono,
-          fontWeight: 'bold',
-          color: 'text.secondary',
-        }}
-      >
-        {heading}
-      </TableCell>
-      <TableCell
-        sx={{
-          textAlign: 'right',
-          color: theme.palette.secondary.dark,
-          fontFamily: fontFamilies.robotoMono,
-          fontWeight: 'bold',
-        }}
-      >
-        {value}
-      </TableCell>
-    </TableRow>
   )
 }
 
