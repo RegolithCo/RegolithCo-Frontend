@@ -3905,7 +3905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@regolithco/common@npm:^1.4.7":
+"@regolithco/common@npm:^1.4.7, @regolithco/common@npm:^1.4.8":
   version: 1.4.8
   resolution: "@regolithco/common@npm:1.4.8"
   dependencies:
@@ -3920,17 +3920,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@regolithco/ocr@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@regolithco/ocr@npm:1.0.1"
+"@regolithco/ocr@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@regolithco/ocr@npm:1.0.2"
   dependencies:
     "@gutenye/ocr-browser": ^1.4.8
-    "@gutenye/ocr-node": ^1.4.8
     "@regolithco/common": ^1.4.7
     graphql: ^16.12.0
     loglevel: ^1.9.2
     onnxruntime-node: ^1.23.2
-  checksum: dfa8104c8552524316be042ccba3bdcd701ed382fe90a2c3ba89a997df9393a471ca4df7b449eafa015e9972ef0ee172eb25c91f1f1894265f75b22a833a5d29
+  checksum: e187679e68946ef2848bf6d13f96153feffb493cd05484cf0a0f3b352a460ae2e78d00c49ffdea6f965eff02d33cbde04d5e1dc6e9c507a33702b01fc4a0b687
   languageName: node
   linkType: hard
 
@@ -3964,8 +3963,8 @@ __metadata:
     "@nivo/line": ^0.99.0
     "@nivo/pie": ^0.99.0
     "@react-oauth/google": ^0.12.2
-    "@regolithco/common": ^1.4.7
-    "@regolithco/ocr": ^1.0.1
+    "@regolithco/common": ^1.4.8
+    "@regolithco/ocr": ^1.0.2
     "@sentry/react": ^9.44.0
     "@sentry/vite-plugin": ^3.6.1
     "@storybook/addon-actions": ^9.0.8

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-yarn upgrade @regolithco/common
+yarn up @regolithco/common
+yarn up @regolithco/ocr
