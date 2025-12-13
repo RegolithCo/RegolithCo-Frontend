@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'build',
     sourcemap: true,
+    target: 'es2020',
   },
 
   server: {

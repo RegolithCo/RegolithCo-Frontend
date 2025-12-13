@@ -75,8 +75,8 @@ const splitLink = split(
     const definition = getMainDefinition(query)
     return Boolean(
       definition.kind === 'OperationDefinition' &&
-      definition.operation === 'query' &&
-      definition.name?.value.startsWith('getPublic') // change this condition based on your needs
+        definition.operation === 'query' &&
+        definition.name?.value.startsWith('getPublic') // change this condition based on your needs
     )
   },
   publicLink,
@@ -111,7 +111,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         ...DEV_HEADERS,
         authorization: token ? `Bearer ${token}` : '',
       }
-      if (authType) finalHeaders.authType = authType
+      if (!DEV_HEADERS.authType && authType) finalHeaders.authType = authType
       devQueries(finalHeaders)
       return { headers: finalHeaders }
     })
