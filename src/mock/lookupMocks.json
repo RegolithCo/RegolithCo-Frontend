@@ -1269,6 +1269,11 @@
         }
       },
       "UEX": {
+        "refineryBonuses": {
+          "CRUL1": {
+            "AGRICIUM": 1
+          }
+        },
         "bodies": [
           {
             "label": "Stanton",

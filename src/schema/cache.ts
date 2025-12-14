@@ -15,12 +15,11 @@ export type ActiveMiningLaserLoadoutFieldPolicy = {
 	modules?: FieldPolicy<any> | FieldReadFunction<any>,
 	modulesActive?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type CIGLookupsKeySpecifier = ('densitiesLookups' | 'methodsBonusLookup' | 'oreProcessingLookup' | 'refineryBonusLookup' | CIGLookupsKeySpecifier)[];
+export type CIGLookupsKeySpecifier = ('densitiesLookups' | 'methodsBonusLookup' | 'oreProcessingLookup' | CIGLookupsKeySpecifier)[];
 export type CIGLookupsFieldPolicy = {
 	densitiesLookups?: FieldPolicy<any> | FieldReadFunction<any>,
 	methodsBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>,
-	oreProcessingLookup?: FieldPolicy<any> | FieldReadFunction<any>,
-	refineryBonusLookup?: FieldPolicy<any> | FieldReadFunction<any>
+	oreProcessingLookup?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type CrewShareKeySpecifier = ('createdAt' | 'note' | 'orderId' | 'payeeScName' | 'payeeUserId' | 'session' | 'sessionId' | 'share' | 'shareType' | 'state' | 'updatedAt' | 'workOrder' | CrewShareKeySpecifier)[];
 export type CrewShareFieldPolicy = {
@@ -505,10 +504,11 @@ export type SurveyDataFieldPolicy = {
 	epoch?: FieldPolicy<any> | FieldReadFunction<any>,
 	lastUpdated?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UEXLookupsKeySpecifier = ('bodies' | 'maxPrices' | 'ships' | 'tradeports' | UEXLookupsKeySpecifier)[];
+export type UEXLookupsKeySpecifier = ('bodies' | 'maxPrices' | 'refineryBonuses' | 'ships' | 'tradeports' | UEXLookupsKeySpecifier)[];
 export type UEXLookupsFieldPolicy = {
 	bodies?: FieldPolicy<any> | FieldReadFunction<any>,
 	maxPrices?: FieldPolicy<any> | FieldReadFunction<any>,
+	refineryBonuses?: FieldPolicy<any> | FieldReadFunction<any>,
 	ships?: FieldPolicy<any> | FieldReadFunction<any>,
 	tradeports?: FieldPolicy<any> | FieldReadFunction<any>
 };

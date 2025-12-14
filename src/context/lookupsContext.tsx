@@ -46,8 +46,8 @@ export class ClientDataStore implements DataStore {
         case 'methodsBonusLookup':
           retVal = this.lookups?.CIG?.methodsBonusLookup as Lookups[K]
           break
-        case 'refineryBonusLookup':
-          retVal = this.lookups?.CIG?.refineryBonusLookup as Lookups[K]
+        case 'refineryBonuses':
+          retVal = this.lookups?.UEX?.refineryBonuses as Lookups[K]
           break
         case 'oreProcessingLookup':
           retVal = this.lookups?.CIG?.oreProcessingLookup as Lookups[K]

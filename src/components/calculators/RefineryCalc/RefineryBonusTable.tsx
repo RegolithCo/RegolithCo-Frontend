@@ -57,7 +57,7 @@ export const RefineryBonusTable: React.FC = () => {
       // const tradeportData = ((await dataStore.getLookup('tradeportLookups')) || []).filter(
       //   ({ refinery }) => refinery === true
       // )
-      const refineryBonusLookup = await dataStore.getLookup('refineryBonusLookup')
+      const refineryBonusLookup = await dataStore.getLookup('refineryBonuses')
 
       const hAxis: [RefineryEnum, string, SystemEnum][] = Object.entries(SystemRefineries).reduce(
         (acc, [system, refineries]) => {
@@ -92,9 +92,10 @@ export const RefineryBonusTable: React.FC = () => {
       ]
       const rows: RefineryModifiers[][] = vAxis.map(([ore]) => {
         const cols: RefineryModifiers[] = hAxis.map(([refinery, name]) => {
-          const opl = refineryBonusLookup[refinery] as OreProcessingLookup
+          const opl = refineryBonusLookup[refinery] as Record<ShipOreEnum, number> | undefined
           if (!opl) return [NaN, NaN, NaN]
-          const outArr = (opl[ore] as RefineryModifiers) || [1, 1, 1]
+          const outVal = (opl[ore] as unknown as number) || 1
+          const outArr = [outVal, 1, 1]
 
           const outArrNormed = outArr.map((val) => {
             if (val === null) return null

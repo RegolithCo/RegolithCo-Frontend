@@ -2700,7 +2700,6 @@ export const GetPublicLookupsDocument = gql`
     CIG {
       densitiesLookups
       oreProcessingLookup
-      refineryBonusLookup
       methodsBonusLookup
     }
     UEX {
@@ -2708,6 +2707,7 @@ export const GetPublicLookupsDocument = gql`
       maxPrices
       ships
       tradeports
+      refineryBonuses
     }
     loadout
   }
