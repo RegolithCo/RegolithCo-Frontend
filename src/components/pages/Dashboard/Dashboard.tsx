@@ -84,8 +84,8 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
             (acc, wo) => {
               try {
                 const csSumm = props.workOrderSummaries[wo.sessionId][wo.orderId].crewShareSummary || []
-                const csReturns = (wo.crewShares || []).map<[CrewShare, number]>((cs, idcs) => {
-                  const amts = csSumm[idcs] || [0, 0, 0]
+                const csReturns = (wo.crewShares || []).map<[CrewShare, bigint]>((cs, idcs) => {
+                  const amts = csSumm[idcs] || [0n, 0n, 0n]
                   const amt = wo.includeTransferFee ? amts[1] : amts[0]
                   return [cs, amt]
                 })
@@ -94,11 +94,11 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                 return acc
               }
             },
-            [] as [CrewShare, number][]
+            [] as [CrewShare, bigint][]
           )
         )
       },
-      [] as [CrewShare, number][]
+      [] as [CrewShare, bigint][]
     )
     const relevantCrewShares = myCrewShares.filter((csArr) => {
       const cs = csArr[0]

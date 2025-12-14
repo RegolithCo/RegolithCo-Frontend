@@ -477,7 +477,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
 
   if (!summary || !dataStore.ready) return <div>loading lookups...</div>
 
-  const salvageAUECSUmmary = salvageFind.wrecks?.reduce((acc, wreck) => acc + (wreck.sellableAUEC || 0), 0) || 0
+  const salvageAUECSUmmary = salvageFind.wrecks?.reduce((acc, wreck) => acc + (wreck.sellableAUEC || 0n), 0n) || 0n
 
   const summaryVolume =
     scoutingFind.clusterType === ScoutingFindTypeEnum.Vehicle ? summary.volume * 10000 : summary.volume
@@ -675,7 +675,7 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                               )}
                             </TableCell>
                             <TableCell align="right">
-                              {MValueFormatter(value, MValueFormat.number_sm, findDecimalsSm(value))}
+                              {MValueFormatter(Number(value), MValueFormat.number_sm, findDecimalsSm(Number(value)))}
                             </TableCell>
                           </TableRow>
                         )
@@ -686,9 +686,9 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                       <TableCell align="right"></TableCell>
                       <TableCell align="right">
                         {MValueFormatter(
-                          salvageAUECSUmmary,
+                          Number(salvageAUECSUmmary),
                           MValueFormat.number_sm,
-                          findDecimalsSm(salvageAUECSUmmary)
+                          findDecimalsSm(Number(salvageAUECSUmmary))
                         )}
                       </TableCell>
                     </TableRow>
@@ -702,7 +702,11 @@ export const ScoutingFindCalc: React.FC<ScoutingFindCalcProps> = ({
                     </TableCell>
                     <TableCell align="right">
                       {/* {profitSymbol} */}
-                      {MValueFormatter(summary.value, MValueFormat.number_sm, findDecimalsSm(summary.value))}
+                      {MValueFormatter(
+                        Number(summary.value),
+                        MValueFormat.number_sm,
+                        findDecimalsSm(Number(summary.value))
+                      )}
                     </TableCell>
                   </TableRow>
                 </TableFooter>

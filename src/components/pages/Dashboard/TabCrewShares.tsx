@@ -49,8 +49,8 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
             (acc, wo) => {
               try {
                 const csSumm = workOrderSummaries[wo.sessionId][wo.orderId].crewShareSummary || []
-                const csReturns = (wo.crewShares || []).map<[CrewShare, number]>((cs, idcs) => {
-                  const amts = csSumm[idcs] || [0, 0, 0]
+                const csReturns = (wo.crewShares || []).map<[CrewShare, bigint]>((cs, idcs) => {
+                  const amts = csSumm[idcs] || [0n, 0n, 0n]
                   const amt = wo.includeTransferFee ? amts[1] : amts[0]
                   return [cs, amt]
                 })
@@ -60,11 +60,11 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                 return acc
               }
             },
-            [] as [CrewShare, number][]
+            [] as [CrewShare, bigint][]
           )
         )
       },
-      [] as [CrewShare, number][]
+      [] as [CrewShare, bigint][]
     )
 
     const relevantCrewShares = myCrewShares.filter((csArr) => {
@@ -87,8 +87,8 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
   const { iOweShares, oweMeShares } = React.useMemo(() => {
     // Filter to only unpaid shares
     const unpaidShares = relevantCrewShares.filter((cs) => !cs[0].state)
-    const iOweShares: Record<string, { amt: number; shares: [CrewShare, number][]; workOrders: WorkOrder[] }> = {}
-    const oweMeShares: Record<string, { amt: number; shares: [CrewShare, number][]; workOrders: WorkOrder[] }> = {}
+    const iOweShares: Record<string, { amt: bigint; shares: [CrewShare, bigint][]; workOrders: WorkOrder[] }> = {}
+    const oweMeShares: Record<string, { amt: bigint; shares: [CrewShare, bigint][]; workOrders: WorkOrder[] }> = {}
 
     const workOrderLookups = [...mySessions, ...joinedSessions].reduce((acc, session) => {
       acc[session.sessionId] = (session.workOrders?.items || []).reduce(
@@ -115,7 +115,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
       const sellerName = workOrderSummaries[cs.sessionId][cs.orderId].sellerScName
 
       if (cs.payeeScName === userProfile.scName && sellerName !== userProfile.scName) {
-        if (!oweMeShares[sellerName]) oweMeShares[sellerName] = { amt: 0, shares: [], workOrders: [] }
+        if (!oweMeShares[sellerName]) oweMeShares[sellerName] = { amt: 0n, shares: [], workOrders: [] }
         oweMeShares[sellerName].shares.push(csArr)
         oweMeShares[sellerName].workOrders.push(wo)
         oweMeShares[sellerName].amt += amt
@@ -123,7 +123,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
         cs.payeeScName !== userProfile.scName &&
         workOrderSummaries[cs.sessionId][cs.orderId].sellerScName === userProfile.scName
       ) {
-        if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0, shares: [], workOrders: [] }
+        if (!iOweShares[cs.payeeScName]) iOweShares[cs.payeeScName] = { amt: 0n, shares: [], workOrders: [] }
         iOweShares[cs.payeeScName].shares.push(csArr)
         iOweShares[cs.payeeScName].workOrders.push(wo)
         iOweShares[cs.payeeScName].amt += amt
@@ -220,7 +220,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                     fontWeight: 'bold',
                   },
                 }}
-                value={Object.values(iOweShares).reduce((acc, { amt }) => acc + amt, 0)}
+                value={Object.values(iOweShares).reduce((acc, { amt }) => acc + amt, 0n)}
                 format={MValueFormat.currency}
               />
             </Stack>
@@ -293,7 +293,7 @@ export const TabCrewShares: React.FC<DashboardProps> = ({
                     fontWeight: 'bold',
                   },
                 }}
-                value={Object.values(oweMeShares).reduce((acc, { amt }) => acc + amt, 0)}
+                value={Object.values(oweMeShares).reduce((acc, { amt }) => acc + amt, 0n)}
                 format={MValueFormat.currency}
               />
             </Stack>

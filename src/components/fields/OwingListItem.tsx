@@ -74,7 +74,7 @@ export type ConfirmModalState = {
   payerUserSCName?: string
   payeeUser?: User | UserProfile
   payeeUserSCName?: string
-  amt: number
+  amt: number | bigint
   crewShares: CrewShare[]
 }
 
@@ -85,7 +85,7 @@ export interface OwingListItemProps {
   payeeUser?: SessionUser | User | UserProfile
   meUser?: SessionUser | User | UserProfile
   workOrders: WorkOrder[]
-  amt: number
+  amt: number | bigint
   mutating?: boolean
   isPaid?: boolean
   isShare?: boolean
@@ -273,11 +273,11 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
                   const { remainder, payoutSummary } = workOrderCalcs[workOrderIdx]
                   const finalPayout: ShareAmtArr = isMe
                     ? [
-                        payoutSummary[cs.payeeScName][0] + (remainder || 0),
-                        payoutSummary[cs.payeeScName][1] + (remainder || 0),
-                        0,
+                        payoutSummary[cs.payeeScName][0] + (remainder || 0n),
+                        payoutSummary[cs.payeeScName][1] + (remainder || 0n),
+                        0n,
                       ]
-                    : payoutSummary[cs.payeeScName] || [0, 0, 0]
+                    : payoutSummary[cs.payeeScName] || [0n, 0n, 0n]
                   log.debug('finalPayout', { workOrders, workOrderCalcs, finalPayout })
                   return (
                     <TableRow

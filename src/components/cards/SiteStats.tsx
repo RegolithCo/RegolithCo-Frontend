@@ -34,8 +34,8 @@ export const SiteStats: React.FC<SiteStatsProps> = ({ last30Days, allTime, stats
   // const matches = useMediaQuery(theme.breakpoints.up('md'))
 
   const usersFormatted = formatCardNumber(allTime?.summary?.users || 0)
-  const aUECFormatted = formatCardNumber(allTime?.summary?.grossProfitaUEC || 0)
-  const lossFormatted = formatCardNumber(allTime?.summary?.lossaUEC || 0)
+  const aUECFormatted = formatCardNumber(Number(allTime?.summary?.grossProfitaUEC || 0n))
+  const lossFormatted = formatCardNumber(Number(allTime?.summary?.lossaUEC || 0n))
   const rawOreSCUFormatted = formatCardNumber(allTime?.summary?.rawOreSCU || 0)
   const totalSessionsFormatted = formatCardNumber(allTime?.summary?.sessions || 0)
   const workOrdersFormatted = formatCardNumber(allTime?.summary?.workOrders || 0)

@@ -279,7 +279,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         const percentTotal = (newShipRock.ores || [])
           .filter(({ ore }) => ore !== ShipOreEnum.Inertmaterial)
           .reduce((acc, { percent }) => acc + percent, 0)
-        setOreProps([volume, value, percentTotal, byOre])
+        setOreProps([volume, Number(value), percentTotal, byOre])
       } catch (e) {
         log.error(e)
         return [0, 0, 0, {}]

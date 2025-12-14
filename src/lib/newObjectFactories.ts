@@ -245,7 +245,7 @@ export function newWorkOrderMaker(
   const expenses: WorkOrderExpense[] = []
   if (activityType === ActivityEnum.ShipMining) {
     expenses.push({
-      amount: 0,
+      amount: 0n,
       name: 'Refinery Fee',
       ownerScName: owner.scName,
       __typename: 'WorkOrderExpense',
@@ -298,7 +298,7 @@ export function newWorkOrderMaker(
     case ActivityEnum.Other:
       return {
         ...(workOrderFields as OtherOrder),
-        shareAmount: 10000,
+        shareAmount: 10000n,
       }
     default:
       throw new Error(`Unknown order type: ${activityType}`)

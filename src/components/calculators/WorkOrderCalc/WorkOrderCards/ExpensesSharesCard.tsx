@@ -93,11 +93,13 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const [storeChoices, setStoreChoices] = useState<StoreChoice[]>([])
   const [myStoreChoice, setMyStoreChoice] = useState<StoreChoice>()
   const [finalSummary, setFinalSummary] = useState<WorkOrderSummary>(summary)
-  const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(jsRound(workOrder.shareAmount || 0, 0))
+  const [shareAmountInputVal, setShareAmountInputVal] = useState<number>(
+    jsRound(Number(workOrder.shareAmount || 0n), 0)
+  )
   const useScrollerRef = React.useRef<HTMLDivElement>({} as HTMLDivElement)
   const shipOrder = workOrder as ShipMiningOrder
 
-  const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + amount, 0)
+  const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + amount, 0n)
   const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   useEffect(() => {
@@ -342,7 +344,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                   setShareAmountInputVal(value)
                   onChange({
                     ...workOrder,
-                    shareAmount: value,
+                    shareAmount: BigInt(value),
                   })
                 } else {
                   setShareAmountInputVal(0)
@@ -548,7 +550,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
                       ...(workOrder.expenses || []),
                       {
                         name: '',
-                        amount: 0,
+                        amount: 0n,
                         ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
                         __typename: 'WorkOrderExpense',
                       },
@@ -652,7 +654,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             onChange({
               ...workOrder,
               isSold: true,
-              shareAmount: newVal,
+              shareAmount: BigInt(newVal),
             })
             setCompositeAddOpen(false)
           }}

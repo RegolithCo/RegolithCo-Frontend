@@ -221,9 +221,9 @@ export function formatChartData(
       if (!workOrderSummaries[wo.sessionId] || !workOrderSummaries[wo.sessionId][wo.orderId]) return
 
       const summary = workOrderSummaries[wo.sessionId][wo.orderId]
-      financeBucketDict[bucket].grossProfitaUEC += summary.grossValue
-      financeBucketDict[bucket].lossaUEC += summary.lossValue
-      financeBucketDict[bucket].payoutsTotal += summary.payoutsTotal
+      financeBucketDict[bucket].grossProfitaUEC += Number(summary.grossValue)
+      financeBucketDict[bucket].lossaUEC += Number(summary.lossValue)
+      financeBucketDict[bucket].payoutsTotal += Number(summary.payoutsTotal)
     })
 
   sessions

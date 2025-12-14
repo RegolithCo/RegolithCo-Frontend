@@ -153,7 +153,7 @@ export const TabStats: React.FC<DashboardProps> = ({
     const refiningProcesses: Partial<RegolithStatsSummary['refineryMethod']> = {}
 
     // Total Revenue is easy. It's just all the aUEC summed from all sessions
-    const totalRevenue = sessionsFiltered.reduce((acc, session) => acc + (session.summary?.aUEC || 0), 0)
+    const totalRevenue = sessionsFiltered.reduce((acc, session) => acc + (session.summary?.aUEC || 0n), 0n)
 
     const myIncome = workOrdersFiltered.reduce((acc, wo) => {
       const { crewShares, sessionId, orderId, orderType } = wo
@@ -174,8 +174,8 @@ export const TabStats: React.FC<DashboardProps> = ({
 
       const woSumm = workOrderSummaries[sessionId][orderId].crewShareSummary
       if (!woSumm) return acc
-      return acc + (woSumm[myIndex][0] || 0)
-    }, 0)
+      return acc + (woSumm[myIndex][0] || 0n)
+    }, 0n)
 
     const sharedIncome = workOrdersFiltered.reduce((acc, { crewShares, sessionId, orderId }) => {
       const myIndex = (crewShares || []).findIndex((cs) => cs.payeeScName === userProfile.scName)
@@ -184,12 +184,12 @@ export const TabStats: React.FC<DashboardProps> = ({
 
       if (!woSumm || woSumm.sellerScName !== userProfile.scName) return acc
       // REDUCE THE SHARED INCOME BY THE AMOUNT I EARNED`1
-      return acc + ((woSumm.crewShareSummary || [])[myIndex][0] || 0)
-    }, 0)
+      return acc + ((woSumm.crewShareSummary || [])[myIndex][0] || 0n)
+    }, 0n)
     return {
-      totalRevenue: formatCardNumber(totalRevenue),
-      myIncome: formatCardNumber(myIncome),
-      sharedIncome: formatCardNumber(sharedIncome),
+      totalRevenue: formatCardNumber(Number(totalRevenue)),
+      myIncome: formatCardNumber(Number(myIncome)),
+      sharedIncome: formatCardNumber(Number(sharedIncome)),
       refineries,
       refiningProcesses,
     }
@@ -267,11 +267,11 @@ export const TabStats: React.FC<DashboardProps> = ({
     const shipOrePie: Partial<RegolithStatsSummary['shipOres']> = {}
     const vehicleOrePie: Partial<RegolithStatsSummary['vehicleOres']> = {}
     const salvageOrePie: Partial<RegolithStatsSummary['salvageOres']> = {}
-    let expenses: number = 0
+    let expenses: bigint = 0n
 
     workOrdersFiltered.forEach(({ orderId, sessionId }) => {
       const summ = workOrderSummaries[sessionId]?.[orderId]
-      expenses += summ?.expensesValue || 0
+      expenses += summ?.expensesValue || 0n
       if (!summ) return
       const shipOres = Object.values(ShipOreEnum)
       const vehicleOres = Object.values(VehicleOreEnum)
@@ -291,7 +291,7 @@ export const TabStats: React.FC<DashboardProps> = ({
     })
 
     return {
-      expenses: formatCardNumber(expenses),
+      expenses: formatCardNumber(Number(expenses)),
       shipOrePie,
       vehicleOrePie,
       salvageOrePie,

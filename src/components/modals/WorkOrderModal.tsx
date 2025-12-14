@@ -252,7 +252,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
       }))
     )
     const expenses = [...(shipOrder.expenses || []), ...(capturedOrder.expenses || [])].filter(
-      ({ amount, name }, i, arr) => !(name.toLowerCase().includes('refinery') && amount === 0)
+      ({ amount, name }, i, arr) => !(name.toLowerCase().includes('refinery') && amount === 0n)
     )
 
     setNewWorkOrder({

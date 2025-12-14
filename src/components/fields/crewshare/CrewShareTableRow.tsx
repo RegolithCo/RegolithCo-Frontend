@@ -39,7 +39,7 @@ export type CrewShareTableRowProps = {
   crewShare: CrewShare
   expenses: WorkOrderExpense[]
   payoutSummary: ShareAmtArr
-  remainder: number
+  remainder: bigint
   numSharesTotal: number
   isMandatory?: boolean
   allowPay?: boolean
@@ -103,9 +103,9 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
   const backgroundColor = isSeller ? '#55555555' : isMandatory ? '#7444751f' : isSessionRow ? '#29434c11' : 'inherit'
   const hasNote = crewShare.note && crewShare.note.length > 0
   const finalPayout: ShareAmtArr = !payoutSummary
-    ? [0, 0, 0]
+    ? [0n, 0n, 0n]
     : isSeller
-      ? [payoutSummary[0] + (remainder || 0), payoutSummary[1] + (remainder || 0), 0]
+      ? [payoutSummary[0] + (remainder || 0n), payoutSummary[1] + (remainder || 0n), 0n]
       : payoutSummary
   return (
     <>

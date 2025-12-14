@@ -266,7 +266,11 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                       if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
                         const result = await parseShipMiningOrder(newUrl)
                         if (result) {
-                          setData(result)
+                          const fixedResult = {
+                            ...result,
+                            expenses: result.expenses?.map((e) => ({ ...e, amount: BigInt(e.amount) })),
+                          }
+                          setData(fixedResult)
                           if (rawImageUrl) setRawImageUrl(null)
                           // setSubmittedImageUrl(null)
                         } else {

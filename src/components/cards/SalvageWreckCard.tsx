@@ -22,7 +22,7 @@ import { LookupsContext } from '../../context/lookupsContext'
 
 export interface SalvageWreckCardProps {
   wreck: SalvageWreck
-  wreckValue?: number
+  wreckValue?: number | bigint
   allowEdit?: boolean
   onChangeState?: (state: WreckStateEnum) => void
   onEditClick?: () => void

@@ -225,7 +225,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
   const setNewWreck = React.useCallback(
     async (newWreck: SalvageWreck) => {
       if (!newWreck || !dataStore.ready) return
-      let value = newWreck.sellableAUEC || 0
+      let value = Number(newWreck.sellableAUEC || 0n)
       let volume = 0
       const newOres = [...(newWreck.salvageOres || [])]
       // Fetch the prices
@@ -506,7 +506,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
                     const rawValue = parseInt(event.target.value.replace(/[^\d.]/g, '').replace(/^0+/, '')) || 0
                     if (rawValue < 0) return
                     if (rawValue > 50000000) return
-                    setNewWreck({ ...newWreck, sellableAUEC: rawValue })
+                    setNewWreck({ ...newWreck, sellableAUEC: BigInt(rawValue) })
                   }}
                   variant="outlined"
                   size="small"

@@ -80,8 +80,8 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
   // NOTE: Order is REALLY important here
   const [summaries, setSummaries] = React.useState<Record<string, WorkOrderSummary>>()
   const [yieldVolSCU, setYieldVolSCU] = React.useState(0)
-  const [grossAmount, setGrossAmount] = React.useState(0)
-  const [shareAmount, setShareAmount] = React.useState(0)
+  const [grossAmount, setGrossAmount] = React.useState<number | bigint>(0)
+  const [shareAmount, setShareAmount] = React.useState<number | bigint>(0)
   const [sortedWorkOrders, setSortedWorkOrders] = React.useState([...workOrders])
 
   const workOrderTableRows = React.useMemo(
@@ -126,7 +126,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
           const newNet = acc[1] + summaries[wo.orderId].shareAmount
           return [newGross, newNet]
         },
-        [0, 0]
+        [0n, 0n]
       )
       setGrossAmount(grossAmt)
       setShareAmount(shareAmt)

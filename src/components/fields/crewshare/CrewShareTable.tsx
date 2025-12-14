@@ -463,7 +463,7 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
                 payoutSummary={(summary.crewShareSummary || [])[idx]}
                 isEditing={isEditing}
                 allowEdit={allowEdit}
-                remainder={summary.remainder || 0}
+                remainder={summary.remainder || 0n}
               />
             ))}
           </TableBody>

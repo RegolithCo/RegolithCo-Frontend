@@ -215,11 +215,11 @@ export const SessionListMonth: React.FC<SessionListMonthProps> = ({ yearMonthArr
   if (yearMonthArr.length === 0) return
   const currHeading = dayjs(yearMonthArr[0][0].createdAt).format('YYYY - MMMM')
   const monthlyAUEC = yearMonthArr.reduce((acc, dayArr) => {
-    const dayAUEC = dayArr.reduce<number>((acc, session) => {
-      return acc + (session.summary?.aUEC || 0)
-    }, 0)
+    const dayAUEC = dayArr.reduce<bigint>((acc, session) => {
+      return acc + (session.summary?.aUEC || 0n)
+    }, 0n)
     return acc + dayAUEC
-  }, 0)
+  }, 0n)
 
   return (
     <Box sx={{ margin: '0 auto' }}>

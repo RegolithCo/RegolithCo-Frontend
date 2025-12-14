@@ -60,7 +60,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
     hasTransferFee = true
     expenses.push({
       name: 'moTRADER',
-      amount: (summary?.transferFees as number) > -1 ? (summary.transferFees as number) || 0 : 0,
+      amount: (summary?.transferFees || 0n) > -1n ? summary.transferFees || 0n : 0n,
       ownerScName: workOrder.sellerscName || (workOrder.owner?.scName as string),
       idx: -1,
     })
@@ -74,7 +74,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
     })
   })
 
-  const totalExpenses = expenses.reduce((acc, { amount }) => acc + amount, 0)
+  const totalExpenses = expenses.reduce((acc, { amount }) => acc + amount, 0n)
 
   return (
     <Box
@@ -173,7 +173,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                     onCancel={() => setEditingRow(null)}
                     onChange={(val) => {
                       const newExpenses = [...(workOrder.expenses || [])]
-                      newExpenses[idx] = { ...newExpenses[idx], amount: val } // Create a new object
+                      newExpenses[idx] = { ...newExpenses[idx], amount: BigInt(val) } // Create a new object
                       setWorkingVal(newExpenses)
                       debouncedOnChange({
                         ...workOrder,
@@ -240,7 +240,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
                 Total Expenses:
               </TableCell>
               <TableCell scope="row" sx={{ textAlign: 'right' }}>
-                <MValue value={totalExpenses * -1} format={MValueFormat.currency} />
+                <MValue value={Number(totalExpenses) * -1} format={MValueFormat.currency} />
               </TableCell>
               <TableCell padding="none"></TableCell>
             </TableRow>
@@ -310,7 +310,7 @@ const ExpenseRowName: React.FC<{
 }
 
 const ExpenseRowAmount: React.FC<{
-  amount: number
+  amount: number | bigint
   isEditing: boolean
   onChange: (val: number) => void
   onCancel: () => void
@@ -318,7 +318,7 @@ const ExpenseRowAmount: React.FC<{
   const theme = useTheme()
   // const styles = stylesThunk(theme)
 
-  if (!isEditing) return <MValue value={amount * -1} format={MValueFormat.currency} />
+  if (!isEditing) return <MValue value={Number(amount) * -1} format={MValueFormat.currency} />
 
   return (
     <TextField
@@ -326,7 +326,7 @@ const ExpenseRowAmount: React.FC<{
       autoFocus
       disabled={!isEditing}
       variant="standard"
-      value={Numeral(amount * -1).format(`0,0`)}
+      value={Numeral(Number(amount) * -1).format(`0,0`)}
       onKeyDown={(e) => {
         if (e.key === 'Escape' || e.key === 'Enter' || e.key === 'Tab') {
           onCancel()

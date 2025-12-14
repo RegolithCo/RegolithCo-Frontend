@@ -51,7 +51,7 @@ export const countDecimals = (value: number, maxAllowedDecimals: number): number
 }
 
 export interface MValueProps {
-  value?: number | string | React.ReactNode | null
+  value?: number | string | React.ReactNode | null | bigint
   onClick?: () => void
   onChange?: (val: number) => void
   decimals?: number

@@ -20,7 +20,7 @@ import { RockIcon } from '../../icons'
 
 export interface ShipRockCardProps {
   rock: ShipRock
-  rockValue?: number
+  rockValue?: number | bigint
   allowEdit?: boolean
   onChangeState?: (state: RockStateEnum) => void
   onEditClick?: () => void

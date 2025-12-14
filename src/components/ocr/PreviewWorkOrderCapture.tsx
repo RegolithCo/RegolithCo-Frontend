@@ -147,13 +147,13 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
                         const newExpenses = order.expenses ? [...order.expenses] : []
                         if (newExpenses.length === 0) {
                           newExpenses.push({
-                            amount: newCost || 0,
+                            amount: BigInt(newCost || 0),
                             __typename: 'WorkOrderExpense',
                             name: 'Initial Cost',
                             ownerScName: '',
                           })
                         } else {
-                          newExpenses[0] = { ...newExpenses[0], amount: newCost || 0 }
+                          newExpenses[0] = { ...newExpenses[0], amount: BigInt(newCost || 0) }
                         }
                         handleUpdate({ expenses: newExpenses })
                       }}
