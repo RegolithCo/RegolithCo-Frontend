@@ -59,11 +59,18 @@ export const useSessionList = (): useSessionsReturn => {
     variables: { nextToken: null },
     notifyOnNetworkStatusChange: true,
     skip: !userProfileQry.data?.profile,
-    onCompleted: (data) => {
-      const items: Session[] = (data.profile?.mySessions?.items as Session[]) || []
-      if (items.length > 0) setPaginationDate(getNewPaginationDate(items))
-    },
   })
+
+  useEffect(() => {
+    const data = mySessionsQry.data
+    if (data) {
+      const items: Session[] = (data.profile?.mySessions?.items as Session[]) || []
+      if (items.length > 0) {
+        const newDate = getNewPaginationDate(items)
+        _setPaginationDate((prev) => (newDate < prev ? newDate : prev))
+      }
+    }
+  }, [mySessionsQry.data])
 
   const joinedSessionsQry = useGetJoinedUserSessionsQuery({
     variables: { nextToken: null },

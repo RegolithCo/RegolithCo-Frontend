@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { SessionPage } from './SessionPage'
 import { PageLoader } from '../PageLoader'
@@ -59,26 +59,26 @@ export const SessionPageContainer: React.FC = () => {
   const [expandedUserDrawer, setExpandedUserDrawer] = useLocalStorage('SESSION::expandedUserDrawer', true)
 
   // For temporary objects before we commit them to the DB
-  const [newWorkOrder, setNewWorkOrder] = React.useState<WorkOrder | null>(null)
-  const [newScoutingFind, setNewScoutingFind] = React.useState<ScoutingFind | null>(null)
-  const [activeModal, setActiveModal] = React.useState<DialogEnum | null>(null)
-  const [activeLoadout, setActiveLoadout] = React.useState<MiningLoadout | null>(null)
-  const [activeUserModalId, setActiveUserModalId] = React.useState<string | null>(null)
-  const [pendingUserModalScName, setPendingUserModalScName] = React.useState<string | null>(null)
-  const { stopScreenCapture, stream } = React.useContext(ScreenshareContext)
+  const [newWorkOrder, setNewWorkOrder] = useState<WorkOrder | null>(null)
+  const [newScoutingFind, setNewScoutingFind] = useState<ScoutingFind | null>(null)
+  const [activeModal, setActiveModal] = useState<DialogEnum | null>(null)
+  const [activeLoadout, setActiveLoadout] = useState<MiningLoadout | null>(null)
+  const [activeUserModalId, setActiveUserModalId] = useState<string | null>(null)
+  const [pendingUserModalScName, setPendingUserModalScName] = useState<string | null>(null)
+  const { stopScreenCapture, stream } = useContext(ScreenshareContext)
 
   // Clean up the stream when you leave a session page
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       stopScreenCapture()
     }
   }, [stream])
 
   // We keep a pasted buffer state for the user to paste into
-  const [pastedImgUrl, setPastedImgUrl] = React.useState<string | null>(null)
+  const [pastedImgUrl, setPastedImgUrl] = useState<string | null>(null)
 
-  const [shareWorkOrderId, setShareWorkOrderId] = React.useState<string | null>(null)
-  const [shareScoutingFindId, setShareScoutingFindId] = React.useState<string | null>(null)
+  const [shareWorkOrderId, setShareWorkOrderId] = useState<string | null>(null)
+  const [shareScoutingFindId, setShareScoutingFindId] = useState<string | null>(null)
 
   const sessionQueries = useSessions(sessionId as string)
   const modalWorkOrderQry = useWorkOrders(sessionId as string, modalOrderId as string)
@@ -106,7 +106,7 @@ export const SessionPageContainer: React.FC = () => {
     ({ scName }) => scName === pendingUserModalScName
   )
 
-  const { crewHierarchy, singleActives, captains, singleInnactives } = React.useMemo(() => {
+  const { crewHierarchy, singleActives, captains, singleInnactives } = useMemo(() => {
     const crewHierarchy = crewHierarchyCalc(
       (session?.activeMembers?.items as SessionUser[]) || [],
       session?.mentionedUsers || []
@@ -132,7 +132,7 @@ export const SessionPageContainer: React.FC = () => {
     return { crewHierarchy, singleActives, captains, singleInnactives }
   }, [session?.activeMembers?.items, session?.mentionedUsers])
 
-  const userSuggest: UserSuggest = React.useMemo(() => {
+  const userSuggest: UserSuggest = useMemo(() => {
     if (!session || !myUserProfile || !mySessionUser) return {} as UserSuggest
     return createUserSuggest(session, myUserProfile, mySessionUser, crewHierarchy)
   }, [session, myUserProfile, mySessionUser, crewHierarchy])
@@ -199,7 +199,7 @@ export const SessionPageContainer: React.FC = () => {
   }
 
   // make a map of useIds to their scouting find attendance
-  const scoutingAttendanceMap = React.useMemo(() => {
+  const scoutingAttendanceMap = useMemo(() => {
     const map = new Map<string, ScoutingFind>()
     session?.scouting?.items?.forEach((scoutingFind) => {
       // This will get overwritten if there are duplicates but that's ok
@@ -224,7 +224,7 @@ export const SessionPageContainer: React.FC = () => {
     }
   }
 
-  const modalWorkOrder: WorkOrder | undefined = React.useMemo(() => {
+  const modalWorkOrder: WorkOrder | undefined = useMemo(() => {
     return (
       (sessionQueries.session &&
         modalOrderId &&
@@ -234,7 +234,7 @@ export const SessionPageContainer: React.FC = () => {
       undefined
     )
   }, [sessionQueries.session?.workOrders?.items, modalOrderId])
-  const modalScoutingFind: ScoutingFind | undefined = React.useMemo(() => {
+  const modalScoutingFind: ScoutingFind | undefined = useMemo(() => {
     return (
       (sessionQueries.session &&
         modalScoutingFindId &&
@@ -246,7 +246,7 @@ export const SessionPageContainer: React.FC = () => {
   }, [sessionQueries.session?.scouting?.items, modalScoutingFindId])
 
   // Detect paste events and handle them as long as no modals are open
-  const pasteDisabled = React.useMemo(
+  const pasteDisabled = useMemo(
     () =>
       !!activeModal ||
       !!modalWorkOrder ||

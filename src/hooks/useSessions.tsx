@@ -110,7 +110,6 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     },
     fetchPolicy,
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
-    onCompleted: (data) => {},
   })
 
   React.useEffect(() => {
@@ -142,33 +141,35 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       nextToken: null,
     },
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
-    onCompleted(data) {
-      if (data.session?.activeMembers?.nextToken) {
-        sessionActiveMemberQry.fetchMore({
-          variables: {
-            nextToken: data.session?.activeMembers?.nextToken,
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult || !prev.session) return prev
-            const oldSess = prev.session as Session
-            const oldMembers = prev.session.activeMembers as PaginatedSessionUsers
-            const newMembers = fetchMoreResult.session?.activeMembers as PaginatedSessionUsers
-            return {
-              ...prev,
-              session: {
-                ...oldSess,
-                activeMembers: {
-                  ...oldMembers,
-                  items: [...(oldMembers.items || []), ...(newMembers.items || [])],
-                  nextToken: fetchMoreResult.session?.activeMembers?.nextToken,
-                },
-              },
-            }
-          },
-        })
-      }
-    },
   })
+
+  React.useEffect(() => {
+    const data = sessionActiveMemberQry.data
+    if (data?.session?.activeMembers?.nextToken) {
+      sessionActiveMemberQry.fetchMore({
+        variables: {
+          nextToken: data.session?.activeMembers?.nextToken,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult || !prev.session) return prev
+          const oldSess = prev.session as Session
+          const oldMembers = prev.session.activeMembers as PaginatedSessionUsers
+          const newMembers = fetchMoreResult.session?.activeMembers as PaginatedSessionUsers
+          return {
+            ...prev,
+            session: {
+              ...oldSess,
+              activeMembers: {
+                ...oldMembers,
+                items: [...(oldMembers.items || []), ...(newMembers.items || [])],
+                nextToken: fetchMoreResult.session?.activeMembers?.nextToken,
+              },
+            },
+          }
+        },
+      })
+    }
+  }, [sessionActiveMemberQry.data])
   const sessionWorkOrdersQry = useGetSessionWorkOrdersQuery({
     variables: {
       sessionId: sessionId as string,
@@ -212,33 +213,35 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       nextToken: null,
     },
     skip: !sessionId || !sessionUserQry.data?.sessionUser,
-    onCompleted(data) {
-      if (data.session?.scouting?.nextToken) {
-        sessionScoutingQry.fetchMore({
-          variables: {
-            nextToken: data.session?.scouting?.nextToken,
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult || !prev.session) return prev
-            const oldSess = prev.session as Session
-            const oldMembers = prev.session?.scouting as PaginatedScoutingFinds
-            const newMembers = fetchMoreResult.session?.scouting as PaginatedScoutingFinds
-            return {
-              ...prev,
-              session: {
-                ...oldSess,
-                activeMembers: {
-                  ...oldMembers,
-                  items: [...(oldMembers.items || []), ...(newMembers.items || [])],
-                  nextToken: fetchMoreResult.session?.scouting?.nextToken,
-                },
-              },
-            }
-          },
-        })
-      }
-    },
   })
+
+  React.useEffect(() => {
+    const data = sessionScoutingQry.data
+    if (data?.session?.scouting?.nextToken) {
+      sessionScoutingQry.fetchMore({
+        variables: {
+          nextToken: data.session?.scouting?.nextToken,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult || !prev.session) return prev
+          const oldSess = prev.session as Session
+          const oldMembers = prev.session?.scouting as PaginatedScoutingFinds
+          const newMembers = fetchMoreResult.session?.scouting as PaginatedScoutingFinds
+          return {
+            ...prev,
+            session: {
+              ...oldSess,
+              activeMembers: {
+                ...oldMembers,
+                items: [...(oldMembers.items || []), ...(newMembers.items || [])],
+                nextToken: fetchMoreResult.session?.scouting?.nextToken,
+              },
+            },
+          }
+        },
+      })
+    }
+  }, [sessionScoutingQry.data])
 
   const updateSessionMutation = useUpdateSessionMutation()
   const addSessionMentionsMutation = useAddSessionMentionsMutation()

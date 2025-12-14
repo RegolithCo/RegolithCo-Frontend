@@ -5,6 +5,7 @@ import {
   calculateWorkOrder,
   createSafeFileName,
   CrewShare,
+  jsonSerializeBigInt,
   makeHumanIds,
   session2Json,
   ShipLookups,
@@ -48,7 +49,7 @@ export const DownloadModalContainer: React.FC<DownloadModalContainerProps> = ({ 
       onClose={onClose}
       downloadJSON={() => {
         if (!session) return
-        const jsonObj = JSON.stringify(session2Json(session), null, 2)
+        const jsonObj = jsonSerializeBigInt(session2Json(session))
         downloadFile(
           jsonObj,
           createSafeFileName(session.name || 'Session', session.sessionId) + '.json',

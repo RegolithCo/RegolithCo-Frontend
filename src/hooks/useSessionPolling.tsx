@@ -28,11 +28,14 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: SessionUser)
       sessionId: sessionId as string,
     },
     skip: !sessionId || !sessionUser,
-    onCompleted: (data) => {
-      log.debug('Polling: FULL sessionUserQry.onCompleted', data)
-      setLastFullQuery(Date.now())
-    },
   })
+
+  React.useEffect(() => {
+    if (sessionQry.data) {
+      log.debug('Polling: FULL sessionUserQry.onCompleted', sessionQry.data)
+      setLastFullQuery(Date.now())
+    }
+  }, [sessionQry.data])
 
   // This is the lightweight query that we use to update the session
   // It should only contain: sesisoniD, timestamps for updatedAt and createdAt and the state
@@ -47,30 +50,32 @@ export const useSessionPolling = (sessionId?: string, sessionUser?: SessionUser)
     onError: (error) => {
       log.error('Polling: sessionUpdatedQry.onError', error)
     },
-    onCompleted: (data) => {
-      if (data.sessionUpdates) {
-        log.debug('Polling: sessionUpdatedQry.onCompleted FOUND', data.sessionUpdates?.length, data.sessionUpdates)
-        const updatedDates: number[] = []
-        data.sessionUpdates.forEach((update) => {
-          handleCacheUpdate(client, sessionQry?.data?.session, update)
-          if (update?.eventDate) updatedDates.push(update?.eventDate)
-        })
-        // Set the last update to the last updated date from the download queue
-        // This way we're sure not to miss anything if something happened while we were processing
-        // the rest of the records. Also we subtract 1 second to make sure we don't miss anything.
-        // This might cause a bit of over-querying but it's better than missing something
-        if (updatedDates.length > 0) {
-          const maxDate = Math.max(...updatedDates)
-          if (maxDate > lastUpdated) setLastUpdated(Math.max(...updatedDates))
-        } else if (data.sessionUpdates?.length === 0) {
-          // Make sure this date keeps up and is never behind the lastFullQuery
-          if (lastUpdated < lastFullQuery) setLastUpdated(lastFullQuery)
-        }
-
-        // Now update the apollo cache
-      }
-    },
   })
+
+  React.useEffect(() => {
+    const data = sessionUpdatedQry.data
+    if (data?.sessionUpdates) {
+      log.debug('Polling: sessionUpdatedQry.onCompleted FOUND', data.sessionUpdates?.length, data.sessionUpdates)
+      const updatedDates: number[] = []
+      data.sessionUpdates.forEach((update) => {
+        handleCacheUpdate(client, sessionQry?.data?.session, update)
+        if (update?.eventDate) updatedDates.push(update?.eventDate)
+      })
+      // Set the last update to the last updated date from the download queue
+      // This way we're sure not to miss anything if something happened while we were processing
+      // the rest of the records. Also we subtract 1 second to make sure we don't miss anything.
+      // This might cause a bit of over-querying but it's better than missing something
+      if (updatedDates.length > 0) {
+        const maxDate = Math.max(...updatedDates)
+        setLastUpdated((prev) => (maxDate > prev ? maxDate : prev))
+      } else if (data.sessionUpdates?.length === 0) {
+        // Make sure this date keeps up and is never behind the lastFullQuery
+        setLastUpdated((prev) => (prev < lastFullQuery ? lastFullQuery : prev))
+      }
+
+      // Now update the apollo cache
+    }
+  }, [sessionUpdatedQry.data, client, sessionQry?.data?.session, lastFullQuery])
 
   // TODO: This is our sloppy poll function we need to update to lower data costs
   React.useEffect(() => {

@@ -20,6 +20,13 @@ import { LoginChoiceContainer } from './components/modals/LoginChoice'
 import * as Sentry from '@sentry/react'
 import { AnalyticsContextProvider, GDPRDialog } from './components/Analytics'
 
+// Hack to make BigInt serializable
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+BigInt.prototype.toJSON = function () {
+  return this.toString()
+}
+
 if (config.stage !== 'production') {
   // Logrocket only runs when not in production since we only get the free plan
   log.enableAll()

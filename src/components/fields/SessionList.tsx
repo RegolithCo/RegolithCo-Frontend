@@ -216,7 +216,7 @@ export const SessionListMonth: React.FC<SessionListMonthProps> = ({ yearMonthArr
   const currHeading = dayjs(yearMonthArr[0][0].createdAt).format('YYYY - MMMM')
   const monthlyAUEC = yearMonthArr.reduce((acc, dayArr) => {
     const dayAUEC = dayArr.reduce<bigint>((acc, session) => {
-      return acc + (session.summary?.aUEC || 0n)
+      return acc + BigInt(session.summary?.aUEC || 0)
     }, 0n)
     return acc + dayAUEC
   }, 0n)

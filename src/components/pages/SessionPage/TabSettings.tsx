@@ -185,7 +185,6 @@ export const SessionSettingsTab: React.FC<SessionSettingsTabProps> = ({
     // Do a deep object compare and only update if the session settings actually changed
     if (!isEqual(oldSettings, incomingSettings)) {
       // We want to update these as infrequently as possible because we may lose work
-      // log.debug('settings CHANGED', JSON.stringify(newSettings), JSON.stringify(incomingSettings))
       setOldSettings(incomingSettings)
       setNewSettings(incomingSettings)
     }
