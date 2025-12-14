@@ -57,7 +57,8 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
         ),
         isInitialized: Boolean(userProfileQry.data?.profile),
         myProfile: userProfileQry.data?.profile || null,
-        loading: loginLoading || userProfileQry.loading,
+        loading:
+          loginLoading || userProfileQry.loading || (isAuthenticated && !userProfileQry.data && !userProfileQry.error),
       }}
     >
       {children}
