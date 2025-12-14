@@ -5,6 +5,9 @@ import { ErrorCode } from '@regolithco/common'
 import * as Sentry from '@sentry/react'
 import config from '../config'
 
+const STAGE = document.querySelector<HTMLMetaElement>('meta[name=stage]')?.content
+const IS_DEV = STAGE === 'dev' || STAGE === '%STAGE%' || STAGE === 'staging'
+
 // Log any GraphQL errors or network error that occurred
 export const retryLink = new RetryLink({
   delay: {
@@ -55,6 +58,21 @@ export const makeLogLink = (logFn: (...args: unknown[]) => void): ApolloLink =>
             query: queryBody?.trim(),
             variables: operation.variables,
             response: data.data,
+            report: IS_DEV
+              ? `
+Operation:
+\`\`\`gql
+${queryBody?.trim()}
+\`\`\`
+\`\`\`json
+${JSON.stringify(operation.variables, undefined, 2)}
+\`\`\`
+Returns:
+\`\`\`json
+${JSON.stringify(data.data, undefined, 2)}
+\`\`\`  
+`
+              : 'NOT SHOWN IN PRODUCTION',
           }
 
           if (data.errors) displayObj.errors = data.errors
