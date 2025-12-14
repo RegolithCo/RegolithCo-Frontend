@@ -28,6 +28,7 @@ import { PageWrapper } from '../PageWrapper'
 import { Celebration, Coffee, Info, NewReleases, QuestionAnswer } from '@mui/icons-material'
 import { DiscordIcon } from '../../icons/Discord'
 import { AppVersion } from '../fields/AppVersion'
+import Testimonials from '../Testimonials'
 import { SCVersion } from '../fields/SCVersion'
 import { fontFamilies } from '../../theme'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -181,6 +182,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Typography>
             </CardContent>
           </Card>
+
           <Card elevation={20} sx={styles.card}>
             <CardHeader title="Disclaimer" />
             <CardContent>
@@ -235,6 +237,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
               </Typography>
             </CardContent>
           </Card>
+
+          <Testimonials />
+
           <Card elevation={20} sx={styles.card}>
             <CardHeader title="Policies" />
             <CardContent>
