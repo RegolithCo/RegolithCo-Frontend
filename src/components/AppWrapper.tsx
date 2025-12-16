@@ -1,9 +1,10 @@
 import { Box, useMediaQuery, useTheme, SxProps, Theme, keyframes } from '@mui/material'
-import { alpha } from '@mui/material/styles'
+import { alpha, darken } from '@mui/material/styles'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 import { Copyright } from './Copyright'
 import { AnnoyingCoffee } from './fields/AnnoyingCoffee'
+import { JoinDiscord } from './fields/JoinDiscord'
 
 const moveBackground = keyframes`
   0% {
@@ -86,7 +87,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, ro
 
   const dotColor = alpha(theme.palette.secondary.dark, 0.2)
   const starColor = alpha(theme.palette.text.primary, 0.2)
-  const bgColor = theme.palette.background.default
+  const bgColor = darken(theme.palette.secondary.dark, 0.8)
   const nebula1 = alpha(theme.palette.secondary.dark, 0.5)
   const nebula2 = alpha(theme.palette.secondary.main, 0.2)
   const gridColor = alpha(theme.palette.divider, 0.04)
@@ -134,6 +135,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, ro
           </Box>
         )}
         <AnnoyingCoffee show={showCoffee && (mediumUp || isHome)} />
+        <JoinDiscord show={showCoffee && (mediumUp || isHome)} />
       </Box>
     </Box>
   )
