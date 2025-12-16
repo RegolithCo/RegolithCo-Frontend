@@ -93,7 +93,11 @@ const HomeCard: React.FC<{
           onClick={!disabled ? onClick : undefined}
         >
           <Wrapper>
-            <CardMedia sx={{ height: 140 }} image={`/${imgageUrl}`} title={title} />
+            <CardMedia
+              sx={{ height: 140, objectFit: 'fill', backgroundPosition: 'top' }}
+              image={`/${imgageUrl}`}
+              title={title}
+            />
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography
                 variant="overline"
