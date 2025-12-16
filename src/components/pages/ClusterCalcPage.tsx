@@ -35,7 +35,7 @@ export const ClusterCalcPage: React.FC<ClusterCalcPageProps> = ({ userProfile })
   }, [clusters, activeScoutingFindType])
 
   return (
-    <PageWrapper title="Cluster Calculator" maxWidth="md" sx={{}}>
+    <PageWrapper title="Cluster Calculator" maxWidth="md">
       <Typography variant="h4" component="h1" gutterBottom></Typography>
       <Typography variant="body1" component="p" gutterBottom>
         This is a standalone calculator for determining the value of a rock cluster. Simply click "Add Scan" to get

@@ -47,8 +47,9 @@ const styles = {
       md: 4,
     },
     border: {
-      md: '1px solid #444444',
+      md: '1px solid #222222',
     },
+    boxShadow: '0 0 20px #000000cc',
     backgroundColor: '#09090bec',
   },
 }

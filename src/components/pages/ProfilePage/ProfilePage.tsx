@@ -90,9 +90,6 @@ export interface ProfilePageProps {
 export const profileStylesThunk = (theme: Theme): Record<string, SxProps<Theme>> => ({
   pageWrapper: {
     '&>.MuiPaper-root': {},
-    [theme.breakpoints.up('md')]: {
-      ml: '5%',
-    },
   },
   container: {
     py: 3,
