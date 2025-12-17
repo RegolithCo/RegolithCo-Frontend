@@ -46,14 +46,14 @@ export const MatrixBackground: React.FC<MatrixBackgroundProps> = ({ color, backg
     const columns = Math.ceil(width / fontSize)
     const drops: number[] = []
     for (let i = 0; i < columns; i++) {
-      drops[i] = Math.random() * (height / fontSize)
+      drops[i] = 0 // Start at top
     }
 
     // Horizontal rows
     const rows = Math.ceil(height / fontSize)
     const horizontalDrops: number[] = []
     for (let i = 0; i < rows; i++) {
-      horizontalDrops[i] = Math.random() * columns
+      horizontalDrops[i] = 0 // Start at left
     }
 
     const draw = () => {
@@ -89,12 +89,18 @@ export const MatrixBackground: React.FC<MatrixBackgroundProps> = ({ color, backg
 
     let animationFrameId: number
     let lastTime = 0
+    let drawCount = 0
+    const fastInterval = 30
+    // Calculate how many frames needed to cover the screen (max dimension)
+    const targetFastFrames = Math.max(Math.ceil(height / fontSize), Math.ceil(width / fontSize))
 
     const render = (time: number) => {
+      const currentInterval = drawCount < targetFastFrames ? fastInterval : redrawInterval
       const deltaTime = time - lastTime
-      if (deltaTime >= redrawInterval) {
+      if (deltaTime >= currentInterval) {
         draw()
         lastTime = time
+        drawCount++
       }
       animationFrameId = requestAnimationFrame(render)
     }
