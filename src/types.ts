@@ -1,5 +1,5 @@
 import { AlertProps } from '@mui/material'
-import { GravityWell, GravityWellTypeEnum } from '@regolithco/common'
+import { GravityWell, GravityWellTypeEnum, ObjectValues } from '@regolithco/common'
 
 export type Config = {
   apiUrl: string

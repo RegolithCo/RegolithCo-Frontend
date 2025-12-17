@@ -206,8 +206,6 @@ export const VHSBackground: React.FC<VHSBackgroundProps> = ({
     'rgba(59, 0, 226, 0.8)',
   ],
 }) => {
-  const theme = useTheme()
-
   const style = {
     '--vhs-bg': backgroundColor,
     '--vhs-overlay': overlayColor,
@@ -231,13 +229,13 @@ export const VHSBackground: React.FC<VHSBackgroundProps> = ({
         <Noise />
         <Noise className="moving" />
 
-        <PlayText>
-          {'COMPUTING'.split('').map((char, index) => (
+        {/* <PlayText>
+          {'PLAY...'.split('').map((char, index) => (
             <Char key={index} index={index}>
               {char}
             </Char>
           ))}
-        </PlayText>
+        </PlayText> */}
         <TimeText>--:--</TimeText>
         <RecordSpeedText>SLP 0:00:00</RecordSpeedText>
       </IntroWrap>

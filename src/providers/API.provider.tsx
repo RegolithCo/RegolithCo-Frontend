@@ -92,6 +92,7 @@ export const APIProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const { authType, token, isAuthenticated, loading, authLogIn, authLogOut } = useContext(LoginContext)
   const [APIWorking, setAPIWorking] = useState(true)
   const [hideNames, setHideNames] = React.useState(false)
+
   const [maintenanceMode, setMaintenanceMode] = useState<string>()
   const [errorDialog, setErrorDialog] = useState<ApolloErrorDialog | null>(null)
   const { enqueueSnackbar } = useSnackbar()

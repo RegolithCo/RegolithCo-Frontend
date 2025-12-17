@@ -128,9 +128,8 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
   const userCtx = React.useContext(UserProfileContext)
 
   return (
-    <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
+    <PageWrapper title="Welcome to Regolith Co." maxWidth="md" backgroundEffect="stars">
       <Typography
-        paragraph
         sx={{
           m: 2,
         }}

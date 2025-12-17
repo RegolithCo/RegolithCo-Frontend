@@ -5,9 +5,20 @@ import { useLocation } from 'react-router-dom'
 import { Copyright } from './Copyright'
 import { AnnoyingCoffee } from './fields/AnnoyingCoffee'
 import { JoinDiscord } from './fields/JoinDiscord'
-import { MatrixBackground } from './MatrixBackground'
-import { StarsParallax } from './StarsParallax'
-import { VHSBackground } from './VHSBackground'
+import { MatrixBackground } from './backgrounds/MatrixBackground'
+import { StarsParallax } from './backgrounds/StarsParallax'
+import { VHSBackground } from './backgrounds/VHSBackground'
+import { ObjectValues } from '@regolithco/common'
+
+const BackgroundEffectEnum = {
+  //
+  MATRIX: 'matrix',
+  MATRIX_ERROR: 'matrix-error',
+  STARS: 'stars',
+  STARS_BLUE: 'stars-blue',
+  VHS: 'vhs',
+} as const
+export type BackgroundEffectEnum = ObjectValues<typeof BackgroundEffectEnum>
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
@@ -25,9 +36,7 @@ const styles: Record<string, SxProps<Theme>> = {
   },
 }
 
-export const AppWrapperContainer: React.FC<
-  React.PropsWithChildren<{ backgroundEffect?: 'matrix' | 'stars' | 'vhs' }>
-> = ({ children, backgroundEffect }) => {
+export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { pathname } = useLocation()
 
   const pathnameRegex = pathname.match(/^(\/[^/]*)/)
@@ -35,6 +44,26 @@ export const AppWrapperContainer: React.FC<
 
   // match /session/20780cc1-28b8-4169-a004-b874687c79cd/dash but not /session
   const hideCoffee = pathname.match(/^\/session\/[0-9a-f-]+/)
+
+  let backgroundEffect: BackgroundEffectEnum = BackgroundEffectEnum.STARS
+  switch (allMatches[0]) {
+    case '/':
+      backgroundEffect = BackgroundEffectEnum.STARS
+      break
+    case '/about':
+    case '/loadouts':
+      backgroundEffect = BackgroundEffectEnum.VHS
+      break
+    case '/cluster':
+      backgroundEffect = BackgroundEffectEnum.STARS_BLUE
+      break
+    case '/workorder':
+      backgroundEffect = BackgroundEffectEnum.MATRIX
+      break
+    default:
+      backgroundEffect = BackgroundEffectEnum.STARS
+      break
+  }
 
   return (
     <AppWrapper showCoffee={!hideCoffee} rootPath={allMatches[0]} backgroundEffect={backgroundEffect}>
@@ -47,15 +76,10 @@ export interface AppWrapperProps {
   rootPath?: string
   showCoffee?: boolean
   children: React.ReactNode
-  backgroundEffect?: 'matrix' | 'stars' | 'vhs'
+  backgroundEffect?: BackgroundEffectEnum
 }
 
-export const AppWrapper: React.FC<AppWrapperProps> = ({
-  children,
-  showCoffee,
-  rootPath,
-  backgroundEffect = 'stars',
-}) => {
+export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, rootPath, backgroundEffect }) => {
   const theme = useTheme()
   const mediumUp = useMediaQuery(theme.breakpoints.up('md'))
   const isHome = rootPath === '/'
@@ -65,15 +89,18 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({
       {backgroundEffect === 'matrix' && (
         <MatrixBackground
           color={alpha(theme.palette.primary.main, 0.55)}
-          backgroundColor={alpha(darken(theme.palette.secondary.dark, 0.95), 0.05)}
+          backgroundColor={alpha(darken(theme.palette.secondary.dark, 0.95), 0.3)}
           redrawInterval={250}
         />
       )}
       {backgroundEffect === 'stars' && <StarsParallax />}
+      {backgroundEffect === 'stars-blue' && (
+        <StarsParallax color1={theme.palette.info.main} color2={theme.palette.info.main} starColor="#ffffff" />
+      )}
       {backgroundEffect === 'vhs' && (
         <VHSBackground
-          backgroundColor={theme.palette.background.default}
-          overlayColor={darken(theme.palette.primary.main, 0.5)}
+          backgroundColor={darken(theme.palette.background.default, 0.6)}
+          overlayColor={darken(theme.palette.info.dark, 0.6)}
           textColor={theme.palette.primary.contrastText}
           shadowColors={[
             theme.palette.secondary.main,

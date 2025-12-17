@@ -214,6 +214,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
           )}
         </Stack>
       }
+      backgroundEffect="vhs"
       maxWidth="xl"
     >
       {/* Fitler box */}

@@ -57,6 +57,7 @@ const styles = {
 export const PageWrapper: React.FC<PageWrapperProps> = ({ title, children, maxWidth, loading, sx, titleSx }) => {
   const theme = useTheme()
   const sxContainer: SxProps<Theme> = Object.assign({}, styles.container, sx)
+
   return (
     <>
       <Container maxWidth={maxWidth || 'sm'} sx={sxContainer}>
