@@ -94,7 +94,7 @@ const HomeCard: React.FC<{
         >
           <Wrapper>
             <CardMedia
-              sx={{ height: 140, objectFit: 'fill', backgroundPosition: 'top' }}
+              sx={{ height: 140, backgroundSize: 'contain', backgroundPosition: 'top' }}
               image={`/${imgageUrl}`}
               title={title}
             />
@@ -189,7 +189,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
           title="Cluster Calculator"
           disabled={Boolean(maintenanceMode)}
           description="Standalone calculator for figuring out the value of a rock or cluster."
-          imgageUrl="images/sm/cluster.jpg"
+          imgageUrl="images/sm/clustercalc.png"
           url="/cluster"
         />
         <HomeCard
