@@ -72,6 +72,8 @@ const VHSContainer = styled(Box)({
   position: 'absolute',
   top: 0,
   left: 0,
+  // blur
+  filter: 'blur(3px)',
   width: '100%',
   height: '100%',
   background: 'var(--vhs-bg)',

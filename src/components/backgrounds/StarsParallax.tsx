@@ -94,7 +94,7 @@ export const StarsParallax: React.FC<StarsParallaxProps> = ({ starColor, color1,
           ctx.stroke()
 
           ctx.beginPath()
-          ctx.arc(x, y, r, 0, Math.PI * 2)
+          if (r > 0) ctx.arc(x, y, r, 0, Math.PI * 2)
           ctx.fill()
         }
       }

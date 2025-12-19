@@ -86,20 +86,20 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, ro
 
   return (
     <Box sx={styles.container}>
-      {backgroundEffect === 'matrix' && (
+      {mediumUp && backgroundEffect === 'matrix' && (
         <MatrixBackground
           color={alpha(theme.palette.secondary.dark, 0.55)}
           backgroundColor={alpha(darken(theme.palette.secondary.dark, 0.95), 0.3)}
           redrawInterval={100}
         />
       )}
-      {backgroundEffect === 'stars' && (
+      {mediumUp && backgroundEffect === 'stars' && (
         <StarsParallax color1={theme.palette.primary.main} color2={theme.palette.secondary.dark} starColor="#ffffff" />
       )}
-      {backgroundEffect === 'stars-blue' && (
+      {mediumUp && backgroundEffect === 'stars-blue' && (
         <StarsParallax color1={theme.palette.info.main} color2={theme.palette.info.main} starColor="#ffffff" />
       )}
-      {backgroundEffect === 'vhs' && (
+      {mediumUp && backgroundEffect === 'vhs' && (
         <VHSBackground
           backgroundColor={darken(theme.palette.background.default, 0.6)}
           overlayColor={darken(theme.palette.info.dark, 0.6)}
