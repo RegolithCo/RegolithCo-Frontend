@@ -13,6 +13,7 @@ import {
   Typography,
   useTheme,
   alpha,
+  Box,
 } from '@mui/material'
 import * as React from 'react'
 
@@ -78,6 +79,7 @@ const HomeCard: React.FC<{
         <Card
           elevation={focus ? 10 : 1}
           sx={{
+            position: 'relative',
             border: focus ? `1px solid ${theme.palette.primary.main}` : undefined,
             height: '100%',
             '& .MuiCardMedia-root': {
@@ -92,12 +94,30 @@ const HomeCard: React.FC<{
           }}
           onClick={!disabled ? onClick : undefined}
         >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: 140,
+              backgroundImage: `linear-gradient(to top, #000000, #191A35)`,
+              zIndex: 0,
+            }}
+          />
           <Wrapper>
             <CardMedia
-              sx={{ height: 140, backgroundSize: 'contain', backgroundPosition: 'top' }}
+              sx={{
+                position: 'relative',
+                height: 140,
+                zIndex: 1,
+                backgroundSize: 'contain',
+                backgroundPosition: 'top',
+              }}
               image={`/${imgageUrl}`}
               title={title}
             />
+
             <CardContent sx={{ flexGrow: 1 }}>
               <Typography
                 variant="overline"
@@ -174,7 +194,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
           title="Mining Loadouts"
           disabled={Boolean(maintenanceMode)}
           description="Plan and tweak your mining ship loadouts using the right components for the right kind of ores."
-          imgageUrl="images/sm/workshop.jpg"
+          imgageUrl="images/sm/loadout.png"
           url="/loadouts"
         />
         <HomeCard
