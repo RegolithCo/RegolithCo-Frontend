@@ -128,7 +128,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
   const userCtx = React.useContext(UserProfileContext)
 
   return (
-    <PageWrapper title="Welcome to Regolith Co." maxWidth="md" backgroundEffect="stars">
+    <PageWrapper title="Welcome to Regolith Co." maxWidth="md">
       <Typography
         sx={{
           m: 2,
@@ -202,7 +202,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
           title="Refinery Data"
           disabled={Boolean(maintenanceMode)}
           description="Data tables to compare refineries."
-          imgageUrl="images/sm/market.jpg"
+          imgageUrl="images/sm/market.png"
           url="/tables/ore"
         />
         <HomeCard

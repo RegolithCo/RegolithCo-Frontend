@@ -127,7 +127,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate, tab }) => {
   useBrowserTitle(finalTitle)
 
   return (
-    <PageWrapper title={finalTitle} maxWidth="md" backgroundEffect="vhs">
+    <PageWrapper title={finalTitle} maxWidth="md">
       <Tabs
         value={finalTab}
         aria-label="basic tabs example"

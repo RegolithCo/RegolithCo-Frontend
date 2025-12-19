@@ -48,7 +48,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
   let backgroundEffect: BackgroundEffectEnum = BackgroundEffectEnum.STARS
   switch (allMatches[0]) {
     case '/':
-      backgroundEffect = BackgroundEffectEnum.STARS
+      backgroundEffect = BackgroundEffectEnum.STARS_BLUE
       break
     case '/about':
     case '/loadouts':
@@ -88,12 +88,14 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, ro
     <Box sx={styles.container}>
       {backgroundEffect === 'matrix' && (
         <MatrixBackground
-          color={alpha(theme.palette.primary.main, 0.55)}
+          color={alpha(theme.palette.secondary.dark, 0.55)}
           backgroundColor={alpha(darken(theme.palette.secondary.dark, 0.95), 0.3)}
-          redrawInterval={250}
+          redrawInterval={100}
         />
       )}
-      {backgroundEffect === 'stars' && <StarsParallax />}
+      {backgroundEffect === 'stars' && (
+        <StarsParallax color1={theme.palette.primary.main} color2={theme.palette.secondary.dark} starColor="#ffffff" />
+      )}
       {backgroundEffect === 'stars-blue' && (
         <StarsParallax color1={theme.palette.info.main} color2={theme.palette.info.main} starColor="#ffffff" />
       )}

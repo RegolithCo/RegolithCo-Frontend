@@ -29,6 +29,7 @@ export const MatrixBackground: React.FC<MatrixBackgroundProps> = ({ color, backg
     const koreanCharacters = '가나다라마바사아자차카타파하거너더러머버서어저처커터퍼허고노도로모보소오조초코토포호'
     const thaiCharacters = 'กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลวศษสหฬอฮ'
     const arabicCharacters = 'ابتثجحخدذرزسشصضطظعغفقكلمنهويءئؤ'
+    const funUTF8Characters = '◊○☼☽☾♠♣♥♦♪♫☯☢☣☤⚕⚖⚗⚙⚛⚡☭✈✉✆☎☏✂✃✄✒✍✓✔✕✖✗✘❄❇❈❉❊'
     const numbers = '0123456789'
     const letters =
       chineseCharacters +
@@ -39,8 +40,9 @@ export const MatrixBackground: React.FC<MatrixBackgroundProps> = ({ color, backg
       numbers +
       numbers +
       numbers +
-      numbers
-    const fontSize = 14
+      numbers +
+      funUTF8Characters
+    const fontSize = 24
 
     // Vertical columns
     const columns = Math.ceil(width / fontSize)
@@ -90,7 +92,7 @@ export const MatrixBackground: React.FC<MatrixBackgroundProps> = ({ color, backg
     let animationFrameId: number
     let lastTime = 0
     let drawCount = 0
-    const fastInterval = 30
+    const fastInterval = 20
     // Calculate how many frames needed to cover the screen (max dimension)
     const targetFastFrames = Math.max(Math.ceil(height / fontSize), Math.ceil(width / fontSize))
 
