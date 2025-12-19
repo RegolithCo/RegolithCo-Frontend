@@ -1,6 +1,7 @@
 import { Box, GlobalStyles, useTheme } from '@mui/material'
 import { keyframes, styled } from '@mui/material/styles'
 import React from 'react'
+import MiningHud from './MiningHud'
 
 // Keyframes
 const noiseAnim = keyframes`
@@ -37,7 +38,7 @@ const scanlinesAnim = keyframes`
   }
 `
 
-const rgbTextAnim = keyframes`
+export const rgbTextAnim = keyframes`
   0% {
     text-shadow: -1px 1px 8px rgba(255, 255, 255, 0.6), 1px -1px 8px rgba(255, 255, 235, 0.7), 0px 0 1px var(--vhs-shadow-1), 0 0px 3px var(--vhs-shadow-2), 0px 0 3px var(--vhs-shadow-3), 0 0px 3px var(--vhs-shadow-4), 0px 0 3px var(--vhs-shadow-5);
   }
@@ -187,6 +188,14 @@ const RecordSpeedText = styled(Box)({
   animation: `${rgbTextAnim} 1s steps(9) 0s infinite alternate`,
 })
 
+const HudWrapper = styled(Box)({
+  position: 'absolute',
+  right: '5%',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  zIndex: 10,
+})
+
 export interface VHSBackgroundProps {
   backgroundColor?: string
   overlayColor?: string
@@ -238,6 +247,9 @@ export const VHSBackground: React.FC<VHSBackgroundProps> = ({
         </PlayText> */}
         <TimeText>--:--</TimeText>
         <RecordSpeedText>SLP 0:00:00</RecordSpeedText>
+        <HudWrapper>
+          <MiningHud />
+        </HudWrapper>
       </IntroWrap>
     </VHSContainer>
   )

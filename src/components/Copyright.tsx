@@ -12,6 +12,11 @@ export function Copyright() {
       color="text.secondary"
       align="right"
       sx={{
+        position: 'fixed',
+        bottom: 8,
+        right: 8,
+        fontFamily: `'${theme.typography.fontFamily}', sans-serif`,
+        fontSize: 8,
         [theme.breakpoints.up('md')]: {
           fontSize: 10,
         },
