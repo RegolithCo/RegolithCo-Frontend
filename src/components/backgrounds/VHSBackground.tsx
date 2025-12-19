@@ -1,7 +1,8 @@
-import { Box, GlobalStyles, useTheme } from '@mui/material'
+import { Box, GlobalStyles } from '@mui/material'
 import { keyframes, styled } from '@mui/material/styles'
 import React from 'react'
 import MiningHud from './MiningHud'
+import MiningHUDLeft from './MiningHUDLeft'
 
 // Keyframes
 const noiseAnim = keyframes`
@@ -55,16 +56,11 @@ export const rgbTextAnim = keyframes`
     text-shadow: -1px 1px 8px rgba(255, 255, 255, 0.6), 1px -1px 8px rgba(255, 255, 235, 0.7), 0px 0 3px var(--vhs-shadow-1), 0 0px 3px var(--vhs-shadow-2), 0px 0 3px var(--vhs-shadow-3), 0 0px 3px var(--vhs-shadow-4), 0px 0 3px var(--vhs-shadow-5);
   }
   90% {
-    text-shadow: -1px 1px 8px rgba(255, 255, 255, 0.6), 1px -1px 8px rgba(255, 255, 235, 0.7), -5px 0 1px var(--vhs-shadow-1), 0 5px 1px var(--vhs-shadow-2), 5px 0 1px var(--vhs-shadow-3), 0 -5px 1px var(--vhs-shadow-4), 5px 0 1px var(--vhs-shadow-5);
-  }
-  100% {
     text-shadow: -1px 1px 8px rgba(255, 255, 255, 0.6), 1px -1px 8px rgba(255, 255, 235, 0.7), 5px 0 1px var(--vhs-shadow-1), 0 -5px 1px var(--vhs-shadow-2), -5px 0 1px var(--vhs-shadow-3), 0 5px 1px var(--vhs-shadow-4), -5px 0 1px var(--vhs-shadow-5);
   }
-`
-
-const typeAnim = keyframes`
-  0%, 19% {opacity:0;}
-  20%, 100% {opacity:1;}
+  100% {
+    text-shadow: -1px 1px 8px rgba(255, 255, 255, 0.6), 1px -1px 8px rgba(255, 255, 235, 0.7), -5px 0 1px var(--vhs-shadow-1), 0 5px 1px var(--vhs-shadow-2), 5px 0 1px var(--vhs-shadow-3), 0 -5px 1px var(--vhs-shadow-4), 5px 0 1px var(--vhs-shadow-5);
+  }
 `
 
 // Styled Components
@@ -73,7 +69,7 @@ const VHSContainer = styled(Box)({
   top: 0,
   left: 0,
   // blur
-  filter: 'blur(3px)',
+  filter: 'blur(1px)',
   width: '100%',
   height: '100%',
   background: 'var(--vhs-bg)',
@@ -103,7 +99,7 @@ const Scanlines = styled(Box)({
   zIndex: 300,
   opacity: 0.6,
   willChange: 'opacity',
-  animation: `${opacityAnim} 3s linear infinite`,
+  animation: `${opacityAnim} 6s linear infinite`,
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -115,7 +111,7 @@ const Scanlines = styled(Box)({
     background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, .5) 51%)',
     backgroundSize: '100% 4px',
     willChange: 'background, background-size',
-    animation: `${scanlinesAnim} .2s linear infinite`,
+    animation: `${scanlinesAnim} 0.5s linear infinite`,
   },
 })
 
@@ -144,7 +140,7 @@ const Noise = styled(Box)(() => ({
     zIndex: 450,
     '&:before': {
       willChange: 'background-position',
-      animation: `${noiseAnim} 1s infinite alternate`,
+      animation: `${noiseAnim} 2.5s infinite alternate`,
     },
   },
 }))
@@ -160,26 +156,12 @@ const IntroWrap = styled(Box)({
   background: 'var(--vhs-overlay)',
 })
 
-const PlayText = styled(Box)({
-  position: 'absolute',
-  left: '2rem',
-  top: '2rem',
-  willChange: 'text-shadow',
-  animation: `${rgbTextAnim} 2s steps(9) 0s infinite alternate`,
-})
-
-const Char = styled('span')<{ index: number }>(({ index }) => ({
-  willChange: 'opacity',
-  animation: `${typeAnim} 1.2s infinite alternate`,
-  animationDelay: `${60 * index}ms`,
-}))
-
 const TimeText = styled(Box)({
   position: 'absolute',
   right: '2rem',
   top: '2rem',
   willChange: 'text-shadow',
-  animation: `${rgbTextAnim} 1s steps(9) 0s infinite alternate`,
+  animation: `${rgbTextAnim} 2.5s steps(9) 0s infinite alternate`,
 })
 
 const RecordSpeedText = styled(Box)({
@@ -187,7 +169,7 @@ const RecordSpeedText = styled(Box)({
   left: '2rem',
   bottom: '5rem',
   willChange: 'text-shadow',
-  animation: `${rgbTextAnim} 1s steps(9) 0s infinite alternate`,
+  animation: `${rgbTextAnim} 2.5s steps(9) 0s infinite alternate`,
 })
 
 const HudWrapper = styled(Box)({
@@ -249,6 +231,9 @@ export const VHSBackground: React.FC<VHSBackgroundProps> = ({
         </PlayText> */}
         <TimeText>--:--</TimeText>
         <RecordSpeedText>SLP 0:00:00</RecordSpeedText>
+        <HudWrapper style={{ left: '1%', right: 'auto' }}>
+          <MiningHUDLeft />
+        </HudWrapper>
         <HudWrapper>
           <MiningHud />
         </HudWrapper>
