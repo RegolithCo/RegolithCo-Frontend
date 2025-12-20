@@ -74,7 +74,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({ workOrder, summary, 
     })
   })
 
-  const totalExpenses = expenses.reduce((acc, { amount }) => acc + amount, 0n)
+  const totalExpenses = expenses.reduce((acc, { amount }) => acc + BigInt(amount), 0n)
 
   return (
     <Box

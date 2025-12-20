@@ -88,79 +88,82 @@ export const MValueFormatter = (
   let finalVal: React.ReactNode = ''
 
   // Miscellaneous types of values that may be non-numerical
-  if (format === MValueFormat.string) finalVal = value as string
-  else if (isNaN(Number(value))) return '--'
+  if (format === MValueFormat.string) return value as string
+  if (typeof value === 'undefined') return ''
+  if (value === null) return 'null'
+  if (typeof value === 'bigint') {
+    // BigInts are fine, but Numeral doesn't support them directly
+  } else if (isNaN(Number(value))) return '--'
   // check for the infinity case
   else if (!isFinite(Number(value))) return '--'
-  else if (typeof value === 'undefined') return ''
-  else if (value === null) finalVal = 'null'
+
+  const numValue = typeof value === 'bigint' ? Number(value) : Number(value)
 
   // Number: Just a number
   if (!format || format === MValueFormat.number || format === MValueFormat.decimal) {
     let finalDecimals = 0
     if (decimals) finalDecimals = decimals
-    else if (maxDecimals) finalDecimals = countDecimals(value as number, maxDecimals)
-    else finalDecimals = 0
+    else if (maxDecimals) finalDecimals = countDecimals(numValue, maxDecimals)
+    else finalDecimals = findDecimalsSm(numValue)
     //
-    if (finalDecimals === 0) finalVal = Numeral(value).format(`0,0`)
-    else finalVal = Numeral(value).format(`0,0.${'0'.repeat(finalDecimals)}`)
+    if (finalDecimals === 0) finalVal = Numeral(numValue).format(`0,0`)
+    else finalVal = Numeral(numValue).format(`0,0.${'0'.repeat(finalDecimals)}`)
   } else if (format === MValueFormat.number_sm) {
     // The small version is pretty tightly wound
     let finalDecimals = 0
     if (decimals) finalDecimals = decimals
-    else if (maxDecimals) finalDecimals = countDecimals(value as number, maxDecimals)
-    else finalDecimals = findDecimalsSm(value as number)
-    finalVal = Numeral(value).format(`0.${'0'.repeat(finalDecimals)}a`)
+    else if (maxDecimals) finalDecimals = countDecimals(numValue, maxDecimals)
+    else finalDecimals = findDecimalsSm(numValue)
+    finalVal = Numeral(numValue).format(`0.${'0'.repeat(finalDecimals)}a`)
   }
 
   // aUEC: Currency
   else if (format === MValueFormat.currency) {
     // Currency never has decimals because aUEC has no fractional amount
-    finalVal = MValueAddUnit(Numeral(value).format(`0,0`), 'aUEC')
+    finalVal = MValueAddUnit(Numeral(numValue).format(`0,0`), 'aUEC')
   } else if (format === MValueFormat.currency_sm) {
     // The small version is pretty tightly wound
     let finalDecimals = 0
     if (decimals) finalDecimals = decimals
-    else if (maxDecimals) finalDecimals = countDecimals(value as number, maxDecimals)
-    else finalDecimals = findDecimalsSm(value as number)
-    finalVal = MValueAddUnit(Numeral(value).format(`0.${'0'.repeat(finalDecimals)}a`), 'aUEC')
+    else if (maxDecimals) finalDecimals = countDecimals(numValue, maxDecimals)
+    else finalDecimals = findDecimalsSm(numValue)
+    finalVal = MValueAddUnit(Numeral(numValue).format(`0.${'0'.repeat(finalDecimals)}a`), 'aUEC')
   }
 
   // Percent: 0.00%
   else if (format === MValueFormat.percent) {
     let finalDecimals = 0
     if (decimals) finalDecimals = decimals
-    else if (maxDecimals) finalDecimals = countDecimals((value as number) * 100, maxDecimals)
-    else finalDecimals = findDecimalsSm(value as number)
-    finalVal = Numeral(value).format(`0,0.${'0'.repeat(finalDecimals || 0)}%`)
+    else if (maxDecimals) finalDecimals = countDecimals(numValue * 100, maxDecimals)
+    else finalDecimals = findDecimalsSm(numValue)
+    finalVal = Numeral(numValue).format(`0,0.${'0'.repeat(finalDecimals || 0)}%`)
   }
 
   // Modifier. Used for loadout calculations: +0.00%
   else if (format === MValueFormat.modifier) {
-    const prefix = (value as number) > 0 ? '+' : ''
-    finalVal = prefix + Numeral(value).format(`0,0`) + '%'
+    const prefix = numValue > 0 ? '+' : ''
+    finalVal = prefix + Numeral(numValue).format(`0,0`) + '%'
   }
 
   // Durations 00:00:00
   else if (format === MValueFormat.duration) {
-    finalVal = readableMilliseconds(value as number, false)
+    finalVal = readableMilliseconds(numValue, false)
   } else if (format === MValueFormat.durationS) {
-    finalVal = readableMilliseconds(value as number, true)
+    finalVal = readableMilliseconds(numValue, true)
   } else if (format === MValueFormat.duration_small) {
-    finalVal = readableMilliseconds(value as number, false, false)
+    finalVal = readableMilliseconds(numValue, false, false)
   } else if (format === MValueFormat.dateTime) {
     // Format date to be more readable
-    const dateVal = dayjs(value as number).format('MMM D h:mma')
+    const dateVal = dayjs(numValue).format('MMM D h:mma')
     finalVal = `${dateVal} ${getTimezoneStr()}`
   } else if (format === MValueFormat.volSCU) {
-    const val = value as number
-    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimalsSm(value as number, true)
-    finalVal = MValueAddUnit(Numeral(val).format(`0,0.${'0'.repeat(finalDecimals)}`), 'SCU')
+    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimalsSm(numValue, true)
+    finalVal = MValueAddUnit(Numeral(numValue).format(`0,0.${'0'.repeat(finalDecimals)}`), 'SCU')
   } else if (format === MValueFormat.volcSCU) {
-    finalVal = MValueAddUnit(Numeral(value).format(`0,0.${'0'.repeat(decimals || 0)}`), 'cSCU')
+    finalVal = MValueAddUnit(Numeral(numValue).format(`0,0.${'0'.repeat(decimals || 0)}`), 'cSCU')
   } else if (format === MValueFormat.mass_sm) {
-    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimalsSm(value as number, true)
-    finalVal = MValueAddUnit(Numeral(value).format(`0.${'0'.repeat(finalDecimals)}a`), 't')
+    const finalDecimals = typeof decimals !== 'undefined' ? decimals : findDecimalsSm(numValue, true)
+    finalVal = MValueAddUnit(Numeral(numValue).format(`0.${'0'.repeat(finalDecimals)}a`), 't')
   } else {
     finalVal = value as string
   }

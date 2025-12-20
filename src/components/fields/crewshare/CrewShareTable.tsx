@@ -119,6 +119,13 @@ export const CrewShareTable: React.FC<CrewShareTableProps> = ({
   const sessionRows = (templateJob?.crewShares || []).map(({ payeeScName }) => payeeScName)
   const mandatoryRows = templateJob?.lockedFields && templateJob?.lockedFields.includes('crewShares') ? sessionRows : []
 
+  console.log('CrewShareTable render:', {
+    workOrderId: workOrder.orderId,
+    crewSharesCount: workOrder.crewShares?.length,
+    summaryCrewShareCount: summary.crewShareSummary?.length,
+    summary,
+  })
+
   return (
     <Box>
       {isEditing && (

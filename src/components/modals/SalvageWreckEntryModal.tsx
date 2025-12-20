@@ -476,7 +476,7 @@ export const SalvageWreckEntryModal: React.FC<SalvageWreckEntryModalProps> = ({
               </Box>
               <Box sx={{ flex: '1 0 40%' }}>
                 <TextField
-                  value={Numeral(newWreck.sellableAUEC || 0).format(`0,0`)}
+                  value={Numeral(Number(newWreck.sellableAUEC || 0)).format(`0,0`)}
                   sx={styles.numfields}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">aUEC</InputAdornment>,

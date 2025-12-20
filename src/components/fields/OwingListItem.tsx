@@ -427,11 +427,11 @@ export const OwingListItem: React.FC<OwingListItemProps> = ({
 const formatPayout = (theme: Theme, shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactNode => {
   let tooltip = ''
   if (includeTfr) {
-    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout - ${numeral(shareArr[0] - shareArr[1]).format(
-      '0,0'
-    )} transfer fee`
+    tooltip = `= ${numeral(Number(shareArr[0])).format('0,0')} payout - ${numeral(
+      Number(shareArr[0] - shareArr[1])
+    ).format('0,0')} transfer fee`
   } else {
-    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout`
+    tooltip = `= ${numeral(Number(shareArr[0])).format('0,0')} payout`
   }
   return (
     <Tooltip title={tooltip}>

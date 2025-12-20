@@ -45,7 +45,7 @@ const stylesThunk = (theme: Theme, isActive: boolean): Record<string, SxProps<Th
   container: {
     display: 'flex',
     height: '100%',
-    backdropFilter: 'blur(7px)',
+    backdropFilter: 'blur(3px)',
     backgroundColor: '#0e0c1b77',
   },
   sessionTabs: {

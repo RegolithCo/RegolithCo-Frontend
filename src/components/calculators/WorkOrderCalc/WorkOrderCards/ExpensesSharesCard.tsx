@@ -99,7 +99,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const useScrollerRef = React.useRef<HTMLDivElement>({} as HTMLDivElement)
   const shipOrder = workOrder as ShipMiningOrder
 
-  const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + amount, 0n)
+  const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + BigInt(amount), 0n)
   const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   useEffect(() => {
@@ -325,7 +325,7 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
             fullWidth
             autoFocus
             disabled={!allowEdit || !isEditing}
-            value={Numeral(shareAmountInputVal).format(`0,0`)}
+            value={Numeral(Number(shareAmountInputVal)).format(`0,0`)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()

@@ -107,6 +107,17 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
     : isSeller
       ? [payoutSummary[0] + (remainder || 0n), payoutSummary[1] + (remainder || 0n), 0n]
       : payoutSummary
+
+  if (isSeller || (payoutSummary && payoutSummary[0] > 0n)) {
+    console.log('CrewShareTableRow debug:', {
+      payee: crewShare.payeeScName,
+      isSeller,
+      payoutSummary,
+      remainder,
+      finalPayout,
+    })
+  }
+
   return (
     <>
       <Tooltip title={tooltip} arrow placement="left" enterDelay={1000}>
@@ -444,11 +455,11 @@ const formatPayout = (shareArr: ShareAmtArr, includeTfr?: boolean): React.ReactN
   const theme = useTheme()
   let tooltip = ''
   if (includeTfr) {
-    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout - ${numeral(shareArr[0] - shareArr[1]).format(
-      '0,0'
-    )} transfer fee`
+    tooltip = `= ${numeral(Number(shareArr[0])).format('0,0')} payout - ${numeral(
+      Number(shareArr[0] - shareArr[1])
+    ).format('0,0')} transfer fee`
   } else {
-    tooltip = `= ${numeral(shareArr[0]).format('0,0')} payout`
+    tooltip = `= ${numeral(Number(shareArr[0])).format('0,0')} payout`
   }
   return (
     <Tooltip title={tooltip} arrow enterDelay={2000} placement="top">

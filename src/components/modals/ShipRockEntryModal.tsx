@@ -322,8 +322,8 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
   let massErrorReason = ''
   if (!newShipRock.mass) massErrorReason = 'Mass is required'
   else if (newShipRock.mass <= SHIP_ROCK_BOUNDS[0] || newShipRock.mass > SHIP_ROCK_BOUNDS[1]) {
-    massErrorReason = `Mass must be between ${Numeral(SHIP_ROCK_BOUNDS[0]).format('0,0')} and ${Numeral(
-      SHIP_ROCK_BOUNDS[1]
+    massErrorReason = `Mass must be between ${Numeral(Number(SHIP_ROCK_BOUNDS[0])).format('0,0')} and ${Numeral(
+      Number(SHIP_ROCK_BOUNDS[1])
     ).format('0,0')} tonnes`
   }
   const massError = Boolean(massErrorReason.length > 0)
@@ -467,7 +467,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
               }}
               error={massError}
               helperText={disabled ? massErrorReason : ''}
-              value={Numeral(jsRound(newShipRock.mass as number, 0)).format(`0,0`)}
+              value={Numeral(Number(jsRound(newShipRock.mass as number, 0))).format(`0,0`)}
               onChange={(event) => {
                 const rawValue = event.target.value.replace(/[^\d.]/g, '').replace(/^0+/, '')
                 const value = jsRound(parseInt(rawValue, 10), 0)
