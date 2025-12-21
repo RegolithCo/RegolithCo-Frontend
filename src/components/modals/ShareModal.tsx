@@ -54,14 +54,14 @@ export const ShareTypeEnum = {
   WORK_ORDER: 'Work Order',
   CLUSTER: 'Scouting Find',
 } as const
-export type DataTabsEnum = ObjectValues<typeof ShareTypeEnum>
+export type ShareTypeEnum = ObjectValues<typeof ShareTypeEnum>
 
 export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, initScoutingFindId, initWorkOrderId }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const { session } = React.useContext(SessionContext)
   const { getSafeName } = React.useContext(AppContext)
-  const [activeTab, setActiveTab] = React.useState<DataTabsEnum>(() => {
+  const [activeTab, setActiveTab] = React.useState<ShareTypeEnum>(() => {
     if (initScoutingFindId) return ShareTypeEnum.CLUSTER
     if (initWorkOrderId) return ShareTypeEnum.WORK_ORDER
     return ShareTypeEnum.SESSION

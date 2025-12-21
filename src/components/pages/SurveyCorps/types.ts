@@ -12,7 +12,7 @@ export type OreTierEnum = ObjectValues<typeof OreTierEnum>
 export const SystemColors: (theme: Theme) => Record<SystemEnum, string> = (theme: Theme) => ({
   [SystemEnum.Stanton]: theme.palette.info.main,
   [SystemEnum.Pyro]: theme.palette.error.main,
-  [SystemEnum.Nyx]: theme.palette.info.light,
+  [SystemEnum.Nyx]: theme.palette.secondary.dark,
 })
 
 export const OreTierColors: Record<OreTierEnum, string> = {

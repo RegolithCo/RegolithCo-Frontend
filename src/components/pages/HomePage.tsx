@@ -223,7 +223,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate, last30Days, allTim
           disabled={Boolean(maintenanceMode)}
           description="Data tables to compare refineries."
           imgageUrl="images/sm/market.png"
-          url="/tables/ore"
+          url="/tables/refinery"
         />
         <HomeCard
           title="Merchandise"

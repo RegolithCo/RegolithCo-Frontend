@@ -24,7 +24,6 @@ import {
 } from '@mui/material'
 import {
   BackwardStats,
-  LoadoutShipEnum,
   MiningGadgetEnum,
   MiningModuleEnum,
   ObjectValues,
@@ -113,6 +112,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
         if (categoryFilter.includes('A') && mod.category === 'A') return true
         if (categoryFilter.includes('P') && mod.category === 'P') return true
         if (categoryFilter.includes('G') && mod.category === 'G') return true
+        return false
       })
     filteredVals.sort((a, b) => {
       // Sort by category In this EXACT order: 1. active, 2. passive, 3. gadget
@@ -133,7 +133,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
       return a.nickname.localeCompare(b.nickname)
     })
     return [filteredVals, filteredStores]
-  }, [categoryFilter, filterSelected, filterSystem, dataStore.ready])
+  }, [categoryFilter, filterSelected, selected, filterSystem, dataStore.ready])
 
   const [maxMin] = React.useMemo(() => {
     // Create a dictionary of max and min values for each of the following laser.stats:
@@ -170,7 +170,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
     }
   }, [])
 
-  const handleCategoryFilter = (event: React.MouseEvent<HTMLElement>, newFilter: LoadoutShipEnum[]) => {
+  const handleCategoryFilter = (event: React.MouseEvent<HTMLElement>, newFilter: string[]) => {
     if (newFilter.length === 0) setCategoryFilter([])
     else setCategoryFilter(newFilter)
   }
@@ -273,9 +273,8 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
           <ToggleButton
             value={SystemEnum.Stanton}
             aria-label="Stanton"
-            color="info"
             sx={{
-              color: theme.palette.info.dark,
+              color: sysColors[SystemEnum.Stanton],
             }}
           >
             Stanton
@@ -283,12 +282,20 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
           <ToggleButton
             value={SystemEnum.Pyro}
             aria-label="Pyro"
-            color="primary"
             sx={{
-              color: theme.palette.primary.dark,
+              color: sysColors[SystemEnum.Pyro],
             }}
           >
             Pyro
+          </ToggleButton>
+          <ToggleButton
+            value={SystemEnum.Nyx}
+            aria-label="Nyx"
+            sx={{
+              color: sysColors[SystemEnum.Nyx],
+            }}
+          >
+            Nyx
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -387,7 +394,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                   <>
                     {filteredStores.map((store, idx) => (
                       <LongCellHeaderWrapped
-                        key={`${store}-${idx}`}
+                        key={`${store.UEXID}-${idx}`}
                         theme={theme}
                         first={idx === 0}
                         hovered={Boolean(hoverCol && hoverCol[0] === idx)}
@@ -468,7 +475,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                 const rowSelected = selected.includes(lm.code as MiningGadgetEnum | MiningModuleEnum)
                 const rowEven = idr % 2 === 0
 
-                const isActive = lm.category === 'Active'
+                const isActive = lm.category === 'A'
 
                 const bgColor =
                   rowSelected && !filterSelected
@@ -633,7 +640,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ onAddToLoadout }) => {
                           const price = lm.prices[store.UEXID] || 0
                           return (
                             <TableCell
-                              key={`${store}-${colNum}`}
+                              key={`${store.UEXID}-${idr}-${colNum}`}
                               onMouseEnter={(e) => handleMouseEnter(e, sysColors[store.system], idr, colNum)}
                               sx={Object.assign({}, styles.cellDivider, styles.storeCell)}
                               padding="checkbox"

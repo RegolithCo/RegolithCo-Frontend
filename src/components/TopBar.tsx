@@ -160,7 +160,7 @@ export const TopBar: React.FC = () => {
       ],
     },
     {
-      path: '/tables/ore',
+      path: '/tables/market',
       name: 'Data',
       icon: <TableChart />,
       children: [
@@ -207,7 +207,7 @@ export const TopBar: React.FC = () => {
           icon: <EmojiEvents />,
         },
         { isDivider: true },
-        { path: '/tables/ore', name: 'Refinery Methods', icon: <TableChart /> },
+        // { path: '/tables/ore', name: 'Refinery Methods', icon: <TableChart /> },
         { path: '/tables/refinery', name: 'Refining Bonuses', icon: <TableChart /> },
         { path: '/tables/market', name: 'Market Prices', icon: <Store /> },
         { isDivider: true },

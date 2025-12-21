@@ -16,9 +16,9 @@ export const DataTablesPageContainer: React.FC = () => {
   const { tab } = useParams()
   let title = 'Data Tables'
   switch (tab) {
-    case DataTabsEnum.ORE:
-      title = 'Data Tables - Ore Calculator'
-      break
+    // case DataTabsEnum.ORE:
+    //   title = 'Data Tables - Ore Calculator'
+    //   break
     case DataTabsEnum.REFINERY:
       title = 'Data Tables - Refinery Bonuses'
       break
@@ -39,7 +39,7 @@ export interface DataTablesPageProps {
 }
 
 export const DataTabsEnum = {
-  ORE: 'ore',
+  // ORE: 'ore',
   REFINERY: 'refinery',
   MARKET: 'market',
 } as const
@@ -63,7 +63,7 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
   const styles = stylesThunk(theme)
 
-  const finalTab = typeof tab === 'undefined' ? DataTabsEnum.ORE : tab
+  const finalTab = typeof tab === 'undefined' ? DataTabsEnum.REFINERY : tab
   return (
     <PageWrapper title="Data Tables" maxWidth="lg">
       <Typography component="p" gutterBottom>
@@ -88,7 +88,7 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
           }}
           aria-label="basic tabs example"
         >
-          <Tab label="Ore Calculator" value={DataTabsEnum.ORE} sx={styles.bigTabs} />
+          {/* <Tab label="Ore Calculator" value={DataTabsEnum.ORE} sx={styles.bigTabs} /> */}
           <Tab label="Refinery Bonuses" value={DataTabsEnum.REFINERY} sx={styles.bigTabs} />
           <Tab label="Market Prices" value={DataTabsEnum.MARKET} sx={styles.bigTabs} />
         </Tabs>
@@ -106,7 +106,7 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
           }}
           aria-label="basic tabs example"
         >
-          <Tab label="Ore Calc." value={DataTabsEnum.ORE} sx={styles.smallTabs} />
+          {/* <Tab label="Ore Calc." value={DataTabsEnum.ORE} sx={styles.smallTabs} /> */}
           <Tab label="Refineries" value={DataTabsEnum.REFINERY} sx={styles.smallTabs} />
           <Tab label="Market" value={DataTabsEnum.MARKET} sx={styles.smallTabs} />
         </Tabs>
@@ -125,11 +125,6 @@ export const DataTablesPage: React.FC<DataTablesPageProps> = ({ navigate, tab })
         .
       </Alert>
 
-      {tab === DataTabsEnum.ORE && (
-        <Box>
-          <RefineryCalc />
-        </Box>
-      )}
       {tab === DataTabsEnum.REFINERY && (
         <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
           <RefineryBonusTable />

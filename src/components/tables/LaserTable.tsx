@@ -294,9 +294,8 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
           <ToggleButton
             value={SystemEnum.Stanton}
             aria-label="Stanton"
-            color="info"
             sx={{
-              color: theme.palette.info.dark,
+              color: SystemColors(theme)[SystemEnum.Stanton],
             }}
           >
             Stanton
@@ -304,12 +303,20 @@ export const LaserTable: React.FC<LaserTableProps> = ({ onAddToLoadout }) => {
           <ToggleButton
             value={SystemEnum.Pyro}
             aria-label="Pyro"
-            color="primary"
             sx={{
-              color: theme.palette.primary.dark,
+              color: SystemColors(theme)[SystemEnum.Pyro],
             }}
           >
             Pyro
+          </ToggleButton>
+          <ToggleButton
+            value={SystemEnum.Nyx}
+            aria-label="Nyx"
+            sx={{
+              color: SystemColors(theme)[SystemEnum.Nyx],
+            }}
+          >
+            Nyx
           </ToggleButton>
         </ToggleButtonGroup>
 

@@ -95,7 +95,7 @@ export const App: React.FC = () => {
               <Route path="/survey/:tab" element={<SurveyCorpsHomeContainer />} />
               <Route path="/survey/:tab/:subtab" element={<SurveyCorpsHomeContainer />} />
 
-              <Route path="/tables/" element={<Navigate to="/tables/ore" replace />} />
+              <Route path="/tables/" element={<Navigate to="/tables/refinery" replace />} />
               <Route path="/tables/:tab" element={<DataTablesPageContainer />} errorElement={<ErrorPage />} />
 
               <Route path="/loadouts/" element={<Navigate to="/loadouts/calculator" replace />} />
