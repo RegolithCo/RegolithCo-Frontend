@@ -38,7 +38,7 @@
     "@nivo/pie": "^0.99.0",
     "@react-oauth/google": "^0.12.2",
     "@regolithco/common": "^1.4.17",
-    "@regolithco/ocr": "^1.0.4",
+    "@regolithco/ocr": "^1.0.5",
     "@sentry/react": "^10.30.0",
     "@sentry/vite-plugin": "^4.6.1",
     "axios": "^1.13.2",

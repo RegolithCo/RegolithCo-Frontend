@@ -61,6 +61,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
     case '/workorder':
       backgroundEffect = BackgroundEffectEnum.MATRIX
       break
+    // Those survey tables are so non-performant that we really can't have any background
     case '/survey':
       backgroundEffect = BackgroundEffectEnum.NONE
       break
