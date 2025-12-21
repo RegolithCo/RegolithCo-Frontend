@@ -11,7 +11,7 @@ import {
   Box,
 } from '@mui/material'
 import { getOreName, ShipMiningOrderCapture } from '@regolithco/common'
-import { MValue, MValueFormat, MValueFormatter } from '../fields/MValue'
+import { MValue, MValueFormat } from '../fields/MValue'
 import { fontFamilies } from '../../theme'
 import { RefineryControl } from '../fields/RefineryControl'
 import { RefineryMethodControl } from '../fields/RefiningMethodControl'
@@ -27,6 +27,8 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
   const theme = useTheme()
 
   const handleUpdate = (updates: Partial<ShipMiningOrderCapture>) => {
+    console.log('DEBUG: PreviewWorkOrderCapture order', order)
+    console.log('MARZIPAN_ORDER', { order, updates })
     onChange({ ...order, ...updates })
   }
 
