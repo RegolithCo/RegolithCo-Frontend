@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { ScoutingFindStateEnum, SessionStateEnum } from '@regolithco/common'
 import {
   Box,
@@ -13,7 +12,6 @@ import {
   Typography,
   useTheme,
   Zoom,
-  Popper,
   useMediaQuery,
   Tooltip,
   Grid,
@@ -99,15 +97,6 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
   // Handlers for the SpeedDials
   const workOrderAccordionRef = React.useRef<HTMLElement>(null)
   const scoutingAccordionRef = React.useRef<HTMLElement>(null)
-  const [workOrderFABAnchorEl, setWorkOrderAnchorEl] = React.useState<HTMLElement | null>(null)
-  const [scoutingFindFABAnchorEl, setScoutingFindAnchorEl] = React.useState<HTMLElement | null>(null)
-
-  React.useEffect(() => {
-    if (workOrderAccordionRef.current) setWorkOrderAnchorEl(workOrderAccordionRef.current)
-  }, [workOrderAccordionRef.current])
-  React.useEffect(() => {
-    if (scoutingAccordionRef.current) setScoutingFindAnchorEl(scoutingAccordionRef.current)
-  }, [scoutingAccordionRef.current])
 
   const isActive = session?.state === SessionStateEnum.Active
   const styles = stylesThunk(theme, isActive)
@@ -200,16 +189,14 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
             ]}
           />
         </Box>
-        {topExpanded && workOrderFABAnchorEl && (
-          <Popper open anchorEl={workOrderFABAnchorEl} placement="bottom-end">
-            <WorkOrderAddFAB
-              onClick={createNewWorkOrder}
-              sessionSettings={session?.sessionSettings}
-              fabProps={{
-                disabled: !isActive,
-              }}
-            />
-          </Popper>
+        {topExpanded && (
+          <WorkOrderAddFAB
+            onClick={createNewWorkOrder}
+            sessionSettings={session?.sessionSettings}
+            fabProps={{
+              disabled: !isActive,
+            }}
+          />
         )}
       </Box>
 
@@ -285,16 +272,14 @@ export const TabDashboard: React.FC<TabDashboardProps> = () => {
             })}
           </Grid>
         </Box>
-        {bottomExpanded && scoutingFindFABAnchorEl && (
-          <Popper open anchorEl={scoutingFindFABAnchorEl} placement="bottom-end">
-            <ScoutingAddFAB
-              onClick={createNewScoutingFind}
-              sessionSettings={session?.sessionSettings}
-              fabProps={{
-                disabled: !isActive,
-              }}
-            />
-          </Popper>
+        {bottomExpanded && (
+          <ScoutingAddFAB
+            onClick={createNewScoutingFind}
+            sessionSettings={session?.sessionSettings}
+            fabProps={{
+              disabled: !isActive,
+            }}
+          />
         )}
         {scanModalOpen && <ScanModal open={scanModalOpen} onClose={() => setScanModalOpen(false)} />}
       </Box>

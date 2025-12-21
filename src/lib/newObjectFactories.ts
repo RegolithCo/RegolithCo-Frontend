@@ -232,7 +232,7 @@ export function newWorkOrderMaker(
     shareRefinedValue: undefined,
     processStartTime: undefined,
     processDurationS: undefined,
-    shareAmount: undefined,
+    shareAmount: null,
 
     // Cascading fallback of options
     includeTransferFee: booleanDefault([defaults.includeTransferFee, true]),

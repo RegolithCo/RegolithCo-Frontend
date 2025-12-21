@@ -1,7 +1,7 @@
 import { ApolloLink, ServerError } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
 import { RetryLink } from '@apollo/client/link/retry'
-import { ErrorCode } from '@regolithco/common'
+import { ErrorCode, jsonSerializeBigInt } from '@regolithco/common'
 import * as Sentry from '@sentry/react'
 import config from '../config'
 
@@ -65,11 +65,11 @@ Operation:
 ${queryBody?.trim()}
 \`\`\`
 \`\`\`json
-${JSON.stringify(operation.variables, undefined, 2)}
+${jsonSerializeBigInt(operation.variables)}
 \`\`\`
 Returns:
 \`\`\`json
-${JSON.stringify(data.data, undefined, 2)}
+${jsonSerializeBigInt(data.data)}
 \`\`\`  
 `
               : 'NOT SHOWN IN PRODUCTION',

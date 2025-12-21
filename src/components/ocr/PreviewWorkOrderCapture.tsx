@@ -25,7 +25,7 @@ export interface PreviewWorkOrderCapturePRops {
 
 export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = ({ order, imageUrl, onChange }) => {
   const theme = useTheme()
-  console.log('MARZIPAN', order)
+
   const handleUpdate = (updates: Partial<ShipMiningOrderCapture>) => {
     onChange({ ...order, ...updates })
   }

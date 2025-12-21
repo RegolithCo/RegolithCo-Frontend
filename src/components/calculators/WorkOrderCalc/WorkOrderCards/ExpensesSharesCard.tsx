@@ -99,7 +99,6 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
   const useScrollerRef = React.useRef<HTMLDivElement>({} as HTMLDivElement)
   const shipOrder = workOrder as ShipMiningOrder
 
-  const totalExpenses = (workOrder.expenses || []).reduce((acc, { amount }) => acc + BigInt(amount), 0n)
   const isIncludeTransferFeeLocked = (templateJob?.lockedFields || [])?.includes('includeTransferFee')
 
   useEffect(() => {
@@ -148,6 +147,8 @@ export const ExpensesSharesCard: React.FC<ExpensesSharesCardProps> = ({
     }
     if (typeof workOrder.shareAmount === 'undefined' || workOrder.shareAmount === null) {
       setShareAmountInputVal(myStoreChoice.price)
+      // We need to sync this back to the work order so it can be saved
+      onChange({ ...workOrder, shareAmount: BigInt(myStoreChoice.price) })
     }
   }, [myStoreChoice, workOrder.shareAmount])
 
