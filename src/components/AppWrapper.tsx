@@ -17,6 +17,7 @@ const BackgroundEffectEnum = {
   STARS: 'stars',
   STARS_BLUE: 'stars-blue',
   VHS: 'vhs',
+  NONE: 'none',
 } as const
 export type BackgroundEffectEnum = ObjectValues<typeof BackgroundEffectEnum>
 
@@ -59,6 +60,9 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       break
     case '/workorder':
       backgroundEffect = BackgroundEffectEnum.MATRIX
+      break
+    case '/survey':
+      backgroundEffect = BackgroundEffectEnum.NONE
       break
     default:
       backgroundEffect = BackgroundEffectEnum.STARS

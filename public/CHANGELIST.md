@@ -1,9 +1,12 @@
-### December ??, 2025
+### December 22, 2025
 ## 1.4.5 - OCR in the browser
 
-- BUG FIX: Problem with work orders > 2 billion aUEC causing errors. Upgraded the entire system to 
-- Refinery bonuses now pull from UEX.
-- OCR now works in the browser
+You may notice a lot fo the artwork has been removed from the site. I've made the decision to remove all AI-generated graphics from the site, mainly for ethical reasons. It's going to take me a while to replace it but in the interim things will look a little more plain.
+
+- OCR now works in-browser without making a server requestand has been upgraded to support some of the new UI layouts from vehicles in 4.5.
+- BUG FIX: Problem with work orders > 2 billion aUEC causing errors. Upgraded the entire system to use a bigger type of integer.
+- Refinery bonuses now pull from UEX and method bonuses have been updated to fit the new nerfs in 4.5.
+- Performance improvements across the board.
 - Upgraded to ES2020: Upgrading the entire codebase to ES2020 to support BigInt natively. This should help with large numbers in work orders and crew shares.
 
 ### November 19, 2025
