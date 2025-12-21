@@ -108,16 +108,6 @@ export const CrewShareTableRow: React.FC<CrewShareTableRowProps> = ({
       ? [payoutSummary[0] + (remainder || 0n), payoutSummary[1] + (remainder || 0n), 0n]
       : payoutSummary
 
-  if (isSeller || (payoutSummary && payoutSummary[0] > 0n)) {
-    console.log('CrewShareTableRow debug:', {
-      payee: crewShare.payeeScName,
-      isSeller,
-      payoutSummary,
-      remainder,
-      finalPayout,
-    })
-  }
-
   return (
     <>
       <Tooltip title={tooltip} arrow placement="left" enterDelay={1000}>
