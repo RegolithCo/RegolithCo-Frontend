@@ -258,7 +258,6 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                 chooseFileClick={handleFileDialogClick}
                 captureType={captureType}
                 onSubmit={async (newUrl) => {
-                  console.log('DEBUG: CaptureControl onSubmit', { newUrlLen: newUrl?.length })
                   if (newUrl) {
                     setSubmittedImageUrl(newUrl)
                     setProcessing(true)

@@ -109,7 +109,6 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
   }, [isScreenSharing, imageUrl])
 
   const onSubmitClick = useCallback(async () => {
-    console.log('DEBUG: CapturePreviewCrop onSubmitClick')
     // First we need to choose if the image is coming from the imageUrl or from the screen share
     let processImg = imageUrl
 

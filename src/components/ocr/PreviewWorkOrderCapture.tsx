@@ -27,8 +27,6 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
   const theme = useTheme()
 
   const handleUpdate = (updates: Partial<ShipMiningOrderCapture>) => {
-    console.log('DEBUG: PreviewWorkOrderCapture order', order)
-    console.log('MARZIPAN_ORDER', { order, updates })
     onChange({ ...order, ...updates })
   }
 

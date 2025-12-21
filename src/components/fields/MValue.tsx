@@ -102,7 +102,7 @@ export const MValueFormatter = (
   // Number: Just a number
   if (!format || format === MValueFormat.number || format === MValueFormat.decimal) {
     let finalDecimals = 0
-    if (decimals) finalDecimals = decimals
+    if (typeof decimals !== 'undefined') finalDecimals = decimals
     else if (maxDecimals) finalDecimals = countDecimals(numValue, maxDecimals)
     else finalDecimals = findDecimalsSm(numValue)
     //
@@ -111,7 +111,7 @@ export const MValueFormatter = (
   } else if (format === MValueFormat.number_sm) {
     // The small version is pretty tightly wound
     let finalDecimals = 0
-    if (decimals) finalDecimals = decimals
+    if (typeof decimals !== 'undefined') finalDecimals = decimals
     else if (maxDecimals) finalDecimals = countDecimals(numValue, maxDecimals)
     else finalDecimals = findDecimalsSm(numValue)
     finalVal = Numeral(numValue).format(`0.${'0'.repeat(finalDecimals)}a`)
@@ -124,7 +124,7 @@ export const MValueFormatter = (
   } else if (format === MValueFormat.currency_sm) {
     // The small version is pretty tightly wound
     let finalDecimals = 0
-    if (decimals) finalDecimals = decimals
+    if (typeof decimals !== 'undefined') finalDecimals = decimals
     else if (maxDecimals) finalDecimals = countDecimals(numValue, maxDecimals)
     else finalDecimals = findDecimalsSm(numValue)
     finalVal = MValueAddUnit(Numeral(numValue).format(`0.${'0'.repeat(finalDecimals)}a`), 'aUEC')
@@ -133,7 +133,7 @@ export const MValueFormatter = (
   // Percent: 0.00%
   else if (format === MValueFormat.percent) {
     let finalDecimals = 0
-    if (decimals) finalDecimals = decimals
+    if (typeof decimals !== 'undefined') finalDecimals = decimals
     else if (maxDecimals) finalDecimals = countDecimals(numValue * 100, maxDecimals)
     else finalDecimals = findDecimalsSm(numValue)
     finalVal = Numeral(numValue).format(`0,0.${'0'.repeat(finalDecimals || 0)}%`)
@@ -192,7 +192,7 @@ export const MValue: React.FC<MValueProps> = ({
     const isPercent = format === MValueFormat.percent
     let displayValue = isPercent && typeof value === 'number' ? value * 100 : value
     // Now apply decimals if needed
-    if (decimals && displayValue && typeof displayValue === 'number') {
+    if (typeof decimals !== 'undefined' && displayValue && typeof displayValue === 'number') {
       displayValue = parseFloat(displayValue.toFixed(decimals))
     }
     return (

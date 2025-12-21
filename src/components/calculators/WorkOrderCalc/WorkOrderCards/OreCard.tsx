@@ -53,6 +53,7 @@ import { RefineryProgress } from '../../../fields/RefineryProgress'
 import { RefineryProgressShare } from '../../../fields/RefineryProgressShare'
 import { LookupsContext } from '../../../../context/lookupsContext'
 import { Help, TableView } from '@mui/icons-material'
+import { debounce } from 'lodash'
 import { OreCardHelpModal } from './OreCardHelpModal'
 
 export type OreCardProps = WorkOrderCalcProps & {
@@ -157,6 +158,14 @@ export const OreCard: React.FC<OreCardProps> = ({
     },
     [dataStore]
   )
+
+  const debouncedTableChange = React.useMemo(() => debounce(tableChange, 300), [])
+
+  useEffect(() => {
+    return () => {
+      debouncedTableChange.cancel()
+    }
+  }, [debouncedTableChange])
 
   let unit = 'SCU'
   switch (workOrder.orderType) {
@@ -363,7 +372,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                           event.target.select()
                         }}
                         onChange={(e) =>
-                          tableChange(
+                          debouncedTableChange(
                             oreKey as ShipOreEnum,
                             shipOrder,
                             onChange,
@@ -373,7 +382,10 @@ export const OreCard: React.FC<OreCardProps> = ({
                             oreAmtCalcWrapped
                           )
                         }
-                        onBlur={() => setEditCell(undefined)}
+                        onBlur={() => {
+                          debouncedTableChange.flush()
+                          setEditCell(undefined)
+                        }}
                         onKeyDown={(event) => {
                           // This should stop exponents and scientific notation
                           if (event.key === 'e') {
@@ -413,7 +425,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                         }}
                       />
                     ) : (
-                      <MValue value={convertedCollected} typoProps={{}} />
+                      <MValue value={convertedCollected} decimals={0} />
                     )}
                   </TableCell>
                   {shipOrder?.isRefined && (
@@ -428,7 +440,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                           autoFocus
                           defaultValue={refined > 0 ? refined.toFixed(0) : 0}
                           onChange={(e) =>
-                            tableChange(
+                            debouncedTableChange(
                               oreKey as ShipOreEnum,
                               shipOrder,
                               onChange,
@@ -441,7 +453,10 @@ export const OreCard: React.FC<OreCardProps> = ({
                           onFocus={(event) => {
                             event.target.select()
                           }}
-                          onBlur={() => setEditCell(undefined)}
+                          onBlur={() => {
+                            debouncedTableChange.flush()
+                            setEditCell(undefined)
+                          }}
                           onKeyDown={(event) => {
                             // This should stop exponents and scientific notation
                             if (event.key === 'e') {
@@ -484,7 +499,7 @@ export const OreCard: React.FC<OreCardProps> = ({
                           }}
                         />
                       ) : (
-                        <MValue value={refined} />
+                        <MValue value={refined} decimals={0} />
                       )}
                     </TableCell>
                   )}
