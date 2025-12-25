@@ -153,43 +153,56 @@ export const TabStats: React.FC<DashboardProps> = ({
     const refiningProcesses: Partial<RegolithStatsSummary['refineryMethod']> = {}
 
     // Total Revenue is easy. It's just all the aUEC summed from all sessions
-    const totalRevenue = sessionsFiltered.reduce((acc, session) => acc + (session.summary?.aUEC || 0n), 0n)
-
-    const myIncome = workOrdersFiltered.reduce((acc, wo) => {
-      const { crewShares, sessionId, orderId, orderType } = wo
-      const myIndex = (crewShares || []).findIndex((cs) => cs.payeeScName === userProfile.scName)
-      if (myIndex < 0 || !workOrderSummaries[sessionId] || !workOrderSummaries[sessionId][orderId]) return acc
-
-      if (orderType === ActivityEnum.ShipMining) {
-        const shipOrder = wo as ShipMiningOrder
-        if (shipOrder.refinery) {
-          if (!refineries[shipOrder.refinery]) refineries[shipOrder.refinery] = 0
-          refineries[shipOrder.refinery] = (refineries[shipOrder.refinery] || 0) + 1
+    let totalRevenueNum = 0
+    let myIncomeNum = 0
+    let sharedIncomeNum = 0
+    try {
+      const totalRevenueBigInt = sessionsFiltered.reduce((acc, session) => acc + (session.summary?.aUEC || 0n), 0n)
+      totalRevenueNum = typeof totalRevenueBigInt === 'bigint' ? Number(totalRevenueBigInt) : totalRevenueBigInt
+    } catch (e) {
+      totalRevenueNum = 0
+    }
+    try {
+      const myIncomeBigInt = workOrdersFiltered.reduce((acc, wo) => {
+        const { crewShares, sessionId, orderId, orderType } = wo
+        const myIndex = (crewShares || []).findIndex((cs) => cs.payeeScName === userProfile.scName)
+        if (myIndex < 0 || !workOrderSummaries[sessionId] || !workOrderSummaries[sessionId][orderId]) return acc
+        if (orderType === ActivityEnum.ShipMining) {
+          const shipOrder = wo as ShipMiningOrder
+          if (shipOrder.refinery) {
+            if (!refineries[shipOrder.refinery]) refineries[shipOrder.refinery] = 0
+            refineries[shipOrder.refinery] = (refineries[shipOrder.refinery] || 0) + 1
+          }
+          if (shipOrder.method) {
+            if (!refiningProcesses[shipOrder.method]) refiningProcesses[shipOrder.method] = 0
+            refiningProcesses[shipOrder.method] = (refiningProcesses[shipOrder.method] || 0) + 1
+          }
         }
-        if (shipOrder.method) {
-          if (!refiningProcesses[shipOrder.method]) refiningProcesses[shipOrder.method] = 0
-          refiningProcesses[shipOrder.method] = (refiningProcesses[shipOrder.method] || 0) + 1
-        }
-      }
-
-      const woSumm = workOrderSummaries[sessionId][orderId].crewShareSummary
-      if (!woSumm) return acc
-      return acc + (woSumm[myIndex][0] || 0n)
-    }, 0n)
-
-    const sharedIncome = workOrdersFiltered.reduce((acc, { crewShares, sessionId, orderId }) => {
-      const myIndex = (crewShares || []).findIndex((cs) => cs.payeeScName === userProfile.scName)
-      if (myIndex < 0 || !workOrderSummaries[sessionId] || !workOrderSummaries[sessionId][orderId]) return acc
-      const woSumm = workOrderSummaries[sessionId][orderId]
-
-      if (!woSumm || woSumm.sellerScName !== userProfile.scName) return acc
-      // REDUCE THE SHARED INCOME BY THE AMOUNT I EARNED`1
-      return acc + ((woSumm.crewShareSummary || [])[myIndex][0] || 0n)
-    }, 0n)
+        const woSumm = workOrderSummaries[sessionId][orderId].crewShareSummary
+        if (!woSumm) return acc
+        return acc + (woSumm[myIndex][0] || 0n)
+      }, 0n)
+      myIncomeNum = typeof myIncomeBigInt === 'bigint' ? Number(myIncomeBigInt) : myIncomeBigInt
+    } catch (e) {
+      myIncomeNum = 0
+    }
+    try {
+      const sharedIncomeBigInt = workOrdersFiltered.reduce((acc, { crewShares, sessionId, orderId }) => {
+        const myIndex = (crewShares || []).findIndex((cs) => cs.payeeScName === userProfile.scName)
+        if (myIndex < 0 || !workOrderSummaries[sessionId] || !workOrderSummaries[sessionId][orderId]) return acc
+        const woSumm = workOrderSummaries[sessionId][orderId]
+        if (!woSumm || woSumm.sellerScName !== userProfile.scName) return acc
+        // REDUCE THE SHARED INCOME BY THE AMOUNT I EARNED`1
+        return acc + ((woSumm.crewShareSummary || [])[myIndex][0] || 0n)
+      }, 0n)
+      sharedIncomeNum = typeof sharedIncomeBigInt === 'bigint' ? Number(sharedIncomeBigInt) : sharedIncomeBigInt
+    } catch (e) {
+      sharedIncomeNum = 0
+    }
     return {
-      totalRevenue: formatCardNumber(Number(totalRevenue)),
-      myIncome: formatCardNumber(Number(myIncome)),
-      sharedIncome: formatCardNumber(Number(sharedIncome)),
+      totalRevenue: formatCardNumber(totalRevenueNum),
+      myIncome: formatCardNumber(myIncomeNum),
+      sharedIncome: formatCardNumber(sharedIncomeNum),
       refineries,
       refiningProcesses,
     }
@@ -291,7 +304,7 @@ export const TabStats: React.FC<DashboardProps> = ({
     })
 
     return {
-      expenses: formatCardNumber(Number(expenses)),
+      expenses: formatCardNumber(parseInt(expenses.toString())),
       shipOrePie,
       vehicleOrePie,
       salvageOrePie,
@@ -374,27 +387,32 @@ export const TabStats: React.FC<DashboardProps> = ({
 
         <Grid spacing={2} my={3} container sx={{ width: '100%' }}>
           <SiteStatsCard
-            value={totalRevenue[0]}
-            scale={totalRevenue[1]}
+            value={totalRevenue && totalRevenue[0] !== undefined ? totalRevenue[0] : 0}
+            scale={totalRevenue && totalRevenue[1] !== undefined ? totalRevenue[1] : ''}
             subText="Total Session Revenue"
             tooltip={`aUEC Earned by all users in sessions I have owned/joined`}
             loading={loading}
           />
           <SiteStatsCard
-            value={myIncome[0]}
-            scale={myIncome[1]}
+            value={myIncome && myIncome[0] !== undefined ? myIncome[0] : 0}
+            scale={myIncome && myIncome[1] !== undefined ? myIncome[1] : ''}
             subText="Personal Profit"
             tooltip={`aUEC Earned by users`}
             loading={loading}
           />
           <SiteStatsCard
-            value={sharedIncome[0]}
-            scale={sharedIncome[1]}
+            value={sharedIncome && sharedIncome[0] !== undefined ? sharedIncome[0] : 0}
+            scale={sharedIncome && sharedIncome[1] !== undefined ? sharedIncome[1] : ''}
             subText="Shared Income"
             tooltip={`aUEC Earned by users other than you in your sessions.`}
             loading={loading}
           />
-          <SiteStatsCard value={expenses[0]} scale={expenses[1]} subText="Expenses (aUEC)" loading={loading} />
+          <SiteStatsCard
+            value={expenses && expenses[0] !== undefined ? expenses[0] : 0}
+            scale={expenses && expenses[1] !== undefined ? expenses[1] : ''}
+            subText="Expenses (aUEC)"
+            loading={loading}
+          />
 
           <SiteStatsCard
             value={
