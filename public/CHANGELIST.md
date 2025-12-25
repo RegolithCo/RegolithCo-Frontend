@@ -10,7 +10,7 @@ This is kind of a massive release for regolith under the hood. A new OCR engine 
 - Removing a couple of calculators almost nobody was using that have now been replaced by much better ones at [UEX Corp](https://uexcorp.space/mining/refineries).
 - Upgraded to ES2020: Upgrading the entire codebase to ES2020 to support BigInt natively. This should help with large numbers in work orders and crew shares.
 
-You may also notice a lot fo the artwork has been removed from the site. I've made the decision to remove all AI-generated graphics from the site, mainly for ethical reasons. If anyone is interested in the "why" of it all I wrote a blog post about it [here](https://docs.regolith.rocks/blog/ai-art-ethics).
+You may also notice a lot fo the artwork has been removed from the site. I've made the decision to remove all AI-generated graphics from the site, mainly for ethical reasons. If anyone is interested in the "why" of it all I wrote a blog post about it [here](https://docs.regolith.rocks/blog/2025/12/24/wheres-the-art).
 
 ### November 19, 2025
 ## 1.4.4 - NYX!
