@@ -1,13 +1,16 @@
-### December 22, 2025
-## 1.4.5 - OCR in the browser
+### 🎄 December 25, 2025
+## 1.5.0 - OCR in the browser and SC 4.5
 
-You may notice a lot fo the artwork has been removed from the site. I've made the decision to remove all AI-generated graphics from the site, mainly for ethical reasons. It's going to take me a while to replace it but in the interim things will look a little more plain.
+This is kind of a massive release for regolith under the hood. A new OCR engine and lots of major changes so I expect there will still be some bugs to work out so please be patient with us while we find ans squash them.
 
 - OCR now works in-browser without making a server requestand has been upgraded to support some of the new UI layouts from vehicles in 4.5.
 - BUG FIX: Problem with work orders > 2 billion aUEC causing errors. Upgraded the entire system to use a bigger type of integer.
 - Refinery bonuses now pull from UEX and method bonuses have been updated to fit the new nerfs in 4.5.
 - Performance improvements across the board.
+- Removing a couple of calculators almost nobody was using that have now been replaced by much better ones at [UEX Corp](https://uexcorp.space/mining/refineries).
 - Upgraded to ES2020: Upgrading the entire codebase to ES2020 to support BigInt natively. This should help with large numbers in work orders and crew shares.
+
+You may also notice a lot fo the artwork has been removed from the site. I've made the decision to remove all AI-generated graphics from the site, mainly for ethical reasons. If anyone is interested in the "why" of it all I wrote a blog post about it [here](https://docs.regolith.rocks/blog/ai-art-ethics).
 
 ### November 19, 2025
 ## 1.4.4 - NYX!

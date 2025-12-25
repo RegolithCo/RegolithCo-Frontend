@@ -35,7 +35,7 @@ export const StarsParallax: React.FC<StarsParallaxProps> = ({ starColor, color1,
     // Star data structure: [x, y, z, pz] per star
     let numStars = 0
     let stars = new Float32Array(0)
-    const speed = 1.5 // Slightly faster for better effect
+    const speed = 0.6 // Slightly faster for better effect
 
     const initStars = (count: number, w: number, h: number) => {
       numStars = count

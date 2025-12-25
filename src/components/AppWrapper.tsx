@@ -63,6 +63,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       break
     // Those survey tables are so non-performant that we really can't have any background
     case '/survey':
+    case '/session':
       backgroundEffect = BackgroundEffectEnum.NONE
       break
     default:
