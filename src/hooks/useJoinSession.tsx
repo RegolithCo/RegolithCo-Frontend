@@ -8,6 +8,7 @@ import log from 'loglevel'
 import { usePageVisibility } from './usePageVisibility'
 import { makeSessionUrls } from '../lib/routingUrls'
 import { SessionTabs } from '../context/session.context'
+import { trackEvent } from '../lib/analytics'
 
 type useSessionsReturn = {
   sessionShare?: SessionShare
@@ -64,6 +65,9 @@ export const useJoinSession = (joinId?: string): useSessionsReturn => {
     },
     onCompleted: (data) => {
       enqueueSnackbar('JOINED SESSION!', { variant: 'success' })
+      trackEvent('join_session', 'session', data.joinSession?.sessionId || undefined, {
+        sessionId: data.joinSession?.sessionId || '',
+      })
       if (data.joinSession?.sessionId)
         navigate(makeSessionUrls({ sessionId: data.joinSession?.sessionId, tab: SessionTabs.DASHBOARD }))
     },

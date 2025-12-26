@@ -61,6 +61,7 @@ import { useGQLErrors } from './useGQLErrors'
 import log from 'loglevel'
 import { Reference, StoreObject } from '@apollo/client'
 import { UserProfileContext } from '../context/auth.context'
+import { trackEvent } from '../lib/analytics'
 
 type useSessionsReturn = {
   session?: Session
@@ -593,7 +594,9 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       }).then()
     },
     leaveSession: () => {
-      return leaveSessionMutation[0]().then()
+      return leaveSessionMutation[0]().then(() => {
+        trackEvent('leave_session', 'session', sessionId)
+      })
     },
     onUpdateSession: (session: SessionInput, destructSessSettings: DestructuredSettings) => {
       return updateSessionMutation[0]({
@@ -737,7 +740,12 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
             },
           })
         },
-      }).then()
+      }).then(() => {
+        trackEvent('create_work_order', 'work_order', undefined, {
+          orderType: newOrder.orderType,
+          isRefined: (newOrder as ShipMiningOrder).isRefined ? 'true' : 'false',
+        })
+      })
     },
     // NOTE: This looks similar to "setCrewSharePaid" in useWorkOrder.ts but it's much more lightweight
     markCrewSharePaid: (crewShare: CrewShare, isPaid: boolean) => {
@@ -798,7 +806,12 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
             },
           })
         },
-      }).then()
+      }).then(() => {
+        trackEvent('create_scouting_find', 'scouting', undefined, {
+          clusterType: newFind.clusterType,
+          includeInSurvey: newFind.includeInSurvey ? 'true' : 'false',
+        })
+      })
     },
   }
 }

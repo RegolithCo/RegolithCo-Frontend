@@ -20,6 +20,7 @@ import {
 import { useGQLErrors } from './useGQLErrors'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { trackEvent } from '../lib/analytics'
 
 import { useSnackbar } from 'notistack'
 import React, { useCallback, useEffect } from 'react'
@@ -103,6 +104,9 @@ export const useSessionList = (): useSessionsReturn => {
     },
     onCompleted: (data) => {
       enqueueSnackbar('Session created', { variant: 'success' })
+      trackEvent('create_session', 'session', data.createSession?.name || undefined, {
+        sessionId: data.createSession?.sessionId || '',
+      })
       navigate(`/session/${data.createSession?.sessionId}`)
     },
   })
