@@ -10,6 +10,11 @@ export const PRODUCTION_GA = 'G-M3N6E5P1FP'
 export const STAGING_GA = 'G-GGGZ6TSDZ5'
 export const LOCALHOST_GA = 'G-3LCK4H15P1'
 
+export type GAUserProps = {
+  userId: string
+  userType: 'verified' | 'unverified' | 'anonymous'
+}
+
 export const useConsentCookie = () => {
   const [consent, setConsentState] = useState<ConsentStatus>((Cookies.get(GDPR_COOKIE_NAME) as ConsentStatus) || null)
 
@@ -84,6 +89,37 @@ export const trackEvent = (
   }
 
   ReactGA.event(action, params)
+}
+
+/**
+ * Set the user identity in Google Analytics.
+ * @param props
+ */
+export const setGAUser = (props: GAUserProps) => {
+  try {
+    ReactGA.set({
+      user_id: props.userId,
+      user_type: props.userType,
+    })
+    log.debug('GA User set:', props)
+  } catch (error) {
+    log.error('Error setting GA user:', error)
+  }
+}
+
+/**
+ * Clear the user identity in Google Analytics.
+ */
+export const clearGAUser = () => {
+  try {
+    ReactGA.set({
+      user_id: undefined,
+      user_type: 'anonymous',
+    })
+    log.debug('GA User cleared')
+  } catch (error) {
+    log.error('Error clearing GA user:', error)
+  }
 }
 
 /**

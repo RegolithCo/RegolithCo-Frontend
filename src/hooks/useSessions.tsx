@@ -367,7 +367,9 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
             state: SessionStateEnum.Active,
           },
         },
-      }).then()
+      }).then(() => {
+        trackEvent('reopen_session', 'session', sessionId)
+      })
     },
     closeSession: () => {
       return updateSessionMutation[0]({
@@ -377,9 +379,10 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
             state: SessionStateEnum.Closed,
           },
         },
-      }).then()
+      }).then(() => {
+        trackEvent('close_session', 'session', sessionId)
+      })
     },
-    // We pulled this into a variable because something else needs it
     addSessionMentions,
     removeSessionMentions: (scNames: string[]) => {
       return removeSessionMentionsMutation[0]({
@@ -467,7 +470,9 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
       }).then()
     },
     deleteSession: () => {
-      return deleteSessionMutation[0]().then()
+      return deleteSessionMutation[0]().then(() => {
+        trackEvent('delete_session', 'session', sessionId)
+      })
     },
     updateMySessionUser: (sessionUser: SessionUserInput) => {
       return upsertSessionUserMutation[0]({

@@ -3,6 +3,7 @@ import { UserStateEnum } from '@regolithco/common'
 import { useGetUserProfileQuery } from '../schema'
 import { usePageVisibility } from '../hooks/usePageVisibility'
 import { LoginContext, UserProfileContext } from '../context/auth.context'
+import { clearGAUser, setGAUser } from '../lib/analytics'
 import * as Sentry from '@sentry/react'
 import config from '../config'
 
@@ -27,10 +28,15 @@ export const UserProfileProvider: React.FC<React.PropsWithChildren> = ({ childre
         id: userProfileQry.data?.profile?.userId,
         username: userProfileQry.data?.profile?.scName,
       })
+      setGAUser({
+        userId: userProfileQry.data.profile.userId,
+        userType: userProfileQry.data.profile.state === UserStateEnum.Verified ? 'verified' : 'unverified',
+      })
     } else {
       Sentry.setUser({
         username: 'Anonymous',
       })
+      clearGAUser()
     }
   }, [isAuthenticated, userProfileQry.data])
 

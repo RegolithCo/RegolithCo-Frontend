@@ -18,6 +18,7 @@ import {
 import { CaptureTypeEnum } from './types'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
+import { trackEvent } from '../../lib/analytics'
 
 interface CapturePreviewCropProps {
   imageUrl?: string | null // This is the URL-encoded image
@@ -129,6 +130,9 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
 
       // Convert the canvas to an image URL
       processImg = canvas.toDataURL('image/png')
+      trackEvent('ocr_capture', 'ocr', `video_capture_${captureType}`)
+    } else if (processImg) {
+      trackEvent('ocr_capture', 'ocr', `file_capture_${captureType}`)
     }
 
     if (!processImg || processImg.length === 0 || !cropRef.current) {
@@ -278,6 +282,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
           color="primary"
           startIcon={<CropIcon />}
           onClick={() => {
+            trackEvent('ocr_reset_crop', 'ocr', captureType)
             setCrop(defaultCrops[captureType])
             setStoredVal({ ...(storedVal || defaultCrops), [captureType]: defaultCrops[captureType] })
           }}
@@ -289,6 +294,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
           color="primary"
           startIcon={<SelectAll />}
           onClick={() => {
+            trackEvent('ocr_no_crop', 'ocr', captureType)
             setCrop({
               unit: 'px',
               width: 0,
