@@ -181,11 +181,9 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     }
     ctx.drawImage(ghostImage, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight)
 
-    // You might want { type: "image/jpeg", quality: <0 to 1> } to reduce image size.
     const blobUrl = await offscreen
       .convertToBlob({
-        type: 'image/jpeg',
-        quality: 0.6,
+        type: 'image/png',
       })
       .then((blob) => {
         const reader = new FileReader()
