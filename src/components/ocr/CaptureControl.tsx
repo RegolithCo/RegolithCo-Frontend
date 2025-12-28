@@ -14,8 +14,9 @@ import {
   Stack,
 } from '@mui/material'
 import { env } from 'onnxruntime-web'
-import { parseShipMiningOrder, parseShipRock } from '@regolithco/ocr'
 import { JSONObject, ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
+import OCRWorker from './ocr.worker?worker'
+import { WorkerMessageData, WorkerResultData } from './ocr.worker'
 
 // Configure WASM path to root
 env.wasm.wasmPaths = '/ort/'
@@ -258,6 +259,7 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({
             {isCropStage && (
               <CapturePreviewCrop
                 imageUrl={rawImageUrl}
+                submitting={processing}
                 clearImage={() => {
                   if (rawImageUrl) setRawImageUrl(null)
                   if (showError) setShowError(null)
@@ -270,28 +272,44 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({
                     setSubmittedImageUrl(newUrl)
                     setProcessing(true)
                     try {
-                      if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
-                        const result = await parseShipMiningOrder(newUrl)
-                        if (result) {
+                      const worker = new OCRWorker()
+                      const result = await new Promise<ShipMiningOrderCapture | ShipRockCapture>((resolve, reject) => {
+                        worker.onmessage = (event: MessageEvent<WorkerResultData>) => {
+                          if (event.data.error) {
+                            reject(new Error(event.data.error))
+                          } else if (event.data.result) {
+                            resolve(event.data.result)
+                          } else {
+                            reject(new Error('Scan could not be captured'))
+                          }
+                          worker.terminate()
+                        }
+                        worker.onerror = (err) => {
+                          reject(err)
+                          worker.terminate()
+                        }
+                        worker.postMessage({
+                          imageUrl: newUrl,
+                          captureType,
+                        } as WorkerMessageData)
+                      })
+
+                      if (result) {
+                        if (captureType === CaptureTypeEnum.REFINERY_ORDER) {
                           const fixedResult = {
                             ...result,
-                            expenses: result.expenses?.map((e) => ({ ...e, amount: BigInt(e.amount) })),
+                            expenses: (result as ShipMiningOrderCapture).expenses?.map((e) => ({
+                              ...e,
+                              amount: BigInt(e.amount),
+                            })),
                           }
                           setData(fixedResult)
-                          if (rawImageUrl) setRawImageUrl(null)
-                          // setSubmittedImageUrl(null)
                         } else {
-                          setShowError('Scan Could not be captured')
-                        }
-                      } else if (captureType === CaptureTypeEnum.SHIP_ROCK) {
-                        const result = await parseShipRock(newUrl)
-                        if (result) {
                           setData(result)
-                          if (rawImageUrl) setRawImageUrl(null)
-                          // setSubmittedImageUrl(null)
-                        } else {
-                          setShowError('Scan Could not be captured')
                         }
+                        if (rawImageUrl) setRawImageUrl(null)
+                      } else {
+                        setShowError('Scan Could not be captured')
                       }
                     } catch (e) {
                       const msg = e instanceof Error ? e.message : 'Scan Could not be captured'

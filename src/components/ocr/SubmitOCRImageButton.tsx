@@ -18,6 +18,7 @@ import { useSnackbar } from 'notistack'
 import { CaptureTypeEnum } from './types'
 import { CaptureTypeEnum as GQLCaptureTypeEnum, JSONObject } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
+import { Box } from '@mui/system'
 
 interface SubmitOCRImageButtonProps {
   imageUrl: string | null
@@ -118,12 +119,13 @@ export const SubmitOCRImageButton: React.FC<SubmitOCRImageButtonProps> = ({
         </DialogTitle>
         <DialogContent>
           <Typography sx={{ my: 2 }}>
-            Help us understand why the image failed by submitting it to the developers.
+            Help us understand why the image failed by submitting it to the developers. Over time we can make the
+            detection even better.
           </Typography>
           <TextField
             autoFocus
             margin="dense"
-            label="Optional message (e.g. what went wrong?)"
+            label={`Optional message (i.e. "It didn't detect GOLD correctly.")`}
             fullWidth
             multiline
             rows={4}
@@ -136,9 +138,10 @@ export const SubmitOCRImageButton: React.FC<SubmitOCRImageButtonProps> = ({
           <Button onClick={handleClose} color="inherit" disabled={submitting}>
             Cancel
           </Button>
+          <Box sx={{ flex: 1 }} />
           <Button
             onClick={handleSubmit}
-            color="info"
+            color="secondary"
             variant="contained"
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={20} /> : <BugReport />}

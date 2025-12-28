@@ -1,4 +1,14 @@
-import { Box, Button, Chip, DialogActions, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  DialogActions,
+  IconButton,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import ReactCrop, { Crop } from 'react-image-crop'
 import { ScreenshareContext } from '../../context/screenshare.context'
@@ -23,9 +33,10 @@ import { trackEvent } from '../../lib/analytics'
 interface CapturePreviewCropProps {
   imageUrl?: string | null // This is the URL-encoded image
   captureType: CaptureTypeEnum
+  submitting?: boolean
   clearImage: () => void
   chooseFileClick: () => void
-  onSubmit: (image: string | null) => void
+  onSubmit: (image: string | null) => Promise<void>
 }
 
 type CropLookups = {
@@ -52,6 +63,7 @@ export const defaultCrops: CropLookups = {
 
 export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
   captureType,
+  submitting,
   imageUrl,
   onSubmit,
   chooseFileClick,
@@ -343,8 +355,14 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
         )}
         <Box sx={{ flexGrow: 1 }} />
 
-        <Button variant="contained" color="success" startIcon={<DocumentScanner />} onClick={onSubmitClick}>
-          Submit
+        <Button
+          disabled={submitting}
+          variant="contained"
+          color="success"
+          startIcon={submitting ? <CircularProgress size={20} /> : <DocumentScanner />}
+          onClick={onSubmitClick}
+        >
+          Capture
         </Button>
       </DialogActions>
     </>
