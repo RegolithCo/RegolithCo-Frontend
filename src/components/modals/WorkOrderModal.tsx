@@ -39,7 +39,6 @@ import {
   Delete,
   DocumentScanner,
   Edit,
-  Error,
   NewReleases,
   Save,
   SvgIconComponent,
@@ -291,6 +290,7 @@ export const WorkOrderModal: React.FC<WorkOrderModalProps> = ({ open, setWorkOrd
           initialImageUrl={pastedImgUrl || null}
           onClose={() => setCamScanModal(false)}
           onCapture={handleCapture}
+          sessionId={workOrder.sessionId}
         />
       )}
       <WorkIcon color="inherit" fontSize="large" sx={styles.icon} />

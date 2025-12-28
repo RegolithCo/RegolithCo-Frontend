@@ -188,7 +188,7 @@ export type PendingUserFieldPolicy = {
 	sessionRole?: FieldPolicy<any> | FieldReadFunction<any>,
 	shipRole?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'surveyData' | 'user' | 'workOrder' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('crewShares' | 'lookups' | 'profile' | 'scoutingFind' | 'session' | 'sessionShare' | 'sessionUpdates' | 'sessionUser' | 'submitOCRImage' | 'surveyData' | 'user' | 'workOrder' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	crewShares?: FieldPolicy<any> | FieldReadFunction<any>,
 	lookups?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -198,6 +198,7 @@ export type QueryFieldPolicy = {
 	sessionShare?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionUpdates?: FieldPolicy<any> | FieldReadFunction<any>,
 	sessionUser?: FieldPolicy<any> | FieldReadFunction<any>,
+	submitOCRImage?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyData?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	workOrder?: FieldPolicy<any> | FieldReadFunction<any>

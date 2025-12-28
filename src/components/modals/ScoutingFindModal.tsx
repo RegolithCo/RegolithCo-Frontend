@@ -194,6 +194,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
             onClose={() => setCamScanModal(false)}
             onCapture={handleCapture}
             initialImageUrl={pastedImgUrl}
+            sessionId={scoutingFind.sessionId}
           />
         )}
         <Box sx={styles.boxContainer}>

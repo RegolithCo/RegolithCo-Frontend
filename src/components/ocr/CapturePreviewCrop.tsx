@@ -109,7 +109,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     }
   }, [isScreenSharing, imageUrl])
 
-  const onSubmitClick = useCallback(async () => {
+  const getCroppedImage = useCallback(async (): Promise<string | null> => {
     // First we need to choose if the image is coming from the imageUrl or from the screen share
     let processImg = imageUrl
 
@@ -124,20 +124,18 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
       const context = canvas.getContext('2d')
       if (!context) {
         log.error('No 2d context')
-        return
+        return null
       }
       context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
       // Convert the canvas to an image URL
       processImg = canvas.toDataURL('image/png')
-      trackEvent('ocr_capture', 'ocr', `video_capture_${captureType}`)
-    } else if (processImg) {
-      trackEvent('ocr_capture', 'ocr', `file_capture_${captureType}`)
+      // trackEvent('ocr_capture', 'ocr', `video_capture_${captureType}`) // Move this out of helper
     }
 
     if (!processImg || processImg.length === 0 || !cropRef.current) {
       log.error('No image to process')
-      return
+      return null
     }
 
     // Create a phantom image to process the crop
@@ -150,7 +148,7 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
     })
     if (crop.height === 0 && crop.width === 0) {
       // Submit the image as is
-      return onSubmit(processImg)
+      return processImg
     }
     let cropX = 0
     let cropY = 0
@@ -201,8 +199,20 @@ export const CapturePreviewCrop: React.FC<CapturePreviewCropProps> = ({
         reader.readAsDataURL(blob)
         return readPromise
       })
-    onSubmit(blobUrl)
-  }, [crop, cropRef.current])
+    return blobUrl
+  }, [imageUrl, isScreenSharing, crop, cropRef.current, captureType])
+
+  const onSubmitClick = useCallback(async () => {
+    const blobUrl = await getCroppedImage()
+    if (blobUrl) {
+      if (!imageUrl) {
+        trackEvent('ocr_capture', 'ocr', `video_capture_${captureType}`)
+      } else {
+        trackEvent('ocr_capture', 'ocr', `file_capture_${captureType}`)
+      }
+      onSubmit(blobUrl)
+    }
+  }, [getCroppedImage, imageUrl, captureType, onSubmit])
 
   return (
     <>

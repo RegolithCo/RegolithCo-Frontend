@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import { env } from 'onnxruntime-web'
 import { parseShipMiningOrder, parseShipRock } from '@regolithco/ocr'
-import { ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
+import { JSONObject, ShipMiningOrderCapture, ShipRockCapture } from '@regolithco/common'
 
 // Configure WASM path to root
 env.wasm.wasmPaths = '/ort/'
@@ -32,6 +32,7 @@ import { fontFamilies } from '../../theme'
 import { PreviewWorkOrderCapture } from './PreviewWorkOrderCapture'
 import { PreviewScoutingRockCapture } from './PreviewScoutingRockCapture'
 import { RockIcon } from '../../icons'
+import { SubmitOCRImageButton } from './SubmitOCRImageButton'
 
 export const CaptureTypeTitle: Record<CaptureTypeEnum, string> = {
   SHIP_ROCK: 'Capture Rock Scan',
@@ -43,9 +44,16 @@ export interface CaptureControlProps {
   initialImageUrl?: string | null
   onCapture: <T extends ShipRockCapture | ShipMiningOrderCapture>(retVal: T) => void
   captureType: CaptureTypeEnum
+  sessionId?: string
 }
 
-export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, captureType, onCapture, initialImageUrl }) => {
+export const CaptureControl: React.FC<CaptureControlProps> = ({
+  onClose,
+  captureType,
+  onCapture,
+  initialImageUrl,
+  sessionId,
+}) => {
   const [rawImageUrl, setRawImageUrl] = useState<string | null>(initialImageUrl || null)
   const [submittedImageUrl, setSubmittedImageUrl] = useState<string | null>(null)
   const [showError, setShowError] = useState<string | null>(null)
@@ -344,6 +352,13 @@ export const CaptureControl: React.FC<CaptureControlProps> = ({ onClose, capture
                 >
                   Retry
                 </Button>
+                <Box sx={{ flexGrow: 1 }} />
+                <SubmitOCRImageButton
+                  imageUrl={submittedImageUrl}
+                  captureType={captureType}
+                  context={data as JSONObject}
+                  sessionId={sessionId || ''}
+                />
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
                   color="success"

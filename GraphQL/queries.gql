@@ -167,6 +167,10 @@ query getCrewShares($sessionId: ID!, $orderId: ID, $nextToken: String) {
 #   }
 # }
 
+query submitOCRImage($sessionId: ID!, $captureType: CaptureTypeEnum!, $metadata: JSONObject!) {
+  submitOCRImage(sessionId: $sessionId, captureType: $captureType, metadata: $metadata)
+}
+
 # NOTE: The getPublic in the name is what makes it use the public API
 query getPublicSurveyData($epoch: String!, $dataName: String!) {
   surveyData(epoch: $epoch, dataName: $dataName) {

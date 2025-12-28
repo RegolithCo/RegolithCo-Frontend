@@ -714,6 +714,15 @@ export type GetCrewSharesQueryVariables = types.Exact<{
 
 export type GetCrewSharesQuery = { __typename: 'Query', crewShares?: { __typename: 'PaginatedCrewShares', nextToken?: string | null, items: Array<{ __typename: 'CrewShare', state?: boolean | null, sessionId: string, payeeScName: string, payeeUserId?: string | null, orderId: string, shareType: types.ShareTypeEnum, share: number, note?: string | null, createdAt: any, updatedAt: any }> } | null };
 
+export type SubmitOcrImageQueryVariables = types.Exact<{
+  sessionId: types.Scalars['ID']['input'];
+  captureType: types.CaptureTypeEnum;
+  metadata: types.Scalars['JSONObject']['input'];
+}>;
+
+
+export type SubmitOcrImageQuery = { __typename: 'Query', submitOCRImage?: string | null };
+
 export type GetPublicSurveyDataQueryVariables = types.Exact<{
   epoch: types.Scalars['String']['input'];
   dataName: types.Scalars['String']['input'];

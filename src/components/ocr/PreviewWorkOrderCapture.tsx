@@ -9,6 +9,7 @@ import {
   Typography,
   useTheme,
   Box,
+  Stack,
 } from '@mui/material'
 import { getOreName, ShipMiningOrderCapture } from '@regolithco/common'
 import { MValue, MValueFormat } from '../fields/MValue'
@@ -42,18 +43,26 @@ export const PreviewWorkOrderCapture: React.FC<PreviewWorkOrderCapturePRops> = (
         },
       }}
     >
-      <Typography
-        variant="h4"
+      <Stack
+        direction="row"
         sx={{
           borderBottom: '1px solid',
           mb: 2,
-          fontFamily: fontFamilies.robotoMono,
-          fontWeight: 'bold',
-          textAlign: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
         }}
       >
-        Capture Results
-      </Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: fontFamilies.robotoMono,
+            fontWeight: 'bold',
+          }}
+        >
+          Capture Results
+        </Typography>
+      </Stack>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, justifyContent: 'center' }}>
         <Box
           sx={{

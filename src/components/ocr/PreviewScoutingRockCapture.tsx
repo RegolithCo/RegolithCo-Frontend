@@ -9,6 +9,7 @@ import {
   Typography,
   useTheme,
   Box,
+  Stack,
 } from '@mui/material'
 import { getOreName, ShipRockCapture } from '@regolithco/common'
 import { fontFamilies } from '../../theme'
@@ -46,18 +47,26 @@ export const PreviewScoutingRockCapture: React.FC<PreviewScoutingRockCaptureProp
         },
       }}
     >
-      <Typography
-        variant="h4"
+      <Stack
+        direction="row"
         sx={{
           borderBottom: '1px solid',
           mb: 2,
-          fontFamily: fontFamilies.robotoMono,
-          fontWeight: 'bold',
-          textAlign: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
         }}
       >
-        Scan Results
-      </Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: fontFamilies.robotoMono,
+            fontWeight: 'bold',
+          }}
+        >
+          Scan Results
+        </Typography>
+      </Stack>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, justifyContent: 'center' }}>
         <Box
           sx={{
