@@ -1,3 +1,11 @@
+### December 28, 2025
+## 1.5.1 - Hotfix for December 25 release
+
+- Many improvements to OCR capture for both work orders and scouting finds. 
+- Moved the new client OCR to a web worker to improve performance and reduce jank on the main thread.
+- Added a submission workflow for users to submit bad OCR captures for improvement.
+
+
 ### 🎄 December 25, 2025
 ## 1.5.0 - OCR in the browser and SC 4.5
 
