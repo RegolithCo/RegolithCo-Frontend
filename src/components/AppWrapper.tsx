@@ -9,6 +9,7 @@ import { MatrixBackground } from './backgrounds/MatrixBackground'
 import { StarsParallax } from './backgrounds/StarsParallax'
 import { VHSBackground } from './backgrounds/VHSBackground'
 import { ObjectValues } from '@regolithco/common'
+import { SessionBg } from './backgrounds/SessionBg'
 
 const BackgroundEffectEnum = {
   //
@@ -53,7 +54,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       backgroundEffect = BackgroundEffectEnum.STARS_BLUE
       break
     case '/session':
-      backgroundEffect = BackgroundEffectEnum.STARS
+      backgroundEffect = BackgroundEffectEnum.SESSION
       break
     case '/about':
     case '/loadouts':
@@ -95,20 +96,23 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children, showCoffee, ro
 
   return (
     <Box sx={styles.container}>
-      {mediumUp && backgroundEffect === 'matrix' && (
+      {mediumUp && backgroundEffect === BackgroundEffectEnum.MATRIX && (
         <MatrixBackground
           color={alpha(theme.palette.secondary.dark, 0.55)}
           backgroundColor={alpha(darken(theme.palette.secondary.dark, 0.95), 0.3)}
           redrawInterval={100}
         />
       )}
-      {mediumUp && backgroundEffect === 'stars' && (
+      {mediumUp && backgroundEffect === BackgroundEffectEnum.STARS && (
         <StarsParallax color1={theme.palette.primary.main} color2={theme.palette.secondary.dark} starColor="#ffffff" />
       )}
-      {mediumUp && backgroundEffect === 'stars-blue' && (
+      {mediumUp && backgroundEffect === BackgroundEffectEnum.STARS_BLUE && (
         <StarsParallax color1={theme.palette.info.main} color2={theme.palette.info.main} starColor="#ffffff" />
       )}
-      {mediumUp && backgroundEffect === 'vhs' && (
+      {mediumUp && backgroundEffect === BackgroundEffectEnum.SESSION && (
+        <SessionBg color1={theme.palette.primary.main} color2={theme.palette.secondary.dark} />
+      )}
+      {mediumUp && backgroundEffect === BackgroundEffectEnum.VHS && (
         <VHSBackground
           backgroundColor={darken(theme.palette.background.default, 0.6)}
           overlayColor={darken(theme.palette.info.dark, 0.6)}
