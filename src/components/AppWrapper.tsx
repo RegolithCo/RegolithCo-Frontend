@@ -58,7 +58,7 @@ export const AppWrapperContainer: React.FC<React.PropsWithChildren> = ({ childre
       break
     case '/about':
     case '/loadouts':
-      backgroundEffect = BackgroundEffectEnum.VHS
+      backgroundEffect = BackgroundEffectEnum.STARS
       break
     case '/cluster':
       backgroundEffect = BackgroundEffectEnum.STARS_BLUE
