@@ -12,6 +12,9 @@ import {
   MiningLoadout,
   ScoutingFind,
   ScoutingFindTypeEnum,
+  ShipClusterFind,
+  VehicleClusterFind,
+  SalvageFind,
   SessionStateEnum,
   SessionUser,
   UserProfile,
@@ -489,6 +492,19 @@ export const SessionPageContainer: React.FC = () => {
               scoutingFind: newScoutingFind as ScoutingFind,
               isNew: true,
               onChange: (newScouting) => {
+                // final sanity check for clusterCount
+                const numRocks =
+                  newScouting.clusterType === ScoutingFindTypeEnum.Ship
+                    ? (newScouting as ShipClusterFind).shipRocks?.length || 0
+                    : newScouting.clusterType === ScoutingFindTypeEnum.Vehicle
+                      ? (newScouting as VehicleClusterFind).vehicleRocks?.length || 0
+                      : newScouting.clusterType === ScoutingFindTypeEnum.Salvage
+                        ? (newScouting as SalvageFind).wrecks?.length || 0
+                        : 0
+                if (!newScouting.clusterCount || newScouting.clusterCount < Math.max(1, numRocks)) {
+                  newScouting.clusterCount = Math.max(1, numRocks)
+                }
+
                 setActiveModal(null)
                 sessionQueries.createScoutingFind(newScouting)
                 setNewScoutingFind(null)

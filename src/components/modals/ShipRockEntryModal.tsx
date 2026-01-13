@@ -245,7 +245,7 @@ export const ShipRockEntryModal: React.FC<ShipRockEntryModalProps> = ({
         (acc, { ore, percent }) => (ore === ShipOreEnum.Inertmaterial ? acc : acc + percent),
         0
       )
-      newOres.push({ ore: ShipOreEnum.Inertmaterial, percent: 1 - total, __typename: 'ShipRockOre' })
+      newOres.push({ ore: ShipOreEnum.Inertmaterial, percent: jsRound(1 - total, 2), __typename: 'ShipRockOre' })
       // Fetch the prices
       const prices = await Promise.all(
         newOres.map((ore) => findPrice(dataStore, ore.ore as ShipOreEnum, undefined, true))

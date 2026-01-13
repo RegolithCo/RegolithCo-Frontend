@@ -23,6 +23,7 @@ import {
   ShipRock,
   ShipRockCapture,
   VehicleClusterFind,
+  jsRound,
 } from '@regolithco/common'
 import { ScoutingFindCalc } from '../calculators/ScoutingFindCalc'
 import { scoutingFindStateThemes } from '../../theme'
@@ -121,13 +122,13 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
 
     // Add this rock to the list
     const newRock = {
-      mass: capturedRock.mass || 0,
-      inst: capturedRock.inst || 0,
-      res: capturedRock.res || 0,
+      mass: jsRound(capturedRock.mass || 0, 0),
+      inst: jsRound(capturedRock.inst || 0, 2),
+      res: jsRound(capturedRock.res || 0, 2),
       rockType: capturedRock.rockType || rockTypeDefault,
       ores: capturedRock.ores.map((ore) => ({
         ore: ore.ore,
-        percent: ore.percent,
+        percent: jsRound(ore.percent, 2),
         __typename: 'ShipRockOre',
       })),
       state: RockStateEnum.Ready,
@@ -138,7 +139,7 @@ export const ScoutingFindModal: React.FC<ScoutingFindModalProps> = ({ open, setS
     if (!newRock.ores.find((ore) => ore.ore === ShipOreEnum.Inertmaterial)) {
       // calculate the inert material
       const totalOres = newRock.ores.reduce((acc, ore) => acc + ore.percent, 0)
-      const inertMaterial = totalOres >= 0 && totalOres <= 1 ? 1 - totalOres : 0
+      const inertMaterial = totalOres >= 0 && totalOres <= 1 ? jsRound(1 - totalOres, 2) : 0
       newRock.ores.push({
         ore: ShipOreEnum.Inertmaterial,
         percent: inertMaterial,

@@ -339,6 +339,7 @@ export function newEmptyScoutingFind(
       return {
         ...(baseObj as VehicleClusterFind),
         vehicleRocks: [],
+        clusterCount: 1,
       }
     case ScoutingFindTypeEnum.Salvage:
       return {

@@ -93,7 +93,7 @@ export const ScoutingClusterCountModal: React.FC<ScoutingClusterCountModalProps>
     return { value: i + 1, label }
   })
 
-  const minVal = clusterType === ScoutingFindTypeEnum.Ship && numScans && numScans > 0 ? numScans : 1
+  const minVal = numScans && numScans > 0 ? numScans : 1
 
   React.useEffect(() => {
     setNewClusterCount(clusterCount || minVal)

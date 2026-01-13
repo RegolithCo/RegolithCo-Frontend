@@ -55,6 +55,7 @@ import {
   ShipRoleEnum,
   PendingUserInput,
   SessionStateEnum,
+  jsRound,
 } from '@regolithco/common'
 import { useNavigate } from 'react-router-dom'
 import { useGQLErrors } from './useGQLErrors'
@@ -96,7 +97,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
   const previousSessionId = React.useRef<string | null>(null)
 
   const { enqueueSnackbar } = useSnackbar()
-  const [sessionError, setSessionError] = React.useState<ErrorCode>()
+  const [sessionError] = React.useState<ErrorCode>()
 
   const sessionUserQry = useGetSessionUserQuery({
     variables: {
@@ -557,7 +558,7 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
           const foundSessionUser = sessionQry.data?.session?.activeMembers?.items?.find(
             (m) => m.ownerId === userId
           ) as SessionUser
-          const { isPilot, ...retVal } = foundSessionUser
+          const { ...retVal } = foundSessionUser
           return {
             updateSessionUser: {
               ...retVal,
@@ -774,6 +775,13 @@ export const useSessions = (sessionId?: string): useSessionsReturn => {
     createScoutingFind: (newFind: ScoutingFind) => {
       // Assign a temp ID
       newFind.scoutingFindId = 'SFUPL_' + (Math.random() * 1000).toFixed(0)
+
+      log.info('Creating Scouting Find:', JSON.stringify(newFind, null, 2))
+
+      // Defensive rounding for clusterCount
+      if (typeof newFind.clusterCount === 'number') {
+        newFind.clusterCount = jsRound(newFind.clusterCount, 0)
+      }
 
       const destructured = scoutingFindDestructured(newFind)
 
