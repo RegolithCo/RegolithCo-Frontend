@@ -1,3 +1,17 @@
+### January 13, 2026
+## 1.5.2 - Loadouts & Layouts bugfixes
+
+This is a quick patch to address some of the issues found in the 1.5.0/1.5.1 releases.
+
+- **BUGFIX: Golem Laser Reset**: Fixed an issue in the loadout calculator where selecting "none" for a module/gadget would incorrectly change the Golem's laser head back to a Prospector laser.
+- **Performance Optimization**: Disabled the "VHS" background effect to improve site performance and reduce jank.
+- **Better Rounding**: Improved precision and rounding in ore percentage calculations to prevent values from exceeding 100%.
+- **BUGFIX**: Prevent doubling up of ores which creates shadow ores and skews the total in a way the user can't fix.
+- **Discord Auth Fix**: Resolved a bug with local storage persistence for Discord authentication.
+- **Gravity Well Hierarchy**: Fixed a bug where some gravity well and location options were not appearing correctly in the dropdowns.
+- **General Cleanup**: Fixed various background display issues and minor spelling errors.
+- **General Server Performance**: Added a server-side improvement to reduce overall API calls.
+
 ### December 28, 2025
 ## 1.5.1 - Hotfix for December 25 release
 
