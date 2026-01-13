@@ -169,7 +169,7 @@ export const LoadoutPage: React.FC<LoadoutPageProps> = ({
           <Link href="https://uexcorp.space/data/home" target="_blank">
             UEX Data Runner
           </Link>{' '}
-          and submit a report to get theme altered.
+          and submit a report to get them altered.
         </Typography>
       </>
     )
