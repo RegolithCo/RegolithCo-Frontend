@@ -233,7 +233,7 @@ export const VehicleOreDistribution: React.FC<VehicleOreDistributionProps> = ({ 
       const rowData = (data && data.data && data.data[row.id]) || null
       if (row.wellType === GravityWellTypeEnum.PLANET || row.wellType === GravityWellTypeEnum.SATELLITE) {
         // keep these always
-      } else if (!rowData && (row.depth >= 2 || row.wellType === GravityWellTypeEnum.CLUSTER)) return null
+      }
 
       return (
         <SurveyTableRow

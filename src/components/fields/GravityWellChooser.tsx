@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Autocomplete, MenuItem, Stack, TextField, Tooltip, Typography, useTheme } from '@mui/material'
+import { Autocomplete, MenuItem, Stack, TextField, Tooltip, Typography, useTheme, Theme } from '@mui/material'
 import { GravityWell, GravityWellTypeEnum, Lookups, SystemEnum } from '@regolithco/common'
 import { LookupsContext } from '../../context/lookupsContext'
 import { Bedtime, Brightness5, GolfCourse, Language, ScatterPlotOutlined } from '@mui/icons-material'
@@ -68,105 +68,81 @@ export const GravityWellNameLookup: React.FC<{ code: string; simple: boolean }> 
   return <GravityWellNameRender options={well as GravityWellOptions} simple={simple} />
 }
 
-export const getGravityWellOptions = (theme, systemLookup): GravityWellOptions[] => {
+export const getGravityWellOptions = (theme: Theme, systemLookup: GravityWell[]): GravityWellOptions[] => {
   if (!systemLookup) return []
-  const systems = systemLookup.filter(({ wellType }) => wellType === GravityWellTypeEnum.SYSTEM)
-  //  Need to output all values in the format of { label: 'SYSTEMNAME - PLANETNAME - SATNAME', id: 'PY' }
-  const planetOptions = systems.reduce((acc, system, key) => {
-    acc.push({
-      ...system,
-      color: theme.palette.primary.main,
-      icon: <Brightness5 />,
+
+  const getIconAndColor = (well: GravityWell) => {
+    switch (well.wellType) {
+      case GravityWellTypeEnum.SYSTEM:
+        return { color: theme.palette.primary.main, icon: <Brightness5 /> }
+      case GravityWellTypeEnum.BELT:
+        return { color: theme.palette.secondary.light, icon: <RockIcon /> }
+      case GravityWellTypeEnum.PLANET:
+        return { color: theme.palette.info.main, icon: <Language /> }
+      case GravityWellTypeEnum.LAGRANGE:
+        return { color: theme.palette.info.dark, icon: <GolfCourse /> }
+      case GravityWellTypeEnum.CLUSTER:
+        return { color: theme.palette.success.main, icon: <ScatterPlotOutlined /> }
+      case GravityWellTypeEnum.SATELLITE:
+        return { color: 'white', icon: <Bedtime /> }
+      default:
+        return { color: 'white', icon: null }
+    }
+  }
+
+  const nodes = new Map<string, GravityWell>()
+  const childrenMap = new Map<string, string[]>()
+
+  systemLookup.forEach((well) => {
+    nodes.set(well.id, well)
+    const parent = well.parent || 'ROOT'
+    if (!childrenMap.has(parent)) {
+      childrenMap.set(parent, [])
+    }
+    childrenMap.get(parent)!.push(well.id)
+  })
+
+  const roots = systemLookup.filter((well) => !well.parent || !nodes.has(well.parent))
+
+  // Sort roots to prioritize SYSTEMS if they are present
+  roots.sort((a, b) => {
+    if (a.wellType === GravityWellTypeEnum.SYSTEM && b.wellType !== GravityWellTypeEnum.SYSTEM) return -1
+    if (a.wellType !== GravityWellTypeEnum.SYSTEM && b.wellType === GravityWellTypeEnum.SYSTEM) return 1
+    return 0
+  })
+
+  const result: GravityWellOptions[] = []
+  const processed = new Set<string>()
+
+  const traverse = (id: string, depth: number, parents: string[]) => {
+    if (processed.has(id)) return
+    const well = nodes.get(id)
+    if (!well) return
+
+    processed.add(id)
+    const { color, icon } = getIconAndColor(well)
+    result.push({
+      ...well,
+      depth: well.depth !== undefined ? well.depth : depth,
+      parents: well.parents && well.parents.length ? well.parents : parents,
+      color,
+      icon,
     })
-    systemLookup
-      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === system.id)
-      .forEach((belt, idx) => {
-        acc.push({
-          ...belt,
-          color: theme.palette.secondary.light,
-          icon: <RockIcon />,
-        })
-      })
 
-    // Now we descend into planets
-    systemLookup
-      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.PLANET && parent === system.id)
-      .forEach((planet, idx) => {
-        acc.push({
-          ...planet,
-          color: theme.palette.info.main,
-          icon: <Language />,
-        })
-        systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === planet.id)
-          .forEach((belt, idx) => {
-            acc.push({
-              ...belt,
-              color: theme.palette.secondary.light,
-              icon: <RockIcon />,
-            })
-          })
-        systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.LAGRANGE && parent === planet.id)
-          .forEach((lagrange, idx) => {
-            acc.push({
-              ...lagrange,
-              color: theme.palette.info.dark,
-              icon: <GolfCourse />,
-            })
-          })
-        systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === planet.id)
-          .forEach((clusterInner, idx) => {
-            acc.push({
-              ...clusterInner,
-              color: theme.palette.success.main,
-              icon: <ScatterPlotOutlined />,
-            })
-          })
-        systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.SATELLITE && parent === planet.id)
-          .forEach((sat, idx) => {
-            acc.push({
-              ...sat,
-              color: 'white',
-              icon: <Bedtime />,
-            })
-            systemLookup
-              .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.BELT && parent === sat.id)
-              .forEach((belt, idx) => {
-                acc.push({
-                  ...belt,
-                  color: theme.palette.secondary.light,
-                  icon: <RockIcon />,
-                })
-              })
-          })
-      })
+    const children = childrenMap.get(id) || []
+    children.forEach((childId) => traverse(childId, depth + 1, [...parents, id]))
+  }
 
-    // Finally we use system clusters
-    systemLookup
-      .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === system.id)
-      .forEach((cluster, idx) => {
-        acc.push({
-          ...cluster,
-          color: theme.palette.success.main,
-          icon: <ScatterPlotOutlined />,
-        })
-        systemLookup
-          .filter(({ wellType, parent }) => wellType === GravityWellTypeEnum.CLUSTER && parent === cluster.id)
-          .forEach((clusterInner, idx) => {
-            acc.push({
-              ...clusterInner,
-              color: theme.palette.success.main,
-              icon: <ScatterPlotOutlined />,
-            })
-          })
-      })
+  roots.forEach((root) => traverse(root.id, 0, []))
 
-    return acc
-  }, [] as GravityWellOptions[])
-  return planetOptions
+  // Final fallback to ensure nothing was missed (e.g. cycles, which shouldn't happen)
+  systemLookup.forEach((well) => {
+    if (!processed.has(well.id)) {
+      traverse(well.id, 0, [])
+    }
+  })
+
+  return result
 }
 
 export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick, wellId, filterToSystem, bonuses }) => {
@@ -226,7 +202,13 @@ export const GravityWellChooser: React.FC<GravityWellChooserProps> = ({ onClick,
         // return values (case insensitive) that match ALL of the words
         return options.filter((option) => {
           if (wellId === option.id) return true
-          if (filterToSystem && filterToSystem !== option.system) return false
+          if (
+            filterToSystem &&
+            filterToSystem.toLowerCase() !== (option.system || '').toLowerCase() &&
+            filterToSystem.toLowerCase() !== (option.id || '').toLowerCase()
+          ) {
+            return false
+          }
           const found = words.map(
             (word) =>
               option.label.toLowerCase().includes(word) ||
