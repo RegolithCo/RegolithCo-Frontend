@@ -21,6 +21,7 @@ const getDiscordConfig = (): TAuthConfig => ({
   autoLogin: true,
   decodeToken: false,
   scope: 'identify guilds',
+  storage: 'local',
 })
 
 /**

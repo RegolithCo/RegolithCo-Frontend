@@ -106,6 +106,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
   React.useEffect(() => {
     if (!dataStore.ready) return
     const calcWorkOrders = async () => {
+      console.time(`[PERF] calcWorkOrders (${workOrders.length} items)`)
       const sortedWorkOrders = [...workOrders].sort((a, b) =>
         reverse ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
       )
@@ -130,6 +131,7 @@ export const WorkOrderTable: React.FC<WorkOrderTableProps> = ({
       )
       setGrossAmount(grossAmt)
       setShareAmount(shareAmt)
+      console.timeEnd(`[PERF] calcWorkOrders (${workOrders.length} items)`)
     }
     calcWorkOrders()
   }, [dataStore, workOrders])
