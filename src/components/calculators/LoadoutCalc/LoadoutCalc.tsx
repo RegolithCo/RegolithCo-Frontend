@@ -275,6 +275,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
               <Grid container spacing={3} rowSpacing={3}>
                 <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                   <LoadoutLaserTool
+                    key={`laser-0-${newLoadout.ship}`}
                     activeLaser={activeLasers[0]}
                     readonly={readonly}
                     laserLocked={laserReadonly}
@@ -282,15 +283,17 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                     laserSize={laserSize}
                     label={laserSize < 2 ? 'Laser' : 'Front Turret'}
                     onChange={(currAl, isHover) => {
+                      if (!currAl) return
+                      const finalAl = laserReadonly ? { ...currAl, laser: activeLasers[0].laser } : currAl
                       if (isHover) {
                         setHoverLoadout({
                           ...newLoadout,
-                          activeLasers: [currAl, activeLasers[1], activeLasers[2]],
+                          activeLasers: [finalAl, activeLasers[1], activeLasers[2]],
                         })
                       } else {
                         setNewLoadout({
                           ...newLoadout,
-                          activeLasers: [currAl, activeLasers[1], activeLasers[2]],
+                          activeLasers: [finalAl, activeLasers[1], activeLasers[2]],
                         })
                       }
                     }}
@@ -299,6 +302,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 {newLoadout.ship === LoadoutShipEnum.Mole && (
                   <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                     <LoadoutLaserTool
+                      key={`laser-1-${newLoadout.ship}`}
                       activeLaser={activeLasers[1]}
                       laserSize={laserSize}
                       isShare={isShare}
@@ -306,15 +310,17 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                       laserLocked={laserReadonly}
                       label="Port Turret"
                       onChange={(currAl, isHover) => {
+                        if (!currAl) return
+                        const finalAl = laserReadonly ? { ...currAl, laser: activeLasers[1].laser } : currAl
                         if (isHover) {
                           setHoverLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], currAl, activeLasers[2]],
+                            activeLasers: [activeLasers[0], finalAl, activeLasers[2]],
                           })
                         } else {
                           setNewLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], currAl, activeLasers[2]],
+                            activeLasers: [activeLasers[0], finalAl, activeLasers[2]],
                           })
                         }
                       }}
@@ -324,6 +330,7 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                 {newLoadout.ship === LoadoutShipEnum.Mole && (
                   <ToolGrid ship={newLoadout.ship} isShare={isShare}>
                     <LoadoutLaserTool
+                      key={`laser-2-${newLoadout.ship}`}
                       activeLaser={activeLasers[2]}
                       laserSize={laserSize}
                       isShare={isShare}
@@ -331,15 +338,17 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                       laserLocked={laserReadonly}
                       label="Starboard Turret"
                       onChange={(currAl, isHover) => {
+                        if (!currAl) return
+                        const finalAl = laserReadonly ? { ...currAl, laser: activeLasers[2].laser } : currAl
                         if (isHover) {
                           setHoverLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], activeLasers[1], currAl],
+                            activeLasers: [activeLasers[0], activeLasers[1], finalAl],
                           })
                         } else {
                           setNewLoadout({
                             ...newLoadout,
-                            activeLasers: [activeLasers[0], activeLasers[1], currAl],
+                            activeLasers: [activeLasers[0], activeLasers[1], finalAl],
                           })
                         }
                       }}
@@ -347,7 +356,12 @@ export const LoadoutCalc: React.FC<LoadoutCalcProps> = ({
                   </ToolGrid>
                 )}
                 <ToolGrid ship={newLoadout.ship} isShare={isShare}>
-                  <LoadoutInventory loadout={newLoadout} onChange={setNewLoadout} readonly={readonly} />
+                  <LoadoutInventory
+                    key={`inventory-${newLoadout.ship}`}
+                    loadout={newLoadout}
+                    onChange={setNewLoadout}
+                    readonly={readonly}
+                  />
                 </ToolGrid>
               </Grid>
             </Grid>

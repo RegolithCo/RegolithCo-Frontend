@@ -41,6 +41,10 @@ export const LoadoutLaserTool: React.FC<LoadoutLaserRowProps> = ({
 
   const previousLoadout = useRef(activeLaser)
 
+  React.useEffect(() => {
+    previousLoadout.current = activeLaser
+  }, [activeLaser])
+
   const onLaserChange = (laser: MiningLaserEnum | '', isActive: boolean, hover: boolean) => {
     if (laser === '') return onChange(hover ? previousLoadout.current : null, hover)
     const loadout: ActiveMiningLaserLoadout = {
