@@ -1,8 +1,9 @@
-### January 13, 2026
+### January 14, 2026
 ## 1.5.2 - Loadouts & Layouts bugfixes
 
 This is a quick patch to address some of the issues found in the 1.5.0/1.5.1 releases.
 
+- **BUGFIX: Dashboard stats not showing correct values**: Last month's BigInt upgrades are still causing some problems but slowly we are finding them all.
 - **BUGFIX: Golem Laser Reset**: Fixed an issue in the loadout calculator where selecting "none" for a module/gadget would incorrectly change the Golem's laser head back to a Prospector laser.
 - **Performance Optimization**: Disabled the "VHS" background effect to improve site performance and reduce jank.
 - **Better Rounding**: Improved precision and rounding in ore percentage calculations to prevent values from exceeding 100%.

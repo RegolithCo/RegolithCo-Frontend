@@ -22,6 +22,7 @@ import { PageLoader } from '../../PageLoader'
 import { SessionDashTabsEnum, tabUrl } from '../Dashboard.container'
 import { MyDashboardStatsChart } from '../../../cards/charts/MyDashboardStatsChart'
 import { DoubleArrow } from '@mui/icons-material'
+import { Textfit } from 'react-textfit'
 
 export type StatsFilters = {
   preset: DatePresetsEnum
@@ -157,9 +158,10 @@ export const TabStats: React.FC<DashboardProps> = ({
     let myIncomeNum = 0
     let sharedIncomeNum = 0
     try {
-      const totalRevenueBigInt = sessionsFiltered.reduce((acc, session) => acc + (session.summary?.aUEC || 0n), 0n)
+      const totalRevenueBigInt = sessionsFiltered.reduce((acc, session) => acc + BigInt(session.summary?.aUEC || 0), 0n)
       totalRevenueNum = typeof totalRevenueBigInt === 'bigint' ? Number(totalRevenueBigInt) : totalRevenueBigInt
     } catch (e) {
+      console.warn('Error calculating totalRevenue', e)
       totalRevenueNum = 0
     }
     try {
@@ -180,10 +182,11 @@ export const TabStats: React.FC<DashboardProps> = ({
         }
         const woSumm = workOrderSummaries[sessionId][orderId].crewShareSummary
         if (!woSumm) return acc
-        return acc + (woSumm[myIndex][0] || 0n)
+        return acc + BigInt(woSumm[myIndex][0] || 0)
       }, 0n)
       myIncomeNum = typeof myIncomeBigInt === 'bigint' ? Number(myIncomeBigInt) : myIncomeBigInt
     } catch (e) {
+      console.warn('Error calculating myIncome', e)
       myIncomeNum = 0
     }
     try {
@@ -193,10 +196,11 @@ export const TabStats: React.FC<DashboardProps> = ({
         const woSumm = workOrderSummaries[sessionId][orderId]
         if (!woSumm || woSumm.sellerScName !== userProfile.scName) return acc
         // REDUCE THE SHARED INCOME BY THE AMOUNT I EARNED`1
-        return acc + ((woSumm.crewShareSummary || [])[myIndex][0] || 0n)
+        return acc + BigInt((woSumm.crewShareSummary || [])[myIndex][0] || 0)
       }, 0n)
       sharedIncomeNum = typeof sharedIncomeBigInt === 'bigint' ? Number(sharedIncomeBigInt) : sharedIncomeBigInt
     } catch (e) {
+      console.warn('Error calculating sharedIncome', e)
       sharedIncomeNum = 0
     }
     return {
@@ -223,26 +227,47 @@ export const TabStats: React.FC<DashboardProps> = ({
       {} as RegolithStatsSummary['workOrderTypes']
     )
 
-    const oreReducedRaw = formatCardNumber(
-      sessionsFiltered.reduce((acc, sess) => {
-        return acc + (sess.summary?.collectedSCU || 0)
-      }, 0)
-    )
-    const oreReducedYielded = formatCardNumber(
-      sessionsFiltered.reduce((acc, sess) => {
-        return acc + (sess.summary?.yieldSCU || 0)
-      }, 0)
+    const sanitizeCardNumber = (val: [string | number, string]) => {
+      if (typeof val[0] === 'string') {
+        val[0] = parseFloat(val[0].replace(/,/g, ''))
+      }
+      return val
+    }
+
+    const oreReducedRaw = sanitizeCardNumber(
+      formatCardNumber(
+        sessionsFiltered.reduce((acc, sess) => {
+          const val = sess.summary?.collectedSCU
+          const num = parseFloat(String(val || 0))
+          return acc + (isNaN(num) ? 0 : num)
+        }, 0)
+      )
     )
 
-    const scoutedRocks = formatCardNumber(
-      sessionsFiltered.reduce((acc, sess) => {
-        const scoutSummary = sess.summary?.scoutingFindsByType
-        return (
-          acc + (scoutSummary?.other || 0) ||
-          0 + (scoutSummary?.salvage || 0) + (scoutSummary?.ship || 0) + (scoutSummary?.vehicle || 0)
-        )
-      }, 0)
+    const oreReducedYielded = sanitizeCardNumber(
+      formatCardNumber(
+        sessionsFiltered.reduce((acc, sess) => {
+          const val = sess.summary?.yieldSCU
+          const num = parseFloat(String(val || 0))
+          return acc + (isNaN(num) ? 0 : num)
+        }, 0)
+      )
     )
+
+    const scoutedRocks = sanitizeCardNumber(
+      formatCardNumber(
+        sessionsFiltered.reduce((acc, sess) => {
+          const scoutSummary = sess.summary?.scoutingFindsByType
+          const val =
+            parseFloat(String(scoutSummary?.other || 0)) +
+            parseFloat(String(scoutSummary?.salvage || 0)) +
+            parseFloat(String(scoutSummary?.ship || 0)) +
+            parseFloat(String(scoutSummary?.vehicle || 0))
+          return acc + (isNaN(val) ? 0 : val)
+        }, 0)
+      )
+    )
+
     return {
       activityPie,
       oreReducedRaw,
@@ -416,11 +441,15 @@ export const TabStats: React.FC<DashboardProps> = ({
 
           <SiteStatsCard
             value={
-              <>
-                {MValueFormatter(oreReducedRaw[0] || 0, MValueFormat.number)}
+              <Textfit
+                mode="single"
+                max={30}
+                style={{ fontFamily: fontFamilies.robotoMono, color: theme.palette.text.primary }}
+              >
+                {MValueFormatter(oreReducedRaw[0] || 0, MValueFormat.number_sm)}
                 <DoubleArrow />
-                {MValueFormatter(oreReducedYielded[0] || 0, MValueFormat.number)}
-              </>
+                {MValueFormatter(oreReducedYielded[0] || 0, MValueFormat.number_sm)}
+              </Textfit>
             }
             scale={oreReducedRaw[1]}
             subText="Ore (SCU)"
